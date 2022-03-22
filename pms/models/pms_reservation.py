@@ -2085,7 +2085,7 @@ class PmsReservation(models.Model):
         lines_to_update_channel = self.env["pms.reservation.line"]
         if "sale_channel_origin_id" in vals:
             folios_to_update_channel = self.get_folios_to_update_channel(vals)
-        lines_to_update_channel = self.get_lines_to_update_channel(vals)
+            lines_to_update_channel = self.get_lines_to_update_channel(vals)
         res = super(PmsReservation, self).write(vals)
         if folios_to_update_channel:
             folios_to_update_channel.sale_channel_origin_id = vals[

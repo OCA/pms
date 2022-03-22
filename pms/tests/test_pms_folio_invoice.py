@@ -135,6 +135,14 @@ class TestPmsFolioInvoice(TestPms):
         )
         journals.allowed_pms_payments = True
 
+        # create a sale channel
+        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+            {
+                "name": "Door",
+                "channel_type": "direct",
+            }
+        )
+
     def test_invoice_full_folio(self):
         """
         Check that when launching the create_invoices() method for a full folio,
@@ -153,6 +161,7 @@ class TestPmsFolioInvoice(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
         state_expected = "invoiced"
@@ -183,6 +192,7 @@ class TestPmsFolioInvoice(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
         dict_lines = dict()
@@ -208,6 +218,7 @@ class TestPmsFolioInvoice(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
         dict_lines = dict()
@@ -260,6 +271,7 @@ class TestPmsFolioInvoice(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
         tcs = [-1, 0, 3]
@@ -294,6 +306,7 @@ class TestPmsFolioInvoice(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
 
@@ -321,6 +334,7 @@ class TestPmsFolioInvoice(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
         qty_to_invoice_expected = sum(
@@ -348,6 +362,7 @@ class TestPmsFolioInvoice(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
         r1.folio_id._create_invoices()
@@ -376,6 +391,8 @@ class TestPmsFolioInvoice(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
+                "service_ids": [(6, 0, [self.service1.id])],
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
 
@@ -418,6 +435,8 @@ class TestPmsFolioInvoice(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
+                "service_ids": [(6, 0, [self.service1.id])],
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
 
@@ -461,6 +480,8 @@ class TestPmsFolioInvoice(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
+                "service_ids": [(6, 0, [self.service1.id])],
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
 
@@ -523,6 +544,7 @@ class TestPmsFolioInvoice(TestPms):
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
                 "board_service_room_id": self.board_service_room_type1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
         dict_lines = dict()
@@ -578,6 +600,7 @@ class TestPmsFolioInvoice(TestPms):
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
                 "board_service_room_id": self.board_service_room_type1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
         dict_lines = dict()
@@ -634,6 +657,7 @@ class TestPmsFolioInvoice(TestPms):
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
                 "board_service_room_id": self.board_service_room_type1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
         dict_lines = dict()
