@@ -828,12 +828,19 @@ class TestPmsMultiproperty(TestPms):
                 "email": "miguel@example.com",
             }
         )
+        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+            {
+                "name": "Door",
+                "channel_type": "direct",
+            }
+        )
         self.reservation1 = self.env["pms.reservation"].create(
             {
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
                 "pms_property_id": self.pms_property1.id,
                 "partner_id": host1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
 

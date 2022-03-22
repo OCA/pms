@@ -66,66 +66,6 @@ class TestPmsSaleChannel(TestPms):
             "Reservation with a valid agency should be created.",
         )
 
-    def test_reservation_with_partner_direct(self):
-        """
-        Reservation create with partner (no agency) and sale channel
-        'direct' must be set reservation sale channel to 'direct'.
-        A reservation with partner and sale channel as 'direct'
-        should be created.
-        """
-        # ARRANGE
-        PmsReservation = self.env["pms.reservation"]
-        PmsSaleChannel = self.env["pms.sale.channel"]
-        # ACT
-        sale_channel1 = PmsSaleChannel.create({"channel_type": "direct"})
-        partner1 = self.env["res.partner"].create({"name": "partner1"})
-        reservation1 = PmsReservation.create(
-            {
-                "checkin": datetime.datetime.now(),
-                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
-                "channel_type_id": sale_channel1.id,
-                "partner_id": partner1.id,
-                "pms_property_id": self.pms_property1.id,
-            }
-        )
-        # ASSERT
-        self.assertEqual(
-            reservation1.channel_type_id.channel_type,
-            "direct",
-            "A reservation with partner and sale channel as 'direct'"
-            "should be created a 'direct' reservation.",
-        )
-
-    def test_reservation_with_partner_indirect(self):
-        """
-        Reservation create with partner (no agency) and sale channel
-        'indirect' must be set reservation sale channel to 'direct'.
-        A reservation with partner and sale channel as 'direct'
-        should be created.
-        """
-        # ARRANGE
-        PmsReservation = self.env["pms.reservation"]
-        PmsSaleChannel = self.env["pms.sale.channel"]
-        # ACT
-        sale_channel1 = PmsSaleChannel.create({"channel_type": "indirect"})
-        partner1 = self.env["res.partner"].create({"name": "partner1"})
-        reservation1 = PmsReservation.create(
-            {
-                "checkin": datetime.datetime.now(),
-                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
-                "channel_type_id": sale_channel1.id,
-                "partner_id": partner1.id,
-                "pms_property_id": self.pms_property1.id,
-            }
-        )
-        # ASSERT
-        self.assertEqual(
-            reservation1.channel_type_id.channel_type,
-            "indirect",
-            "A reservation with partner and sale channel as 'direct'"
-            "should be created a 'indirect' reservation.",
-        )
-
     def test_create_agency_with_sale_channel_indirect(self):
         """
         Agency should be created as partner setted as 'agency'

@@ -85,6 +85,15 @@ class TestPmsSharedRoom(TestPms):
             }
         )
 
+        # create a sale channel
+        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+            {
+                "name": "Door",
+                "channel_type": "direct",
+            }
+        )
+
+
     def test_count_avail_beds_with_room_occupied(self):
         """
         Check that not allow to create a bed reservation with a room occupied
@@ -104,6 +113,7 @@ class TestPmsSharedRoom(TestPms):
                 "checkin": today,
                 "checkout": tomorrow,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
 
@@ -137,6 +147,7 @@ class TestPmsSharedRoom(TestPms):
                 "checkin": today,
                 "checkout": tomorrow,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
 
@@ -182,6 +193,7 @@ class TestPmsSharedRoom(TestPms):
                 "checkin": today,
                 "checkout": tomorrow,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
 
@@ -217,6 +229,7 @@ class TestPmsSharedRoom(TestPms):
                 "checkin": today,
                 "checkout": tomorrow,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
         res1.flush()
@@ -250,6 +263,7 @@ class TestPmsSharedRoom(TestPms):
                 "checkin": today,
                 "checkout": tomorrow,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
 
@@ -285,6 +299,7 @@ class TestPmsSharedRoom(TestPms):
                 "checkin": today,
                 "checkout": tomorrow,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
 
@@ -321,6 +336,7 @@ class TestPmsSharedRoom(TestPms):
                 "checkin": today,
                 "checkout": tomorrow,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
 
@@ -355,6 +371,7 @@ class TestPmsSharedRoom(TestPms):
                 "checkin": today,
                 "checkout": tomorrow,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
 
@@ -370,6 +387,7 @@ class TestPmsSharedRoom(TestPms):
                     "checkin": today,
                     "checkout": tomorrow,
                     "pms_property_id": self.pms_property1.id,
+                    "sale_channel_origin_id": self.sale_channel_direct1.id
                 }
             )
             r_test.flush()
@@ -394,6 +412,7 @@ class TestPmsSharedRoom(TestPms):
                 "checkin": today,
                 "checkout": tomorrow,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
 
@@ -410,6 +429,7 @@ class TestPmsSharedRoom(TestPms):
                     "checkin": today,
                     "checkout": tomorrow,
                     "pms_property_id": self.pms_property1.id,
+                    "sale_channel_origin_id": self.sale_channel_direct1.id
                 }
             )
             r_test.flush()
@@ -435,6 +455,7 @@ class TestPmsSharedRoom(TestPms):
                 "checkin": today,
                 "checkout": tomorrow,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
         r1.action_cancel()
@@ -471,6 +492,7 @@ class TestPmsSharedRoom(TestPms):
                 "checkin": today,
                 "checkout": tomorrow,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
         r1.action_cancel()

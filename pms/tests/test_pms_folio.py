@@ -55,6 +55,15 @@ class TestPmsFolio(TestPms):
         )
         journals.allowed_pms_payments = True
 
+        # create sale channel direct
+        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+            {
+                "name": "Door",
+                "channel_type": "direct",
+            }
+        )
+
+
     def create_sale_channel_scenario(self):
         """
         Method to simplified scenario on sale channel tests:
@@ -410,6 +419,7 @@ class TestPmsFolio(TestPms):
                 "adults": 2,
                 "partner_id": self.env.ref("base.res_partner_12").id,
                 "room_type_id": self.demo_room_type_double.id,
+                "sale_channel_origin_id":self.sale_channel_direct1.id,
             }
         )
 
@@ -456,6 +466,7 @@ class TestPmsFolio(TestPms):
                 "adults": 2,
                 "partner_id": self.env.ref("base.res_partner_12").id,
                 "room_type_id": self.demo_room_type_double.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
 
@@ -542,6 +553,7 @@ class TestPmsFolio(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist1.id,
                 "reservation_type": "staff",
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # ASSERT
@@ -582,6 +594,7 @@ class TestPmsFolio(TestPms):
                 "pricelist_id": self.pricelist1.id,
                 "reservation_type": "out",
                 "closure_reason_id": closure_reason.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
         # ASSERT

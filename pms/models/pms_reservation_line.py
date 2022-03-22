@@ -112,6 +112,7 @@ class PmsReservationLine(models.Model):
         store=True,
         readonly=False,
         compute="_compute_overbooking",
+    )
     sale_channel_id = fields.Many2one(
         string="Sale Channel",
         help="Sale Channel through which reservation line was created",
