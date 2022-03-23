@@ -87,6 +87,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "channel_type": "direct",
             }
         )
+
     # RESERVATION LINES
     def test_comp_fsl_rooms_all_same_group(self):
         """
