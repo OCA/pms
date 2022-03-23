@@ -128,7 +128,7 @@ class TestPmsPricelist(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist2.id,
                 "board_service_room_id": self.board_service_room_type1.id,
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # ASSERT
@@ -176,7 +176,7 @@ class TestPmsPricelist(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist2.id,
                 "board_service_room_id": self.board_service_room_type1.id,
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # ASSERT
@@ -221,7 +221,7 @@ class TestPmsPricelist(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist2.id,
                 "board_service_room_id": self.board_service_room_type1.id,
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # ASSERT
@@ -270,7 +270,7 @@ class TestPmsPricelist(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist2.id,
                 "board_service_room_id": self.board_service_room_type1.id,
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # ASSERT
@@ -317,7 +317,7 @@ class TestPmsPricelist(TestPms):
                 "preferred_room_id": self.room1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist2.id,
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # ASSERT
@@ -364,7 +364,7 @@ class TestPmsPricelist(TestPms):
                 "preferred_room_id": self.room1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist2.id,
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # ASSERT
@@ -407,7 +407,7 @@ class TestPmsPricelist(TestPms):
                 "preferred_room_id": self.room1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist2.id,
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # ASSERT
@@ -454,7 +454,7 @@ class TestPmsPricelist(TestPms):
                 "preferred_room_id": self.room1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist2.id,
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # ASSERT
@@ -501,7 +501,7 @@ class TestPmsPricelist(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist2.id,
                 "service_ids": [(0, 0, {"product_id": self.product1.id})],
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # ASSERT
@@ -548,7 +548,7 @@ class TestPmsPricelist(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist2.id,
                 "service_ids": [(0, 0, {"product_id": self.product1.id})],
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # ASSERT
@@ -591,7 +591,7 @@ class TestPmsPricelist(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist2.id,
                 "service_ids": [(0, 0, {"product_id": self.product1.id})],
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # ASSERT
@@ -638,7 +638,7 @@ class TestPmsPricelist(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist2.id,
                 "service_ids": [(0, 0, {"product_id": self.product1.id})],
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # ASSERT
@@ -802,7 +802,7 @@ class TestPmsPricelist(TestPms):
                 "preferred_room_id": self.room.id,
                 "pms_property_id": self.pms_property1.id,
                 "partner_id": self.partner1.id,
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # ACT
@@ -1251,7 +1251,7 @@ class TestPmsPricelist(TestPms):
                         "preferred_room_id": self.room.id,
                         "pms_property_id": self.pms_property1.id,
                         "pricelist_id": self.pricelist1.id,
-                        "sale_channel_origin_id": self.sale_channel_direct1.id
+                        "sale_channel_origin_id": self.sale_channel_direct1.id,
                     }
                 )
                 reservation_price = reservation.price_subtotal
