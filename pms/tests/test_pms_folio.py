@@ -63,7 +63,6 @@ class TestPmsFolio(TestPms):
             }
         )
 
-
     def create_sale_channel_scenario(self):
         """
         Method to simplified scenario on sale channel tests:
@@ -419,7 +418,7 @@ class TestPmsFolio(TestPms):
                 "adults": 2,
                 "partner_id": self.env.ref("base.res_partner_12").id,
                 "room_type_id": self.demo_room_type_double.id,
-                "sale_channel_origin_id":self.sale_channel_direct1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
 
@@ -466,7 +465,7 @@ class TestPmsFolio(TestPms):
                 "adults": 2,
                 "partner_id": self.env.ref("base.res_partner_12").id,
                 "room_type_id": self.demo_room_type_double.id,
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
 
@@ -594,7 +593,7 @@ class TestPmsFolio(TestPms):
                 "pricelist_id": self.pricelist1.id,
                 "reservation_type": "out",
                 "closure_reason_id": closure_reason.id,
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # ASSERT
@@ -1120,4 +1119,420 @@ class TestPmsFolio(TestPms):
             partner3.id,
             folio1.partner_invoice_ids.ids,
             "A checkin partner was not added as a billing contact",
+        )
+
+    @freeze_time("2001-10-10")
+    def test_folio_sale_channel_origin_in_reservation(self):
+        """
+        Check that the reservation has sale_channel_origin_id
+        as the folio sale_channel_origin_id in
+        which reservation was created
+
+        When a reservation is created on a folio
+        that already has a sale_channel_origin
+        that reservation will have the same sale_channel_origin
+
+        """
+        # ARRANGE
+        partner1 = self.env["res.partner"].create({"name": "partner1"})
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner1.name,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
+            }
+        )
+        # ACT
+        reservation1 = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "folio_id": folio1.id,
+            }
+        )
+        # ASSERT
+        self.assertEqual(
+            reservation1.sale_channel_origin_id.id,
+            folio1.sale_channel_origin_id.id,
+            "Sale channel of reservation must be the same that it folio",
+        )
+
+    @freeze_time("2001-10-19")
+    def test_folio_sale_channel_ids(self):
+        """
+        Check if sale_channel_ids of folio correspond to
+        sale_channel_origin_id of its reservations at the
+        time of creating a new reservation in the folio
+        """
+        # ARRANGE
+        sale_channel_phone = self.env["pms.sale.channel"].create(
+            {
+                "name": "phone",
+                "channel_type": "direct",
+            }
+        )
+        partner1 = self.env["res.partner"].create({"name": "partner1"})
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner1.name,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
+            }
+        )
+
+        self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "folio_id": folio1.id,
+            }
+        )
+        self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "folio_id": folio1.id,
+                "sale_channel_origin_id": sale_channel_phone.id,
+            }
+        )
+        # ACT
+        expected_sale_channels = []
+        for reservation in folio1.reservation_ids:
+            expected_sale_channels.append(reservation.sale_channel_origin_id.id)
+
+        # ASSERT
+        self.assertItemsEqual(
+            folio1.sale_channel_ids.ids,
+            list(set(expected_sale_channels)),
+            "Sale_channel_ids of folio must be the same as "
+            "sale_channel_origin of its reservation ",
+        )
+
+    @freeze_time("2001-10-22")
+    def test_folio_sale_channel_ids_reservations_several_origin(self):
+        """
+        Check that sale_channel_ids of folio correspond to sale_channel_origin_id
+        of its reservations
+
+        In this case, folio1 has two reservations(reservation1, reservation2)
+         with the same sale_channel_origin.
+
+                           sale_channel_origin_id       sale_channel_ids
+                          -------------------------
+         Folio1 -------->   sale_channel_direct1   ||   sale_channel_direct1
+         reservation1 -->   sale_channel_direct1
+         reservation2 -->   sale_channel_direct1
+
+         Then, reservation2 update sale_channel_origin_id for a diferent one. So the folio
+         has several reservations with different sale_channel_origin_id.
+         It should be noted that the check would force having to update
+         the folio sale_channel_origin_id (force_update_origin) isn't marked.
+
+         Expected result:
+
+                          sale_channel_origin_id        sale_channel_ids
+                          ----------------------
+         Folio1 -------->  sale_channel_direct1 | (sale_channel_direct1, sale_channel_phone)
+         reservation1 -->  sale_channel_direct1
+         reservation2 -->  sale_channel_phone
+
+          In this test case, sale_channel_ids will be checked
+        """
+        # ARRANGE
+        sale_channel_phone = self.env["pms.sale.channel"].create(
+            {
+                "name": "phone",
+                "channel_type": "direct",
+            }
+        )
+        partner1 = self.env["res.partner"].create({"name": "partner1"})
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner1.name,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
+            }
+        )
+
+        self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "folio_id": folio1.id,
+            }
+        )
+        reservation2 = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "folio_id": folio1.id,
+            }
+        )
+        # ACT
+        reservation_vals = {
+            "sale_channel_origin_id": sale_channel_phone.id,
+            "force_update_origin": False,
+        }
+
+        reservation2.write(reservation_vals)
+        expected_sale_channels = []
+        for reservation in folio1.reservation_ids:
+            expected_sale_channels.append(reservation.sale_channel_origin_id.id)
+
+        # ASSERT
+        self.assertItemsEqual(
+            folio1.sale_channel_ids.ids,
+            list(set(expected_sale_channels)),
+            "Sale_channel_ids of folio must be the same as "
+            "sale_channel_origin of its reservation ",
+        )
+
+    @freeze_time("2001-10-22")
+    def test_sale_channel_origin_id_reservation_not_update_origin(self):
+        """
+        Check that sale_channel_origin_id of folio doesn't change
+        when sale_channel_origin_id of one of its reservations is updated
+        but the check isn't checked
+
+         In this case, folio1 has two reservations(reservation1, reservation2)
+         with the same sale_channel_origin.
+
+                           sale_channel_origin_id
+                          -------------------------
+         Folio1 -------->   sale_channel_direct1
+         reservation1 -->   sale_channel_direct1
+         reservation2 -->   sale_channel_direct1
+
+         Then, reservation2 update sale_channel_origin_id for a diferent one. So the folio
+         has several reservations with different sale_channel_origin_id.
+         And the check would force having to update
+         the folio sale_channel_origin_id (force_update_origin) isn't marked.
+         So sale_channel_origin_id of folio shouldn't change.
+
+         Expected result:
+
+                           sale_channel_origin_id
+                          -------------------------
+         Folio1 -------->   sale_channel_direct1
+         reservation1 -->   sale_channel_direct1
+         reservation2 -->   sale_channel_phone
+
+          In this test case, sale_channel_origin_id of folio will be checked
+        """
+        # ARRANGE
+        sale_channel_phone = self.env["pms.sale.channel"].create(
+            {
+                "name": "phone",
+                "channel_type": "direct",
+            }
+        )
+        partner1 = self.env["res.partner"].create({"name": "partner1"})
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner1.name,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
+            }
+        )
+
+        self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "folio_id": folio1.id,
+            }
+        )
+        reservation2 = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "folio_id": folio1.id,
+            }
+        )
+        # ACT
+        reservation_vals = {
+            "sale_channel_origin_id": sale_channel_phone.id,
+            "force_update_origin": False,
+        }
+        reservation2.write(reservation_vals)
+
+        # ASSERT
+        self.assertNotEqual(
+            folio1.sale_channel_origin_id,
+            reservation2.sale_channel_origin_id,
+            "Sale_channel_origin_id of folio shouldn't be the same as "
+            "sale_channel_origin of reservation2",
+        )
+
+    @freeze_time("2001-10-25")
+    def test_sale_channel_origin_id_reservation_update_origin(self):
+        """
+        Check that sale_channel_origin_id of the folio changes when
+        you change sale_channel_origin_id of one of its reservations
+        and check that forces the update of sale_channel_origin_id of folio
+
+
+                           sale_channel_origin_id
+                          -------------------------
+         Folio1 -------->   sale_channel_direct1
+         reservation1 -->   sale_channel_direct1
+         reservation2 -->   sale_channel_direct1
+
+         Then, reservation2 update sale_channel_origin_id for a diferent one. So the folio
+         has several reservations with different sale_channel_origin_id.
+         And the check would force having to update
+         the folio sale_channel_origin_id (force_update_origin) is marked.
+         So sale_channel_origin_id of folio must change.
+
+         Expected result:
+
+                           sale_channel_origin_id
+                          -------------------------
+         Folio1 -------->   sale_channel_phone
+         reservation1 -->   sale_channel_phone
+         reservation2 -->   sale_channel_phone
+
+          In this test case, sale_channel_origin_id of folio1 will be checked
+        """
+        # ARRANGE
+        sale_channel_phone = self.env["pms.sale.channel"].create(
+            {
+                "name": "phone",
+                "channel_type": "direct",
+            }
+        )
+        partner1 = self.env["res.partner"].create({"name": "partner1"})
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner1.name,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
+            }
+        )
+
+        self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "folio_id": folio1.id,
+            }
+        )
+        reservation2 = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "folio_id": folio1.id,
+            }
+        )
+        # ACT
+        reservation_vals = {
+            "sale_channel_origin_id": sale_channel_phone.id,
+            "force_update_origin": True,
+        }
+        reservation2.write(reservation_vals)
+        # ASSERT
+        self.assertEqual(
+            folio1.sale_channel_origin_id,
+            reservation2.sale_channel_origin_id,
+            "Sale_channel_origin_id of folio should be updated",
+        )
+
+    @freeze_time("2001-10-25")
+    def test_sale_channel_origin_id_reservation_update_reservations(self):
+        """
+        Check that sale_channel_origin_id of a reservation changes when
+        another reservation of the same folio changes sale_channel_origin_id
+        and marks the check.
+        By changing sale_channel_origin_ id of a reservation and marking the check
+        that forces the update, changes both sale_channel_origin of folio and
+        sale_channel_origin of reservations that had the same
+
+
+                           sale_channel_origin_id
+                          -------------------------
+         Folio1 -------->   sale_channel_direct1
+         reservation1 -->   sale_channel_direct1
+         reservation2 -->   sale_channel_direct1
+
+         Then, reservation2 update sale_channel_origin_id for a diferent one.
+         And the check would force having to update
+         the folio sale_channel_origin_id (force_update_origin) is marked.
+         So sale_channel_origin_id of folio and other reservations with the same
+         sale_channel_origin must change.
+
+         Expected result:
+
+                           sale_channel_origin_id
+                          -------------------------
+         Folio1 -------->   sale_channel_phone
+         reservation1 -->   sale_channel_phone
+         reservation2 -->   sale_channel_phone
+
+          In this test case, sale_channel_origin_id of reservation1 will be checked
+        """
+        # ARRANGE
+        sale_channel_phone = self.env["pms.sale.channel"].create(
+            {
+                "name": "phone",
+                "channel_type": "direct",
+            }
+        )
+        partner1 = self.env["res.partner"].create({"name": "partner1"})
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner1.name,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
+            }
+        )
+
+        reservation1 = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "folio_id": folio1.id,
+            }
+        )
+        reservation2 = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "folio_id": folio1.id,
+            }
+        )
+        # ACT
+        reservation_vals = {
+            "sale_channel_origin_id": sale_channel_phone.id,
+            "force_update_origin": True,
+        }
+        reservation2.write(reservation_vals)
+
+        # ASSERT
+        self.assertEqual(
+            reservation1.sale_channel_origin_id,
+            reservation2.sale_channel_origin_id,
+            "sale_channel_origin_id of reservations that coincided "
+            "with sale_channel_origin_id of folio de should be updated",
         )

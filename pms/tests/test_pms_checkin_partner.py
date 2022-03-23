@@ -1098,7 +1098,7 @@ class TestPmsCheckinPartner(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": partner.name,
                 "email": partner.email,
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # ACT
@@ -1141,7 +1141,7 @@ class TestPmsCheckinPartner(TestPms):
                 "room_type_id": self.room_type1.id,
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": partner.name,
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # ACT
@@ -1187,7 +1187,7 @@ class TestPmsCheckinPartner(TestPms):
                 "room_type_id": self.room_type1.id,
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": partner.name,
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         checkin = self.env["pms.checkin.partner"].create(
@@ -1249,7 +1249,7 @@ class TestPmsCheckinPartner(TestPms):
                 "room_type_id": self.room_type1.id,
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": partner1.name,
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
 
@@ -1297,7 +1297,7 @@ class TestPmsCheckinPartner(TestPms):
                 "room_type_id": self.room_type1.id,
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": "Rosa Costa",
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         checkin = self.env["pms.checkin.partner"].create(
@@ -1551,7 +1551,7 @@ class TestPmsCheckinPartner(TestPms):
                 "partner_id": self.host1.id,
                 "adults": 1,
                 "pms_property_id": self.pms_property1.id,
-                "sale_channel_origin_id": self.sale_channel_direct1.id
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         checkin_partner_id = self.reservation.checkin_partner_ids[0]

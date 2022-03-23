@@ -3796,6 +3796,7 @@ class TestPmsReservations(TestPms):
                     self.commission
                     + service.price_total * self.agency1.default_commission / 100
                 )
+        # ASSERT
         self.assertEqual(
             self.commission,
             reservation.commission_amount,
@@ -3867,3 +3868,309 @@ class TestPmsReservations(TestPms):
             "The out of service reservation should be created properly with "
             "a closure reason.",
         )
+    # tests for several sale channels in reservation
+    @freeze_time("2000-11-10")
+    def test_reservation_sale_channel_origin_in_reservation_lines(self):
+        """
+        Check that reservation_lines have sale_channel_id
+        corresponding to sale_channel_origin_id of their reservation
+
+        When a reservation was created with a sale channel, it corresponds
+        to the sale_channel_origin.
+        Reservation lines will have as sale_channel_id the sale_channel_origin_id
+        of reservation when creating them
+
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = checkin + datetime.timedelta(days=3)
+        reservation_vals = {
+            "checkin": checkin,
+            "checkout": checkout,
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+
+        # ACT
+        reservation = self.env["pms.reservation"].create(reservation_vals)
+
+        # ASSERT
+        self.assertEqual(
+            reservation.sale_channel_origin_id,
+            reservation.reservation_line_ids.mapped("sale_channel_id"),
+            "Sale channel of reservation lines must be the same that their reservation",
+        )
+
+    @freeze_time("2000-10-10")
+    def test_reservation_sale_channel_origin_in_folio(self):
+        """
+        Check that folio have sale_channel_origin_id
+        corresponding to sale_channel_origin_id of the reservation
+        that was created before the folio
+
+        When a reservation was created with a sale channel, it corresponds
+        to the sale_channel_origin.
+        If reservation didn't have folio previously, the folio to be created
+        will have the same sale_channel_origin as the reservation
+
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = checkin + datetime.timedelta(days=3)
+        reservation_vals = {
+            "checkin": checkin,
+            "checkout": checkout,
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+
+        # ACT
+        reservation = self.env["pms.reservation"].create(reservation_vals)
+
+        # ASSERT
+        self.assertEqual(
+            reservation.sale_channel_origin_id,
+            reservation.folio_id.sale_channel_origin_id,
+            "Sale channel of folio must be the same that it reservation",
+        )
+
+    @freeze_time("2001-10-15")
+    def test_reservation_sale_channel_origin_of_folio(self):
+        """
+        Check that the reservation has sale_channel_origin_id
+        as the folio sale_channel_origin_id in
+        which reservation was created when a folio has already
+        another reservations.
+
+        Testing whether it works when the folio sale_channel_origin_id
+        is given by a previously created reservation
+
+        When a reservation is created on a folio
+        that already has a sale_channel_origin
+        that reservation will have the same sale_channel_origin
+
+        """
+        # ARRANGE
+        reservation_vals = {
+            "checkin": datetime.datetime.now(),
+            "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+        reservation1 = self.env["pms.reservation"].create(reservation_vals)
+        # ACT
+        reservation2 = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "folio_id": reservation1.folio_id.id,
+            }
+        )
+        # ASSERT
+        self.assertEqual(
+            reservation1.sale_channel_origin_id.id,
+            reservation2.sale_channel_origin_id.id,
+            "Sale channel of reservations must be the same",
+        )
+
+    @freeze_time("2000-10-19")
+    def test_reservation_lines_same_sale_channel(self):
+        """
+        Check if sale_channel_ids of reservation correspond to
+        sale_channel_id of its reservation.
+
+        In this case, the reservation has several reservation_lines
+        with the same sale_channel_id. Reservation lines are created
+        with sale_channel_origin_id of the reservation and haven't been
+        modified.
+
+        """
+        # ARRANGE
+        reservation_vals = {
+            "checkin": datetime.datetime.now(),
+            "checkout": datetime.datetime.now() + datetime.timedelta(days=4),
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+        # ACT
+        reservation1 = self.env["pms.reservation"].create(reservation_vals)
+
+        # ASSERT
+        self.assertEqual(
+            reservation1.sale_channel_ids,
+            reservation1.reservation_line_ids.mapped("sale_channel_id"),
+            "Sale_channel_ids of reservation must be the same as "
+            "sale channels of its reservation lines",
+        )
+
+    @freeze_time("2000-10-24")
+    def test_reservation_sale_channel_origin_change_check_lines(self):
+        """
+        Check that sale_channel_id of reservation_lines changes when
+        sale_channel_origin_id of its reservation has changed
+        """
+        # ARRANGE
+        sale_channel_direct2 = self.env["pms.sale.channel"].create(
+            {
+                "name": "sale channel 2",
+                "channel_type": "direct",
+            }
+        )
+        reservation_vals = {
+            "checkin": datetime.datetime.now(),
+            "checkout": datetime.datetime.now() + datetime.timedelta(days=4),
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+        reservation1 = self.env["pms.reservation"].create(reservation_vals)
+
+        # ACT
+        reservation1.sale_channel_origin_id = sale_channel_direct2.id
+
+        # ASSERT
+        self.assertEqual(
+            reservation1.sale_channel_origin_id,
+            reservation1.reservation_line_ids.mapped("sale_channel_id"),
+            "Sale_channel_id of reservation lines must also be changed",
+        )
+
+    @freeze_time("2000-10-29")
+    def test_reservation_lines_not_change_sale_channel(self):
+        """
+            Check that when changing sale_channel_origin_id of a reservation,
+            reservation lines that didn't have the same sale_channel_id didn't
+            change it
+
+            Reservation1:
+                --> sale_channel_origin_id : sale_channel1.id
+                --> reservation_lines:
+                       --> 1: sale_channel_id: sale_channel1.id
+                       --> 2: sale_channel_id: sale_channel1.id
+                       --> 3: sale_channel_id: sale_channel1.id
+                       --> 4: sale_channel_id: sale_channel_phone.id
+
+            Change reservation1.sale_channel_origin_id = sale_channel_mail.id
+
+            Expected result:
+            Reservation1:
+               --> sale_channel_origin_id : sale_channel_mail.id
+               --> reservation_lines:
+                    --> 1: sale_channel_id: sale_channel_mail.id
+                    --> 2: sale_channel_id: sale_channel_mail.id
+                    --> 3: sale_channel_id: sale_channel_mail.id
+                    --> 4: sale_channel_id: sale_channel_phone.id
+
+        In short, sale channel of those reservations lines of the reservation
+        that didn't coincide with sale chanel origin that has been modified,
+        shouldn't be changed. That is, the last reservation_line must have
+        sale_channel_id = sale_channel_phone
+        """
+        # ARRANGE
+        sale_channel_phone = self.env["pms.sale.channel"].create(
+            {
+                "name": "phone",
+                "channel_type": "direct",
+            }
+        )
+        sale_channel_mail = self.env["pms.sale.channel"].create(
+            {
+                "name": "mail",
+                "channel_type": "direct",
+            }
+        )
+        reservation_vals = {
+            "checkin": datetime.datetime.now(),
+            "checkout": datetime.datetime.now() + datetime.timedelta(days=4),
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+        reservation1 = self.env["pms.reservation"].create(reservation_vals)
+
+        # ACT
+        reservation_lines = reservation1.reservation_line_ids
+        reservation_lines[
+            len(reservation_lines) - 1
+        ].sale_channel_id = sale_channel_phone.id
+
+        reservation1.sale_channel_origin_id = sale_channel_mail
+
+        # ASSERT
+        self.assertNotEqual(
+            reservation1.sale_channel_origin_id,
+            reservation_lines[len(reservation_lines) - 1].sale_channel_id,
+            "Sale_channel_id of that reservation line shouldn't have changed",
+        )
+
+    @freeze_time("2000-11-29")
+    def test_several_sale_channel_in_lines(self):
+        """
+        Check that when a reservation has more than one sale_channel_id
+        in its reservation_lines, sale_channel_ids of reservation is well
+        calculated
+        """
+        # ARRANGE
+        sale_channel_phone = self.env["pms.sale.channel"].create(
+            {
+                "name": "phone",
+                "channel_type": "direct",
+            }
+        )
+        reservation_vals = {
+            "checkin": datetime.datetime.now(),
+            "checkout": datetime.datetime.now() + datetime.timedelta(days=4),
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+        reservation1 = self.env["pms.reservation"].create(reservation_vals)
+
+        # ACT
+        reservation_lines = reservation1.reservation_line_ids
+        reservation_lines[0].sale_channel_id = sale_channel_phone.id
+
+        expected_sale_channels = []
+        for line in reservation_lines:
+            expected_sale_channels.append(line.sale_channel_id.id)
+
+        # ASSERT
+        self.assertItemsEqual(
+            reservation1.sale_channel_ids.ids,
+            list(set(expected_sale_channels)),
+            "Sale_channel_ids of that reservation must match those of its lines",
+        )
+
+    @freeze_time("2000-12-01")
+    def test_reservation_no_sale_channel_origin(self):
+        """
+        Check that you cann't create a reservation without sale_channel_origin
+        """
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="Error, it has been allowed to create a reservation without sale channel",
+        ):
+            self.env["pms.reservation"].create(
+                {
+                    "room_type_id": self.room_type_double.id,
+                    "partner_id": self.partner1.id,
+                    "pms_property_id": self.pms_property1.id,
+                    "checkin": datetime.datetime.now(),
+                    "checkout": datetime.datetime.now() + datetime.timedelta(days=4),
+                }
+            )
