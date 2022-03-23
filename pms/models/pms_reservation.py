@@ -2009,6 +2009,8 @@ class PmsReservation(models.Model):
                 default_vals["email"] = folio.email
             elif vals.get("reservation_type") != "out":
                 raise ValidationError(_("Partner contact name is required"))
+            if folio.sale_channel_origin_id and "sale_channel_origin_id" not in vals:
+                default_vals["sale_channel_origin_id"] = folio.sale_channel_origin_id.id
             vals.update(default_vals)
         elif (
             "pms_property_id" in vals
