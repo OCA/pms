@@ -45,7 +45,7 @@ class TestAccountMove(SavepointCase):
         #cls.invoice = cls.AccountMove.create(invoice_vals)
         cls.account_move = cls.AccountMove.create(invoice_vals)
 
-        print("///////////////////////////////////////", cls.account_move.reservation_count)
+        #print("///////////////////////////////////////", cls.account_move.reservation_count)
 
         #self.account_move.create(
             #{
@@ -79,7 +79,8 @@ class TestAccountMove(SavepointCase):
 
     @api.depends("line_ids")
     def test_compute_reservation_count(self):
-        self.account_move._compute_reservation_count() 
+        #self.account_move._compute_reservation_count()
+        print("/////////////////////////////////", self.account_move.reservation_count) 
 
         #total_len = self.account_move.search_count(['id', '=', '99'])
         #print("total length", total_len)
