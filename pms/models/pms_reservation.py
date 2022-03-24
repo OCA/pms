@@ -2118,7 +2118,10 @@ class PmsReservation(models.Model):
                     for res in self.filtered(lambda r: r.folio_id == folio)
                 )
                 and vals["sale_channel_origin_id"] != folio.sale_channel_origin_id.id
-                and ("force_update_origin" in vals and vals.get("force_update_origin"))
+                and (
+                    ("force_update_origin" in vals and vals.get("force_update_origin"))
+                    or len(folio.reservation_ids) == 1
+                )
             ):
                 folios_to_update_channel += folio
         return folios_to_update_channel

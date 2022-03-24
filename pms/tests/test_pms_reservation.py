@@ -4158,7 +4158,7 @@ class TestPmsReservations(TestPms):
     @freeze_time("2000-12-01")
     def test_reservation_no_sale_channel_origin(self):
         """
-        Check that you cann't create a reservation without sale_channel_origin
+        Check that you can't create a reservation without sale_channel_origin
         """
         # ACT & ASSERT
         with self.assertRaises(
@@ -4174,3 +4174,37 @@ class TestPmsReservations(TestPms):
                     "checkout": datetime.datetime.now() + datetime.timedelta(days=4),
                 }
             )
+
+    @freeze_time("2000-12-01")
+    def test_one_reservation_change_sale_channel_origin(self):
+        """
+        Check that when changing the sale_channel_origin of a reservation,
+        sale_channel_origin of its folio changes if folio only has one reservation
+        """
+        # ARRANGE
+        sale_channel_phone = self.env["pms.sale.channel"].create(
+            {
+                "name": "phone",
+                "channel_type": "direct",
+            }
+        )
+        reservation_vals = {
+            "checkin": datetime.datetime.now(),
+            "checkout": datetime.datetime.now() + datetime.timedelta(days=4),
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+        reservation1 = self.env["pms.reservation"].create(reservation_vals)
+
+        # ACT
+        reservation1.sale_channel_origin_id = sale_channel_phone.id
+
+        # ASSERT
+        self.assertEqual(
+            reservation1.folio_id.sale_channel_origin_id,
+            reservation1.sale_channel_origin_id,
+            "Sale_channel_origin_id of folio must be the same as "
+            "sale_channel_origin of rservation",
+        )
