@@ -226,8 +226,6 @@ class PmsFolio(models.Model):
         string="Sale Channel Origin",
         help="Sale Channel through which folio was created, the original",
         comodel_name="pms.sale.channel",
-        store=True,
-        compute="_compute_sale_channel_origin_id",
     )
 
     transaction_ids = fields.Many2many(
@@ -1062,12 +1060,6 @@ class PmsFolio(models.Model):
             for reservation in folio.reservation_ids:
                 if reservation.commission_amount != 0:
                     folio.commission = folio.commission + reservation.commission_amount
-
-    @api.depends("agency_id")
-    def _compute_sale_channel_origin_id(self):
-        for folio in self:
-            if folio.agency_id:
-                folio.sale_channel_origin_id = folio.agency_id.sale_channel_id.id
 
     @api.depends("reservation_ids", "reservation_ids.sale_channel_ids")
     def _compute_sale_channel_ids(self):

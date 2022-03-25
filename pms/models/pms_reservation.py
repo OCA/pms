@@ -1891,6 +1891,7 @@ class PmsReservation(models.Model):
                             "Change sale_channel_origin of reservation before"
                         )
                     )
+
     # Action methods
     def open_partner(self):
         """Utility method used to add an "View Customer" button in reservation views"""
@@ -2026,7 +2027,7 @@ class PmsReservation(models.Model):
             vals.update(default_vals)
         elif (
             "pms_property_id" in vals
-            and ("sale_channel_origin_id" in vals or "agency_id" in vals)
+            and "sale_channel_origin_id" in vals
             and ("partner_name" in vals or "partner_id" in vals or "agency_id" in vals)
         ):
             folio_vals = {
