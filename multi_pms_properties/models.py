@@ -13,6 +13,12 @@ class BaseModel(models.AbstractModel):
     as attribute.
     """
 
+    def _valid_field_parameter(self, field, name):
+        """Make new field attribute valid for Odoo."""
+        return name == "check_pms_properties" or super()._valid_field_parameter(
+            field, name
+        )
+
     @api.model_create_multi
     def create(self, vals_list):
         records = super(BaseModel, self).create(vals_list)
@@ -29,7 +35,7 @@ class BaseModel(models.AbstractModel):
                 fname == "pms_property_id"
                 or fname == "pms_property_ids"
                 or fname == "company_id"
-                or (field.relational and field.check_pms_properties)
+                or (field.relational and getattr(field, "check_pms_properties", False))
             ):
                 check_pms_properties = True
         if res and check_pms_properties and self._check_pms_properties_auto:
@@ -101,7 +107,7 @@ class BaseModel(models.AbstractModel):
             field = self._fields[name]
             if (
                 field.relational
-                and field.check_pms_properties
+                and getattr(field, "check_pms_properties", False)
                 and (
                     "pms_property_id" in self.env[field.comodel_name]
                     or "pms_property_ids" in self.env[field.comodel_name]
