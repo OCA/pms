@@ -1895,6 +1895,7 @@ class TestPmsReservations(TestPms):
                 "checkout": fields.date.today() + datetime.timedelta(days=152),
                 "agency_id": agency.id,
                 "room_type_id": self.room_type_double.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id
             }
         )
         self.assertEqual(
@@ -2610,6 +2611,7 @@ class TestPmsReservations(TestPms):
                 "checkout": fields.date.today() + datetime.timedelta(days=152),
                 "agency_id": agency.id,
                 "room_type_id": self.room_type_double.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id
             }
         )
 
@@ -3777,6 +3779,7 @@ class TestPmsReservations(TestPms):
             "pms_property_id": self.pms_property1.id,
             "agency_id": self.agency1.id,
             "service_ids": [self.service.id],
+            "sale_channel_origin_id": self.sale_channel_direct.id
         }
         # ACT
         reservation = self.env["pms.reservation"].create(reservation_vals)
@@ -4208,3 +4211,35 @@ class TestPmsReservations(TestPms):
             "Sale_channel_origin_id of folio must be the same as "
             "sale_channel_origin of rservation",
         )
+
+    @freeze_time("2000-12-10")
+    def test_check_sale_channel_origin_in_reservation_lines(self):
+        """
+        Check that a reservation has at least one reservation_line woth the
+        same sale_channel_id as its sale_channel_origin_id
+        """
+        # ARRANGE
+        sale_channel_phone = self.env["pms.sale.channel"].create(
+            {
+                "name": "phone",
+                "channel_type": "direct",
+            }
+        )
+        reservation_vals = {
+            "checkin": datetime.datetime.now(),
+            "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+        reservation1 = self.env["pms.reservation"].create(reservation_vals)
+
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="Error, there cannot be a reservation in which at least one of its reservation"
+                "lines doesn't have as sale_channel_id the sale_channel_origin_id of reservation",
+        ):
+            reservation1.reservation_line_ids.write({"sale_channel_id": sale_channel_phone})
+            reservation1.flush()
