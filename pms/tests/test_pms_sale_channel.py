@@ -56,6 +56,7 @@ class TestPmsSaleChannel(TestPms):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "agency_id": agency1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": sale_channel1.id,
             }
         )
 
