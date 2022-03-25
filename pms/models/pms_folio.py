@@ -1279,7 +1279,9 @@ class PmsFolio(models.Model):
             if folio.email and folio.create_date.date() == fields.Date.today():
                 template = folio.pms_property_id.property_confirmed_template
                 try:
-                    template.send_mail(folio.id, force_send=True)
+                    template.send_mail(
+                        folio.id, force_send=True, email_values={"auto_delete": False}
+                    )
                 except MailDeliveryException:
                     self.env["ir.logging"].create(
                         {
@@ -1309,7 +1311,9 @@ class PmsFolio(models.Model):
             if folio.email:
                 template = folio.pms_property_id.property_modified_template
                 try:
-                    template.send_mail(folio.id, force_send=True)
+                    template.send_mail(
+                        folio.id, force_send=True, email_values={"auto_delete": False}
+                    )
                 except MailDeliveryException:
                     self.env["ir.logging"].create(
                         {
@@ -1343,7 +1347,11 @@ class PmsFolio(models.Model):
                             reservation.pms_property_id.property_canceled_template
                         )
                         try:
-                            template.send_mail(reservation.id, force_send=True)
+                            template.send_mail(
+                                reservation.id,
+                                force_send=True,
+                                email_values={"auto_delete": False},
+                            )
                         except MailDeliveryException:
                             self.env["ir.logging"].create(
                                 {
