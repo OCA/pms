@@ -1654,6 +1654,7 @@ class PmsReservation(models.Model):
             if (
                 record.sale_channel_origin_id != record.folio_id.sale_channel_origin_id
                 and record.folio_id
+                and isinstance(self.id, int)
             ):
                 record.is_origin_channel_check_visible = True
             else:
