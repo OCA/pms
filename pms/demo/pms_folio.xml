@@ -22,13 +22,17 @@
                     })]"
             />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_door" />
+            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
         </record>
         <record id="pms_folio_sngx3" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_10" />
             <field name="user_id" ref="base.user_admin" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_booking" />
+            <field
+                name="sale_channel_origin_id"
+                ref="pms.main_pms_sale_channel_phone"
+            />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
@@ -65,7 +69,7 @@
             <field name="partner_id" ref="base.res_partner_12" />
             <field name="user_id" ref="base.user_admin" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_door" />
+            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -83,6 +87,10 @@
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_airbnb" />
+            <field
+                name="sale_channel_origin_id"
+                ref="pms.main_pms_sale_channel_phone"
+            />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -105,6 +113,10 @@
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_airbnb" />
             <field
+                name="sale_channel_origin_id"
+                ref="pms.main_pms_sale_channel_phone"
+            />
+            <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -125,6 +137,10 @@
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="agency_booking" />
+            <field
+                name="sale_channel_origin_id"
+                ref="pms.main_pms_sale_channel_phone"
+            />
             <field name="internal_comment">Each guest pays his bill</field>
             <field
                 name="reservation_ids"
@@ -135,7 +151,8 @@
                     'checkin': (DateTime.today() + timedelta(days=14)),
                     'checkout': (DateTime.today() + timedelta(days=21)),
                     'adults': 4,
-                    'partner_requests': '1 extra towel needed.'
+                    'partner_requests': '1 extra towel needed.',
+                    'sale_channel_origin_id': ref('pms.main_pms_sale_channel_mail')
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -150,7 +167,10 @@
             <field name="partner_id" ref="base.res_partner_address_15" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_phone" />
+            <field
+                name="sale_channel_origin_id"
+                ref="pms.main_pms_sale_channel_phone"
+            />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -171,7 +191,7 @@
             <field name="partner_id" ref="base.res_partner_4" />
             <field name="user_id" ref="base.user_admin" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_mail" />
+            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -191,6 +211,10 @@
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_airbnb" />
             <field
+                name="sale_channel_origin_id"
+                ref="pms.main_pms_sale_channel_phone"
+            />
+            <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -208,7 +232,10 @@
             <field name="user_id" ref="base.user_admin" />
             <field name="reservation_type">out</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_phone" />
+            <field
+                name="sale_channel_origin_id"
+                ref="pms.main_pms_sale_channel_phone"
+            />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -228,7 +255,7 @@
             <field name="partner_id" ref="base.res_partner_12" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_door" />
+            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -248,6 +275,10 @@
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_booking" />
+            <field
+                name="sale_channel_origin_id"
+                ref="pms.main_pms_sale_channel_phone"
+            />
             <field
                 name="internal_comment"
             >Do not allow guests to pay anything. The company pays for everything.</field>
@@ -269,6 +300,7 @@
                     'checkout': (DateTime.today() + timedelta(days=18)),
                     'adults': 1,
                     'state': 'confirm',
+                    'sale_channel_origin_id': ref('pms.main_pms_sale_channel_door')
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -285,6 +317,7 @@
                     'checkout': (DateTime.today() + timedelta(days=18)),
                     'adults': 1,
                     'state': 'confirm',
+                    'sale_channel_origin_id': ref('pms.main_pms_sale_channel_mail')
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -309,6 +342,7 @@
                     'checkout': (DateTime.today() + timedelta(days=18)),
                     'adults': 3,
                     'state': 'confirm',
+                    'sale_channel_origin_id': ref('pms.main_pms_sale_channel_mail')
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -325,6 +359,11 @@
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_booking" />
+
+            <field
+                name="sale_channel_origin_id"
+                ref="pms.main_pms_sale_channel_phone"
+            />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -343,7 +382,7 @@
             <field name="user_id" ref="base.user_admin" />
             <field name="reservation_type">out</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_door" />
+            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -363,7 +402,10 @@
             <field name="partner_id" ref="base.res_partner_address_10" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_phone" />
+            <field
+                name="sale_channel_origin_id"
+                ref="pms.main_pms_sale_channel_phone"
+            />
             <field name="internal_comment">Each guest pays his bill</field>
             <field
                 name="reservation_ids"
@@ -383,6 +425,7 @@
                     'checkout': (DateTime.today() + timedelta(days=20)),
                     'adults': 1,
                     'state': 'confirm',
+                    'sale_channel_origin_id': ref('pms.main_pms_sale_channel_door'),
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -399,7 +442,10 @@
             <field name="partner_id" ref="base.res_partner_address_33" />
             <field name="user_id" ref="base.user_admin" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_phone" />
+            <field
+                name="sale_channel_origin_id"
+                ref="pms.main_pms_sale_channel_phone"
+            />
             <field name="internal_comment">Each guest pays his bill</field>
             <field
                 name="reservation_ids"
@@ -419,6 +465,7 @@
                     'checkout': (DateTime.today() + timedelta(days=21)),
                     'adults': 2,
                     'state': 'cancel',
+                    'sale_channel_origin_id': ref('pms.main_pms_sale_channel_door'),
                     })]"
             />
 
@@ -427,7 +474,7 @@
             <field name="partner_id" ref="base.res_partner_main2" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_door" />
+            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -446,7 +493,7 @@
             <field name="user_id" ref="base.user_admin" />
             <field name="reservation_type">normal</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_mail" />
+            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -464,7 +511,7 @@
             <field name="user_id" ref="base.user_demo" />
             <field name="reservation_type">normal</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_mail" />
+            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -488,6 +535,10 @@
             <field name="reservation_type">normal</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_airbnb" />
+            <field
+                name="sale_channel_origin_id"
+                ref="pms.main_pms_sale_channel_phone"
+            />
             <field name="state">cancel</field>
             <field
                 name="reservation_ids"
@@ -502,30 +553,35 @@
                     })]"
             />
         </record>
-        <record id="pms_folio_cnf_04" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_18" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="reservation_type">normal</field>
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.agency_booking" />
-            <field
-                name="reservation_ids"
-                eval="[(5, 0), (0, 0, {
-                    'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref ('pms_room_type_conference_room'),
-                    'checkin': (DateTime.today() + timedelta(days=22)),
-                    'checkout': (DateTime.today() + timedelta(days=23)),
-                    'adults': 1,
-                    'state': 'cancel',
-                    'partner_requests': 'Sound system.'
-                    })]"
-            />
-        </record>
+<!--        <record id="pms_folio_cnf_04" model="pms.folio">-->
+<!--            <field name="partner_id" ref="base.res_partner_18" />-->
+<!--            <field name="user_id" ref="base.user_demo" />-->
+<!--            <field name="reservation_type">normal</field>-->
+<!--            <field name="pms_property_id" ref="pms.main_pms_property" />-->
+<!--            <field name="agency_id" ref="pms.agency_booking" />-->
+<!--            <field-->
+<!--                name="sale_channel_origin_id"-->
+<!--                ref="pms.main_pms_sale_channel_phone"-->
+<!--            />-->
+<!--            <field-->
+<!--                name="reservation_ids"-->
+<!--                eval="[(5, 0), (0, 0, {-->
+<!--                    'pricelist_id': ref('product.list0'),-->
+<!--                    'room_type_id': ref ('pms_room_type_conference_room'),-->
+<!--                    'checkin': (DateTime.today() + timedelta(days=22)),-->
+<!--                    'checkout': (DateTime.today() + timedelta(days=23)),-->
+<!--                    'adults': 1,-->
+<!--                    'state': 'cancel',-->
+<!--                    'partner_requests': 'Sound system.'-->
+<!--                    })]"-->
+<!--            />-->
+<!--        </record>-->
         <record id="pms_folio_eco_sngx3" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_18" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_booking" />
+            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
             <field name="internal_comment">Each guest pays his bill</field>
             <field
                 name="reservation_ids"
@@ -555,6 +611,7 @@
                     'adults': 1,
                     'state': 'confirm',
                     'board_service_room_id': ref('pms_board_service_room_single_breakfast'),
+                    'sale_channel_origin_id': ref('pms.main_pms_sale_channel_phone')
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -564,6 +621,7 @@
                     'adults': 1,
                     'state': 'confirm',
                     'board_service_room_id': ref('pms_board_service_room_single_full_board'),
+                    'sale_channel_origin_id': ref('pms.main_pms_sale_channel_phone')
                     })]"
             />
         </record>
@@ -571,7 +629,7 @@
             <field name="partner_id" ref="base.res_partner_address_30" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_phone" />
+            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
             <field name="internal_comment">Each guest pays his bill</field>
             <field
                 name="reservation_ids"
@@ -604,6 +662,7 @@
                     'children': 1,
                     'state': 'confirm',
                     'board_service_room_id': ref('pms_board_service_room_triple_full_board'),
+                    'sale_channel_origin_id': ref('main_pms_sale_channel_mail')
                     })]"
             />
         </record>
@@ -611,7 +670,7 @@
             <field name="partner_id" ref="base.res_partner_address_25" />
             <field name="user_id" ref="base.user_admin" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_mail" />
+            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
             <field name="internal_comment">Each guest pays his bill</field>
             <field
                 name="reservation_ids"
@@ -645,6 +704,10 @@
             <field name="user_id" ref="base.user_admin" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_booking" />
+            <field
+                name="sale_channel_origin_id"
+                ref="pms.main_pms_sale_channel_phone"
+            />
             <field name="internal_comment">Each guest pays his bill</field>
             <field
                 name="reservation_ids"
@@ -677,7 +740,10 @@
             <field name="partner_id" ref="base.res_partner_10" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_phone" />
+            <field
+                name="sale_channel_origin_id"
+                ref="pms.main_pms_sale_channel_phone"
+            />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
@@ -697,7 +763,7 @@
             <field name="partner_id" ref="base.res_partner_4" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_mail" />
+            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
@@ -717,7 +783,10 @@
             <field name="partner_id" ref="base.res_partner_address_27" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_phone" />
+            <field
+                name="sale_channel_origin_id"
+                ref="pms.main_pms_sale_channel_phone"
+            />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
@@ -737,7 +806,10 @@
             <field name="partner_id" ref="base.res_partner_12" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_phone" />
+            <field
+                name="sale_channel_origin_id"
+                ref="pms.main_pms_sale_channel_phone"
+            />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
@@ -758,6 +830,10 @@
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_airbnb" />
+            <field
+                name="sale_channel_origin_id"
+                ref="pms.main_pms_sale_channel_phone"
+            />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
@@ -785,7 +861,7 @@
             <field name="partner_id" ref="base.res_partner_address_17" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_door" />
+            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -804,7 +880,10 @@
             <field name="partner_id" ref="base.res_partner_3" />
             <field name="user_id" ref="base.user_admin" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_phone" />
+            <field
+                name="sale_channel_origin_id"
+                ref="pms.main_pms_sale_channel_phone"
+            />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -822,7 +901,7 @@
             <field name="partner_id" ref="base.res_partner_address_25" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_mail" />
+            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -844,6 +923,10 @@
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_airbnb" />
+            <field
+                name="sale_channel_origin_id"
+                ref="pms.main_pms_sale_channel_phone"
+            />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
