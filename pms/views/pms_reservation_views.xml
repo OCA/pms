@@ -47,7 +47,7 @@
                         name="action_open_mail_composer"
                         string="Send Confirmation Email "
                         type="object"
-                        attrs="{'invisible':['|','|','|',('to_send_mail', '=', False),('is_modified_reservation', '=', True),('state', 'in', 'cancel'),('reservation_type', 'in', 'out')]}"
+                        attrs="{'invisible':['|','|','|',('to_send_mail', '=', False),('is_modified_reservation', '=', True),('state', 'not in', 'confirm'),('reservation_type', 'in', 'out')]}"
                     />
                     <button
                         name="action_open_mail_composer"
@@ -57,13 +57,19 @@
                     />
                     <button
                         name="action_open_mail_composer"
+                        string="Send Exit Email "
+                        type="object"
+                        attrs="{'invisible':['|','|',('to_send_mail', '=', False), ('state', 'not in', 'done'),('reservation_type', 'in', 'out')]}"
+                    />
+                    <button
+                        name="action_open_mail_composer"
                         string="Send Cancellation Email "
                         type="object"
                         attrs="{'invisible':['|','|',('to_send_mail', '=', False), ('state', 'not in', 'cancel'),('reservation_type', 'in', 'out')]}"
                     />
                     <field name="state" widget="statusbar" />
-                    <field name="to_send_mail" invisible="1" />
-                    <field name="is_modified_reservation" invisible="1" />
+                    <field name="to_send_mail" invisible="0" />
+                    <field name="is_modified_reservation" invisible="0" />
                 </header>
                 <div
                     class="alert alert-info"
