@@ -655,10 +655,11 @@ class PmsReservation(models.Model):
         inverse_name="reservation_possible_customer_id",
     )
     to_send_mail = fields.Boolean(
-        string="Mail Sent",
+        string="To Send Mail",
         compute="_compute_to_send_mail",
         readonly=False,
         store=True,
+        default=False,
     )
 
     is_modified_reservation = fields.Boolean(
@@ -1515,9 +1516,13 @@ class PmsReservation(models.Model):
         for record in self:
             if record.state in "draft":
                 record.is_modified_reservation = False
-            elif record.state in ("confirm", "onboard") and not record.to_send_mail:
+            elif (
+                record._origin.checkin != record.checkin
+                or record._origin.checkout != record.checkout
+            ) and not record.to_send_mail:
                 record.is_modified_reservation = True
-                record.to_send_mail = True
+                for reservations in record.folio_id.reservation_ids:
+                    reservations.to_send_mail = True
             else:
                 record.is_modified_reservation = False
 
@@ -1529,13 +1534,13 @@ class PmsReservation(models.Model):
             else:
                 record.lang = self.env["res.lang"].get_installed()
 
-    @api.depends("reservation_type")
+    @api.depends("reservation_type", "state")
     def _compute_to_send_mail(self):
         for record in self:
+            if record.state in ("confirm", "done", "cancel"):
+                record.to_send_mail = True
             if record.reservation_type == "out":
                 record.to_send_mail = False
-            else:
-                record.to_send_mail = True
 
     def _search_allowed_checkin(self, operator, value):
         if operator not in ("=",):
@@ -1996,7 +2001,6 @@ class PmsReservation(models.Model):
             else:
                 record.state = "cancel"
                 record.folio_id._compute_amount()
-                record.to_send_mail = True
 
     def action_assign(self):
         for record in self:

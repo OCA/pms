@@ -14,8 +14,6 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools import float_compare, float_is_zero
 from odoo.tools.misc import get_lang
 
-from odoo.addons.base.models.ir_mail_server import MailDeliveryException
-
 _logger = logging.getLogger(__name__)
 
 
@@ -1525,157 +1523,109 @@ class PmsFolio(models.Model):
 
     # CHECKIN/OUT PROCESS
 
-    @api.model
-    def send_confirmation_mail(self):
-        folios = self.env["pms.folio"].search(
-            [
-                ("pms_property_id.is_confirmed_auto_mail", "=", True),
-                ("reservation_ids.to_send_mail", "=", True),
-                ("reservation_ids.is_modified_reservation", "=", False),
-                ("reservation_ids.state", "!=", "cancel"),
-            ]
-        )
-        for folio in folios:
-            if folio.email and folio.create_date.date() == fields.Date.today():
-                template = folio.pms_property_id.property_confirmed_template
-                try:
-                    template.send_mail(
-                        folio.id, force_send=True, email_values={"auto_delete": False}
-                    )
-                except MailDeliveryException:
-                    self.env["ir.logging"].create(
-                        {
-                            "name": "Failed to send confirmation email to "
-                            + folio.email,
-                            "type": "server",
-                            "path": "pms/pms/models/pms_folio.py",
-                            "line": "1281",
-                            "func": "send_confirmation_email",
-                            "message": "Confirmation Mail Delivery Failed",
-                        }
-                    )
-                for reservation in folio.reservation_ids:
-                    reservation.to_send_mail = False
-
-    @api.model
-    def send_modification_mail(self):
-        folios = self.env["pms.folio"].search(
-            [
-                ("pms_property_id.is_modified_auto_mail", "=", True),
-                ("reservation_ids.to_send_mail", "=", True),
-                ("reservation_ids.is_modified_reservation", "=", True),
-                ("reservation_ids.state", "!=", "cancel"),
-            ]
-        )
-        for folio in folios:
-            if folio.email:
-                template = folio.pms_property_id.property_modified_template
-                try:
-                    template.send_mail(
-                        folio.id, force_send=True, email_values={"auto_delete": False}
-                    )
-                except MailDeliveryException:
-                    self.env["ir.logging"].create(
-                        {
-                            "name": "Failed to send modification email to "
-                            + folio.email,
-                            "type": "server",
-                            "path": "pms/pms/models/pms_folio.py",
-                            "line": "1311",
-                            "func": "send_modification_email",
-                            "message": "Modification Mail Delivery Failed",
-                        }
-                    )
-                for reservation in folio.reservation_ids:
-                    reservation.to_send_mail = False
-
-    @api.model
-    def send_cancelation_mail(self):
-        folios = self.env["pms.folio"].search(
-            [("pms_property_id.is_canceled_auto_mail", "=", True)]
-        )
-        for folio in folios:
-            reservations = folio.reservation_ids.filtered(lambda r: r.state in "cancel")
-            for reservation in reservations:
-                if reservation.email:
-                    if (
-                        not reservation.to_send_mail
-                        and reservation.email
-                        and reservation.state not in "out"
-                    ):
-                        template = (
-                            reservation.pms_property_id.property_canceled_template
-                        )
-                        try:
-                            template.send_mail(
-                                reservation.id,
-                                force_send=True,
-                                email_values={"auto_delete": False},
-                            )
-                        except MailDeliveryException:
-                            self.env["ir.logging"].create(
-                                {
-                                    "name": "Failed to send cancellation email to "
-                                    + reservation.email,
-                                    "type": "server",
-                                    "path": "pms/pms/models/pms_folio.py",
-                                    "line": "1345",
-                                    "func": "send_cancelation_email",
-                                    "message": "Cancellation Mail Delivery Failed",
-                                }
-                            )
-                        reservation.to_send_mail = False
-
     def action_open_mail_composer(self):
         self.ensure_one()
-        template = False
-        pms_property = self.pms_property_id
-        if (
-            all(reservation.to_send_mail for reservation in self.reservation_ids)
-            and not all(
-                reservation.is_modified_reservation
-                for reservation in self.reservation_ids
-            )
-            and all(
-                reservation.state not in "cancel"
-                for reservation in self.reservation_ids
-            )
+        res_ids = []
+        partner_ids = []
+        if all(
+            reservation.to_send_mail
+            and not reservation.is_modified_reservation
+            and reservation.state in "confirm"
+            for reservation in self.reservation_ids
         ):
-            if pms_property.property_confirmed_template:
-                template = pms_property.property_confirmed_template
-        elif (
-            any(reservation.to_send_mail for reservation in self.reservation_ids)
-            and any(
-                reservation.is_modified_reservation
-                for reservation in self.reservation_ids
-            )
-            and all(
-                reservation.state not in "cancel"
-                for reservation in self.reservation_ids
-            )
-        ):
-            if pms_property.property_modified_template:
-                template = pms_property.property_modified_template
+            if self.pms_property_id.property_confirmed_template:
+                template = self.pms_property_id.property_confirmed_template
+            else:
+                raise ValidationError(
+                    _(
+                        "You must select a confirmation template "
+                        "in the email configuration menu of the property"
+                    )
+                )
+            model = "pms.folio"
+            partner_ids = [self.partner_id.id]
+            res_id = self.id
+            composition_mode = "comment"
         elif any(
-            reservation.to_send_mail for reservation in self.reservation_ids
-        ) and any(
-            reservation.state in "cancel" for reservation in self.reservation_ids
+            reservation.to_send_mail and reservation.is_modified_reservation
+            for reservation in self.reservation_ids
+        ) and all(
+            reservation.state not in "cancel" for reservation in self.reservation_ids
         ):
-            if pms_property.property_canceled_template:
-                template = pms_property.property_canceled_template
+            if self.pms_property_id.property_modified_template:
+                template = self.pms_property_id.property_modified_template
+            else:
+                raise ValidationError(
+                    _(
+                        "You must select a modification template "
+                        "in the email configuration menu of the property"
+                    )
+                )
+            model = "pms.folio"
+            partner_ids = [self.partner_id.id]
+            res_id = self.id
+            composition_mode = "comment"
+        elif any(
+            reservation.to_send_mail and reservation.state in "cancel"
+            for reservation in self.reservation_ids
+        ):
+            if self.pms_property_id.property_canceled_template:
+                template = self.pms_property_id.property_canceled_template
+            else:
+                raise ValidationError(
+                    _(
+                        "You must select a cancelation template "
+                        "in the email configuration menu of the property"
+                    )
+                )
+            model = "pms.reservation"
+            composition_mode = "mass_mail"
+            for reservation in self.reservation_ids:
+                if reservation.state in "cancel" and reservation.to_send_mail:
+                    partner_ids.append(reservation.partner_id.id)
+                    res_ids.append(reservation.id)
+        elif any(
+            reservation.to_send_mail and reservation.state in "done"
+            for reservation in self.reservation_ids
+        ):
+            if self.pms_property_id.property_exit_template:
+                template = self.pms_property_id.property_exit_template
+            else:
+                raise ValidationError(
+                    _(
+                        "You must select a exit template in "
+                        "the email configuration menu of the property"
+                    )
+                )
+            model = "pms.checkin.partner"
+            composition_mode = "mass_mail"
+            for checkin_partner in self.checkin_partner_ids:
+                if (
+                    checkin_partner.state == "done"
+                    and checkin_partner.reservation_id.to_send_mail
+                ):
+                    partner_ids.append(checkin_partner.partner_id.id)
+                    res_ids.append(checkin_partner.id)
         compose_form = self.env.ref(
             "mail.email_compose_message_wizard_form", raise_if_not_found=False
         )
         ctx = dict(
-            model="pms.folio",
-            default_model="pms.folio",
-            default_res_id=self.id,
+            model=model,
+            default_model=model,
             default_template_id=template and template.id or False,
-            composition_mode="comment",
-            partner_ids=[self.partner_id.id],
+            default_composition_mode=composition_mode,
+            partner_ids=partner_ids,
             force_email=True,
-            record_id=self.id,
         )
+        if composition_mode == "comment":
+            ctx.update(
+                default_res_id=res_id,
+                record_id=res_id,
+            )
+        else:
+            ctx.update(
+                active_ids=res_ids,
+            )
         return {
             "name": _("Send Mail "),
             "type": "ir.actions.act_window",
