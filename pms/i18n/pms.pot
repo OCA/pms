@@ -5107,9 +5107,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model,name:pms.model_account_journal
 #: model:ir.model.fields,field_description:pms.field_account_bank_statement__journal_id
-#: model:ir.model.fields,field_description:pms.field_account_bank_statement_line__journal_id
-#: model:ir.model.fields,field_description:pms.field_account_move__journal_id
-#: model:ir.model.fields,field_description:pms.field_account_payment__journal_id
 msgid "Journal"
 msgstr ""
 
