@@ -276,6 +276,8 @@ class ResPartner(models.Model):
             vat_document_types.append((doc_type.name, doc_type.name))
         return vat_document_types
 
+    team_id = fields.Many2one("pms.team", "PMS Team")
+
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.gender")
     def _compute_gender(self):
         if hasattr(super(), "_compute_gender"):

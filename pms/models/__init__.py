@@ -47,3 +47,4 @@ from . import res_partner_id_number
 from . import pms_automated_mails
 from . import payment_transaction
 from . import res_partner_id_category
+from . import pms_team
