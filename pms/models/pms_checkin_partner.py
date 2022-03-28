@@ -16,7 +16,7 @@ from odoo.tools.safe_eval import safe_eval
 class PmsCheckinPartner(models.Model):
     _name = "pms.checkin.partner"
     _description = "Partner Checkins"
-    _inherit = ["portal.mixin"]
+    _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin"]
     _rec_name = "identifier"
 
     identifier = fields.Char(
@@ -833,7 +833,7 @@ class PmsCheckinPartner(models.Model):
         for record in self.filtered(lambda c: c.state == "onboard"):
             vals = {
                 "state": "done",
-                "departure": record.reservation_id.checkout,
+                "departure": fields.Datetime.now(),
             }
             record.update(vals)
         return True
@@ -937,3 +937,39 @@ class PmsCheckinPartner(models.Model):
         )
 
         invitation_mail.send()
+
+    def send_exit_email(self, template_id):
+        template = self.env["mail.template"].browse(template_id)
+        if self.email:
+            template.send_mail(
+                self.id,
+                force_send=True,
+                raise_exception=False,
+                email_values={"email_to": self.email, "auto_delete": False},
+            )
+            body = template._render_field(
+                "body_html", [6, 0, self.id], compute_lang=True, post_process=True
+            )[self.id]
+            self.reservation_id.message_post(body=body)
+
+        if self.reservation_id.to_send_mail:
+            emails = self.reservation_id.checkin_partner_ids.mapped("email")
+            if (
+                self.reservation_id.partner_id
+                and self.reservation_id.partner_id.email
+                and self.reservation_id.partner_id.email not in emails
+            ):
+                template.send_mail(
+                    self.partner_id.id,
+                    force_send=True,
+                    raise_exception=False,
+                    email_values={
+                        "email_to": self.reservation_id.email,
+                        "auto_delete": False,
+                    },
+                )
+                body = template._render_field(
+                    "body_html", [6, 0, self.id], compute_lang=True, post_process=True
+                )[self.id]
+                self.reservation_id.message_post(body=body)
+            self.reservation_id.to_send_mail = False
