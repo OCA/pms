@@ -324,6 +324,11 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__txt_message
+msgid "Log Message"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.ui.menu,name:pms_l10n_es.menu_open_pms_log_institution_traveller_report_form_tree
 msgid "Log institution traveller report"
 msgstr ""
