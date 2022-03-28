@@ -270,34 +270,6 @@ class TestPmsAutomatedMails(TestPms):
             "The trigger of the automated action must be 'on_write'",
         )
 
-    def test_time_moment_before_in_checkout(self):
-        """
-        Check that when creating an automated mail with parameters
-        action = 'checkout' and moment = 'before' the trg_date_range
-        of the automated_action created is equal to
-        (automated_mail.time * -1)'.
-        """
-        # ARRANGE
-        automated_mail_vals = {
-            "name": "Auto Mail 1",
-            "template_id": self.template.id,
-            "action": "checkout",
-            "moment": "before",
-            "pms_property_ids": [(6, 0, [self.pms_property1.id])],
-            "time": 60,
-            "time_type": "minutes",
-        }
-
-        # ACT
-        auto_mail = self.env["pms.automated.mails"].create(automated_mail_vals)
-
-        # ASSERT
-        self.assertEqual(
-            auto_mail.automated_actions_id.trg_date_range,
-            -60,
-            "The trg_date_range of the automated action must be '-60'",
-        )
-
     def test_time_moment_in_act_in_checkout(self):
         """
         Check that when creating an automated mail with parameters
@@ -610,7 +582,7 @@ class TestPmsAutomatedMails(TestPms):
         # ASSERT
         self.assertEqual(
             auto_mail.automated_actions_id.filter_domain,
-            "[('state', '=', 'out'), ('pms_property_id', 'in', "
+            "[('state', '=', 'done'), ('pms_property_id', 'in', "
             + pms_property_id_str
             + ")]",
             "The filter_pre_domain of the automated action must "

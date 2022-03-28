@@ -61,11 +61,11 @@ class PmsAutomatedMails(models.Model):
         string="Moment",
         help="Moment in relation to the action in which the email will be sent",
         selection=[
+            ("in_act", "In the act"),
             ("before", "Before"),
             ("after", "After"),
-            ("in_act", "In the act"),
         ],
-        default="before",
+        default="in_act",
     )
 
     active = fields.Boolean(
@@ -94,6 +94,9 @@ class PmsAutomatedMails(models.Model):
             "usage": "ir_cron",
             "model_id": dict_val["model_id"],
         }
+        if action == "checkout":
+            code = "record.send_exit_email(" + str(template_id) + ")"
+            action_server_vals.update({"state": "code", "code": code})
         action_server = self.env["ir.actions.server"].create(action_server_vals)
         automated_actions_vals = {
             "active": active,
@@ -127,7 +130,7 @@ class PmsAutomatedMails(models.Model):
         result = super(PmsAutomatedMails, self).write(vals)
         is_create = False
         if (
-            self.action in ("creation", "write", "cancel", "invoice")
+            self.action in ("creation", "write", "cancel", "invoice", "checkout")
             and self.moment == "before"
         ):
             raise UserError(_("The moment for this action cannot be 'Before'"))
@@ -142,6 +145,9 @@ class PmsAutomatedMails(models.Model):
             "usage": "ir_cron",
             "model_id": dict_val["model_id"],
         }
+        if vals.get("action") == "checkout":
+            code = "record.send_exit_email(" + str(self.template_id) + ")"
+            action_server_vals.update({"state": "code", "code": code})
         action_server.write(action_server_vals)
         automated_actions_vals = {
             "active": self.active,
@@ -181,14 +187,14 @@ class PmsAutomatedMails(models.Model):
     @api.model
     def _get_auto_action_fields_in_creation_action(self, moment, time):
         model_field = False
-        model_id = self.env["ir.model"].search([("model", "=", "pms.reservation")]).id
+        model_id = self.env["ir.model"].search([("model", "=", "pms.folio")]).id
         if moment == "in_act":
             trigger = "on_create"
             time = 0
         else:
             trigger = "on_time"
             model_field = self.env["ir.model.fields"].search(
-                [("model", "=", "pms.reservation"), ("name", "=", "create_date")]
+                [("model", "=", "pms.folio"), ("name", "=", "create_date")]
             )
         result = {
             "model_id": model_id,
@@ -240,16 +246,20 @@ class PmsAutomatedMails(models.Model):
 
     @api.model
     def _get_auto_action_fields_in_checkout_action(self, moment, time):
-        model_id = self.env["ir.model"].search([("model", "=", "pms.reservation")]).id
-        trigger = "on_time"
-        model_field = self.env["ir.model.fields"].search(
-            [("model", "=", "pms.reservation"), ("name", "=", "checkout")]
+        model_id = (
+            self.env["ir.model"].search([("model", "=", "pms.checkin.partner")]).id
         )
-        if moment == "before":
-            time = time * (-1)
+        trigger = "on_write"
+        model_field = self.env["ir.model.fields"].search(
+            [("model", "=", "pms.checkin.partner"), ("name", "=", "state")]
+        )
         if moment == "in_act":
-            trigger = "on_write"
             time = 0
+        else:
+            trigger = "on_time"
+            model_field = self.env["ir.model.fields"].search(
+                [("model", "=", "pms.checkin.partner"), ("name", "=", "departure")]
+            )
         result = {
             "model_id": model_id,
             "trigger": trigger,
@@ -308,14 +318,21 @@ class PmsAutomatedMails(models.Model):
         dict_val = {}
         if action == "creation":
             dict_val = self._get_auto_action_fields_in_creation_action(moment, time)
+            filter_domain = [
+                ("first_checkin", ">=", str(fields.date.today())),
+                ("reservation_ids.to_send_mail", "=", True),
+            ]
         elif action == "write" or action == "cancel":
             dict_val = self._get_auto_action_fields_in_write_or_cancel_action(
                 moment, time
             )
             if action == "cancel":
                 filter_domain = [
-                    ("state", "=", "cancelled"),
+                    ("state", "=", "cancel"),
                 ]
+                trigger_fields = self.env["ir.model.fields"].search(
+                    [("model", "=", "pms.reservation"), ("name", "=", "state")]
+                )
         elif action == "checkin":
             dict_val = self._get_auto_action_fields_in_checkin_action(moment, time)
             if moment == "in_act":
@@ -330,11 +347,15 @@ class PmsAutomatedMails(models.Model):
             dict_val = self._get_auto_action_fields_in_checkout_action(moment, time)
             if moment == "in_act":
                 trigger_fields = self.env["ir.model.fields"].search(
-                    [("model", "=", "pms.reservation"), ("name", "=", "state")]
+                    [("model", "=", "pms.checkin.partner"), ("name", "=", "state")]
                 )
                 filter_pre_domain = [("state", "=", "onboard")]
                 filter_domain = [
-                    ("state", "=", "out"),
+                    ("state", "=", "done"),
+                ]
+            else:
+                filter_domain = [
+                    ("state", "=", "done"),
                 ]
         elif action == "payment":
             dict_val = self._get_auto_action_fields_in_payment_action(moment, time)
