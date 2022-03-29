@@ -4,22 +4,12 @@ from odoo.tests import SavepointCase
 from odoo import api
 from datetime import date, timedelta
 
-#class TestAccountMove(TransactionCase):
-    #def setUp(self):
-        #super(TestAccountMove, self).setUp()
-        #self.account_move = self.env["account.move"]
-
-        #self.account_move_line = self.env["account.move.line"]
-
-        #self.test_reservation_count = 
 
 class TestAccountMove(SavepointCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
 
-
-        
         cls.product = cls.env["product.product"].create(
             {
                 "name": "Demo",
@@ -30,8 +20,6 @@ class TestAccountMove(SavepointCase):
                 "default_code": "PROD_DEL01",
             }
         )
-
-        
 
         cls.partner_owner = cls.env["res.partner"].create({"name": "Property Owner"})
 
@@ -44,13 +32,6 @@ class TestAccountMove(SavepointCase):
             }
         )
 
-        # cls.pms_property_reservation = cls.env["pms.property.reservation"].create(
-        #     {
-        #         "name": "Test pms property reservation",
-        #         "product_id": cls.product.id
-        #     }
-        # )
-
         cls.reservation = cls.env["pms.reservation"].create(
             {
                 "name": "Test Reservation",
@@ -59,7 +40,13 @@ class TestAccountMove(SavepointCase):
             }
         )
         
-
+        cls.reservation_2 = cls.env["pms.reservation"].create(
+            {
+                "name": "Test Reservation 2",
+                "property_id": cls.property.id
+                
+            }
+        )
 
         cls.sale_order_obj = cls.env["sale.order"]
 
@@ -68,8 +55,6 @@ class TestAccountMove(SavepointCase):
         cls.sale_pricelist = cls.env["product.pricelist"].create(
             {"name": "Test Pricelist", "currency_id": cls.env.ref("base.USD").id}
         )
-
-        
 
         cls.so = cls.sale_order_obj.create(
             {
@@ -82,7 +67,6 @@ class TestAccountMove(SavepointCase):
                         0,
                         0,
                         {
-                            "pms_reservation_id": cls.reservation.id,
                             "name": cls.reservation.name,
                             "product_id": cls.product.id,
                             "product_uom_qty": 5.0,
@@ -95,201 +79,50 @@ class TestAccountMove(SavepointCase):
             }
         )
 
-    @api.depends("line_ids")
-    def test_compute_reservation_count(self):
-        print("//////////////////////////////////////", self.so.date_order)
-        self.so.sudo().action_confirm()
+        cls.so.sudo().action_confirm()
 
+        cls.currency_usd_id = cls.env.ref("base.USD").id
 
-        # product = cls.env["product.product"].create(
-        #     {
-        #         "name": "Demo",
-        #         #"name": cls.reservation.name,
-        #         "categ_id": cls.env.ref("product.product_category_1").id,
-        #         "standard_price": 40.0,
-        #         "type": "consu",
-        #         "uom_id": cls.env.ref("uom.product_uom_unit").id,
-        #         "default_code": "PROD_DEL01",
-        #     }
-        # )
+        cls.env["account.move"].invalidate_cache()
 
-
-
-        account_move = self.env["account.move"].create(
+        cls.account_move = cls.env["account.move"].create(
             {
-                "line_ids": [
-                    (
+                "partner_id": cls.partner.id,
+                "currency_id": cls.currency_usd_id,
+                "move_type": "out_invoice",
+                "invoice_date": fields.Date.today(),
+                #"invoice_payment_term_id": self.payment_term.id,
+                "invoice_line_ids": [
+                #"line_ids": [
+                    [
                         0,
                         0,
                         {
-                            "name": "Demo",
-                            #"categ_id": self.env.ref("product.product_category_1").id,
-                            #"standard_price": 40.0,
-                            #"type": "consu",
-                            #"uom_id": self.env.ref("uom.product_uom_unit").id,
-                            #"default_code": "PROD_DEL01",
-                        }
-                    )
-                ]
-                
+                            "pms_reservation_id": cls.reservation.id,
+                            "product_id": cls.product.id,
+                            "quantity": 12.0,
+                            "price_unit": None,
+                            "name": "something",
+                            #"account_id": self.account_revenue.id,
+                        },
+                    ],
+                    [
+                        0,
+                        0,
+                        {
+                            "pms_reservation_id": cls.reservation_2.id,
+                            "product_id": cls.product.id,
+                            "quantity": 12.0,
+                            "price_unit": None,
+                            "name": "something",
+                            #"account_id": self.account_revenue.id,
+                        },
+                    ]
+                ],
             }
         )
 
-        mov_line_credit = {
-            "move_name": 'test invoice',
-            #'move_id': invoice.id,
-            "move_id": account_move.id,
-            'debit': 0.0 ,
-            #'credit':  amount,
-            # 'date': date,
-            # 'partner_id': partner,
-            # 'product_id': product.id,
-            # 'account_id': acc_p.id,
-            # 'name':product.name,
-            # 'exclude_from_invoice_tab': True,
-             'quantity': 1,
-            # 'price_unit': float(amount)
-            }
 
-        #mov_line_debit = {
-            #"move_name": 'test invoice',
-            #'move_id': invoice.id,
-            #'debit':  amount,
-            #'credit': 0.0 ,
-            # 'date': date,
-            # 'name': product.name,
-            # 'partner_id': partner,
-            #'product_id': product.id,
-            #'account_id': acc_r.id,
-            #'quantity': 1,
-            # 'exclude_from_invoice_tab': True,
-            #'price_unit': float(amount)
-            #}
-
-        # ct = self.env['account.move.line'].sudo().with_context(
-        # check_move_validity=True).create([mov_line_debit,mov_line_credit])
-
-
-        ct = self.env['account.move.line'].sudo().with_context(
-        check_move_validity=True).create([mov_line_credit])
-        
-        self.assertEqual(True, True)
-        #self.account_move._compute_reservation_count()
-        print("/////////////////////////////////", self.account_move.reservation_count) 
-
-
-
-
-        # so = cls.sale_order_obj.create(
-        #     {
-        #         "partner_id": cls.partner.id,
-        #         "date_order": date.today() + timedelta(days=1),
-        #         "pricelist_id": cls.sale_pricelist.id,
-        #         "order_line": [
-        #             (
-        #                 0,
-        #                 0,
-        #                 {
-        #                     "name": cls.product.name,
-        #                     "product_id": cls.product.id,
-        #                     "product_uom_qty": 5.0,
-        #                     "product_uom": cls.product.uom_po_id.id,
-        #                     "price_unit": 10.0,
-                            
-        #                 },
-        #             )
-        #         ],
-        #     }
-        # )
-
-        # # MODELS
-        # cls.AccountMove = cls.env["account.move"]
-        # cls.ResPartner = cls.env["res.partner"]
-        # cls.AccountAccount = cls.env["account.account"]
-        # cls.AccountJournal = cls.env["account.journal"]
-
-        # # INSTANCE
-        # partners = cls.ResPartner.search(
-        #     [("type", "!=", "invoice"), ("child_ids", "=", False)], limit=2
-        # )
-        # cls.partner = partners[0]
-        # cls.partner_2 = partners[1]
-
-        # # invoice
-        # journal = cls.AccountJournal.create(
-        #     {"name": "Purchase Journal - Test", "code": "STPJ", "type": "purchase"}
-        # )
-        # invoice_vals = {
-        #     "name": "TEST",
-        #     "move_type": "in_invoice",
-        #     "partner_id": cls.partner.id,
-        #     "journal_id": journal.id,
-
-        #     "invoice_line_ids":  [(0, 0, {
-        #         "product_id": ,
-        #         "account_id": ,
-        #         "quantity": ,
-        #         "price_unit": ,
-        #     })],
-        # }
-        # #cls.invoice = cls.AccountMove.create(invoice_vals)
-        # cls.account_move = cls.AccountMove.create(invoice_vals)
-
-        
-
-        #print("///////////////////////////////////////", cls.account_move.reservation_count)
-
-        #self.account_move.create(
-            #{
-                #"line_ids":  [(0, 0, {})],
-
-                #"reservation_count": 3
-            #}
-        #)
-
-        #self.account_move.create(
-            #{
-                #"line_ids":  [(0, 0, {})],
-                #"reservation_count": 5
-            #}
-        #)
-
-        #self.account_move_line.create(
-            #{
-                #"pms_reservation_id": 23
-            #}
-
-        #)
-
-        #self.account_move.reservation_count = fields.Integer(
-        #"Reservations Count", compute="test_compute_reservation_count")
-
-        #self.assertEqual(self.test_reservation_count, 3)
-        #print("reservation count: ", self.account_move.get(1))
-
-
-
-    # @api.depends("line_ids")
-    # def test_compute_reservation_count(self):
-    #     sudo().action_confirm()
-    #     self.assertEqual(True, True)
-    #     self.account_move._compute_reservation_count()
-    #     print("/////////////////////////////////", self.account_move.reservation_count) 
-
-
-
-        #total_len = self.account_move.search_count(['id', '=', '99'])
-        #print("total length", total_len)
-        #for r in self.account_move:
-            #print("reservation_count:", r.reservation_count)
-
-
-        #for invoice in self:
-            #reservation = invoice.line_ids.mapped("pms_reservation_id")
-            #invoice.reservation_count = len(reservation)
-            #self.assertEqual(invoice.reservation_count, 3)
-
-    def test_action_view_reservation_list(self):
-        self.assertEqual(True, True)
-        #print(self.account_move.action_view_reservation_list())
-
+    def test_compute_reservation_count(self):
+        self.assertTrue( self.account_move.reservation_count, 2)
+        print("********** Number of reservations ********** :", self.account_move.reservation_count)
