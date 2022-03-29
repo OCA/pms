@@ -126,3 +126,4 @@ class TestAccountMove(SavepointCase):
     def test_compute_reservation_count(self):
         self.assertTrue( self.account_move.reservation_count, 2)
         print("********** Number of reservations ********** :", self.account_move.reservation_count)
+        
