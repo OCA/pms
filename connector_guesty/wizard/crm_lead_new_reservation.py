@@ -12,6 +12,7 @@ _log = logging.getLogger(__name__)
 
 class WizCrmLeadNewReservation(models.TransientModel):
     _name = "wiz.crm.lead.new.reservation"
+    _description = "New Reservation Wizard"
 
     crm_lead_id = fields.Many2one("crm.lead")
     check_in = fields.Date(required=True)
@@ -198,6 +199,7 @@ class WizCrmLeadNewReservation(models.TransientModel):
 
 class CRMListingAvailability(models.Model):
     _name = "crm.listing.availability"
+    _description = "Listing Availability"
 
     crm_lead_id = fields.Many2one("crm.lead")
     property_id = fields.Many2one("pms.property")
@@ -207,7 +209,6 @@ class CRMListingAvailability(models.Model):
     country_id = fields.Many2one(
         "res.country", related="property_id.country_id", store=True
     )
-    colony = fields.Char(related="property_id.l10n_mx_edi_colony", store=True)
 
     price = fields.Float()
     currency = fields.Char()

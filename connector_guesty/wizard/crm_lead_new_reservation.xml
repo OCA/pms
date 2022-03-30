@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+
     <record id="crm_lead_new_reservation_form" model="ir.ui.view">
         <field name="name">New Quotation</field>
         <field name="model">wiz.crm.lead.new.reservation</field>
@@ -76,13 +76,13 @@
             </form>
         </field>
     </record>
+
     <record id="crm_listing_availability_tree_view" model="ir.ui.view">
         <field name="name">Availability</field>
         <field name="model">crm.listing.availability</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="property_id" />
-                <field name="colony" />
                 <field name="city" />
                 <field name="country_id" />
                 <field name="price" />
@@ -99,10 +99,10 @@
         <field name="arch" type="xml">
             <search>
                 <field name="property_id" />
-                <field name="colony" />
                 <field name="city" />
                 <field name="country_id" />
             </search>
         </field>
     </record>
+
 </odoo>
