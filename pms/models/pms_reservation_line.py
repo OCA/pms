@@ -129,7 +129,7 @@ class PmsReservationLine(models.Model):
         result = []
         for res in self:
             date = fields.Date.from_string(res.date)
-            name = u"{}/{}".format(date.day, date.month)
+            name = "{}/{}".format(date.day, date.month)
             result.append((res.id, name))
         return result
 

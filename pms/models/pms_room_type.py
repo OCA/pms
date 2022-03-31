@@ -186,7 +186,7 @@ class PmsRoomType(models.Model):
     # TODO: Review Check product fields default values to room
     @api.model
     def create(self, vals):
-        """ Add room types as not purchase services. """
+        """Add room types as not purchase services."""
         vals.update(
             {
                 "purchase_ok": False,
