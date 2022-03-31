@@ -48,6 +48,14 @@ class TestAccountMove(SavepointCase):
             }
         )
 
+        cls.reservation_3 = cls.env["pms.reservation"].create(
+            {
+                "name": "Test Reservation 3",
+                "property_id": cls.property.id
+                
+            }
+        )
+
         cls.sale_order_obj = cls.env["sale.order"]
 
         cls.partner = cls.env["res.partner"].create({"name": "TEST CUSTOMER"})
@@ -72,7 +80,34 @@ class TestAccountMove(SavepointCase):
                             "product_uom_qty": 5.0,
                             "product_uom": cls.product.uom_po_id.id,
                             "price_unit": 10.0,
-                            
+                            "qty_delivered": 1,
+                            "pms_reservation_id": cls.reservation.id
+                        },
+                    ),
+                    (
+                        0,
+                        0,
+                        {
+                            "name": cls.reservation.name,
+                            "product_id": cls.product.id,
+                            "product_uom_qty": 5.0,
+                            "product_uom": cls.product.uom_po_id.id,
+                            "price_unit": 10.0,
+                            "qty_delivered": 1,
+                            "pms_reservation_id": cls.reservation_2.id
+                        },
+                    ),
+                    (
+                        0,
+                        0,
+                        {
+                            "name": cls.reservation.name,
+                            "product_id": cls.product.id,
+                            "product_uom_qty": 5.0,
+                            "product_uom": cls.product.uom_po_id.id,
+                            "price_unit": 10.0,
+                            "qty_delivered": 1,
+                            "pms_reservation_id": cls.reservation_3.id
                         },
                     )
                 ],
@@ -83,47 +118,33 @@ class TestAccountMove(SavepointCase):
 
         cls.currency_usd_id = cls.env.ref("base.USD").id
 
-        cls.env["account.move"].invalidate_cache()
+        cls.invoice_lines = []
 
-        cls.account_move = cls.env["account.move"].create(
-            {
-                "partner_id": cls.partner.id,
-                "currency_id": cls.currency_usd_id,
-                "move_type": "out_invoice",
-                "invoice_date": fields.Date.today(),
-                #"invoice_payment_term_id": self.payment_term.id,
-                "invoice_line_ids": [
-                #"line_ids": [
-                    [
-                        0,
-                        0,
-                        {
-                            "pms_reservation_id": cls.reservation.id,
-                            "product_id": cls.product.id,
-                            "quantity": 12.0,
-                            "price_unit": None,
-                            "name": "something",
-                            #"account_id": self.account_revenue.id,
-                        },
-                    ],
-                    [
-                        0,
-                        0,
-                        {
-                            "pms_reservation_id": cls.reservation_2.id,
-                            "product_id": cls.product.id,
-                            "quantity": 12.0,
-                            "price_unit": None,
-                            "name": "something",
-                            #"account_id": self.account_revenue.id,
-                        },
-                    ]
-                ],
+        #Make invoice from sale order
+
+        for line in cls.so.order_line:
+            vals = {
+                'name': line.name,
+                'price_unit': line.price_unit,
+                'quantity': line.product_uom_qty,
+                'product_id': line.product_id.id,
+                'product_uom_id': line.product_uom.id,
+                'tax_ids': [(6, 0, line.tax_id.ids)],
+                'sale_line_ids': [(6, 0, [line.id])],
+                'pms_reservation_id':  line.pms_reservation_id
             }
-        )
+            cls.invoice_lines.append((0, 0, vals))
+
+        cls.account_move = cls.env['account.move'].create({
+            "partner_id": cls.partner.id,
+            "currency_id": cls.currency_usd_id,
+            "move_type": "out_invoice",
+            "invoice_date": fields.Date.today(),
+            'invoice_line_ids': cls.invoice_lines
+        })
 
 
     def test_compute_reservation_count(self):
-        self.assertTrue( self.account_move.reservation_count, 2)
-        print("********** Number of reservations ********** :", self.account_move.reservation_count)
+        print("********** Number of reservations in sale order ********** : ", self.account_move.reservation_count)
+        self.assertEqual( self.account_move.reservation_count, 3)
         
