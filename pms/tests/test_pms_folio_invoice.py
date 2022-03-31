@@ -585,7 +585,7 @@ class TestPmsFolioInvoice(TestPms):
         line by unit prices/qty with nights"""
 
     def _test_autoinvoice_folio(self):
-        """ Test create and invoice the cron by partner preconfig automation """
+        """Test create and invoice the cron by partner preconfig automation"""
 
     def _test_downpayment(self):
         """Test invoice qith a way of downpaument and check dowpayment's

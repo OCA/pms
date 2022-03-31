@@ -1698,7 +1698,7 @@ class PmsReservation(models.Model):
 
     # Action methods
     def open_partner(self):
-        """ Utility method used to add an "View Customer" button in reservation views """
+        """Utility method used to add an "View Customer" button in reservation views"""
         self.ensure_one()
         partner_form_id = self.env.ref("pms.view_partner_data_form").id
         return {
@@ -1800,7 +1800,7 @@ class PmsReservation(models.Model):
     def name_get(self):
         result = []
         for res in self:
-            name = u"{} ({})".format(res.name, res.rooms if res.rooms else "No room")
+            name = "{} ({})".format(res.name, res.rooms if res.rooms else "No room")
             result.append((res.id, name))
         return result
 
