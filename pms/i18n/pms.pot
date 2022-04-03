@@ -7080,6 +7080,12 @@ msgid "Payment terms for current folio."
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/pms_folio.py:0 code:addons/pms/models/pms_folio.py:0
+#, python-format
+msgid "Payment: <b>%s</b> by <b>%s</b>"
+msgstr ""
+
+#. module: pms
 #: model:ir.model,name:pms.model_account_payment
 #: model:ir.model,name:pms.model_wizard_payment_folio
 #: model:ir.model.fields,help:pms.field_pms_folio__payment_ids
@@ -7997,6 +8003,12 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__external_reference
 msgid "Reference of this folio in an external system"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_folio.py:0 code:addons/pms/models/pms_folio.py:0
+#, python-format
+msgid "Refund: <b>%s</b> by <b>%s</b>"
 msgstr ""
 
 #. module: pms
