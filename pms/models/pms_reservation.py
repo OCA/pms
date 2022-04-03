@@ -1597,13 +1597,33 @@ class PmsReservation(models.Model):
                 )
 
     @api.constrains("reservation_line_ids")
-    def check_consecutive_dates(self):
+    def checkin_checkout_consecutive_dates(self):
         """
         simply convert date objects to integers using the .toordinal() method
         of datetime objects. The difference between the maximum and minimum value
         of the set of ordinal dates is one more than the length of the set
         """
         for record in self:
+            if min(record.reservation_line_ids.mapped("date")) != record.checkin:
+                raise UserError(
+                    _(
+                        """
+                        Compute error: The first room line date should
+                        be the same as the checkin date!
+                        """
+                    )
+                )
+            if max(
+                record.reservation_line_ids.mapped("date")
+            ) != record.checkout - datetime.timedelta(days=1):
+                raise UserError(
+                    _(
+                        """
+                        Compute error: The last room line date should
+                        be the previous day of the checkout date!
+                        """
+                    )
+                )
             if record.reservation_line_ids and len(record.reservation_line_ids) > 1:
                 dates = record.reservation_line_ids.mapped("date")
                 date_ints = {d.toordinal() for d in dates}
@@ -1874,7 +1894,22 @@ class PmsReservation(models.Model):
         record = super(PmsReservation, self).create(vals)
         if record.preconfirm and record.state == "draft":
             record.confirm()
+
+        record._check_services(vals)
+
         return record
+
+    def write(self, vals):
+        asset = super(PmsReservation, self).write(vals)
+        self._check_services(vals)
+        return asset
+
+    def _check_services(self, vals):
+        # If we create a reservation with board service and other service at the same time,
+        # compute_service_ids dont run (compute with readonly to False),
+        # and we must force it to compute the services linked with the board service:
+        if "board_service_room_id" in vals and "service_ids" in vals:
+            self._compute_service_ids()
 
     def update_prices(self):
         self.ensure_one()

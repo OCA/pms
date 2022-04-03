@@ -1,0 +1,194 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="booking_duplicate" model="ir.ui.view">
+        <field name="name">Duplicate Folio</field>
+        <field name="model">pms.booking.duplicate</field>
+        <field name="arch" type="xml">
+            <form class="pt-1">
+                <h2>
+                    <field name="reference_folio_id" required="1" readonly="1" />
+                </h2>
+                <div class="row">
+                    <div class="col-6 ">
+                        <group>
+                            <field name="pms_property_id" invisible="0" />
+                            <field name="used_room_ids" invisible="1" />
+                            <field name="reservation_type" />
+                            <field
+                                name="agency_id"
+                                attrs="{'invisible': [('reservation_type','!=','normal')]}"
+                            />
+                            <field
+                                name="segmentation_ids"
+                                widget="many2many_tags"
+                                attrs="{'invisible': [('reservation_type','!=','normal')]}"
+                            />
+                        </group>
+                    </div>
+                    <div class="col-6">
+                        <group>
+                            <field
+                                name="partner_id"
+                                string="Partner"
+                                options="{'no_create': True,'no_open': True}"
+                                attrs="{'invisible': [('reservation_type','=','out')]}"
+                            />
+                            <field
+                                name="partner_name"
+                                string="Partner"
+                                required="1"
+                                attrs="{'invisible': [('reservation_type','=','out')]}"
+                            />
+                            <field
+                                name="partner_name"
+                                string="Reason"
+                                required="1"
+                                attrs="{'invisible': [('reservation_type','!=','out')]}"
+                            />
+                            <field
+                                default_focus="1"
+                                name="pricelist_id"
+                                string="Pricelist"
+                                options="{'no_create': True,'no_open': True}"
+                                attrs="{'required': [('reservation_type','=','normal')], 'invisible': [('reservation_type','!=','normal')]}"
+                            />
+                            <field
+                                name="channel_type_id"
+                                attrs="{'required': [('reservation_type','=','normal')], 'invisible': [('reservation_type','!=','normal')]}"
+                            />
+                        </group>
+                        <div>
+                            <group>
+                                <field
+                                    name="internal_comment"
+                                    placeholder="Internal comment Folio"
+                                    nolabel="1"
+                                />
+                            </group>
+                        </div>
+                    </div>
+                </div>
+                <group>
+                    <field name="start_date" />
+                    <field name="recompute_prices" />
+                </group>
+                <div class="row">
+                    <div class="col-12">
+                        <group>
+                            <field name="line_ids" nolabel="1">
+                                 <tree
+                                    editable="bottom"
+                                    create="false"
+                                    delete="false"
+                                    decoration-muted="checkin == False"
+                                    decoration-danger="checkin != False and occupied_room == True"
+                                    decoration-success="checkin != False and occupied_room == False"
+                                >
+                                    <field
+                                        name="reference_reservation_id"
+                                        invisible="1"
+                                    />
+                                    <field name="booking_duplicate_id" invisible="1" />
+                                    <field name="pms_property_id" invisible="1" />
+                                    <field name="adults" />
+                                    <field name="allowed_room_ids" invisible="1" />
+                                    <field
+                                        name="room_type_id"
+                                        readonly="1"
+                                        options="{'no_open': True}"
+                                        force_save="1"
+                                    />
+                                    <field
+                                        name="pricelist_id"
+                                        optional="hidden"
+                                        options="{'no_create': True, 'no_edit': True, 'no_open': True}"
+                                    />
+                                    <field
+                                        name="preferred_room_id"
+                                        options="{'no_create': True, 'no_edit': True, 'no_open': True}"
+                                    />
+                                    <field name="occupied_room" invisible="1" />
+                                    <field name="used_room_ids" invisible="1" />
+                                    <field name="checkin" force_save="1" />
+                                    <field name="checkout" force_save="1" />
+                                    <field
+                                        name="board_service_room_id"
+                                        attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
+                                        options="{'no_create': True, 'no_edit': True, 'no_open': True}"
+                                    />
+                                    <field
+                                        name="service_ids"
+                                        widget="many2many_tags"
+                                        attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
+                                        readonly="1"
+                                    />
+                                    <field
+                                        name="price_total"
+                                        readonly="1"
+                                        force_save="1"
+                                        attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
+                                    />
+                                 </tree>
+                            </field>
+                        </group>
+                    </div>
+                </div>
+                <div class="row float-right border mr-2 mb-5">
+                    <div class="col-3 ">
+                        <div class="col-3 px-0">
+                            <group>
+                                <field
+                                    name="total_price_folio"
+                                    widget="monetary"
+                                    attrs="{'invisible': [('reservation_type','!=','normal')]}"
+                                />
+                            </group>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <field name="created_folio_ids" readonly="1" />
+                </div>
+                <footer>
+                    <button
+                        name="create_and_new"
+                        string="Create and Continue"
+                        type="object"
+                        class="btn-secondary"
+                    />
+                    <button
+                        name="create_and_close"
+                        string="Create and Close"
+                        type="object"
+                        class="btn-primary"
+                    />
+                    <span>
+                        or
+                    </span>
+                    <button
+                        string="Cancel"
+                        class="btn-default border"
+                        special="cancel"
+                    />
+                    <button
+                        name="view_folios"
+                        string="View Folios"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [('created_folio_ids','=', False)]}"
+                    />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_booking_duplicate" model="ir.actions.act_window">
+        <field name="name">Folio creation</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pms.booking.duplicate</field>
+        <field name="view_id" ref="booking_duplicate" />
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

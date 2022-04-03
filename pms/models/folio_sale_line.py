@@ -264,6 +264,15 @@ class FolioSaleLine(models.Model):
         store=True,
         related="folio_id.partner_id",
     )
+    origin_agency_id = fields.Many2one(
+        string="Origin Agency",
+        help="The agency where the folio sale line originates",
+        comodel_name="res.partner",
+        domain="[('is_agency', '=', True)]",
+        compute="_compute_origin_agency_id",
+        store=True,
+        readonly=False,
+    )
     analytic_tag_ids = fields.Many2many(
         string="Analytic Tags",
         comodel_name="account.analytic.tag",
@@ -319,6 +328,14 @@ class FolioSaleLine(models.Model):
         store=True,
         compute="_compute_date_order",
     )
+
+    @api.depends(
+        "reservation_line_ids",
+        "reservation_id.agency_id",
+    )
+    def _compute_origin_agency_id(self):
+        for rec in self:
+            rec.origin_agency_id = rec.folio_id.agency_id
 
     @api.depends("qty_to_invoice")
     def _compute_service_order(self):
@@ -395,7 +412,7 @@ class FolioSaleLine(models.Model):
                     invoice_date = (
                         invoice_line.move_id.invoice_date or fields.Date.today()
                     )
-                    if invoice_line.move_id.move_type == "out_invoice":
+                    if invoice_line.move_id.move_type in ["out_invoice", "out_receipt"]:
                         amount_invoiced += invoice_line.currency_id._convert(
                             invoice_line.price_subtotal,
                             line.currency_id,
@@ -506,7 +523,7 @@ class FolioSaleLine(models.Model):
             "Product Unit of Measure"
         )
         for line in self:
-            if line.state == "draft":
+            if line.state == "draft" or line.price_total == 0.0:
                 line.invoice_status = "no"
             # REVIEW: if qty_to_invoice < 0 (invoice qty > sale qty),
             # why status to_invoice?? this behavior is copied from sale order
@@ -625,7 +642,7 @@ class FolioSaleLine(models.Model):
         Otherwise, the quantity delivered is used.
         """
         for line in self:
-            if line.folio_id.state not in ["draft"]:
+            if line.folio_id.state not in ["draft"] and line.price_total > 0.0:
                 line.qty_to_invoice = line.product_uom_qty - line.qty_invoiced
             else:
                 line.qty_to_invoice = 0
@@ -650,7 +667,7 @@ class FolioSaleLine(models.Model):
             qty_invoiced = 0.0
             for invoice_line in line.invoice_lines:
                 if invoice_line.move_id.state != "cancel":
-                    if invoice_line.move_id.move_type == "out_invoice":
+                    if invoice_line.move_id.move_type in ["out_invoice", "out_receipt"]:
                         qty_invoiced += invoice_line.product_uom_id._compute_quantity(
                             invoice_line.quantity, line.product_uom
                         )

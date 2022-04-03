@@ -4,6 +4,7 @@
 import logging
 
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -42,7 +43,7 @@ class ResPartner(models.Model):
     )
     pms_property_ids = fields.Many2many(
         string="Properties",
-        help="Properties with access to the element;"
+        help="Properties with access to the element"
         " if not set, all properties can access",
         required=False,
         comodel_name="pms.property",
@@ -85,15 +86,6 @@ class ResPartner(models.Model):
         store=True,
         compute="_compute_nationality_id",
     )
-    # TODO: Use new partner contact "other or "private" with
-    # personal contact address complete??
-    # to avoid user country_id on companies contacts.
-    # view to checkin partner state_id field
-    state_id = fields.Many2one(
-        readonly=False,
-        store=True,
-        compute="_compute_state_id",
-    )
     email = fields.Char(
         readonly=False,
         store=True,
@@ -103,6 +95,11 @@ class ResPartner(models.Model):
         readonly=False,
         store=True,
         compute="_compute_mobile",
+    )
+    phone = fields.Char(
+        readonly=False,
+        store=True,
+        compute="_compute_phone",
     )
     firstname = fields.Char(
         readonly=False,
@@ -120,6 +117,11 @@ class ResPartner(models.Model):
         store=True,
         compute="_compute_lastname2",
     )
+    vat = fields.Char(
+        readonly=False,
+        store=True,
+        compute="_compute_vat",
+    )
     comment = fields.Text(
         tracking=True,
     )
@@ -133,6 +135,109 @@ class ResPartner(models.Model):
         string="Possible Customer In Checkin Partner",
         comodel_name="pms.checkin.partner",
     )
+    invoicing_policy = fields.Selection(
+        string="Invoicing Policy",
+        help="""The invoicing policy of the partner,
+         set Property to user the policy configured in the Property""",
+        selection=[
+            ("property", "Property Policy Invoice"),
+            ("manual", "Manual"),
+            ("checkout", "From Checkout"),
+            ("month_day", "Month Day Invoice"),
+        ],
+        default="property",
+    )
+    invoicing_month_day = fields.Integer(
+        string="Invoicing Month Day",
+        help="The day of the month to invoice",
+    )
+    margin_days_autoinvoice = fields.Integer(
+        string="Days from Checkout",
+        help="Days from Checkout to generate the invoice",
+    )
+    default_invoice_lines = fields.Selection(
+        string="Invoice...",
+        help="""Use to preconfigure the sale lines to autoinvoice
+        for this partner. All (invoice reservations and services),
+        Only overnights to invoice only the reservations
+        with overnight and board services(exclude parkings, salon, etc...),
+        All reservations to include all reservations,
+        and Services only include services not boards""",
+        selection=[
+            ("all", "All"),
+            ("overnights", "Only Overnights"),
+            ("reservations", "All reservations"),
+            ("services", "Services"),
+        ],
+        default="all",
+    )
+    vat_document_type = fields.Selection(
+        string="Document Type",
+        help="""The vat document type of the partner,
+        set if is a fiscal document, passport, etc...""",
+        selection=lambda self: self._selection_vat_document_type(),
+        compute="_compute_vat_document_type",
+        store=True,
+    )
+    residence_street = fields.Char(
+        string="Street of residence",
+        help="Street of the guest's residence",
+        readonly=False,
+        store=True,
+        compute="_compute_residence_street",
+    )
+    residence_street2 = fields.Char(
+        string="Second street of residence",
+        help="Second street of the guest's residence",
+        readonly=False,
+        store=True,
+        compute="_compute_residence_street2",
+    )
+    residence_zip = fields.Char(
+        string="Zip of residence",
+        help="Zip of the guest's residence",
+        readonly=False,
+        store=True,
+        compute="_compute_residence_zip",
+        change_default=True,
+    )
+    residence_city = fields.Char(
+        string="city of residence",
+        help="City of the guest's residence",
+        readonly=False,
+        store=True,
+        compute="_compute_residence_city",
+    )
+    residence_country_id = fields.Many2one(
+        string="Country of residence",
+        help="Partner country of residence",
+        readonly=False,
+        store=True,
+        compute="_compute_residence_country_id",
+        comodel_name="res.country",
+    )
+    residence_state_id = fields.Many2one(
+        string="State of residence",
+        help="Partner state of residence",
+        readonly=False,
+        store=True,
+        compute="_compute_residence_state_id",
+        comodel_name="res.country.state",
+    )
+
+    @api.model
+    def _selection_vat_document_type(self):
+        vat_document_types = [
+            ("vat", _("VAT")),
+        ]
+        document_categories = self.env["res.partner.id_category"].search(
+            [
+                ("is_vat_equivalent", "=", False),
+            ]
+        )
+        for doc_type in document_categories:
+            vat_document_types.append((doc_type.name, doc_type.name))
+        return vat_document_types
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.gender")
     def _compute_gender(self):
@@ -188,24 +293,145 @@ class ResPartner(models.Model):
             elif not record.nationality_id:
                 record.nationality_id = False
 
-    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.state_id")
-    def _compute_state_id(self):
-        if hasattr(super(), "_compute_state_id"):
-            super()._compute_state_id()
+    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.phone")
+    def _compute_phone(self):
+        if hasattr(super(), "_compute_phone"):
+            super()._compute_phone()
         for record in self:
-            if not record.state_id and record.pms_checkin_partner_ids:
-                state_id = list(
+            if not record.phone and record.pms_checkin_partner_ids:
+                phone = list(
+                    filter(None, set(record.pms_checkin_partner_ids.mapped("phone")))
+                )
+                if len(phone) == 1:
+                    record.phone = phone[0]
+                else:
+                    record.phone = False
+            elif not record.phone:
+                record.phone = False
+
+    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_street")
+    def _compute_residence_street(self):
+        if hasattr(super(), "_compute_residence_street"):
+            super()._compute_residence_street()
+        for record in self:
+            if not record.residence_street and record.pms_checkin_partner_ids:
+                residence_street = list(
                     filter(
                         None,
-                        set(record.pms_checkin_partner_ids.mapped("state_id")),
+                        set(record.pms_checkin_partner_ids.mapped("residence_street")),
                     )
                 )
-                if len(state_id) == 1:
-                    record.state_id = state_id[0]
+                if len(residence_street) == 1:
+                    record.residence_street = residence_street[0]
                 else:
-                    record.state_id = False
-            elif not record.state_id:
-                record.state_id = False
+                    record.residence_street = False
+            elif not record.residence_street:
+                record.residence_street = False
+
+    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_street2")
+    def _compute_residence_street2(self):
+        if hasattr(super(), "_compute_residence_street2"):
+            super()._compute_residence_street2()
+        for record in self:
+            if not record.residence_street2 and record.pms_checkin_partner_ids:
+                residence_street2 = list(
+                    filter(
+                        None,
+                        set(record.pms_checkin_partner_ids.mapped("residence_street2")),
+                    )
+                )
+                if len(residence_street2) == 1:
+                    record.residence_street2 = residence_street2[0]
+                else:
+                    record.residence_street2 = False
+            elif not record.residence_street2:
+                record.residence_street2 = False
+
+    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_zip")
+    def _compute_residence_zip(self):
+        if hasattr(super(), "_compute_residence_zip"):
+            super()._compute_residence_zip()
+        for record in self:
+            if not record.residence_zip and record.pms_checkin_partner_ids:
+                residence_zip = list(
+                    filter(
+                        None,
+                        set(record.pms_checkin_partner_ids.mapped("residence_zip")),
+                    )
+                )
+                if len(residence_zip) == 1:
+                    record.residence_zip = residence_zip[0]
+                else:
+                    record.residence_zip = False
+            elif not record.residence_zip:
+                record.residence_zip = False
+
+    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_city")
+    def _compute_residence_city(self):
+        if hasattr(super(), "_compute_residence_city"):
+            super()._compute_residence_city()
+        for record in self:
+            if not record.residence_city and record.pms_checkin_partner_ids:
+                residence_city = list(
+                    filter(
+                        None,
+                        set(record.pms_checkin_partner_ids.mapped("residence_city")),
+                    )
+                )
+                if len(residence_city) == 1:
+                    record.residence_city = residence_city[0]
+                else:
+                    record.residence_city = False
+            elif not record.residence_city:
+                record.residence_city = False
+
+    @api.depends(
+        "pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_country_id"
+    )
+    def _compute_residence_country_id(self):
+        if hasattr(super(), "_compute_residence_country_id"):
+            super()._compute_residence_country_id()
+        for record in self:
+            if not record.residence_country_id and record.pms_checkin_partner_ids:
+                residence_country_id = list(
+                    filter(
+                        None,
+                        set(
+                            record.pms_checkin_partner_ids.mapped(
+                                "residence_country_id"
+                            )
+                        ),
+                    )
+                )
+                if len(residence_country_id) == 1:
+                    record.residence_country_id = residence_country_id[0]
+                else:
+                    record.residence_country_id = False
+            elif not record.residence_country_id:
+                record.residence_country_id = False
+
+    @api.depends(
+        "pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_state_id"
+    )
+    def _compute_residence_state_id(self):
+        if hasattr(super(), "_compute_residence_state_id"):
+            super()._compute_residence_state_id()
+        for record in self:
+            if not record.residence_state_id and record.pms_checkin_partner_ids:
+                residence_state_id = list(
+                    filter(
+                        None,
+                        set(
+                            record.pms_checkin_partner_ids.mapped("residence_state_id")
+                        ),
+                    )
+                )
+                if len(residence_state_id) == 1:
+                    record.residence_state_id = residence_state_id[0]
+                else:
+                    record.residence_state_id = False
+            elif not record.residence_state_id:
+                record.residence_state_id = False
 
     @api.depends(
         "pms_checkin_partner_ids",
@@ -327,6 +553,17 @@ class ResPartner(models.Model):
             elif not record.lastname2:
                 record.lastname2 = False
 
+    @api.depends("id_numbers", "id_numbers.name")
+    def _compute_vat(self):
+        if hasattr(super(), "_compute_vat"):
+            super()._compute_vat()
+        for record in self:
+            if not record.vat and record.id_numbers:
+                vat = list(filter(None, set(record.id_numbers.mapped("name"))))
+                record.vat = vat[0]
+            elif not record.vat:
+                record.vat = False
+
     def _compute_reservations_count(self):
         # Return reservation with partner included in reservation and/or checkin
         pms_reservation_obj = self.env["pms.reservation"]
@@ -347,6 +584,27 @@ class ResPartner(models.Model):
                     ("id", "in", checkin_reservation_ids),
                 ]
             )
+
+    @api.depends(
+        "vat", "id_numbers", "id_numbers.category_id", "id_numbers.vat_syncronized"
+    )
+    def _compute_vat_document_type(self):
+        self.vat_document_type = False
+        for record in self.filtered("vat"):
+            document = record.id_numbers.filtered("vat_syncronized")
+            if document:
+                if len(document) > 1:
+                    raise ValidationError(
+                        _("There is more than one document with vat syncronized")
+                    )
+                if record.vat:
+                    record.vat_document_type = (
+                        document.category_id.name
+                        if not document.category_id.is_vat_equivalent
+                        else "vat"
+                    )
+            else:
+                record.vat_document_type = "vat"
 
     def action_partner_reservations(self):
         self.ensure_one()
@@ -499,3 +757,29 @@ class ResPartner(models.Model):
         key_fields = super(ResPartner, self)._get_key_fields()
         key_fields.extend(["document_number"])
         return key_fields
+
+    def _check_enought_invoice_data(self):
+        self.ensure_one()
+        if self.vat and self.country_id and self.city and self.street:
+            return True
+        return False
+
+    @api.constrains("vat_document_type")
+    def check_vat(self):
+        """
+        Inherit constrain to allow set vat in
+        document ids like passport, etc...
+        """
+        for partner in self:
+            if not partner.vat_document_type or partner.vat_document_type != "vat":
+                continue
+            else:
+                super(ResPartner, partner).check_vat()
+
+    def unlink(self):
+        dummy, various_partner_id = self.env["ir.model.data"].get_object_reference(
+            "pms", "various_pms_partner"
+        )
+        if various_partner_id in self.ids:
+            raise ValidationError(_("The partner 'Various Clients' cannot be deleted"))
+        return super().unlink()

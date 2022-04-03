@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="inherit_partner_id_numbers_form" model="ir.ui.view">
+        <field name="name">inherit.res.partner.id_number.form</field>
+        <field name="model">res.partner.id_number</field>
+        <field
+            name="inherit_id"
+            ref="partner_identification.view_partner_id_numbers_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='valid_until']" position="after">
+                <field name="support_number" />
+            </xpath>
+        </field>
+    </record>
+    <record id="inherit_partner_id_numbers_tree" model="ir.ui.view">
+        <field name="name">inherit.res.partner.id_number.tree</field>
+        <field name="model">res.partner.id_number</field>
+        <field
+            name="inherit_id"
+            ref="partner_identification.view_partner_id_numbers_tree"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='valid_until']" position="after">
+                <field name="support_number" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

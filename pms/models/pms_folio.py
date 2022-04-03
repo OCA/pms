@@ -4,7 +4,10 @@
 
 import datetime
 import logging
+from datetime import timedelta
 from itertools import groupby
+
+from dateutil import relativedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
@@ -31,6 +34,10 @@ class PmsFolio(models.Model):
         readonly=True,
         index=True,
         default=lambda self: _("New"),
+    )
+    external_reference = fields.Char(
+        string="External Reference",
+        help="Reference of this folio in an external system",
     )
     pms_property_id = fields.Many2one(
         string="Property",
@@ -293,7 +300,6 @@ class PmsFolio(models.Model):
         comodel_name="res.partner.category",
         ondelete="restrict",
     )
-    client_order_ref = fields.Char(string="Customer Reference", help="", copy=False)
     reservation_type = fields.Selection(
         string="Type",
         help="The type of the reservation. "
@@ -505,6 +511,11 @@ class PmsFolio(models.Model):
         store=True,
         compute="_compute_last_checkout",
     )
+    autoinvoice_date = fields.Date(
+        string="Autoinvoice Date",
+        compute="_compute_autoinvoice_date",
+        store=True,
+    )
 
     def name_get(self):
         result = []
@@ -539,71 +550,137 @@ class PmsFolio(models.Model):
         )
         invoice_vals_list = []
         invoice_item_sequence = 0
-        for order in self:
-            order = order.with_company(order.company_id)
-            current_section_vals = None
-            down_payments = order.env["folio.sale.line"]
-
-            # Invoice values.
-            invoice_vals = order._prepare_invoice(partner_invoice_id=partner_invoice_id)
-
-            # Invoice line values (keep only necessary sections).
-            invoice_lines_vals = []
-            for line in order.sale_line_ids.filtered(
+        for folio in self:
+            folio_lines_to_invoice = folio.sale_line_ids.filtered(
                 lambda l: l.id in list(lines_to_invoice.keys())
-            ):
-                if line.display_type == "line_section":
-                    current_section_vals = line._prepare_invoice_line(
-                        sequence=invoice_item_sequence + 1
-                    )
-                    continue
-                if line.display_type != "line_note" and float_is_zero(
-                    line.qty_to_invoice, precision_digits=precision
-                ):
-                    continue
-                if (
-                    line.qty_to_invoice > 0
-                    or (line.qty_to_invoice < 0 and final)
-                    or line.display_type == "line_note"
-                ):
-                    if line.is_downpayment:
-                        down_payments += line
-                        continue
-                    if current_section_vals:
-                        invoice_item_sequence += 1
-                        invoice_lines_vals.append(current_section_vals)
-                        current_section_vals = None
-                    invoice_item_sequence += 1
-                    prepared_line = line._prepare_invoice_line(
-                        sequence=invoice_item_sequence, qty=lines_to_invoice[line.id]
-                    )
-                    invoice_lines_vals.append(prepared_line)
+            )
+            folio_partner_invoice_id = partner_invoice_id
+            if not folio_partner_invoice_id:
+                folio_partner_invoice_id = folio._get_default_partner_invoice_id()
 
-            # If down payments are present in SO, group them under common section
-            if down_payments:
-                invoice_item_sequence += 1
-                down_payments_section = order._prepare_down_payment_section_line(
-                    sequence=invoice_item_sequence
+            groups_invoice_lines = folio._get_groups_invoice_lines(
+                lines_to_invoice=folio_lines_to_invoice,
+                partner_invoice_id=folio_partner_invoice_id,
+            )
+            for group in groups_invoice_lines:
+                folio = folio.with_company(folio.company_id)
+                down_payments = folio.env["folio.sale.line"]
+
+                # Invoice values.
+                invoice_vals = folio._prepare_invoice(
+                    partner_invoice_id=group["partner_id"]
                 )
-                invoice_lines_vals.append(down_payments_section)
-                for down_payment in down_payments:
+                # Invoice line values (keep only necessary sections).
+                current_section_vals = None
+                invoice_lines_vals = []
+                for line in group["lines"]:
+                    if line.display_type == "line_section":
+                        current_section_vals = line._prepare_invoice_line(
+                            sequence=invoice_item_sequence + 1
+                        )
+                        continue
+                    if line.display_type != "line_note" and float_is_zero(
+                        line.qty_to_invoice, precision_digits=precision
+                    ):
+                        continue
+                    if (
+                        line.qty_to_invoice > 0
+                        or (line.qty_to_invoice < 0 and final)
+                        or line.display_type == "line_note"
+                    ):
+                        if line.is_downpayment:
+                            down_payments += line
+                            continue
+                        if current_section_vals:
+                            invoice_item_sequence += 1
+                            invoice_lines_vals.append(current_section_vals)
+                            current_section_vals = None
+                        invoice_item_sequence += 1
+                        prepared_line = line._prepare_invoice_line(
+                            sequence=invoice_item_sequence,
+                            qty=lines_to_invoice[line.id],
+                        )
+                        invoice_lines_vals.append(prepared_line)
+
+                # If down payments are present in SO, group them under common section
+                if down_payments:
                     invoice_item_sequence += 1
-                    invoice_down_payment_vals = down_payment._prepare_invoice_line(
+                    down_payments_section = folio._prepare_down_payment_section_line(
                         sequence=invoice_item_sequence
                     )
-                    invoice_lines_vals.append(invoice_down_payment_vals)
+                    invoice_lines_vals.append(down_payments_section)
+                    for down_payment in down_payments:
+                        invoice_item_sequence += 1
+                        invoice_down_payment_vals = down_payment._prepare_invoice_line(
+                            sequence=invoice_item_sequence
+                        )
+                        invoice_lines_vals.append(invoice_down_payment_vals)
 
-            if not any(
-                new_line["display_type"] is False for new_line in invoice_lines_vals
-            ):
-                raise self._nothing_to_invoice_error()
+                if not any(
+                    new_line["display_type"] is False for new_line in invoice_lines_vals
+                ):
+                    raise self._nothing_to_invoice_error()
+                invoice_vals["invoice_line_ids"] = [
+                    (0, 0, invoice_line_id) for invoice_line_id in invoice_lines_vals
+                ]
 
-            invoice_vals["invoice_line_ids"] = [
-                (0, 0, invoice_line_id) for invoice_line_id in invoice_lines_vals
-            ]
-
-            invoice_vals_list.append(invoice_vals)
+                invoice_vals_list.append(invoice_vals)
         return invoice_vals_list
+
+    def _get_groups_invoice_lines(self, lines_to_invoice, partner_invoice_id):
+        self.ensure_one()
+        target_lines = lines_to_invoice
+        if self._context.get("lines_auto_add") and partner_invoice_id:
+            folio_partner_invoice = self.env["res.partner"].browse(partner_invoice_id)
+            if folio_partner_invoice.default_invoice_lines == "overnights":
+                target_lines = target_lines.filtered(
+                    lambda r: r.is_board_service
+                    or (r.reservation_line_ids and r.reservation_id.overnight_room)
+                )
+            elif folio_partner_invoice.default_invoice_lines == "reservations":
+                target_lines = target_lines.filtered(
+                    lambda r: r.is_board_service or r.reservation_line_ids
+                )
+            elif folio_partner_invoice.default_invoice_lines == "services":
+                target_lines = target_lines.filtered(
+                    lambda r: not r.is_board_service or r.service_line_ids
+                )
+        groups_invoice_lines = [
+            {
+                "partner_id": partner_invoice_id,
+                "lines": target_lines,
+            }
+        ]
+        if (
+            self.autoinvoice_date
+            and self.autoinvoice_date <= fields.Date.today()
+            and len(target_lines) < len(lines_to_invoice)
+        ):
+            other_partner_to_invoice = self.partner_invoice_ids.filtered(
+                lambda p: p.id != partner_invoice_id
+            )
+            if not other_partner_to_invoice:
+                other_partner_to_invoice = self.env.ref("pms.various_pms_partner")
+            groups_invoice_lines.append(
+                {
+                    "partner_id": other_partner_to_invoice.id,
+                    "lines": lines_to_invoice - target_lines,
+                }
+            )
+        return groups_invoice_lines
+
+    def _get_default_partner_invoice_id(self):
+        self.ensure_one()
+        folio_partner_invoice_id = False
+        if self.partner_id and self.partner_id.vat:
+            folio_partner_invoice_id = self.partner_id.id
+        if not folio_partner_invoice_id:
+            folio_partner_invoice_id = (
+                self.partner_invoice_ids[0].id if self.partner_invoice_ids else False
+            )
+        if not folio_partner_invoice_id:
+            folio_partner_invoice_id = self.env.ref("pms.various_pms_partner").id
+        return folio_partner_invoice_id
 
     def _get_tax_amount_by_group(self):
         self.ensure_one()
@@ -626,6 +703,42 @@ class PmsFolio(models.Model):
             (line[0].name, line[1]["amount"], line[1]["base"], len(res)) for line in res
         ]
         return res
+
+    @api.depends("partner_id", "invoice_status", "last_checkout", "partner_invoice_ids")
+    def _compute_autoinvoice_date(self):
+        self.autoinvoice_date = False
+        for record in self.filtered(lambda r: r.invoice_status == "to_invoice"):
+            record.autoinvoice_date = record._get_to_invoice_date()
+
+    def _get_to_invoice_date(self):
+        self.ensure_one()
+        partner = self.partner_id
+        invoicing_policy = (
+            self.pms_property_id.default_invoicing_policy
+            if not partner or partner.invoicing_policy == "property"
+            else partner.invoicing_policy
+        )
+        if invoicing_policy == "manual":
+            return False
+        if invoicing_policy == "checkout":
+            margin_days = (
+                self.pms_property_id.margin_days_autoinvoice
+                if not partner or partner.invoicing_policy == "property"
+                else partner.margin_days_autoinvoice
+            )
+            return self.last_checkout + timedelta(days=margin_days)
+        if invoicing_policy == "month_day":
+            month_day = (
+                self.pms_property_id.invoicing_month_day
+                if not partner or partner.invoicing_policy == "property"
+                else partner.invoicing_month_day
+            )
+            if self.last_checkout.day <= month_day:
+                self.autoinvoice_date = self.last_checkout.replace(day=month_day)
+            else:
+                self.autoinvoice_date = (
+                    self.last_checkout + relativedelta.relativedelta(months=1)
+                ).replace(day=month_day)
 
     @api.depends("reservation_ids", "reservation_ids.state")
     def _compute_number_of_rooms(self):
@@ -782,7 +895,8 @@ class PmsFolio(models.Model):
         # directly linked to the SO.
         for order in self:
             invoices = order.sale_line_ids.invoice_lines.move_id.filtered(
-                lambda r: r.move_type in ("out_invoice", "out_refund")
+                lambda r: r.move_type
+                in ("out_invoice", "out_refund", "out_receipt", "in_receipt")
             )
             order.move_ids = invoices
             order.invoice_count = len(invoices)
@@ -814,9 +928,10 @@ class PmsFolio(models.Model):
         - to_invoice: if any SO line is 'to_invoice', the whole SO is 'to_invoice'
         - invoiced: if all SO lines are invoiced, the SO is invoiced.
         """
-        unconfirmed_orders = self.filtered(lambda so: so.state in ["draft"])
+        unconfirmed_orders = self.filtered(lambda folio: folio.state in ["draft"])
         unconfirmed_orders.invoice_status = "no"
-        confirmed_orders = self - unconfirmed_orders
+        zero_orders = self.filtered(lambda folio: folio.amount_total == 0)
+        confirmed_orders = self - unconfirmed_orders - zero_orders
         if not confirmed_orders:
             return
         line_invoice_status_all = [
@@ -1105,7 +1220,7 @@ class PmsFolio(models.Model):
                     JOIN account_move_line aml ON aml.id = soli_rel.invoice_line_id
                     JOIN account_move am ON am.id = aml.move_id
                 WHERE
-                    am.move_type in ('out_invoice', 'out_refund') AND
+                    am.move_type in ('out_invoice', 'out_refund', 'in_receipt') AND
                     am.id = ANY(%s)
             """,
                 (list(value),),
@@ -1117,7 +1232,7 @@ class PmsFolio(models.Model):
             (
                 "sale_line_ids.invoice_lines.move_id.move_type",
                 "in",
-                ("out_invoice", "out_refund"),
+                ("out_invoice", "out_refund", "in_receipt"),
             ),
             ("sale_line_ids.invoice_lines.move_id", operator, value),
         ]
@@ -1507,6 +1622,7 @@ class PmsFolio(models.Model):
                 return self.env["account.move"]
         # 1) Create invoices.
         if not lines_to_invoice:
+            self = self.with_context(lines_auto_add=True)
             lines_to_invoice = dict()
             for line in self.sale_line_ids:
                 lines_to_invoice[line.id] = (
@@ -1517,45 +1633,12 @@ class PmsFolio(models.Model):
             lines_to_invoice=lines_to_invoice,
             partner_invoice_id=partner_invoice_id,
         )
-
         if not invoice_vals_list:
             raise self._nothing_to_invoice_error()
 
         # 2) Manage 'grouped' parameter: group by (partner_id, currency_id).
         if not grouped:
-            new_invoice_vals_list = []
-            invoice_grouping_keys = self._get_invoice_grouping_keys()
-            for _grouping_keys, invoices in groupby(
-                invoice_vals_list,
-                key=lambda x: [
-                    x.get(grouping_key) for grouping_key in invoice_grouping_keys
-                ],
-            ):
-                origins = set()
-                payment_refs = set()
-                refs = set()
-                ref_invoice_vals = None
-                for invoice_vals in invoices:
-                    if not ref_invoice_vals:
-                        ref_invoice_vals = invoice_vals
-                    else:
-                        ref_invoice_vals["invoice_line_ids"] += invoice_vals[
-                            "invoice_line_ids"
-                        ]
-                    origins.add(invoice_vals["invoice_origin"])
-                    payment_refs.add(invoice_vals["payment_reference"])
-                    refs.add(invoice_vals["ref"])
-                ref_invoice_vals.update(
-                    {
-                        "ref": ", ".join(refs)[:2000],
-                        "invoice_origin": ", ".join(origins),
-                        "payment_reference": len(payment_refs) == 1
-                        and payment_refs.pop()
-                        or False,
-                    }
-                )
-                new_invoice_vals_list.append(ref_invoice_vals)
-            invoice_vals_list = new_invoice_vals_list
+            invoice_vals_list = self._get_group_vals_list(invoice_vals_list)
 
         # 3) Create invoices.
 
@@ -1595,12 +1678,7 @@ class PmsFolio(models.Model):
         # a salesperson must be able to generate an invoice from a
         # sale order without "billing" access rights.
         # However, he should not be able to create an invoice from scratch.
-        moves = (
-            self.env["account.move"]
-            .sudo()
-            .with_context(default_move_type="out_invoice", auto_name=True)
-            .create(invoice_vals_list)
-        )
+        moves = self._create_account_moves(invoice_vals_list)
 
         # 4) Some moves might actually be refunds: convert
         # them if the total amount is negative
@@ -1622,6 +1700,54 @@ class PmsFolio(models.Model):
             )
         return moves
 
+    def _create_account_moves(self, invoice_vals_list):
+        moves = self.env["account.move"]
+        for invoice_vals in invoice_vals_list:
+            if invoice_vals["move_type"] == "out_invoice":
+                move = (
+                    self.env["account.move"]
+                    .sudo()
+                    .with_context(default_move_type="out_invoice", auto_name=True)
+                    .create(invoice_vals)
+                )
+            moves += move
+        return moves
+
+    def _get_group_vals_list(self, invoice_vals_list):
+        new_invoice_vals_list = []
+        invoice_grouping_keys = self._get_invoice_grouping_keys()
+        for _grouping_keys, invoices in groupby(
+            invoice_vals_list,
+            key=lambda x: [
+                x.get(grouping_key) for grouping_key in invoice_grouping_keys
+            ],
+        ):
+            origins = set()
+            payment_refs = set()
+            refs = set()
+            ref_invoice_vals = None
+            for invoice_vals in invoices:
+                if not ref_invoice_vals:
+                    ref_invoice_vals = invoice_vals
+                else:
+                    ref_invoice_vals["invoice_line_ids"] += invoice_vals[
+                        "invoice_line_ids"
+                    ]
+                origins.add(invoice_vals["invoice_origin"])
+                payment_refs.add(invoice_vals["payment_reference"])
+                refs.add(invoice_vals["ref"])
+            ref_invoice_vals.update(
+                {
+                    "ref": ", ".join(refs)[:2000],
+                    "invoice_origin": ", ".join(origins),
+                    "payment_reference": len(payment_refs) == 1
+                    and payment_refs.pop()
+                    or False,
+                }
+            )
+            new_invoice_vals_list.append(ref_invoice_vals)
+        return new_invoice_vals_list
+
     def _prepare_invoice(self, partner_invoice_id=False):
         """
         Prepare the dict of values to create the new invoice for a folio.
@@ -1629,28 +1755,25 @@ class PmsFolio(models.Model):
         (making sure to call super() to establish a clean extension chain).
         """
         self.ensure_one()
-        journal = (
-            self.env["account.move"]
-            .with_context(
-                default_move_type="out_invoice",
-                default_company_id=self.company_id.id,
-                default_pms_property_id=self.pms_property_id.id,
+        journal = self._get_folio_default_journal(partner_invoice_id)
+        if not journal:
+            journal = (
+                self.env["account.move"]
+                .with_context(
+                    default_move_type="out_invoice",
+                    default_company_id=self.company_id.id,
+                    default_pms_property_id=self.pms_property_id.id,
+                )
+                ._get_default_journal()
             )
-            ._get_default_journal()
-        )
         if not journal:
             raise UserError(
                 _("Please define an accounting sales journal for the company %s (%s).")
                 % (self.company_id.name, self.company_id.id)
             )
 
-        if not partner_invoice_id:
-            partner_invoice_id = (
-                self.partner_invoice_ids[0].id if self.partner_invoice_ids else False
-            )
-
         invoice_vals = {
-            "ref": self.client_order_ref or "",
+            "ref": self.name or "",
             "move_type": "out_invoice",
             "narration": self.note,
             "currency_id": self.pricelist_id.currency_id.id,
@@ -1663,13 +1786,24 @@ class PmsFolio(models.Model):
             "journal_id": journal.id,  # company comes from the journal
             "invoice_origin": self.name,
             "invoice_payment_term_id": self.payment_term_id.id,
-            "payment_reference": self.reference,
             "transaction_ids": [(6, 0, self.transaction_ids.ids)],
             "folio_ids": [(6, 0, [self.id])],
             "invoice_line_ids": [],
             "company_id": self.company_id.id,
+            "payment_reference": self.external_reference or self.reference,
         }
         return invoice_vals
+
+    def _get_folio_default_journal(self, partner_invoice_id):
+        self.ensure_one()
+        pms_property = self.pms_property_id
+        partner = self.env["res.partner"].browse(partner_invoice_id)
+        if not partner or (
+            not partner._check_enought_invoice_data()
+            and self._context.get("autoinvoice")
+        ):
+            return pms_property.journal_simplified_invoice_id
+        return pms_property.journal_normal_invoice_id
 
     def do_payment(
         self,
@@ -1691,18 +1825,31 @@ class PmsFolio(models.Model):
         """
         if not pay_type:
             pay_type = journal.type
+        reference = folio.name
+        if folio.external_reference:
+            reference += " - " + folio.external_reference
         vals = {
             "journal_id": journal.id,
             "partner_id": partner.id,
             "amount": amount,
             "date": date or fields.Date.today(),
-            "ref": folio.name,
+            "ref": reference,
             "folio_ids": [(6, 0, [folio.id])],
             "payment_type": "inbound",
             "partner_type": "customer",
             "state": "draft",
+            "origin_reference": folio.external_reference,
         }
         pay = self.env["account.payment"].create(vals)
+        pay.message_post_with_view(
+            "mail.message_origin_link",
+            values={
+                "self": pay,
+                "origin": folio,
+            },
+            subtype_id=self.env.ref("mail.mt_note").id,
+        )
+
         pay.action_post()
 
         # Review: force to autoreconcile payment with invoices already created
@@ -1762,19 +1909,29 @@ class PmsFolio(models.Model):
         """
         if not pay_type:
             pay_type = journal.type
-
+        reference = folio.name
+        if folio.external_reference:
+            reference += " - " + folio.external_reference
         vals = {
             "journal_id": journal.id,
             "partner_id": partner.id,
             "amount": amount if amount > 0 else -amount,
             "date": date or fields.Date.today(),
-            "ref": folio.name,
+            "ref": reference,
             "folio_ids": [(6, 0, [folio.id])],
             "payment_type": "outbound",
             "partner_type": "customer",
             "state": "draft",
         }
         pay = self.env["account.payment"].create(vals)
+        pay.message_post_with_view(
+            "mail.message_origin_link",
+            values={
+                "self": pay,
+                "origin": folio,
+            },
+            subtype_id=self.env.ref("mail.mt_note").id,
+        )
         pay.action_post()
 
         # Automatic register refund in cash register
@@ -2176,7 +2333,6 @@ class PmsFolio(models.Model):
                             "partner_id": record.partner_id.id,
                             "name": record.document_number,
                             "category_id": record.document_type.id,
-                            "valid_from": record.document_expedition_date,
                         }
                     )
 

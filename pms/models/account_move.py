@@ -4,7 +4,7 @@ import itertools as it
 import json
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class AccountMove(models.Model):
@@ -32,6 +32,20 @@ class AccountMove(models.Model):
         # check_pms_properties=True,
     )
     # journal_id = fields.Many2one(check_pms_properties=True)
+    is_simplified_invoice = fields.Boolean(
+        help="Technical field to know if the invoice is simplified",
+        related="journal_id.is_simplified_invoice",
+        store=True,
+    )
+    origin_agency_id = fields.Many2one(
+        string="Origin Agency",
+        help="The agency where the folio account move originates",
+        comodel_name="res.partner",
+        domain="[('is_agency', '=', True)]",
+        compute="_compute_origin_agency_id",
+        store=True,
+        readonly=False,
+    )
 
     @api.onchange("pms_property_id")
     def _onchange_pms_property_id(self):
@@ -64,6 +78,19 @@ class AccountMove(models.Model):
             move.folio_ids = False
             move.folio_ids = move.mapped("line_ids.folio_ids.id")
 
+    @api.depends("line_ids", "line_ids.origin_agency_id")
+    def _compute_origin_agency_id(self):
+        """
+        Compute the origin agency of the account move
+        if the move has multiple agencies in origin,
+        the first one is returned (REVIEW: is this correct?)
+        """
+        self.origin_agency_id = False
+        for move in self:
+            agencies = move.mapped("line_ids.origin_agency_id")
+            if agencies:
+                move.origin_agency_id = agencies[0]
+
     def _compute_payments_widget_to_reconcile_info(self):
         for move in self:
             if not move.line_ids.folio_line_ids:
@@ -84,22 +111,6 @@ class AccountMove(models.Model):
                     in ("receivable", "payable")
                 )
 
-                domain = [
-                    ("account_id", "in", pay_term_lines.account_id.ids),
-                    ("parent_state", "=", "posted"),
-                    ("reconciled", "=", False),
-                    "|",
-                    ("amount_residual", "!=", 0.0),
-                    ("amount_residual_currency", "!=", 0.0),
-                    "|",
-                    (
-                        "folio_ids",
-                        "in",
-                        move.line_ids.mapped("folio_line_ids.folio_id.id"),
-                    ),
-                    ("partner_id", "=", move.commercial_partner_id.id),
-                ]
-
                 payments_widget_vals = {
                     "outstanding": True,
                     "content": [],
@@ -107,13 +118,31 @@ class AccountMove(models.Model):
                 }
 
                 if move.is_inbound():
-                    domain.append(("balance", "<", 0.0))
+                    domain = [("balance", "<", 0.0)]
                     payments_widget_vals["title"] = _("Outstanding credits")
                 else:
-                    domain.append(("balance", ">", 0.0))
+                    domain = [("balance", ">", 0.0)]
                     payments_widget_vals["title"] = _("Outstanding debits")
-                for line in self.env["account.move.line"].search(domain):
 
+                domain.extend(
+                    [
+                        ("account_id", "in", pay_term_lines.account_id.ids),
+                        ("parent_state", "=", "posted"),
+                        ("reconciled", "=", False),
+                        "|",
+                        ("amount_residual", "!=", 0.0),
+                        ("amount_residual_currency", "!=", 0.0),
+                        "|",
+                        (
+                            "folio_ids",
+                            "in",
+                            move.line_ids.mapped("folio_line_ids.folio_id.id"),
+                        ),
+                        ("partner_id", "=", move.commercial_partner_id.id),
+                    ]
+                )
+
+                for line in self.env["account.move.line"].search(domain):
                     if line.currency_id == move.currency_id:
                         # Same foreign currency.
                         amount = abs(line.amount_residual_currency)
@@ -157,13 +186,18 @@ class AccountMove(models.Model):
         default_pms_property_id is set in context
         """
         journal = super(AccountMove, self)._search_default_journal(journal_types)
-        if self._context.get("default_pms_property_id"):
-            property_id = self._context.get("default_pms_property_id")
-            pms_property = self.env["pms.property"].browse(property_id)
+        company_id = self._context.get("default_company_id", self.env.company.id)
+        company = self.env["res.company"].browse(company_id)
+        pms_property_id = self.pms_property_id.id or (
+            self.env.user.get_active_property_ids
+            and self.env.user.get_active_property_ids()[0]
+        )
+        pms_property = self.env["pms.property"].browse(pms_property_id)
+        if pms_property:
             domain = [
                 ("company_id", "=", pms_property.company_id.id),
                 ("type", "in", journal_types),
-                ("pms_property_ids", "in", property_id),
+                ("pms_property_ids", "in", pms_property.id),
             ]
             journal = self.env["account.journal"].search(domain, limit=1)
             if not journal:
@@ -173,15 +207,40 @@ class AccountMove(models.Model):
                     ("pms_property_ids", "=", False),
                 ]
                 journal = self.env["account.journal"].search(domain, limit=1)
-            if not journal:
+        else:
+            domain = [
+                ("company_id", "=", company_id),
+                ("type", "in", journal_types),
+                ("pms_property_ids", "=", False),
+            ]
+            journal = self.env["account.journal"].search(domain, limit=1)
+        if not journal:
+            if pms_property:
                 error_msg = _(
                     """No journal could be found in property %(property_name)s
                     for any of those types: %(journal_types)s""",
                     property_name=pms_property.display_name,
                     journal_types=", ".join(journal_types),
                 )
-                raise UserError(error_msg)
+            else:
+                error_msg = _(
+                    """No journal could be found in company %(company_name)s
+                    for any of those types: %(journal_types)s""",
+                    company_name=company.display_name,
+                    journal_types=", ".join(journal_types),
+                )
+            raise UserError(error_msg)
         return journal
+
+    @api.depends("pms_property_id")
+    def _compute_suitable_journal_ids(self):
+        super(AccountMove, self)._compute_suitable_journal_ids()
+        for move in self:
+            if move.pms_property_id:
+                move.suitable_journal_ids = move.suitable_journal_ids.filtered(
+                    lambda j: not j.pms_property_ids
+                    or move.pms_property_id.id in j.pms_property_ids.ids
+                )
 
     def _autoreconcile_folio_payments(self):
         """
@@ -235,6 +294,8 @@ class AccountMove(models.Model):
         """
         Overwrite the original method to add the folio_ids to the invoice
         """
+        for record in self:
+            record._check_pms_valid_invoice(record)
         res = super(AccountMove, self)._post(soft)
         self._autoreconcile_folio_payments()
         return res
@@ -252,3 +313,39 @@ class AccountMove(models.Model):
                         lambda p: p.id in [item.id for item in combi]
                     )
         return []
+
+    @api.model
+    def _check_pms_valid_invoice(self, move):
+        """
+        Check invoice and receipts legal status
+        """
+        if (
+            move.is_invoice(include_receipts=True)
+            and not move.journal_id.is_simplified_invoice
+            and (
+                not move.partner_id or not move.partner_id._check_enought_invoice_data()
+            )
+        ):
+            raise UserError(
+                _(
+                    "You cannot validate this invoice. Please check the "
+                    " partner has the complete information required."
+                )
+            )
+        if move.journal_id.is_simplified_invoice:
+            move._check_simplified_restrictions()
+        return True
+
+    def _check_simplified_restrictions(self):
+        self.ensure_one()
+        if (
+            self.pms_property_id
+            and self.amount_total > self.pms_property_id.max_amount_simplified_invoice
+        ):
+            mens = _(
+                "The total amount of the simplified invoice is higher than the "
+                "maximum amount allowed for simplified invoices."
+            )
+            self.folio_ids.message_post(body=mens)
+            raise ValidationError(mens)
+        return True

@@ -142,6 +142,55 @@ class PmsProperty(models.Model):
     is_modified_auto_mail = fields.Boolean(string="Auto Send Modification Mail")
     is_canceled_auto_mail = fields.Boolean(string="Auto Send Cancellation Mail")
 
+    default_invoicing_policy = fields.Selection(
+        string="Default Invoicing Policy",
+        selection=[
+            ("manual", "Manual"),
+            ("checkout", "Checkout"),
+            ("month_day", "Month Day Invoice"),
+        ],
+        default="manual",
+    )
+
+    margin_days_autoinvoice = fields.Integer(
+        string="Margin Days",
+        help="Days from Checkout to generate the invoice",
+    )
+
+    invoicing_month_day = fields.Integer(
+        string="Invoicing Month Day",
+        help="The day of the month to invoice",
+    )
+
+    journal_simplified_invoice_id = fields.Many2one(
+        string="Simplified Invoice Journal",
+        comodel_name="account.journal",
+        domain=[
+            ("type", "=", "sale"),
+        ],
+        help="Journal used to create the simplified invoice",
+        check_company=True,
+        check_pms_properties=True,
+    )
+
+    journal_normal_invoice_id = fields.Many2one(
+        string="Normal Invoice Journal",
+        comodel_name="account.journal",
+        domain=[
+            ("type", "=", "sale"),
+            ("is_simplified_invoice", "=", False),
+        ],
+        help="Journal used to create the normal invoice",
+        check_company=True,
+        check_pms_properties=True,
+    )
+
+    max_amount_simplified_invoice = fields.Float(
+        string="Max Amount Simplified Invoice",
+        help="Maximum amount to create the simplified invoice",
+        default=400.0,
+    )
+
     @api.depends_context(
         "checkin",
         "checkout",
@@ -551,5 +600,37 @@ class PmsProperty(models.Model):
                                 "closed": True,
                             }
                         )
-
         return True
+
+    @api.model
+    def autoinvoicing(self):
+        """
+        This method is used to autoinvoicing the folios
+        """
+        folios = self.env["pms.folio"].search(
+            [
+                ("autoinvoice_date", "=", fields.date.today()),
+            ]
+        )
+        if folios:
+            invoices = folios.with_context(autoinvoice=True)._create_invoices(
+                grouped=True,
+            )
+            if invoices:
+                invoices.action_post()
+        return True
+
+    @api.constrains("journal_normal_invoice_id")
+    def _check_journal_normal_invoice(self):
+        for pms_property in self.filtered("journal_normal_invoice_id"):
+            if pms_property.journal_normal_invoice_id.is_simplified_invoice:
+                raise ValidationError(
+                    _("Journal %s is not allowed to be used for normal invoices")
+                    % pms_property.journal_normal_invoice_id.name
+                )
+
+    @api.constrains("journal_simplified_invoice_id")
+    def _check_journal_simplified_invoice(self):
+        for pms_property in self.filtered("journal_simplified_invoice_id"):
+            if not pms_property.journal_simplified_invoice_id.is_simplified_invoice:
+                pms_property.journal_simplified_invoice_id.is_simplified_invoice = True

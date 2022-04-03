@@ -64,10 +64,17 @@
                     <field name="is_agency" />
                 </group>
             </xpath>
-            <xpath expr="//field[@name='company_id']" position="after">
-                <group>
-                    <field name="pms_property_ids" />
-                </group>
+            <xpath expr="//field[@name='vat']" position="after">
+                <field
+                    name="vat_document_type"
+                    attrs="{'invisible':[('vat','=',False)]}"
+                />
+            </xpath>
+            <xpath
+                expr="//notebook/page[@name='sales_purchases']/group/group/field[@name='company_id']"
+                position="after"
+            >
+                <field name="pms_property_ids" widget="many2many_tags" />
             </xpath>
             <xpath expr="//page[@name='internal_notes']" position="after">
                 <page
@@ -91,8 +98,70 @@
                     </group>
                 </page>
             </xpath>
+            <xpath expr="//page[@name='personal_information_page']">
+                <group>
+                    <label for="residence_street" string="Residence Address" />
+                    <div class="o_address_format">
+                        <field
+                            name="residence_street"
+                            placeholder="Street..."
+                            class="o_address_street"
+                        />
+                        <field
+                            name="residence_street2"
+                            placeholder="Street 2..."
+                            class="o_address_street"
+                        />
+                        <field
+                            name="residence_city"
+                            placeholder="City"
+                            class="o_address_city"
+                        />
+                        <field
+                            name="residence_state_id"
+                            class="o_address_state"
+                            placeholder="State"
+                            options="{'no_open': True, 'no_quick_create': True}"
+                        />
+                        <field
+                            name="residence_zip"
+                            placeholder="ZIP"
+                            class="o_address_zip"
+                        />
+                        <field
+                            name="residence_country_id"
+                            placeholder="Country"
+                            class="o_address_country"
+                            options='{"no_open": True, "no_create": True}'
+                        />
+                    </div>
+                </group>
+            </xpath>
         </field>
     </record>
+
+    <record id="view_partner_property_form" model="ir.ui.view">
+        <field name="name">view.partner.property.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account.view_partner_property_form" />
+        <field name="arch" type="xml">
+            <xpath expr='//group[@name="accounting_entries"]' position='after'>
+                <group string="PMS Invoice policy" name="pms_invoice_policy">
+                    <field name="invoicing_policy" />
+                    <field
+                        name="invoicing_month_day"
+                        attrs="{'invisible': [('invoicing_policy', '!=', 'month_day')]}"
+                    />
+                    <field
+                        name="margin_days_autoinvoice"
+                        attrs="{'invisible': [('invoicing_policy', '!=', 'checkout')]}"
+                    />
+                    <field name="default_invoice_lines" />
+                </group>
+            </xpath>
+        </field>
+    </record>
+
     <record id="view_partner_data_form" model="ir.ui.view">
             <field name="name">res.partner.form.data</field>
             <field name="model">res.partner</field>

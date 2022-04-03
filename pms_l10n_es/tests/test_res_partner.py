@@ -46,9 +46,9 @@ class TestResPartner(TestPms):
         self.partner_1 = self.env["res.partner"].create(
             {
                 "name": "partner1",
-                "country_id": country_spain.id,
+                "residence_country_id": country_spain.id,
                 "nationality_id": country_spain.id,
-                "state_id": state_madrid.id,
+                "residence_state_id": state_madrid.id,
                 "birthdate_date": "2000-06-25",
                 "gender": "male",
             }
@@ -56,7 +56,7 @@ class TestResPartner(TestPms):
         # ASSERT
         self.assertEqual(
             self.partner_1.ine_code,
-            self.partner_1.state_id.ine_code,
+            self.partner_1.residence_state_id.ine_code,
             "The ine code for Spanish partners must match the ine"
             " code of the state to which they belong",
         )

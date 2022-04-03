@@ -1,0 +1,79 @@
+<odoo>
+    <template
+        id="inherit_pms_l10n_es_portal_my_precheckin_detail"
+        inherit_id="pms.portal_my_precheckin_detail"
+    >
+        <xpath expr="//div[@name='document_type_div']" position="replace">
+            <div t-attf-class="form-group col-md-4">
+                <label class="col-form-label" for="document_type">Doc. Type</label>
+                <div class="d-none"><p id="docTypeId"><t
+                            t-esc="checkin_partner_id.document_type"
+                        /></p></div>
+                <select
+                    class="form-control #{error.get('document_type') and 'is-invalid' or ''}"
+                    name='document_type'
+                    id="doc_type"
+                >
+                    <option value="">Select an option</option>
+                    <t t-foreach="doc_type_ids" t-as='doc_type'>
+                        <option
+                            t-att-value="doc_type.name"
+                            t-att-selected="doc_type.id == checkin_partner_id.document_type.id"
+                        >
+                            <t t-esc='doc_type.name' />
+                        </option>
+                    </t>
+                </select>
+                <t t-if="error_message">
+                    <span
+                        class="text-danger"
+                        t-esc="error_message.get('document_type')"
+                    />
+                </t>
+            </div>
+        </xpath>
+        <xpath expr="//div[@name='document_number_div']" position="replace">
+            <div t-attf-class="col-12 col-md-4">
+                <label class="col-form-label" for="document_number">Doc. Number</label>
+                <input
+                    type="text"
+                    name="document_number"
+                    t-attf-class="form-control #{error.get('document_number') and 'is-invalid' or ''}"
+                    t-att-value="doc_number or checkin_partner_id.document_number"
+                />
+                <t t-if="error_message">
+                    <span
+                        class="text-danger"
+                        t-esc="error_message.get('document_number')"
+                    />
+                </t>
+            </div>
+            <div t-attf-class="form-group col-md-4">
+                <label
+                    class="col-form-label"
+                    for="support_number"
+                >Doc. Support Number</label>
+                <input
+                    type="text"
+                    name="support_number"
+                    t-attf-class="form-control"
+                    t-att-value="support_number or checkin_partner_id.support_number"
+                />
+            </div>
+        </xpath>
+    </template>
+    <template
+        id="inherit_pms_l10n_es_portal_my_precheckin_end"
+        inherit_id="pms.portal_my_precheckin_end"
+    >
+        <xpath expr="//div[@name='birthdate_div']" position="before">
+            <div t-attf-class="form-group col-12 col-md-6 font-weight-bold">
+                Doc. Support Number:
+                <br />
+                <span class="font-weight-normal ml-3">
+                    <t t-esc="checkin_partner.support_number" />
+                </span>
+            </div>
+        </xpath>
+    </template>
+</odoo>

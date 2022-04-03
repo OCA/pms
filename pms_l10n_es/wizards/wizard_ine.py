@@ -208,7 +208,7 @@ class WizardIne(models.TransientModel):
                     )
                     raise ValidationError(
                         _(
-                            "The following guests have no nationality set :%s.",
+                            "The following guests have no residence nationality set :%s.",
                             guests_with_no_nationality,
                         )
                     )
@@ -234,13 +234,13 @@ class WizardIne(models.TransientModel):
                     # arrivals grouped by state_id (Spain "provincias")
                     read_by_arrivals_spain = self.env["res.partner"].read_group(
                         entry["__domain"],
-                        ["state_id"],
-                        ["state_id"],
+                        ["residence_state_id"],
+                        ["residence_state_id"],
                         lazy=False,
                     )
                     # iterate read_group results from Spain
                     for entry_from_spain in read_by_arrivals_spain:
-                        if not entry_from_spain["state_id"]:
+                        if not entry_from_spain["residence_state_id"]:
                             spanish_guests_with_no_state = self.env[
                                 "res.partner"
                             ].search(entry_from_spain["__domain"])
@@ -255,10 +255,10 @@ class WizardIne(models.TransientModel):
                                     spanish_guests_with_no_state,
                                 )
                             )
-                        state_id = self.env["res.country.state"].browse(
-                            entry_from_spain["state_id"][0]
+                        residence_state_id = self.env["res.country.state"].browse(
+                            entry_from_spain["residence_state_id"][0]
                         )  # .ine_code
-                        ine_code = state_id.ine_code
+                        ine_code = residence_state_id.ine_code
 
                         # get count of each result
                         num_spain = entry_from_spain["__count"]
@@ -317,18 +317,18 @@ class WizardIne(models.TransientModel):
                     # if there are some checkin partners in the same reservation
                     if chk_part_same_reserv_with_checkin:
                         # create partner with same country & state
-                        country_other = (
-                            chk_part_same_reserv_with_checkin.partner_id.country_id.id
-                        )
-                        state_other = (
-                            chk_part_same_reserv_with_checkin.partner_id.state_id.id
-                        )
+                        country_other = chk_part_same_reserv_with_checkin[
+                            0
+                        ].partner_id.nationality_id.id
+                        state_other = chk_part_same_reserv_with_checkin[
+                            0
+                        ].partner_id.residence_state_id.id
                         dummy_partner = self.env["res.partner"].create(
                             {
                                 "name": "partner1",
                                 "country_id": country_other,
                                 "nationality_id": country_other,
-                                "state_id": state_other,
+                                "residence_state_id": state_other,
                             }
                         )
 
@@ -339,7 +339,7 @@ class WizardIne(models.TransientModel):
                                 "name": "partner1",
                                 "country_id": country_spain.id,
                                 "nationality_id": country_spain.id,
-                                "state_id": state_madrid.id,
+                                "residence_state_id": state_madrid.id,
                             }
                         )
                     fake_partners_ids.append(dummy_partner.id)

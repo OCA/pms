@@ -76,6 +76,13 @@ class PmsCheckinPartner(models.Model):
         store=True,
         compute="_compute_mobile",
     )
+    phone = fields.Char(
+        string="Phone",
+        help="Checkin Partner Phone",
+        readonly=False,
+        store=True,
+        compute="_compute_phone",
+    )
     image_128 = fields.Image(
         string="Image",
         help="Checkin Partner Image, it corresponds with Partner Image associated",
@@ -136,18 +143,52 @@ class PmsCheckinPartner(models.Model):
         compute="_compute_nationality_id",
         comodel_name="res.country",
     )
-    # TODO: Use new partner contact "other or "private" with
-    # personal contact address complete??
-    # to avoid user country_id on companies contacts.
-    # View to res.partner state_id inherit
-    state_id = fields.Many2one(
-        string="Country State",
-        help="host state",
+    residence_street = fields.Char(
+        string="Street",
+        help="Street of the guest's residence",
         readonly=False,
         store=True,
-        compute="_compute_state_id",
+        compute="_compute_residence_street",
+    )
+    residence_street2 = fields.Char(
+        string="Street2",
+        help="Second street of the guest's residence",
+        readonly=False,
+        store=True,
+        compute="_compute_residence_street2",
+    )
+    residence_zip = fields.Char(
+        string="Zip",
+        help="Zip of the guest's residence",
+        readonly=False,
+        store=True,
+        compute="_compute_residence_zip",
+        change_default=True,
+    )
+    residence_city = fields.Char(
+        string="City",
+        help="City of the guest's residence",
+        readonly=False,
+        store=True,
+        compute="_compute_residence_city",
+    )
+    residence_country_id = fields.Many2one(
+        string="Country of residence",
+        help="Country of the guest's residence",
+        readonly=False,
+        store=True,
+        compute="_compute_residence_country_id",
+        comodel_name="res.country",
+    )
+    residence_state_id = fields.Many2one(
+        string="State of residence",
+        help="State of the guest's residence",
+        readonly=False,
+        store=True,
+        compute="_compute_residence_state_id",
         comodel_name="res.country.state",
     )
+
     firstname = fields.Char(
         string="First Name",
         help="host firstname",
@@ -222,6 +263,10 @@ class PmsCheckinPartner(models.Model):
         compute="_compute_possible_existing_customer_ids",
         comodel_name="res.partner",
         inverse_name="checkin_partner_possible_customer_id",
+    )
+
+    partner_relationship = fields.Char(
+        string="Partner relationship", help="Family relationship between travelers"
     )
 
     @api.depends("partner_id")
@@ -304,12 +349,55 @@ class PmsCheckinPartner(models.Model):
                 record.nationality_id = False
 
     @api.depends("partner_id")
-    def _compute_state_id(self):
+    def _compute_residence_street(self):
         for record in self:
-            if not record.state_id and record.partner_id.state_id:
-                record.state_id = record.partner_id.state_id
-            elif not record.state_id:
-                record.state_id = False
+            if not record.residence_street and record.partner_id.residence_street:
+                record.residence_street = record.partner_id.residence_street
+            elif not record.residence_street:
+                record.residence_street = False
+
+    @api.depends("partner_id")
+    def _compute_residence_street2(self):
+        for record in self:
+            if not record.residence_street2 and record.partner_id.residence_street2:
+                record.residence_street2 = record.partner_id.residence_street2
+            elif not record.residence_street2:
+                record.residence_street2 = False
+
+    @api.depends("partner_id")
+    def _compute_residence_zip(self):
+        for record in self:
+            if not record.residence_zip and record.partner_id.residence_zip:
+                record.residence_zip = record.partner_id.residence_zip
+            elif not record.residence_zip:
+                record.residence_zip = False
+
+    @api.depends("partner_id")
+    def _compute_residence_city(self):
+        for record in self:
+            if not record.residence_city and record.partner_id.residence_city:
+                record.residence_city = record.partner_id.residence_city
+            elif not record.residence_city:
+                record.residence_city = False
+
+    @api.depends("partner_id")
+    def _compute_residence_country_id(self):
+        for record in self:
+            if (
+                not record.residence_country_id
+                and record.partner_id.residence_country_id
+            ):
+                record.residence_country_id = record.partner_id.residence_country_id
+            elif not record.residence_country_id:
+                record.residence_country_id = False
+
+    @api.depends("partner_id")
+    def _compute_residence_state_id(self):
+        for record in self:
+            if not record.residence_state_id and record.partner_id.residence_state_id:
+                record.residence_state_id = record.partner_id.residence_state_id
+            elif not record.residence_state_id:
+                record.residence_state_id = False
 
     @api.depends("reservation_id", "reservation_id.folio_id")
     def _compute_folio_id(self):
@@ -348,14 +436,26 @@ class PmsCheckinPartner(models.Model):
     @api.depends("partner_id")
     def _compute_email(self):
         for record in self:
-            if not record.email or record.partner_id.email:
+            if not record.email and record.partner_id.email:
                 record.email = record.partner_id.email
+            elif not record.email:
+                record.email = False
 
     @api.depends("partner_id")
     def _compute_mobile(self):
         for record in self:
-            if not record.mobile or record.partner_id.mobile:
+            if not record.mobile and record.partner_id.mobile:
                 record.mobile = record.partner_id.mobile
+            elif not record.mobile:
+                record.mobile = False
+
+    @api.depends("partner_id")
+    def _compute_phone(self):
+        for record in self:
+            if not record.phone and record.partner_id.phone:
+                record.phone = record.partner_id.phone
+            elif not record.phone:
+                record.phone = False
 
     @api.depends("partner_id")
     def _compute_document_id(self):
@@ -756,10 +856,10 @@ class PmsCheckinPartner(models.Model):
         if not values.get("document_type"):
             values.update({"document_type": False})
         if values.get("state"):
-            state_id = self.env["res.country.state"].search(
+            residence_state_id = self.env["res.country.state"].search(
                 [("id", "=", values.get("state"))]
             )
-            values.update({"state_id": state_id})
+            values.update({"residence_state_id": residence_state_id})
             values.pop("state")
         if values.get("document_expedition_date"):
             doc_type = values.get("document_type")

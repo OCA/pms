@@ -85,6 +85,32 @@
                                 <field name="room_ids" />
                             </group>
                         </page>
+                        <page string="Invoicing" name="property_invoicing">
+                            <group>
+                                <field name="default_invoicing_policy" />
+                                <field
+                                    name="margin_days_autoinvoice"
+                                    attrs="{'invisible': [('default_invoicing_policy', '=', 'manual')]}"
+                                />
+                                <field
+                                    name="journal_normal_invoice_id"
+                                    attrs="{'required': [('default_invoicing_policy', '!=', 'manual')]}"
+                                    domain="[
+                                        ('type', '=', 'sale'),
+                                        ('company_id','=',company_id),
+                                    ]"
+                                />
+                                <field
+                                    name="journal_simplified_invoice_id"
+                                    attrs="{'required': [('default_invoicing_policy', '!=', 'manual')]}"
+                                    domain="[
+                                        ('type', '=', 'sale'),
+                                        ('company_id','=',company_id),
+                                    ]"
+                                />
+                                <field name="max_amount_simplified_invoice" />
+                            </group>
+                        </page>
                         <page string="Email Configuration">
                             <group>
                                 <div class="row">
