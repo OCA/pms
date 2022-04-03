@@ -20,3 +20,10 @@ class ResCompany(models.Model):
         string="Privacy Policy",
         help="Authorization by the user for the" "manage of their personal data",
     )
+
+    check_min_partner_data_invoice = fields.Boolean(
+        string="Check minimum partner data for invoices",
+        help="""Check minimum partner data for invoices:
+            - VAT, name, street, city, country""",
+        default=True,
+    )
