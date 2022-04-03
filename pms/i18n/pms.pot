@@ -14,6 +14,26 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: pms
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid ""
+"\n"
+"                        Compute error: The first room line date should\n"
+"                        be the same as the checkin date!\n"
+"                        "
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid ""
+"\n"
+"                        Compute error: The last room line date should\n"
+"                        be the previous day of the checkout date!\n"
+"                        "
+msgstr ""
+
+#. module: pms
 #: model:room.closure.reason,description:pms.pms_room_closure_reason_vip_privacy
 msgid ""
 "\n"
@@ -344,6 +364,11 @@ msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
+msgid "<span class=\"o_stat_text\">Duplicate Booking</span>"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 msgid "<span class=\"o_stat_text\">New Booking Group</span>"
 msgstr ""
 
@@ -365,6 +390,14 @@ msgstr ""
 msgid ""
 "<span style=\"color:red\" class=\"d-none error_inv_email\">Mandatory "
 "Email</span>"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.booking_duplicate
+msgid ""
+"<span>\n"
+"                        or\n"
+"                    </span>"
 msgstr ""
 
 #. module: pms
@@ -1039,8 +1072,18 @@ msgid "Activity Type Icon"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_board_service
+msgid "Add Board Service to reservations"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.several_partners_wizard
 msgid "Add Customer"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_service
+msgid "Add Service to reservations"
 msgstr ""
 
 #. module: pms
@@ -1097,6 +1140,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__adults
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__adults
 msgid "Adults"
 msgstr ""
 
@@ -1133,6 +1177,7 @@ msgid "Agencies"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__agency_id
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__agency_id
 #: model:ir.model.fields,field_description:pms.field_pms_folio__agency_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__agency_id
@@ -1143,9 +1188,15 @@ msgid "Agency"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_booking_duplicate__agency_id
 #: model:ir.model.fields,help:pms.field_pms_booking_engine__agency_id
 #: model:ir.model.fields,help:pms.field_pms_reservation__agency_id
 msgid "Agency that made the reservation"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__res_partner__default_invoice_lines__all
+msgid "All"
 msgstr ""
 
 #. module: pms
@@ -1158,6 +1209,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
 #: model_terms:ir.ui.view,arch_db:pms.wizard_folio_changes_view_form
 msgid "All days"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__res_partner__default_invoice_lines__reservations
+msgid "All reservations"
 msgstr ""
 
 #. module: pms
@@ -1183,9 +1239,20 @@ msgid "Allowed Reservations"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__allowed_room_type_ids
+msgid "Allowed Room Types"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__allowed_room_ids
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__allowed_room_ids
 #: model:ir.model.fields,field_description:pms.field_pms_wizard_reservation_lines_split__allowed_room_ids
 msgid "Allowed Rooms"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__allowed_service_ids
+msgid "Allowed Services"
 msgstr ""
 
 #. module: pms
@@ -1410,10 +1477,46 @@ msgid "Apply Availability Rule on wednesdays"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_new_checkin
+msgid "Apply Checkin Update"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_new_checkout
+msgid "Apply Checkout Update"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_partner_id
+msgid "Apply Customer"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_discount
+msgid "Apply Discount update"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__change_from_date
+msgid "Apply From"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_price
+msgid "Apply Price update"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__apply_pricelist
 #: model:ir.model.fields,field_description:pms.field_res_partner__apply_pricelist
 #: model:ir.model.fields,field_description:pms.field_res_users__apply_pricelist
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_pricelist_id
 msgid "Apply Pricelist"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__change_to_date
+msgid "Apply To"
 msgstr ""
 
 #. module: pms
@@ -1543,6 +1646,13 @@ msgid "Authorization by the user for themanage of their personal data"
 msgstr ""
 
 #. module: pms
+#: model:ir.actions.server,name:pms.autoinvoicing_folios_ir_actions_server
+#: model:ir.cron,cron_name:pms.autoinvoicing_folios
+#: model:ir.cron,name:pms.autoinvoicing_folios
+msgid "Auto Invoicing Folios"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__is_canceled_auto_mail
 msgid "Auto Send Cancellation Mail"
 msgstr ""
@@ -1565,6 +1675,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__preconfirm
 msgid "Auto confirm to Save"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_folio__autoinvoice_date
+msgid "Autoinvoice Date"
 msgstr ""
 
 #. module: pms
@@ -1794,6 +1909,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type__pms_board_service_id
 #: model:ir.model.fields,field_description:pms.field_pms_folio_availability_wizard__board_service_room_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__board_service_room_id
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__board_service_room_id
 #: model:ir.model.fields,field_description:pms.field_product_pricelist_item__board_service_room_type_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_service_line_report_view_tree
@@ -1862,6 +1978,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio_availability_wizard__board_service_room_id
 #: model:ir.model.fields,help:pms.field_pms_reservation__board_service_room_id
+#: model:ir.model.fields,help:pms.field_pms_reservation_duplicate__board_service_room_id
 msgid "Board Service included in the room"
 msgstr ""
 
@@ -1892,12 +2009,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__board_service
 msgid "Board service"
-msgstr ""
-
-#. module: pms
-#: code:addons/pms/wizards/wizard_folio_changes.py:0
-#, python-format
-msgid "Board service has been changed from folio"
 msgstr ""
 
 #. module: pms
@@ -1982,6 +2093,7 @@ msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.advanced_filters_wizard
+#: model_terms:ir.ui.view,arch_db:pms.booking_duplicate
 #: model_terms:ir.ui.view,arch_db:pms.booking_engine
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
 #: model_terms:ir.ui.view,arch_db:pms.reservation_wizard
@@ -2057,8 +2169,18 @@ msgid "Cancelled"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_invoice_document
+msgid "Cancelled Invoice"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 msgid "Cancelled Rooms"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_invoice_document
+msgid "Cancelled Simplified Invoice"
 msgstr ""
 
 #. module: pms
@@ -2100,6 +2222,11 @@ msgid "Change"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_day_qty
+msgid "Change cuantity service per day"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 msgid "Channel"
@@ -2136,6 +2263,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__is_company
 msgid "Check if the contact is a company, otherwise it is a person"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation_duplicate__occupied_room
+msgid "Check if the room is occupied"
 msgstr ""
 
 #. module: pms
@@ -2202,6 +2334,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__mobile
 msgid "Checkin Partner Mobile"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__phone
+msgid "Checkin Partner Phone"
 msgstr ""
 
 #. module: pms
@@ -2301,6 +2438,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__checkout
 #: model:ir.model.fields.selection,name:pms.selection__pms_automated_mails__action__checkout
+#: model:ir.model.fields.selection,name:pms.selection__pms_property__default_invoicing_policy__checkout
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation
 msgid "Checkout"
 msgstr ""
@@ -2366,9 +2504,28 @@ msgid "Choose a customer if you want to add it to the reservation"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_city
 #: model:ir.model.fields,field_description:pms.field_pms_property__city
+#: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+#: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "City"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__residence_city
+#: model:ir.model.fields,help:pms.field_pms_property__residence_city
+#: model:ir.model.fields,help:pms.field_res_partner__residence_city
+#: model:ir.model.fields,help:pms.field_res_users__residence_city
+msgid "City of the guest's residence"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"City:\n"
+"                                                         <br/>"
 msgstr ""
 
 #. module: pms
@@ -2656,22 +2813,32 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__country_id
+#: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+#: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "Country"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__state_id
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-msgid "Country State"
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_country_id
+#: model:ir.model.fields,field_description:pms.field_pms_property__residence_country_id
+#: model:ir.model.fields,field_description:pms.field_res_partner__residence_country_id
+#: model:ir.model.fields,field_description:pms.field_res_users__residence_country_id
+msgid "Country of residence"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__residence_country_id
+msgid "Country of the guest's residence"
 msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
 msgid ""
-"Country State:\n"
-"                                                        <br/>"
+"Country:\n"
+"                                                         <br/>"
 msgstr ""
 
 #. module: pms
@@ -2689,6 +2856,16 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 #: model_terms:ir.ui.view,arch_db:pms.view_folio_advance_payment_inv
 msgid "Create Invoice"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.booking_duplicate
+msgid "Create and Close"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.booking_duplicate
+msgid "Create and Continue"
 msgstr ""
 
 #. module: pms
@@ -2740,6 +2917,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_board_service__create_uid
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_line__create_uid
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type_line__create_uid
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__create_uid
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__create_uid
 #: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule__create_uid
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__create_uid
@@ -2749,6 +2927,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_num_rooms_selection__create_uid
 #: model:ir.model.fields,field_description:pms.field_pms_property__create_uid
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__create_uid
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__create_uid
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__create_uid
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_split_join_swap_wizard__create_uid
 #: model:ir.model.fields,field_description:pms.field_pms_room__create_uid
@@ -2779,6 +2958,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_board_service__create_date
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_line__create_date
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type_line__create_date
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__create_date
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__create_date
 #: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule__create_date
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__create_date
@@ -2788,6 +2968,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_num_rooms_selection__create_date
 #: model:ir.model.fields,field_description:pms.field_pms_property__create_date
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__create_date
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__create_date
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__create_date
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_split_join_swap_wizard__create_date
 #: model:ir.model.fields,field_description:pms.field_pms_room__create_date
@@ -2821,6 +3002,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__credit_limit
 msgid "Credit Limit"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_invoice_document
+msgid "Credit Note"
 msgstr ""
 
 #. module: pms
@@ -2876,6 +3062,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__folio_partner_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__partner_id
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_partner_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_search
 msgid "Customer"
 msgstr ""
@@ -2983,11 +3170,13 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio_availability_wizard__checkout
+#: model:ir.model.fields,help:pms.field_pms_reservation_duplicate__checkout
 msgid "Date Reservation ends"
 msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio_availability_wizard__checkin
+#: model:ir.model.fields,help:pms.field_pms_reservation_duplicate__checkin
 msgid "Date Reservation starts "
 msgstr ""
 
@@ -2999,6 +3188,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_availability_plan_rule__date
 msgid "Date for which availability rule applies"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_booking_duplicate__start_date
+msgid "Date from first copy Checkin (reference min checkin folio reservation)"
 msgstr ""
 
 #. module: pms
@@ -3022,6 +3216,16 @@ msgid "Date types"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__wizard_folio_changes__modification_type__dates
+msgid "Dates"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__dates_incongruence
+msgid "Dates incrongruence"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_automated_mails__time_type__day
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_service_view_form
@@ -3032,6 +3236,19 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule__days_intime
 msgid "Days Late"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_res_partner__margin_days_autoinvoice
+#: model:ir.model.fields,field_description:pms.field_res_users__margin_days_autoinvoice
+msgid "Days from Checkout"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__margin_days_autoinvoice
+#: model:ir.model.fields,help:pms.field_res_partner__margin_days_autoinvoice
+#: model:ir.model.fields,help:pms.field_res_users__margin_days_autoinvoice
+msgid "Days from Checkout to generate the invoice"
 msgstr ""
 
 #. module: pms
@@ -3052,6 +3269,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_folio_advance_payment_inv__deduct_down_payments
 #: model:ir.model.fields,help:pms.field_folio_advance_payment_inv__deduct_down_payments
 msgid "Deduct down payments"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__default_invoicing_policy
+msgid "Default Invoicing Policy"
 msgstr ""
 
 #. module: pms
@@ -3197,6 +3419,7 @@ msgid "Direct"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__channel_type_id
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__channel_type_id
 #: model:ir.model.fields,field_description:pms.field_pms_folio__channel_type_id
 msgid "Direct Sale Channel"
@@ -3208,6 +3431,7 @@ msgid "Disc.%"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__discount
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__discount
 msgid "Discount"
 msgstr ""
@@ -3256,6 +3480,7 @@ msgid "Discount of total price in reservation"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_booking_duplicate__discount
 #: model:ir.model.fields,help:pms.field_pms_booking_engine__discount
 msgid "Discount that be applied in total price"
 msgstr ""
@@ -3284,6 +3509,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_line__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type_line__display_name
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__display_name
@@ -3293,6 +3519,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_num_rooms_selection__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_property__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__display_name
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_split_join_swap_wizard__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_room__display_name
@@ -3310,6 +3537,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_product_template__display_name
 #: model:ir.model.fields,field_description:pms.field_res_company__display_name
 #: model:ir.model.fields,field_description:pms.field_res_partner__display_name
+#: model:ir.model.fields,field_description:pms.field_res_partner_id_category__display_name
 #: model:ir.model.fields,field_description:pms.field_res_partner_id_number__display_name
 #: model:ir.model.fields,field_description:pms.field_res_users__display_name
 #: model:ir.model.fields,field_description:pms.field_room_closure_reason__display_name
@@ -3376,7 +3604,10 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_type
 #: model:ir.model.fields,field_description:pms.field_pms_folio__document_type
+#: model:ir.model.fields,field_description:pms.field_pms_property__vat_document_type
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__document_type
+#: model:ir.model.fields,field_description:pms.field_res_partner__vat_document_type
+#: model:ir.model.fields,field_description:pms.field_res_users__vat_document_type
 msgid "Document Type"
 msgstr ""
 
@@ -3479,6 +3710,16 @@ msgid "Draft"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_invoice_document
+msgid "Draft Invoice"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_invoice_document
+msgid "Draft Simplified Invoice"
+msgstr ""
+
+#. module: pms
 #: model:res.partner.id_category,name:pms.document_type_driving_license
 msgid "Driving License"
 msgstr ""
@@ -3488,6 +3729,17 @@ msgstr ""
 #: code:addons/pms/static/src/xml/pms_base_templates.xml:0
 #, python-format
 msgid "Dropdown menu"
+msgstr ""
+
+#. module: pms
+#: model:ir.model,name:pms.model_pms_booking_duplicate
+msgid "Duplicate Booking"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/wizards/pms_booking_duplicate.py:0
+#, python-format
+msgid "Duplicate Folios"
 msgstr ""
 
 #. module: pms
@@ -3641,6 +3893,11 @@ msgid "Explanation of the reason for closing a room"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_folio__external_reference
+msgid "External Reference"
+msgstr ""
+
+#. module: pms
 #: model:product.product,name:pms.pms_service_extra_bed
 #: model:product.template,name:pms.pms_service_extra_bed_product_template
 msgid "Extra Bed"
@@ -3665,6 +3922,11 @@ msgstr ""
 #: code:addons/pms/models/pms_room.py:0
 #, python-format
 msgid "Extra beds can't be greater than allowed beds for this room"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__partner_relationship
+msgid "Family relationship between travelers"
 msgstr ""
 
 #. module: pms
@@ -3844,6 +4106,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__folio_id
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__reference_folio_id
 msgid "Folio Reference"
 msgstr ""
 
@@ -3864,6 +4127,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio_availability_wizard__booking_engine_id
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__booking_duplicate_id
 msgid "Folio Wizard ID"
 msgstr ""
 
@@ -3873,6 +4137,7 @@ msgid "Folio billing terms and conditions"
 msgstr ""
 
 #. module: pms
+#: model:ir.actions.act_window,name:pms.action_booking_duplicate
 #: model:ir.actions.act_window,name:pms.action_booking_engine
 msgid "Folio creation"
 msgstr ""
@@ -3912,6 +4177,11 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_booking_duplicate__reference_folio_id
+msgid "Folio to copy data"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_folio_sale_line__folio_id
 msgid "Folio to which folio sale line belongs"
 msgstr ""
@@ -3928,6 +4198,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_account_move_line__folio_ids
 #: model:ir.model.fields,field_description:pms.field_account_payment__folio_ids
 #: model:ir.model.fields,field_description:pms.field_payment_transaction__folio_ids
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__created_folio_ids
 #: model:ir.model.fields,field_description:pms.field_pms_property__pms_folio_ids
 #: model:ir.model.fields,field_description:pms.field_res_partner__pms_folio_ids
 #: model:ir.model.fields,field_description:pms.field_res_users__pms_folio_ids
@@ -3938,6 +4209,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_home_menu_folio
 #: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "Folios"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_booking_duplicate__created_folio_ids
+msgid "Folios already created"
 msgstr ""
 
 #. module: pms
@@ -4039,8 +4315,15 @@ msgid "From"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__res_partner__invoicing_policy__checkout
+msgid "From Checkout"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__start_date
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__start_date
 #: model:ir.model.fields,field_description:pms.field_pms_folio_availability_wizard__checkin
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__checkin
 msgid "From:"
 msgstr ""
 
@@ -4286,6 +4569,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_line__id
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type__id
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type_line__id
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__id
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__id
 #: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule__id
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__id
@@ -4295,6 +4579,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_num_rooms_selection__id
 #: model:ir.model.fields,field_description:pms.field_pms_property__id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__id
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_split_join_swap_wizard__id
 #: model:ir.model.fields,field_description:pms.field_pms_room__id
@@ -4312,6 +4597,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_product_template__id
 #: model:ir.model.fields,field_description:pms.field_res_company__id
 #: model:ir.model.fields,field_description:pms.field_res_partner__id
+#: model:ir.model.fields,field_description:pms.field_res_partner_id_category__id
 #: model:ir.model.fields,field_description:pms.field_res_partner_id_number__id
 #: model:ir.model.fields,field_description:pms.field_res_users__id
 #: model:ir.model.fields,field_description:pms.field_room_closure_reason__id
@@ -4393,6 +4679,11 @@ msgid "If checked, some messages have a delivery error."
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_wizard_folio_changes__apply_day_qty
+msgid "If not set, it will use the default product day qty"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__team_id
 msgid ""
 "If set, this Sales Team will be used for sales and assignments related to "
@@ -4411,6 +4702,11 @@ msgstr ""
 msgid ""
 "If the sanitized phone number is on the blacklist, the contact won't receive"
 " mass mailing sms anymore, from any list"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_res_partner_id_category__is_vat_equivalent
+msgid "If true, this document type is check by vat number"
 msgstr ""
 
 #. module: pms
@@ -4512,6 +4808,7 @@ msgid "In time"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_booking_duplicate__partner_name
 #: model:ir.model.fields,help:pms.field_pms_booking_engine__partner_name
 msgid "In whose name is the reservation"
 msgstr ""
@@ -4652,6 +4949,12 @@ msgid "Indicates that the product is sold per person"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_wizard_folio_changes__dates_incongruence
+msgid ""
+"Indicates that there are reservations with different checkin and/or checkout"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room__parent_id
 msgid "Indicates that this room is a child of another room"
 msgstr ""
@@ -4708,6 +5011,7 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__internal_comment
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__internal_comment
 #: model:ir.model.fields,field_description:pms.field_pms_folio__internal_comment
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__folio_internal_comment
@@ -4715,6 +5019,7 @@ msgid "Internal Folio Notes"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_booking_duplicate__internal_comment
 #: model:ir.model.fields,help:pms.field_pms_booking_engine__internal_comment
 #: model:ir.model.fields,help:pms.field_pms_folio__internal_comment
 msgid "Internal Folio notes for Staff"
@@ -4732,6 +5037,7 @@ msgid "Internal Reference"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.booking_duplicate
 #: model_terms:ir.ui.view,arch_db:pms.booking_engine
 msgid "Internal comment Folio"
 msgstr ""
@@ -4830,6 +5136,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__invoice_warn
 #: model:ir.model.fields.selection,name:pms.selection__pms_automated_mails__action__invoice
+#: model_terms:ir.ui.view,arch_db:pms.report_invoice_document
 msgid "Invoice"
 msgstr ""
 
@@ -4888,6 +5195,13 @@ msgid "Invoice address for current partner"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__default_invoice_lines
+#: model:ir.model.fields,field_description:pms.field_res_partner__default_invoice_lines
+#: model:ir.model.fields,field_description:pms.field_res_users__default_invoice_lines
+msgid "Invoice..."
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 msgid "Invoiced"
 msgstr ""
@@ -4920,12 +5234,23 @@ msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
+#: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Invoicing"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__invoicing_month_day
+#: model:ir.model.fields,field_description:pms.field_res_partner__invoicing_month_day
+#: model:ir.model.fields,field_description:pms.field_res_users__invoicing_month_day
+msgid "Invoicing Month Day"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__invoicing_policy
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__invoice_policy
+#: model:ir.model.fields,field_description:pms.field_res_partner__invoicing_policy
+#: model:ir.model.fields,field_description:pms.field_res_users__invoicing_policy
 msgid "Invoicing Policy"
 msgstr ""
 
@@ -4963,6 +5288,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__is_product_variant
 msgid "Is Product Variant"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_res_partner_id_category__is_vat_equivalent
+msgid "Is VAT Equivalent"
 msgstr ""
 
 #. module: pms
@@ -5032,6 +5362,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__allowed_room_ids
+#: model:ir.model.fields,help:pms.field_pms_reservation_duplicate__allowed_room_ids
 msgid "It contains all available rooms for this reservation"
 msgstr ""
 
@@ -5114,6 +5445,12 @@ msgid "Journal"
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/pms_property.py:0
+#, python-format
+msgid "Journal %s is not allowed to be used for normal invoices"
+msgstr ""
+
+#. module: pms
 #: model:ir.model,name:pms.model_account_move
 #: model:ir.model.fields,field_description:pms.field_account_move_line__move_id
 msgid "Journal Entry"
@@ -5127,6 +5464,16 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__journal_item_count
 msgid "Journal Items"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__journal_normal_invoice_id
+msgid "Journal used to create the normal invoice"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__journal_simplified_invoice_id
+msgid "Journal used to create the simplified invoice"
 msgstr ""
 
 #. module: pms
@@ -5194,6 +5541,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_line____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type_line____last_update
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner____last_update
@@ -5203,6 +5551,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_num_rooms_selection____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_property____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_reservation____last_update
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_split_join_swap_wizard____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_room____last_update
@@ -5220,6 +5569,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_product_template____last_update
 #: model:ir.model.fields,field_description:pms.field_res_company____last_update
 #: model:ir.model.fields,field_description:pms.field_res_partner____last_update
+#: model:ir.model.fields,field_description:pms.field_res_partner_id_category____last_update
 #: model:ir.model.fields,field_description:pms.field_res_partner_id_number____last_update
 #: model:ir.model.fields,field_description:pms.field_res_users____last_update
 #: model:ir.model.fields,field_description:pms.field_room_closure_reason____last_update
@@ -5246,6 +5596,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_board_service__write_uid
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_line__write_uid
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type_line__write_uid
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__write_uid
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__write_uid
 #: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule__write_uid
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__write_uid
@@ -5255,6 +5606,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_num_rooms_selection__write_uid
 #: model:ir.model.fields,field_description:pms.field_pms_property__write_uid
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__write_uid
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__write_uid
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__write_uid
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_split_join_swap_wizard__write_uid
 #: model:ir.model.fields,field_description:pms.field_pms_room__write_uid
@@ -5285,6 +5637,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_board_service__write_date
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_line__write_date
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type_line__write_date
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__write_date
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__write_date
 #: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule__write_date
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__write_date
@@ -5294,6 +5647,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_num_rooms_selection__write_date
 #: model:ir.model.fields,field_description:pms.field_pms_property__write_date
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__write_date
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__write_date
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__write_date
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_split_join_swap_wizard__write_date
 #: model:ir.model.fields,field_description:pms.field_pms_room__write_date
@@ -5381,6 +5735,14 @@ msgid "Latest Invoices & Payments Matching Date"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_booking_duplicate__recompute_prices
+msgid ""
+"Leave unchecked if you want to respect\n"
+"        the price of the original reservation regardless\n"
+"        of what is marked in the rate"
+msgstr ""
+
+#. module: pms
 #: model:ir.model,name:pms.model_pms_wizard_reservation_lines_split
 msgid "Lines available to split"
 msgstr ""
@@ -5457,11 +5819,22 @@ msgid "Mandatory Firstname"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__pms_property__default_invoicing_policy__manual
+#: model:ir.model.fields.selection,name:pms.selection__res_partner__invoicing_policy__manual
+msgid "Manual"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__service_type
 msgid ""
 "Manually set quantities on order: Invoice based on the manually entered quantity, without creating an analytic account.\n"
 "Timesheets on contract: Invoice based on the tracked hours on the related timesheet.\n"
 "Create a task and track hours: Create a task on the sales order validation and track the work hours."
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__margin_days_autoinvoice
+msgid "Margin Days"
 msgstr ""
 
 #. module: pms
@@ -5491,6 +5864,11 @@ msgstr ""
 #: code:addons/pms/wizards/wizard_massive_changes.py:0
 #, python-format
 msgid "Massive changes on Pricelist and Availability Plans"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__max_amount_simplified_invoice
+msgid "Max Amount Simplified Invoice"
 msgstr ""
 
 #. module: pms
@@ -5544,6 +5922,11 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_cancelation_rule_form
 msgid "Max. days InTime before Checkin"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__max_amount_simplified_invoice
+msgid "Maximum amount to create the simplified invoice"
 msgstr ""
 
 #. module: pms
@@ -5688,6 +6071,11 @@ msgid "Modification Email"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__modification_type
+msgid "Modification Type"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__property_modified_template
 msgid "Modification email template"
 msgstr ""
@@ -5706,6 +6094,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
 #: model_terms:ir.ui.view,arch_db:pms.wizard_folio_changes_view_form
 msgid "Monday"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__pms_property__default_invoicing_policy__month_day
+#: model:ir.model.fields.selection,name:pms.selection__res_partner__invoicing_policy__month_day
+msgid "Month Day Invoice"
 msgstr ""
 
 #. module: pms
@@ -5819,6 +6213,16 @@ msgid "New Board Service"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_checkin
+msgid "New Checkin"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_checkout
+msgid "New Checkout"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_discount
 msgid "New Discount %"
 msgstr ""
@@ -5826,6 +6230,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_price
 msgid "New Price"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_service_id
+msgid "New Service"
 msgstr ""
 
 #. module: pms
@@ -5867,6 +6276,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__reservation_line_ids
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__nights
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__nights
 msgid "Nights"
 msgstr ""
 
@@ -5902,6 +6312,14 @@ msgstr ""
 #: code:addons/pms/models/account_move.py:0
 #, python-format
 msgid ""
+"No journal could be found in company %(company_name)s\n"
+"                    for any of those types: %(journal_types)s"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/account_move.py:0
+#, python-format
+msgid ""
 "No journal could be found in property %(property_name)s\n"
 "                    for any of those types: %(journal_types)s"
 msgstr ""
@@ -5918,10 +6336,16 @@ msgid "NoShow first days"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__pms_booking_duplicate__reservation_type__normal
 #: model:ir.model.fields.selection,name:pms.selection__pms_booking_engine__reservation_type__normal
 #: model:ir.model.fields.selection,name:pms.selection__pms_folio__reservation_type__normal
 #: model:ir.model.fields.selection,name:pms.selection__pms_reservation__reservation_type__normal
 msgid "Normal"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__journal_normal_invoice_id
+msgid "Normal Invoice Journal"
 msgstr ""
 
 #. module: pms
@@ -6125,6 +6549,11 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__occupied_room
+msgid "Occupied Room"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__occupies_availability
 msgid "Occupies"
 msgstr ""
@@ -6152,6 +6581,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_sale_channel__is_on_line
 msgid "On Line"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__res_partner__default_invoice_lines__overnights
+msgid "Only Overnights"
 msgstr ""
 
 #. module: pms
@@ -6268,6 +6702,27 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_account_bank_statement_line__origin_agency_id
+#: model:ir.model.fields,field_description:pms.field_account_move__origin_agency_id
+#: model:ir.model.fields,field_description:pms.field_account_move_line__origin_agency_id
+#: model:ir.model.fields,field_description:pms.field_account_payment__origin_agency_id
+#: model:ir.model.fields,field_description:pms.field_folio_sale_line__origin_agency_id
+msgid "Origin Agency"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_account_payment__origin_reference
+msgid "Origin Reference"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.view_account_invoice_filter
+#: model_terms:ir.ui.view,arch_db:pms.view_account_move_filter
+#: model_terms:ir.ui.view,arch_db:pms.view_account_payment_search
+msgid "Originating agency"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_checkin_partner__gender__other
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid "Other"
@@ -6295,6 +6750,7 @@ msgid "Out"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__pms_booking_duplicate__reservation_type__out
 #: model:ir.model.fields.selection,name:pms.selection__pms_booking_engine__reservation_type__out
 #: model:ir.model.fields.selection,name:pms.selection__pms_folio__reservation_type__out
 #: model:ir.model.fields.selection,name:pms.selection__pms_reservation__reservation_type__out
@@ -6334,6 +6790,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model,name:pms.model_pms_folio
 msgid "PMS Folio"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.view_partner_property_form
+msgid "PMS Invoice policy"
 msgstr ""
 
 #. module: pms
@@ -6390,10 +6851,12 @@ msgid "Partially Paid"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__partner_id
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__partner_id
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__partner_id
 #: model:ir.model.fields,field_description:pms.field_pms_folio__partner_id
 #: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__partner_id
+#: model_terms:ir.ui.view,arch_db:pms.booking_duplicate
 #: model_terms:ir.ui.view,arch_db:pms.booking_engine
 #: model_terms:ir.ui.view,arch_db:pms.view_partner_data_form
 msgid "Partner"
@@ -6410,6 +6873,11 @@ msgid "Partner Contracts"
 msgstr ""
 
 #. module: pms
+#: model:ir.model,name:pms.model_res_partner_id_category
+msgid "Partner ID Category"
+msgstr ""
+
+#. module: pms
 #: model:ir.model,name:pms.model_res_partner_id_number
 msgid "Partner ID Number"
 msgstr ""
@@ -6420,11 +6888,24 @@ msgid "Partner Operations"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+msgid "Partner Relationship"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"Partner Relationship:\n"
+"                                                        <br/>"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__partner_requests
 msgid "Partner Requests"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_booking_duplicate__segmentation_ids
 #: model:ir.model.fields,help:pms.field_pms_booking_engine__segmentation_ids
 msgid "Partner Tags"
 msgstr ""
@@ -6448,11 +6929,32 @@ msgid "Partner contact name is required"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__residence_country_id
+#: model:ir.model.fields,help:pms.field_res_partner__residence_country_id
+#: model:ir.model.fields,help:pms.field_res_users__residence_country_id
+msgid "Partner country of residence"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__partner_name
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__partner_name
 msgid "Partner name"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__partner_relationship
+msgid "Partner relationship"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__residence_state_id
+#: model:ir.model.fields,help:pms.field_res_partner__residence_state_id
+#: model:ir.model.fields,help:pms.field_res_users__residence_state_id
+msgid "Partner state of residence"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_booking_duplicate__partner_id
 #: model:ir.model.fields,help:pms.field_pms_booking_engine__partner_id
 msgid "Partner who made the reservation"
 msgstr ""
@@ -6641,14 +7143,25 @@ msgid "Persons can't be higher than room capacity (%s)"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__phone
 #: model:ir.model.fields,field_description:pms.field_pms_property__phone
+#: model:ir.model.fields,field_description:pms.field_res_partner__phone
+#: model:ir.model.fields,field_description:pms.field_res_users__phone
 #: model:ir.model.fields.selection,name:pms.selection__pms_service__channel_type__phone
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid "Phone"
 msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__phone_sanitized_blacklisted
 msgid "Phone Blacklisted"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"Phone:\n"
+"                                                        <br/>"
 msgstr ""
 
 #. module: pms
@@ -6824,14 +7337,18 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model,name:pms.model_product_pricelist
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__pricelist_id
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__pricelist_id
 #: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule__pricelist_ids
 #: model:ir.model.fields,field_description:pms.field_pms_folio__pricelist_id
 #: model:ir.model.fields,field_description:pms.field_pms_property__property_product_pricelist
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__pricelist_id
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__pricelist_id
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__pricelist_id
 #: model:ir.model.fields,field_description:pms.field_product_pricelist_item__pricelist_id
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_pricelist_id
 #: model:ir.model.fields.selection,name:pms.selection__pms_massive_changes_wizard__massive_changes_on__pricelist
+#: model_terms:ir.ui.view,arch_db:pms.booking_duplicate
 #: model_terms:ir.ui.view,arch_db:pms.booking_engine
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
@@ -6859,6 +7376,7 @@ msgid "Pricelist Type"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_booking_duplicate__pricelist_id
 #: model:ir.model.fields,help:pms.field_pms_booking_engine__pricelist_id
 msgid "Pricelist applied in folio"
 msgstr ""
@@ -6899,6 +7417,11 @@ msgid "Pricelist types, it can be Daily Plan"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation_duplicate__pricelist_id
+msgid "Pricelist used for this reservation"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan__pms_pricelist_ids
 #: model:ir.model.fields,field_description:pms.field_pms_sale_channel__product_pricelist_ids
 #: model:ir.ui.menu,name:pms.pricelist_menu
@@ -6926,13 +7449,6 @@ msgstr ""
 msgid ""
 "Prices have been recomputed according to pricelist <b>%s</b>\n"
 "                 and room type <b>%s</b>"
-msgstr ""
-
-#. module: pms
-#: code:addons/pms/wizards/wizard_folio_changes.py:0
-#: code:addons/pms/wizards/wizard_folio_changes.py:0
-#, python-format
-msgid "Prices/Discounts have been changed from folio"
 msgstr ""
 
 #. module: pms
@@ -7121,6 +7637,13 @@ msgid "Properties with access to the element"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__pms_property_ids
+#: model:ir.model.fields,help:pms.field_res_partner__pms_property_ids
+msgid ""
+"Properties with access to the element if not set, all properties can access"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_account_journal__pms_property_ids
 #: model:ir.model.fields,help:pms.field_pms_amenity__pms_property_ids
 #: model:ir.model.fields,help:pms.field_pms_amenity_type__pms_property_ids
@@ -7131,7 +7654,6 @@ msgstr ""
 #: model:ir.model.fields,help:pms.field_pms_board_service_room_type__pms_property_ids
 #: model:ir.model.fields,help:pms.field_pms_board_service_room_type_line__pms_property_ids
 #: model:ir.model.fields,help:pms.field_pms_cancelation_rule__pms_property_ids
-#: model:ir.model.fields,help:pms.field_pms_property__pms_property_ids
 #: model:ir.model.fields,help:pms.field_pms_room__pms_property_id
 #: model:ir.model.fields,help:pms.field_pms_room_type__pms_property_ids
 #: model:ir.model.fields,help:pms.field_pms_room_type_class__pms_property_ids
@@ -7141,7 +7663,6 @@ msgstr ""
 #: model:ir.model.fields,help:pms.field_product_pricelist_item__pms_property_ids
 #: model:ir.model.fields,help:pms.field_product_product__pms_property_ids
 #: model:ir.model.fields,help:pms.field_product_template__pms_property_ids
-#: model:ir.model.fields,help:pms.field_res_partner__pms_property_ids
 #: model:ir.model.fields,help:pms.field_room_closure_reason__pms_property_ids
 msgid ""
 "Properties with access to the element; if not set, all properties can access"
@@ -7149,6 +7670,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio_availability_wizard__pms_property_id
+#: model:ir.model.fields,help:pms.field_pms_reservation_duplicate__pms_property_id
 msgid "Propertiy with access to the element;"
 msgstr ""
 
@@ -7161,12 +7683,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_automated_mails__pms_property_ids
 #: model:ir.model.fields,field_description:pms.field_pms_availability__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan_rule__pms_property_id
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_folio__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_folio_availability_wizard__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__pms_property_ids
 #: model:ir.model.fields,field_description:pms.field_pms_property__partner_id
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_room__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_service__pms_property_id
@@ -7181,6 +7705,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.view_account_journal_search
 #: model_terms:ir.ui.view,arch_db:pms.view_account_move_filter
 #: model_terms:ir.ui.view,arch_db:pms.view_account_move_line_filter
+#: model_terms:ir.ui.view,arch_db:pms.view_account_payment_search
 msgid "Property"
 msgstr ""
 
@@ -7202,6 +7727,11 @@ msgstr ""
 #. module: pms
 #: model:res.groups,name:pms.group_pms_manager
 msgid "Property Management/ Manager"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__res_partner__invoicing_policy__property
+msgid "Property Policy Invoice"
 msgstr ""
 
 #. module: pms
@@ -7261,6 +7791,7 @@ msgid "Property to which the folio associated belongs"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_booking_duplicate__pms_property_id
 #: model:ir.model.fields,help:pms.field_pms_booking_engine__pms_property_id
 msgid "Property to which the folio belongs"
 msgstr ""
@@ -7327,6 +7858,11 @@ msgid "Quantity"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__day_qty
+msgid "Quantity per day"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__visible_qty_configurator
 msgid "Quantity visible in configurator"
 msgstr ""
@@ -7385,6 +7921,7 @@ msgid "Real availability"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.booking_duplicate
 #: model_terms:ir.ui.view,arch_db:pms.booking_engine
 msgid "Reason"
 msgstr ""
@@ -7410,6 +7947,11 @@ msgid "Recipients Model Name"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__recompute_prices
+msgid "Recompute Price"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Recompute all prices based on this pricelist"
 msgstr ""
@@ -7432,6 +7974,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__code
 #, python-format
 msgid "Reference"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_folio__external_reference
+msgid "Reference of this folio in an external system"
 msgstr ""
 
 #. module: pms
@@ -7555,6 +8102,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__reservation_id
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__reference_reservation_id
 msgid "Reservation Reference"
 msgstr ""
 
@@ -7613,6 +8161,7 @@ msgstr ""
 
 #. module: pms
 #: code:addons/pms/models/pms_folio.py:0
+#: code:addons/pms/wizards/pms_booking_duplicate.py:0
 #: code:addons/pms/wizards/pms_booking_engine.py:0
 #, python-format
 msgid "Reservation from "
@@ -7646,6 +8195,11 @@ msgid "Reservation rule by day"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation_duplicate__reference_reservation_id
+msgid "Reservation to copy data"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__reservation_id
 msgid "Reservation to which checkin partners belong"
 msgstr ""
@@ -7665,6 +8219,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_res_users__pms_reservation_ids
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__reservation_ids
 #: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__reservation_ids
+#: model:ir.model.fields.selection,name:pms.selection__wizard_folio_changes__modification_type__reservations
 #: model:ir.ui.menu,name:pms.menu_reservations
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_graph
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_pivot
@@ -7716,6 +8271,14 @@ msgid "Reservations/"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+#: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
+msgid "Residence Address"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__activity_user_id
 #: model:ir.model.fields,field_description:pms.field_pms_property__activity_user_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__activity_user_id
@@ -7730,6 +8293,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__preferred_room_id
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__preferred_room_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__room_id
 #: model:ir.model.fields,field_description:pms.field_pms_service__reservation_id
 #: model:ir.model.fields,field_description:pms.field_pms_wizard_reservation_lines_split__room_id
@@ -7817,6 +8381,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__room_type_ids
 #: model:ir.model.fields,field_description:pms.field_pms_num_rooms_selection__room_type_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__room_type_id
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__room_type_id
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__room_type_id
 #: model:ir.model.fields,field_description:pms.field_product_product__room_type_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
@@ -7846,6 +8411,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio_availability_wizard__room_type_id
+#: model:ir.model.fields,help:pms.field_pms_reservation_duplicate__room_type_id
 msgid "Room Type reserved"
 msgstr ""
 
@@ -7896,6 +8462,11 @@ msgid "Room reservation detail"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation_duplicate__preferred_room_id
+msgid "Room reserved"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_service_line__reservation_id
 msgid "Room to which the services will be applied"
 msgstr ""
@@ -7931,6 +8502,11 @@ msgid "Room type's board services"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__room_type_filter_ids
+msgid "Room types"
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/wizards/wizard_split_join_swap_reservation.py:0
 #, python-format
 msgid "Room {} not available."
@@ -7947,6 +8523,7 @@ msgid "Rooming"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__line_ids
 #: model:ir.model.fields,field_description:pms.field_pms_property__room_ids
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__room_ids
 #: model:ir.model.fields,field_description:pms.field_pms_ubication__pms_room_ids
@@ -7969,6 +8546,11 @@ msgid "Rooms found in this location"
 msgstr ""
 
 #. module: pms
+#: model:ir.model,name:pms.model_pms_reservation_duplicate
+msgid "Rooms in Duplicate Folio"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__room_ids
 msgid "Rooms that a property has."
 msgstr ""
@@ -7981,6 +8563,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__room_ids
 msgid "Rooms that belong to room type."
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_booking_duplicate__line_ids
+msgid "Rooms to create"
 msgstr ""
 
 #. module: pms
@@ -8114,6 +8701,7 @@ msgid "Sales Channel"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_booking_duplicate__channel_type_id
 #: model:ir.model.fields,help:pms.field_pms_booking_engine__channel_type_id
 #: model:ir.model.fields,help:pms.field_pms_reservation__channel_type_id
 msgid "Sales Channel through which the reservation was managed"
@@ -8206,6 +8794,18 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+msgid "Second Street"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"Second Street:\n"
+"                                                         <br/>"
+msgstr ""
+
+#. module: pms
 #: model:pms.ubication,name:pms.pms_ubication_2nd_floor
 msgid "Second floor"
 msgstr ""
@@ -8215,6 +8815,21 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_res_partner__lastname2
 #: model:ir.model.fields,field_description:pms.field_res_users__lastname2
 msgid "Second last name"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__residence_street2
+#: model:ir.model.fields,field_description:pms.field_res_partner__residence_street2
+#: model:ir.model.fields,field_description:pms.field_res_users__residence_street2
+msgid "Second street of residence"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__residence_street2
+#: model:ir.model.fields,help:pms.field_pms_property__residence_street2
+#: model:ir.model.fields,help:pms.field_res_partner__residence_street2
+#: model:ir.model.fields,help:pms.field_res_users__residence_street2
+msgid "Second street of the guest's residence"
 msgstr ""
 
 #. module: pms
@@ -8235,6 +8850,7 @@ msgid "Segment the amenities by categories (multimedia, comfort, etc ...)"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__segmentation_ids
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__segmentation_ids
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__segmentation_ids
 #: model:ir.model.fields,field_description:pms.field_pms_folio__segmentation_ids
@@ -8276,6 +8892,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__categ_id
 msgid "Select category for the current product"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.wizard_folio_changes_view_form
+msgid "Selected reservations with different dates"
 msgstr ""
 
 #. module: pms
@@ -8422,7 +9043,10 @@ msgstr ""
 #: model:ir.actions.act_window,name:pms.action_pms_services_form
 #: model:ir.model.fields,field_description:pms.field_account_bank_statement_line__service_ids
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__service_ids
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__service_ids
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__service_ids
 #: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__service_ids
+#: model:ir.model.fields.selection,name:pms.selection__res_partner__default_invoice_lines__services
 #: model:ir.ui.menu,name:pms.menu_services_pms
 #: model:ir.ui.menu,name:pms.pms_services_menu
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
@@ -8444,6 +9068,11 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_service_line_view_search
 msgid "Services NOT included in the room reservation price"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__wizard_folio_changes__modification_type__services
+msgid "Services Prices"
 msgstr ""
 
 #. module: pms
@@ -8616,6 +9245,24 @@ msgid "Signup URL"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_invoice_document
+msgid "Simplified Invoice"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__journal_simplified_invoice_id
+msgid "Simplified Invoice Journal"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_account_bank_statement_line__is_simplified_invoice
+#: model:ir.model.fields,field_description:pms.field_account_journal__is_simplified_invoice
+#: model:ir.model.fields,field_description:pms.field_account_move__is_simplified_invoice
+#: model:ir.model.fields,field_description:pms.field_account_payment__is_simplified_invoice
+msgid "Simplified invoice"
+msgstr ""
+
+#. module: pms
 #: model:pms.room.type,name:pms.pms_room_type_single
 #: model:product.product,name:pms.pms_room_type_single_product_product
 msgid "Single"
@@ -8661,6 +9308,7 @@ msgid "Splitted"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__pms_booking_duplicate__reservation_type__staff
 #: model:ir.model.fields.selection,name:pms.selection__pms_booking_engine__reservation_type__staff
 #: model:ir.model.fields.selection,name:pms.selection__pms_folio__reservation_type__staff
 #: model:ir.model.fields.selection,name:pms.selection__pms_reservation__reservation_type__staff
@@ -8696,12 +9344,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__state
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__state
 #: model:ir.model.fields,field_description:pms.field_pms_service__state
-#: model:ir.model.fields,field_description:pms.field_res_partner__state_id
-#: model:ir.model.fields,field_description:pms.field_res_users__state_id
+#: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+#: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "State"
 msgstr ""
 
@@ -8713,8 +9362,28 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_state_id
+#: model:ir.model.fields,field_description:pms.field_pms_property__residence_state_id
+#: model:ir.model.fields,field_description:pms.field_res_partner__residence_state_id
+#: model:ir.model.fields,field_description:pms.field_res_users__residence_state_id
+msgid "State of residence"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__residence_state_id
+msgid "State of the guest's residence"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation_line__state
 msgid "State of the reservation line."
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"State:\n"
+"                                                         <br/>"
 msgstr ""
 
 #. module: pms
@@ -8746,23 +9415,52 @@ msgid "Status of the checkin partner regarding the reservation"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_street
 #: model:ir.model.fields,field_description:pms.field_pms_property__street
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid "Street"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
+#: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "Street 2..."
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__residence_street
+#: model:ir.model.fields,field_description:pms.field_res_partner__residence_street
+#: model:ir.model.fields,field_description:pms.field_res_users__residence_street
+msgid "Street of residence"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__residence_street
+#: model:ir.model.fields,help:pms.field_pms_property__residence_street
+#: model:ir.model.fields,help:pms.field_res_partner__residence_street
+#: model:ir.model.fields,help:pms.field_res_users__residence_street
+msgid "Street of the guest's residence"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
+#: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "Street..."
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_street2
 #: model:ir.model.fields,field_description:pms.field_pms_property__street2
 msgid "Street2"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"Street:\n"
+"                                                         <br/>"
 msgstr ""
 
 #. module: pms
@@ -8851,6 +9549,8 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__vat
+#: model:ir.model.fields,field_description:pms.field_res_partner__vat
+#: model:ir.model.fields,field_description:pms.field_res_users__vat
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "Tax ID"
 msgstr ""
@@ -8925,6 +9625,19 @@ msgid "Technical field that indicates the reservation is not comfirm yet"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_account_bank_statement_line__is_simplified_invoice
+#: model:ir.model.fields,help:pms.field_account_move__is_simplified_invoice
+#: model:ir.model.fields,help:pms.field_account_payment__is_simplified_invoice
+msgid "Technical field to know if the invoice is simplified"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_res_partner_id_number__vat_syncronized
+msgid ""
+"Technical field to know if vat partner is syncronized with this document"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__allowed_checkin
 msgid ""
 "Technical field, Indicates if there isn't a checkin_partner dataOnly can be "
@@ -8981,6 +9694,8 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__vat
+#: model:ir.model.fields,help:pms.field_res_partner__vat
+#: model:ir.model.fields,help:pms.field_res_users__vat
 msgid ""
 "The Tax Identification Number. Complete it if the contact is subjected to "
 "government taxes. Used in some legal statements."
@@ -8989,6 +9704,19 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_automated_mails__action
 msgid "The action that will cause the email to be sent "
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_account_bank_statement_line__origin_agency_id
+#: model:ir.model.fields,help:pms.field_account_move__origin_agency_id
+#: model:ir.model.fields,help:pms.field_account_move_line__origin_agency_id
+#: model:ir.model.fields,help:pms.field_account_payment__origin_agency_id
+msgid "The agency where the folio account move originates"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_folio_sale_line__origin_agency_id
+msgid "The agency where the folio sale line originates"
 msgstr ""
 
 #. module: pms
@@ -9090,6 +9818,13 @@ msgid "The date of the reservation in reservation line"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__invoicing_month_day
+#: model:ir.model.fields,help:pms.field_res_partner__invoicing_month_day
+#: model:ir.model.fields,help:pms.field_res_users__invoicing_month_day
+msgid "The day of the month to invoice"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__default_pricelist_id
 msgid "The default pricelist used in this property."
 msgstr ""
@@ -9133,6 +9868,27 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_folio_sale_line__untaxed_amount_to_invoice
 msgid "The invoiced amount without taxes in the line of the folio"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__invoicing_policy
+#: model:ir.model.fields,help:pms.field_res_partner__invoicing_policy
+#: model:ir.model.fields,help:pms.field_res_users__invoicing_policy
+msgid ""
+"The invoicing policy of the partner,\n"
+"         set Property to user the policy configured in the Property"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/account_journal.py:0
+#, python-format
+msgid "The journal %s is used for normal invoices in the properties: %s"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/account_journal.py:0
+#, python-format
+msgid "The journal %s is used for simplified invoices in the properties: %s"
 msgstr ""
 
 #. module: pms
@@ -9182,6 +9938,12 @@ msgstr ""
 #: code:addons/pms/models/ir_config_parameter.py:0
 #, python-format
 msgid "The parameter Advanced price rules cannot be modified"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/res_partner.py:0
+#, python-format
+msgid "The partner 'Various Clients' cannot be deleted"
 msgstr ""
 
 #. module: pms
@@ -9274,6 +10036,11 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_account_payment__origin_reference
+msgid "The reference of the payment origin"
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid "The reservation type must be the same for all reservations in folio"
@@ -9363,11 +10130,21 @@ msgid "The template that will be sent by email"
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/account_move.py:0
+#, python-format
+msgid ""
+"The total amount of the simplified invoice is higher than the maximum amount"
+" allowed for simplified invoices."
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio_availability_wizard__price_total
+#: model:ir.model.fields,help:pms.field_pms_reservation_duplicate__price_total
 msgid "The total price in the folio"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_booking_duplicate__reservation_type
 #: model:ir.model.fields,help:pms.field_pms_booking_engine__reservation_type
 #: model:ir.model.fields,help:pms.field_pms_folio__reservation_type
 msgid ""
@@ -9383,6 +10160,15 @@ msgstr ""
 #: code:addons/pms/wizards/folio_make_invoice_advance.py:0
 #, python-format
 msgid "The value of the down payment amount must be positive."
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__vat_document_type
+#: model:ir.model.fields,help:pms.field_res_partner__vat_document_type
+#: model:ir.model.fields,help:pms.field_res_users__vat_document_type
+msgid ""
+"The vat document type of the partner,\n"
+"        set if is a fiscal document, passport, etc..."
 msgstr ""
 
 #. module: pms
@@ -9404,6 +10190,12 @@ msgstr ""
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid "There are no checkins to print"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/res_partner.py:0
+#, python-format
+msgid "There is more than one document with vat syncronized"
 msgstr ""
 
 #. module: pms
@@ -9634,6 +10426,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__end_date
 #: model:ir.model.fields,field_description:pms.field_pms_folio_availability_wizard__checkout
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__checkout
 msgid "To:"
 msgstr ""
 
@@ -9680,6 +10473,7 @@ msgid "Total Pending"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__total_price_folio
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__total_price_folio
 msgid "Total Price"
 msgstr ""
@@ -9737,6 +10531,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio_availability_wizard__price_total
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__price_total
 msgid "Total price"
 msgstr ""
 
@@ -9746,6 +10541,7 @@ msgid "Total price from services of a reservation"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_booking_duplicate__total_price_folio
 #: model:ir.model.fields,help:pms.field_pms_booking_engine__total_price_folio
 msgid "Total price of folio with taxes"
 msgstr ""
@@ -9808,6 +10604,7 @@ msgid "Tuesday"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__reservation_type
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__reservation_type
 #: model:ir.model.fields,field_description:pms.field_pms_folio__reservation_type
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
@@ -10006,6 +10803,16 @@ msgid "Upselling Opportunity"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_res_company__url_advert
+msgid "Url Advert"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_res_company__url_advert
+msgid "Url to identify the ad"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__barcode
 msgid "Use a barcode to identify this contact."
 msgstr ""
@@ -10021,6 +10828,30 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_account_journal__allowed_pms_payments
 msgid "Use to pay for reservations"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__default_invoice_lines
+#: model:ir.model.fields,help:pms.field_res_partner__default_invoice_lines
+#: model:ir.model.fields,help:pms.field_res_users__default_invoice_lines
+msgid ""
+"Use to preconfigure the sale lines to autoinvoice\n"
+"        for this partner. All (invoice reservations and services),\n"
+"        Only overnights to invoice only the reservations\n"
+"        with overnight and board services(exclude parkings, salon, etc...),\n"
+"        All reservations to include all reservations,\n"
+"        and Services only include services not boards"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_account_journal__is_simplified_invoice
+msgid "Use to simplified invoice"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__used_room_ids
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__used_room_ids
+msgid "Used Rooms"
 msgstr ""
 
 #. module: pms
@@ -10042,6 +10873,12 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__currency_id
 msgid "Utility field to express amount currency"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/res_partner.py:0
+#, python-format
+msgid "VAT"
 msgstr ""
 
 #. module: pms
@@ -10105,6 +10942,21 @@ msgid "Variant Seller"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_res_partner_id_number__vat_syncronized
+msgid "Vat Syncronized"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_invoice_document
+msgid "Vendor Bill"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_invoice_document
+msgid "Vendor Credit Note"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__property_supplier_payment_term_id
 msgid "Vendor Payment Terms"
 msgstr ""
@@ -10124,6 +10976,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "View Customer"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.booking_duplicate
+msgid "View Folios"
 msgstr ""
 
 #. module: pms
@@ -10205,6 +11062,22 @@ msgid "Wizard for massive changes on Availability Plans & Pricelists."
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/wizards/pms_booking_duplicate.py:0
+#, python-format
+msgid ""
+"You can not create a new folio because there are rooms already occupied.\n"
+"                    Please, check the rooms marked in red and try again."
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/account_move.py:0
+#, python-format
+msgid ""
+"You cannot validate this invoice. Please check the  partner has the complete"
+" information required."
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/wizards/wizard_advanced_filters.py:0
 #, python-format
 msgid "You must add filters to perform the search"
@@ -10233,13 +11106,39 @@ msgid "Your reservation in ${object.pms_property_id.name} has been modified"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
+#: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "ZIP"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"ZIP:\n"
+"                                                         <br/>"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_zip
 #: model:ir.model.fields,field_description:pms.field_pms_property__zip
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid "Zip"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__residence_zip
+#: model:ir.model.fields,field_description:pms.field_res_partner__residence_zip
+#: model:ir.model.fields,field_description:pms.field_res_users__residence_zip
+msgid "Zip of residence"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__residence_zip
+#: model:ir.model.fields,help:pms.field_pms_property__residence_zip
+#: model:ir.model.fields,help:pms.field_res_partner__residence_zip
+#: model:ir.model.fields,help:pms.field_res_users__residence_zip
+msgid "Zip of the guest's residence"
 msgstr ""
 
 #. module: pms
@@ -10287,6 +11186,13 @@ msgid "checkout in reservation"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__residence_city
+#: model:ir.model.fields,field_description:pms.field_res_partner__residence_city
+#: model:ir.model.fields,field_description:pms.field_res_users__residence_city
+msgid "city of residence"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "email"
@@ -10325,11 +11231,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__lastname2
 msgid "host second lastname"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__state_id
-msgid "host state"
 msgstr ""
 
 #. module: pms
