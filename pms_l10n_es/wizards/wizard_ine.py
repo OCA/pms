@@ -317,12 +317,12 @@ class WizardIne(models.TransientModel):
                     # if there are some checkin partners in the same reservation
                     if chk_part_same_reserv_with_checkin:
                         # create partner with same country & state
-                        country_other = (
-                            chk_part_same_reserv_with_checkin.partner_id.nationality_id.id
-                        )
-                        state_other = (
-                            chk_part_same_reserv_with_checkin.partner_id.residence_state_id.id
-                        )
+                        country_other = chk_part_same_reserv_with_checkin[
+                            0
+                        ].partner_id.nationality_id.id
+                        state_other = chk_part_same_reserv_with_checkin[
+                            0
+                        ].partner_id.residence_state_id.id
                         dummy_partner = self.env["res.partner"].create(
                             {
                                 "name": "partner1",
