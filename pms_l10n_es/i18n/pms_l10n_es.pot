@@ -121,6 +121,11 @@ msgid "DNI"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,help:pms_l10n_es.field_res_partner_id_number__support_number
+msgid "DNI support number"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__date_target
 msgid "Date"
 msgstr ""
@@ -149,8 +154,31 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__display_name
 #: model:ir.model.fields,field_description:pms_l10n_es.field_res_country_state__display_name
 #: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner__display_name
+#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner_id_number__display_name
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__display_name
 msgid "Display Name"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.inherit_pms_l10n_es_portal_my_precheckin_detail
+msgid "Doc. Number"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.inherit_pms_l10n_es_portal_my_precheckin_detail
+msgid "Doc. Support Number"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.inherit_pms_l10n_es_portal_my_precheckin_end
+msgid ""
+"Doc. Support Number:\n"
+"                <br/>"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.inherit_pms_l10n_es_portal_my_precheckin_detail
+msgid "Doc. Type"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -232,8 +260,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_res_country_state__id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner__id
+#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner_id_number__id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__id
 msgid "ID"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_checkin_partner__support_number
+msgid "ID support number"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -303,6 +337,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room____last_update
 #: model:ir.model.fields,field_description:pms_l10n_es.field_res_country_state____last_update
 #: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner____last_update
+#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner_id_number____last_update
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard____last_update
 msgid "Last Modified on"
 msgstr ""
@@ -364,6 +399,11 @@ msgid "Partner Checkins"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model,name:pms_l10n_es.model_res_partner_id_number
+msgid "Partner ID Number"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__institution_password
 msgid "Password provided by institution to send the data."
 msgstr ""
@@ -412,6 +452,11 @@ msgid "Report of daily sending files of travellers to institutions."
 msgstr ""
 
 #. module: pms_l10n_es
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.inherit_pms_l10n_es_portal_my_precheckin_detail
+msgid "Select an option"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.traveller_report_wizard
 msgid "Send file"
 msgstr ""
@@ -445,6 +490,12 @@ msgid "Successful file sending"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__support_number
+#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner_id_number__support_number
+msgid "Support number"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_room__in_ine
 msgid "Take it into account to generate INE statistics"
 msgstr ""
@@ -475,7 +526,7 @@ msgstr ""
 #. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
-msgid "The following guests have no nationality set :%s."
+msgid "The following guests have no residence nationality set :%s."
 msgstr ""
 
 #. module: pms_l10n_es
