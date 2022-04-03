@@ -125,6 +125,7 @@ class PmsReservation(models.Model):
         help="Reason why the reservation cannot be made",
         related="folio_id.closure_reason_id",
         check_pms_properties=True,
+        readonly=False,
     )
     company_id = fields.Many2one(
         string="Company",
@@ -1670,6 +1671,18 @@ class PmsReservation(models.Model):
                     record, record.service_ids.service_line_ids
                 )
 
+    @api.constrains("closure_reason_id")
+    def _check_closure_reason_id(self):
+        for record in self:
+            if record.reservation_type == "out":
+                if not record.closure_reason_id:
+                    raise ValidationError(
+                        _(
+                            "A closure reason is mandatory when reservation"
+                            " type is 'out of service'"
+                        )
+                    )
+
     @api.constrains("reservation_type")
     def _check_same_reservation_type(self):
         for record in self:
@@ -1802,7 +1815,7 @@ class PmsReservation(models.Model):
                 default_vals["partner_name"] = folio.partner_name
                 default_vals["mobile"] = folio.mobile
                 default_vals["email"] = folio.email
-            else:
+            elif vals.get("reservation_type") != "out":
                 raise ValidationError(_("Partner contact name is required"))
             vals.update(default_vals)
         elif "pms_property_id" in vals and (
@@ -1819,12 +1832,21 @@ class PmsReservation(models.Model):
                 folio_vals["partner_name"] = vals.get("partner_name")
                 folio_vals["mobile"] = vals.get("mobile")
                 folio_vals["email"] = vals.get("email")
-            else:
+            elif vals.get("reservation_type") != "out":
                 raise ValidationError(_("Partner contact name is required"))
             # Create the folio in case of need
             # (To allow to create reservations direct)
             if vals.get("reservation_type"):
                 folio_vals["reservation_type"] = vals.get("reservation_type")
+                if vals.get("reservation_type") == "out" and not vals.get(
+                    "closure_reason_id"
+                ):
+                    raise ValidationError(
+                        _(
+                            "A closure reason is mandatory when reservation"
+                            " type is 'out of service'"
+                        )
+                    )
             folio = self.env["pms.folio"].create(folio_vals)
             vals.update(
                 {
@@ -1832,6 +1854,7 @@ class PmsReservation(models.Model):
                     "reservation_type": vals.get("reservation_type"),
                 }
             )
+
         else:
             raise ValidationError(_("The Property are mandatory in the reservation"))
         if vals.get("name", _("New")) == _("New") or "name" not in vals:

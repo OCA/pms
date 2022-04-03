@@ -1234,6 +1234,12 @@ class TestPmsFolioSaleLine(TestPms):
         self.partner1 = self.env["res.partner"].create({"name": "Alberto"})
         checkin = fields.date.today()
         checkout = fields.date.today() + datetime.timedelta(days=3)
+        closure_reason = self.env["room.closure.reason"].create(
+            {
+                "name": "test closure reason",
+                "description": "test clopsure reason description",
+            }
+        )
         # ACT
         reservation = self.env["pms.reservation"].create(
             {
@@ -1244,6 +1250,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist1.id,
                 "reservation_type": "out",
+                "closure_reason_id": closure_reason.id,
             }
         )
         # ASSERT
