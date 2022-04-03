@@ -320,7 +320,8 @@ class AccountMove(models.Model):
         Check invoice and receipts legal status
         """
         if (
-            move.is_invoice(include_receipts=True)
+            move.company_id.check_min_partner_data_invoice
+            and move.is_invoice(include_receipts=True)
             and not move.journal_id.is_simplified_invoice
             and (
                 not move.partner_id or not move.partner_id._check_enought_invoice_data()
