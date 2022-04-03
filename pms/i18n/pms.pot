@@ -2271,6 +2271,18 @@ msgid "Check if the room is occupied"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_res_company__check_min_partner_data_invoice
+msgid "Check minimum partner data for invoices"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_res_company__check_min_partner_data_invoice
+msgid ""
+"Check minimum partner data for invoices:\n"
+"            - VAT, name, street, city, country"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__employee
 msgid "Check this box if this contact is an Employee."
 msgstr ""
