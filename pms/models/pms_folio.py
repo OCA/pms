@@ -1848,6 +1848,8 @@ class PmsFolio(models.Model):
                 "origin": folio,
             },
             subtype_id=self.env.ref("mail.mt_note").id,
+            email_from=user.partner_id.email_formatted
+            or folio.pms_property_id.email_formatted,
         )
 
         pay.action_post()
@@ -1871,22 +1873,25 @@ class PmsFolio(models.Model):
                 date=date,
             )
             self.env["account.bank.statement.line"].sudo().create(line)
-
-        # folio.message_post(
-        #     body=_(
-        #         """Payment: <b>%s</b> by <b>%s</b>""",
-        #         amount,
-        #         journal.display_name,
-        #     )
-        # )
-        # for reservation in folio.reservation_ids:
-        #     reservation.message_post(
-        #         body=_(
-        #             """Payment: <b>%s</b> by <b>%s</b>""",
-        #             amount,
-        #             journal.display_name,
-        #         )
-        #     )
+        folio.message_post(
+            body=_(
+                """Payment: <b>%s</b> by <b>%s</b>""",
+                amount,
+                journal.display_name,
+            ),
+            email_from=user.partner_id.email_formatted
+            or folio.pms_property_id.email_formatted,
+        )
+        for reservation in folio.reservation_ids:
+            reservation.message_post(
+                body=_(
+                    """Payment: <b>%s</b> by <b>%s</b>""",
+                    amount,
+                    journal.display_name,
+                ),
+                email_from=user.partner_id.email_formatted
+                or folio.pms_property_id.email_formatted,
+            )
         return True
 
     def do_refund(
@@ -1931,6 +1936,8 @@ class PmsFolio(models.Model):
                 "origin": folio,
             },
             subtype_id=self.env.ref("mail.mt_note").id,
+            email_from=user.partner_id.email_formatted
+            or folio.pms_property_id.email_formatted,
         )
         pay.action_post()
 
@@ -1949,21 +1956,25 @@ class PmsFolio(models.Model):
             )
             self.env["account.bank.statement.line"].sudo().create(line)
 
-        # folio.message_post(
-        #     body=_(
-        #         """Refund: <b>%s</b> by <b>%s</b>""",
-        #         amount,
-        #         journal.display_name,
-        #     )
-        # )
-        # for reservation in folio.reservation_ids:
-        #     reservation.message_post(
-        #         body=_(
-        #             """Refund: <b>%s</b> by <b>%s</b>""",
-        #             amount,
-        #             journal.display_name,
-        #         )
-        #     )
+        folio.message_post(
+            body=_(
+                """Refund: <b>%s</b> by <b>%s</b>""",
+                amount,
+                journal.display_name,
+            ),
+            email_from=user.partner_id.email_formatted
+            or folio.pms_property_id.email_formatted,
+        )
+        for reservation in folio.reservation_ids:
+            reservation.message_post(
+                body=_(
+                    """Refund: <b>%s</b> by <b>%s</b>""",
+                    amount,
+                    journal.display_name,
+                ),
+                email_from=user.partner_id.email_formatted
+                or folio.pms_property_id.email_formatted,
+            )
         return True
 
     def open_wizard_several_partners(self):
