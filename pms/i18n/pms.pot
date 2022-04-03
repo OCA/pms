@@ -878,6 +878,14 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/pms_reservation.py:0
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid ""
+"A closure reason is mandatory when reservation type is 'out of service'"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
