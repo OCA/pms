@@ -610,14 +610,18 @@ class PmsProperty(models.Model):
         folios = self.env["pms.folio"].search(
             [
                 ("autoinvoice_date", "=", fields.date.today()),
+                ("invoice_status", "=", "to_invoice"),
             ]
         )
-        if folios:
-            invoices = folios.with_context(autoinvoice=True)._create_invoices(
-                grouped=True,
-            )
-            if invoices:
-                invoices.action_post()
+        for folio in folios:
+            try:
+                invoice = folio.with_context(autoinvoice=True)._create_invoices(
+                    grouped=True,
+                )
+                if invoice:
+                    invoice.action_post()
+            except Exception as e:
+                folio.message_post(body=_("Error in autoinvoicing folio: " + str(e)))
         return True
 
     @api.constrains("journal_normal_invoice_id")
