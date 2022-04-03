@@ -2333,7 +2333,6 @@ class PmsFolio(models.Model):
                             "partner_id": record.partner_id.id,
                             "name": record.document_number,
                             "category_id": record.document_type.id,
-                            "valid_from": record.document_expedition_date,
                         }
                     )
 
