@@ -1496,7 +1496,6 @@ class TestPmsCheckinPartner(TestPms):
             "mobile": "666555444",
             "phone": "123456789",
             "nationality_id": nationality_id.id,
-            "state_id": state_id.id,
             "residence_street": "Calle 123",
             "residence_street2": "Avda. Constitución 123",
             "residence_zip": "15700",
@@ -1511,7 +1510,6 @@ class TestPmsCheckinPartner(TestPms):
             {
                 "nationality_id": nationality_id,
                 "residence_country_id": nationality_id,
-                "state_id": state_id,
                 "residence_state_id": state_id,
             }
         )
