@@ -11,6 +11,10 @@
                 eval="obj()._get_default_favicon(original=True)"
             />
         </record>
+        <!-- Avoid constrain error with demo base data -->
+        <record id="base.main_company" model="res.company">
+            <field name="check_min_partner_data_invoice">False</field>
+        </record>
         <!--Availability Plan -->
         <record id="demo_pms_availability" model="pms.availability.plan">
             <field name="name">Availability Plan Demo</field>
