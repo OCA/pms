@@ -188,7 +188,9 @@ class AccountMove(models.Model):
         journal = super(AccountMove, self)._search_default_journal(journal_types)
         company_id = self._context.get("default_company_id", self.env.company.id)
         company = self.env["res.company"].browse(company_id)
-        pms_property_id = self.pms_property_id.id or (
+        pms_property_id = self.env.context.get(
+            "default_pms_property_id", self.pms_property_id.id
+        ) or (
             self.env.user.get_active_property_ids
             and self.env.user.get_active_property_ids()[0]
         )
