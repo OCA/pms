@@ -26,6 +26,11 @@ class PmsReservation(models.Model):
         help="Reservation Code Identification",
         readonly=True,
     )
+    folio_sequence = fields.Integer(
+        string="Folio Sequence",
+        help="Techinal field to get reservation name",
+        readonly=True,
+    )
     priority = fields.Integer(
         string="Priority",
         help="Priority of a reservation",
@@ -1878,14 +1883,13 @@ class PmsReservation(models.Model):
         else:
             raise ValidationError(_("The Property are mandatory in the reservation"))
         if vals.get("name", _("New")) == _("New") or "name" not in vals:
-            pms_property_id = (
-                self.env.user.get_active_property_ids()[0]
-                if "pms_property_id" not in vals
-                else vals["pms_property_id"]
+            folio_sequence = (
+                max(folio.mapped("reservation_ids.folio_sequence")) + 1
+                if folio.reservation_ids
+                else 1
             )
-            pms_property = self.env["pms.property"].browse(pms_property_id)
-            vals["name"] = pms_property.reservation_sequence_id._next_do()
-
+            vals["folio_sequence"] = folio_sequence
+            vals["name"] = folio.name + "/" + str(folio_sequence)
         if not vals.get("reservation_type"):
             vals["reservation_type"] = (
                 folio.reservation_type if folio.reservation_type else "normal"

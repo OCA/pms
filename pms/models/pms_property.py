@@ -67,13 +67,6 @@ class PmsProperty(models.Model):
         copy=False,
         comodel_name="ir.sequence",
     )
-    reservation_sequence_id = fields.Many2one(
-        string="Reservation Sequence",
-        help="The sequence that formed the name of the reservation.",
-        check_company=True,
-        copy=False,
-        comodel_name="ir.sequence",
-    )
     checkin_sequence_id = fields.Many2one(
         string="Checkin Sequence",
         help="Field used to create the name of the checkin partner",
@@ -510,20 +503,6 @@ class PmsProperty(models.Model):
                 }
             )
             vals.update({"folio_sequence_id": folio_sequence.id})
-        if "reservation_sequence_id" not in vals or not vals.get(
-            "reservation_sequence_id"
-        ):
-            reservation_sequence = self.env["ir.sequence"].create(
-                {
-                    "name": "PMS Reservation " + name,
-                    "code": "pms.reservation",
-                    "prefix": "R/%(y)s",
-                    "suffix": "%(sec)s",
-                    "padding": 4,
-                    "company_id": vals.get("company_id"),
-                }
-            )
-            vals.update({"reservation_sequence_id": reservation_sequence.id})
         if "checkin_sequence_id" not in vals or not vals.get("checkin_sequence_id"):
             checkin_sequence = self.env["ir.sequence"].create(
                 {
