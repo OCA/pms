@@ -4135,6 +4135,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__folio_sequence_id
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__folio_sequence
 msgid "Folio Sequence"
 msgstr ""
 
@@ -8143,11 +8144,6 @@ msgid "Reservation Rooms"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_property__reservation_sequence_id
-msgid "Reservation Sequence"
-msgstr ""
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_service_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_service_view_search
 msgid "Reservation Service"
@@ -9628,6 +9624,11 @@ msgid "Taxes used for deposits"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation__folio_sequence
+msgid "Techinal field to get reservation name"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__show_update_pricelist
 msgid ""
 "Technical Field, True if the pricelist was changed;\n"
@@ -9973,7 +9974,7 @@ msgstr ""
 #. module: pms
 #: code:addons/pms/models/res_partner.py:0
 #, python-format
-msgid "The partner 'Various Clients' cannot be deleted"
+msgid "The partner %s cannot be deleted"
 msgstr ""
 
 #. module: pms
@@ -10117,11 +10118,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__folio_sequence_id
 msgid "The sequence that formed the name of the folio."
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_property__reservation_sequence_id
-msgid "The sequence that formed the name of the reservation."
 msgstr ""
 
 #. module: pms
