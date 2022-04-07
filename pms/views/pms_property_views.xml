@@ -69,7 +69,6 @@
                             </group>
                             <group string="Sequences">
                                 <field name="folio_sequence_id" />
-                                <field name="reservation_sequence_id" />
                                 <field name="checkin_sequence_id" />
                             </group>
                             <group colspan="4" col="4" string="Check-in hours">

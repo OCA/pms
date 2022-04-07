@@ -8,13 +8,6 @@
             <field name="padding">5</field>
         </record>
 
-        <record model="ir.sequence" id="seq_pms_reservation">
-            <field name="name">PMS Reservation</field>
-            <field name="code">pms.reservation</field>
-            <field name="prefix">R%(y)s</field>
-            <field name="padding">6</field>
-        </record>
-
         <record model="ir.sequence" id="seq_pms_checkin">
             <field name="name">PMS Checkin</field>
             <field name="code">pms.checkin.partner</field>

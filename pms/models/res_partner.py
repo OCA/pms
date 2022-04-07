@@ -781,5 +781,8 @@ class ResPartner(models.Model):
             "pms", "various_pms_partner"
         )
         if various_partner_id in self.ids:
-            raise ValidationError(_("The partner 'Various Clients' cannot be deleted"))
+            various_partner = self.browse(various_partner_id)
+            raise ValidationError(
+                _("The partner %s cannot be deleted"), various_partner.name
+            )
         return super().unlink()
