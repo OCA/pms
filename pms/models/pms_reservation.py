@@ -134,9 +134,6 @@ class PmsReservation(models.Model):
     sale_channel_origin_id = fields.Many2one(
         string="Sale Channel Origin",
         help="Sale Channel through which reservation was created, the original",
-        store=True,
-        readonly=False,
-        compute="_compute_sale_channel_origin_id",
         default=lambda self: self._get_default_sale_channel_origin(),
         comodel_name="pms.sale.channel",
     )
@@ -1633,12 +1630,24 @@ class PmsReservation(models.Model):
                 record.lang = self.env["res.lang"].get_installed()
 
 
-    @api.depends("reservation_line_ids", "reservation_line_ids.sale_channel_id")
+    @api.depends(
+        "reservation_line_ids",
+        "reservation_line_ids.sale_channel_id",
+        "service_ids",
+        "service_ids.sale_channel_ids",
+        "service_ids.sale_channel_origin_id",
+    )
     def _compute_sale_channel_ids(self):
         for record in self:
-            record.sale_channel_ids = [
-                (6, 0, record.mapped("reservation_line_ids.sale_channel_id.id"))
-            ]
+            sale_channel_ids = []
+            if record.reservation_line_ids:
+                for sale in record.reservation_line_ids.mapped("sale_channel_id.id"):
+                    sale_channel_ids.append(sale)
+            if record.service_ids:
+                for sale in record.service_ids.mapped("sale_channel_ids.id"):
+                    sale_channel_ids.append(sale)
+            sale_channel_ids = list(set(sale_channel_ids))
+            record.sale_channel_ids = [(6, 0, sale_channel_ids)]
 
     @api.depends("agency_id")
     def _compute_sale_channel_origin_id(self):
@@ -1654,7 +1663,8 @@ class PmsReservation(models.Model):
             if (
                 record.sale_channel_origin_id != record.folio_id.sale_channel_origin_id
                 and record.folio_id
-                and isinstance(self.id, int)
+                # and isinstance(self.id, int)
+                and record._origin.sale_channel_origin_id.id
             ):
                 record.is_origin_channel_check_visible = True
             else:
@@ -2099,9 +2109,11 @@ class PmsReservation(models.Model):
     def write(self, vals):
         folios_to_update_channel = self.env["pms.folio"]
         lines_to_update_channel = self.env["pms.reservation.line"]
+        services_to_update_channel = self.env["pms.service"]
         if "sale_channel_origin_id" in vals:
             folios_to_update_channel = self.get_folios_to_update_channel(vals)
             lines_to_update_channel = self.get_lines_to_update_channel(vals)
+            services_to_update_channel = self.get_services_to_update_channel(vals)
         res = super(PmsReservation, self).write(vals)
         if folios_to_update_channel:
             folios_to_update_channel.sale_channel_origin_id = vals[
@@ -2109,6 +2121,11 @@ class PmsReservation(models.Model):
             ]
         if lines_to_update_channel:
             lines_to_update_channel.sale_channel_id = vals["sale_channel_origin_id"]
+        if services_to_update_channel:
+            services_to_update_channel.sale_channel_origin_id = vals[
+                "sale_channel_origin_id"
+            ]
+
         self._check_services(vals)
         # Only check if adult to avoid to check capacity in intermediate states (p.e. flush)
         # that not take access to possible extra beds service in vals
@@ -2149,6 +2166,20 @@ class PmsReservation(models.Model):
                 ):
                     lines_to_update_channel += line
         return lines_to_update_channel
+
+    def get_services_to_update_channel(self, vals):
+        services_to_update_channel = self.env["pms.service"]
+        for record in self:
+            for service in record.service_ids:
+                if (
+                    service.sale_channel_origin_id == record.sale_channel_origin_id
+                    and (
+                        vals["sale_channel_origin_id"]
+                        != service.sale_channel_origin_id.id
+                    )
+                ):
+                    services_to_update_channel += service
+        return services_to_update_channel
 
     def update_prices(self):
         self.ensure_one()

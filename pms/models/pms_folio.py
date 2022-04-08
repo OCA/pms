@@ -204,17 +204,6 @@ class PmsFolio(models.Model):
         ondelete="restrict",
         check_pms_properties=True,
     )
-    # channel_type_id = fields.Many2one(
-    #     string="Direct Sale Channel",
-    #     help="Only allowed if the field of sale channel channel_type is 'direct'",
-    #     readonly=False,
-    #     store=True,
-    #     comodel_name="pms.sale.channel",
-    #     domain=[("channel_type", "=", "direct")],
-    #     ondelete="restrict",
-    #     compute="_compute_channel_type_id",
-    #     check_pms_properties=True,
-    # )
     sale_channel_ids = fields.Many2many(
         string="Sale Channels",
         help="Sale Channels through which reservations were managed",
@@ -1061,12 +1050,25 @@ class PmsFolio(models.Model):
                 if reservation.commission_amount != 0:
                     folio.commission = folio.commission + reservation.commission_amount
 
-    @api.depends("reservation_ids", "reservation_ids.sale_channel_ids")
+    @api.depends(
+        "reservation_ids",
+        "reservation_ids.sale_channel_ids",
+        "service_ids",
+        "service_ids.sale_channel_ids",
+    )
     def _compute_sale_channel_ids(self):
         for record in self:
-            record.sale_channel_ids = [
-                (6, 0, record.mapped("reservation_ids.sale_channel_origin_id.id"))
-            ]
+            sale_channel_ids = []
+            if record.reservation_ids:
+                for sale in record.reservation_ids.mapped("sale_channel_ids.id"):
+                    sale_channel_ids.append(sale)
+            if record.service_ids:
+                # si es un board service que mire sale_channel_ids
+                # y si es un servicio a secas entonces que coja el origen
+                for sale in record.service_ids.mapped("sale_channel_origin_id.id"):
+                    sale_channel_ids.append(sale)
+            sale_channel_ids = list(set(sale_channel_ids))
+            record.sale_channel_ids = [(6, 0, sale_channel_ids)]
 
     @api.depends("sale_line_ids.invoice_lines")
     def _compute_get_invoiced(self):
@@ -1539,20 +1541,49 @@ class PmsFolio(models.Model):
 
     def write(self, vals):
         reservations_to_update = self.env["pms.reservation"]
+        services_to_update = self.env["pms.service"]
         if "sale_channel_origin_id" in vals:
-            for record in self:
-                for reservation in record.reservation_ids:
-                    if (
-                        reservation.sale_channel_origin_id
-                        == self.sale_channel_origin_id
-                    ):
-                        reservations_to_update += reservation
+            reservations_to_update = self.get_reservations_to_update_channel(vals)
+            services_to_update = self.get_services_to_update_channel(vals)
+
         res = super(PmsFolio, self).write(vals)
         if reservations_to_update:
             reservations_to_update.sale_channel_origin_id = vals[
                 "sale_channel_origin_id"
             ]
+
+        if services_to_update:
+            services_to_update.sale_channel_origin_id = vals["sale_channel_origin_id"]
+
         return res
+
+    def get_reservations_to_update_channel(self, vals):
+        reservations_to_update = self.env["pms.reservation"]
+        for record in self:
+            for reservation in record.reservation_ids:
+                if (
+                    reservation.sale_channel_origin_id == self.sale_channel_origin_id
+                ) and (
+                    vals["sale_channel_origin_id"]
+                    != reservation.sale_channel_origin_id.id
+                ):
+                    reservations_to_update += reservation
+        return reservations_to_update
+
+    def get_services_to_update_channel(self, vals):
+        services_to_update = self.env["pms.service"]
+        for record in self:
+            for service in record.service_ids:
+                if (
+                    not service.reservation_id
+                    and (service.sale_channel_origin_id == self.sale_channel_origin_id)
+                    and (
+                        vals["sale_channel_origin_id"]
+                        != service.sale_channel_origin_id.id
+                    )
+                ):
+                    services_to_update += service
+        return services_to_update
 
     def action_pay(self):
         self.ensure_one()
