@@ -563,6 +563,7 @@
                                             attrs="{'readonly': [('per_day','=',True)]}"
                                             force_save="1"
                                         />
+                                        <field name="sale_channel_origin_id" />
                                         <button
                                             type="object"
                                             class="oe_stat_button"
