@@ -4462,6 +4462,7 @@ msgstr "Línea de Venta de la Ficha"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__folio_sequence_id
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__folio_sequence
 msgid "Folio Sequence"
 msgstr "Nº de Ficha"
 
@@ -8559,11 +8560,6 @@ msgid "Reservation Rooms"
 msgstr "Reservas"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_property__reservation_sequence_id
-msgid "Reservation Sequence"
-msgstr "Referencia de la Reserva"
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_service_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_service_view_search
 msgid "Reservation Service"
@@ -10067,6 +10063,11 @@ msgid "Taxes used for deposits"
 msgstr "Tasas utilizadas para depósitos"
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation__folio_sequence
+msgid "Techinal field to get reservation name"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__show_update_pricelist
 msgid ""
 "Technical Field, True if the pricelist was changed;\n"
@@ -10423,7 +10424,7 @@ msgstr "El parámetro de reglas de tarifa avanzadas no se puede modificar"
 #. module: pms
 #: code:addons/pms/models/res_partner.py:0
 #, python-format
-msgid "The partner 'Various Clients' cannot be deleted"
+msgid "The partner %s cannot be deleted"
 msgstr ""
 
 #. module: pms
@@ -10594,11 +10595,6 @@ msgstr ""
 #: model:ir.model.fields,help:pms.field_pms_property__folio_sequence_id
 msgid "The sequence that formed the name of the folio."
 msgstr "La secuencia que forma el nombre de la ficha."
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_property__reservation_sequence_id
-msgid "The sequence that formed the name of the reservation."
-msgstr "La secuencia que forma el nombre de la reserva."
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__payment_state
@@ -11889,6 +11885,12 @@ msgid ""
 msgstr ""
 "No puede tener más de una habitación con el mismo nombre en la misma "
 "propiedad"
+
+#~ msgid "Reservation Sequence"
+#~ msgstr "Referencia de la Reserva"
+
+#~ msgid "The sequence that formed the name of the reservation."
+#~ msgstr "La secuencia que forma el nombre de la reserva."
 
 #~ msgid ""
 #~ "\n"
