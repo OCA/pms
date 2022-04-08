@@ -126,6 +126,12 @@ class PmsServiceLine(models.Model):
         readonly=True,
         store=True,
     )
+    sale_channel_id = fields.Many2one(
+        string="Sale Channel",
+        help="Sale Channel through which service line was created",
+        comodel_name="pms.sale.channel",
+        check_pms_properties=True,
+    )
     auto_qty = fields.Boolean(
         string="Qty automated setted",
         help="Show if the day qty was calculated automatically",
@@ -248,6 +254,15 @@ class PmsServiceLine(models.Model):
                         _("%s limit exceeded for %s")
                         % (record.service_id.product_id.name, record.date)
                     )
+
+    @api.model
+    def create(self, vals):
+        if vals.get("service_id") and not vals.get("sale_channel_id"):
+            service = self.env["pms.service"].browse(vals["service_id"])
+            if service.sale_channel_origin_id:
+                vals["sale_channel_id"] = service.sale_channel_origin_id.id
+        record = super(PmsServiceLine, self).create(vals)
+        return record
 
     # Business methods
     def _cancel_discount(self):

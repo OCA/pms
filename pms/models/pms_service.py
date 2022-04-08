@@ -146,17 +146,19 @@ class PmsService(models.Model):
             ("no", "Nothing to Invoice"),
         ],
     )
-    channel_type = fields.Selection(
-        string="Sales Channel",
-        help="sales channel through which the service was sold."
-        "It can be 'door', 'mail', 'phone', 'call' or 'web'",
-        selection=[
-            ("door", "Door"),
-            ("mail", "Mail"),
-            ("phone", "Phone"),
-            ("call", "Call Center"),
-            ("web", "Web"),
-        ],
+    sale_channel_ids = fields.Many2many(
+        string="Sale Channels",
+        help="Sale Channels through which service lines were managed",
+        store=True,
+        compute="_compute_sale_channel_ids",
+        comodel_name="pms.sale.channel",
+        check_pms_properties=True,
+    )
+    sale_channel_origin_id = fields.Many2one(
+        string="Sale Channel Origin",
+        help="Sale Channel through which service was created, the original",
+        comodel_name="pms.sale.channel",
+        check_pms_properties=True,
     )
     price_subtotal = fields.Monetary(
         string="Subtotal",
@@ -425,6 +427,13 @@ class PmsService(models.Model):
                 line.discount = record.discount
                 line.cancel_discount = 0
 
+    @api.depends("service_line_ids", "service_line_ids.sale_channel_id")
+    def _compute_sale_channel_ids(self):
+        for record in self:
+            record.sale_channel_ids = [
+                (6, 0, record.mapped("service_line_ids.sale_channel_id.id"))
+            ]
+
     def name_get(self):
         result = []
         for rec in self:
@@ -534,3 +543,60 @@ class PmsService(models.Model):
                 )
             else:
                 return 0
+
+    @api.model
+    def create(self, vals):
+        if vals.get("reservation_id") and not vals.get("sale_channel_origin_id"):
+            reservation = self.env["pms.reservation"].browse(vals["reservation_id"])
+            if reservation.sale_channel_origin_id:
+                vals["sale_channel_origin_id"] = reservation.sale_channel_origin_id.id
+        elif (
+            vals.get("folio_id")
+            and not vals.get("reservation_id")
+            and not vals.get("sale_channel_origin_id")
+        ):
+            folio = self.env["pms.folio"].browse(vals["folio_id"])
+            if folio.sale_channel_origin_id:
+                vals["sale_channel_origin_id"] = folio.sale_channel_origin_id.id
+        record = super(PmsService, self).create(vals)
+        return record
+
+    def write(self, vals):
+        folios_to_update_channel = self.env["pms.folio"]
+        lines_to_update_channel = self.env["pms.service.line"]
+        if "sale_channel_origin_id" in vals:
+            folios_to_update_channel = self.get_folios_to_update_channel(vals)
+            lines_to_update_channel = self.get_service_lines_to_update_channel(vals)
+        res = super(PmsService, self).write(vals)
+        if folios_to_update_channel:
+            folios_to_update_channel.sale_channel_origin_id = vals[
+                "sale_channel_origin_id"
+            ]
+        if lines_to_update_channel:
+            lines_to_update_channel.sale_channel_id = vals["sale_channel_origin_id"]
+        return res
+
+    def get_folios_to_update_channel(self, vals):
+        folios_to_update_channel = self.env["pms.folio"]
+        for folio in self.mapped("folio_id"):
+            if (
+                any(
+                    service.sale_channel_origin_id == folio.sale_channel_origin_id
+                    for service in self.filtered(lambda r: r.folio_id == folio)
+                )
+                and vals["sale_channel_origin_id"] != folio.sale_channel_origin_id.id
+                and (len(folio.reservation_ids) == 0)
+                and (len(folio.service_ids) == 1)
+            ):
+                folios_to_update_channel += folio
+        return folios_to_update_channel
+
+    def get_service_lines_to_update_channel(self, vals):
+        lines_to_update_channel = self.env["pms.service.line"]
+        for record in self:
+            for service_line in record.service_line_ids:
+                if service_line.sale_channel_id == self.sale_channel_origin_id and (
+                    vals["sale_channel_origin_id"] != service_line.sale_channel_id.id
+                ):
+                    lines_to_update_channel += service_line
+            return lines_to_update_channel
