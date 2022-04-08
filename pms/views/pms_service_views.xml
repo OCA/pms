@@ -27,7 +27,10 @@
                             attrs="{'readonly': [('per_day','=',True)]}"
                             force_save="1"
                         />
+                        <field name="sale_channel_origin_id" />
+                        <field name="sale_channel_ids" widget="many2many_tags" />
                     </group>
+
                     <field name="tax_ids" widget="many2many_tags" invisible="1" />
                     <field name="price_subtotal" invisible="1" />
                     <field name="price_tax" invisible="1" />
@@ -35,6 +38,7 @@
                     <field name="service_line_ids" nolabel="1">
                         <tree string="Days" editable="bottom">
                             <field name="date" />
+                            <field name="sale_channel_id" />
                             <field name="day_qty" />
                             <field name="price_unit" />
                             <field
@@ -43,6 +47,7 @@
                             />
                             <field name="price_day_total" />
                             <field name="is_board_service" invisible="1" />
+                            <field name="pms_property_id" invisible="1" />
                         </tree>
                     </field>
                 </sheet>
@@ -85,6 +90,8 @@
                     attrs="{'readonly': [('per_day','=',True)]}"
                     force_save="1"
                 />
+                <field name="sale_channel_origin_id" />
+                <field name="sale_channel_ids" />
                 <button
                     type="object"
                     class="oe_stat_button"
@@ -99,6 +106,7 @@
                 <field name="service_line_ids" invisible="1">
                     <tree string="Days">
                         <field name="date" />
+                        <field name="sale_channel_id" />
                         <field name="day_qty" />
                         <field
                             name="discount"
@@ -106,6 +114,7 @@
                         />
                         <field name="price_unit" />
                         <field name="is_board_service" invisible="1" />
+                        <field name="pms_property_id" invisible="1" />
                     </tree>
                 </field>
             </tree>
