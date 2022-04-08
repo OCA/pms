@@ -117,7 +117,6 @@ class PmsReservationLine(models.Model):
         string="Sale Channel",
         help="Sale Channel through which reservation line was created",
         comodel_name="pms.sale.channel",
-        ondelete="restrict",
         check_pms_properties=True,
     )
     _sql_constraints = [
