@@ -380,7 +380,7 @@ class PmsCheckinPartner(models.Model):
             elif not record.residence_city:
                 record.residence_city = False
 
-    @api.depends("partner_id")
+    @api.depends("partner_id", "nationality_id")
     def _compute_residence_country_id(self):
         for record in self:
             if (
@@ -388,6 +388,8 @@ class PmsCheckinPartner(models.Model):
                 and record.partner_id.residence_country_id
             ):
                 record.residence_country_id = record.partner_id.residence_country_id
+            elif not record.residence_country_id and record.nationality_id:
+                record.residence_country_id = record.nationality_id
             elif not record.residence_country_id:
                 record.residence_country_id = False
 
