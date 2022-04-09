@@ -4621,6 +4621,11 @@ msgid "For manual payments"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_folio__force_nothing_to_invoice
+msgid "Force no invoice"
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/models/pms_property.py:0
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
@@ -11599,6 +11604,13 @@ msgstr "Peso"
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__weight_uom_name
 msgid "Weight unit of measure label"
 msgstr "Etiqueta de unidad de medida de peso"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_folio__force_nothing_to_invoice
+msgid ""
+"When you set this field, the folio will be considered as nothin to invoice, "
+"even when there may be ordered quantities pending to invoice."
+msgstr ""
 
 #. module: pms
 #: model:pms.amenity,name:pms.pms_amenity_wi_fi
