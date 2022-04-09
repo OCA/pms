@@ -122,6 +122,36 @@ class ResPartner(models.Model):
         store=True,
         compute="_compute_vat",
     )
+    country_id = fields.Many2one(
+        readonly=False,
+        store=True,
+        compute="_compute_country_id",
+    )
+    state_id = fields.Many2one(
+        readonly=False,
+        store=True,
+        compute="_compute_state_id",
+    )
+    city = fields.Char(
+        readonly=False,
+        store=True,
+        compute="_compute_city",
+    )
+    street = fields.Char(
+        readonly=False,
+        store=True,
+        compute="_compute_street",
+    )
+    street2 = fields.Char(
+        readonly=False,
+        store=True,
+        compute="_compute_street2",
+    )
+    zip = fields.Char(
+        readonly=False,
+        store=True,
+        compute="_compute_zip",
+    )
     comment = fields.Text(
         tracking=True,
     )
@@ -386,7 +416,9 @@ class ResPartner(models.Model):
                 record.residence_city = False
 
     @api.depends(
-        "pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_country_id"
+        "pms_checkin_partner_ids",
+        "pms_checkin_partner_ids.residence_country_id",
+        "nationality_id",
     )
     def _compute_residence_country_id(self):
         if hasattr(super(), "_compute_residence_country_id"):
@@ -407,6 +439,8 @@ class ResPartner(models.Model):
                     record.residence_country_id = residence_country_id[0]
                 else:
                     record.residence_country_id = False
+            elif not record.residence_country_id and record.nationality_id:
+                record.residence_country_id = record.nationality_id
             elif not record.residence_country_id:
                 record.residence_country_id = False
 
@@ -563,6 +597,74 @@ class ResPartner(models.Model):
                 record.vat = vat[0]
             elif not record.vat:
                 record.vat = False
+
+    @api.depends("residence_country_id")
+    def _compute_country_id(self):
+        if hasattr(super(), "_compute_country_id"):
+            super()._compute_country_id()
+        for record in self:
+            if (
+                not record.parent_id
+                and not record.country_id
+                and record.residence_country_id
+            ):
+                record.country_id = record.residence_country_id
+            elif not record.country_id:
+                record.country_id = False
+
+    @api.depends("residence_state_id")
+    def _compute_state_id(self):
+        if hasattr(super(), "_compute_state_id"):
+            super()._compute_state_id()
+        for record in self:
+            if (
+                not record.parent_id
+                and not record.state_id
+                and record.residence_state_id
+            ):
+                record.state_id = record.residence_state_id
+            elif not record.state_id:
+                record.state_id = False
+
+    @api.depends("residence_city")
+    def _compute_city(self):
+        if hasattr(super(), "_compute_city"):
+            super()._compute_city()
+        for record in self:
+            if not record.parent_id and not record.city and record.residence_city:
+                record.city = record.residence_city
+            elif not record.city:
+                record.city = False
+
+    @api.depends("residence_street")
+    def _compute_street(self):
+        if hasattr(super(), "_compute_street"):
+            super()._compute_street()
+        for record in self:
+            if not record.parent_id and not record.street and record.residence_street:
+                record.street = record.residence_street
+            elif not record.street:
+                record.street = False
+
+    @api.depends("residence_street2")
+    def _compute_street2(self):
+        if hasattr(super(), "_compute_street2"):
+            super()._compute_street2()
+        for record in self:
+            if not record.parent_id and not record.street2 and record.residence_street2:
+                record.street2 = record.residence_street2
+            elif not record.street2:
+                record.street2 = False
+
+    @api.depends("residence_zip")
+    def _compute_zip(self):
+        if hasattr(super(), "_compute_zip"):
+            super()._compute_zip()
+        for record in self:
+            if not record.parent_id and not record.zip and record.residence_zip:
+                record.zip = record.residence_zip
+            elif not record.zip:
+                record.zip = False
 
     def _compute_reservations_count(self):
         # Return reservation with partner included in reservation and/or checkin
