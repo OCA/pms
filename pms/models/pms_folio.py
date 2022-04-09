@@ -440,6 +440,13 @@ class PmsFolio(models.Model):
         compute="_compute_get_invoice_status",
         compute_sudo=True,
     )
+    force_nothing_to_invoice = fields.Boolean(
+        string="Force no invoice",
+        help="When you set this field, the folio will be considered as "
+        "nothin to invoice, even when there may be ordered "
+        "quantities pending to invoice.",
+        copy=False,
+    )
     internal_comment = fields.Text(
         string="Internal Folio Notes",
         help="Internal Folio notes for Staff",
@@ -951,7 +958,7 @@ class PmsFolio(models.Model):
             line_invoice_status = [
                 d[1] for d in line_invoice_status_all if d[0] == order.id
             ]
-            if order.state in ("draft"):
+            if order.state in ("draft") or order.force_nothing_to_invoice:
                 order.invoice_status = "no"
             elif any(
                 invoice_status == "to_invoice" for invoice_status in line_invoice_status
