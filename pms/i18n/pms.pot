@@ -2518,6 +2518,8 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_city
 #: model:ir.model.fields,field_description:pms.field_pms_property__city
+#: model:ir.model.fields,field_description:pms.field_res_partner__city
+#: model:ir.model.fields,field_description:pms.field_res_users__city
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
@@ -2825,6 +2827,8 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__country_id
+#: model:ir.model.fields,field_description:pms.field_res_partner__country_id
+#: model:ir.model.fields,field_description:pms.field_res_users__country_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
@@ -9370,6 +9374,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__state
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__state
 #: model:ir.model.fields,field_description:pms.field_pms_service__state
+#: model:ir.model.fields,field_description:pms.field_res_partner__state_id
+#: model:ir.model.fields,field_description:pms.field_res_users__state_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_search
@@ -9443,6 +9449,8 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_street
 #: model:ir.model.fields,field_description:pms.field_pms_property__street
+#: model:ir.model.fields,field_description:pms.field_res_partner__street
+#: model:ir.model.fields,field_description:pms.field_res_users__street
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid "Street"
 msgstr ""
@@ -9479,6 +9487,8 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_street2
 #: model:ir.model.fields,field_description:pms.field_pms_property__street2
+#: model:ir.model.fields,field_description:pms.field_res_partner__street2
+#: model:ir.model.fields,field_description:pms.field_res_users__street2
 msgid "Street2"
 msgstr ""
 
@@ -11148,6 +11158,8 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_zip
 #: model:ir.model.fields,field_description:pms.field_pms_property__zip
+#: model:ir.model.fields,field_description:pms.field_res_partner__zip
+#: model:ir.model.fields,field_description:pms.field_res_users__zip
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid "Zip"
 msgstr ""
