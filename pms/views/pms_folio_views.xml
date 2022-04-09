@@ -568,6 +568,7 @@
                         <page string="Other data">
                             <group>
                                 <field name="user_id" />
+                                <field name="force_nothing_to_invoice" />
                             </group>
                         </page>
                         <!-- <page string="Foreign Exchange" name="foreign exchange" invisible="1">
