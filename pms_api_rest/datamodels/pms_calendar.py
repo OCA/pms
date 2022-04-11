@@ -31,7 +31,7 @@ class PmsCalendarSearchParam(Datamodel):
 class PmsCalendarFreeDailyRoomsByType(Datamodel):
     _name = "pms.calendar.free.daily.rooms.by.type"
     date = fields.String(required=True, allow_none=False)
-    roomType = fields.Integer(required=True, allow_none=False)
+    roomTypeId = fields.Integer(required=True, allow_none=False)
     freeRooms = fields.Integer(required=True, allow_none=False)
 
 
