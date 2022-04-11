@@ -1,0 +1,16 @@
+<odoo>
+
+    <record id="view_task_form2_pms" model="ir.ui.view">
+        <field name="name">project.task.form.pms</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Properties" name="properties">
+                    <field name="pms_property_ids" />
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
