@@ -250,7 +250,7 @@ class PmsCalendarService(Component):
                         date=str(
                             datetime.combine(date, datetime.min.time()).isoformat()
                         ),
-                        roomType=room_type_iterator.id,
+                        roomTypeId=room_type_iterator.id,
                         freeRooms=free_rooms_room_type,
                     )
                 )
