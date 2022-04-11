@@ -1023,6 +1023,31 @@ msgstr ""
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Link a property to a stock location"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Link projects and tasks to your properties"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Link purchases to your properties"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_project
+msgid "Link to Projects and Tasks"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_purchase
+msgid "Link to Purchases"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Link your leads to a property"
 msgstr ""
 
@@ -1061,6 +1086,11 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_account_asset
 msgid "Manage Assets"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_stock
+msgid "Manage Content"
 msgstr ""
 
 #. module: pms_base
