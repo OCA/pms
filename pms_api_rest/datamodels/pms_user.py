@@ -12,6 +12,7 @@ class PmsApiRestUserInput(Datamodel):
 class PmsApiRestUserOutput(Datamodel):
     _name = "pms.api.rest.user.output"
     token = fields.String(required=False, allow_none=True)
+    expirationDate = fields.Integer(required=True, allow_none=False)
     userId = fields.Integer(required=True, allow_none=False)
     userName = fields.String(required=True, allow_none=False)
     userImageBase64 = fields.String(required=False, allow_none=True)
