@@ -6,7 +6,7 @@
     "name": "Property Management System",
     "summary": "Manage properties",
     "version": "14.0.1.1.1",
-    "development_status": "Alpha",
+    "development_status": "Beta",
     "category": "Generic Modules/Property Management System",
     "website": "https://github.com/OCA/pms",
     "author": "Commit [Sun], Open Source Integrators, Odoo Community Association (OCA)",
