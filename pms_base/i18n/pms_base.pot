@@ -19,6 +19,11 @@ msgid "# Meetings"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__task_count
+msgid "# Tasks"
+msgstr ""
+
+#. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_team_kanban
 msgid ""
 "<br/>\n"
@@ -1822,6 +1827,11 @@ msgstr ""
 #: model:ir.ui.menu,name:pms_base.menu_config_tag
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_tag_tree
 msgid "Tags"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__task_ids
+msgid "Tasks"
 msgstr ""
 
 #. module: pms_base
