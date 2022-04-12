@@ -1,0 +1,14 @@
+<odoo>
+
+    <record id="view_pms_amenity_form_inherit_pms_website" model="ir.ui.view">
+        <field name="name">pms.amenity.form.inherit</field>
+        <field name="model">pms.amenity</field>
+        <field name="inherit_id" ref="pms_base.view_pms_amenity_form" />
+        <field name="arch" type="xml">
+            <field name="type_id" position="after">
+                <field name="is_main_amenity" />
+            </field>
+        </field>
+    </record>
+
+</odoo>
