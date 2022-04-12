@@ -1,0 +1,41 @@
+<odoo>
+
+     <!-- Used in location -->
+    <record model="ir.actions.act_window" id="location_open_content">
+        <field name="context">{'search_default_productgroup': 1}</field>
+        <field name="domain">[('location_id', 'child_of', stock_location_id)]</field>
+        <field name="name">Content</field>
+        <field name="res_model">stock.quant</field>
+    </record>
+
+    <record id="view_pms_property_form_stock" model="ir.ui.view">
+        <field name="name">pms.property.form.pms.stock</field>
+        <field name="model">pms.property</field>
+        <field name="inherit_id" ref="pms_base.view_pms_property_form" />
+        <field name="priority">99999</field>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="inventory" string="Inventory">
+                    <group id="stock">
+                        <group id="stock-left">
+                            <field name="stock_location_id" />
+                        </group>
+                        <group id="stock-right" />
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    string="Content"
+                    class="oe_stat_button"
+                    icon="fa-cubes"
+                    name="%(pms_stock.location_open_content)d"
+                    context="{'stock_location_id': stock_location_id}"
+                    type="action"
+                    attrs="{'invisible': [('stock_location_id', '=', False)]}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
