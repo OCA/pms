@@ -1,0 +1,18 @@
+<odoo>
+
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value
+                eval="[('module', '=', 'base'), ('name', '=', 'res_partner_portal_public_rule')]"
+            />
+        </function>
+        <value eval="{'noupdate': False}" />
+    </function>
+
+    <record model="ir.rule" id="base.res_partner_portal_public_rule">
+        <field
+            name="domain_force"
+        >['|', ('id', 'child_of', user.commercial_partner_id.id), ('is_property', '=', True)]</field>
+    </record>
+
+ </odoo>

@@ -1,0 +1,7 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_pms_property_public,access_property_public,pms_base.model_pms_property,,1,1,1,1
+access_pms_room_public,access_pms_room,pms_base.model_pms_room,,1,0,0,0
+access_pms_amenity_public,access_pms_amenity,pms_base.model_pms_amenity,,1,0,0,0
+access_pms_service,access_pms_service,pms_base.model_pms_service,,1,0,0,0
+access_pms_website_category,access_pms_website_category,model_pms_website_category,base.group_user,1,1,1,0
+access_pms_website_category_public,access_pms_website_category_public,model_pms_website_category,,1,0,0,0

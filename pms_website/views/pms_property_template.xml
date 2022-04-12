@@ -1,0 +1,482 @@
+<odoo>
+
+    <template id="property" name="Property" track="1">
+        <t t-call="website.layout">
+            <t t-set="additional_title" t-value="property.name" />
+             <div
+                class="oe_structure oe_empty"
+                id="oe_structure_website_sale_property_1"
+            />
+            <div
+                itemscope="itemscope"
+                itemtype="http://schema.org/Product"
+                id="wrap"
+                class="js_sale"
+            >
+                <section
+                    t-attf-class="container py-2 oe_website_sale"
+                    id="product_detail"
+                    t-att-data-view-track="view_track and '1' or '0'"
+                >
+                    <div class="row">
+                        <div class="col-md-4">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <a t-att-href="keep()">Property</a>
+                                </li>
+                                <li class="breadcrumb-item active">
+                                    <span t-field="property.name" />
+                                </li>
+                            </ol>
+                        </div>
+                        <div class="col-md-8">
+                            <!-- <div class="form-inline justify-content-end">
+                                <t t-call="website_sale.search">
+                                    <t t-set="search" t-value="False"/>
+                                </t>
+                                <t t-call="website_sale.pricelist_list">
+                                    <t t-set="_classes" t-valuef="ml-2"/>
+                                </t>
+                            </div> -->
+                        </div>
+                    </div>
+                    <div
+                        itemprop="description"
+                        t-field="property.website_description1"
+                        class="oe_structure oe_empty mt16"
+                        t-attf-id="oe_structure_website_sale_property_{{property.id}}_3"
+                    />
+                    <div class="row">
+                            <div
+                            id="o-carousel-product"
+                            class="carousel slide"
+                            data-ride="carousel"
+                            data-interval="0"
+                        >
+                                <div
+                                t-field="property.image_1920"
+                                class="d-flex align-items-center justify-content-center h-100"
+                                t-options='{"widget": "image", "preview_image": "image_1024", "class": "product_detail_img mh-100", "alt-field": "name", "itemprop": "image"}'
+                            />
+                            </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 pt-3 pb-3 " id="product_details">
+                            <h1
+                                itemprop="name"
+                                t-field="property.name"
+                            >Property Name</h1>
+                            <span
+                                itemprop="url"
+                                style="display:none;"
+                                t-esc="property.website_url"
+                            />
+                            <h4 class="mt-3" t-if="property.partner_id">
+                                <a
+                                    itemprop="name"
+                                    t-att-href="property.google_map_link()"
+                                    target="_BLANK"
+                                >
+                                    <span t-field="property.city" />
+                                </a>
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div t-if="property.qty_living_room" class="col-8">
+                            <ul
+                                class="list-group direction-vertical "
+                                style="font-size: 15px;line-height: 20px;"
+                            >
+                             <table>
+                                    <tr>
+                                        <h5 t-if="property.parent_id">
+                                            <i class="fa fa-building" />
+                                            <span
+                                                itemprop="parent_name"
+                                                t-field="property.parent_id"
+                                            />
+                                        </h5>
+                                    </tr>
+
+                                    <tr>
+                                        <td t-if="property.qty_living_room">
+                                            <div class="pt-0 pr-3">
+                                                <t
+                                                    t-set="icon"
+                                                    t-value="env.ref('pms_base.pms_room_type_living').sudo().icon"
+                                                />
+                                                <!-- <t t-foreach="property.room_ids" t-as="room"> -->
+                                                <span t-attf-class="{{icon}}" />
+                                                <!-- </t> -->
+                                            </div>
+                                        </td>
+
+                                        <td t-if="property.qty_living_room">
+                                            <span
+                                                style="font-size: 20px; line-height: 40px;"
+                                                t-esc="property.qty_living_room"
+                                            /> Bedrooms
+                                        </td>
+
+                                        <td t-if="property.qty_half_bathroom">
+                                            <div class="pt-0 pr-3">
+                                                <t
+                                                    t-set="icon"
+                                                    t-value="env.ref('pms_base.pms_room_type_half_bath').sudo().icon"
+                                                />
+                                                <!-- <t t-foreach="property.room_ids" t-as="room"> -->
+                                                <span t-attf-class="{{icon}}" />
+                                                <!-- </t> -->
+                                            </div>
+                                        </td>
+
+                                        <td t-if="property.qty_half_bathroom">
+                                            <span
+                                                style="font-size: 20px; line-height: 40px;"
+                                                t-esc="property.qty_half_bathroom"
+                                            /> Bathrooms
+                                        </td>
+                                        <td t-if="property.no_of_guests">
+                                        <div class="pt-0 pr-3">
+                                            <span class="fa fa-users" />
+                                        </div>
+                                    </td>
+                                    <td t-if="property.no_of_guests">
+                                        <span
+                                                style="font-size: 20px;"
+                                                t-field="property.no_of_guests"
+                                            /> Guest(s)
+                                    </td>
+
+                                                <!-- <span
+                                                    style="font-size: 20px;"
+                                                    t-esc="room.name"
+                                                /> -->
+                                    </tr>
+
+                                <tr>
+                                    <!-- <td> -->
+                                    <td>
+                                        <div class="pt-0 pr-3">
+                                            <span class="fa fa-home" />
+                                        </div>
+                                    </td>
+                                    <td><span t-field="property.area" /></td>
+                                </tr>
+                                <!-- <div class=s"pt-5 pr-0"> -->
+                                <t
+                                        t-if="property.service_ids"
+                                        t-foreach="property.sudo().service_ids"
+                                        t-as="service"
+                                    >
+                                <tr>
+                                    <td>
+                                        <div class="pt-0 pr-3">
+                                            <span t-attf-class="{{service.icon}}" />
+                                        </div>
+                                    </td>
+                                    <td class="w-25">
+                                        <span t-esc="service.name.name" />
+                                    </td>
+                                </tr>
+                                </t>
+                            </table>
+                            </ul>
+                        </div>
+                    </div>
+                    <div t-if="property.parking_lot" class="section-margin mt-3">
+                        <ul class="list-group direction-vertical">
+                            <li
+                                class="sc-bBHxTw ljStsE list-group-item d-flex p-0  my-2 border-0"
+                            >
+                                <div class="pt-0 pr-3">
+                                    <span class="fa fa-car" />
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="mb-1">
+                                        <h5
+                                            class="mb-0 item-header"
+                                        >Parking Availability</h5>
+                                    </div>
+                                    <div class="mb-1">
+                                        <p
+                                            style="font-size: 15px; line-height:22px;"
+                                        >Free parking spots nearby</p>
+                                    </div>
+                                </div>
+
+                            </li>
+                        </ul>
+                    </div>
+                    <div
+                        itemprop="description"
+                        t-field="property.website_description2"
+                        class="oe_structure oe_empty mt16"
+                        t-attf-id="oe_structure_website_sale_property_{{property.id}}_4"
+                    />
+                </section>
+                <section class="row section-margin">
+                    <div class="col-12">
+                        <section class="container">
+                            <ul
+                                class="list-group direction-horizontal row"
+                                style="flex-direction: row !important; flex-wrap: wrap;"
+                            >
+                                <li
+                                    class="list-group-item d-flex p-0 col col-sm-6 col-md-4 p-3 my-2 border-0"
+                                >
+                                    <div class="pt-0 pr-3">
+                                        <span class="fa fa-clock-o" />
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="mb-1">
+                                            <p
+                                                class="mb-0 item-header"
+                                            > Check in &amp; Check out </p>
+                                        </div>
+                                        <div class="mb-1">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <t
+                                                        t-if="(property.checkin &lt; 12.0 or property.checkout &lt; 12.0)"
+                                                    >
+                                                        <t t-set="tz">AM</t>
+                                                    </t>
+                                                    <t
+                                                        t-if="(property.checkin &gt; 12.0 or property.checkout &gt; 12.0)"
+                                                    >
+                                                        <t t-set="tz">PM</t>
+                                                    </t>
+                                                    <span
+                                                        class="normal"
+                                                    >Check in:</span> <span
+                                                        t-field="property.checkin"
+                                                        t-options='{"widget": "float", "precision": 2}'
+                                                    /> <span t-esc="tz" />
+                                                    <br />
+                                                    <span
+                                                        class="normal"
+                                                    >Check out:</span> <span
+                                                        t-field="property.checkout"
+                                                        t-options='{"widget": "float", "precision": 2}'
+                                                    /> <span t-esc="tz" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li
+                                    class="list-group-item d-flex p-0 col col-sm-6 col-md-4 p-3 my-2 border-0"
+                                >
+                                    <div class="pt-0 pr-3">
+                                        <span class="fa fa-check-square-o" />
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="mb-1">
+                                            <p
+                                                class="mb-0 item-header"
+                                            > House Rules </p>
+                                        </div>
+                                        <div class="mb-1">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <t t-if="property.pets">
+                                                        <span class="fa fa-circle-o" />
+                                                        <span
+                                                            class="normal"
+                                                        >Pet-friendly apartments.</span>
+                                                    </t>
+                                                    <t t-elif="property.pets== False">
+                                                        <span class="fa fa-circle-o" />
+                                                        <span
+                                                            class="normal"
+                                                        >Pets Are  Not Allowed.</span>
+                                                    </t>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li
+                                    class="list-group-item d-flex p-0 col col-sm-6 col-md-4 p-3 my-2 border-0"
+                                >
+                                    <div class="pt-0 pr-3">
+                                        <span class="fa fa-times-circle-o" />
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="mb-1">
+                                            <p
+                                                class="mb-0 item-header"
+                                            > Cancelation Policy </p>
+                                        </div>
+                                        <div class="mb-1">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <p
+                                                        class="text-justify"
+                                                    >Change of plans? No worries. You can cancel up to 72 hours before your check-in date for a full refund. For reservations close to check-in or special cases, please contact our team, we will be glad to help.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </section>
+                    </div>
+                </section>
+                <section
+                    t-attf-class="container py-2 oe_website_sale"
+                    id="product_detail"
+                    t-if="property.amenity_ids"
+                    t-att-data-view-track="view_track and '1' or '0'"
+                >
+                    <div class="container">
+                        <h2 class="text-center mb-5 item-header">Amenities</h2>
+                    </div>
+                    <div class="container">
+                        <ul
+                            class="list-group direction-horizontal"
+                            style="font-size: 15px;line-height: 20px; flex-direction: row !important; flex-wrap: wrap;"
+                        >
+                            <t
+                                t-if="property.amenity_ids"
+                                t-foreach="property.amenity_ids"
+                                t-as="amenity"
+                            >
+                                <t t-if="amenity.is_main_amenity">
+                                    <li
+                                        class="list-group-item d-flex p-0 col col-sm-6 col-md-4 my-2 border-0"
+                                    >
+                                        <div class="pt-0 pr-3">
+                                            <span class="fa fa-circle-o" />
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <p class="mb-1"> <span
+                                                    t-esc="amenity.name"
+                                                /></p>
+                                        </div>
+                                    </li>
+                                </t>
+                            </t>
+                        </ul>
+                    </div>
+                    <div class="row">
+                    <div class="w-100 d-flex col-12 mt-5">
+                        <button
+                                class="btn btn-primary d-flex align-items-center justify-content-center btn-square btn btn-outline-dark mx-auto "
+                                style="background:white; width:100%; max-width: 380px;"
+                                data-toggle="modal"
+                                data-target="#exampleModalPreview"
+                            >
+                            <p class="mb-0 normal text-dark">Explore all amenities</p>
+                        </button>
+
+                    </div>
+                </div>
+
+                </section>
+
+                <div
+                    class="modal fade right"
+                    id="exampleModalPreview"
+                    tabindex="-1"
+                    role="dialog"
+                    aria-labelledby="exampleModalPreviewLabel"
+                    aria-hidden="true"
+                >
+                    <div
+                        class="modal-dialog-full-width modal-dialog momodel modal-fluid modal-xl"
+                        role="document"
+                    >
+                        <div class="modal-content-full-width modal-content ">
+                            <div
+                                class=" modal-header-full-width modal-header text-center"
+                            >
+                                <div class="row container h-100">
+                                    <div class="padding-y col-12 col-12 text-center">
+                                        <h3 class="h3">Main Amenities</h3>
+                                        <p
+                                        >Discover the featured amenities on this property</p>
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    class="close"
+                                    data-dismiss="modal"
+                                    aria-label="Close"
+                                ><span class="fa fa-times" /></button>
+                            </div>
+                            <div class="modal-body">
+                                <ul
+                                    class="list-group direction-horizontal ml-5"
+                                    style="font-size: 15px;line-height: 20px; flex-direction: row !important; flex-wrap: wrap;"
+                                >
+                                    <t
+                                        t-if="property.amenity_ids"
+                                        t-foreach="property.amenity_ids"
+                                        t-as="amenity"
+                                    >
+                                        <t t-if="amenity.is_main_amenity">
+                                            <li
+                                                class="list-group-item d-flex p-0 col col-sm-6 col-md-4 my-2 border-0"
+                                            >
+                                                <div class="pt-0 pr-3">
+                                                    <span class="fa fa-circle-o" />
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <p class="mb-1"> <span
+                                                            t-esc="amenity.name"
+                                                        /></p>
+                                                </div>
+                                            </li>
+                                        </t>
+                                    </t>
+                                </ul>
+                                <div class="row container h-100 mt-3">
+                                    <div class="padding-y col-12 col-12 text-center">
+                                        <h3 class="h3">All Amenities</h3>
+                                        <p
+                                        >Explore all amenities available in this property</p>
+                                    </div>
+                                </div>
+                                <ul
+                                    class="list-group direction-horizontal ml-5"
+                                    style="font-size: 15px;line-height: 20px; flex-direction: row !important; flex-wrap: wrap;"
+                                >
+                                    <t
+                                        t-if="property.amenity_ids"
+                                        t-foreach="property.amenity_ids"
+                                        t-as="amenity"
+                                    >
+                                        <t t-if="amenity.is_main_amenity== False">
+                                            <li
+                                                class="list-group-item d-flex p-0 col col-sm-6 col-md-4 my-2 border-0"
+                                            >
+                                                <div class="pt-0 pr-3">
+                                                    <span class="fa fa-circle-o" />
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <p class="mb-1"> <span
+                                                            t-esc="amenity.name"
+                                                        /></p>
+                                                </div>
+                                            </li>
+                                        </t>
+                                    </t>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="oe_structure oe_empty"
+                id="oe_structure_website_sale_property_2"
+            />
+        </t>
+    </template>
+
+</odoo>
