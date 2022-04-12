@@ -4,10 +4,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0+e-20211202\n"
+"Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-23 19:41+0000\n"
-"PO-Revision-Date: 2021-12-23 19:41+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -79,11 +77,6 @@ msgid "Attachment Count"
 msgstr ""
 
 #. module: pms_sale
-#: model_terms:ir.ui.view,arch_db:pms_sale.pms_configurator_view_form
-msgid "Availabilities"
-msgstr ""
-
-#. module: pms_sale
 #. openerp-web
 #: code:addons/pms_sale/static/src/xml/timeline.xml:0
 #, python-format
@@ -106,8 +99,18 @@ msgid "Book"
 msgstr ""
 
 #. module: pms_sale
+#: model:pms.stage,name:pms_sale.pms_stage_booked
+msgid "Booked"
+msgstr ""
+
+#. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__partner_id
 msgid "Booked by"
+msgstr ""
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.pms_configurator_view_form
+msgid "Bookings"
 msgstr ""
 
 #. module: pms_sale
@@ -121,11 +124,13 @@ msgid "Cancelled"
 msgstr ""
 
 #. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.pms_configurator_view_form
 #: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_form
 msgid "Check In"
 msgstr ""
 
 #. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.pms_configurator_view_form
 #: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_form
 msgid "Check Out"
 msgstr ""
@@ -311,7 +316,6 @@ msgstr ""
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__start
 #: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__start
-#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_form
 msgid "From"
 msgstr ""
 
@@ -751,14 +755,15 @@ msgstr ""
 
 #. module: pms_sale
 #: model:ir.actions.act_window,name:pms_sale.action_board_reservation
-#: model:ir.actions.act_window,name:pms_sale.action_board_reservation_window
 #: model:ir.actions.act_window,name:pms_sale.action_operations_reservation
 #: model:ir.actions.act_window,name:pms_sale.action_pms_reservation
 #: model:ir.actions.act_window,name:pms_sale.action_report_reservation
+#: model:ir.actions.act_window,name:pms_sale.action_sale_reservation
 #: model:ir.ui.menu,name:pms_sale.menu_board_reservation
 #: model:ir.ui.menu,name:pms_sale.menu_config_reservation
 #: model:ir.ui.menu,name:pms_sale.menu_operations_reservation
 #: model:ir.ui.menu,name:pms_sale.menu_report_reservation
+#: model:ir.ui.menu,name:pms_sale.pms_reservation_timeline
 #: model_terms:ir.ui.view,arch_db:pms_sale.sale_order_view_form_inherit_pms_sale
 #: model_terms:ir.ui.view,arch_db:pms_sale.view_move_form_inherit_pms_sale
 #: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_calendar
@@ -774,11 +779,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_sale.field_account_payment__reservation_count
 #: model:ir.model.fields,field_description:pms_sale.field_sale_order__reservation_count
 msgid "Reservations Count"
-msgstr ""
-
-#. module: pms_sale
-#: model:pms.stage,name:pms_sale.pms_stage_booked
-msgid "Reserved"
 msgstr ""
 
 #. module: pms_sale
@@ -908,7 +908,6 @@ msgstr ""
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__stop
 #: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__stop
-#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_form
 msgid "To"
 msgstr ""
 
