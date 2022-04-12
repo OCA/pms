@@ -7,6 +7,9 @@ from odoo.exceptions import ValidationError
 
 from odoo.addons.component.core import Component
 from odoo.addons.connector_pms.components.adapter import ChannelAdapterError
+from odoo.addons.connector_pms_wubook.models.pms_reservation.mapper_import import (
+    get_room_type,
+)
 
 
 class ChannelWubookPmsFolioAdapter(Component):
@@ -226,7 +229,6 @@ class ChannelWubookPmsFolioAdapter(Component):
             occupancies_d = {
                 x["id"]: x["occupancy"] for x in value.pop("rooms_occupancies")
             }
-
             boards_d = {}
             boards = value.pop("boards")
             if boards:
@@ -238,7 +240,12 @@ class ChannelWubookPmsFolioAdapter(Component):
             reservations = []
             for room in value.pop("booked_rooms"):
                 room_id = room["room_id"]
-
+                # If not occupancies in values set the default occupancy
+                # with the min occupancy of the room type
+                if not occupancies_d:
+                    import_mapper = self.component(usage="import.mapper")
+                    room_type = get_room_type(import_mapper, room_id)
+                    occupancies_d[room_id] = min(room_type.room_ids.mapped("capacity"))
                 # TODO: move the following code to method and
                 #  remove boards_d
                 if id_channel == 0:
@@ -280,7 +287,7 @@ class ChannelWubookPmsFolioAdapter(Component):
                             "day": days["day"],
                             "room_id": room_id,
                             "board": board,
-                            "occupancy": occupancies_d[room_id],
+                            "occupancy": occupancies_d.get(room_id) or 1,
                             "board_included": id_channel != 0,
                         }
                     )
