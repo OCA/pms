@@ -15,3 +15,4 @@ class PmsPropertyInfo(Datamodel):
     id = fields.Integer(required=False, allow_none=True)
     name = fields.String(required=False, allow_none=True)
     company = fields.String(required=False, allow_none=True)
+    defaultPricelistId = fields.Integer(required=False, allow_none=True)
