@@ -1,5 +1,4 @@
 import time
-from math import ceil
 
 from jose import jwt
 
@@ -38,7 +37,7 @@ class PmsLoginService(Component):
         )
         # formula = ms_now + ms in 1 sec * secs in 1 min
         minutes = 10
-        timestamp_expire_in_a_min = int(time.time()*1000.0) + 1000 * 60 * minutes
+        timestamp_expire_in_a_min = int(time.time() * 1000.0) + 1000 * 60 * minutes
 
         if not user_record:
             raise ValidationError(_("user or password not valid"))
