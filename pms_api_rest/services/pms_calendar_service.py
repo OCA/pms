@@ -29,6 +29,7 @@ class PmsCalendarService(Component):
         domain.append(("date", ">=", calendar_search_param.date_from))
         domain.append(("date", "<=", calendar_search_param.date_to))
         domain.append(("pms_property_id", "=", calendar_search_param.pms_property_id))
+        domain.append(("state", "!=", "cancel"))
         result_lines = []
         PmsCalendarInfo = self.env.datamodels["pms.calendar.info"]
         for line in self.env["pms.reservation.line"].search(
