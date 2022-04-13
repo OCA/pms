@@ -24,6 +24,11 @@ msgid "# Tasks"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__supplier_invoice_count
+msgid "# Vendor Bills"
+msgstr ""
+
+#. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_team_kanban
 msgid ""
 "<br/>\n"
@@ -181,6 +186,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_attachment_count
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_attachment_count
 msgid "Attachment Count"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__receipt_reminder_email
+msgid ""
+"Automatically send a confirmation email to the vendor X days before the "
+"expected receipt date, asking him to confirm the exact date."
 msgstr ""
 
 #. module: pms_base
@@ -519,6 +531,11 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__date
 msgid "Date"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__reminder_date_before_receipt
+msgid "Days Before Receipt"
 msgstr ""
 
 #. module: pms_base
@@ -1187,6 +1204,11 @@ msgid "Message for Invoice"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__purchase_warn_msg
+msgid "Message for Purchase Order"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__sale_warn_msg
 msgid "Message for Sales Order"
 msgstr ""
@@ -1269,6 +1291,11 @@ msgid "Number of Actions"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__reminder_date_before_receipt
+msgid "Number of days to send reminder email before the promised receipt date"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_has_error_counter
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_has_error_counter
 msgid "Number of errors"
@@ -1298,6 +1325,11 @@ msgid "Number of unread messages"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__on_time_rate
+msgid "On-Time Delivery Rate"
+msgstr ""
+
+#. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Online reservation"
 msgstr ""
@@ -1320,6 +1352,13 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_amenity__type_id
 msgid "Organize amenities by type (multimedia, comfort, etc ...)"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__on_time_rate
+msgid ""
+"Over the past 12 months; the number of products received on time divided by "
+"the number of ordered products."
 msgstr ""
 
 #. module: pms_base
@@ -1535,6 +1574,21 @@ msgid "Purchase Contracts"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__purchase_line_ids
+msgid "Purchase Lines"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__purchase_warn
+msgid "Purchase Order"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__purchase_order_count
+msgid "Purchase Order Count"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__qty_bedroom
 msgid "Qty Bedroom"
 msgstr ""
@@ -1562,6 +1616,11 @@ msgstr ""
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
 msgid "Quantities"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__receipt_reminder_email
+msgid "Receipt Reminder"
 msgstr ""
 
 #. module: pms_base
@@ -1671,6 +1730,7 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__invoice_warn
 #: model:ir.model.fields,help:pms_base.field_pms_property__picking_warn
+#: model:ir.model.fields,help:pms_base.field_pms_property__purchase_warn
 #: model:ir.model.fields,help:pms_base.field_pms_property__sale_warn
 msgid ""
 "Selecting the \"Warning\" option will notify user with the message, "
@@ -1858,6 +1918,11 @@ msgid "Street2"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_purchase_currency_id
+msgid "Supplier Currency"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__supplier_rank
 msgid "Supplier Rank"
 msgstr ""
@@ -1985,6 +2050,13 @@ msgstr ""
 msgid ""
 "This account will be used instead of the default one as the receivable "
 "account for the current partner"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__property_purchase_currency_id
+msgid ""
+"This currency will be used, instead of the default one, for purchases from "
+"the current partner"
 msgstr ""
 
 #. module: pms_base
