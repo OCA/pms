@@ -33,6 +33,7 @@ class PmsPropertyService(Component):
                     id=prop.id,
                     name=prop.name,
                     company=prop.company_id.name,
+                    defaultPricelistId=prop.default_pricelist_id.id,
                 )
             )
         return result_properties
@@ -60,6 +61,7 @@ class PmsPropertyService(Component):
                 id=pms_property.id,
                 name=pms_property.name,
                 company=pms_property.company_id.name,
+                defaultPricelistId=pms_property.default_pricelist_id.id,
             )
 
         return res

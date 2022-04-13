@@ -151,7 +151,7 @@ class PmsPricelistService(Component):
                     if rule:
 
                         pricelist_info.availability_rule_id = rule.id
-                        pricelist_info.min_stay = 8
+                        pricelist_info.min_stay = rule.min_stay
                         pricelist_info.min_stay_arrival = rule.min_stay_arrival
                         pricelist_info.max_stay = rule.max_stay
                         pricelist_info.max_stay_arrival = rule.max_stay_arrival
