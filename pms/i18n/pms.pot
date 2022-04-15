@@ -3461,8 +3461,12 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__discount
-#: model:ir.model.fields,field_description:pms.field_pms_service__discount
 msgid "Discount (€)"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_service__discount
+msgid "Discount (€/ud)"
 msgstr ""
 
 #. module: pms
@@ -4289,6 +4293,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_account_journal__allowed_pms_payments
 msgid "For manual payments"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_service__no_auto_add_lines
+msgid "Force No Auto Add Lines"
 msgstr ""
 
 #. module: pms
@@ -8749,6 +8758,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__sale_line_ids
+#: model:ir.model.fields,field_description:pms.field_pms_service_line__sale_line_ids
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 msgid "Sales Lines"
 msgstr ""
@@ -9668,6 +9678,15 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__preconfirm
 msgid "Technical field that indicates the reservation is not comfirm yet"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_service__no_auto_add_lines
+msgid ""
+"Technical field to avoid add service lines to service\n"
+"        automatically when creating a new service. It is used when\n"
+"        creating a new service with lines in vals\n"
+"        "
 msgstr ""
 
 #. module: pms
