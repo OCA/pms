@@ -183,12 +183,21 @@ class PmsService(models.Model):
     )
 
     discount = fields.Float(
-        string="Discount (€)",
+        string="Discount (€/ud)",
         help="Discount of total price",
         readonly=False,
         store=True,
         digits=("Discount"),
         compute="_compute_discount",
+        inverse="_inverse_discount",
+    )
+    no_auto_add_lines = fields.Boolean(
+        string="Force No Auto Add Lines",
+        help="""Technical field to avoid add service lines to service
+        automatically when creating a new service. It is used when
+        creating a new service with lines in vals
+        """,
+        default=False,
     )
 
     # Compute and Search methods
@@ -296,6 +305,8 @@ class PmsService(models.Model):
     )
     def _compute_service_line_ids(self):
         for service in self:
+            if service.no_auto_add_lines:
+                continue
             if service.product_id:
                 day_qty = 1
                 if service.reservation_id and service.product_id:
@@ -407,6 +418,14 @@ class PmsService(models.Model):
                 cancel_discount = price * ((line.cancel_discount or 0.0) * 0.01)
                 discount += first_discount + cancel_discount
             record.discount = discount
+
+    def _inverse_discount(self):
+        # compute the discount line percentage
+        # based on the discount amount
+        for record in self:
+            for line in record.service_line_ids:
+                line.discount = record.discount
+                line.cancel_discount = 0
 
     def name_get(self):
         result = []
