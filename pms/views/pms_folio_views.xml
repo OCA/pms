@@ -59,6 +59,17 @@
                     class="alert alert-warning"
                     role="alert"
                     style="margin-bottom:0px;"
+                    attrs="{'invisible': [('payment_multi','=',False)]}"
+                >
+                    This folio has payments assigned to multiple folios (through an invoice or directly).
+                    The Folio will only be considered paid if all the folios with the same associated
+                    payment are paid, or if a specific payment is assigned to this folio.
+                    <field name="payment_multi" invisible="1" />
+                </div>
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    style="margin-bottom:0px;"
                     attrs="{'invisible': [('possible_existing_customer_ids','=',[])]}"
                 >
                     A customer/s has this email or mobile, do you want to add it?
@@ -208,6 +219,12 @@
                         title="Partial"
                         bg_color="bg-warning"
                         attrs="{'invisible': [('payment_state', '!=', 'partial')]}"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Overpayment!"
+                        bg_color="bg-info"
+                        attrs="{'invisible': [('payment_state', '!=', 'overpayment')]}"
                     />
                     <widget
                         name="web_ribbon"
@@ -549,7 +566,13 @@
                                     <field name="payment_type" />
                                     <field name="amount" />
                                     <field name="partner_id" invisible="1" />
-                                    <field name="state" invisible="1" />
+                                    <field
+                                        name="state"
+                                        decoration-success="state == 'posted'"
+                                        decoration-danger="state == 'cancel'"
+                                        decoration-warning="state == 'draft'"
+                                        widget="badge"
+                                    />
                                 </tree>
                             </field>
                             <!-- REVIEW: transations has a payment related -->
@@ -659,9 +682,9 @@
                 />
                 <field
                     name="payment_state"
-                    decoration-success="payment_state == 'paid'"
-                    decoration-danger="payment_state == 'not_paid' and state in ['cancel','onboard','done','arrival_delayed','departure_delayed']"
-                    decoration-info="payment_state == 'not_paid' and state in ['draft','confirm',]"
+                    decoration-success="payment_state in ['paid', 'nothing_to_pay']"
+                    decoration-danger="payment_state == 'not_paid'"
+                    decoration-info="payment_state == 'overpayment'"
                     decoration-warning="payment_state == 'partial'"
                     widget="badge"
                     optional="show"
