@@ -4522,6 +4522,11 @@ msgstr ""
 "una secuencia"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_folio__payment_multi
+msgid "Folio paid with payments assigned to other folios"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_folio_sale_line__invoice_lines
 msgid "Folio sale line invoice lines"
 msgstr ""
@@ -6814,6 +6819,11 @@ msgid "Nothing to invoice"
 msgstr "Nada paraFacturar"
 
 #. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__pms_folio__payment_state__nothing_to_pay
+msgid "Nothing to pay"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__cardex_warning
 msgid "Notice under the signature on the traveler's ticket."
 msgstr ""
@@ -7216,6 +7226,16 @@ msgstr "Débitos pendientes"
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 msgid "Overbookings"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__pms_folio__payment_state__overpayment
+msgid "Overpayment"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
+msgid "Overpayment!"
 msgstr ""
 
 #. module: pms
@@ -10117,6 +10137,11 @@ msgid "Technical field for UX purpose."
 msgstr "Campo técnico para fines de UX."
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_folio__payment_multi
+msgid "Technical field for manage payments with multiple folios assigned"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__preconfirm
 msgid "Technical field that indicates the reservation is not comfirm yet"
 msgstr "Campo técnico que indica que la reserva aún no está confirmada"
@@ -10835,6 +10860,17 @@ msgstr ""
 "Este campo se usa para buscar en la dirección de correo electrónico, ya que "
 "el campo de correo electrónico principal puede contener más que "
 "estrictamente una dirección de correo electrónico."
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
+msgid ""
+"This folio has payments assigned to multiple folios (through an invoice or "
+"directly).\n"
+"                    The Folio will only be considered paid if all the folios "
+"with the same associated\n"
+"                    payment are paid, or if a specific payment is assigned "
+"to this folio."
+msgstr ""
 
 #. module: pms
 #: code:addons/pms/models/pms_checkin_partner.py:0
