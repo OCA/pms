@@ -437,6 +437,10 @@
                                 attrs="{'invisible': [('reservation_type', '!=', 'normal')]}"
                             />
                             <field
+                                name="external_reference"
+                                attrs="{'invisible': [('agency_id', '=', False)]}"
+                            />
+                            <field
                                 name="channel_type_id"
                                 attrs="{'readonly':[('agency_id','!=', False)], 'invisible': [('reservation_type', '!=', 'normal')]}"
                             />
