@@ -26,6 +26,13 @@ class PmsReservation(models.Model):
         help="Reservation Code Identification",
         readonly=True,
     )
+    external_reference = fields.Char(
+        string="External Reference",
+        help="Reference of this folio in an external system",
+        compute="_compute_external_reference",
+        store=True,
+        readonly=False,
+    )
     folio_sequence = fields.Integer(
         string="Folio Sequence",
         help="Techinal field to get reservation name",
@@ -667,6 +674,22 @@ class PmsReservation(models.Model):
     lang = fields.Many2one(
         string="Language", comodel_name="res.lang", compute="_compute_lang"
     )
+
+    @api.depends("folio_id", "folio_id.external_reference")
+    def _compute_external_reference(self):
+        for reservation in self:
+            if not reservation.external_reference:
+                reservation.external_reference = (
+                    reservation._get_reservation_external_reference()
+                )
+
+    def _get_reservation_external_reference(self):
+        self.ensure_one()
+        folio = self.folio_id
+        if folio and folio.external_reference:
+            return folio.external_reference
+        else:
+            return False
 
     def _compute_date_order(self):
         for record in self:

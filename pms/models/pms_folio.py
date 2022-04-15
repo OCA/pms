@@ -38,6 +38,9 @@ class PmsFolio(models.Model):
     external_reference = fields.Char(
         string="External Reference",
         help="Reference of this folio in an external system",
+        compute="_compute_external_reference",
+        readonly=False,
+        store=True,
     )
     pms_property_id = fields.Many2one(
         string="Property",
@@ -710,6 +713,20 @@ class PmsFolio(models.Model):
             (line[0].name, line[1]["amount"], line[1]["base"], len(res)) for line in res
         ]
         return res
+
+    @api.depends("reservation_ids", "reservation_ids.external_reference")
+    def _compute_external_reference(self):
+        for folio in self:
+            folio.external_reference = folio._get_folio_external_reference()
+
+    def _get_folio_external_reference(self):
+        self.ensure_one()
+        references = list(set(self.reservation_ids.mapped("external_reference")))
+        references = list(filter(bool, references))
+        if references:
+            return ",".join(references)
+        else:
+            return False
 
     @api.depends("partner_id", "invoice_status", "last_checkout", "partner_invoice_ids")
     def _compute_autoinvoice_date(self):
