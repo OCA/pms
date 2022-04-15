@@ -3920,6 +3920,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__external_reference
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__external_reference
 msgid "External Reference"
 msgstr ""
 
@@ -8021,6 +8022,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__external_reference
+#: model:ir.model.fields,help:pms.field_pms_reservation__external_reference
 msgid "Reference of this folio in an external system"
 msgstr ""
 
