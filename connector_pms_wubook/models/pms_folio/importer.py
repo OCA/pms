@@ -1,7 +1,7 @@
 # Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, fields
+from odoo import _, SUPERUSER_ID
 
 from odoo.addons.component.core import Component
 
@@ -61,9 +61,6 @@ class ChannelWubookPmsFolioImporter(Component):
         # Pre payment Folio
         if binding.payment_gateway_fee > 0:
             folio = binding.odoo_id
-            # REVIEW: avoid duplicate payment
-            if folio.payment_ids:
-                return
             # Wubook Pre payment
             if (
                 folio.channel_type_id
@@ -75,16 +72,53 @@ class ChannelWubookPmsFolioImporter(Component):
                 journal = binding.backend_id.backend_journal_ota_ids.filtered(
                     lambda x: x.agency_id.id == folio.agency_id.id
                 ).journal_id
+                # auto update OTAs payment on modified/cancelled reservations
+                ota_payments = folio.payment_ids.filtered(
+                    lambda x: x.journal_id.id == journal.id
+                )
+                if ota_payments:
+                    if folio.state == "cancel" and folio.amount_total == 0:
+                        ota_payments.action_draft()
+                        ota_payments.action_cancel()
+                        folio.message_post(
+                            body=_(
+                                "The folio and the OTA payment have been cancelled."
+                            ),
+                            subtype_id=self.env.ref("mail.mt_note").id,
+                            email_from=self.env.user.partner_id.email_formatted
+                            or folio.pms_property_id.email_formatted,
+                        )
+                    elif folio.amount_total < binding.payment_gateway_fee:
+                        ota_payments.action_draft()
+                        ota_payments[0].amount = folio.amount_total
+                        ota_payments[0].action_post()
+                        folio.message_post(
+                            body=_(
+                                "The amount of the payment has been updated to %s by OTA modification"
+                                % folio.amount_total
+                            ),
+                            subtype_id=self.env.ref("mail.mt_note").id,
+                            email_from=self.env.user.partner_id.email_formatted
+                            or folio.pms_property_id.email_formatted,
+                        )
+
+            # REVIEW: avoid duplicate payment
+            if (
+                folio.payment_ids.filtered(lambda p: p.state == "posted")
+                or folio.amount_total == 0
+            ):
+                return
             if not journal:
                 raise NotImplementedError(
                     _("Not configure journal payments to %s OTA")
                     % (folio.agency_id.name,)
                 )
+            payment_amount = binding.payment_gateway_fee if binding.payment_gateway_fee <= folio.amount_total else folio.amount_total
             folio.do_payment(
                 journal,
                 journal.suspense_account_id,
                 self.env.user,
-                binding.payment_gateway_fee,
+                payment_amount,
                 folio,
                 reservations=False,
                 services=False,
