@@ -41,9 +41,6 @@ class PmsReservationLine(models.Model):
         readonly=True,
         copy=False,
         comodel_name="folio.sale.line",
-        relation="reservation_line_sale_line_rel",
-        column1="reservation_line_id",
-        column2="sale_line_id",
         check_pms_properties=True,
     )
     pms_property_id = fields.Many2one(

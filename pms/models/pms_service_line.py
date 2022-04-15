@@ -51,6 +51,13 @@ class PmsServiceLine(models.Model):
         related="service_id.pms_property_id",
         check_pms_properties=True,
     )
+    sale_line_ids = fields.Many2many(
+        string="Sales Lines",
+        readonly=True,
+        copy=False,
+        comodel_name="folio.sale.line",
+        check_pms_properties=True,
+    )
     date = fields.Date(
         string="Date",
         help="Sate on which the product is to be consumed",
