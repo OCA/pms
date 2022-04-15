@@ -89,7 +89,7 @@ class ChannelWubookPmsFolioImporter(Component):
                 reservations=False,
                 services=False,
                 partner=folio.partner_id,
-                date=fields.Date.today(),
+                date=folio.last_checkout,
             )
 
     def _create(self, model, values):
