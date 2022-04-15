@@ -3765,9 +3765,13 @@ msgstr "Descuento"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__discount
-#: model:ir.model.fields,field_description:pms.field_pms_service__discount
 msgid "Discount (€)"
 msgstr "Descuento (€)"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_service__discount
+msgid "Discount (€/ud)"
+msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
@@ -4618,6 +4622,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_account_journal__allowed_pms_payments
 msgid "For manual payments"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_service__no_auto_add_lines
+msgid "Force No Auto Add Lines"
 msgstr ""
 
 #. module: pms
@@ -9169,6 +9178,7 @@ msgstr "Descripciones de la Venta"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__sale_line_ids
+#: model:ir.model.fields,field_description:pms.field_pms_service_line__sale_line_ids
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 msgid "Sales Lines"
 msgstr "Líneas de Ventas"
@@ -10108,6 +10118,15 @@ msgstr "Campo técnico para fines de UX."
 #: model:ir.model.fields,help:pms.field_pms_reservation__preconfirm
 msgid "Technical field that indicates the reservation is not comfirm yet"
 msgstr "Campo técnico que indica que la reserva aún no está confirmada"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_service__no_auto_add_lines
+msgid ""
+"Technical field to avoid add service lines to service\n"
+"        automatically when creating a new service. It is used when\n"
+"        creating a new service with lines in vals\n"
+"        "
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_account_bank_statement_line__is_simplified_invoice
