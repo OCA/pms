@@ -9,7 +9,6 @@ class AccountPayment(models.Model):
     folio_ids = fields.Many2many(
         string="Folios",
         comodel_name="pms.folio",
-        ondelete="cascade",
         compute="_compute_folio_ids",
         store=True,
         readonly=False,
@@ -68,15 +67,15 @@ class AccountPayment(models.Model):
                 "line_ids.folio_line_ids.folio_id.id"
             )
             folio_ids = list(set(inv_folio_ids + bill_folio_ids))
-            if folio_ids:
+            # If the payment was already assigned to a specific page of the invoice,
+            # we do not want it to be associated with others
+            if folio_ids and len(set(rec.folio_ids.ids) & set(folio_ids)) == 0:
+                folios = self.env["pms.folio"].browse(folio_ids)
+                # If the payment is in a new invoice, we want it to be associated with all
+                # folios of the invoice that don't are paid yet
+                folio_ids = folios.filtered(lambda f: f.pending_amount > 0).ids
                 rec.write({"folio_ids": [(6, 0, folio_ids)]})
-            elif (
-                not rec.reconciled_invoice_ids
-                and not rec.reconciled_bill_ids
-                and rec.folio_ids
-            ):
-                rec.folio_ids = rec.folio_ids
-            else:
+            elif not rec.folio_ids:
                 rec.folio_ids = False
 
     def _prepare_move_line_default_vals(self, write_off_line_vals=None):

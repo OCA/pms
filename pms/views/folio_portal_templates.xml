@@ -161,13 +161,13 @@
                 <i class="fa fa-fw fa-arrow-circle-right" /> Pay Now
             </a>
             <div
-                t-if="tx_ids and not pending_manual_txs and folio.payment_state not in ('paid', 'in_payment')"
+                t-if="tx_ids and not pending_manual_txs and folio.payment_state in ('not_paid', 'partial')"
                 class="alert alert-info py-1 mb-2"
             >
                 <i class="fa fa-fw fa-check-circle" /> Pending
             </div>
             <div
-                t-if="folio.payment_state in ('paid', 'in_payment')"
+                t-if="folio.payment_state in ('paid', 'overpayment')"
                 class="alert alert-success py-1 mb-2"
             >
                 <i class="fa fa-fw fa-check-circle" /> Paid
