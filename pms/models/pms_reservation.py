@@ -15,7 +15,7 @@ class PmsReservation(models.Model):
     _name = "pms.reservation"
     _description = "Reservation"
     _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin"]
-    _order = "priority asc, create_date desc, write_date desc"
+    _order = "write_date desc, create_date desc"
     # TODO:
     #  consider near_to_checkin & pending_notifications to order
     _check_pms_properties_auto = True
