@@ -162,6 +162,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
             if self.partner_invoice_id
             else order.partner_invoice_id.id,
             "currency_id": order.pricelist_id.currency_id.id,
+            "folio_ids": [(6, 0, order.ids)],
             "payment_reference": order.reference,
             "invoice_payment_term_id": order.payment_term_id.id,
             "partner_bank_id": order.company_id.partner_id.bank_ids[:1].id,

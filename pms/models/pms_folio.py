@@ -265,6 +265,8 @@ class PmsFolio(models.Model):
             ("not_paid", "Not Paid"),
             ("paid", "Paid"),
             ("partial", "Partially Paid"),
+            ("overpayment", "Overpayment"),
+            ("nothing_to_pay", "Nothing to pay"),
         ],
         compute="_compute_amount",
         tracking=True,
@@ -399,6 +401,13 @@ class PmsFolio(models.Model):
         store=True,
         compute="_compute_amount",
         tracking=True,
+    )
+    payment_multi = fields.Boolean(
+        string="Folio paid with payments assigned to other folios",
+        help="Technical field for manage payments with multiple folios assigned",
+        readonly=True,
+        store=True,
+        compute="_compute_amount",
     )
     amount_untaxed = fields.Monetary(
         string="Untaxed Amount",
@@ -1103,72 +1112,126 @@ class PmsFolio(models.Model):
         "payment_ids.move_id.line_ids.credit",
         "payment_ids.move_id.line_ids.currency_id",
         "payment_ids.move_id.line_ids.amount_currency",
+        "move_ids.amount_residual",
     )
     def _compute_amount(self):
         for record in self:
             if record.reservation_type in ("staff", "out"):
                 record.amount_total = 0
                 vals = {
-                    "payment_state": False,
+                    "payment_state": "nothing_to_pay",
                     "pending_amount": 0,
                     "invoices_paid": 0,
                 }
                 record.update(vals)
             else:
-                mls = record.payment_ids.mapped("move_id.line_ids").filtered(
+                # first attempt compute amount search payments refs with only one folio
+                mls_one_folio = (
+                    record.payment_ids.filtered(lambda pay: len(pay.folio_ids) == 1)
+                    .mapped("move_id.line_ids")
+                    .filtered(
+                        lambda x: x.account_id.internal_type == "receivable"
+                        and x.parent_state == "posted"
+                    )
+                )
+                advance_amount = record._get_advance_amount(mls_one_folio)
+                # Compute 'payment_state'.
+                vals = record._get_amount_vals(mls_one_folio, advance_amount)
+                # If folio its not paid, search payments refs with more than one folio
+                folio_ids = record.payment_ids.mapped("folio_ids.id")
+                if vals["pending_amount"] > 0 and len(folio_ids) > 1:
+                    folios = self.env["pms.folio"].browse(folio_ids)
+                    mls_multi_folio = folios.payment_ids.mapped(
+                        "move_id.line_ids"
+                    ).filtered(
+                        lambda x: x.account_id.internal_type == "receivable"
+                        and x.parent_state == "posted"
+                    )
+                    if mls_multi_folio:
+                        advance_amount = record._get_advance_amount(mls_multi_folio)
+                        vals = record._get_amount_vals(
+                            mls_multi_folio, advance_amount, folio_ids
+                        )
+
+                record.update(vals)
+
+    def _get_advance_amount(self, mls):
+        self.ensure_one()
+        advance_amount = 0.0
+        for line in mls:
+            line_currency = line.currency_id or line.company_id.currency_id
+            line_amount = line.amount_currency if line.currency_id else line.balance
+            line_amount *= -1
+            if line_currency != self.currency_id:
+                advance_amount += line.currency_id._convert(
+                    line_amount,
+                    self.currency_id,
+                    self.company_id,
+                    line.date or fields.Date.today(),
+                )
+            else:
+                advance_amount += line_amount
+        return advance_amount
+
+    def _get_amount_vals(self, mls, advance_amount, folio_ids=False):
+        self.ensure_one()
+        folios = self
+        if folio_ids:
+            folios = self.env["pms.folio"].browse(folio_ids)
+            mls_one_folio = (
+                self.payment_ids.filtered(lambda pay: len(pay.folio_ids) == 1)
+                .mapped("move_id.line_ids")
+                .filtered(
                     lambda x: x.account_id.internal_type == "receivable"
                     and x.parent_state == "posted"
                 )
-                advance_amount = 0.0
-                for line in mls:
-                    line_currency = line.currency_id or line.company_id.currency_id
-                    line_amount = (
-                        line.amount_currency if line.currency_id else line.balance
-                    )
-                    line_amount *= -1
-                    if line_currency != record.currency_id:
-                        advance_amount += line.currency_id._convert(
-                            line_amount,
-                            record.currency_id,
-                            record.company_id,
-                            line.date or fields.Date.today(),
-                        )
-                    else:
-                        advance_amount += line_amount
-                amount_residual = record.amount_total - advance_amount
+            )
+            amount_folio_residual = self.amount_total - self._get_advance_amount(
+                mls_one_folio
+            )
+            amount_total_residual = sum(folios.mapped("amount_total")) - advance_amount
+        else:
+            amount_folio_residual = amount_total_residual = (
+                sum(folios.mapped("amount_total")) - advance_amount
+            )
+        total = sum(folios.mapped("amount_total"))
 
-                total = record.amount_total
-                # REVIEW: Must We ignored services in cancelled folios
-                # pending amount?
-                if record.state == "cancel":
-                    total = total - sum(record.service_ids.mapped("price_total"))
-                # Compute 'payment_state'.
-                payment_state = "not_paid"
-                if (
-                    mls
-                    and float_compare(
-                        amount_residual,
-                        total,
-                        precision_rounding=record.currency_id.rounding,
-                    )
-                    != 0
-                ):
-                    has_due_amount = float_compare(
-                        amount_residual,
-                        0.0,
-                        precision_rounding=record.currency_id.rounding,
-                    )
-                    if has_due_amount <= 0:
-                        payment_state = "paid"
-                    elif has_due_amount > 0:
-                        payment_state = "partial"
+        # REVIEW: Must We ignored services in cancelled folios
+        # pending amount?
+        for folio in folios:
+            if folio.state == "cancel":
+                total = total - sum(folio.service_ids.mapped("price_total"))
+        payment_state = "not_paid"
+        if (
+            mls
+            and float_compare(
+                amount_total_residual,
+                total,
+                precision_rounding=self.currency_id.rounding,
+            )
+            != 0
+        ):
+            has_due_amount = float_compare(
+                amount_total_residual,
+                0.0,
+                precision_rounding=self.currency_id.rounding,
+            )
+            if has_due_amount == 0:
+                payment_state = "paid"
+            elif has_due_amount > 0:
+                payment_state = "partial"
+            elif has_due_amount < 0:
+                payment_state = "overpayment"
+        elif total == 0:
+            payment_state = "nothing_to_pay"
 
-                vals = {
-                    "pending_amount": amount_residual,
-                    "invoices_paid": advance_amount,
-                    "payment_state": payment_state,
-                }
-                record.update(vals)
+        vals = {
+            "payment_multi": len(folios) > 1,
+            "pending_amount": min(amount_total_residual, amount_folio_residual),
+            "invoices_paid": advance_amount,
+            "payment_state": payment_state,
+        }
+        return vals
 
     @api.depends("reservation_ids", "reservation_ids.priority")
     def _compute_max_reservation_priority(self):
@@ -1236,12 +1299,11 @@ class PmsFolio(models.Model):
         if operator == "in" and value:
             self.env.cr.execute(
                 """
-                SELECT array_agg(so.id)
-                    FROM pms_folio so
-                    JOIN folio_sale_line sol ON sol.folio_id = so.id
-                    JOIN folio_sale_line_invoice_rel soli_rel ON \
-                        soli_rel.sale_line_ids = sol.id
-                    JOIN account_move_line aml ON aml.id = soli_rel.invoice_line_id
+                SELECT array_agg(fo.id)
+                    FROM pms_folio fo
+                    JOIN folio_sale_line fol ON fol.folio_id = fo.id
+                    JOIN folio_sale_line_invoice_rel foli_rel ON foli_rel.sale_line_id = fol.id
+                    JOIN account_move_line aml ON aml.id = foli_rel.invoice_line_id
                     JOIN account_move am ON am.id = aml.move_id
                 WHERE
                     am.move_type in ('out_invoice', 'out_refund', 'in_receipt') AND
@@ -1811,7 +1873,6 @@ class PmsFolio(models.Model):
             "invoice_origin": self.name,
             "invoice_payment_term_id": self.payment_term_id.id,
             "transaction_ids": [(6, 0, self.transaction_ids.ids)],
-            "folio_ids": [(6, 0, [self.id])],
             "invoice_line_ids": [],
             "company_id": self.company_id.id,
             "payment_reference": self.external_reference or self.reference,
