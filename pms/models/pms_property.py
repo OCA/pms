@@ -592,7 +592,12 @@ class PmsProperty(models.Model):
                 ("invoice_status", "=", "to_invoice"),
             ]
         )
-        for folio in folios:
+        paid_folios = folios.filtered(lambda f: f.pending_amount <= 0)
+        unpaid_folios = folios.filtered(lambda f: f.pending_amount > 0)
+        for folio in unpaid_folios:
+            # TODO: Autoinvoice unpaid agency folios?
+            folio.message_post(body=_("Not invoiced due to pending amounts"))
+        for folio in paid_folios:
             try:
                 invoice = folio.with_context(autoinvoice=True)._create_invoices(
                     grouped=True,
