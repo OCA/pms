@@ -1,5 +1,7 @@
 import datetime
 
+from odoo import fields
+
 from .common import TestPms
 
 
@@ -661,7 +663,7 @@ class TestPmsFolioInvoice(TestPms):
             "The autoinvoice date in folio with property checkout policy is wrong",
         )
 
-    def test_autoinvoice_folio_overnights_partner_policy(self):
+    def test_autoinvoice_paid_folio_overnights_partner_policy(self):
         """
         Test create and invoice the cron by partner preconfig automation
         with only overnights reservations (included board services)
@@ -669,8 +671,105 @@ class TestPmsFolioInvoice(TestPms):
         Set partner invoicing_policy to checkout, create a reservation
         with room, board service and normal service, run autoinvoicing
         method and check that only room and board service was invoiced
-        in partner1,
+        in partner1, the folio must be paid
 
+        """
+        # ARRANGE
+        self.partner_id.invoicing_policy = "checkout"
+        self.partner_id.margin_days_autoinvoice = 0
+        self.partner_id.default_invoice_lines = "overnights"
+        self.product1 = self.env["product.product"].create(
+            {
+                "name": "Test Product 1",
+            }
+        )
+
+        self.product2 = self.env["product.product"].create(
+            {
+                "name": "Test Product 2",
+                "lst_price": 100,
+            }
+        )
+
+        self.board_service1 = self.env["pms.board.service"].create(
+            {
+                "name": "Test Board Service 1",
+                "default_code": "CB1",
+                "amount": 10,
+            }
+        )
+
+        self.board_service_line1 = self.env["pms.board.service.line"].create(
+            {
+                "product_id": self.product1.id,
+                "pms_board_service_id": self.board_service1.id,
+                "amount": 10,
+            }
+        )
+
+        self.board_service_room_type1 = self.env["pms.board.service.room.type"].create(
+            {
+                "pms_room_type_id": self.room_type_double.id,
+                "pms_board_service_id": self.board_service1.id,
+            }
+        )
+        # ACT
+        self.reservation1 = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.property.id,
+                "checkin": datetime.date.today() - datetime.timedelta(days=3),
+                "checkout": datetime.date.today(),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner_id.id,
+                "board_service_room_id": self.board_service_room_type1.id,
+            }
+        )
+        self.service = self.env["pms.service"].create(
+            {
+                "is_board_service": False,
+                "product_id": self.product2.id,
+                "reservation_id": self.reservation1.id,
+            }
+        )
+        folio = self.reservation1.folio_id
+        reservation1 = self.reservation1
+        folio.do_payment(
+            journal=self.env["account.journal"].browse(
+                reservation1.folio_id.pms_property_id._get_payment_methods().ids[0]
+            ),
+            receivable_account=self.env["account.journal"]
+            .browse(reservation1.folio_id.pms_property_id._get_payment_methods().ids[0])
+            .suspense_account_id,
+            user=self.env.user,
+            amount=reservation1.folio_id.pending_amount,
+            folio=folio,
+            partner=reservation1.partner_id,
+            date=fields.date.today(),
+        )
+        self.property.autoinvoicing()
+
+        # ASSERT
+        overnight_sale_lines = self.reservation1.folio_id.sale_line_ids.filtered(
+            lambda line: line.reservation_line_ids or line.is_board_service
+        )
+        partner_invoice = self.reservation1.folio_id.move_ids.filtered(
+            lambda inv: inv.partner_id == self.partner_id
+        )
+        self.assertEqual(
+            partner_invoice.mapped("line_ids.folio_line_ids.id"),
+            overnight_sale_lines.ids,
+            "Billed services and overnights invoicing wrong compute",
+        )
+
+    def test_not_autoinvoice_unpaid_folio_partner_policy(self):
+        """
+        Test create and invoice the cron by partner preconfig automation
+        --------------------------------------
+        Set partner invoicing_policy to checkout, create a reservation
+        with room, board service and normal service, run autoinvoicing
+        method and check that not invoice was created becouse
+        the folio is not paid
         """
         # ARRANGE
         self.partner_id.invoicing_policy = "checkout"
@@ -733,15 +832,12 @@ class TestPmsFolioInvoice(TestPms):
         self.property.autoinvoicing()
 
         # ASSERT
-        overnight_sale_lines = self.reservation1.folio_id.sale_line_ids.filtered(
-            lambda line: line.reservation_line_ids or line.is_board_service
-        )
         partner_invoice = self.reservation1.folio_id.move_ids.filtered(
             lambda inv: inv.partner_id == self.partner_id
         )
         self.assertEqual(
             partner_invoice.mapped("line_ids.folio_line_ids.id"),
-            overnight_sale_lines.ids,
+            [],
             "Billed services and overnights invoicing wrong compute",
         )
 
