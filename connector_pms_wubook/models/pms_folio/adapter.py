@@ -234,6 +234,8 @@ class ChannelWubookPmsFolioAdapter(Component):
             if boards:
                 boards_d = {k: v != "nb" and v or None for k, v in boards.items()}
 
+            channel_data = value.get("channel_data")
+            vat_included = channel_data.get("vat_included", True)
             id_channel = value["id_channel"]
 
             customer_notes = value.pop("customer_notes")
@@ -248,21 +250,13 @@ class ChannelWubookPmsFolioAdapter(Component):
                     occupancies_d[room_id] = min(room_type.room_ids.mapped("capacity"))
                 # TODO: move the following code to method and
                 #  remove boards_d
-                if id_channel == 0:
-                    board = boards_d.get(room_id)
-                elif id_channel == 2:
+                board = boards_d.get(room_id)
+                if id_channel == 2: # Booking.com
                     # Board services can be included in the rate
                     # plan and detected by the WuBook API
                     detected_board = value.get("ancillary", {}).get("Detected Board")
                     board = detected_board != "nb" and detected_board or None
                     # Guests can differ from the Wubook ones???
-                    guests = room.get("ancillary", {}).get("guests")
-                    if guests:
-                        occupancies_d[room_id] = min(occupancies_d[room_id], guests)
-                else:
-                    # REVIEW other OTAs: Generic interpretation to avoid importer blocking
-                    detected_board = value.get("ancillary", {}).get("Detected Board")
-                    board = detected_board != "nb" and detected_board or None
                     guests = room.get("ancillary", {}).get("guests")
                     if guests:
                         occupancies_d[room_id] = min(occupancies_d[room_id], guests)
@@ -289,6 +283,7 @@ class ChannelWubookPmsFolioAdapter(Component):
                             "board": board,
                             "occupancy": occupancies_d.get(room_id) or 1,
                             "board_included": id_channel != 0,
+                            "vat_included": vat_included,
                         }
                     )
 
