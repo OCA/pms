@@ -875,7 +875,7 @@ class ResPartner(models.Model):
         for partner in self:
             if not partner.vat_document_type or partner.vat_document_type != "vat":
                 continue
-            else:
+            elif hasattr(super(), "check_vat"):
                 super(ResPartner, partner).check_vat()
 
     def unlink(self):
