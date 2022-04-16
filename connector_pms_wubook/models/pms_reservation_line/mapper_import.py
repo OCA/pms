@@ -22,8 +22,23 @@ class ChannelWubookPmsReservationLineMapperImport(Component):
     @mapping
     def price(self, record):
         price = record["price"]
+        room_type = get_room_type(self, record["room_id"])
+        vat_included = record["vat_included"]
+        # By default, taxes are included in the price
+        # if not included, wi need handle the price
+        if not vat_included:
+            product = room_type.product_id
+            company = self.backend_record.pms_property_id.company_id
+            taxes = product.taxes_id.filtered(
+                lambda x: x.company_id == company
+            )
+            taxes_vals = taxes.compute_all(
+                price_unit=price,
+                product=product,
+                handle_price_include=vat_included
+            )
+            price = taxes_vals["total_included"]
         if record["board"] and record["board_included"]:
-            room_type = get_room_type(self, record["room_id"])
             board_service_room = get_board_service_room_type(
                 self, room_type, record["board"]
             )
