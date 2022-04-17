@@ -23,7 +23,7 @@
                 expr="//field[@name='invoice_line_ids']/tree/field[@name='quantity']"
                 position="before"
             >
-                <field name="name_changed_by_user" invisible="1" />
+                <field name="name_changed_by_user" invisible="0" />
                 <field
                     name="pms_property_id"
                     attrs="{'column_invisible':[('parent.pms_property_id','!=',False)]}"
