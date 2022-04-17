@@ -1793,7 +1793,7 @@ class PmsFolio(models.Model):
                 move = (
                     self.env["account.move"]
                     .sudo()
-                    .with_context(default_move_type="out_invoice", auto_name=True)
+                    .with_context(default_move_type="out_invoice")
                     .create(invoice_vals)
                 )
             moves += move
