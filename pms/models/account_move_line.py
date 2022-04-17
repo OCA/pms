@@ -32,11 +32,11 @@ class AccountMoveLine(models.Model):
         check_pms_properties=True,
     )
     name_changed_by_user = fields.Boolean(
-        string="Custom label",
-        readonly=False,
-        default=False,
-        store=True,
-        compute="_compute_name_changed_by_user",
+        string="Name set manually",
+        help="""Techinal field to know if the name was set manually by the user
+        or by the system. If the name was set manually, the system will not
+        change it when the qty days are changed""",
+        default=True,
     )
     pms_property_id = fields.Many2one(
         name="Property",
@@ -60,24 +60,16 @@ class AccountMoveLine(models.Model):
     @api.depends("quantity")
     def _compute_name(self):
         for record in self:
-            record.name = self.env["folio.sale.line"].generate_folio_sale_name(
-                record.folio_line_ids.reservation_id,
-                record.product_id,
-                record.folio_line_ids.service_id,
-                record.folio_line_ids.reservation_line_ids,
-                record.folio_line_ids.service_line_ids,
-                qty=record.quantity,
-            )
-            # TODO: check why this code doesn't work
-            # if not record.name_changed_by_user:
-            #   record.with_context(auto_name=True).name = self
-            #       .env["folio.sale.line"].generate_folio_sale_name(
-            #           record.folio_line_ids.service_id,
-            #           record.folio_line_ids.reservation_line_ids,
-            #           record.product_id,
-            #           qty=record.quantity)
-            #     record.with_context(auto_name=True)
-            #       ._compute_name_changed_by_user()
+            if record.folio_line_ids and not record.name_changed_by_user:
+                record.name_changed_by_user = False
+                record.name = self.env["folio.sale.line"].generate_folio_sale_name(
+                    record.folio_line_ids.reservation_id,
+                    record.product_id,
+                    record.folio_line_ids.service_id,
+                    record.folio_line_ids.reservation_line_ids,
+                    record.folio_line_ids.service_line_ids,
+                    qty=record.quantity,
+                )
 
     @api.depends("move_id")
     def _compute_pms_property_id(self):
@@ -86,15 +78,6 @@ class AccountMoveLine(models.Model):
                 rec.pms_property_id = rec.move_id.pms_property_id
             elif not rec.pms_property_id:
                 rec.pms_property_id = False
-
-    @api.depends("name")
-    def _compute_name_changed_by_user(self):
-        for record in self:
-            # if not record._context.get("auto_name"):
-            if not self._context.get("auto_name"):
-                record.name_changed_by_user = True
-            else:
-                record.name_changed_by_user = False
 
     @api.depends(
         "folio_line_ids",
