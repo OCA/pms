@@ -939,6 +939,7 @@ class FolioSaleLine(models.Model):
             "analytic_account_id": self.folio_id.analytic_account_id.id,
             "analytic_tag_ids": [(6, 0, self.analytic_tag_ids.ids)],
             "folio_line_ids": [(6, 0, [self.id])],
+            "name_changed_by_user": False,
         }
         if optional_values:
             res.update(optional_values)
