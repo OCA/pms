@@ -84,6 +84,57 @@ class TestPmsFolioInvoice(TestPms):
             }
         )
 
+    def create_configuration_accounting_scenario(self):
+        """
+        Method to simplified scenario to payments and accounting:
+        # REVIEW:
+        - Use new property with odoo demo data company to avoid account configuration
+        - Emule SetUp with new property:
+            - create demo_room_type_double
+            - Create 2 rooms room_type_double
+        """
+        self.pms_property_demo = self.env["pms.property"].create(
+            {
+                "name": "Property Based on Comapany Demo",
+                "company_id": self.env.ref("base.main_company").id,
+                "default_pricelist_id": self.env.ref("product.list0").id,
+            }
+        )
+        # create room type
+        self.demo_room_type_double = self.env["pms.room.type"].create(
+            {
+                "pms_property_ids": [self.pms_property_demo.id],
+                "name": "Double Test",
+                "default_code": "Demo_DBL_Test",
+                "class_id": self.room_type_class1.id,
+                "price": 25,
+            }
+        )
+        # create rooms
+        self.double1 = self.env["pms.room"].create(
+            {
+                "pms_property_id": self.pms_property_demo.id,
+                "name": "Double 101",
+                "room_type_id": self.demo_room_type_double.id,
+                "capacity": 2,
+            }
+        )
+        self.double2 = self.env["pms.room"].create(
+            {
+                "pms_property_id": self.pms_property_demo.id,
+                "name": "Double 102",
+                "room_type_id": self.demo_room_type_double.id,
+                "capacity": 2,
+            }
+        )
+        # make current journals payable
+        journals = self.env["account.journal"].search(
+            [
+                ("type", "in", ["bank", "cash"]),
+            ]
+        )
+        journals.allowed_pms_payments = True
+
     def test_invoice_full_folio(self):
         """
         Check that when launching the create_invoices() method for a full folio,
@@ -675,6 +726,7 @@ class TestPmsFolioInvoice(TestPms):
 
         """
         # ARRANGE
+        self.create_configuration_accounting_scenario()
         self.partner_id.invoicing_policy = "checkout"
         self.partner_id.margin_days_autoinvoice = 0
         self.partner_id.default_invoice_lines = "overnights"
@@ -709,18 +761,18 @@ class TestPmsFolioInvoice(TestPms):
 
         self.board_service_room_type1 = self.env["pms.board.service.room.type"].create(
             {
-                "pms_room_type_id": self.room_type_double.id,
+                "pms_room_type_id": self.demo_room_type_double.id,
                 "pms_board_service_id": self.board_service1.id,
             }
         )
         # ACT
         self.reservation1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property_demo.id,
                 "checkin": datetime.date.today() - datetime.timedelta(days=3),
                 "checkout": datetime.date.today(),
                 "adults": 2,
-                "room_type_id": self.room_type_double.id,
+                "room_type_id": self.demo_room_type_double.id,
                 "partner_id": self.partner_id.id,
                 "board_service_room_id": self.board_service_room_type1.id,
             }
@@ -747,7 +799,7 @@ class TestPmsFolioInvoice(TestPms):
             partner=reservation1.partner_id,
             date=fields.date.today(),
         )
-        self.property.autoinvoicing()
+        self.pms_property_demo.autoinvoicing()
 
         # ASSERT
         overnight_sale_lines = self.reservation1.folio_id.sale_line_ids.filtered(
