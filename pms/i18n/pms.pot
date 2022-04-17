@@ -3071,11 +3071,6 @@ msgid "Custom Values"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_account_move_line__name_changed_by_user
-msgid "Custom label"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__folio_partner_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__partner_id
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_partner_id
@@ -6216,6 +6211,11 @@ msgid "Name of who made the reservation"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_account_move_line__name_changed_by_user
+msgid "Name set manually"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
 msgid ""
 "Name:\n"
@@ -6399,6 +6399,12 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_folio__payment_state__not_paid
 msgid "Not Paid"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_property.py:0
+#, python-format
+msgid "Not invoiced due to pending amounts"
 msgstr ""
 
 #. module: pms
@@ -9673,6 +9679,14 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__folio_sequence
 msgid "Techinal field to get reservation name"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_account_move_line__name_changed_by_user
+msgid ""
+"Techinal field to know if the name was set manually by the user\n"
+"        or by the system. If the name was set manually, the system will not\n"
+"        change it when the qty days are changed"
 msgstr ""
 
 #. module: pms
