@@ -14,4 +14,18 @@
         </xpath>
     </template>
 
+    <template
+        id="assets_tests"
+        name="Website Sale Assets Tests"
+        inherit_id="web.assets_tests"
+    >
+        <xpath expr="." position="inside">
+            <script
+                type="text/javascript"
+                src="/pms_website_sale/static/tests/tours/pms_website_sale_tour.js"
+            />
+
+        </xpath>
+    </template>
+
 </odoo>

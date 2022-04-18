@@ -89,15 +89,19 @@ class WebsiteSale(WebsiteSale):
             end = date_range[1].strip() + " 23:59:59"
             start = datetime.strptime(start, "%m/%d/%Y %H:%M:%S")
             end = datetime.strptime(end, "%m/%d/%Y %H:%M:%S")
-            reservation_ids = request.env["pms.reservation"].search(
-                [
-                    ("stop", "<=", end),
-                    "|",
-                    "|",
-                    ("start", ">=", start),
-                    ("start", ">=", end),
-                    ("stop", ">=", start),
-                ]
+            reservation_ids = (
+                request.env["pms.reservation"]
+                .sudo()
+                .search(
+                    [
+                        ("stop", "<=", end),
+                        "|",
+                        "|",
+                        ("start", ">=", start),
+                        ("start", ">=", end),
+                        ("stop", ">=", start),
+                    ]
+                )
             )
             property_ids = reservation_ids.mapped("property_id")
             domain += [("id", "not in", property_ids.ids)]

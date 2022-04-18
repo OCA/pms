@@ -12,10 +12,6 @@ odoo.define("pms_website_sale.pms_property", function (require) {
         cssLibs: ["/web/static/lib/daterangepicker/daterangepicker.css"],
         start: function () {
             var def = this._super.apply(this, arguments);
-            console.log(
-                "/////////////111111111111//////",
-                $(".field_date_range_filtter")
-            );
             $(".field_date_range_filtter").daterangepicker({
                 autoApply: true,
                 mindate: new moment(),
