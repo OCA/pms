@@ -1,0 +1,24 @@
+<odoo noupdate="0">
+
+    <record id="property_public" model="ir.rule">
+        <field name="name">Property</field>
+        <field name="model_id" ref="pms_base.model_pms_property" />
+        <field name="domain_force">[('website_published', '=', True)]</field>
+        <field
+            name="groups"
+            eval="[(4, ref('base.group_public')), (4, ref('base.group_portal'))]"
+        />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+
+    <record id="pms_base.group_pms_manager" model="res.groups">
+        <field
+            name="implied_ids"
+            eval="[(4, ref('website.group_website_publisher'))]"
+        />
+    </record>
+
+</odoo>
