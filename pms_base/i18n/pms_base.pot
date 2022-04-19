@@ -1003,6 +1003,11 @@ msgid "Last Modified on"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__last_website_so_id
+msgid "Last Online Sales Order"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_amenity__write_uid
 #: model:ir.model.fields,field_description:pms_base.field_pms_amenity_type__write_uid
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__write_uid
