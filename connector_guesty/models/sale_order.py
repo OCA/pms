@@ -34,40 +34,38 @@ class SaleOrder(models.Model):
     def create(self, values):
         return super().create(values)
 
-    def write(self, values):
-        res = super().write(values)
-        _fields = [f for f in values if f in ["order_line", "state"]]
+    def action_draft(self):
+        reservation_id = self.sale_get_active_reservation(include_cancelled=True)
+        reservation_id.action_draft()
+        return super().action_draft()
 
-        if (
-            self.company_id.guesty_backend_id
-            and not self.env.context.get("ignore_guesty_push", False)
-            and len(_fields) > 0
-        ):
-            for sale in self:
-                if sale.state == "draft":
-                    continue
-
-                reservation_ids = self.env["pms.reservation"].search(
-                    [("sale_order_id", "=", sale.id)]
-                )
-
-                if reservation_ids:
-                    for reservation in reservation_ids:
-                        if reservation.guesty_id:
-                            reservation.guesty_push_reservation_update()
-        return res
-
-    def action_cancel(self):
-        stage_ids = [
-            self.env.ref("pms_sale.pms_stage_new", raise_if_not_found=False).id,
-            self.env.ref("pms_sale.pms_stage_booked", raise_if_not_found=False).id,
-            self.env.ref("pms_sale.pms_stage_confirmed", raise_if_not_found=False).id,
-        ]
-        reservation_ids = self.env["pms.reservation"].search(
-            [("sale_order_id", "=", self.id), ("stage_id", "in", stage_ids)]
-        )
-        reservation_ids.action_cancel()
+    def action_cancel(self, ignore_push_event=False, cancel_reservation=True):
+        reservation_ids = self.sale_get_active_reservation()
+        if reservation_ids and cancel_reservation:
+            reservation_ids.action_cancel(ignore_push_event=ignore_push_event)
         return super().action_cancel()
+
+    def action_approve(self, ignore_push_event=False):
+        if not ignore_push_event:
+            reservation_ids = self.sale_get_active_reservation()
+            if reservation_ids:
+                reservation_ids.guesty_push_reservation()
+        return super().action_approve()
+
+    def action_quotation_send(self):
+        _log.info("================= Sending Email =================")
+        rs = super().action_quotation_send()
+        for record in self:
+            to_create = record.sale_get_active_reservation().filtered(
+                lambda r: not r.guesty_id
+            )
+            if to_create:
+                default_status = "inquiry"
+                if self.state in ["sale", "done"]:
+                    default_status = "confirmed"
+
+                to_create.guesty_push_reservation(default_status=default_status)
+        return rs
 
     @api.onchange("order_line")
     def _onchange_validity_date(self):
@@ -81,12 +79,15 @@ class SaleOrder(models.Model):
                 )
                 break
 
-    def sale_get_active_reservation(self):
+    def sale_get_active_reservation(self, include_cancelled=False):
         _stage_ids = [
             self.env.company.guesty_backend_id.stage_reserved_id.id,
             self.env.company.guesty_backend_id.stage_confirmed_id.id,
             self.env.company.guesty_backend_id.stage_inquiry_id.id,
         ]
+
+        if include_cancelled:
+            _stage_ids.append(self.env.company.guesty_backend_id.stage_canceled_id.id)
 
         _reservation = (
             self.env["pms.reservation"]

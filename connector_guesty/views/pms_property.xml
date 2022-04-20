@@ -15,10 +15,44 @@
                 <button name="property_get_price" string="Test Date" type="object" />
             </xpath>
             <xpath expr="//notebook" position="inside">
+                <page string="Additional Info">
+                    <group>
+                        <group>
+                            <field name="property_host" />
+                            <field name="has_security" />
+                            <field name="has_elevator" />
+                            <field name="parking_spaces" />
+                            <field name="parking_spaces_description" />
+                            <field name="has_dishwasher" />
+                            <field name="has_washing_machine" />
+                            <field name="has_dryer" />
+                            <field name="has_sofa_bed" />
+                        </group>
+                        <group>
+                            <field name="has_working_space" />
+                            <field name="has_rooftop" />
+                            <field name="has_gym" />
+                            <field name="has_pool" />
+                            <field name="has_air_conditioning" />
+                            <field name="has_cable_tv" />
+                            <field name="internet_speed_up_mbps" />
+                            <field name="internet_speed_down_mbps" />
+                            <field name="exit_date" />
+                            <field name="ota_description" />
+                        </group>
+                    </group>
+                </page>
                 <page string="Guesty Technical Info">
                     <group>
                         <group>
                             <field name="guesty_id" string="Guesty ID" readonly="1" />
+                            <field name="guesty_listing_ids" string="Guesty Listings">
+                                <tree>
+                                    <field name="name" />
+                                    <field name="title" />
+                                    <field name="city" />
+                                </tree>
+                            </field>
                         </group>
                     </group>
                 </page>
@@ -38,6 +72,48 @@
             <xpath expr="//field[@name='listing_type']" position="after">
                 <field name="days_quotation_expiration" />
             </xpath>
+
+
+            <xpath
+                expr="//field[@name='room_ids']/tree/field[@name='type_id']"
+                position="after"
+            >
+                <field name="qty_double_bed" />
+                <field name="qty_queen_bed" />
+                <field name="qty_king_bed" />
+            </xpath>
+
+
+            <xpath expr="//field[@name='qty_bedroom']" position="after">
+                <field name="qty_total_bed" />
+                <field name="qty_double_bed" />
+                <field name="qty_queen_bed" />
+                <field name="qty_king_bed" />
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_pms_property_tree_casai" model="ir.ui.view">
+        <field name="name">pms.property.tree.casai</field>
+        <field name="model">pms.property</field>
+        <field name="inherit_id" ref="pms_base.view_pms_property_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='owner_id']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name="contact_address" optional="show" />
+                <field name="l10n_mx_edi_colony" optional="show" />
+                <field name="no_of_guests" optional="show" string="Occupancy" />
+                <field name="qty_bedroom" optional="show" string="Rooms" />
+                <field name="qty_half_bathroom" optional="show" string="Half Baths" />
+                <field name="qty_kitchen" optional="show" />
+                <field name="terrace" optional="show" string="Terrace" />
+                <field name="balcony" optional="show" string="Balcony" />
+                <field name="heating" optional="show" string="Heating" />
+                <field name="street2" optional="show" string="Neighborhood" />
+            </xpath>
         </field>
     </record>
 
@@ -46,12 +122,117 @@
         <field name="model">pms.property</field>
         <field name="inherit_id" ref="pms_base.view_pms_property_search" />
         <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <field name="no_of_guests" string="Num. Guests" readonly="1" />
+                <field name="property_host" />
+                <field name="parking_spaces" />
+                <field name="parking_spaces_description" />
+                <field name="internet_speed_up_mbps" />
+                <field name="internet_speed_down_mbps" />
+                <field name="exit_date" />
+                <field name="ota_description" />
+                <separator />
+                <filter
+                    string="1 Bedroom"
+                    name="no_bedroom_1"
+                    domain="[('qty_bedroom', '=', 1)]"
+                />
+                <filter
+                    string="2 Bedrooms"
+                    name="no_bedroom_2"
+                    domain="[('qty_bedroom', '=', 2)]"
+                />
+                <filter
+                    string="3 Bedrooms"
+                    name="no_bedroom_3"
+                    domain="[('qty_bedroom', '=', 3)]"
+                />
+                <separator />
+                <filter
+                    string="Has Security"
+                    name="filter_has_security"
+                    domain="[('has_security', '=', True)]"
+                />
+                <filter
+                    string="Has Elevator"
+                    name="filter_has_elevator"
+                    domain="[('has_elevator', '=', True)]"
+                />
+                <filter
+                    string="Has Dishwasher"
+                    name="filter_has_dishwasher"
+                    domain="[('has_dishwasher', '=', True)]"
+                />
+                <filter
+                    string="Has Washing Machine"
+                    name="filter_has_washing_machine"
+                    domain="[('has_washing_machine', '=', True)]"
+                />
+                <filter
+                    string="Has Dryer"
+                    name="filter_has_dryer"
+                    domain="[('has_dryer', '=', True)]"
+                />
+                <filter
+                    string="Has Sofa Bed"
+                    name="filter_has_sofa_bed"
+                    domain="[('has_sofa_bed', '=', True)]"
+                />
+                <filter
+                    string="Has Working Space"
+                    name="filter_has_working_space"
+                    domain="[('has_working_space', '=', True)]"
+                />
+                <filter
+                    string="Has Rooftop"
+                    name="filter_has_rooftop"
+                    domain="[('has_rooftop', '=', True)]"
+                />
+                <filter
+                    string="Has Gym"
+                    name="filter_has_gym"
+                    domain="[('has_gym', '=', True)]"
+                />
+                <filter
+                    string="Has Pool"
+                    name="filter_has_pool"
+                    domain="[('has_pool', '=', True)]"
+                />
+                <filter
+                    string="Has Air Conditioning"
+                    name="filter_has_air_conditioning"
+                    domain="[('has_air_conditioning', '=', True)]"
+                />
+                <filter
+                    string="Has Cable TV"
+                    name="filter_has_cable_tv"
+                    domain="[('has_cable_tv', '=', True)]"
+                />
+
+            </xpath>
             <xpath expr="//filter[@name='active']" position="after">
                 <separator />
                 <filter
                     string="In Guesty"
                     name="guesty_ok"
                     domain="[('guesty_id', '!=', False)]"
+                />
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_guesty_pms_property_kanban" model="ir.ui.view">
+        <field name="name">pms.property.kanban</field>
+        <field name="model">pms.property</field>
+        <field name="priority">199</field>
+        <field name="inherit_id" ref="pms_base.view_pms_property_kanban" />
+        <field name="arch" type="xml">
+            <xpath expr="//kanban/templates/t/div/div/img" position="replace">
+                <img
+                    t-att-src="kanban_image('pms.property', 'image_128', record.id.raw_value)"
+                    alt="Property"
+                    class="o_image_64_contain"
                 />
             </xpath>
         </field>

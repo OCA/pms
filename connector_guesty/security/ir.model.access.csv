@@ -8,3 +8,4 @@ access_pms_property_days_quotation_expiration,access_pms_property_days_quotation
 access_crm_lead_rule,access_crm_lead_rule,model_crm_lead_rule,base.group_user,1,1,1,1
 access_wiz_crm_lead_new_reservation,access_wiz_crm_lead_new_reservation,model_wiz_crm_lead_new_reservation,base.group_user,1,1,1,1
 access_crm_listing_availability,access_crm_listing_availability,model_crm_listing_availability,base.group_user,1,0,0,0
+access_pms_guesty_listing,access_pms_guesty_listing,model_pms_guesty_listing,base.group_user,1,0,0,0

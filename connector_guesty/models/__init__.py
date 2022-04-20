@@ -1,9 +1,11 @@
 from . import (
     backend_guesty,
     pms_property,
+    pms_room,
     pms_reservation,
     pms_property_reservation,
     pms_guesty_calendar,
+    pms_guesty_listing,
     pms_configurator,
     product,
     res_company,

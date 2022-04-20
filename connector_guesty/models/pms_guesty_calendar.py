@@ -5,7 +5,7 @@ import logging
 
 import pytz
 
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _log = logging.getLogger(__name__)
@@ -14,6 +14,7 @@ _log = logging.getLogger(__name__)
 class PmsGuestyCalendar(models.Model):
     _name = "pms.guesty.calendar"
     _description = "Guesty Calendar"
+    _rec_name = "price"
 
     listing_id = fields.Char(required=True)
     listing_date = fields.Date(required=True)
@@ -33,6 +34,10 @@ class PmsGuestyCalendar(models.Model):
 
     property_id = fields.Many2one("pms.property", required=True)
 
+    date_start = fields.Datetime(compute="_compute_full_date", store=True)
+    date_stop = fields.Datetime(compute="_compute_full_date", store=True)
+    color = fields.Integer(compute="_compute_full_date", store=True)
+
     _sql_constraints = [
         (
             "unique_listing_date",
@@ -40,6 +45,26 @@ class PmsGuestyCalendar(models.Model):
             _("You cannot have dates duplicated by listing"),
         )
     ]
+
+    @api.depends("listing_date", "state")
+    def _compute_full_date(self):
+        _log.info(self.env.context)
+        for record in self:
+            tz = pytz.timezone(record.property_id.tz)
+            start = datetime.datetime.combine(
+                record.listing_date, datetime.datetime.min.time()
+            )
+            start = tz.localize(start).astimezone(pytz.UTC).replace(tzinfo=None)
+            # _log.info(start)
+
+            stop = datetime.datetime.combine(
+                record.listing_date, datetime.datetime.max.time()
+            )
+            stop = tz.localize(stop).astimezone(pytz.UTC).replace(tzinfo=None)
+
+            record.date_start = start
+            record.date_stop = stop
+            record.color = 10 if record.state == "available" else 1
 
     def guesty_pull_calendar(self, backend, property_id, start_date, stop_date):
         # todo: Fix Calendar

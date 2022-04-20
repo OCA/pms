@@ -143,6 +143,10 @@ class BackendGuesty(models.Model):
                 "fullName": partner.name,
                 "email": partner.email,
             }
+
+            if partner.phone or partner.mobile:
+                body["phone"] = partner.phone or partner.mobile
+
             success, res = self.call_post_request(url_path="guests", body=body)
 
             if not success:
@@ -324,11 +328,13 @@ class BackendGuesty(models.Model):
 
         url = "{}/{}".format(self.api_url, url_path)
         try:
+            _log.info("Calling GET request to {}".format(url))
             result = requests.get(
                 url=url, params=params, auth=(self.api_key, self.api_secret)
             )
 
             if result.status_code in success_codes:
+                _log.info(result.content)
                 return True, result.json()
 
             _log.error(result.content)
@@ -339,6 +345,7 @@ class BackendGuesty(models.Model):
 
     def call_post_request(self, url_path, body):
         url = "{}/{}".format(self.api_url, url_path)
+        _log.info("Calling POST request to {}".format(url))
         result = requests.post(url=url, json=body, auth=(self.api_key, self.api_secret))
 
         if result.status_code == 200:
@@ -349,6 +356,7 @@ class BackendGuesty(models.Model):
 
     def call_put_request(self, url_path, body):
         url = "{}/{}".format(self.api_url, url_path)
+        _log.info("Calling PUT request to {}".format(url))
         result = requests.put(url=url, json=body, auth=(self.api_key, self.api_secret))
 
         if result.status_code == 200:
@@ -367,7 +375,18 @@ class BackendGuesty(models.Model):
         while True:
             success, res = self.call_get_request(
                 url_path="listings",
-                params={"city": "Ciudad de México"},
+                params={
+                    "fields": " ".join(
+                        [
+                            "title",
+                            "nickname",
+                            "accountId",
+                            "address.city",
+                            "active",
+                            "isListed",
+                        ]
+                    ),
+                },
                 limit=100,
                 skip=skip,
             )
@@ -377,25 +396,27 @@ class BackendGuesty(models.Model):
             if success:
                 result = res.get("results", [])
                 for record in result:
-                    property_id = property_ids.filtered(
-                        lambda s: s.ref == record.get("nickname")
-                    )
-                    if property_id and len(property_id) == 1:
-                        property_id.write(
-                            {
-                                "guesty_id": record.get("_id"),
-                                "name": "{} / {}".format(
-                                    record.get("nickname"), record.get("title")
-                                ),
-                            }
-                        )
-                    else:
-                        _log.info("Not found: {}".format(record.get("nickname")))
+                    self.env["pms.guesty.listing"].guesty_pull_listing(record)
 
                 if len(result) == 0:
                     break
             else:
                 break
+
+        for property_id in property_ids.filtered(lambda x: x.guesty_id):
+            listing_id = self.env["pms.guesty.listing"].search(
+                [("external_id", "=", property_id.guesty_id)], limit=1
+            )
+            if listing_id:
+                property_id.guesty_listing_ids += listing_id
+
+        for property_id in property_ids.filtered(lambda x: not x.guesty_id):
+            record_match = self.env["pms.guesty.listing"].search(
+                [("name", "=", property_id.ref)]
+            )
+            if record_match:
+                property_id.guesty_id = record_match.external_id
+                property_id.guesty_listing_ids += record_match
 
     def guesty_get_calendar_info(self, check_in, check_out, property_ids):
         listing_ids = property_ids.mapped("guesty_id")

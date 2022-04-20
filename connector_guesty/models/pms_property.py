@@ -29,6 +29,58 @@ class PmsProperty(models.Model):
         string="Days to quotation expiration", default=1
     )
 
+    guesty_listing_ids = fields.Many2many("pms.guesty.listing", string="Listing")
+    property_host = fields.Char(string="Host")
+    has_security = fields.Boolean(string="Has security")
+    has_elevator = fields.Boolean(string="Has elevator")
+    parking_spaces = fields.Integer(string="Parking spaces")
+    parking_spaces_description = fields.Text(string="Parking spaces description")
+    has_dishwasher = fields.Boolean(string="Has dishwasher")
+    has_washing_machine = fields.Boolean(string="Has washing machine")
+    has_dryer = fields.Boolean(string="Has dryer")
+    has_sofa_bed = fields.Boolean(string="Has sofa bed")
+    has_working_space = fields.Boolean(string="Has working space")
+    has_rooftop = fields.Boolean(string="Has rooftop space")
+    has_gym = fields.Boolean(string="Has gym")
+    has_pool = fields.Boolean(string="Has pool")
+    has_air_conditioning = fields.Boolean(string="Has air conditioning")
+    has_cable_tv = fields.Boolean(string="Has cable tv")
+    internet_speed_up_mbps = fields.Integer(string="Internet speed (mbps)")
+    internet_speed_down_mbps = fields.Integer(string="Internet speed (mbps)")
+
+    exit_date = fields.Date(string="Exit date")
+    ota_description = fields.Text(string="OTAs description")
+
+    qty_total_bed = fields.Integer(
+        string="Total Beds", compute="_compute_qty_beds", store=True
+    )
+    qty_double_bed = fields.Integer(
+        string="Double Beds", compute="_compute_qty_beds", store=True
+    )
+    qty_queen_bed = fields.Integer(
+        string="Queen Beds", compute="_compute_qty_beds", store=True
+    )
+    qty_king_bed = fields.Integer(
+        string="King Beds", compute="_compute_qty_beds", store=True
+    )
+
+    @api.depends("room_ids")
+    def _compute_qty_beds(self):
+        for record in self:
+            qty_double_bed = 0
+            qty_queen_bed = 0
+            qty_king_bed = 0
+
+            for room in record.room_ids:
+                qty_double_bed = qty_double_bed + room.qty_double_bed
+                qty_queen_bed = qty_queen_bed + room.qty_queen_bed
+                qty_king_bed = qty_king_bed + room.qty_king_bed
+
+            record.qty_double_bed = qty_double_bed
+            record.qty_queen_bed = qty_queen_bed
+            record.qty_king_bed = qty_king_bed
+            record.qty_total_bed = qty_double_bed + qty_queen_bed + qty_king_bed
+
     @api.constrains("days_quotation_expiration")
     def check_days_quotation_expiration(self):
         if self.days_quotation_expiration > 2:
@@ -39,6 +91,13 @@ class PmsProperty(models.Model):
     @api.onchange("days_quotation_expiration")
     def _onchange_days_quotation_expiration(self):
         self.check_days_quotation_expiration()
+
+    @api.onchange("guesty_listing_ids")
+    def onchange_guesty_listing_ids(self):
+        if self.guesty_listing_ids:
+            for record in self.guesty_listing_ids:
+                self.guesty_id = record.external_id
+                break
 
     def action_guesty_push_property(self):
         self.with_delay().guesty_push_property()

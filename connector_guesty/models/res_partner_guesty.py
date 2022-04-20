@@ -23,15 +23,18 @@ class ResPartnerGuesty(models.Model):
             "fullName": self.partner_id.name,
         }
 
-        if self.partner_id.phone:
-            body["phone"] = self.partner_id.phone
+        if self.partner_id.phone or self.partner_id.mobile:
+            body["phone"] = self.partner_id.phone or self.partner_id.mobile
 
         if self.partner_id.email:
             body["email"] = self.partner_id.email
 
+        _log.info(body)
         success, res = self.env.company.guesty_backend_id.call_put_request(
             url_path="guests/{}".format(self.guesty_id), body=body
         )
+
+        _log.info(success, res)
 
         if success:
             return res
