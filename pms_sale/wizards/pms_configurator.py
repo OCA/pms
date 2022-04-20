@@ -41,7 +41,8 @@ class PMSConfigurator(models.TransientModel):
         duration_field = self._fields["duration"]
         self.env.remove_to_compute(duration_field, self)
         for reservation in self:
-            reservation.stop = reservation.start + timedelta(days=reservation.duration)
+            date_stop = reservation.start + timedelta(days=reservation.duration)
+            reservation.stop = datetime.combine(date_stop, reservation.stop.time())
 
     @api.depends("guest_ids")
     def _compute_no_of_guests(self):
