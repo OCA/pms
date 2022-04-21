@@ -34,6 +34,19 @@ class PmsPropertyService(Component):
                     name=prop.name,
                     company=prop.company_id.name,
                     defaultPricelistId=prop.default_pricelist_id.id,
+                    colorOptionConfig=prop.color_option_config,
+                    preReservationColor=prop.pre_reservation_color,
+                    confirmedReservationColor=prop.confirmed_reservation_color,
+                    paidReservationColor=prop.paid_reservation_color,
+                    onBoardReservationColor=prop.on_board_reservation_color,
+                    paidCheckinReservationColor=prop.paid_checkin_reservation_color,
+                    outReservationColor=prop.out_reservation_color,
+                    staffReservationColor=prop.staff_reservation_color,
+                    toAssignReservationColor=prop.to_assign_reservation_color,
+                    pendingPaymentReservationColor=prop.pending_payment_reservation_color,
+                    simpleOutColor=prop.simple_out_color,
+                    simpleInColor=prop.simple_in_color,
+                    simpleFutureColor=prop.simple_future_color,
                 )
             )
         return result_properties
@@ -62,6 +75,16 @@ class PmsPropertyService(Component):
                 name=pms_property.name,
                 company=pms_property.company_id.name,
                 defaultPricelistId=pms_property.default_pricelist_id.id,
+                colorOptionConfig=pms_property.color_option_config,
+                preReservationColor=pms_property.pre_reservation_color,
+                confirmedReservationColor=pms_property.confirmed_reservation_color,
+                paidReservationColor=pms_property.paid_reservation_color,
+                onBoardReservationColor=pms_property.on_board_reservation_color,
+                paidCheckinReservationColor=pms_property.paid_checkin_reservation_color,
+                outReservationColor=pms_property.out_reservation_color,
+                staffReservationColor=pms_property.staff_reservation_color,
+                toAssignReservationColor=pms_property.to_assign_reservation_color,
+                pendingPaymentReservationColor=pms_property.pending_payment_reservation_color,
             )
 
         return res
