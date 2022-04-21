@@ -7899,6 +7899,11 @@ msgid "Public Price"
 msgstr ""
 
 #. module: pms
+#: model:product.pricelist,name:pms.pricelist_discount_10%
+msgid "Public Pricelist Discount 10%"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__description_purchase
 msgid "Purchase Description"
 msgstr ""
