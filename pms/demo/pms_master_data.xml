@@ -3751,13 +3751,14 @@
         </record>
 
         <!--pricelist 10% discount on public pricelist-->
-        <record id="pricelist_discount_10%" model="product.pricelist">
+        <record id="pricelist_discount_10_percent" model="product.pricelist">
             <field name="name">Public Pricelist Discount 10%</field>
             <field name="pricelist_type" />
+            <field name="availability_plan_id" ref="demo_pms_availability" />
         </record>
 
         <record id="pms_pricelist_item_discount_10%" model="product.pricelist.item">
-            <field name="pricelist_id" ref="pricelist_discount_10%" />
+            <field name="pricelist_id" ref="pricelist_discount_10_percent" />
             <field name="applied_on">3_global</field>
             <field name="base">pricelist</field>
             <field name="base_pricelist_id" ref="product.list0" />
@@ -3765,9 +3766,6 @@
             <field name="price_discount">10.00</field>
         </record>
 
-        <record id="product.list0" model="product.pricelist">
-            <field name="availability_plan_id" ref="demo_pms_availability" />
-        </record>
         <!--Availability Plan Rules -->
         <!--room_type:double-->
         <record id="availability_rule_double_1" model="pms.availability.plan.rule">
