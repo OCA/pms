@@ -615,7 +615,7 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
         """
         # ARRANGE
         test_quota = 2
-        test_pricelist2 = self.env["product.pricelist"].create(
+        test_pricelist3 = self.env["product.pricelist"].create(
             {
                 "name": "test pricelist 2",
             }
@@ -647,7 +647,7 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
         )
 
         # ACT
-        reservation.pricelist_id = test_pricelist2.id
+        reservation.pricelist_id = test_pricelist3.id
         reservation.flush()
         self.assertEqual(
             test_quota,
