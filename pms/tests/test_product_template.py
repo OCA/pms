@@ -164,6 +164,7 @@ class TestProductTemplate(TestPms):
                 "board_service_room_id": board_service_room_type.id,
             }
         )
+        reservation.flush()
         # ASSERT
         self.assertEqual(
             reservation.service_ids.service_line_ids.day_qty,
@@ -212,6 +213,7 @@ class TestProductTemplate(TestPms):
                 "board_service_room_id": board_service_room_type.id,
             }
         )
+        reservation.flush()
         # ASSERT
         # self.assertTrue(reservation, "The reservation should have been created.")
         # ASSERT
