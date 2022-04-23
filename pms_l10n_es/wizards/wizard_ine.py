@@ -457,30 +457,23 @@ class WizardIne(models.TransientModel):
             ["price"],
             [],
         )
-        rooms_not_allowed = (
-            self.env["pms.reservation.line"]
-            .search(
+        count_room_days_not_allowed = len(
+            self.env["pms.reservation.line"].search(
                 [
                     ("pms_property_id", "=", pms_property_id),
                     ("occupies_availability", "=", True),
                     ("reservation_id.reservation_type", "!=", "normal"),
+                    ("date", ">=", first_day),
+                    ("date", "<=", last_day),
                 ]
             )
-            .mapped("room_id")
-            .ids
         )
-        available_rooms = self.env["pms.room"].search_count(
-            [
-                ("in_ine", "=", True),
-                ("pms_property_id", "=", pms_property_id),
-                ("id", "not in", rooms_not_allowed),
-            ]
-        )
+        pms_property = self.env["pms.property"].browse(pms_property_id)
+        count_total_room_days = len(pms_property.room_ids) * month_range[1]
+        count_available_room_days = count_total_room_days - count_room_days_not_allowed
         if not sum_group_price[0]["price"]:
             return 0
-        revpar = round(
-            sum_group_price[0]["price"] / (available_rooms * last_day.day), 2
-        )
+        revpar = round(sum_group_price[0]["price"] / count_available_room_days, 2)
         return revpar
 
     @api.model
