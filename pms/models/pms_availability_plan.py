@@ -87,7 +87,7 @@ class PmsAvailabilityPlan(models.Model):
         if pricelist_id and room_type_id and date:
             rule = self.env["pms.availability.plan.rule"].search(
                 [
-                    ("availability_plan_id.pms_pricelist_ids", "=", pricelist_id),
+                    ("availability_plan_id.pms_pricelist_ids", "in", pricelist_id),
                     ("room_type_id", "=", room_type_id),
                     ("date", "=", date),
                     ("pms_property_id", "=", pms_property_id),
@@ -126,7 +126,7 @@ class PmsAvailabilityPlan(models.Model):
                 [("id", "=", impacts_quota_id)]
             )
             # and restore quota in old rule item
-            if old_rule:
+            if old_rule and (not rule or rule.id != old_rule.id):
                 old_rule.quota += 1
 
         return False
