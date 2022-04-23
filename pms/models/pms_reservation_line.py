@@ -338,16 +338,13 @@ class PmsReservationLine(models.Model):
     def _compute_impacts_quota(self):
         for line in self:
             reservation = line.reservation_id
-            if isinstance(line.id, int):
-                impacts_quota = False
-            else:
-                impacts_quota = line.impacts_quota
+            impacts_quota_id = line.impacts_quota
             line.impacts_quota = self.env["pms.availability.plan"].update_quota(
                 pricelist_id=reservation.pricelist_id.id,
                 room_type_id=reservation.room_type_id.id,
                 date=line.date,
                 pms_property_id=reservation.pms_property_id.id,
-                impacts_quota_id=impacts_quota,
+                impacts_quota_id=impacts_quota_id,
             )
 
     @api.depends(
