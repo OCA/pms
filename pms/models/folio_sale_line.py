@@ -14,7 +14,9 @@ from odoo.tools.misc import get_lang
 class FolioSaleLine(models.Model):
     _name = "folio.sale.line"
     _description = "Folio Sale Line"
-    _order = "folio_id, sequence, reservation_order desc, service_order, date_order"
+    _order = (
+        "folio_id, sequence, reservation_order desc, service_order, name, date_order"
+    )
     _check_company_auto = True
 
     folio_id = fields.Many2one(
