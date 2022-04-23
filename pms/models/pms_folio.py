@@ -2377,7 +2377,7 @@ class PmsFolio(models.Model):
                         current = {
                             "price_unit": item["price_unit"],
                             "discount": final_discount,
-                            "reservation_line_ids": [(6, 0, lines_to.ids)],
+                            "service_line_ids": [(6, 0, lines_to.ids)],
                             "sequence": sequence,
                         }
                         sale_folio_lines.append(
