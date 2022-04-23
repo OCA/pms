@@ -7899,7 +7899,7 @@ msgid "Public Price"
 msgstr ""
 
 #. module: pms
-#: model:product.pricelist,name:pms.pricelist_discount_10%
+#: model:product.pricelist,name:pms.pricelist_discount_10_percent
 msgid "Public Pricelist Discount 10%"
 msgstr ""
 
