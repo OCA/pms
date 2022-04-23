@@ -1624,6 +1624,13 @@ class PmsReservation(models.Model):
                     )
                 )
 
+    def _check_capacity(self):
+        for record in self:
+            if record.reservation_type != "out":
+                self.env["pms.room"]._check_adults(
+                    record, record.service_ids.service_line_ids
+                )
+
     @api.constrains("reservation_line_ids")
     def checkin_checkout_consecutive_dates(self):
         """
@@ -1710,14 +1717,6 @@ class PmsReservation(models.Model):
         for record in self:
             if record.agency_id and not record.agency_id.is_agency:
                 raise ValidationError(_("booking agency with wrong configuration: "))
-
-    @api.constrains("check_adults")
-    def _check_capacity(self):
-        for record in self:
-            if record.reservation_type != "out":
-                self.env["pms.room"]._check_adults(
-                    record, record.service_ids.service_line_ids
-                )
 
     @api.constrains("closure_reason_id")
     def _check_closure_reason_id(self):
@@ -1917,8 +1916,8 @@ class PmsReservation(models.Model):
             vals["reservation_type"] = (
                 folio.reservation_type if folio.reservation_type else "normal"
             )
-
         record = super(PmsReservation, self).create(vals)
+        record._check_capacity()
         if record.preconfirm and record.state == "draft":
             record.confirm()
 
@@ -1929,6 +1928,10 @@ class PmsReservation(models.Model):
     def write(self, vals):
         asset = super(PmsReservation, self).write(vals)
         self._check_services(vals)
+        # Only check if adult to avoid to check capacity in intermediate states (p.e. flush)
+        # that not take access to possible extra beds service in vals
+        if "adults" in vals:
+            self._check_capacity()
         return asset
 
     def _check_services(self, vals):
