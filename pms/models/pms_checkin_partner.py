@@ -688,6 +688,10 @@ class PmsCheckinPartner(models.Model):
             raise ValidationError(
                 _("Is mandatory indicate the reservation on the checkin")
             )
+        # If a checkin is manually created, we need make sure that
+        # the reservation adults are computed
+        if not reservation.checkin_partner_ids:
+            reservation.flush()
         draft_checkins = reservation.checkin_partner_ids.filtered(
             lambda c: c.state == "draft"
         )
