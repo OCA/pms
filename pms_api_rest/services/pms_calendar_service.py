@@ -256,3 +256,45 @@ class PmsCalendarService(Component):
                     )
                 )
         return result
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/alerts-per-day",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.calendar.search.param", is_list=False),
+        output_param=Datamodel("pms.calendar.alerts.per.day", is_list=True),
+        auth="jwt_api_pms",
+    )
+    def get_alerts_per_day(self, pms_calendar_search_param):
+        PmsCalendarAlertsPerDay = self.env.datamodels["pms.calendar.alerts.per.day"]
+        date_from = datetime.strptime(
+            pms_calendar_search_param.date_from, "%Y-%m-%d"
+        ).date()
+        date_to = datetime.strptime(
+            pms_calendar_search_param.date_to, "%Y-%m-%d"
+        ).date()
+        result = []
+        for day in (
+            date_from + timedelta(d) for d in range((date_to - date_from).days + 1)
+        ):
+            overbooking = False
+            reservations = self.env["pms.reservation"].search(
+                [
+                    ("checkin", "=", day),
+                    ("pms_property_id", "=", pms_calendar_search_param.pms_property_id),
+                ]
+            )
+            if any(reservation.overbooking for reservation in reservations):
+                overbooking = True
+            result.append(
+                PmsCalendarAlertsPerDay(
+                    date=str(datetime.combine(day, datetime.min.time()).isoformat()),
+                    overbooking=overbooking,
+                )
+            )
+        return result
