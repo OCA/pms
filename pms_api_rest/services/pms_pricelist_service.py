@@ -138,28 +138,25 @@ class PmsPricelistService(Component):
 
                 if item or rule:
                     pricelist_info = PmsPricelistItemInfo(
-                        room_type_id=room_type.id,
+                        roomTypeId=room_type.id,
                         date=str(
                             datetime.combine(date, datetime.min.time()).isoformat()
                         ),
                     )
 
                     if item:
-                        pricelist_info.pricelist_item_id = item.id
-                        pricelist_info.fixed_price = item.fixed_price
+                        pricelist_info.pricelistItemId = item.id
 
                     if rule:
 
-                        pricelist_info.availability_rule_id = rule.id
-                        pricelist_info.min_stay = rule.min_stay
-                        pricelist_info.min_stay_arrival = rule.min_stay_arrival
-                        pricelist_info.max_stay = rule.max_stay
-                        pricelist_info.max_stay_arrival = rule.max_stay_arrival
+                        pricelist_info.availabilityRuleId = rule.id
+                        pricelist_info.minStay = rule.min_stay
+                        pricelist_info.minStayArrival = rule.min_stay_arrival
+                        pricelist_info.maxStay = rule.max_stay
+                        pricelist_info.maxStayArrival = rule.max_stay_arrival
                         pricelist_info.closed = rule.closed
-                        pricelist_info.closed_departure = rule.closed_departure
-                        pricelist_info.closed_arrival = rule.closed_arrival
-                        pricelist_info.quota = rule.quota
-                        pricelist_info.max_avail = rule.max_avail
+                        pricelist_info.closedDeparture = rule.closed_departure
+                        pricelist_info.closedArrival = rule.closed_arrival
 
                     result.append(pricelist_info)
 
