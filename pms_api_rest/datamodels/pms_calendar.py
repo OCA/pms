@@ -65,3 +65,9 @@ class PmsCalendarInfo(Datamodel):
     nextLineSplitted = fields.Boolean(required=False, allow_none=True)
     previousLineSplitted = fields.Boolean(required=False, allow_none=True)
     closureReason = fields.String(required=False, allow_none=True)
+
+
+class PmsCalendarAlertsPerDay(Datamodel):
+    _name = "pms.calendar.alerts.per.day"
+    date = fields.String(required=True, allow_none=False)
+    overbooking = fields.Boolean(required=True, allow_none=False)
