@@ -74,7 +74,7 @@ class PmsCalendarService(Component):
                     == line.date,
                     totalPrice=line.reservation_id.price_total,
                     pendingPayment=line.reservation_id.folio_pending_amount,
-                    numNotifications=len(line.reservation_id.message_ids),
+                    numNotifications=line.reservation_id.message_needaction_counter,
                     adults=line.reservation_id.adults,
                     nextLineSplitted=next_line_splitted,
                     previousLineSplitted=previous_line_splitted,
