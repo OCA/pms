@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+
     <record id="sale_order_view_form_inherit_pms_sale" model="ir.ui.view">
         <field name="name">sale.order.form.inherit.pms.sale</field>
         <field name="model">sale.order</field>
@@ -25,6 +25,7 @@
                 position="after"
             >
                 <field name="reservation_ok" invisible="1" />
+                <field name="currency_id" invisible="1" />
                 <field
                     name="property_id"
                     attrs="{'invisible': [('reservation_ok', '=', False)], 'required': [('reservation_ok', '!=', False)]}"
@@ -35,6 +36,7 @@
                     attrs="{'invisible': ['|', ('reservation_ok', '=', False), ('property_id', '=', False)],
                  'required': [('reservation_ok', '!=', False), ('property_id', '!=', False)]}"
                     options="{'no_open': True, 'no_create': True}"
+                    domain="[('property_id', '=', property_id), ('currency_id', '=', currency_id)]"
                 />
                 <field name="start" invisible="1" />
                 <field name="stop" invisible="1" />
@@ -83,4 +85,5 @@
             </xpath>
         </field>
     </record>
+
 </odoo>
