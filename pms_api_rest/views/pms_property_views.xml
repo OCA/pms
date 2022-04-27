@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="inherit_pms_property_views" model="ir.ui.view">
+        <field name="model">pms.property</field>
+        <field name="inherit_id" ref="pms.pms_property_views_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='default_departure_hour']" position="after">
+                <group string="Planning Colors">
+                    <field name="color_option_config" />
+                    <group>
+                        <field
+                            name="simple_in_color"
+                            widget="color"
+                            attrs="{'invisible': [('color_option_config', '!=', 'simple')]}"
+                        />
+                        <field
+                            name="simple_out_color"
+                            widget="color"
+                            attrs="{'invisible': [('color_option_config', '!=', 'simple')]}"
+                        />
+                        <field
+                            name="simple_future_color"
+                            widget="color"
+                            attrs="{'invisible': [('color_option_config', '!=', 'simple')]}"
+                        />
+                    </group>
+                    <group colspan="4" col="4">
+                        <field
+                            name="pre_reservation_color"
+                            widget="color"
+                            attrs="{'invisible': [('color_option_config', '!=', 'advanced')]}"
+                        />
+                        <field
+                            name="out_reservation_color"
+                            widget="color"
+                            attrs="{'invisible': [('color_option_config', '!=', 'advanced')]}"
+                        />
+                        <field
+                            name="confirmed_reservation_color"
+                            widget="color"
+                            attrs="{'invisible': [('color_option_config', '!=', 'advanced')]}"
+                        />
+                        <field
+                            name="paid_reservation_color"
+                            widget="color"
+                            attrs="{'invisible': [('color_option_config', '!=', 'advanced')]}"
+                        />
+                        <field
+                            name="staff_reservation_color"
+                            widget="color"
+                            attrs="{'invisible': [('color_option_config', '!=', 'advanced')]}"
+                        />
+                        <field
+                            name="on_board_reservation_color"
+                            widget="color"
+                            attrs="{'invisible': [('color_option_config', '!=', 'advanced')]}"
+                        />
+                        <field
+                            name="to_assign_reservation_color"
+                            widget="color"
+                            attrs="{'invisible': [('color_option_config', '!=', 'advanced')]}"
+                        />
+                        <field
+                            name="paid_checkin_reservation_color"
+                            widget="color"
+                            attrs="{'invisible': [('color_option_config', '!=', 'advanced')]}"
+                        />
+                        <field
+                            name="pending_payment_reservation_color"
+                            widget="color"
+                            attrs="{'invisible': [('color_option_config', '!=', 'advanced')]}"
+                        />
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
