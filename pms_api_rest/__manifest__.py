@@ -16,6 +16,9 @@
     "external_dependencies": {
         "python": ["jwt", "simplejson", "marshmallow", "jose"],
     },
-    "data": ["data/auth_jwt_validator.xml"],
+    "data": [
+        "data/auth_jwt_validator.xml",
+        "views/pms_property_views.xml",
+    ],
     "installable": True,
 }
