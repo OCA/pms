@@ -113,6 +113,13 @@ class PmsReservationLine(models.Model):
         related="reservation_id.overnight_room",
         store=True,
     )
+    overbooking = fields.Boolean(
+        string="Overbooking",
+        help="Indicate if exists overbooking in the reservation line",
+        store=True,
+        readonly=False,
+        compute="_compute_overbooking",
+    )
     _sql_constraints = [
         (
             "rule_availability",
@@ -468,6 +475,28 @@ class PmsReservationLine(models.Model):
                     )
             else:
                 record.avail_id = False
+
+    @api.depends("reservation_id.overbooking")
+    def _compute_overbooking(self):
+        for record in self:
+            if record.reservation_id.overbooking:
+                real_avail = (
+                    self.env["pms.availability"]
+                    .search(
+                        [
+                            ("room_type_id", "=", record.room_id.room_type_id.id),
+                            ("date", "=", record.date),
+                            ("pms_property_id", "=", record.pms_property_id.id),
+                        ]
+                    )
+                    .real_avail
+                )
+                if real_avail == 0:
+                    record.overbooking = True
+                else:
+                    record.overbooking = False
+            else:
+                record.overbooking = False
 
     # Constraints and onchanges
     @api.constrains("date")
