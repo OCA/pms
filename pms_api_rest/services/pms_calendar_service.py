@@ -283,13 +283,13 @@ class PmsCalendarService(Component):
             date_from + timedelta(d) for d in range((date_to - date_from).days + 1)
         ):
             overbooking = False
-            reservations = self.env["pms.reservation"].search(
+            lines = self.env["pms.reservation.line"].search(
                 [
-                    ("checkin", "=", day),
+                    ("date", "=", day),
                     ("pms_property_id", "=", pms_calendar_search_param.pms_property_id),
                 ]
             )
-            if any(reservation.overbooking for reservation in reservations):
+            if any(line.overbooking for line in lines):
                 overbooking = True
             result.append(
                 PmsCalendarAlertsPerDay(
