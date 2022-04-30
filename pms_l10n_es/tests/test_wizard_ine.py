@@ -753,12 +753,19 @@ class TestWizardINE(TestPms):
         # ARRANGE
         self.ideal_scenario()
         start_date = datetime.date(2021, 2, 1)
+        end_date = datetime.date(2021, 2, 28)
         expected_monthly_adr = 23.58
 
         # ACT
-        monthly_adr = self.env["pms.ine.wizard"].ine_calculate_monthly_adr(
-            start_date, self.pms_property1.id
+        wizard = self.env["pms.ine.wizard"].new(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "start_date": start_date,
+                "end_date": end_date,
+            }
         )
+
+        monthly_adr = wizard.ine_calculate_adr(start_date, end_date)
         # ASSERT
         self.assertEqual(
             expected_monthly_adr,
@@ -784,12 +791,18 @@ class TestWizardINE(TestPms):
         # ARRANGE
         self.ideal_scenario()
         start_date = datetime.date(2021, 2, 1)
+        end_date = datetime.date(2021, 2, 28)
         expected_monthly_revpar = 0.99
 
         # ACT
-        monthly_revpar = self.env["pms.ine.wizard"].ine_calculate_monthly_revpar(
-            start_date, self.pms_property1.id
+        wizard = self.env["pms.ine.wizard"].new(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "start_date": start_date,
+                "end_date": end_date,
+            }
         )
+        monthly_revpar = wizard.ine_calculate_revpar(start_date, end_date)
         # ASSERT
         self.assertEqual(
             expected_monthly_revpar,
