@@ -409,72 +409,58 @@ class WizardIne(models.TransientModel):
         partners_to_unlink.unlink()
         return nationalities
 
-    @api.model
-    def ine_calculate_monthly_adr(self, start_date, pms_property_id):
-        month = start_date.month
-        year = start_date.year
-        month_range = calendar.monthrange(start_date.year, start_date.month)
-        first_day = datetime.date(year, month, 1)
-        last_day = datetime.date(year, month, month_range[1])
-        group_adr = self.env["pms.reservation.line"].read_group(
-            [
-                ("pms_property_id", "=", pms_property_id),
-                ("occupies_availability", "=", True),
-                ("reservation_id.reservation_type", "=", "normal"),
-                ("room_id.in_ine", "=", True),
-                ("date", ">=", first_day),
-                ("date", "<=", last_day),
-            ],
-            ["price:avg"],
-            ["date:day"],
-        )
-        if not len(group_adr):
-            return 0
-        adr = 0
-        for day_adr in group_adr:
-            adr += day_adr["price"]
-
-        adr = round(adr / len(group_adr), 2)
+    def ine_calculate_adr(self, start_date, end_date, domain=False):
+        """
+        Calculate monthly ADR for a property only in INE rooms
+        :param start_date: start date
+        :param pms_property_id: pms property id
+        :param domain: domain to filter reservations (channel, agencies, etc...)
+        """
+        self.ensure_one()
+        domain = [] if not domain else domain
+        domain.append(("room_id.in_ine", "=", True))
+        adr = self.pms_property_id._get_adr(start_date, end_date, domain)
         self.adr = adr
         return adr
 
-    @api.model
-    def ine_calculate_monthly_revpar(self, start_date, pms_property_id):
-        month = start_date.month
-        year = start_date.year
-        month_range = calendar.monthrange(start_date.year, start_date.month)
-        first_day = datetime.date(year, month, 1)
-        last_day = datetime.date(year, month, month_range[1])
-        sum_group_price = self.env["pms.reservation.line"].read_group(
-            [
-                ("pms_property_id", "=", pms_property_id),
-                ("occupies_availability", "=", True),
-                ("reservation_id.reservation_type", "=", "normal"),
-                ("room_id.in_ine", "=", True),
-                ("date", ">=", first_day),
-                ("date", "<=", last_day),
-            ],
-            ["price"],
-            [],
-        )
-        count_room_days_not_allowed = len(
-            self.env["pms.reservation.line"].search(
-                [
-                    ("pms_property_id", "=", pms_property_id),
-                    ("occupies_availability", "=", True),
-                    ("reservation_id.reservation_type", "!=", "normal"),
-                    ("date", ">=", first_day),
-                    ("date", "<=", last_day),
-                ]
-            )
-        )
-        pms_property = self.env["pms.property"].browse(pms_property_id)
-        count_total_room_days = len(pms_property.room_ids) * month_range[1]
-        count_available_room_days = count_total_room_days - count_room_days_not_allowed
-        if not sum_group_price[0]["price"]:
-            return 0
-        revpar = round(sum_group_price[0]["price"] / count_available_room_days, 2)
+    def ine_calculate_revpar(self, start_date, end_date, domain=False):
+        """
+        Calculate monthly revpar for a property only in INE rooms
+        :param start_date: start date
+        :param pms_property_id: pms property id
+        :param domain: domain to filter reservations (channel, agencies, etc...)
+        """
+        self.ensure_one()
+        domain = [] if not domain else domain
+        domain.append(("room_id.in_ine", "=", True))
+        revpar = self.pms_property_id._get_revpar(start_date, end_date, domain)
+        self.revpar = revpar
         return revpar
+
+    def ine_calculate_occupancy(self, start_date, end_date, domain=False):
+        """
+        Calculate monthly occupancy for a property only in INE rooms
+        :param start_date: start date
+        :param pms_property_id: pms property id
+        :param domain: domain to filter reservations (channel, agencies, etc...)
+        """
+        self.ensure_one()
+        domain = [] if not domain else domain
+        total_domain = [
+            ("room_id.in_ine", "=", True),
+            ("date", ">=", start_date),
+            ("date", "<=", end_date),
+        ]
+        total_reservations = self.env["pms.reservation.line"].search(total_domain)
+        domain.extend(total_domain)
+        filter_reservations = self.env["pms.reservation.line"].search(domain)
+        if len(filter_reservations) > 0:
+            filter_percent = round(
+                len(filter_reservations) * 100 / len(total_reservations), 2
+            )
+        else:
+            filter_percent = 0
+        return filter_percent
 
     @api.model
     def ine_get_nif_cif(self, cif_nif):
@@ -688,16 +674,16 @@ class WizardIne(models.TransientModel):
         prices_tag = ET.SubElement(survey_tag, "PRECIOS")
 
         ET.SubElement(prices_tag, "REVPAR_MENSUAL").text = str(
-            self.ine_calculate_monthly_revpar(
+            self.ine_calculate_revpar(
                 self.start_date,
-                self.pms_property_id.id,
+                self.end_date,
             )
         )
 
         ET.SubElement(prices_tag, "ADR_MENSUAL").text = str(
-            self.ine_calculate_monthly_adr(
+            self.ine_calculate_adr(
                 self.start_date,
-                self.pms_property_id.id,
+                self.end_date,
             )
         )
 
@@ -715,24 +701,126 @@ class WizardIne(models.TransientModel):
         ET.SubElement(
             prices_tag, "PCTN_HABITACIONES_OCUPADAS_TOUROPERADOR_ONLINE"
         ).text = "0"
-        ET.SubElement(prices_tag, "ADR_EMPRESAS").text = "0"
-        ET.SubElement(prices_tag, "PCTN_HABITACIONES_OCUPADAS_EMPRESAS").text = "0"
-        ET.SubElement(prices_tag, "ADR_AGENCIA_DE_VIAJE_TRADICIONAL").text = "0"
+        ET.SubElement(prices_tag, "ADR_EMPRESAS").text = str(
+            self.ine_calculate_adr(
+                self.start_date,
+                self.end_date,
+                [
+                    ("reservation_id.partner_id", "!=", False),
+                    ("reservation_id.partner_id.is_company", "=", True),
+                ],
+            )
+        )
+        ET.SubElement(prices_tag, "PCTN_HABITACIONES_OCUPADAS_EMPRESAS").text = str(
+            self.ine_calculate_occupancy(
+                self.start_date,
+                self.end_date,
+                [
+                    ("reservation_id.partner_id", "!=", False),
+                    ("reservation_id.partner_id.is_company", "=", True),
+                ],
+            )
+        )
+        ET.SubElement(prices_tag, "ADR_AGENCIA_DE_VIAJE_TRADICIONAL").text = str(
+            self.ine_calculate_adr(
+                self.start_date,
+                self.end_date,
+                [
+                    ("reservation_id.agency_id", "!=", False),
+                    ("reservation_id.agency_id.sale_channel_id.is_on_line", "=", False),
+                ],
+            )
+        )
         ET.SubElement(
             prices_tag, "PCTN_HABITACIONES_OCUPADAS_AGENCIA_TRADICIONAL"
-        ).text = "0"
-        ET.SubElement(prices_tag, "ADR_AGENCIA_DE_VIAJE_ONLINE").text = "0"
+        ).text = str(
+            self.ine_calculate_occupancy(
+                self.start_date,
+                self.end_date,
+                [
+                    ("reservation_id.agency_id", "!=", False),
+                    ("reservation_id.agency_id.sale_channel_id.is_on_line", "=", False),
+                ],
+            )
+        )
+        ET.SubElement(prices_tag, "ADR_AGENCIA_DE_VIAJE_ONLINE").text = str(
+            self.ine_calculate_adr(
+                self.start_date,
+                self.end_date,
+                [
+                    ("reservation_id.agency_id", "!=", False),
+                    ("reservation_id.agency_id.sale_channel_id.is_on_line", "=", True),
+                ],
+            )
+        )
         ET.SubElement(
             prices_tag, "PCTN_HABITACIONES_OCUPADAS_AGENCIA_ONLINE"
-        ).text = "0"
-        ET.SubElement(prices_tag, "ADR_PARTICULARES").text = "0"
-        ET.SubElement(prices_tag, "PCTN_HABITACIONES_OCUPADAS_PARTICULARES").text = "0"
+        ).text = str(
+            self.ine_calculate_occupancy(
+                self.start_date,
+                self.end_date,
+                [
+                    ("reservation_id.agency_id", "!=", False),
+                    ("reservation_id.agency_id.sale_channel_id.is_on_line", "=", True),
+                ],
+            )
+        )
+        ET.SubElement(prices_tag, "ADR_PARTICULARES").text = str(
+            self.ine_calculate_adr(
+                self.start_date,
+                self.end_date,
+                [
+                    "|",
+                    ("reservation_id.partner_id", "=", False),
+                    ("reservation_id.partner_id.is_company", "!=", False),
+                ],
+            )
+        )
+        ET.SubElement(prices_tag, "PCTN_HABITACIONES_OCUPADAS_PARTICULARES").text = str(
+            self.ine_calculate_occupancy(
+                self.start_date,
+                self.end_date,
+                [
+                    "|",
+                    ("reservation_id.partner_id", "=", False),
+                    ("reservation_id.partner_id.is_company", "=", False),
+                ],
+            )
+        )
         ET.SubElement(prices_tag, "ADR_GRUPOS").text = "0"
         ET.SubElement(prices_tag, "PCTN_HABITACIONES_OCUPADAS_GRUPOS").text = "0"
-        ET.SubElement(prices_tag, "ADR_INTERNET").text = "0"
-        ET.SubElement(prices_tag, "PCTN_HABITACIONES_OCUPADAS_INTERNET").text = "0"
-        ET.SubElement(prices_tag, "ADR_OTROS").text = "0"
-        ET.SubElement(prices_tag, "PCTN_HABITACIONES_OCUPADAS_OTROS").text = "0"
+        ET.SubElement(prices_tag, "ADR_INTERNET").text = str(
+            self.ine_calculate_adr(
+                self.start_date,
+                self.end_date,
+                [("reservation_id.channel_type_id.is_on_line", "=", True)],
+            )
+        )
+        ET.SubElement(prices_tag, "PCTN_HABITACIONES_OCUPADAS_INTERNET").text = str(
+            self.ine_calculate_occupancy(
+                self.start_date,
+                self.end_date,
+                [("reservation_id.channel_type_id.is_on_line", "=", True)],
+            )
+        )
+        ET.SubElement(prices_tag, "ADR_OTROS").text = str(
+            self.ine_calculate_adr(
+                self.start_date,
+                self.end_date,
+                [("reservation_id.channel_type_id.is_on_line", "!=", True)],
+            )
+        )
+        ET.SubElement(prices_tag, "PCTN_HABITACIONES_OCUPADAS_OTROS").text = str(
+            self.ine_calculate_occupancy(
+                self.start_date,
+                self.end_date,
+                [
+                    "|",
+                    ("reservation_id.channel_type_id.is_on_line", "!=", True),
+                    ("reservation_id.channel_type_id", "=", False),
+                ],
+            )
+        )
 
         staff_tag = ET.SubElement(survey_tag, "PERSONAL_OCUPADO")
         ET.SubElement(staff_tag, "PERSONAL_NO_REMUNERADO").text = str(
