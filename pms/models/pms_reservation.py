@@ -1011,6 +1011,7 @@ class PmsReservation(models.Model):
     @api.depends("adults")
     def _compute_checkin_partner_ids(self):
         for reservation in self:
+            adults = reservation.adults if reservation.reservation_type != "out" else 0
             assigned_checkins = reservation.checkin_partner_ids.filtered(
                 lambda c: c.state in ("precheckin", "onboard", "done")
             )
@@ -1018,20 +1019,18 @@ class PmsReservation(models.Model):
                 lambda c: c.state == "draft"
             )
             leftover_unassigneds_count = (
-                len(assigned_checkins) + len(unassigned_checkins) - reservation.adults
+                len(assigned_checkins) + len(unassigned_checkins) - adults
             )
-            if len(assigned_checkins) > reservation.adults:
+            if len(assigned_checkins) > adults:
                 raise UserError(
                     _("Remove some of the leftover assigned checkins first")
                 )
             elif leftover_unassigneds_count > 0:
                 for i in range(0, leftover_unassigneds_count):
                     reservation.checkin_partner_ids = [(2, unassigned_checkins[i].id)]
-            elif reservation.adults > len(reservation.checkin_partner_ids):
+            elif adults > len(reservation.checkin_partner_ids):
                 checkins_lst = []
-                count_new_checkins = reservation.adults - len(
-                    reservation.checkin_partner_ids
-                )
+                count_new_checkins = adults - len(reservation.checkin_partner_ids)
                 for _i in range(0, count_new_checkins):
                     checkins_lst.append(
                         (
@@ -1043,7 +1042,7 @@ class PmsReservation(models.Model):
                         )
                     )
                 reservation.checkin_partner_ids = checkins_lst
-            elif reservation.adults == 0:
+            elif adults == 0:
                 reservation.checkin_partner_ids = False
 
     @api.depends("checkin_partner_ids", "checkin_partner_ids.state")
