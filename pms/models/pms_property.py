@@ -690,7 +690,7 @@ class PmsProperty(models.Model):
         count_room_days_not_allowed = len(
             self.env["pms.reservation.line"].search(not_allowed_rooms_domain)
         )
-        date_range_days = (end_date - start_date).days
+        date_range_days = (end_date - start_date).days + 1
         count_total_room_days = len(self.room_ids) * date_range_days
         count_available_room_days = count_total_room_days - count_room_days_not_allowed
         if not sum_group_price[0]["price"]:
