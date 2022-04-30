@@ -9,6 +9,7 @@ import pytz
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.osv import expression
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
 from odoo.addons.base.models.res_partner import _tz_get
@@ -622,3 +623,77 @@ class PmsProperty(models.Model):
         for pms_property in self.filtered("journal_simplified_invoice_id"):
             if not pms_property.journal_simplified_invoice_id.is_simplified_invoice:
                 pms_property.journal_simplified_invoice_id.is_simplified_invoice = True
+
+    def _get_adr(self, start_date, end_date, domain=False):
+        """
+        Calculate monthly ADR for a property
+        :param start_date: start date
+        :param pms_property_id: pms property id
+        :param domain: domain to filter reservations (channel, agencies, etc...)
+        """
+        self.ensure_one()
+        domain = [] if not domain else domain
+        domain.extend(
+            [
+                ("pms_property_id", "=", self.id),
+                ("occupies_availability", "=", True),
+                ("reservation_id.reservation_type", "=", "normal"),
+                ("date", ">=", start_date),
+                ("date", "<=", end_date),
+            ]
+        )
+        group_adr = self.env["pms.reservation.line"].read_group(
+            domain,
+            ["price:avg"],
+            ["date:day"],
+        )
+        if not len(group_adr):
+            return 0
+        adr = 0
+        for day_adr in group_adr:
+            adr += day_adr["price"]
+
+        return round(adr / len(group_adr), 2)
+
+    def _get_revpar(self, start_date, end_date, domain=False):
+        """
+        Calculate monthly revpar for a property only in INE rooms
+        :param start_date: start date
+        :param pms_property_id: pms property id
+        :param domain: domain to filter reservations (channel, agencies, etc...)
+        """
+        self.ensure_one()
+        domain = [] if not domain else domain
+        domain.extend(
+            [
+                ("pms_property_id", "=", self.id),
+                ("occupies_availability", "=", True),
+                ("room_id.in_ine", "=", True),
+                ("date", ">=", start_date),
+                ("date", "<=", end_date),
+            ]
+        )
+        price_domain = expression.AND(
+            [domain, [("reservation_id.reservation_type", "=", "normal")]]
+        )
+        sum_group_price = self.env["pms.reservation.line"].read_group(
+            price_domain,
+            ["price"],
+            [],
+        )
+        not_allowed_rooms_domain = expression.AND(
+            [
+                domain,
+                [("reservation_id.reservation_type", "!=", "normal")],
+            ]
+        )
+        count_room_days_not_allowed = len(
+            self.env["pms.reservation.line"].search(not_allowed_rooms_domain)
+        )
+        date_range_days = (end_date - start_date).days
+        count_total_room_days = len(self.room_ids) * date_range_days
+        count_available_room_days = count_total_room_days - count_room_days_not_allowed
+        if not sum_group_price[0]["price"]:
+            return 0
+        revpar = round(sum_group_price[0]["price"] / count_available_room_days, 2)
+        return revpar
