@@ -198,7 +198,7 @@ class WizardIne(models.TransientModel):
 
             for entry in read_group_result:
                 if not entry["nationality_id"]:
-                    guests_with_no_nationality = self.env["res.partner"].search(
+                    guests_with_no_nationality = self.env["pms.checkin.partner"].search(
                         entry["__domain"]
                     )
                     guests_with_no_nationality = (
@@ -232,7 +232,7 @@ class WizardIne(models.TransientModel):
                     nationalities[nationality_id_code][date][type_of_entry] = num
                 else:
                     # arrivals grouped by state_id (Spain "provincias")
-                    read_by_arrivals_spain = self.env["res.partner"].read_group(
+                    read_by_arrivals_spain = self.env["pms.checkin.partner"].read_group(
                         entry["__domain"],
                         ["residence_state_id"],
                         ["residence_state_id"],
@@ -242,7 +242,7 @@ class WizardIne(models.TransientModel):
                     for entry_from_spain in read_by_arrivals_spain:
                         if not entry_from_spain["residence_state_id"]:
                             spanish_guests_with_no_state = self.env[
-                                "res.partner"
+                                "pms.checkin.partner"
                             ].search(entry_from_spain["__domain"])
                             spanish_guests_with_no_state = (
                                 str(spanish_guests_with_no_state.mapped("name"))
@@ -352,8 +352,8 @@ class WizardIne(models.TransientModel):
             arrivals = hosts.filtered(lambda x: x.checkin == p_date)
 
             # arrivals grouped by nationality_id
-            read_by_arrivals = self.env["res.partner"].read_group(
-                [("id", "in", arrivals.mapped("partner_id").ids)],
+            read_by_arrivals = self.env["pms.checkin.partner"].read_group(
+                [("id", "in", arrivals.ids)],
                 ["nationality_id"],
                 ["nationality_id"],
                 orderby="nationality_id",
@@ -364,8 +364,8 @@ class WizardIne(models.TransientModel):
             departures = hosts.filtered(lambda x: x.checkout == p_date)
 
             # departures grouped by nationality_id
-            read_by_departures = self.env["res.partner"].read_group(
-                [("id", "in", departures.mapped("partner_id").ids)],
+            read_by_departures = self.env["pms.checkin.partner"].read_group(
+                [("id", "in", departures.ids)],
                 ["nationality_id"],
                 ["nationality_id"],
                 orderby="nationality_id",
@@ -376,14 +376,13 @@ class WizardIne(models.TransientModel):
             pernoctations = hosts - departures
 
             # pernoctations grouped by nationality_id
-            read_by_pernoctations = self.env["res.partner"].read_group(
-                [("id", "in", pernoctations.mapped("partner_id").ids)],
+            read_by_pernoctations = self.env["pms.checkin.partner"].read_group(
+                [("id", "in", pernoctations.ids)],
                 ["nationality_id"],
                 ["nationality_id"],
                 orderby="nationality_id",
                 lazy=False,
             )
-
             ine_add_arrivals_departures_pernoctations(
                 p_date, "arrivals", read_by_arrivals
             )
