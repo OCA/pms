@@ -784,7 +784,7 @@ class TestWizardINE(TestPms):
         +----------------+-------+-------+-------+
         | monthly revpar |        23.58          |
         +----------------+-------+-------+-------+
-        num rooms avail. = 5
+        num rooms avail = 5
         income = 25.00 + 21.00 + 25.00 + 25.00 + 21.50 + 21.50 = 139
         monthly revpar = 139 / (5 * 28) = 0.99
         """
