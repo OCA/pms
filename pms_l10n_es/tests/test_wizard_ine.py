@@ -911,7 +911,7 @@ class TestWizardINE(TestPms):
         """
         # ARRANGE
         self.ideal_scenario()
-        self.partner_2.nationality_id = False
+        self.reservation_1.checkin_partner_ids[1].nationality_id = False
         start_date = datetime.date(2021, 2, 1)
         end_date = datetime.date(2021, 2, 4)
 
