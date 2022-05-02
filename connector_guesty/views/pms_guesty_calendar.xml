@@ -25,8 +25,8 @@
         <field name="model">pms.guesty.calendar</field>
         <field name="arch" type="xml">
             <graph string="Calendar">
-                <field name="listing_date" group="1" />
-                <field name="state" group="1" />
+                <field name="listing_date" type="row" />
+                <field name="state" type="row" />
             </graph>
         </field>
     </record>

@@ -18,9 +18,9 @@ def standardize_request_data(data):
         if data.get("event") in ["reservation.new", "reservation.updated"]:
             standard_data["reservation"] = data.get("reservation")
             standard_data["event"] = data.get("event")
-        elif data.get("event") and data.get("event", {}).get("reservation"):
-            standard_data["reservation"] = data.get("event").get("reservation")
-            standard_data["event"] = "reservation.updated"
+    elif data.get("event") and data.get("event", {}).get("reservation"):
+        standard_data["reservation"] = data.get("event").get("reservation")
+        standard_data["event"] = "reservation.updated"
 
     return standard_data["reservation"], standard_data["event"]
 
