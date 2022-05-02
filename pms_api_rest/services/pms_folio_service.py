@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from odoo.osv import expression
+
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
@@ -25,10 +27,33 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def get_folios(self, folio_search_param):
-        domain = list()
-        domain.append(("checkin", ">=", folio_search_param.date_from))
-        domain.append(("checkout", "<", folio_search_param.date_to))
-        domain.append(("pms_property_id", "=", folio_search_param.pms_property_id))
+        domain_fields = list()
+
+        domain_fields.append(
+            ("pms_property_id", "=", folio_search_param.pms_property_id)
+        )
+
+        if folio_search_param.date_to and folio_search_param.date_from:
+            domain_fields.append(("checkin", ">=", folio_search_param.date_from))
+            domain_fields.append(("checkout", "<", folio_search_param.date_to))
+
+        domain_filter = list()
+        if folio_search_param.filter:
+            for search in folio_search_param.filter.split(" "):
+                subdomains = [
+                    [("name", "ilike", search)],
+                    [("folio_id.name", "ilike", search)],
+                    [("partner_name", "ilike", search)],
+                    [("partner_id.firstname", "ilike", search)],
+                    [("partner_id.lastname", "ilike", search)],
+                    [("partner_id.id_numbers.name", "ilike", search)],
+                ]
+                domain_filter.append(expression.OR(subdomains))
+        domain = []
+        if domain_filter:
+            domain = expression.AND([domain_fields, domain_filter[0]])
+        else:
+            domain = domain_fields
         result_folios = []
 
         reservations_result = (
@@ -54,6 +79,7 @@ class PmsFolioService(Component):
                 reservations.append(
                     {
                         "id": reservation.id,
+                        "name": reservation.name,
                         "checkin": datetime.combine(
                             reservation.checkin, datetime.min.time()
                         ).isoformat(),
