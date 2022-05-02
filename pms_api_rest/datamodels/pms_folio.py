@@ -9,6 +9,7 @@ class PmsFolioSearchParam(Datamodel):
     pms_property_id = fields.Integer(required=True, allow_none=True)
     date_from = fields.String(required=False, allow_none=True)
     date_to = fields.String(required=False, allow_none=True)
+    filter = fields.String(required=False, allow_none=True)
 
 
 class PmsFolioInfo(Datamodel):
