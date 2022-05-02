@@ -22,7 +22,7 @@ class PmsPropertyService(Component):
         auth="jwt_api_pms",
     )
     def get_properties(self):
-        domain = []
+        domain = [("user_ids", "in", [self.env.user.id])]
         result_properties = []
         PmsPropertyInfo = self.env.datamodels["pms.property.info"]
         for prop in self.env["pms.property"].search(
