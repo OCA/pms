@@ -52,6 +52,7 @@ class PmsCalendarInfo(Datamodel):
     splitted = fields.Boolean(required=False, allow_none=True)
     partnerId = fields.Integer(required=False, allow_none=True)
     partnerName = fields.String(required=False, allow_none=True)
+    folioId = fields.Integer(required=False, allow_none=True)
     reservationId = fields.Integer(required=False, allow_none=True)
     reservationName = fields.String(required=False, allow_none=True)
     reservationType = fields.String(required=False, allow_none=True)
