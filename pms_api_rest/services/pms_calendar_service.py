@@ -66,6 +66,7 @@ class PmsCalendarService(Component):
                     splitted=line.reservation_id.splitted,
                     partnerId=line.reservation_id.partner_id.id or None,
                     partnerName=line.reservation_id.partner_name or None,
+                    folioId=line.reservation_id.folio_id,
                     reservationId=line.reservation_id,
                     reservationName=line.reservation_id.name,
                     reservationType=line.reservation_id.reservation_type,
