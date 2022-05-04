@@ -4868,6 +4868,11 @@ msgid "Indicate if exists overbooking"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation_line__overbooking
+msgid "Indicate if exists overbooking in the reservation line"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_availability_plan_rule__closed
 msgid "Indicate if property is closed or not"
 msgstr ""
@@ -6829,6 +6834,11 @@ msgstr ""
 #: code:addons/pms/models/account_move.py:0
 #, python-format
 msgid "Outstanding debits"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_line__overbooking
+msgid "Overbooking"
 msgstr ""
 
 #. module: pms
