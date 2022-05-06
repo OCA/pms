@@ -101,13 +101,25 @@ class PmsRoom(models.Model):
         translate=True,
     )
 
+    short_name = fields.Char(
+        string="Short Name",
+        help="Four character name, if not set, autocompletes with the first two letters of "
+        "the room name and two incremental numbers",
+    )
+
     _sql_constraints = [
         (
             "room_property_unique",
             "unique(name, pms_property_id)",
-            "you cannot have more than one room "
+            "You cannot have more than one room "
             "with the same name in the same property",
-        )
+        ),
+        (
+            "room_short_name_unique",
+            "unique(short_name, pms_property_id)",
+            "You cannot have more than one room "
+            "with the same short name in the same property",
+        ),
     ]
 
     @api.depends("child_ids")
@@ -173,6 +185,53 @@ class PmsRoom(models.Model):
                             reservation.name,
                         )
                     )
+
+    @api.constrains("short_name")
+    def _check_short_name(self):
+        for record in self:
+            if len(record.short_name) > 4:
+                raise ValidationError(
+                    _("The short name can't contain more than 4 characters")
+                )
+
+    @api.model
+    def create(self, vals):
+        if vals.get("name") and not vals.get("short_name"):
+            if len(vals["name"]) > 4:
+                short_name = self.calculate_short_name(vals)
+                vals.update({"short_name": short_name})
+            else:
+                vals.update({"short_name": vals["name"]})
+        return super(PmsRoom, self).create(vals)
+
+    def write(self, vals):
+        if vals.get("name") and not vals.get("short_name"):
+            if len(vals["name"]) > 4:
+                short_name = self.calculate_short_name(vals)
+                vals.update({"short_name": short_name})
+            else:
+                vals.update({"short_name": vals["name"]})
+        return super(PmsRoom, self).write(vals)
+
+    def calculate_short_name(self, vals):
+        short_name = vals["name"][:2].upper()
+        pms_property_id = self.pms_property_id.id
+        if vals.get("pms_property_id"):
+            pms_property_id = vals["pms_property_id"]
+        rooms = self.env["pms.room"].search([("pms_property_id", "=", pms_property_id)])
+        same_name_rooms = rooms.filtered(
+            lambda room: room.name[:2].upper() == short_name
+        )
+        numbers_name = [0]
+        for room in same_name_rooms:
+            if room.short_name and room.short_name[:2] == short_name:
+                if all(character.isdigit() for character in room.short_name[2:4]):
+                    numbers_name.append(int(room.short_name[2:4]))
+        max_number = max(numbers_name) + 1
+        if max_number < 10:
+            max_number = str(max_number).zfill(2)
+        short_name += max_number
+        return short_name
 
     # Business methods
 
