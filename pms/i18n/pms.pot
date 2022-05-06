@@ -4331,6 +4331,13 @@ msgid "Formatted Email"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room__short_name
+msgid ""
+"Four character name, if not set, autocompletes with the first two letters of"
+" the room name and two incremental numbers"
+msgstr ""
+
+#. module: pms
 #: model:pms.ubication,name:pms.pms_ubication_4st_floor
 msgid "Fourth floor"
 msgstr ""
@@ -9264,6 +9271,11 @@ msgid "Shared Room"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room__short_name
+msgid "Short Name"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_board_service__show_detail_report
 msgid "Show Detail Report"
 msgstr ""
@@ -10208,6 +10220,12 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__folio_sequence_id
 msgid "The sequence that formed the name of the folio."
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_room.py:0
+#, python-format
+msgid "The short name can't contain more than 4 characters"
 msgstr ""
 
 #. module: pms
@@ -11201,6 +11219,19 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model:ir.model.constraint,message:pms.constraint_pms_room_room_property_unique
+msgid ""
+"You cannot have more than one room with the same name in the same property"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.constraint,message:pms.constraint_pms_room_room_short_name_unique
+msgid ""
+"You cannot have more than one room with the same short name in the same "
+"property"
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/models/account_move.py:0
 #, python-format
 msgid ""
@@ -11437,10 +11468,4 @@ msgid ""
 "                                booking client or the company (if a company is\n"
 "                                assigned). If you want to bill an independent contact,\n"
 "                                you can select it in the billing assistant"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.constraint,message:pms.constraint_pms_room_room_property_unique
-msgid ""
-"you cannot have more than one room with the same name in the same property"
 msgstr ""
