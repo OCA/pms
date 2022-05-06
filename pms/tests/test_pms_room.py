@@ -1,5 +1,6 @@
 from psycopg2 import IntegrityError
 
+from odoo.exceptions import ValidationError
 from odoo.tools import mute_logger
 
 from .common import TestPms
@@ -218,3 +219,124 @@ class TestPmsRoom(TestPms):
             expected_display_name,
             "The display name of the room is not as expected",
         )
+
+    def test_short_name_room_name_gt_4(self):
+        """
+        It checks through subtest that the short names of the
+        rooms are correctly established when the names of these
+        exceed 4 characters.
+        -------------------------------------------------------
+        First a room_type (Sweet Imperial) is created. Then 6 rooms
+        are created with the name Sweet Imperial + room number. Finally
+        in a loop we check that the short name of the rooms was set
+        correctly: 'SW01, SW02, SW03...'
+        """
+        self.room_type2 = self.env["pms.room.type"].create(
+            {
+                "pms_property_ids": [self.pms_property1.id],
+                "name": "Sweet Imperial",
+                "default_code": "SWI",
+                "class_id": self.room_type_class1.id,
+                "list_price": 100,
+            }
+        )
+        rooms = []
+        self.room1 = self.env["pms.room"].create(
+            {
+                "name": "Sweet Imperial 101",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type2.id,
+            }
+        )
+        rooms.append(self.room1)
+        self.room2 = self.env["pms.room"].create(
+            {
+                "name": "Sweet Imperial 102",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type2.id,
+            }
+        )
+        rooms.append(self.room2)
+        self.room3 = self.env["pms.room"].create(
+            {
+                "name": "Sweet Imperial 103",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type2.id,
+            }
+        )
+        rooms.append(self.room3)
+        self.room4 = self.env["pms.room"].create(
+            {
+                "name": "Sweet Imperial 104",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type2.id,
+            }
+        )
+        rooms.append(self.room4)
+        self.room5 = self.env["pms.room"].create(
+            {
+                "name": "Sweet Imperial 105",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type2.id,
+            }
+        )
+        rooms.append(self.room5)
+        self.room6 = self.env["pms.room"].create(
+            {
+                "name": "Sweet Imperial 106",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type2.id,
+            }
+        )
+        rooms.append(self.room6)
+        for index, room in enumerate(rooms, start=1):
+            with self.subTest(room):
+                self.assertEqual(
+                    room.short_name,
+                    "SW0" + str(index),
+                    "The short name of the room should be SW0" + str(index),
+                )
+
+    def test_short_name_room_name_lt_4(self):
+        """
+        Checks that the short name of a room is equal to the name
+        when it does not exceed 4 characters.
+        ---------------------------------------------------------
+        A room is created with a name less than 4 characters (101).
+        Then it is verified that the short name and the name of the
+        room are the same.
+        """
+        self.room1 = self.env["pms.room"].create(
+            {
+                "name": "101",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type1.id,
+            }
+        )
+        self.assertEqual(
+            self.room1.short_name,
+            self.room1.name,
+            "The short name of the room should be equal to the name of the room",
+        )
+
+    def test_short_name_gt_4_constraint(self):
+        """
+        Check that the short name of a room cannot exceed 4 characters.
+        --------------------------------------------------------------
+        A room named 201 is created. Afterwards, it is verified that a
+        ValidationError is thrown when trying to change the short name
+        of that room to 'SIN-201'.
+        """
+        self.room1 = self.env["pms.room"].create(
+            {
+                "name": "201",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type1.id,
+            }
+        )
+
+        with self.assertRaises(
+            ValidationError,
+            msg="The short_name of the room should not be able to be write.",
+        ):
+            self.room1.write({"short_name": "SIN-201"})

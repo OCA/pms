@@ -45,6 +45,7 @@
                                 />
                                 <field name="capacity" />
                                 <field name="extra_beds_allowed" />
+                                <field name="short_name" />
                                 <!-- <field name="uom_id" invisible="1" /> -->
                             </group>
                             <group>
@@ -185,7 +186,7 @@
                 <field name="capacity" />
                 <field name="extra_beds_allowed" />
                 <field name="room_amenity_ids" widget="many2many_tags" />
-
+                <field name="short_name" />
             </tree>
         </field>
     </record>
