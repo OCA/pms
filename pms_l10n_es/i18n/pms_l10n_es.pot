@@ -379,16 +379,6 @@ msgid "Log of sending files to institutions"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__adr
-msgid "Monthly ADR"
-msgstr ""
-
-#. module: pms_l10n_es
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__revpar
-msgid "Monthly RevPAR"
-msgstr ""
-
-#. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_property__institution__mossos
 msgid "Mossos_d'esquadra (soon)"
 msgstr ""
@@ -438,6 +428,16 @@ msgstr ""
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_log_institution_traveller_report_view_tree
 msgid "Property Ubications"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__adr
+msgid "Range ADR"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__revpar
+msgid "Range RevPAR"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -520,12 +520,6 @@ msgstr ""
 #. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
-msgid "The date range must belong to the same month."
-msgstr ""
-
-#. module: pms_l10n_es
-#: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
-#, python-format
 msgid "The following guests have no residence nationality set :%s."
 msgstr ""
 
@@ -603,6 +597,12 @@ msgstr ""
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The property zip is not established."
+msgstr ""
+
+#. module: pms_l10n_es
+#: code:addons/pms_l10n_es/models/res_country_state.py:0
+#, python-format
+msgid "The state %s of %s must have an INE code"
 msgstr ""
 
 #. module: pms_l10n_es
