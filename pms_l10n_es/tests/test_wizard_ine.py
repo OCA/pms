@@ -753,12 +753,19 @@ class TestWizardINE(TestPms):
         # ARRANGE
         self.ideal_scenario()
         start_date = datetime.date(2021, 2, 1)
+        end_date = datetime.date(2021, 2, 28)
         expected_monthly_adr = 23.58
 
         # ACT
-        monthly_adr = self.env["pms.ine.wizard"].ine_calculate_monthly_adr(
-            start_date, self.pms_property1.id
+        wizard = self.env["pms.ine.wizard"].new(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "start_date": start_date,
+                "end_date": end_date,
+            }
         )
+
+        monthly_adr = wizard.ine_calculate_adr(start_date, end_date)
         # ASSERT
         self.assertEqual(
             expected_monthly_adr,
@@ -777,19 +784,25 @@ class TestWizardINE(TestPms):
         +----------------+-------+-------+-------+
         | monthly revpar |        23.58          |
         +----------------+-------+-------+-------+
-        num rooms avail. = 5
+        num rooms avail = 5
         income = 25.00 + 21.00 + 25.00 + 25.00 + 21.50 + 21.50 = 139
         monthly revpar = 139 / (5 * 28) = 0.99
         """
         # ARRANGE
         self.ideal_scenario()
         start_date = datetime.date(2021, 2, 1)
+        end_date = datetime.date(2021, 2, 28)
         expected_monthly_revpar = 0.99
 
         # ACT
-        monthly_revpar = self.env["pms.ine.wizard"].ine_calculate_monthly_revpar(
-            start_date, self.pms_property1.id
+        wizard = self.env["pms.ine.wizard"].new(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "start_date": start_date,
+                "end_date": end_date,
+            }
         )
+        monthly_revpar = wizard.ine_calculate_revpar(start_date, end_date)
         # ASSERT
         self.assertEqual(
             expected_monthly_revpar,
@@ -898,7 +911,7 @@ class TestWizardINE(TestPms):
         """
         # ARRANGE
         self.ideal_scenario()
-        self.partner_2.nationality_id = False
+        self.reservation_1.checkin_partner_ids[1].nationality_id = False
         start_date = datetime.date(2021, 2, 1)
         end_date = datetime.date(2021, 2, 4)
 
