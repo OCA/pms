@@ -37,8 +37,8 @@ class WizardIne(models.TransientModel):
         required=True,
     )
 
-    adr = fields.Float(string="Monthly ADR")
-    revpar = fields.Float(string="Monthly RevPAR")
+    adr = fields.Float(string="Range ADR")
+    revpar = fields.Float(string="Range RevPAR")
 
     @api.model
     def ine_rooms(self, start_date, end_date, pms_property_id):
@@ -410,7 +410,7 @@ class WizardIne(models.TransientModel):
 
     def ine_calculate_adr(self, start_date, end_date, domain=False):
         """
-        Calculate monthly ADR for a property only in INE rooms
+        Calculate date range ADR for a property only in INE rooms
         :param start_date: start date
         :param pms_property_id: pms property id
         :param domain: domain to filter reservations (channel, agencies, etc...)
@@ -424,7 +424,7 @@ class WizardIne(models.TransientModel):
 
     def ine_calculate_revpar(self, start_date, end_date, domain=False):
         """
-        Calculate monthly revpar for a property only in INE rooms
+        Calculate date range revpar for a property only in INE rooms
         :param start_date: start date
         :param pms_property_id: pms property id
         :param domain: domain to filter reservations (channel, agencies, etc...)
@@ -438,7 +438,7 @@ class WizardIne(models.TransientModel):
 
     def ine_calculate_occupancy(self, start_date, end_date, domain=False):
         """
-        Calculate monthly occupancy for a property only in INE rooms
+        Calculate date range occupancy for a property only in INE rooms
         :param start_date: start date
         :param pms_property_id: pms property id
         :param domain: domain to filter reservations (channel, agencies, etc...)
@@ -509,9 +509,6 @@ class WizardIne(models.TransientModel):
     def ine_generate_xml(self):
 
         self.check_ine_mandatory_fields(self.pms_property_id)
-
-        if self.start_date.month != self.end_date.month:
-            raise ValidationError(_("The date range must belong to the same month."))
 
         number_of_rooms = sum(
             self.env["pms.room"]
