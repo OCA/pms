@@ -413,8 +413,9 @@ class PmsService(models.Model):
         for record in self:
             discount = 0
             for line in record.service_line_ids:
-                first_discount = line.price_day_total * ((line.discount or 0.0) * 0.01)
-                price = line.price_day_total - first_discount
+                amount = line.day_qty * line.price_unit
+                first_discount = amount * ((line.discount or 0.0) * 0.01)
+                price = amount - first_discount
                 cancel_discount = price * ((line.cancel_discount or 0.0) * 0.01)
                 discount += first_discount + cancel_discount
             record.discount = discount
