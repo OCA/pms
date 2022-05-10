@@ -74,8 +74,16 @@ class WizardIne(models.TransientModel):
                         ("room_id.in_ine", "=", True),
                         ("date", "=", p_date),
                         ("room_id.capacity", "=", 2),
-                        ("reservation_id.adults", "=", 1),
+                        ("reservation_id.state", "in", ["confirmed", "done"]),
                     ]
+                )
+                .filtered(
+                    lambda l: len(
+                        l.reservation_id.checkin_partner_ids.filtered(
+                            lambda c: c.state not in ["draft", "cancel"]
+                        )
+                    )
+                    == 1
                 )
                 .mapped("room_id")
             )
@@ -91,20 +99,39 @@ class WizardIne(models.TransientModel):
                         ("room_id.in_ine", "=", True),
                         ("date", "=", p_date),
                         ("room_id.capacity", "=", 2),
-                        ("reservation_id.adults", "=", 2),
+                        ("reservation_id.state", "in", ["confirmed", "done"]),
                     ]
+                )
+                .filtered(
+                    lambda l: len(
+                        l.reservation_id.checkin_partner_ids.filtered(
+                            lambda c: c.state not in ["draft", "cancel"]
+                        )
+                    )
+                    == 2
                 )
                 .mapped("room_id")
             )
 
             # service lines with extra beds
-            extra_bed_service_lines = self.env["pms.service.line"].search(
-                [
-                    ("pms_property_id", "=", pms_property_id.id),
-                    ("product_id.is_extra_bed", "=", True),
-                    ("reservation_id.reservation_type", "=", "normal"),
-                    ("date", "=", p_date),
-                ]
+            extra_bed_service_lines = (
+                self.env["pms.service.line"]
+                .search(
+                    [
+                        ("pms_property_id", "=", pms_property_id.id),
+                        ("product_id.is_extra_bed", "=", True),
+                        ("reservation_id.reservation_type", "=", "normal"),
+                        ("date", "=", p_date),
+                    ]
+                )
+                .filtered(
+                    lambda s: len(
+                        s.reservation_id.checkin_partner_ids.filtered(
+                            lambda c: c.state not in ["draft", "cancel"]
+                        )
+                    )
+                    > s.reservation_id.adults
+                )
             )
 
             extra_beds = 0
@@ -133,7 +160,16 @@ class WizardIne(models.TransientModel):
                         ("reservation_id.reservation_type", "=", "normal"),
                         ("room_id.in_ine", "=", True),
                         ("pms_property_id", "=", pms_property_id.id),
+                        ("reservation_id.state", "in", ["confirmed", "done"]),
                     ]
+                )
+                .filtered(
+                    lambda l: len(
+                        l.reservation_id.checkin_partner_ids.filtered(
+                            lambda c: c.state not in ["draft", "cancel"]
+                        )
+                    )
+                    > 0
                 )
                 .mapped("room_id")
             )
@@ -272,20 +308,12 @@ class WizardIne(models.TransientModel):
 
                         if not nationalities[CODE_SPAIN][ine_code].get(date):
                             nationalities[CODE_SPAIN][ine_code][date] = dict()
-
                         nationalities[CODE_SPAIN][ine_code][date][
                             type_of_entry
                         ] = num_spain
 
         # result object
         nationalities = dict()
-
-        # fake partners to remove when process finished
-        fake_partners_ids = list()
-
-        # default country and state
-        country_spain = self.env["res.country"].search([("code", "=", "ES")])
-        state_madrid = self.env["res.country.state"].search([("name", "=", "Madrid")])
 
         # iterate days between start_date and end_date
         for p_date in [
@@ -298,54 +326,14 @@ class WizardIne(models.TransientModel):
                     ("pms_property_id", "=", pms_property_id),
                     ("checkin", "<=", p_date),
                     ("checkout", ">=", p_date),
-                    ("reservation_id.state", "!=", "cancel"),
                     ("reservation_id.reservation_type", "=", "normal"),
+                    ("state", "not in", ["draft", "cancel"]),
                 ]
             )
-            for host in hosts:
-                # host without checkin
-                if host.state not in ["onboard", "done"]:
-                    # search other host same reservation with checkin
-                    chk_part_same_reserv_with_checkin = (
-                        hosts.reservation_id.checkin_partner_ids.filtered(
-                            lambda x: x.partner_id
-                            and x.id != host.id
-                            and x.state in ["onboard", "done"]
-                            and x.reservation_id.id == host.reservation_id.id
-                        )
-                    )
-                    # if there are some checkin partners in the same reservation
-                    if chk_part_same_reserv_with_checkin:
-                        # create partner with same country & state
-                        country_other = chk_part_same_reserv_with_checkin[
-                            0
-                        ].partner_id.nationality_id.id
-                        state_other = chk_part_same_reserv_with_checkin[
-                            0
-                        ].partner_id.residence_state_id.id
-                        dummy_partner = self.env["res.partner"].create(
-                            {
-                                "name": "partner1",
-                                "country_id": country_other,
-                                "nationality_id": country_other,
-                                "residence_state_id": state_other,
-                            }
-                        )
-
-                    else:
-                        # create partner from madrid
-                        dummy_partner = self.env["res.partner"].create(
-                            {
-                                "name": "partner1",
-                                "country_id": country_spain.id,
-                                "nationality_id": country_spain.id,
-                                "residence_state_id": state_madrid.id,
-                            }
-                        )
-                    fake_partners_ids.append(dummy_partner.id)
-                    host.partner_id = dummy_partner
             hosts = hosts.filtered(
-                lambda x: x.reservation_id.reservation_line_ids.mapped("room_id").in_ine
+                lambda x: all(
+                    x.reservation_id.reservation_line_ids.mapped("room_id.in_ine")
+                )
             )
 
             # arrivals
@@ -393,19 +381,6 @@ class WizardIne(models.TransientModel):
                 p_date, "pernoctations", read_by_pernoctations
             )
 
-        checkin_partners_to_unlink = self.env["pms.checkin.partner"].search(
-            [
-                ("partner_id", "in", fake_partners_ids),
-            ]
-        )
-        checkin_partners_to_unlink.partner_id = False
-
-        partners_to_unlink = self.env["res.partner"].search(
-            [
-                ("id", "in", fake_partners_ids),
-            ]
-        )
-        partners_to_unlink.unlink()
         return nationalities
 
     def ine_calculate_adr(self, start_date, end_date, domain=False):
