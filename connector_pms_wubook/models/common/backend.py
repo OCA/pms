@@ -261,7 +261,7 @@ class ChannelWubookBackend(models.Model):
         """
         interval_sec = interval * 60
         now = fields.Datetime.now()
-        for backend in self.env["channel.wubook.backend"].search([]):
+        for backend in self.env["channel.wubook.backend"].search([("export_disabled","=",False)]):
             if backend.user_id:
                 backend = backend.with_user(self.user_id)
             for i in range(0, interval_sec, int(interval_sec / count)):
