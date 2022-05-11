@@ -34,6 +34,7 @@ class PmsPropertyService(Component):
                     name=prop.name,
                     company=prop.company_id.name,
                     defaultPricelistId=prop.default_pricelist_id.id,
+                    defaultAvailabilityPlanId=prop.default_pricelist_id.availability_plan_id.id,
                     colorOptionConfig=prop.color_option_config,
                     preReservationColor=prop.pre_reservation_color,
                     confirmedReservationColor=prop.confirmed_reservation_color,
@@ -65,6 +66,7 @@ class PmsPropertyService(Component):
     )
     def get_property(self, property_id):
         pms_property = self.env["pms.property"].search([("id", "=", property_id)])
+        default_avail = pms_property.default_pricelist_id.availability_plan_id.id
         res = []
         PmsPropertyInfo = self.env.datamodels["pms.property.info"]
         if not pms_property:
@@ -75,6 +77,7 @@ class PmsPropertyService(Component):
                 name=pms_property.name,
                 company=pms_property.company_id.name,
                 defaultPricelistId=pms_property.default_pricelist_id.id,
+                defaultAvailabilityPlanId=default_avail,
                 colorOptionConfig=pms_property.color_option_config,
                 preReservationColor=pms_property.pre_reservation_color,
                 confirmedReservationColor=pms_property.confirmed_reservation_color,
