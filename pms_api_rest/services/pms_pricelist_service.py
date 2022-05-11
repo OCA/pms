@@ -1,3 +1,4 @@
+import re
 from datetime import datetime, timedelta
 
 from odoo.exceptions import MissingError
@@ -119,24 +120,7 @@ class PmsPricelistService(Component):
                     ]
                 )
 
-                rule = self.env["pms.availability.plan.rule"].search(
-                    [
-                        ("date", "=", date),
-                        (
-                            "availability_plan_id",
-                            "=",
-                            record_pricelist_id.availability_plan_id.id,
-                        ),
-                        ("room_type_id", "=", room_type.id),
-                        (
-                            "pms_property_id",
-                            "=",
-                            pricelist_item_search_param.pms_property_id,
-                        ),
-                    ]
-                )
-
-                if item or rule:
+                if item:
                     pricelist_info = PmsPricelistItemInfo(
                         roomTypeId=room_type.id,
                         date=str(
@@ -146,17 +130,8 @@ class PmsPricelistService(Component):
 
                     if item:
                         pricelist_info.pricelistItemId = item.id
-
-                    if rule:
-
-                        pricelist_info.availabilityRuleId = rule.id
-                        pricelist_info.minStay = rule.min_stay
-                        pricelist_info.minStayArrival = rule.min_stay_arrival
-                        pricelist_info.maxStay = rule.max_stay
-                        pricelist_info.maxStayArrival = rule.max_stay_arrival
-                        pricelist_info.closed = rule.closed
-                        pricelist_info.closedDeparture = rule.closed_departure
-                        pricelist_info.closedArrival = rule.closed_arrival
+                        price = re.findall("[+-]?\d+\.\d+", item.price)
+                        pricelist_info.price = float(price[0])
 
                     result.append(pricelist_info)
 
