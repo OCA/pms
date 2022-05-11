@@ -130,7 +130,7 @@ class PmsPricelistService(Component):
 
                     if item:
                         pricelist_info.pricelistItemId = item.id
-                        price = re.findall("[+-]?\d+\.\d+", item.price)
+                        price = re.findall(r"[+-]?\d+\.\d+", item.price)
                         pricelist_info.price = float(price[0])
 
                     result.append(pricelist_info)
