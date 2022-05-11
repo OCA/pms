@@ -59,6 +59,7 @@ class PmsRoomTypeService(Component):
                     name=room.name,
                     pms_property_ids=room.pms_property_ids.mapped("id"),
                     defaultCode=room.default_code,
+                    price=room.list_price,
                 )
             )
         return result_rooms
