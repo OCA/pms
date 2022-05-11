@@ -16,6 +16,7 @@ class PmsPropertyInfo(Datamodel):
     name = fields.String(required=False, allow_none=True)
     company = fields.String(required=False, allow_none=True)
     defaultPricelistId = fields.Integer(required=False, allow_none=True)
+    defaultAvailabilityPlanId = fields.Integer(required=False, allow_none=True)
     colorOptionConfig = fields.String(required=False, allow_none=True)
     preReservationColor = fields.String(required=False, allow_none=True)
     confirmedReservationColor = fields.String(required=False, allow_none=True)
