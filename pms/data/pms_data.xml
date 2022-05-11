@@ -19,6 +19,9 @@
             <field name="folio_sequence_id" ref="pms.seq_pms_folio" />
             <field name="checkin_sequence_id" ref="pms.seq_pms_checkin" />
         </record>
+        <record id="product.list0" model="product.pricelist">
+            <field name="availability_plan_id" ref="main_pms_availability_plan" />
+        </record>
         <!-- default partner simplified invoices -->
         <record id="various_pms_partner" model="res.partner">
             <field name="name">Various Clients</field>
