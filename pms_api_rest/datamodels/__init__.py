@@ -18,5 +18,6 @@ from . import pms_user
 
 from . import pms_pricelist
 from . import pms_pricelist_item
-
+from . import pms_availability_plan
+from . import pms_availability_plan_rule
 from . import pms_search_param
