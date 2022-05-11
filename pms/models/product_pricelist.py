@@ -57,6 +57,7 @@ class ProductPricelist(models.Model):
         help="Availability Plan for which the pricelist is included",
         comodel_name="pms.availability.plan",
         ondelete="restrict",
+        required=True,
         check_pms_properties=True,
     )
     item_ids = fields.One2many(
