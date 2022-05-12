@@ -22,3 +22,4 @@ from . import pms_pricelist_item
 from . import pms_availability_plan
 from . import pms_availability_plan_rule
 from . import pms_search_param
+from . import pms_ubication
