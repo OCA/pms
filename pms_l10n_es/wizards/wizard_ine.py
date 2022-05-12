@@ -296,6 +296,13 @@ class WizardIne(models.TransientModel):
                         )  # .ine_code
                         ine_code = residence_state_id.ine_code
 
+                        if not ine_code:
+                            raise ValidationError(
+                                _(
+                                    "%s does not have the INE Code configured"
+                                    % residence_state_id.name
+                                )
+                            )
                         # get count of each result
                         num_spain = entry_from_spain["__count"]
 
@@ -675,7 +682,7 @@ class WizardIne(models.TransientModel):
                 ("reservation_id.agency_id", "!=", False),
                 ("reservation_id.agency_id.sale_channel_id.is_on_line", "=", False),
             ],
-            "percent_otas": [
+            "otas": [
                 ("reservation_id.agency_id", "!=", False),
                 ("reservation_id.agency_id.sale_channel_id.is_on_line", "=", True),
             ],
