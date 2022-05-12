@@ -17,5 +17,18 @@
             </field>
         </field>
     </record>
+    <record id="view_putaway_list_inherit_pms_purchase" model="ir.ui.view">
+        <field name="name">stock.putaway.rule.list</field>
+        <field name="model">stock.putaway.rule</field>
+        <field name="inherit_id" ref="stock.stock_putaway_list" />
+        <field name="arch" type="xml">
+            <field name="location_out_id" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'required': [('method', '!=', 'move_to_property')]}</attribute>
+            </field>
+
+        </field>
+    </record>
 
 </odoo>
