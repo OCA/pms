@@ -9,3 +9,4 @@ from . import pms_property_service
 from . import pms_login_service
 from . import pms_pricelist_service
 from . import pms_availability_plan_service
+from . import pms_room_type_class_service
