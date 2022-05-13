@@ -191,7 +191,7 @@ class AccountMove(models.Model):
         pms_property_id = self.env.context.get(
             "default_pms_property_id", self.pms_property_id.id
         ) or (
-            self.env.user.get_active_property_ids
+            self.env.user.get_active_property_ids()
             and self.env.user.get_active_property_ids()[0]
         )
         pms_property = self.env["pms.property"].browse(pms_property_id)
