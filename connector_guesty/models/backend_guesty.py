@@ -68,6 +68,8 @@ class BackendGuesty(models.Model):
 
     cancel_expired_quotes = fields.Boolean(default=False)
 
+    custom_field_ids = fields.One2many("pms.backend.custom_field", "backend_id")
+
     @api.depends("guesty_environment")
     def _compute_environment_fields(self):
         # noinspection PyTypeChecker
@@ -89,22 +91,28 @@ class BackendGuesty(models.Model):
                 "base_url": "https://app-sandbox.guesty.com",
             }
 
+    def _get_account_info(self):
+        success, result = self.call_get_request("accounts/me", limit=1)
+        return success, result
+
     def set_as_default(self):
         self.sudo().search([("is_default", "=", True)]).write({"is_default": False})
         self.write({"is_default": True})
 
         self.env.company.guesty_backend_id = self.id
 
-    def check_credentials(self):
-        # url to validate the credentials
-        # this endpoint will search a list of users, it may be empty if the api key
-        # does not have permissions to list the users, but it should be a 200 response
-        # Note: Guesty does not provide a way to validate credentials
-        success, result = self.call_get_request("accounts/me", limit=1)
+    def sync_account_info(self):
+        self.ensure_one()
+        if not self.guesty_account_id:
+            raise UserError(_("Please set the Guesty account ID"))
+
+        success, response = self._get_account_info()
+
         if success:
-            _id = result.get("_id")
-            _tz = result.get("timezone")
-            _currency = result.get("currency")
+            # general data
+            _id = response.get("_id")
+            _tz = response.get("timezone")
+            _currency = response.get("currency")
 
             currency = self.env["res.currency"].search(
                 [("name", "=", _currency)], limit=1
@@ -117,8 +125,31 @@ class BackendGuesty(models.Model):
 
             if _tz:
                 payload["timezone"] = _tz
-
             self.write(payload)
+
+            # custom fields
+            custom_fields = response.get("customFields", [])
+            for custom_field in custom_fields:
+                _log.info("Trying to create custom field %s", custom_field)
+                custom_field = self.env["pms.guesty.custom_field"].search(
+                    [("external_id", "=", custom_field["_id"])]
+                )
+                if not custom_field.exists():
+                    self.env["pms.guesty.custom_field"].sudo().create(
+                        {
+                            "name": custom_field["displayName"],
+                            "external_id": custom_field["_id"],
+                        }
+                    )
+
+    def check_credentials(self):
+        # url to validate the credentials
+        # this endpoint will search a list of users, it may be empty if the api key
+        # does not have permissions to list the users, but it should be a 200 response
+        # Note: Guesty does not provide a way to validate credentials
+        success, result = self._get_account_info()
+        if success:
+            return True
         else:
             raise UserError(_("Connection Test Failed!"))
 

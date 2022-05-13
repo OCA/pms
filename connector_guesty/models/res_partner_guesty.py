@@ -29,6 +29,9 @@ class ResPartnerGuesty(models.Model):
         if self.partner_id.email:
             body["email"] = self.partner_id.email
 
+        if self.partner_id.city:
+            body["hometown"] = self.partner_id.city
+
         _log.info(body)
         success, res = self.env.company.guesty_backend_id.call_put_request(
             url_path="guests/{}".format(self.guesty_id), body=body

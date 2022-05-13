@@ -29,6 +29,12 @@
                         class="btn btn-primary"
                         attrs="{'invisible': ['|', ('active', '=', False), ('is_default', '=', True)]}"
                     />
+
+                    <button
+                        name="sync_account_info"
+                        string="Sync Guesty Info"
+                        type="object"
+                    />
                 </header>
                 <sheet>
 
@@ -124,6 +130,14 @@
                                         </group>
                                     </group>
                                 </form>
+                            </field>
+                        </page>
+                        <page string="Guesty">
+                            <field name="custom_field_ids">
+                                <tree editable="bottom">
+                                    <field name="name" />
+                                    <field name="guesty_custom_field_id" />
+                                </tree>
                             </field>
                         </page>
                     </notebook>

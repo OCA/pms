@@ -573,6 +573,22 @@ class PmsReservation(models.Model):
             if "invoiceItems" not in body["money"]:
                 body["money"]["invoiceItems"] = []
 
+        # Custom fields
+        for custom_field_id in backend.custom_field_ids:
+            if custom_field_id.name == "company" and self.partner_id.parent_id:
+                body["customFields"] = [
+                    {
+                        "fieldId": custom_field_id.guesty_custom_field_id.external_id,
+                        "value": self.partner_id.parent_id.name,
+                    }
+                ]
+
+        if "notes" not in body:
+            body["notes"] = {}
+
+        if "other" not in body["notes"]:
+            body["notes"]["other"] = self.user_id.name
+
         return body
 
     def build_so_from_reservation(self, reservation_data):
