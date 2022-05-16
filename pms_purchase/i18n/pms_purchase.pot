@@ -74,3 +74,8 @@ msgstr ""
 #: model:ir.model,name:pms_purchase.model_stock_move
 msgid "Stock Move"
 msgstr ""
+
+#. module: pms_purchase
+#: model:ir.model.fields,field_description:pms_purchase.field_stock_putaway_rule__location_out_id
+msgid "Store to"
+msgstr ""
