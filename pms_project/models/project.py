@@ -6,4 +6,4 @@ from odoo import fields, models
 class Project(models.Model):
     _inherit = "project.project"
 
-    property_id = fields.Many2one("pms.property")
+    property_id = fields.Many2one("pms.property", string="Property")
