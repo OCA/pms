@@ -18,3 +18,4 @@ class PmsRoomInfo(Datamodel):
     capacity = fields.Integer(required=False, allow_none=True)
     shortName = fields.String(required=False, allow_none=True)
     roomTypeClassId = fields.Integer(required=False, allow_none=True)
+    ubicationId = fields.Integer(required=False, allow_none=True)
