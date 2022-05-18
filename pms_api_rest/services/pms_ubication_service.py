@@ -29,18 +29,16 @@ class PmsUbicationService(Component):
         if ubication_search_param.pms_property_ids:
             ubication = set()
             for index, prop in enumerate(ubication_search_param.pms_property_ids):
-                ubication_with_query_property = self.env[
-                    "pms.ubication"
-                ].search([("pms_property_ids", "=", prop)])
+                ubication_with_query_property = self.env["pms.ubication"].search(
+                    [("pms_property_ids", "=", prop)]
+                )
                 if index == 0:
                     ubication = set(ubication_with_query_property.ids)
                 else:
                     ubication = ubication.intersection(
                         set(ubication_with_query_property.ids)
                     )
-            ubication_total = list(
-                set(list(ubication) + ubication_all_properties.ids)
-            )
+            ubication_total = list(set(list(ubication) + ubication_all_properties.ids))
         else:
             ubication_total = list(ubication_all_properties.ids)
         domain = [
