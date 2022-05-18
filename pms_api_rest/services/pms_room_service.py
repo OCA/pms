@@ -52,6 +52,7 @@ class PmsRoomService(Component):
                     capacity=room.capacity,
                     shortName=room.short_name,
                     roomTypeClassId=room.room_type_id.class_id,
+                    ubicationId=room.ubication_id,
                 )
             )
         return result_rooms
