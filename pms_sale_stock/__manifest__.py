@@ -13,5 +13,6 @@
     "depends": ["pms_sale", "pms_stock", "stock_location_content_template"],
     "data": [
         "views/pms_reservation.xml",
+        "views/stock_location_content_check.xml",
     ],
 }
