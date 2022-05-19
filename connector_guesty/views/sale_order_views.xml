@@ -106,6 +106,26 @@
                     attrs="{'readonly': ['|', ('allow_discount', '=', False), ('state', 'in', ['waiting_approval', 'approved'])]}"
                 />
             </xpath>
+            <xpath
+                expr="//group[@name='order_details']//field[@name='currency_id']"
+                position="attributes"
+            >
+                <attribute name="invisible">False</attribute>
+                <attribute name="readonly">False</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='order_line']//tree//field[@name='currency_id']"
+                position="attributes"
+            >
+                <attribute name="invisible">False</attribute>
+                <attribute name="readonly">False</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='order_line']//form//field[@name='stop']"
+                position="after"
+            >
+                <field name="currency_id" invisible="0" readonly="0" />
+            </xpath>
         </field>
     </record>
 
@@ -148,8 +168,8 @@
                     <br />
                     % set transaction = object.get_portal_last_transaction()
                     The order <strong>${object.name}</strong> amounting in
-                    <strong
-                    >${format_amount(object.amount_total, object.currency_id)}</strong>
+                    <strong>${format_amount(object.amount_total, object.currency_id)}
+                    </strong>
                     % if object.state == 'sale' or (transaction and transaction.state in ('done', 'authorized')) :
                     has been manually confirmed by ${object.env.user.name}.
                     <br />
