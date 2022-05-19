@@ -1,9 +1,10 @@
 import time
 
+import werkzeug.exceptions
 from jose import jwt
 
 from odoo import _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import  AccessDenied, UserError
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
@@ -40,8 +41,12 @@ class PmsLoginService(Component):
         timestamp_expire_in_a_min = int(time.time() * 1000.0) + 1000 * 60 * minutes
 
         if not user_record:
-            raise ValidationError(_("user or password not valid"))
-        user_record.with_user(user_record)._check_credentials(user.password, None)
+            raise werkzeug.exceptions.Unauthorized(_("wrong user/pass"))
+        try:
+            user_record.with_user(user_record)._check_credentials(user.password, None)
+        except AccessDenied:
+            raise werkzeug.exceptions.Unauthorized(_("wrong user/pass"))
+
         PmsApiRestUserOutput = self.env.datamodels["pms.api.rest.user.output"]
 
         token = jwt.encode(
