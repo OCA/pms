@@ -21,6 +21,9 @@ class SaleOrder(models.Model):
 
     check_in = fields.Datetime(related="pms_reservation_id.start")
     check_out = fields.Datetime(related="pms_reservation_id.stop")
+    manually_confirmed = fields.Boolean(
+        string="Manually Confirmed", track_visibility="onchange"
+    )
 
     @api.depends("order_line")
     def _compute_pms_reservation_id(self):
@@ -43,6 +46,8 @@ class SaleOrder(models.Model):
         reservation_ids = self.sale_get_active_reservation()
         if reservation_ids and cancel_reservation:
             reservation_ids.action_cancel(ignore_push_event=ignore_push_event)
+
+        self.manually_confirmed = False
         return super().action_cancel()
 
     def action_approve(self, ignore_push_event=False):
@@ -63,7 +68,6 @@ class SaleOrder(models.Model):
                 default_status = "inquiry"
                 if self.state in ["sale", "done"]:
                     default_status = "confirmed"
-
                 to_create.guesty_push_reservation(default_status=default_status)
         return rs
 
@@ -129,3 +133,27 @@ class SaleOrder(models.Model):
                     sale.action_quotation_sent()
             except Exception as ex:
                 _log.error(ex)
+
+    def manually_confirmed_emails(self):
+        message_follower_ids = self.message_follower_ids.filtered(
+            lambda x: x.partner_id.id != self.partner_id.id
+        )
+        partner_ids = message_follower_ids.mapped("partner_id").ids
+        partner_ids_string = ",".join(map(str, partner_ids))
+        return partner_ids_string
+
+    def send_manually_confirmed_email(self):
+        template_id = self.env.ref(
+            "connector_guesty.mail_template_sale_manual_confirmation"
+        )
+        template_id.send_mail(self.id, force_send=True)
+
+    def action_confirm(self):
+        self.manually_confirmed = self._context.get("default_manually_confirmed")
+        original_return = super(SaleOrder, self).action_confirm()
+        if self.manually_confirmed:
+            try:
+                self.send_manually_confirmed_email()
+            except Exception as e:
+                _log.error(e)
+        return original_return
