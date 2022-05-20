@@ -136,3 +136,64 @@ class PmsPricelistService(Component):
                     result.append(pricelist_info)
 
         return result
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:pricelist_id>/pricelist-item",
+                ],
+                "POST",
+            )
+        ],
+        input_param=Datamodel("pms.pricelist.item.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def create_pricelist_item(self, pricelist_id, pms_pricelist_item_info):
+        day = datetime.strptime(
+            pms_pricelist_item_info.date[:10], "%Y-%m-%d"
+        ) + timedelta(days=1)
+        product_id = (
+            self.env["pms.room.type"]
+            .browse(pms_pricelist_item_info.roomTypeId)
+            .product_id
+        )
+        pricelist_item = self.env["product.pricelist.item"].create(
+            {
+                "applied_on": "0_product_variant",
+                "product_id": product_id.id,
+                "pms_property_ids": [pms_pricelist_item_info.pmsPropertyId],
+                "date_start_consumption": day,
+                "date_end_consumption": day,
+                "compute_price": "fixed",
+                "fixed_price": pms_pricelist_item_info.price,
+                "pricelist_id": pricelist_id,
+            }
+        )
+        return pricelist_item.id
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:pricelist_id>/pricelist-item",
+                ],
+                "PATCH",
+            )
+        ],
+        input_param=Datamodel("pms.pricelist.item.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def write_pricelist_item(self, pricelist_id, pms_pricelist_item_info):
+        product_pricelist_item = self.env["product.pricelist.item"].search(
+            [
+                ("id", "=", pms_pricelist_item_info.pricelistItemId),
+                ("pricelist_id", "=", pricelist_id),
+            ]
+        )
+        if product_pricelist_item and pms_pricelist_item_info.price:
+            product_pricelist_item.write(
+                {
+                    "fixed_price": pms_pricelist_item_info.price,
+                }
+            )
