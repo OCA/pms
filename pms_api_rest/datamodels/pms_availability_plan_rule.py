@@ -23,3 +23,4 @@ class PmsAvailabilityPlanRuleInfo(Datamodel):
     roomTypeId = fields.Integer(required=False, allow_none=True)
     date = fields.String(required=False, allow_none=True)
     quota = fields.Integer(required=False, allow_none=True)
+    pmsPropertyId = fields.Integer(required=False, allow_none=True)
