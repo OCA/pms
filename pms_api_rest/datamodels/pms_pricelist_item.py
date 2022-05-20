@@ -16,3 +16,4 @@ class PmsPricelistItemInfo(Datamodel):
     price = fields.Float(required=False, allow_none=True)
     roomTypeId = fields.Integer(required=False, allow_none=True)
     date = fields.String(required=False, allow_none=True)
+    pmsPropertyId = fields.Integer(required=False, allow_none=True)
