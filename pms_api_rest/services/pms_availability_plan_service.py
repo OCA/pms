@@ -149,3 +149,94 @@ class PmsAvailabilityPlanService(Component):
                     result.append(availability_plan_rule_info)
 
         return result
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:availability_plan_id>/availability-plan-rule",
+                ],
+                "POST",
+            )
+        ],
+        input_param=Datamodel("pms.availability.plan.rule.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def create_availability_plan_rule(
+        self, availability_plan_id, pms_avail_plan_rule_info
+    ):
+        day = datetime.strptime(
+            pms_avail_plan_rule_info.date[:10], "%Y-%m-%d"
+        ) + timedelta(days=1)
+        vals = {
+            "room_type_id": pms_avail_plan_rule_info.roomTypeId,
+            "date": day,
+            "pms_property_id": pms_avail_plan_rule_info.pmsPropertyId,
+            "availability_plan_id": availability_plan_id,
+        }
+
+        if pms_avail_plan_rule_info.minStay:
+            vals.update({"min_stay": pms_avail_plan_rule_info.minStay})
+        if pms_avail_plan_rule_info.minStayArrival:
+            vals.update({"min_stay_arrival": pms_avail_plan_rule_info.minStayArrival})
+        if pms_avail_plan_rule_info.maxStay:
+            vals.update({"max_stay": pms_avail_plan_rule_info.maxStay})
+        if pms_avail_plan_rule_info.maxStayArrival:
+            vals.update({"max_stay_arrival": pms_avail_plan_rule_info.maxStayArrival})
+        if pms_avail_plan_rule_info.closed:
+            vals.update({"closed": pms_avail_plan_rule_info.closed})
+        if pms_avail_plan_rule_info.closedDeparture:
+            vals.update({"closed_departure": pms_avail_plan_rule_info.closedDeparture})
+        if pms_avail_plan_rule_info.closedArrival:
+            vals.update({"closed_arrival": pms_avail_plan_rule_info.closedArrival})
+        if pms_avail_plan_rule_info.quota:
+            vals.update({"quota": pms_avail_plan_rule_info.quota})
+        avail_plan_rule = self.env["pms.availability.plan.rule"].create(vals)
+        return avail_plan_rule.id
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:availability_plan_id>/availability-plan-rule/",
+                ],
+                "PATCH",
+            )
+        ],
+        input_param=Datamodel("pms.availability.plan.rule.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def write_availability_plan_rule(
+        self, availability_plan_id, pms_avail_plan_rule_info
+    ):
+        vals = dict()
+        avail_rule = self.env["pms.availability.plan.rule"].search(
+            [
+                ("id", "=", pms_avail_plan_rule_info.availabilityRuleId),
+                ("availability_plan_id", "=", availability_plan_id),
+            ]
+        )
+        if avail_rule:
+            if pms_avail_plan_rule_info.minStay:
+                vals.update({"min_stay": pms_avail_plan_rule_info.minStay})
+            if pms_avail_plan_rule_info.minStayArrival:
+                vals.update(
+                    {"min_stay_arrival": pms_avail_plan_rule_info.minStayArrival}
+                )
+            if pms_avail_plan_rule_info.maxStay:
+                vals.update({"max_stay": pms_avail_plan_rule_info.maxStay})
+            if pms_avail_plan_rule_info.maxStayArrival:
+                vals.update(
+                    {"max_stay_arrival": pms_avail_plan_rule_info.maxStayArrival}
+                )
+            if pms_avail_plan_rule_info.closed:
+                vals.update({"closed": pms_avail_plan_rule_info.closed})
+            if pms_avail_plan_rule_info.closedDeparture:
+                vals.update(
+                    {"closed_departure": pms_avail_plan_rule_info.closedDeparture}
+                )
+            if pms_avail_plan_rule_info.closedArrival:
+                vals.update({"closed_arrival": pms_avail_plan_rule_info.closedArrival})
+            if pms_avail_plan_rule_info.quota:
+                vals.update({"quota": pms_avail_plan_rule_info.quota})
+        avail_rule.write(vals)
