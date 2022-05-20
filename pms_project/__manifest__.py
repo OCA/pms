@@ -9,7 +9,11 @@
     "depends": ["pms_base", "project"],
     "author": "Open Source Integrators, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/pms",
-    "data": ["views/pms_property_views.xml", "views/project_task_views.xml"],
+    "data": [
+        "views/pms_property_views.xml",
+        "views/project_task_views.xml",
+        "views/project.xml",
+    ],
     "maintainers": ["max3903"],
     "development_status": "Beta",
 }
