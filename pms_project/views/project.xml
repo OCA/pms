@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="project_form_view_custom" model="ir.ui.view">
+            <field name="name">Project form view custom</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.edit_project" />
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="before">
+                    <field name="property_id" placeholder="Property" />
+                </xpath>
+            </field>
+        </record>
+        <!-- view search -->
+        <record id="search_view_property" model="ir.ui.view">
+            <field name="name">Property search</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.view_project_project_filter" />
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='my_projects']" position="after">
+                    <separator />
+                    <field name="property_id" />
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
