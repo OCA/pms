@@ -15,20 +15,28 @@ msgstr ""
 
 #. module: pms_project
 #: model:ir.model.fields,field_description:pms_project.field_pms_property__display_name
+#: model:ir.model.fields,field_description:pms_project.field_project_project__display_name
 #: model:ir.model.fields,field_description:pms_project.field_project_task__display_name
 msgid "Display Name"
 msgstr ""
 
 #. module: pms_project
 #: model:ir.model.fields,field_description:pms_project.field_pms_property__id
+#: model:ir.model.fields,field_description:pms_project.field_project_project__id
 #: model:ir.model.fields,field_description:pms_project.field_project_task__id
 msgid "ID"
 msgstr ""
 
 #. module: pms_project
 #: model:ir.model.fields,field_description:pms_project.field_pms_property____last_update
+#: model:ir.model.fields,field_description:pms_project.field_project_project____last_update
 #: model:ir.model.fields,field_description:pms_project.field_project_task____last_update
 msgid "Last Modified on"
+msgstr ""
+
+#. module: pms_project
+#: model:ir.model,name:pms_project.model_project_project
+msgid "Project"
 msgstr ""
 
 #. module: pms_project
@@ -39,6 +47,8 @@ msgstr ""
 
 #. module: pms_project
 #: model:ir.model,name:pms_project.model_pms_property
+#: model:ir.model.fields,field_description:pms_project.field_project_project__property_id
+#: model_terms:ir.ui.view,arch_db:pms_project.project_form_view_custom
 msgid "Property"
 msgstr ""
 
