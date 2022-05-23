@@ -1,6 +1,8 @@
+from odoo import _
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
+from odoo.exceptions import MissingError
 
 
 class PmsRoomService(Component):
@@ -51,3 +53,102 @@ class PmsRoomService(Component):
                 )
             )
         return result_rooms
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:room_id>",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.room.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def get_room(self, room_id):
+        room = self.env['pms.room'].search(
+            [
+                ('id', '=', room_id)
+            ]
+        )
+        if room:
+            PmsRoomInfo = self.env.datamodels["pms.room.info"]
+            return PmsRoomInfo(
+                id=room.id,
+                name=room.name,
+                roomTypeId=room.room_type_id,
+                capacity=room.capacity,
+                shortName=room.short_name,
+            )
+        else:
+            raise MissingError(_("Room not found"))
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:room_id>",
+                ],
+                "PATCH",
+            )
+        ],
+        input_param=Datamodel("pms.room.info"),
+        auth="jwt_api_pms",
+    )
+    def update_room(self, room_id, pms_room_info_data):
+        room = self.env['pms.room'].search(
+            [
+                ('id', '=', room_id)
+            ]
+        )
+        if room:
+            room.name = pms_room_info_data.name
+        else:
+            raise MissingError(_("Room not found"))
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:room_id>",
+                ],
+                "DELETE",
+            )
+        ],
+        auth="jwt_api_pms",
+    )
+    def delete_room(self, room_id):
+        # esto tb podría ser con un browse
+        room = self.env['pms.room'].search(
+            [
+                ('id', '=', room_id)
+            ]
+        )
+        if room:
+            room.active = False
+        else:
+            raise MissingError(_("Room not found"))
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/",
+                ],
+                "POST",
+            )
+        ],
+        input_param=Datamodel("pms.room.info"),
+        auth="jwt_api_pms",
+    )
+    def create_room(self, pms_room_info_param):
+        room = self.env['pms.room'].create(
+            {
+                "name": pms_room_info_param.name,
+                "room_type_id": pms_room_info_param.roomTypeId,
+                "capacity": pms_room_info_param.capacity,
+                "short_name": pms_room_info_param.shortName
+            }
+        )
+        return room.id
