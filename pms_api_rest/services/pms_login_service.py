@@ -4,7 +4,7 @@ import werkzeug.exceptions
 from jose import jwt
 
 from odoo import _
-from odoo.exceptions import  AccessDenied, UserError
+from odoo.exceptions import AccessDenied
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
