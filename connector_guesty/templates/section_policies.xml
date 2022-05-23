@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="website_section_policies_template" name="Policies">
+        <section class="container">
+            <ul
+                class="list-group direction-horizontal row"
+                style="flex-direction: row !important; flex-wrap: wrap;"
+            >
+                <li
+                    class="list-group-item d-flex p-0 col col-sm-6 col-md-4 p-3 my-2 border-0"
+                >
+                    <div class="pt-0 pr-3">
+                        <span class="fa fa-clock-o" />
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="mb-1">
+                            <p class="mb-0 item-header">Check in &amp; Check out
+                            </p>
+                        </div>
+                        <div class="mb-1">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <t
+                                        t-if="(property.checkin &lt; 12.0 or property.checkout &lt; 12.0)"
+                                    >
+                                        <t t-set="tz">AM</t>
+                                    </t>
+                                    <t
+                                        t-if="(property.checkin &gt; 12.0 or property.checkout &gt; 12.0)"
+                                    >
+                                        <t t-set="tz">PM</t>
+                                    </t>
+                                    <span class="normal">Check in:
+                                    </span>
+                                    <span
+                                        t-field="property.checkin"
+                                        t-options="{&quot;widget&quot;: &quot;float&quot;, &quot;precision&quot;: 2}"
+                                    />
+                                    <span t-esc="tz" />
+                                    <br />
+                                    <span class="normal">Check out:
+                                    </span>
+                                    <span
+                                        t-field="property.checkout"
+                                        t-options="{&quot;widget&quot;: &quot;float&quot;, &quot;precision&quot;: 2}"
+                                    />
+                                    <span t-esc="tz" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li
+                    class="list-group-item d-flex p-0 col col-sm-6 col-md-4 p-3 my-2 border-0"
+                >
+                    <div class="pt-0 pr-3">
+                        <span class="fa fa-check-square-o" />
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="mb-1">
+                            <p class="mb-0 item-header">Reglas</p>
+                        </div>
+                        <div class="mb-1">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <t t-if="property.pets">
+                                        <span class="fa fa-circle-o" />
+                                        <span class="normal">Admite mascotas.
+                                        </span>
+                                    </t>
+                                    <t t-elif="property.pets== False">
+                                        <span class="fa fa-circle-o" />
+                                        <span class="normal">No admite mascotas.
+                                        </span>
+                                    </t>
+                                    <span
+                                        class="normal"
+                                    >* Fumar está estrictamente prohibido<br />*
+                                        xxxx<br />* xxxx<br />*
+                                        <font
+                                            style="color: rgb(255, 0, 0);"
+                                        >BOTON POPUP {"Ver
+                                            más"}
+                                        </font>
+                                        <br />
+                                        <br />
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li
+                    class="list-group-item d-flex p-0 col col-sm-6 col-md-4 p-3 my-2 border-0"
+                >
+                    <div class="pt-0 pr-3">
+                        <span class="fa fa-times-circle-o" />
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="mb-1">
+                            <p class="mb-0 item-header">Política de cancelación
+                            </p>
+                        </div>
+                        <div class="mb-1">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <p
+                                        class="text-justify"
+                                    >Change of plans? No worries. You can
+                                        cancel up to 72 hours before your check-in date for a full
+                                        refund. For reservations close to check-in or special cases,
+                                        please contact our team, we will be glad to help.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </section>
+    </template>
+</odoo>

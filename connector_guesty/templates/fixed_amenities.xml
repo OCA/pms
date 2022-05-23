@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="website_fixed_amenities_template" name="Fixed Amenities">
+        <section
+            class="s_title pt32 o_colored_level pb0"
+            data-vcss="001"
+            data-snippet="s_title"
+            data-name="Title"
+        >
+            <div class="container s_allow_columns">
+                <h2 class="text-center mb-5 item-header">
+                    <font style="font-size: 36px;">Amenidades</font>
+                </h2>
+            </div>
+        </section>
+        <section
+            class="s_three_columns bg-200 pt32 pb32 o_colored_level"
+            data-vcss="001"
+            data-snippet="s_three_columns"
+            data-name="Columns"
+        >
+            <div class="container">
+                <div class="row d-flex align-items-stretch">
+                    <div class="col-lg-4 s_col_no_bgcolor pt16 pb16">
+                        <div class="card bg-white h-100">
+                            <div class="card-body">
+                                <h3 class="card-title"><img
+                                        src="https://images.prismic.io/casaiweb/050f4274-222c-4e69-8f5c-93146611cd33_Quere%CC%81taro904-13.jpg?auto=compress,format"
+                                        alt="High speed WiFi"
+                                        style="font-family: Roboto, &quot;Odoo Unicode Support Noto&quot;, sans-serif; font-size: 1rem;"
+                                        loading="lazy"
+                                    />Wifi de alta velocidad
+                                </h3>
+                                <p class="card-text">&amp;nbsp;</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 s_col_no_bgcolor pt16 pb16">
+                        <div class="card bg-white h-100">
+                            <div class="card-body">
+                                <h3 class="card-title"><img
+                                        src="https://images.prismic.io/casaiweb/e989a11c-26d4-4615-a9ae-6b2a685bbc43_JVM421-14DSL-37.jpg?auto=compress,format"
+                                        style="font-family: Roboto, &quot;Odoo Unicode Support Noto&quot;, sans-serif; font-size: 1rem;"
+                                        loading="lazy"
+                                    />Espacios de trabajo
+                                </h3>
+                                <p class="card-text">&amp;nbsp;</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 s_col_no_bgcolor pt16 pb16">
+                        <div class="card bg-white h-100">
+                            <div class="card-body">
+                                <h3 class="card-title"><img
+                                        src="https://images.prismic.io/casaiweb/3386d8f2-e7c3-4fe5-b3c3-ca5b717051bd_SMApp1.0-2.jpg?auto=compress,format"
+                                        style="font-family: Roboto, &quot;Odoo Unicode Support Noto&quot;, sans-serif; font-size: 1rem;"
+                                        loading="lazy"
+                                    />Acceso sin llaves
+                                </h3>
+                                <p class="card-text">
+                                    <br />
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section
+            class="s_three_columns bg-200 pt32 pb32 o_colored_level"
+            data-vcss="001"
+            data-snippet="s_three_columns"
+            data-name="Columns"
+        >
+            <div class="container">
+                <div class="row d-flex align-items-stretch">
+                    <div class="col-lg-4 s_col_no_bgcolor pt16 pb16">
+                        <div class="card bg-white h-100">
+                            <div class="card-body">
+                                <h3 class="card-title"><img
+                                        src="https://images.prismic.io/casaiweb/6b94ba2e-44dc-48bd-a55b-f3559020a721_HEGSMCleaningKit-11.jpg?auto=compress,format"
+                                        alt="Professional Cleaning"
+                                        style="font-family: Roboto, &quot;Odoo Unicode Support Noto&quot;, sans-serif; font-size: 1rem;"
+                                        loading="lazy"
+                                        data-original-title=""
+                                        title=""
+                                        aria-describedby="tooltip529941"
+                                    />Limpieza profesional
+                                </h3>
+                                <p class="card-text">
+                                    <br />
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 s_col_no_bgcolor pt16 pb16">
+                        <div class="card bg-white h-100">
+                            <div class="card-body">
+                                <h3 class="card-title"><img
+                                        src="https://images.prismic.io/casaiweb/407e5a09-7748-410b-b437-f3b17ebe3f09_In+Apt+Prod-22.jpg?auto=compress,format"
+                                        alt="Fresh Linens"
+                                        style="font-family: Roboto, &quot;Odoo Unicode Support Noto&quot;, sans-serif; font-size: 1rem;"
+                                        loading="lazy"
+                                    />Blancos de lujo
+                                </h3>
+                                <p class="card-text">&amp;nbsp;</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 s_col_no_bgcolor pt16 pb16">
+                        <div class="card bg-white h-100">
+                            <div class="card-body">
+                                <h3 class="card-title"><img
+                                        src="https://images.prismic.io/casaiweb/d92dd7fd-0895-48f4-abaf-a004e2931da2_COR131-TOWELS-4.jpg?auto=compress,format"
+                                        style="font-family: Roboto, &quot;Odoo Unicode Support Noto&quot;, sans-serif; font-size: 1rem;"
+                                        loading="lazy"
+                                    />Toallas tipo spa
+                                </h3>
+                                <p class="card-text">
+                                    <br />
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+</odoo>
