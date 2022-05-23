@@ -1,8 +1,9 @@
 from odoo import _
+from odoo.exceptions import MissingError
+
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
-from odoo.exceptions import MissingError
 
 
 class PmsRoomService(Component):
@@ -67,11 +68,7 @@ class PmsRoomService(Component):
         auth="jwt_api_pms",
     )
     def get_room(self, room_id):
-        room = self.env['pms.room'].search(
-            [
-                ('id', '=', room_id)
-            ]
-        )
+        room = self.env["pms.room"].search([("id", "=", room_id)])
         if room:
             PmsRoomInfo = self.env.datamodels["pms.room.info"]
             return PmsRoomInfo(
@@ -97,11 +94,7 @@ class PmsRoomService(Component):
         auth="jwt_api_pms",
     )
     def update_room(self, room_id, pms_room_info_data):
-        room = self.env['pms.room'].search(
-            [
-                ('id', '=', room_id)
-            ]
-        )
+        room = self.env["pms.room"].search([("id", "=", room_id)])
         if room:
             room.name = pms_room_info_data.name
         else:
@@ -120,11 +113,7 @@ class PmsRoomService(Component):
     )
     def delete_room(self, room_id):
         # esto tb podría ser con un browse
-        room = self.env['pms.room'].search(
-            [
-                ('id', '=', room_id)
-            ]
-        )
+        room = self.env["pms.room"].search([("id", "=", room_id)])
         if room:
             room.active = False
         else:
@@ -143,12 +132,12 @@ class PmsRoomService(Component):
         auth="jwt_api_pms",
     )
     def create_room(self, pms_room_info_param):
-        room = self.env['pms.room'].create(
+        room = self.env["pms.room"].create(
             {
                 "name": pms_room_info_param.name,
                 "room_type_id": pms_room_info_param.roomTypeId,
                 "capacity": pms_room_info_param.capacity,
-                "short_name": pms_room_info_param.shortName
+                "short_name": pms_room_info_param.shortName,
             }
         )
         return room.id
