@@ -67,6 +67,84 @@
                         </tree>
                     </field>
                 </page>
+                <page string="Pictures">
+                    <style>
+                        .oe_listing_pic img {
+                        max-width: 90px;
+                        }
+                    </style>
+                    <field name="picture_ids" mode="kanban">
+                        <kanban>
+                            <field name="id" />
+                            <field name="name" />
+                            <field name="url_thumbnail" />
+                            <templates>
+                                <t t-name="kanban-box">
+                                    <t
+                                        t-set="color"
+                                        t-value="kanban_color(record.id.raw_value)"
+                                    />
+                                    <div
+                                        t-att-class="color + (record.id.raw_value == 1 ? ' oe_kanban_color_alert' : '') + ' oe_kanban_global_click'"
+                                    >
+                                        <div class="o_kanban_image">
+                                            <img
+                                                alt="Contact image"
+                                                t-if="record.url_thumbnail.raw_value"
+                                                t-att-src="record.url_thumbnail.raw_value"
+                                            />
+                                        </div>
+                                    </div>
+                                </t>
+                            </templates>
+                        </kanban>
+                    </field>
+                </page>
+                <page string="Website gallery">
+                    <field
+                        name="website_picture_ids"
+                        mode="kanban"
+                        widget="many2many"
+                        domain="[('property_id', '=', id)]"
+                    >
+                        <kanban>
+                            <field name="id" />
+                            <field name="name" />
+                            <field name="url_thumbnail" />
+                            <field name="original_data" />
+                            <templates>
+                                <t t-name="kanban-box">
+                                    <t
+                                        t-set="color"
+                                        t-value="kanban_color(record.id.raw_value)"
+                                    />
+                                    <div
+                                        t-att-class="color + (record.id.raw_value == 1 ? ' oe_kanban_color_alert' : '') + ' oe_kanban_global_click'"
+                                    >
+                                        <div class="o_kanban_image">
+                                            <img
+                                                alt="Contact image"
+                                                t-if="record.original_data.raw_value"
+                                                t-att-src="kanban_image('pms.property.picture', 'original_data', record.id.raw_value)"
+                                            />
+
+                                        </div>
+                                    </div>
+                                </t>
+                            </templates>
+                        </kanban>
+                    </field>
+                </page>
+                <page string="Other website options">
+                    <group>
+                        <group>
+                            <field
+                                name="front_picture"
+                                domain="[('property_id', '=', id)]"
+                            />
+                        </group>
+                    </group>
+                </page>
             </xpath>
 
             <xpath expr="//field[@name='listing_type']" position="after">

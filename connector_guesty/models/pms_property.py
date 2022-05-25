@@ -64,6 +64,10 @@ class PmsProperty(models.Model):
         string="King Beds", compute="_compute_qty_beds", store=True
     )
 
+    picture_ids = fields.One2many("pms.property.picture", "property_id")
+    website_picture_ids = fields.Many2many("pms.property.picture")
+    front_picture = fields.Many2one("pms.property.picture")
+
     @api.depends("room_ids")
     def _compute_qty_beds(self):
         for record in self:

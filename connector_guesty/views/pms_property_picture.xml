@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="pms_property_picture_tree_view" model="ir.ui.view">
+        <field name="name">Pictures</field>
+        <field name="model">pms.property.picture</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="id" />
+                <field name="name" />
+                <field name="original_data" widget="image" />
+            </tree>
+        </field>
+    </record>
+</odoo>

@@ -3,6 +3,7 @@ from . import (
     pms_property,
     pms_room,
     pms_reservation,
+    pms_property_picture,
     pms_property_reservation,
     pms_guesty_calendar,
     pms_guesty_custom_field,

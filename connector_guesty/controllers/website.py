@@ -38,15 +38,22 @@ class CasaiWebsite(Website):
 
     def _prepare_property_values(self, pms_property, category, search, **kwargs):
         rs = super()._prepare_property_values(pms_property, category, search, **kwargs)
-        rs["slider_01"] = {
-            "pictures": [
-                DEMO_PICTURE_01,
-                DEMO_PICTURE_02,
-                DEMO_PICTURE_01,
-                DEMO_PICTURE_02,
-                DEMO_PICTURE_01,
-                DEMO_PICTURE_02,
-            ]
-        }
-        rs["section_id"] = {"picture": DEMO_PICTURE_01}
+
+        _MARKER_URL = "https://d1l56s2phyyu51.cloudfront.net/icons/marker-icon.png"
+        _MAPS_URL = (
+            "{}?{}&{}&{}5&{}&scale=1&format=png&{}&language=en&markers=icon:{}".format(
+                "https://maps.googleapis.com/maps/api/staticmap",
+                "key=",
+                "zoom=1",
+                "center=19.405035,-99.17485",
+                "size=730x272",
+                "maptype=roadmap",
+                "{}|anchor:center|19.405035,-99.17485".format(_MARKER_URL),
+            )
+        )
+
+        pictures = pms_property.website_picture_ids
+        rs["slider_01"] = {"pictures": [a.url_large for a in pictures]}
+        rs["section_id"] = {"picture": pms_property.front_picture.url_large}
+        rs["map_picture"] = {"url": _MAPS_URL}
         return rs

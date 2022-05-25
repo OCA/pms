@@ -11,3 +11,4 @@ access_crm_listing_availability,access_crm_listing_availability,model_crm_listin
 access_pms_guesty_listing,access_pms_guesty_listing,model_pms_guesty_listing,base.group_user,1,0,0,0
 access_pms_guesty_custom_field,access_pms_guesty_custom_field,model_pms_guesty_custom_field,base.group_user,1,0,0,0
 access_pms_backend_custom_field,access_pms_backend_custom_field,model_pms_backend_custom_field,base.group_user,1,1,1,1
+access_pms_property_picture,access_pms_property_picture,model_pms_property_picture,base.group_user,1,1,1,1

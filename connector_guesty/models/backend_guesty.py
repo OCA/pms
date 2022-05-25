@@ -1,5 +1,6 @@
 # Copyright (C) 2021 Casai (https://www.casai.com)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import base64
 import datetime
 import json
 import logging
@@ -479,3 +480,70 @@ class BackendGuesty(models.Model):
                 }
 
         return result
+
+    def download_pictures(self):
+        result_token = requests.post(
+            "https://test-api.casai.com/auth/",
+            headers={"Content-Type": "application/json"},
+            json={},
+        )
+
+        if result_token.status_code not in [200, 201]:
+            raise ValidationError(_("unable to call api"))
+
+        auth_data = result_token.json()
+        token_value = auth_data.get("token")
+
+        if not token_value:
+            raise ValidationError(_("Unable to load token"))
+
+        listing_ids = (
+            self.env["pms.property"]
+            .sudo()
+            .search([("guesty_id", "!=", False)], limit=10)
+        )
+
+        for listing in listing_ids:
+            listing_url = "https://test-api.casai.com/listings/{}/".format(
+                listing.guesty_id
+            )
+            res = requests.get(
+                listing_url, headers={"Authorization": "Token {}".format(token_value)}
+            )
+            if res.status_code not in [200, 201]:
+                continue
+
+            data = res.json()
+            _Picture = self.env["pms.property.picture"].sudo()
+            for _pic in data.get("pictures", []):
+                thumb = _pic["thumbnail"].replace(".webp", ".jpg")
+                large = _pic["large"].replace(".webp", ".jpg")
+                _search = _Picture.search([("external_id", "=", _pic["id"])], limit=1)
+
+                _log.info("Uploading: {}".format(listing.guesty_id))
+
+                _payload = {
+                    "name": _pic["caption"],
+                    "url_thumbnail": thumb,
+                    "url_large": large,
+                    "property_id": listing.id,
+                }
+                if not _search.exists():
+                    img_req = requests.get(thumb)
+                    data = img_req.content
+                    data = base64.b64encode(data)
+                    _payload["original_data"] = data
+                    _payload["external_id"] = _pic["id"]
+                    _Picture.create(_payload)
+                else:
+                    _search.write(_payload)
+
+            # Update data
+            if not listing.ota_description:
+                listing.write({"ota_description": data["publicdescription_space"]})
+
+            if listing.name != data["casai_listing"]["casai_title"]:
+                listing.write({"name": data["casai_listing"]["casai_title"]})
+
+            if listing.ref != data["nickname"]:
+                listing.write({"ref": data["nickname"]})

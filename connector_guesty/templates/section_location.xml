@@ -7,7 +7,10 @@
             data-name="Text - Image"
         >
             <div class="container">
-                <h2 class="text-center mb-5 item-header">
+                <h2
+                    class="text-center pb-2 pt-2 item-header"
+                    style="background-color: #E9ECEF !important"
+                >
                     <font style="font-size: 36px;">Ubicación</font>
                 </h2>
                 <div class="row align-items-center">
@@ -32,7 +35,7 @@
                     </div>
                     <div class="col-lg-6 pt16 pb16 o_colored_level" style="">
                         <img
-                            src="/web/image/4078-41146910/staticmap.png"
+                            t-att-src="map_picture['url']"
                             class="img img-fluid mx-auto"
                             alt=""
                             loading="lazy"

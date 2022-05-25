@@ -35,6 +35,11 @@
                         string="Sync Guesty Info"
                         type="object"
                     />
+                    <button
+                        name="download_pictures"
+                        string="Sync Pictures"
+                        type="object"
+                    />
                 </header>
                 <sheet>
 
