@@ -174,6 +174,10 @@ class GenericImporterCustom(AbstractComponent):
                     % (external_id,)
                 )
 
+        # REVIEW: Avoid import modified folios
+        if external_data.get("was_modified"):
+            return True
+
         # import the missing linked resources
         self._import_dependencies(external_data, external_fields)
 

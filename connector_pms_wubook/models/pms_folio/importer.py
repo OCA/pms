@@ -117,7 +117,6 @@ class ChannelWubookPmsFolioImporter(Component):
                             or folio.pms_property_id.email_formatted,
                         )
 
-
             if (
                 folio.payment_ids.filtered(lambda p: p.state == "posted")
                 or folio.amount_total == 0
