@@ -49,18 +49,33 @@ class ChannelWubookPmsFolioImporter(Component):
         )
 
     def _after_import(self, binding):
+        folio = binding.odoo_id
         # If Wubook status is 7 (Wubook modification) the folio state is not changed
         if binding.wubook_status in ("3", "5", "6") and binding.state != "cancel":
-            binding.odoo_id.action_cancel()
+            folio.action_cancel()
+            # REVIEW: Force update wubook availability becouse Wubook adds one automatically
+            # when entering a cancellation. If the sale room type category (wubook) does not correspond with the
+            # room assigned category, the odoo avail in "Wubook category" will not change when canceled the folio
+            # and wubook adds one to avail although in Odoo there is no longer availability
+            if any([
+                res.reservation_line_ids.mapped(
+                    "room_id.room_type_id.id"
+                ) != [res.room_type_id.id]  for res in folio.reservation_ids
+            ]):
+                self.env["channel.wubook.pms.availability"].export_data(
+                    backend_id=binding.backend_id,
+                    date_from=folio.first_checkin,
+                    date_to=folio.last_checkout,
+                    room_type_ids=folio.mapped("reservation_ids.room_type_id"),
+                )
         elif binding.wubook_status in ("1", "2", "4") and binding.state == "cancel":
-            binding.odoo_id.with_context(confirm_all_reservations=True).action_confirm()
+            folio.with_context(confirm_all_reservations=True).action_confirm()
 
         # TODO: move get_all_items action_cancel here
         # binding.reservation_ids.filtered(lambda x: x['wubook_status'] == '5').action_cancel()
 
         # Pre payment Folio
         if binding.payment_gateway_fee > 0:
-            folio = binding.odoo_id
             # Wubook Pre payment
             if (
                 folio.channel_type_id
@@ -102,7 +117,7 @@ class ChannelWubookPmsFolioImporter(Component):
                             or folio.pms_property_id.email_formatted,
                         )
 
-            # REVIEW: avoid duplicate payment
+
             if (
                 folio.payment_ids.filtered(lambda p: p.state == "posted")
                 or folio.amount_total == 0
