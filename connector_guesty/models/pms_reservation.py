@@ -475,7 +475,11 @@ class PmsReservation(models.Model):
         checkin_localized = utc.localize(self.start).astimezone(tz)
         checkout_localized = utc.localize(self.stop).astimezone(tz)
 
-        guesty_currency = guesty_listing_price.currency_id or backend.currency_id
+        guesty_currency = (
+            guesty_listing_price.currency_id
+            or backend.currency_id
+            or self.env.company.currency_id
+        )
 
         body = {
             "listingId": self.property_id.guesty_id,
@@ -490,37 +494,49 @@ class PmsReservation(models.Model):
             lambda s: s.reservation_ok
         )
         if reservation_line:
-            fare_acc_amount = (
-                reservation_line.price_unit * reservation_line.product_uom_qty
-            )
+            body["money"] = GUESTY_DEFAULT_PAYLOAD["money"].copy()
+            if backend.enable_guesty_discount:
+                fare_acc_amount = (
+                    reservation_line.price_unit * reservation_line.product_uom_qty
+                )
+
+                if reservation_line.discount != 0:
+                    discount_amount = fare_acc_amount - (
+                        fare_acc_amount * (1.0 - reservation_line.discount / 100.0)
+                    )
+
+                    discount_amount = self.sale_order_id.currency_id._convert(
+                        discount_amount,
+                        guesty_currency,
+                        self.sale_order_id.company_id,
+                        self.sale_order_id.date_order,
+                    )
+
+                    body["money"]["invoiceItems"].append(
+                        {
+                            "type": "MANUAL",
+                            "normalType": "AFD",
+                            "secondIdentifier": "ACCOMMODATION_FARE_DISCOUNT",
+                            "amount": discount_amount,
+                            "currency": guesty_currency.name,
+                            "title": "Fare Accommodation Discount",
+                        }
+                    )
+            else:
+                _log.info("================ WITHOUT DISCOUNT ================")
+                fare_acc_amount = reservation_line.price_subtotal
+
             fare_accommodation = self.sale_order_id.currency_id._convert(
                 fare_acc_amount,
                 guesty_currency,
                 self.sale_order_id.company_id,
                 self.sale_order_id.date_order,
             )
+
             body["money"] = {
                 "fareAccommodation": fare_accommodation,
                 "currency": guesty_currency.name,
             }
-
-            if reservation_line.discount != 0:
-                discount_amount = fare_accommodation - (
-                    fare_accommodation * (1.0 - reservation_line.discount / 100.0)
-                )
-                if "invoiceItems" not in body["money"]:
-                    body["money"]["invoiceItems"] = []
-
-                body["money"]["invoiceItems"].append(
-                    {
-                        "type": "MANUAL",
-                        "normalType": "AFD",
-                        "secondIdentifier": "ACCOMMODATION_FARE_DISCOUNT",
-                        "amount": discount_amount,
-                        "currency": guesty_currency.name,
-                        "title": "Fare Accommodation Discount",
-                    }
-                )
 
         cleaning_line = self.sale_order_id.order_line.filtered(
             lambda s: s.product_id.id == backend.cleaning_product_id.id
@@ -589,6 +605,7 @@ class PmsReservation(models.Model):
         if "other" not in body["notes"]:
             body["notes"]["other"] = self.user_id.name
 
+        _log.info(body)
         return body
 
     def build_so_from_reservation(self, reservation_data):

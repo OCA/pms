@@ -70,6 +70,7 @@ class BackendGuesty(models.Model):
     cancel_expired_quotes = fields.Boolean(default=False)
 
     custom_field_ids = fields.One2many("pms.backend.custom_field", "backend_id")
+    enable_guesty_discount = fields.Boolean(default=False)
 
     @api.depends("guesty_environment")
     def _compute_environment_fields(self):
