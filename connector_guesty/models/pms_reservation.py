@@ -38,6 +38,9 @@ class PmsReservation(models.Model):
     guesty_id = fields.Char(copy=False)
     guesty_last_updated_date = fields.Datetime()
     guesty_reservation_id = fields.Many2one("pms.guesty.reservation", copy=False)
+    pms_source_id = fields.Selection(
+        [("odoo", "Odoo"), ("guesty", "Guesty")], default="odoo"
+    )
 
     def _cancel_expired_cron(self):
         if not self.env.company.guesty_backend_id.cancel_expired_quotes:
@@ -76,6 +79,7 @@ class PmsReservation(models.Model):
                 .create({"uuid": values["guesty_id"], "state": "ND"})
                 .id
             )
+
         return super().create(values)
 
     def action_draft(self, ignore_push_event=False):
@@ -356,7 +360,10 @@ class PmsReservation(models.Model):
 
         if reservation_id.exists():
             reservation_id.write(reservation)
+            if reservation_id.pms_source_id == "odoo":
+                return reservation_id
         else:
+            reservation["pms_source_id"] = "guesty"
             reservation_id = self.env["pms.reservation"].sudo().create(reservation)
 
         if reservation_data["status"] in ["canceled", "declined", "expired", "closed"]:
