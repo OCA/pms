@@ -151,6 +151,7 @@ class BackendGuesty(models.Model):
         # Note: Guesty does not provide a way to validate credentials
         success, result = self._get_account_info()
         if success:
+            self.write({"active": True})
             return True
         else:
             raise UserError(_("Connection Test Failed!"))

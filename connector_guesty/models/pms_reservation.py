@@ -35,8 +35,9 @@ GUESTY_DEFAULT_PAYLOAD = {
 class PmsReservation(models.Model):
     _inherit = "pms.reservation"
 
-    guesty_id = fields.Char()
+    guesty_id = fields.Char(copy=False)
     guesty_last_updated_date = fields.Datetime()
+    guesty_reservation_id = fields.Many2one("pms.guesty.reservation", copy=False)
 
     def _cancel_expired_cron(self):
         if not self.env.company.guesty_backend_id.cancel_expired_quotes:
@@ -66,6 +67,16 @@ class PmsReservation(models.Model):
     def _check_no_of_reservations(self):
         # ignore overlaps for reservations, it was manager by guesty.
         return True
+
+    @api.model
+    def create(self, values):
+        if "guesty_id" in values:
+            values["guesty_reservation_id"] = (
+                self.env["pms.guesty.reservation"]
+                .create({"uuid": values["guesty_id"], "state": "ND"})
+                .id
+            )
+        return super().create(values)
 
     def action_draft(self, ignore_push_event=False):
         company = self.property_id.company_id or self.env.company
@@ -299,7 +310,7 @@ class PmsReservation(models.Model):
         if not property_id:
             raise ValidationError(_("Property not found"))
 
-        company_id = property_id.company_id
+        company_id = property_id.company_id or self.env.company
         if not company_id:
             raise ValidationError(
                 _("Company not found on listing {}".format(guesty_listing_id))
