@@ -70,6 +70,7 @@ class BackendGuesty(models.Model):
     cancel_expired_quotes = fields.Boolean(default=False)
 
     custom_field_ids = fields.One2many("pms.backend.custom_field", "backend_id")
+    enable_guesty_discount = fields.Boolean(default=False)
 
     @api.depends("guesty_environment")
     def _compute_environment_fields(self):
@@ -150,6 +151,7 @@ class BackendGuesty(models.Model):
         # Note: Guesty does not provide a way to validate credentials
         success, result = self._get_account_info()
         if success:
+            self.write({"active": True})
             return True
         else:
             raise UserError(_("Connection Test Failed!"))

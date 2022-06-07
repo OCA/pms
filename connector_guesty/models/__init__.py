@@ -8,6 +8,7 @@ from . import (
     pms_guesty_calendar,
     pms_guesty_custom_field,
     pms_guesty_listing,
+    pms_guesty_reservation,
     pms_configurator,
     product,
     res_company,

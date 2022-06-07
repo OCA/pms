@@ -19,6 +19,7 @@
                         <group>
                             <field name="guesty_id" readonly="1" />
                             <field name="sale_order_id" readonly="1" />
+                            <field name="guesty_reservation_id" readonly="1" />
                         </group>
                     </group>
                 </page>

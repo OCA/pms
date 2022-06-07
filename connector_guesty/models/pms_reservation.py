@@ -35,8 +35,9 @@ GUESTY_DEFAULT_PAYLOAD = {
 class PmsReservation(models.Model):
     _inherit = "pms.reservation"
 
-    guesty_id = fields.Char()
+    guesty_id = fields.Char(copy=False)
     guesty_last_updated_date = fields.Datetime()
+    guesty_reservation_id = fields.Many2one("pms.guesty.reservation", copy=False)
 
     def _cancel_expired_cron(self):
         if not self.env.company.guesty_backend_id.cancel_expired_quotes:
@@ -66,6 +67,16 @@ class PmsReservation(models.Model):
     def _check_no_of_reservations(self):
         # ignore overlaps for reservations, it was manager by guesty.
         return True
+
+    @api.model
+    def create(self, values):
+        if "guesty_id" in values:
+            values["guesty_reservation_id"] = (
+                self.env["pms.guesty.reservation"]
+                .create({"uuid": values["guesty_id"], "state": "ND"})
+                .id
+            )
+        return super().create(values)
 
     def action_draft(self, ignore_push_event=False):
         company = self.property_id.company_id or self.env.company
@@ -299,7 +310,7 @@ class PmsReservation(models.Model):
         if not property_id:
             raise ValidationError(_("Property not found"))
 
-        company_id = property_id.company_id
+        company_id = property_id.company_id or self.env.company
         if not company_id:
             raise ValidationError(
                 _("Company not found on listing {}".format(guesty_listing_id))
@@ -475,7 +486,11 @@ class PmsReservation(models.Model):
         checkin_localized = utc.localize(self.start).astimezone(tz)
         checkout_localized = utc.localize(self.stop).astimezone(tz)
 
-        guesty_currency = guesty_listing_price.currency_id or backend.currency_id
+        guesty_currency = (
+            guesty_listing_price.currency_id
+            or backend.currency_id
+            or self.env.company.currency_id
+        )
 
         body = {
             "listingId": self.property_id.guesty_id,
@@ -490,37 +505,49 @@ class PmsReservation(models.Model):
             lambda s: s.reservation_ok
         )
         if reservation_line:
-            fare_acc_amount = (
-                reservation_line.price_unit * reservation_line.product_uom_qty
-            )
+            body["money"] = GUESTY_DEFAULT_PAYLOAD["money"].copy()
+            if backend.enable_guesty_discount:
+                fare_acc_amount = (
+                    reservation_line.price_unit * reservation_line.product_uom_qty
+                )
+
+                if reservation_line.discount != 0:
+                    discount_amount = fare_acc_amount - (
+                        fare_acc_amount * (1.0 - reservation_line.discount / 100.0)
+                    )
+
+                    discount_amount = self.sale_order_id.currency_id._convert(
+                        discount_amount,
+                        guesty_currency,
+                        self.sale_order_id.company_id,
+                        self.sale_order_id.date_order,
+                    )
+
+                    body["money"]["invoiceItems"].append(
+                        {
+                            "type": "MANUAL",
+                            "normalType": "AFD",
+                            "secondIdentifier": "ACCOMMODATION_FARE_DISCOUNT",
+                            "amount": discount_amount,
+                            "currency": guesty_currency.name,
+                            "title": "Fare Accommodation Discount",
+                        }
+                    )
+            else:
+                _log.info("================ WITHOUT DISCOUNT ================")
+                fare_acc_amount = reservation_line.price_subtotal
+
             fare_accommodation = self.sale_order_id.currency_id._convert(
                 fare_acc_amount,
                 guesty_currency,
                 self.sale_order_id.company_id,
                 self.sale_order_id.date_order,
             )
+
             body["money"] = {
                 "fareAccommodation": fare_accommodation,
                 "currency": guesty_currency.name,
             }
-
-            if reservation_line.discount != 0:
-                discount_amount = fare_accommodation - (
-                    fare_accommodation * (1.0 - reservation_line.discount / 100.0)
-                )
-                if "invoiceItems" not in body["money"]:
-                    body["money"]["invoiceItems"] = []
-
-                body["money"]["invoiceItems"].append(
-                    {
-                        "type": "MANUAL",
-                        "normalType": "AFD",
-                        "secondIdentifier": "ACCOMMODATION_FARE_DISCOUNT",
-                        "amount": discount_amount,
-                        "currency": guesty_currency.name,
-                        "title": "Fare Accommodation Discount",
-                    }
-                )
 
         cleaning_line = self.sale_order_id.order_line.filtered(
             lambda s: s.product_id.id == backend.cleaning_product_id.id
