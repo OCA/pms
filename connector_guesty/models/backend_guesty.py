@@ -133,10 +133,11 @@ class BackendGuesty(models.Model):
             custom_fields = response.get("customFields", [])
             for custom_field in custom_fields:
                 _log.info("Trying to create custom field %s", custom_field)
-                custom_field = self.env["pms.guesty.custom_field"].search(
+                custom_field_obj = self.env["pms.guesty.custom_field"].search(
                     [("external_id", "=", custom_field["_id"])]
                 )
-                if not custom_field.exists():
+                if not custom_field_obj.exists():
+                    _log.info(custom_field)
                     self.env["pms.guesty.custom_field"].sudo().create(
                         {
                             "name": custom_field["displayName"],
@@ -151,7 +152,8 @@ class BackendGuesty(models.Model):
         # Note: Guesty does not provide a way to validate credentials
         success, result = self._get_account_info()
         if success:
-            self.write({"active": True})
+            _log.info(result)
+            self.write({"active": True, "guesty_account_id": result["_id"]})
             return True
         else:
             raise UserError(_("Connection Test Failed!"))

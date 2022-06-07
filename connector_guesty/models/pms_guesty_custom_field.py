@@ -9,7 +9,7 @@ class PmsGuestyCustomField(models.Model):
 
     name = fields.Char(string="Name", required=True)
     external_id = fields.Char(string="External ID", required=True)
-    custom_field_id = fields.Char(required=True)
+    custom_field_id = fields.Char(required=False)
 
     _sql_constraints = [
         ("external_id_uniq", "unique (external_id)", "Field ID already exists!")
