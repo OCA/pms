@@ -127,6 +127,37 @@ class BackendGuesty(models.Model):
 
             if _tz:
                 payload["timezone"] = _tz
+
+            if "timezone" not in payload and not self.timezone:
+                payload["timezone"] = self.env.user.tz
+
+            if not self.stage_canceled_id:
+                payload["stage_canceled_id"] = self.env.ref(
+                    "pms_sale.pms_stage_cancelled", raise_if_not_found=False
+                ).id
+
+            if not self.stage_inquiry_id:
+                payload["stage_inquiry_id"] = self.env.ref(
+                    "pms_sale.pms_stage_new", raise_if_not_found=False
+                ).id
+
+            if not self.stage_reserved_id:
+                payload["stage_reserved_id"] = self.env.ref(
+                    "pms_sale.pms_stage_booked", raise_if_not_found=False
+                ).id
+
+            if not self.stage_confirmed_id:
+                payload["stage_confirmed_id"] = self.env.ref(
+                    "pms_sale.pms_stage_confirmed", raise_if_not_found=False
+                ).id
+
+            if not self.reservation_product_id:
+                payload["reservation_product_id"] = (
+                    self.env["product.product"]
+                    .search([("reservation_ok", "=", True)], limit=1)
+                    .id
+                )
+
             self.write(payload)
 
             # custom fields
@@ -137,7 +168,6 @@ class BackendGuesty(models.Model):
                     [("external_id", "=", custom_field["_id"])]
                 )
                 if not custom_field_obj.exists():
-                    _log.info(custom_field)
                     self.env["pms.guesty.custom_field"].sudo().create(
                         {
                             "name": custom_field["displayName"],
