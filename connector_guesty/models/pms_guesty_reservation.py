@@ -20,8 +20,8 @@ class PmsGuestyReservation(models.Model):
 
     _sql_constraints = [
         (
-            "guesty_reservation_unique_uuid",
-            "unique('uuid')",
+            "unique_uuid",
+            "unique(uuid)",
             "Reservation UUID cannot be duplicated",
         )
     ]
