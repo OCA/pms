@@ -29,7 +29,3 @@ class PMSConfigurator(models.TransientModel):
                     "Cannot create a reservation with a 'Check In' ({}) before today ({})"
                 ).format(start_localized, today)
             )
-
-    @api.onchange("start", "stop")
-    def _onchange_reservation_dates(self):
-        self.check_reservation_dates()

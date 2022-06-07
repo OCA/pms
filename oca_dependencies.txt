@@ -1,6 +1,4 @@
 account-financial-tools
-partner-contact
-reporting-engine
-queue
-community-data-files
 contract
+stock-logistics-warehouse
+web

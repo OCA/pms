@@ -1,5 +1,6 @@
 # Copyright (C) 2021 Casai (https://www.casai.com)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import base64
 import datetime
 import json
 import logging
@@ -68,6 +69,9 @@ class BackendGuesty(models.Model):
 
     cancel_expired_quotes = fields.Boolean(default=False)
 
+    custom_field_ids = fields.One2many("pms.backend.custom_field", "backend_id")
+    enable_guesty_discount = fields.Boolean(default=False)
+
     @api.depends("guesty_environment")
     def _compute_environment_fields(self):
         # noinspection PyTypeChecker
@@ -89,22 +93,28 @@ class BackendGuesty(models.Model):
                 "base_url": "https://app-sandbox.guesty.com",
             }
 
+    def _get_account_info(self):
+        success, result = self.call_get_request("accounts/me", limit=1)
+        return success, result
+
     def set_as_default(self):
         self.sudo().search([("is_default", "=", True)]).write({"is_default": False})
         self.write({"is_default": True})
 
         self.env.company.guesty_backend_id = self.id
 
-    def check_credentials(self):
-        # url to validate the credentials
-        # this endpoint will search a list of users, it may be empty if the api key
-        # does not have permissions to list the users, but it should be a 200 response
-        # Note: Guesty does not provide a way to validate credentials
-        success, result = self.call_get_request("accounts/me", limit=1)
+    def sync_account_info(self):
+        self.ensure_one()
+        if not self.guesty_account_id:
+            raise UserError(_("Please set the Guesty account ID"))
+
+        success, response = self._get_account_info()
+
         if success:
-            _id = result.get("_id")
-            _tz = result.get("timezone")
-            _currency = result.get("currency")
+            # general data
+            _id = response.get("_id")
+            _tz = response.get("timezone")
+            _currency = response.get("currency")
 
             currency = self.env["res.currency"].search(
                 [("name", "=", _currency)], limit=1
@@ -118,7 +128,63 @@ class BackendGuesty(models.Model):
             if _tz:
                 payload["timezone"] = _tz
 
+            if "timezone" not in payload and not self.timezone:
+                payload["timezone"] = self.env.user.tz
+
+            if not self.stage_canceled_id:
+                payload["stage_canceled_id"] = self.env.ref(
+                    "pms_sale.pms_stage_cancelled", raise_if_not_found=False
+                ).id
+
+            if not self.stage_inquiry_id:
+                payload["stage_inquiry_id"] = self.env.ref(
+                    "pms_sale.pms_stage_new", raise_if_not_found=False
+                ).id
+
+            if not self.stage_reserved_id:
+                payload["stage_reserved_id"] = self.env.ref(
+                    "pms_sale.pms_stage_booked", raise_if_not_found=False
+                ).id
+
+            if not self.stage_confirmed_id:
+                payload["stage_confirmed_id"] = self.env.ref(
+                    "pms_sale.pms_stage_confirmed", raise_if_not_found=False
+                ).id
+
+            if not self.reservation_product_id:
+                payload["reservation_product_id"] = (
+                    self.env["product.product"]
+                    .search([("reservation_ok", "=", True)], limit=1)
+                    .id
+                )
+
             self.write(payload)
+
+            # custom fields
+            custom_fields = response.get("customFields", [])
+            for custom_field in custom_fields:
+                _log.info("Trying to create custom field %s", custom_field)
+                custom_field_obj = self.env["pms.guesty.custom_field"].search(
+                    [("external_id", "=", custom_field["_id"])]
+                )
+                if not custom_field_obj.exists():
+                    self.env["pms.guesty.custom_field"].sudo().create(
+                        {
+                            "name": custom_field["displayName"],
+                            "external_id": custom_field["_id"],
+                        }
+                    )
+
+    def check_credentials(self):
+        # url to validate the credentials
+        # this endpoint will search a list of users, it may be empty if the api key
+        # does not have permissions to list the users, but it should be a 200 response
+        # Note: Guesty does not provide a way to validate credentials
+        success, result = self._get_account_info()
+        if success:
+            _log.info(result)
+            self.write({"active": True, "guesty_account_id": result["_id"]})
+            return True
         else:
             raise UserError(_("Connection Test Failed!"))
 
@@ -143,6 +209,10 @@ class BackendGuesty(models.Model):
                 "fullName": partner.name,
                 "email": partner.email,
             }
+
+            if partner.phone or partner.mobile:
+                body["phone"] = partner.phone or partner.mobile
+
             success, res = self.call_post_request(url_path="guests", body=body)
 
             if not success:
@@ -324,11 +394,13 @@ class BackendGuesty(models.Model):
 
         url = "{}/{}".format(self.api_url, url_path)
         try:
+            _log.info("Calling GET request to {}".format(url))
             result = requests.get(
                 url=url, params=params, auth=(self.api_key, self.api_secret)
             )
 
             if result.status_code in success_codes:
+                _log.info(result.content)
                 return True, result.json()
 
             _log.error(result.content)
@@ -339,6 +411,7 @@ class BackendGuesty(models.Model):
 
     def call_post_request(self, url_path, body):
         url = "{}/{}".format(self.api_url, url_path)
+        _log.info("Calling POST request to {}".format(url))
         result = requests.post(url=url, json=body, auth=(self.api_key, self.api_secret))
 
         if result.status_code == 200:
@@ -349,6 +422,7 @@ class BackendGuesty(models.Model):
 
     def call_put_request(self, url_path, body):
         url = "{}/{}".format(self.api_url, url_path)
+        _log.info("Calling PUT request to {}".format(url))
         result = requests.put(url=url, json=body, auth=(self.api_key, self.api_secret))
 
         if result.status_code == 200:
@@ -367,7 +441,18 @@ class BackendGuesty(models.Model):
         while True:
             success, res = self.call_get_request(
                 url_path="listings",
-                params={"city": "Ciudad de México"},
+                params={
+                    "fields": " ".join(
+                        [
+                            "title",
+                            "nickname",
+                            "accountId",
+                            "address.city",
+                            "active",
+                            "isListed",
+                        ]
+                    ),
+                },
                 limit=100,
                 skip=skip,
             )
@@ -377,25 +462,27 @@ class BackendGuesty(models.Model):
             if success:
                 result = res.get("results", [])
                 for record in result:
-                    property_id = property_ids.filtered(
-                        lambda s: s.ref == record.get("nickname")
-                    )
-                    if property_id and len(property_id) == 1:
-                        property_id.write(
-                            {
-                                "guesty_id": record.get("_id"),
-                                "name": "{} / {}".format(
-                                    record.get("nickname"), record.get("title")
-                                ),
-                            }
-                        )
-                    else:
-                        _log.info("Not found: {}".format(record.get("nickname")))
+                    self.env["pms.guesty.listing"].guesty_pull_listing(record)
 
                 if len(result) == 0:
                     break
             else:
                 break
+
+        for property_id in property_ids.filtered(lambda x: x.guesty_id):
+            listing_id = self.env["pms.guesty.listing"].search(
+                [("external_id", "=", property_id.guesty_id)], limit=1
+            )
+            if listing_id:
+                property_id.guesty_listing_ids += listing_id
+
+        for property_id in property_ids.filtered(lambda x: not x.guesty_id):
+            record_match = self.env["pms.guesty.listing"].search(
+                [("name", "=", property_id.ref)]
+            )
+            if record_match:
+                property_id.guesty_id = record_match.external_id
+                property_id.guesty_listing_ids += record_match
 
     def guesty_get_calendar_info(self, check_in, check_out, property_ids):
         listing_ids = property_ids.mapped("guesty_id")
@@ -427,3 +514,70 @@ class BackendGuesty(models.Model):
                 }
 
         return result
+
+    def download_pictures(self):
+        result_token = requests.post(
+            "https://test-api.casai.com/auth/",
+            headers={"Content-Type": "application/json"},
+            json={},
+        )
+
+        if result_token.status_code not in [200, 201]:
+            raise ValidationError(_("unable to call api"))
+
+        auth_data = result_token.json()
+        token_value = auth_data.get("token")
+
+        if not token_value:
+            raise ValidationError(_("Unable to load token"))
+
+        listing_ids = (
+            self.env["pms.property"]
+            .sudo()
+            .search([("guesty_id", "!=", False)], limit=10)
+        )
+
+        for listing in listing_ids:
+            listing_url = "https://test-api.casai.com/listings/{}/".format(
+                listing.guesty_id
+            )
+            res = requests.get(
+                listing_url, headers={"Authorization": "Token {}".format(token_value)}
+            )
+            if res.status_code not in [200, 201]:
+                continue
+
+            data = res.json()
+            _Picture = self.env["pms.property.picture"].sudo()
+            for _pic in data.get("pictures", []):
+                thumb = _pic["thumbnail"].replace(".webp", ".jpg")
+                large = _pic["large"].replace(".webp", ".jpg")
+                _search = _Picture.search([("external_id", "=", _pic["id"])], limit=1)
+
+                _log.info("Uploading: {}".format(listing.guesty_id))
+
+                _payload = {
+                    "name": _pic["caption"],
+                    "url_thumbnail": thumb,
+                    "url_large": large,
+                    "property_id": listing.id,
+                }
+                if not _search.exists():
+                    img_req = requests.get(thumb)
+                    data = img_req.content
+                    data = base64.b64encode(data)
+                    _payload["original_data"] = data
+                    _payload["external_id"] = _pic["id"]
+                    _Picture.create(_payload)
+                else:
+                    _search.write(_payload)
+
+            # Update data
+            if not listing.ota_description:
+                listing.write({"ota_description": data["publicdescription_space"]})
+
+            if listing.name != data["casai_listing"]["casai_title"]:
+                listing.write({"name": data["casai_listing"]["casai_title"]})
+
+            if listing.ref != data["nickname"]:
+                listing.write({"ref": data["nickname"]})

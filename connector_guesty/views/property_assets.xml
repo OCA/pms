@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template
+        id="connector_guesty.assets_backend"
+        name="pms assets"
+        inherit_id="web.assets_backend"
+    >
+        <xpath expr="." position="inside">
+            <script
+                type="text/javascript"
+                src="/connector_guesty/static/src/js/icon_widget.js"
+            />
+        </xpath>
+    </template>
+
+</odoo>

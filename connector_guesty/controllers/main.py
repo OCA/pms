@@ -9,6 +9,22 @@ from odoo.http import request
 _log = logging.getLogger(__name__)
 
 
+def standardize_request_data(data):
+    """
+    Standardize the request data to be able to use it in the controller.
+    """
+    standard_data = {}
+    if data.get("reservation") and data.get("event"):
+        if data.get("event") in ["reservation.new", "reservation.updated"]:
+            standard_data["reservation"] = data.get("reservation")
+            standard_data["event"] = data.get("event")
+    elif data.get("event") and data.get("event", {}).get("reservation"):
+        standard_data["reservation"] = data.get("event").get("reservation")
+        standard_data["event"] = "reservation.updated"
+
+    return standard_data["reservation"], standard_data["event"]
+
+
 class GuestyController(http.Controller):
     def validate_get_company(self, payload):
         company_id = payload.get("company")
@@ -30,51 +46,24 @@ class GuestyController(http.Controller):
         type="json",
     )
     def reservations_webhook(self, **data):
-        try:
-            company, backend = self.validate_get_company(data)
-            event = data.get("event")
-            reservation = event.get("reservation")
-        except Exception as ex:
-            _log.warning(str(ex))
-            reservation = request.jsonrequest.get("reservation")
-            company = request.env.company
-            backend = company.guesty_backend_id
+        reservation_info, event_name = standardize_request_data(request.jsonrequest)
+        if event_name not in ["reservation.new", "reservation.updated"]:
+            raise ValidationError(_("Invalid event name {}".format(event_name)))
 
-        if not reservation:
-            raise ValidationError(_("Reservation data not found!"))
-
-        if not company:
-            raise ValidationError(_("No company was found"))
-
-        if not backend:
-            raise ValidationError(_("No backend was found"))
-
-        success, res = backend.sudo().call_get_request(
-            url_path="reservations/{}".format(reservation.get("_id")),
-            params={
-                "fields": " ".join(
-                    [
-                        "status",
-                        "checkIn",
-                        "checkOut",
-                        "listingId",
-                        "guestId",
-                        "listing.nickname",
-                        "lastUpdatedAt",
-                        "money",
-                        "nightsCount",
-                    ]
-                )
-            },
+        guesty_listing_id = reservation_info.get("listingId")
+        listing_sudo = request.env["pms.guesty.listing"].sudo()
+        listing_obj = listing_sudo.search(
+            [("external_id", "=", guesty_listing_id)], limit=1
         )
 
-        if success:
-            request.env["pms.reservation"].with_delay().guesty_pull_reservation(
-                backend, res
-            )
-            return {"success": True}
-        else:
-            raise ValidationError(str(res))
+        if not listing_obj.exists():
+            raise ValidationError(_("Listing not found {}".format(guesty_listing_id)))
+
+        reservation_sudo = request.env["pms.reservation"].sudo()
+        reservation_sudo.with_delay().guesty_pull_reservation(
+            reservation_info, event_name
+        )
+        return {"success": True}
 
     @http.route(
         "/guesty/listing_webhook",

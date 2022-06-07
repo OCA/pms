@@ -4,23 +4,64 @@
         inherit_id="sale.sale_order_portal_content"
         name="sale.order.portal.template.custom"
     >
-        <xpath expr="//div[@class='row']" position="after">
-            <div>
-                <br />
-                <strong class="d-block mb-1">Reservation details</strong>
-                <span>Check in:</span>
-                <b
-                    t-field="sale_order.check_in"
-                    t-options='{"widget": "datetime", "format": "MMM dd, Y HH:mm"}'
-                />
-                <br />
-                <span>Check out:</span>
-                <b
-                    t-field="sale_order.check_out"
-                    t-options='{"widget": "datetime", "format": "MMM dd, Y HH:mm"}'
-                />
-                <hr />
+        <xpath expr="//section[@id='details']" position="before">
+            <div class="row" id="reservation_dates">
+                <div class="mb-3 col-6">
+                    <strong>Check In Date:</strong>
+                    <span
+                        t-field="sale_order.check_in"
+                        t-options='{"widget": "datetime", "format": "MMM dd, Y HH:mm"}'
+                    />
+                </div>
+                <div class="mb-3 col-6">
+                    <strong>Check Out Date:</strong>
+                    <span
+                        t-field="sale_order.check_out"
+                        t-options='{"widget": "datetime", "format": "MMM dd, Y HH:mm"}'
+                    />
+                </div>
             </div>
+            <!--            -->
+            <div class="card mb-2">
+                <div class="row no-gutters">
+                    <div class="col-auto">
+                        <img
+                            t-att-src="sale_order.pms_reservation_id.property_id.front_picture.url_thumbnail"
+                            class="img-fluid"
+                            alt=""
+                        />
+                    </div>
+                    <div class="col">
+                        <div class="card-block px-2">
+                            <h4 class="card-title mt-2">
+                                <span
+                                    t-esc="sale_order.pms_reservation_id.property_id.name"
+                                />
+                            </h4>
+                            <div
+                                style="max-height: 150px; text-overflow: elipsis; overflow: hidden;"
+                            >
+                                <p
+                                    class="card-text"
+                                    style="font-size: 14px;"
+                                    t-esc="sale_order.pms_reservation_id.property_id.ota_description"
+                                />
+                            </div>
+                            <a
+                                t-att-href="sale_order.pms_reservation_id.property_id.website_url"
+                                target="_blank"
+                                class="btn btn-primary"
+                            >Show more
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer w-100 text-muted">
+                    <span t-esc="sale_order.pms_reservation_id.property_id.ref" />
+                </div>
+            </div>
+            <!--            -->
+
         </xpath>
     </template>
 </odoo>

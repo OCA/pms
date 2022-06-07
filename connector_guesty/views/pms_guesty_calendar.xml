@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="pms_guesty_calendar_gantt_view" model="ir.ui.view">
+        <field name="name">pms.guesty.calendar</field>
+        <field name="model">pms.guesty.calendar</field>
+        <field name="arch" type="xml">
+            <gantt
+                date_stop="date_stop"
+                date_start="date_start"
+                string="Availability"
+                create="0"
+                default_group_by="property_id"
+                decoration-success="state == 'available'"
+                color="color"
+            >
+                <field name="date_start" />
+                <field name="state" />
+                <field name="color" />
+            </gantt>
+        </field>
+    </record>
+
+    <record id="pms_guesty_calendar_graph_view" model="ir.ui.view">
+        <field name="name">pms.guesty.calendar</field>
+        <field name="model">pms.guesty.calendar</field>
+        <field name="arch" type="xml">
+            <graph string="Calendar">
+                <field name="listing_date" type="row" />
+                <field name="state" type="row" />
+            </graph>
+        </field>
+    </record>
+
+    <record id="pms_guesty_calendar_action" model="ir.actions.act_window">
+        <field name="name">Property Calendar</field>
+        <field name="res_model">pms.guesty.calendar</field>
+        <field name="view_mode">gantt,graph</field>
+    </record>
+    <menuitem
+        id="pms_guesty_calendar_root_menu"
+        name="Properties Calendar"
+        parent="crm.crm_menu_report"
+        action="pms_guesty_calendar_action"
+    />
+</odoo>
