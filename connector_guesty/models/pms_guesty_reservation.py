@@ -9,6 +9,7 @@ _log = logging.getLogger(__name__)
 
 class PmsGuestyReservation(models.Model):
     _name = "pms.guesty.reservation"
+    _description = "PMS Guesty reservation"
     _rec_name = "uuid"
 
     @api.depends("uuid", "state")

@@ -6,6 +6,7 @@ from odoo import fields, models
 
 class PmsGuestyCustomField(models.Model):
     _name = "pms.guesty.custom_field"
+    _description = "PMS Guesty custom field"
 
     name = fields.Char(string="Name", required=True)
     external_id = fields.Char(string="External ID", required=True)
@@ -18,6 +19,7 @@ class PmsGuestyCustomField(models.Model):
 
 class PmsGuestyCustomFieldBackend(models.Model):
     _name = "pms.backend.custom_field"
+    _description = "PMS Backend custom field"
 
     name = fields.Selection(
         [
