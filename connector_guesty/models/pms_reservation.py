@@ -82,6 +82,15 @@ class PmsReservation(models.Model):
 
         return super().create(values)
 
+    def write(self, values):
+        if "guesty_id" in values and not self.pms_source_id:
+            values["pms_source_id"] = (
+                self.env["pms.guesty.reservation"]
+                .create({"uuid": values["guesty_id"], "state": "ND"})
+                .id
+            )
+        return super().write(values)
+
     def action_draft(self, ignore_push_event=False):
         company = self.property_id.company_id or self.env.company
         if self.stage_id.id != self.env.company.guesty_backend_id.stage_inquiry_id.id:
@@ -360,8 +369,6 @@ class PmsReservation(models.Model):
 
         if reservation_id.exists():
             reservation_id.write(reservation)
-            if reservation_id.pms_source_id == "odoo":
-                return reservation_id
         else:
             reservation["pms_source_id"] = "guesty"
             reservation_id = self.env["pms.reservation"].sudo().create(reservation)
@@ -391,7 +398,8 @@ class PmsReservation(models.Model):
             else:
                 _log.info("Reservation {} already confirmed".format(reservation_id.id))
             try:
-                reservation_id.build_so_from_reservation(reservation_data)
+                if reservation_id.pms_source_id != "odoo":
+                    reservation_id.build_so_from_reservation(reservation_data)
             except Exception as ex:
                 _log.error(ex)
 
