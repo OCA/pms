@@ -616,7 +616,6 @@ class PmsReservation(models.Model):
         if "other" not in body["notes"]:
             body["notes"]["other"] = self.user_id.name
 
-        _log.info(body)
         return body
 
     def build_so_from_reservation(self, reservation_data):
