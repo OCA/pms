@@ -592,7 +592,7 @@ class PmsService(models.Model):
                     board_service=board_room_type.id if board_room_type else False,
                     uom=self.product_id.uom_id.id,
                     fiscal_position=False,
-                    property=self.reservation_id.pms_property_id.id,
+                    property=origin.pms_property_id.id,
                 )
                 if date:
                     product_context["consumption_date"] = date
