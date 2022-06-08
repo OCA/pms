@@ -37,6 +37,7 @@ class AccountBankStatement(models.Model):
             payment_move_line = line._get_payment_move_lines_to_reconcile()
             statement_move_line = line.move_id.line_ids.filtered(
                 lambda line: line.account_id.reconcile
+                or line.account_id == line.journal_id.suspense_account_id
             )
             if payment_move_line and statement_move_line:
                 statement_move_line.account_id = payment_move_line.account_id
