@@ -349,6 +349,7 @@ class AccountMove(models.Model):
                 "The total amount of the simplified invoice is higher than the "
                 "maximum amount allowed for simplified invoices."
             )
-            self.folio_ids.message_post(body=mens)
+            if self.folio_ids:
+                self.folio_ids.message_post(body=mens)
             raise ValidationError(mens)
         return True
