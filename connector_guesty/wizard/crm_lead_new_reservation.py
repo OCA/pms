@@ -122,6 +122,23 @@ class WizCrmLeadNewReservation(models.TransientModel):
             and a["last_state"] == "available"
         ]
 
+    @staticmethod
+    def compute_default_ci_co(date_input, time_input):
+        if date_input and time_input:
+            date_hour, date_minute = divmod(
+                time_input * 60, 60
+            )  # converts like 11.5 to 11:30
+            date_time = datetime.time(int(date_hour), int(date_minute))
+            final_date = datetime.datetime.combine(date_input, date_time)
+            return final_date
+        elif date_input:
+            return datetime.datetime.combine(date_input, datetime.datetime.min.time())
+
+        else:
+            return datetime.datetime.combine(
+                datetime.datetime.today().date(), datetime.datetime.min.time()
+            )
+
     def action_create_quotation(self):
         _log.info(self.available_ids)
         so_ids = []
@@ -135,14 +152,15 @@ class WizCrmLeadNewReservation(models.TransientModel):
                 )
                 utc = pytz.UTC
                 tz = pytz.timezone(backend.timezone)
-                ci = datetime.datetime.combine(
-                    self.check_in, datetime.datetime.min.time()
-                )
-                ci = tz.localize(ci).astimezone(utc).replace(tzinfo=None)
 
-                co = datetime.datetime.combine(
-                    self.check_out, datetime.datetime.min.time()
+                ci = self.compute_default_ci_co(
+                    self.check_in, _self.property_id.checkin
                 )
+                co = self.compute_default_ci_co(
+                    self.check_out, _self.property_id.checkout
+                )
+
+                ci = tz.localize(ci).astimezone(utc).replace(tzinfo=None)
                 co = tz.localize(co).astimezone(utc).replace(tzinfo=None)
 
                 if reservation_product_id:
