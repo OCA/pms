@@ -73,13 +73,19 @@ class PmsFolioService(Component):
                             "id": reservation_line.id,
                             "date": reservation_line.date,
                             "roomId": reservation_line.room_id.id,
+                            "roomName": reservation_line.room_id.name,
                         }
                     )
+                segmentation_ids = []
+                if reservation.segmentation_ids:
+                    for segmentation in reservation.segmentation_ids:
+                        segmentation_ids.append(segmentation.name)
 
                 reservations.append(
                     {
                         "id": reservation.id,
                         "name": reservation.name,
+                        "folioSequence": reservation.folio_sequence,
                         "checkin": datetime.combine(
                             reservation.checkin, datetime.min.time()
                         ).isoformat(),
@@ -93,6 +99,10 @@ class PmsFolioService(Component):
                         if reservation.room_type_id
                         else "",
                         "priceTotal": reservation.price_total,
+                        "priceRoomServicesSet": reservation.price_room_services_set,
+                        "discount": reservation.discount,
+                        "commission": reservation.agency_id.default_commission,
+                        "partnerName": reservation.partner_name,
                         "adults": reservation.adults,
                         "pricelist": reservation.pricelist_id.name,
                         "boardService": (
@@ -109,11 +119,35 @@ class PmsFolioService(Component):
                         "saleChannel": reservation.channel_type_id.name
                         if reservation.channel_type_id
                         else "",
+                        "externalReference": reservation.external_reference
+                        if reservation.external_reference
+                        else "",
                         "agency": reservation.agency_id.name
                         if reservation.agency_id
                         else "",
                         "agencyImage": reservation.agency_id.image_1024.decode("utf-8")
                         if reservation.agency_id
+                        else "",
+                        "state": reservation.state if reservation.state else "",
+                        "roomTypeCode": reservation.room_type_id.default_code
+                        if reservation.room_type_id
+                        else "",
+                        "children": reservation.children
+                        if reservation.children
+                        else "",
+                        "countServices": len(reservation.service_ids)
+                        if reservation.service_ids
+                        else 0,
+                        "readyForCheckin": reservation.ready_for_checkin,
+                        "allowedCheckout": reservation.allowed_checkout,
+                        "isSplitted": reservation.splitted,
+                        "arrivalHour": reservation.arrival_hour,
+                        "departureHour": reservation.departure_hour,
+                        "pendingCheckinData": reservation.pending_checkin_data,
+                        "createDate": reservation.create_date,
+                        "segmentations": segmentation_ids,
+                        "cancellationPolicy": reservation.pricelist_id.cancelation_rule_id.name
+                        if reservation.pricelist_id.cancelation_rule_id.name
                         else "",
                     }
                 )
