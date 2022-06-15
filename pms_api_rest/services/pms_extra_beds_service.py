@@ -55,7 +55,10 @@ class PmsExtraBedsService(Component):
                     ["day_qty:sum"],
                     ["date:day"],
                 )
-                max_daily_used = max(date["day_qty"] for date in qty_for_day)
+                max_daily_used = (
+                    max(date["day_qty"] for date in qty_for_day) if qty_for_day else 0
+                )
+
                 avail = bed.daily_limit - max_daily_used
                 # Avoid send negative values in avail
                 avail = avail if avail >= 0 else 0
