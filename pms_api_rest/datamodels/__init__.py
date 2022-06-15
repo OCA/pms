@@ -29,3 +29,4 @@ from . import res_city_zip
 
 from . import pms_search_param
 from . import pms_ubication
+from . import pms_extra_bed
