@@ -15,3 +15,4 @@ from . import res_partner_category_services
 from . import res_city_zip_service
 from . import pms_room_type_class_service
 from . import pms_ubication_service
+from . import pms_extra_beds_service
