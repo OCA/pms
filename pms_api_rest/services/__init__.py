@@ -16,3 +16,6 @@ from . import res_city_zip_service
 from . import pms_room_type_class_service
 from . import pms_ubication_service
 from . import pms_extra_beds_service
+
+from . import pms_amenity_service
+from . import pms_amenity_type_service
