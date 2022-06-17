@@ -68,7 +68,7 @@ class PmsAvailabilityPlanService(Component):
         [
             (
                 [
-                    "/<int:availability_plan>",
+                    "/<int:availability_plan>/rules",
                 ],
                 "GET",
             )
