@@ -123,29 +123,17 @@ class PmsAvailabilityPlanService(Component):
                 if rule:
                     availability_plan_rule_info = PmsAvailabilityPlanInfo(
                         roomTypeId=room_type.id,
-                        date=str(
-                            datetime.combine(date, datetime.min.time()).isoformat()
-                        ),
+                        date=datetime.combine(date, datetime.min.time()).isoformat(),
+                        availabilityRuleId=rule.id,
+                        minStay=rule.min_stay,
+                        minStayArrival=rule.min_stay_arrival,
+                        maxStay=rule.max_stay,
+                        maxStayArrival=rule.max_stay_arrival,
+                        closed=rule.closed,
+                        closedDeparture=rule.closed_departure,
+                        closedArrival=rule.closed_arrival,
+                        quota=rule.quota,
                     )
-
-                    if rule:
-
-                        availability_plan_rule_info.availabilityRuleId = rule.id
-                        availability_plan_rule_info.minStay = rule.min_stay
-                        availability_plan_rule_info.minStayArrival = (
-                            rule.min_stay_arrival
-                        )
-                        availability_plan_rule_info.maxStay = rule.max_stay
-                        availability_plan_rule_info.maxStayArrival = (
-                            rule.max_stay_arrival
-                        )
-                        availability_plan_rule_info.closed = rule.closed
-                        availability_plan_rule_info.closedDeparture = (
-                            rule.closed_departure
-                        )
-                        availability_plan_rule_info.closedArrival = rule.closed_arrival
-                        availability_plan_rule_info.quota = rule.quota
-
                     result.append(availability_plan_rule_info)
 
         return result
