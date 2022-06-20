@@ -14,4 +14,3 @@ class PmsAmenityTypeInfo(Datamodel):
     _name = "pms.amenity.type.info"
     id = fields.Integer(required=True, allow_none=False)
     name = fields.String(required=True, allow_none=False)
-    pmsAmenityIds = fields.List(fields.Integer(), required=False)
