@@ -125,7 +125,7 @@
                 expr="//field[@name='order_line']//form//field[@name='stop']"
                 position="after"
             >
-                <field name="currency_id" invisible="0" readonly="0" />
+                <field name="currency_id" invisible="0" readonly="1" />
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="attributes">
                 <attribute
