@@ -54,7 +54,6 @@ class PmsAmenityTypeService(Component):
                 PmsAmenityTypeInfo(
                     id=amenity_type.id,
                     name=amenity_type.name,
-                    pmsAmenityIds=amenity_type.pms_amenity_ids.ids,
                 )
             )
         return result_amenity_types
@@ -80,7 +79,6 @@ class PmsAmenityTypeService(Component):
             return PmsAmenityTypeInfo(
                 id=amenity_type.id,
                 name=amenity_type.name,
-                pmsAmenityIds=amenity_type.pms_amenity_ids.ids,
             )
         else:
             raise MissingError(_("Amenity Type not found"))
