@@ -89,3 +89,47 @@ class PmsBoardServiceService(Component):
             )
         else:
             raise MissingError(_("Amenity Type not found"))
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:board_service_id>/lines",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.search.param"),
+        output_param=Datamodel("pms.board.service.line.info", is_list=True),
+        auth="jwt_api_pms",
+    )
+    def get_board_service_lines(self, board_service_id, pms_search_param):
+        domain = list()
+        domain.append(("pms_board_service_room_type_id", "=", board_service_id))
+        if pms_search_param.pms_property_id:
+            domain.extend(
+                [
+                    "|",
+                    (
+                        "pms_property_ids",
+                        "in",
+                        pms_search_param.pms_property_id,
+                    ),
+                    ("pms_property_ids", "=", False),
+                ]
+            )
+        result_board_service_lines = []
+        PmsBoardServiceInfo = self.env.datamodels["pms.board.service.line.info"]
+        for line in self.env["pms.board.service.room.type.line"].search(
+            domain,
+        ):
+            result_board_service_lines.append(
+                PmsBoardServiceInfo(
+                    id=line.id,
+                    name=line.pms_board_service_room_type_id.display_name,
+                    boardServiceId=line.pms_board_service_room_type_id.id,
+                    productId=line.product_id.id,
+                    amount=line.amount,
+                )
+            )
+        return result_board_service_lines

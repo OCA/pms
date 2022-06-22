@@ -23,3 +23,5 @@ from . import pms_amenity_type_service
 
 from . import pms_board_service_line_service
 from . import pms_board_service_service
+
+from . import pms_product_service
