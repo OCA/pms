@@ -24,13 +24,14 @@ odoo.define("pms_sale.PMSConfiguratorFormController", function (require) {
             var self = this;
             return this._super.apply(this, arguments).then(function () {
                 var state = self.renderer.state.data;
-                var guest_ids = [[5, 0, 0]];
+                // Var guest_ids = [[5, 0, 0]];
+                var guest_ids = [];
                 _.each(state.guest_ids.data, function (data) {
                     if (data.data && data.data.name) {
                         if (data.data.partner_id) {
                             data.data.partner_id = data.data.partner_id.data.id;
                         }
-                        guest_ids.push([0, 0, data.data]);
+                        guest_ids.push(data.data);
                     }
                 });
                 self.do_action({

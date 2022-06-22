@@ -4,10 +4,10 @@ odoo.define("pms_sale.product_configurator", function (require) {
     var ProductConfiguratorWidget = require("sale.product_configurator");
 
     /**
-     * Extension of the ProductConfiguratorWidget to support event product
-     * configuration. It opens when an event product_product is set.
+     * Extension of the ProductConfiguratorWidget to support reservation product
+     * configuration. It opens when an reservation product_product is set.
      *
-     * The event information include:
+     * The reservation information include:
      * - property_id
      * - reservation_id
      *
@@ -79,6 +79,9 @@ odoo.define("pms_sale.product_configurator", function (require) {
                     result[0].reservation_ok
                 ) {
                     var web_partner_id = self.get_parent_partner();
+                    if (!web_partner_id && self.record.data.partner_id && self.record.data.partner_id.data){
+                        web_partner_id = self.record.data.partner_id.data.id || false
+                    }
                     var result_vals = {
                         default_product_id: productId,
                     };
@@ -104,6 +107,7 @@ odoo.define("pms_sale.product_configurator", function (require) {
          * @private
          */
         _onEditLineConfiguration: function () {
+            var self = this;
             if (this.recordData.reservation_ok) {
                 var defaultValues = {
                     default_product_id: this.recordData.product_id.data.id,
@@ -111,26 +115,60 @@ odoo.define("pms_sale.product_configurator", function (require) {
 
                 if (this.recordData.property_id) {
                     defaultValues.default_property_id = this.recordData.property_id.data.id;
+                } else {
+                    defaultValues.default_property_id =
+                        (self.getParent().state.data.property_id &&
+                            self.getParent().state.data.property_id.data.id) ||
+                        false;
                 }
 
                 if (this.recordData.reservation_id) {
                     defaultValues.default_reservation_id = this.recordData.reservation_id.data.id;
+                } else {
+                    defaultValues.default_reservation_id =
+                        (self.getParent().state.data.reservation_id &&
+                            self.getParent().state.data.reservation_id.data.id) ||
+                        false;
                 }
+
                 if (this.recordData.start) {
                     defaultValues.default_start = this.recordData.start;
+                } else {
+                    defaultValues.default_start =
+                        self.getParent().state.data.start || false;
                 }
+
                 if (this.recordData.stop) {
                     defaultValues.default_stop = this.recordData.stop;
+                } else {
+                    defaultValues.default_stop =
+                        self.getParent().state.data.stop || false;
                 }
+
                 if (this.recordData.currency_id) {
                     defaultValues.default_currency_id = this.recordData.currency_id.data.id;
+                } else {
+                    defaultValues.default_currency_id =
+                        (self.getParent().state.data.currency_id &&
+                            self.getParent().state.data.currency_id.data.id) ||
+                        false;
                 }
+
                 if (this.recordData.id) {
                     defaultValues.sale_line_ine = this.recordData.id;
+                } else {
+                    defaultValues.sale_line_ine =
+                        self.getParent().state.data.id || false;
                 }
+
                 var web_partner_id = this.get_parent_partner();
                 if (web_partner_id) {
                     defaultValues.web_partner_id = web_partner_id;
+                } else {
+                    defaultValues.web_partner_id =
+                        (self.getParent().state.data.partner_id &&
+                            self.getParent().state.data.partner_id.data.id) ||
+                        false;
                 }
 
                 this._openReservationConfigurator(defaultValues, this.dataPointID);
@@ -156,11 +194,45 @@ odoo.define("pms_sale.product_configurator", function (require) {
          */
         _openReservationConfigurator: function (data, dataPointId) {
             var self = this;
-
             this.do_action("pms_sale.pms_configurator_action", {
                 additional_context: data,
                 on_close: function (result) {
                     if (result && !result.special) {
+                        if (
+                            self.viewType == "form" &&
+                            result.ReservationConfiguration &&
+                            result.ReservationConfiguration.guest_ids
+                        ) {
+                            result.ReservationConfiguration.guest_ids = _.map(
+                                result.ReservationConfiguration.guest_ids,
+                                (g) => {
+                                    if (g.partner_id) {
+                                        g.partner_id = {id: g.partner_id};
+                                    }
+                                    return g;
+                                }
+                            );
+                            result.ReservationConfiguration.guest_ids.forEach(function (
+                                item
+                            ) {
+                                self.trigger_up("field_changed", {
+                                    dataPointID: dataPointId,
+                                    changes: {
+                                        guest_ids: {operation: "CREATE", data: item},
+                                    },
+                                });
+                            });
+                            result.ReservationConfiguration = _.omit(
+                                result.ReservationConfiguration,
+                                "guest_ids"
+                            );
+                        } else {
+                            var guest_ids = _.map(
+                                result.ReservationConfiguration.guest_ids,
+                                (g) => [0, 0, g]
+                            );
+                            result.ReservationConfiguration.guest_ids = guest_ids;
+                        }
                         self.trigger_up("field_changed", {
                             dataPointID: dataPointId,
                             changes: result.ReservationConfiguration,

@@ -30,14 +30,17 @@ class SaleOrder(models.Model):
         return action
 
     def action_confirm(self):
-        res = super(SaleOrder, self).action_confirm()
+        res = super().action_confirm()
         for sale in self:
-            reservation = self.env["pms.reservation"].search(
-                [("sale_order_id", "=", sale.id)]
+            reservations = self.env["pms.reservation"].search(
+                [
+                    ("sale_order_id", "=", sale.id),
+                    ("stage_id", "=", self.env.ref("pms_sale.pms_stage_new").id),
+                ]
             )
-            if reservation:
-                reservation.action_book()
+            if reservations:
+                reservations.action_book()
                 # Set reservation confirm when payment is done by Generate a Payment Link
                 if not sale.has_to_be_paid():
-                    reservation.action_confirm()
+                    reservations.action_confirm()
         return res

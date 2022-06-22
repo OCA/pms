@@ -77,7 +77,11 @@ class PMSConfigurator(models.TransientModel):
     guest_ids = fields.One2many(
         "pms.reservation.guest.wizard", "configurator_id", string="Guests"
     )
-    currency_id = fields.Many2one("res.currency", string="Currency")
+    currency_id = fields.Many2one(
+        "res.currency",
+        string="Currency",
+        default=lambda self: self.env.company.currency_id,
+    )
     reservation_ids = fields.Many2many("pms.reservation")
     timeline_html = fields.Html("Timeline HTML", readonly=True)
 
@@ -139,7 +143,7 @@ class PMSConfigurator(models.TransientModel):
             if configurator.no_of_guests > configurator.property_id.no_of_guests:
                 raise ValidationError(
                     _(
-                        "%s of guests is lower than the %s of guests of the property."
+                        "Too many guests for this property: %s > %s."
                         % (
                             configurator.no_of_guests,
                             configurator.property_id.no_of_guests,
@@ -203,6 +207,11 @@ class PMSConfigurator(models.TransientModel):
         result["timeline_html"] = (
             "<a class='btn btn-primary' href='%s' alt='Timeline View' target='_blank'"
             " >Timeline</a>" % (timeline_url)
+        )
+        result["currency_id"] = (
+            self.env.company.currency_id
+            and self.env.company.currency_id.id
+            or result.get("currency_id", False)
         )
         return result
 
