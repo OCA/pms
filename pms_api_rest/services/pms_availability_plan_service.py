@@ -68,7 +68,7 @@ class PmsAvailabilityPlanService(Component):
         [
             (
                 [
-                    "/<int:availability_plan>/rules",
+                    "/<int:availability_plan>/availability-plan-rules",
                 ],
                 "GET",
             )
@@ -142,7 +142,7 @@ class PmsAvailabilityPlanService(Component):
         [
             (
                 [
-                    "/<int:availability_plan_id>/availability-plan-rule",
+                    "/<int:availability_plan_id>/availability-plan-rules",
                 ],
                 "POST",
             )
@@ -186,7 +186,7 @@ class PmsAvailabilityPlanService(Component):
         [
             (
                 [
-                    "/<int:availability_plan_id>/availability-plan-rule/",
+                    "/<int:availability_plan_id>/availability-plan-rules/<int:availability_plan_rule_id>",
                 ],
                 "PATCH",
             )
@@ -195,13 +195,14 @@ class PmsAvailabilityPlanService(Component):
         auth="jwt_api_pms",
     )
     def write_availability_plan_rule(
-        self, availability_plan_id, pms_avail_plan_rule_info
+        self, availability_plan_id, availability_plan_rule_id, pms_avail_plan_rule_info
     ):
         vals = dict()
         avail_rule = self.env["pms.availability.plan.rule"].search(
             [
-                ("id", "=", pms_avail_plan_rule_info.availabilityRuleId),
                 ("availability_plan_id", "=", availability_plan_id),
+                ("id", "=", availability_plan_rule_id),
+
             ]
         )
         if avail_rule:
