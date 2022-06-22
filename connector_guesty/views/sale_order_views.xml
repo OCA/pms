@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--    pms_reservation_id-->
+    <record id="view_quotation_tree_guesty" model="ir.ui.view">
+        <field name="name">sale.order.tree.guesty</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//tree/field[@name='name']" position="after">
+                <field name="pms_property_id" />
+                <field name="check_in" widget="date" />
+                <field name="check_out" widget="date" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_order_tree_guesty" model="ir.ui.view">
+        <field name="name">sale.order.tree.guesty</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//tree/field[@name='name']" position="after">
+                <field name="pms_property_id" />
+                <field name="check_in" widget="date" />
+                <field name="check_out" widget="date" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_order_tree_discount" model="ir.ui.view">
+        <field name="name">sale.order.tree.guesty</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//tree/field[@name='name']" position="after">
+                <field name="pms_property_id" />
+                <field name="check_in" widget="date" />
+                <field name="check_out" widget="date" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_send_multi_quote" model="ir.actions.server">
+        <field name="name">Send Quotes</field>
+        <field name="model_id" ref="sale.model_sale_order" />
+        <field name="binding_model_id" ref="sale.model_sale_order" />
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">action=records.action_send_multi_quote()</field>
+    </record>
+
+
+    <record id="view_sales_order_filter_guesty" model="ir.ui.view">
+        <field name="name">sale.order.list.select.guesty</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <separator />
+                <field name="pms_property_id" string="Property" />
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="sale_order_view_form_confirmation" model="ir.ui.view">
+        <field name="name">sale.order.form.confirmation</field>
+        <field name="model">sale.order</field>
+        <field name="priority">199</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_confirm'][1]" position="attributes">
+                <attribute
+                    name="confirm"
+                >Are you sure you wish to confirm without payment?
+                </attribute>
+                <attribute name="context">
+                    {'default_manually_confirmed': 1}
+                </attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
+                <attribute
+                    name="confirm"
+                >Are you sure you wish to confirm without payment?
+                </attribute>
+                <attribute name="context">
+                    {'default_manually_confirmed': 1}
+                </attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm'][1]" position="after">
+                <button
+                    name="action_reserve"
+                    string="Reserve Dates"
+                    type="object"
+                    states="draft,approved,sent"
+                    class="btn btn-warning"
+                />
+            </xpath>
+            <xpath
+                expr="//page[@name='order_lines']/field[@name='order_line']/tree/field[@name='discount']"
+                position="replace"
+            >
+                <field name="allow_discount" invisible="1" />
+                <field
+                    name="discount"
+                    attrs="{'readonly': ['|', ('allow_discount', '=', False), ('state', 'in', ['waiting_approval', 'approved'])]}"
+                />
+            </xpath>
+            <xpath
+                expr="//group[@name='order_details']//field[@name='currency_id']"
+                position="attributes"
+            >
+                <attribute name="invisible">False</attribute>
+                <attribute name="readonly">True</attribute>
+                <attribute name="options">{'no_open': True}</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='order_line']//tree//field[@name='currency_id']"
+                position="attributes"
+            >
+                <attribute name="invisible">False</attribute>
+                <attribute name="readonly">True</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='order_line']//form//field[@name='stop']"
+                position="after"
+            >
+                <field name="currency_id" invisible="0" readonly="1" />
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': [('amount_total', '>', 0)]}</attribute>
+                <attribute name="force_save">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='pricelist_id']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': [('amount_total', '>', 0)]}</attribute>
+                <attribute name="force_save">True</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="sale_order_custom_view" model="ir.ui.view">
+        <field name="name">sale.order.custom.view</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//field[@name='order_line']//form//field[@name='start']"
+                position="attributes"
+            >
+                <attribute name="invisible">False</attribute>
+                <attribute name="string">Check in</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='order_line']//form//field[@name='stop']"
+                position="attributes"
+            >
+                <attribute name="invisible">False</attribute>
+                <attribute name="string">Check out</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="mail_template_sale_manual_confirmation" model="mail.template">
+        <field name="name">Sales Order: Manual Confirmation Email</field>
+        <field name="model_id" ref="sale.model_sale_order" />
+        <field name="subject">${object.name} Manually Confirmed</field>
+        <field
+            name="email_from"
+        >${(object.user_id.email_formatted or user.email_formatted) | safe}
+        </field>
+        <field name="partner_to">${object.manually_confirmed_emails()}</field>
+        <field name="body_html" type="html">
+            <div style="margin: 0px; padding: 0px;">
+                <p style="margin: 0px; padding: 0px; font-size: 12px;">
+                    Hello,
+                    <br />
+                    <br />
+                    % set transaction = object.get_portal_last_transaction()
+                    The order <strong>${object.name}</strong> amounting in
+                    <strong>${format_amount(object.amount_total, object.currency_id)}
+                    </strong>
+                    % if object.state == 'sale' or (transaction and transaction.state in ('done', 'authorized')) :
+                    has been manually confirmed by ${object.env.user.name}.
+                    <br />
+                    % elif transaction and transaction.state == 'pending' :
+                    is pending. It will be confirmed when the payment is received.
+                    % if object.reference:
+                    Your payment reference is <strong>${object.reference}</strong>.
+                    % endif
+                    % endif
+                    <br />
+                    <br />
+                </p>
+                % if object.website_id:
+                <div style="margin: 0px; padding: 0px;">
+                    <table
+                        width="100%"
+                        style="color: #454748; font-size: 12px; border-collapse: collapse;"
+                    >
+                        <tr style="border-bottom: 2px solid #dee2e6;">
+                            <td style="width: 150px;">
+                                <strong>Products</strong>
+                            </td>
+                            <td />
+                            <td width="15%" align="center">
+                                <strong>Quantity</strong>
+                            </td>
+                            <td width="20%" align="right">
+                                <strong>
+                                    % if object.user_id.has_group('account.group_show_line_subtotals_tax_excluded'):
+                                    VAT Excl.
+                                    % else
+                                    VAT Incl.
+                                    % endif
+                                </strong>
+                            </td>
+                        </tr>
+                    </table>
+                    % for line in object.order_line:
+                    % if not line.is_delivery and line.display_type in ['line_section', 'line_note']:
+                    <table
+                        width="100%"
+                        style="color: #454748; font-size: 12px; border-collapse: collapse;"
+                    >
+                        <tr
+                            style="${loop.cycle('background-color: #f2f2f2', 'background-color: #ffffff')}"
+                        >
+                            <td colspan="4">
+                                % if line.display_type == 'line_section':
+                                <strong>${line.name}</strong>
+                                % elif line.display_type == 'line_note':
+                                <i>${line.name}</i>
+                                % endif
+                            </td>
+                        </tr>
+                    </table>
+                    % elif not line.is_delivery
+                    <table
+                        width="100%"
+                        style="color: #454748; font-size: 12px; border-collapse: collapse;"
+                    >
+                        <tr
+                            style="${loop.cycle('background-color: #f2f2f2', 'background-color: #ffffff')}"
+                        >
+                            <td style="width: 150px;">
+                                <img
+                                    src="/web/image/product.product/${line.product_id.id}/image_128"
+                                    style="width: 64px; height: 64px; object-fit: contain;"
+                                    alt="Product image"
+                                />
+                            </td>
+                            <td align="left">${line.product_id.name}</td>
+                            <td width="15%" align="center">${line.product_uom_qty}</td>
+                            <td width="20%" align="right">
+                                <strong>
+                                    % if object.user_id.has_group('account.group_show_line_subtotals_tax_excluded'):
+                                    ${format_amount(line.price_reduce_taxexcl, object.currency_id)}
+                                    % else
+                                    ${format_amount(line.price_reduce_taxinc, object.currency_id)}
+                                    % endif
+                                </strong>
+                            </td>
+                        </tr>
+                    </table>
+                    % endif
+                    % endfor
+                </div>
+                % if object.carrier_id:
+                <div style="margin: 0px; padding: 0px;">
+                    <table
+                        width="100%"
+                        style="color: #454748; font-size: 12px; border-spacing: 0px 4px;"
+                        align="right"
+                    >
+                        <tr>
+                            <td style="width: 60%" />
+                            <td
+                                style="width: 30%; border-top: 1px solid #dee2e6;"
+                                align="right"
+                            >
+                                <strong>Delivery:</strong>
+                            </td>
+                            <td
+                                style="width: 10%; border-top: 1px solid #dee2e6;"
+                                align="right"
+                            >${format_amount(object.amount_delivery, object.currency_id)}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 60%" />
+                            <td style="width: 30%;" align="right">
+                                <strong>SubTotal:</strong>
+                            </td>
+                            <td
+                                style="width: 10%;"
+                                align="right"
+                            >${format_amount(object.amount_untaxed, object.currency_id)}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                % else:
+                <div style="margin: 0px; padding: 0px;">
+                    <table
+                        width="100%"
+                        style="color: #454748; font-size: 12px; border-spacing: 0px 4px;"
+                        align="right"
+                    >
+                        <tr>
+                            <td style="width: 60%" />
+                            <td
+                                style="width: 30%; border-top: 1px solid #dee2e6;"
+                                align="right"
+                            >
+                                <strong>SubTotal:</strong>
+                            </td>
+                            <td
+                                style="width: 10%; border-top: 1px solid #dee2e6;"
+                                align="right"
+                            >${format_amount(object.amount_untaxed, object.currency_id)}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                % endif
+                <div style="margin: 0px; padding: 0px;">
+                    <table
+                        width="100%"
+                        style="color: #454748; font-size: 12px; border-spacing: 0px 4px;"
+                        align="right"
+                    >
+                        <tr>
+                            <td style="width: 60%" />
+                            <td style="width: 30%;" align="right">
+                                <strong>Taxes:</strong>
+                            </td>
+                            <td
+                                style="width: 10%;"
+                                align="right"
+                            >${format_amount(object.amount_tax, object.currency_id)}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 60%" />
+                            <td
+                                style="width: 30%; border-top: 1px solid #dee2e6;"
+                                align="right"
+                            >
+                                <strong>Total:</strong>
+                            </td>
+                            <td
+                                style="width: 10%; border-top: 1px solid #dee2e6;"
+                                align="right"
+                            >${format_amount(object.amount_total, object.currency_id)}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                % if object.partner_invoice_id:
+                <div style="margin: 0px; padding: 0px;">
+                    <table width="100%" style="color: #454748; font-size: 12px;">
+                        <tr>
+                            <td style="padding-top: 10px;">
+                                <strong>Bill to:</strong>
+                                ${object.partner_invoice_id.street or ''}
+                                ${object.partner_invoice_id.city or ''}
+                                ${object.partner_invoice_id.state_id.name or ''}
+                                ${object.partner_invoice_id.zip or ''}
+                                ${object.partner_invoice_id.country_id.name or ''}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Payment Method:</strong>
+                                % if transaction.payment_token_id:
+                                ${transaction.payment_token_id.name}
+                                % else:
+                                ${transaction.acquirer_id.name}
+                                % endif
+                                (${format_amount(transaction.amount, object.currency_id)})
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                % endif
+                % if object.partner_shipping_id and not object.only_services:
+                <div style="margin: 0px; padding: 0px;">
+                    <table width="100%" style="color: #454748; font-size: 12px;">
+                        <tr>
+                            <td>
+                                <br />
+                                <strong>Ship to:</strong>
+                                ${object.partner_shipping_id.street or ''}
+                                ${object.partner_shipping_id.city or ''}
+                                ${object.partner_shipping_id.state_id.name or ''}
+                                ${object.partner_shipping_id.zip or ''}
+                                ${object.partner_shipping_id.country_id.name or ''}
+                            </td>
+                        </tr>
+                    </table>
+                    % if object.carrier_id:
+                    <table width="100%" style="color: #454748; font-size: 12px;">
+                        <tr>
+                            <td>
+                                <strong>Shipping Method:</strong>
+                                ${object.carrier_id.name}
+                                % if object.carrier_id.fixed_price == 0.0:
+                                (Free)
+                                % else:
+                                (${format_amount(object.carrier_id.fixed_price, object.currency_id)})
+                                % endif
+                            </td>
+                        </tr>
+                    </table>
+                    % endif
+                </div>
+                % endif
+                % endif
+            </div>
+        </field>
+        <field name="report_template" ref="sale.action_report_saleorder" />
+        <field name="report_name">${(object.name or '').replace('/','_')}</field>
+        <field name="lang">${object.partner_id.lang}</field>
+        <field name="auto_delete" eval="True" />
+    </record>
+</odoo>

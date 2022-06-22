@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="website_abot_apt_template" name="About the APT">
+        <section
+            class="s_text_image pt32 pb32 o_colored_level"
+            data-snippet="s_text_image"
+            data-name="Text - Image"
+        >
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 pt16 pb16 o_colored_level">
+                        <h2>Sobre el departamento</h2>
+                        <div
+                            style="max-height: 250px; text-overflow: ellipsis; overflow: hidden;"
+                        >
+                            <p
+                                style="font-size:15px; color: rgba(0,0,0,0.9); font-family: 'Work Sans'; text-align: justify;"
+                            >
+                                <span t-field="property.ota_description" />
+                            </p>
+                        </div>
+                        <p>
+                            <a
+                                href="#"
+                                class="mb-2 btn btn-primary"
+                                data-toggle="modal"
+                                data-target="#modal_about_the_space"
+                            >
+                                <span>Descubrir más</span>
+                            </a>
+                            <div
+                                class="modal fade"
+                                id="modal_about_the_space"
+                                tabindex="-1"
+                                role="dialog"
+                                aria-labelledby="modal_about_the_space_label"
+                                aria-hidden="true"
+                            >
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5
+                                                class="modal-title"
+                                                id="modal_about_the_space_label"
+                                            >
+                                                <span>Sobre el departamento
+                                                </span>
+                                            </h5>
+                                            <button
+                                                type="button"
+                                                class="close"
+                                                data-dismiss="modal"
+                                                aria-label="Close"
+                                            >
+                                                <span
+                                                    aria-hidden="false"
+                                                ><![CDATA[&times;]]></span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p t-field="property.ota_description" />
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button
+                                                type="button"
+                                                class="btn btn-secondary"
+                                                data-dismiss="modal"
+                                            >Close
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </p>
+                    </div>
+                    <div class="col-lg-6 pt16 pb16 o_colored_level">
+                        <img
+                            t-att-src="section_id['picture']"
+                            class="img img-fluid mx-auto"
+                            loading="lazy"
+                            data-mimetype="image/jpeg"
+                        />
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+</odoo>

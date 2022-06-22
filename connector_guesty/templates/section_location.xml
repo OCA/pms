@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="website_section_location_template" name="Location">
+        <section
+            class="s_text_image pt32 pb32 o_colored_level"
+            data-snippet="s_text_image"
+            data-name="Text - Image"
+        >
+            <div class="container">
+                <h2
+                    class="text-center pb-2 pt-2 item-header"
+                    style="background-color: #E9ECEF !important"
+                >
+                    <font style="font-size: 36px;">Ubicación</font>
+                </h2>
+                <div class="row align-items-center">
+                    <div class="col-lg-6 pt16 pb16 o_colored_level">
+                        <h2>Polanco</h2>
+                        <p>&amp;nbsp;
+                            <span
+                                style="color: rgba(0, 0, 0, 0.9); font-family: &quot;Work Sans&quot;; font-size: 22px; font-style: italic;"
+                            >
+                                Polanco es un vecindario cosmopolita cerca de algunas de las atracciones más
+                                importantes de la ciudad. Aquí puedes encontrar reconocidos bares y
+                                restaurantes al igual que tiendas de grandes marcas.
+                            </span>
+                        </p>
+                        <p>
+                            <a
+                                href="#"
+                                class="btn btn-primary mb-2 o_default_snippet_text"
+                            >Descubrir más
+                            </a>
+                        </p>
+                    </div>
+                    <div class="col-lg-6 pt16 pb16 o_colored_level" style="">
+                        <img
+                            t-att-src="map_picture['url']"
+                            class="img img-fluid mx-auto"
+                            alt=""
+                            loading="lazy"
+                            data-original-title=""
+                            title=""
+                            aria-describedby="tooltip46418"
+                            data-original-id="4077"
+                            data-original-src="/web/image/4077-f2281538/staticmap.png"
+                            data-mimetype="image/png"
+                            data-resize-width="690"
+                        />
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+</odoo>

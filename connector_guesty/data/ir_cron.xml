@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="cancel_expired_reservations" model="ir.cron">
+        <field name="name">Guesty: Cancel Expired Reservations</field>
+        <field name="model_id" ref="pms_sale.model_pms_reservation" />
+        <field name="state">code</field>
+        <field name="code">model._cancel_expired_cron()</field>
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False" />
+    </record>
+</odoo>

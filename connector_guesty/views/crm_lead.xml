@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="guesty_crm_lead_view_form" model="ir.ui.view">
+        <field name="name">guesty.crm.lead.form</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form" />
+        <field name="model">crm.lead</field>
+        <field name="arch" type="xml">
+            <xpath expr="//" />
+        </field>
+    </record>
+</odoo>

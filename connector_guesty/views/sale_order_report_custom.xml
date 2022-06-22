@@ -1,0 +1,38 @@
+<odoo>
+    <template
+        id="sale_order_report_custom"
+        inherit_id="sale.report_saleorder_document"
+        name="sale.order.report.custom"
+    >
+        <xpath expr="//div[@id='informations']" position="after">
+            <div class="o_check_out_info">
+                <br />
+                <strong>Reservation details</strong>
+                <table class="table table-sm o_second_table">
+                    <thead style="display: table-row-group">
+                        <tr>
+                            <th name="th_check_in" class="text-left">Check in</th>
+                            <th name="th_check_out" class="text-left">Check out</th>
+                        </tr>
+                    </thead>
+                    <tbody class="check_info_tbody">
+                        <tr>
+                            <td name="td_check_in">
+                                <span
+                                    t-field="doc.check_in"
+                                    t-options='{"widget": "datetime", "format": "MMM dd, Y HH:mm"}'
+                                />
+                            </td>
+                            <td name="td_check_out" class="text-left">
+                                <span
+                                    t-field="doc.check_out"
+                                    t-options='{"widget": "datetime", "format": "MMM dd, Y HH:mm"}'
+                                />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,108 @@
+<odoo>
+
+    <record id="crm_lead_new_reservation_form" model="ir.ui.view">
+        <field name="name">New Quotation</field>
+        <field name="model">wiz.crm.lead.new.reservation</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field
+                                name="crm_lead_id"
+                                readonly="1"
+                                options="{'no_open': True}"
+                            />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field
+                                name="check_in"
+                                widget="daterange"
+                                options="{'related_end_date': 'check_out', 'minDate': 0}"
+                                attrs="{'readonly':[('state', '!=', 'new')]}"
+                            />
+                            <field
+                                name="check_out"
+                                widget="daterange"
+                                options="{'related_start_date': 'check_in'}"
+                                attrs="{'readonly':[('state', '!=', 'new')]}"
+                            />
+                        </group>
+                        <group>
+                            <field
+                                name="price_list_id"
+                                attrs="{'readonly':[('state', '!=', 'new')]}"
+                            />
+                            <field name="discount" />
+                            <field name="cleaning_fee_price" />
+                        </group>
+                    </group>
+                    <notebook attrs="{'invisible': [('state', '=', 'new')]}">
+                        <page string="Choice Properties">
+                            <field
+                                name="available_ids"
+                                domain="[('crm_lead_id', '=', crm_lead_id)]"
+                            />
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button
+                        name="action_cancel_soft_reset"
+                        type="object"
+                        string="Reset"
+                        attrs="{'invisible': [('state', '!=', 'availability')]}"
+                    />
+                    <button
+                        name="action_check_availability"
+                        type="object"
+                        string="Check Availability"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', '!=', 'new')]}"
+                    />
+                    <button
+                        name="action_create_quotation"
+                        type="object"
+                        string="Create Quotations"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', '!=', 'availability')]}"
+                    />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="crm_listing_availability_tree_view" model="ir.ui.view">
+        <field name="name">Availability</field>
+        <field name="model">crm.listing.availability</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="property_id" />
+                <field name="city" />
+                <field name="country_id" />
+                <field name="price" />
+                <field name="no_nights" />
+                <field name="total_price" />
+                <field name="currency" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="crm_listing_availability_search_view" model="ir.ui.view">
+        <field name="name">Availability</field>
+        <field name="model">crm.listing.availability</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="property_id" />
+                <field name="city" />
+                <field name="country_id" />
+            </search>
+        </field>
+    </record>
+
+</odoo>
