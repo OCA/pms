@@ -26,3 +26,4 @@ class PmsReservationInfo(Datamodel):
     boardServiceName = fields.String(required=False, allow_none=True)
     channelTypeId = fields.Integer(required=False, allow_none=True)
     adults = fields.Integer(required=False, allow_none=True)
+    Overbooking = fields.Boolean(required=False, allow_none=True)
