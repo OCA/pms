@@ -69,7 +69,7 @@ class PmsPricelistService(Component):
         [
             (
                 [
-                    "/<int:pricelist_id>",
+                    "/<int:pricelist_id>/pricelist-items",
                 ],
                 "GET",
             )
@@ -128,10 +128,9 @@ class PmsPricelistService(Component):
                         ),
                     )
 
-                    if item:
-                        pricelist_info.pricelistItemId = item.id
-                        price = re.findall(r"[+-]?\d+\.\d+", item.price)
-                        pricelist_info.price = float(price[0])
+                    pricelist_info.pricelistItemId = item.id
+                    price = re.findall(r"[+-]?\d+\.\d+", item.price)
+                    pricelist_info.price = float(price[0])
 
                     result.append(pricelist_info)
 
@@ -141,7 +140,7 @@ class PmsPricelistService(Component):
         [
             (
                 [
-                    "/<int:pricelist_id>/pricelist-item",
+                    "/<int:pricelist_id>/pricelist-items",
                 ],
                 "POST",
             )
@@ -176,7 +175,7 @@ class PmsPricelistService(Component):
         [
             (
                 [
-                    "/<int:pricelist_id>/pricelist-item",
+                    "/<int:pricelist_id>/pricelist-items/<int:pricelist_item_id>",
                 ],
                 "PATCH",
             )
@@ -184,11 +183,12 @@ class PmsPricelistService(Component):
         input_param=Datamodel("pms.pricelist.item.info", is_list=False),
         auth="jwt_api_pms",
     )
-    def write_pricelist_item(self, pricelist_id, pms_pricelist_item_info):
+    def write_pricelist_item(self, pricelist_id, pricelist_item_id, pms_pricelist_item_info):
+
         product_pricelist_item = self.env["product.pricelist.item"].search(
             [
-                ("id", "=", pms_pricelist_item_info.pricelistItemId),
                 ("pricelist_id", "=", pricelist_id),
+                ("id", "=", pricelist_item_id),
             ]
         )
         if product_pricelist_item and pms_pricelist_item_info.price:
