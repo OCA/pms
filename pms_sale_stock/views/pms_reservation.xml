@@ -1,0 +1,27 @@
+<odoo>
+
+    <record id="view_pms_reservation_form_inherit" model="ir.ui.view">
+        <field name="name">pms.reservation.view.form.inherit</field>
+        <field name="model">pms.reservation</field>
+        <field name="inherit_id" ref="pms_sale.view_reservation_form" />
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+
+                <button
+                    name="action_view_pms_checkouts"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-check"
+                    attrs="{'invisible': [('stock_check_count', '=', 0)]}"
+                >
+                    <field
+                        name="stock_check_count"
+                        widget="statinfo"
+                        string="Checkouts"
+                    />
+                </button>
+            </div>
+        </field>
+    </record>
+
+</odoo>

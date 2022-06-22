@@ -1,0 +1,20 @@
+<odoo>
+
+    <record id="action_stock_content_location_check_pms" model="ir.actions.act_window">
+        <field name="name">Content Checks</field>
+        <field name="res_model">stock.location.content.check</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('pms_reservation_id','!=',None)]</field>
+    </record>
+
+    <menuitem
+        id="menu_stock_location_content_check_pms"
+        name="Checkouts"
+        parent="pms_base.menu_operations"
+        action="action_stock_content_location_check_pms"
+        sequence="25"
+        groups="stock.group_stock_multi_locations"
+    />
+
+</odoo>
