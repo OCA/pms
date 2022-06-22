@@ -34,3 +34,6 @@ from . import pms_extra_bed
 
 from . import pms_amenity_type
 from . import pms_amenity
+
+from . import pms_board_service
+from . import pms_board_service_line
