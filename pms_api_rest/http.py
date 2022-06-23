@@ -36,7 +36,6 @@ class HttpRestRequestPms(HttpRestRequest):
         if isinstance(exception, SessionExpiredException):
             # we don't want to return the login form as plain html page
             # we want to raise a proper exception
-            print("session expired exception")
             return wrapJsonException(Unauthorized(ustr(exception)))
         try:
             return super(HttpRequest, self)._handle_exception(exception)
@@ -46,7 +45,6 @@ class HttpRestRequestPms(HttpRestRequest):
                 NotFound(ustr(e)), include_description=True, extra_info=extra_info
             )
         except (AccessError, AccessDenied) as e:
-            print("access error / access denied exception")
             extra_info = getattr(e, "rest_json_info", None)
             return wrapJsonException(
                 Forbidden(ustr(e)), include_description=True, extra_info=extra_info
@@ -60,7 +58,6 @@ class HttpRestRequestPms(HttpRestRequest):
             extra_info = getattr(e, "rest_json_info", None)
             return wrapJsonException(e, include_description=True, extra_info=extra_info)
         except Unauthorized as e:
-            print("Unauthorized exception")
             extra_info = getattr(e, "rest_json_info", None)
             return (
                 wrapJsonException(e, include_description=True, extra_info=extra_info),
