@@ -186,7 +186,8 @@ class PmsAvailabilityPlanService(Component):
         [
             (
                 [
-                    "/<int:availability_plan_id>/availability-plan-rules/<int:availability_plan_rule_id>",
+                    "/<int:availability_plan_id>/"
+                    "availability-plan-rules/<int:availability_plan_rule_id>",
                 ],
                 "PATCH",
             )
@@ -202,7 +203,6 @@ class PmsAvailabilityPlanService(Component):
             [
                 ("availability_plan_id", "=", availability_plan_id),
                 ("id", "=", availability_plan_rule_id),
-
             ]
         )
         if avail_rule:
