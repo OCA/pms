@@ -34,12 +34,18 @@ class PmsFolioService(Component):
         )
 
         if folio_search_param.date_to and folio_search_param.date_from:
-            reservation_lines = self.env["pms.reservation.line"].search(
-                [
-                    ("date", ">=", folio_search_param.date_from),
-                    ("date", "<", folio_search_param.date_to),
-                ]
-            ).mapped("reservation_id").mapped("folio_id").ids
+            reservation_lines = (
+                self.env["pms.reservation.line"]
+                .search(
+                    [
+                        ("date", ">=", folio_search_param.date_from),
+                        ("date", "<", folio_search_param.date_to),
+                    ]
+                )
+                .mapped("reservation_id")
+                .mapped("folio_id")
+                .ids
+            )
             domain_fields.append(("folio_id", "in", reservation_lines))
 
         domain_filter = list()
@@ -156,7 +162,7 @@ class PmsFolioService(Component):
                         else "",
                         "pendingAmount": reservation.folio_id.pending_amount,
                         "toAssign": reservation.to_assign,
-                        "reservationType": reservation.reservation_type
+                        "reservationType": reservation.reservation_type,
                     }
                 )
             result_folios.append(

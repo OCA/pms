@@ -183,7 +183,9 @@ class PmsPricelistService(Component):
         input_param=Datamodel("pms.pricelist.item.info", is_list=False),
         auth="jwt_api_pms",
     )
-    def write_pricelist_item(self, pricelist_id, pricelist_item_id, pms_pricelist_item_info):
+    def write_pricelist_item(
+        self, pricelist_id, pricelist_item_id, pms_pricelist_item_info
+    ):
 
         product_pricelist_item = self.env["product.pricelist.item"].search(
             [
