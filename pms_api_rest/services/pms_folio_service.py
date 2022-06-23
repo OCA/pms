@@ -34,8 +34,13 @@ class PmsFolioService(Component):
         )
 
         if folio_search_param.date_to and folio_search_param.date_from:
-            domain_fields.append(("checkin", ">=", folio_search_param.date_from))
-            domain_fields.append(("checkout", "<", folio_search_param.date_to))
+            reservation_lines = self.env["pms.reservation.line"].search(
+                [
+                    ("date", ">=", folio_search_param.date_from),
+                    ("date", "<", folio_search_param.date_to),
+                ]
+            ).mapped("reservation_id").mapped("folio_id").ids
+            domain_fields.append(("folio_id", "in", reservation_lines))
 
         domain_filter = list()
         if folio_search_param.filter:
@@ -149,6 +154,9 @@ class PmsFolioService(Component):
                         "cancellationPolicy": reservation.pricelist_id.cancelation_rule_id.name
                         if reservation.pricelist_id.cancelation_rule_id.name
                         else "",
+                        "pendingAmount": reservation.folio_id.pending_amount,
+                        "toAssign": reservation.to_assign,
+                        "reservationType": reservation.reservation_type
                     }
                 )
             result_folios.append(
