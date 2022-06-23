@@ -204,41 +204,204 @@ class PmsReservationService(Component):
                 "GET",
             )
         ],
-        input_param=Datamodel("pms.search.param"),
         output_param=Datamodel("pms.checkin.partner.info", is_list=True),
         auth="jwt_api_pms",
     )
-    def get_checkin_partners(self, reservation_id, pms_search_param):
-        domain = list()
-        domain.append(("id", "=", reservation_id))
-        domain.append(("pms_property_id", "=", pms_search_param.pms_property_id))
-        reservation = self.env["pms.reservation"].search(domain)
+    def get_checkin_partners(self, reservation_id):
+        reservation = self.env["pms.reservation"].browse(reservation_id)
         checkin_partners = []
         PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
         if not reservation:
             pass
         else:
             for checkin_partner in reservation.checkin_partner_ids:
+                if checkin_partner.document_expedition_date:
+                    document_expedition_date = (
+                        checkin_partner.document_expedition_date.strftime("%d/%m/%Y")
+                    )
+                if checkin_partner.birthdate_date:
+                    birthdate_date = checkin_partner.birthdate_date.strftime("%d/%m/%Y")
                 checkin_partners.append(
                     PmsCheckinPartnerInfo(
                         id=checkin_partner.id,
                         reservationId=checkin_partner.reservation_id.id,
                         name=checkin_partner.name if checkin_partner.name else "",
+                        firstname=checkin_partner.firstname
+                        if checkin_partner.firstname
+                        else "",
+                        lastname=checkin_partner.lastname
+                        if checkin_partner.lastname
+                        else "",
+                        lastname2=checkin_partner.lastname2
+                        if checkin_partner.lastname2
+                        else "",
                         email=checkin_partner.email if checkin_partner.email else "",
                         mobile=checkin_partner.mobile if checkin_partner.mobile else "",
-                        nationality=checkin_partner.nationality_id.name
-                        if checkin_partner.nationality_id
-                        else "",
                         documentType=checkin_partner.document_type.name
-                        if checkin_partner.document_type
+                        if checkin_partner.document_type.name
                         else "",
                         documentNumber=checkin_partner.document_number
                         if checkin_partner.document_number
                         else "",
+                        documentExpeditionDate=document_expedition_date
+                        if checkin_partner.document_expedition_date
+                        else "",
+                        documentSupportNumber=checkin_partner.support_number
+                        if checkin_partner.support_number
+                        else "",
                         gender=checkin_partner.gender if checkin_partner.gender else "",
-                        state=dict(
-                            checkin_partner.fields_get(["state"])["state"]["selection"]
-                        )[checkin_partner.state],
+                        birthdate=birthdate_date
+                        if checkin_partner.birthdate_date
+                        else "",
+                        residenceStreet=checkin_partner.residence_street
+                        if checkin_partner.residence_street
+                        else "",
+                        zip=checkin_partner.residence_zip
+                        if checkin_partner.residence_zip
+                        else "",
+                        residenceCity=checkin_partner.residence_city
+                        if checkin_partner.residence_city
+                        else "",
+                        nationality=checkin_partner.residence_country_id.name
+                        if checkin_partner.residence_country_id
+                        else "",
+                        countryState=checkin_partner.residence_state_id.name
+                        if checkin_partner.residence_state_id
+                        else "",
                     )
                 )
         return checkin_partners
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:reservation_id>/adults/<int:adults>",
+                ],
+                "PATCH",
+            )
+        ],
+        auth="jwt_api_pms",
+    )
+    def update_reservation_adults(self, reservation_id, adults):
+        reservation_id = self.env["pms.reservation"].browse(reservation_id)
+        reservation_id.write(
+            {
+                "adults": adults,
+            }
+        )
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:reservation_id>/children/<int:children>",
+                ],
+                "PATCH",
+            )
+        ],
+        auth="jwt_api_pms",
+    )
+    def update_reservation_children(self, reservation_id, children):
+        reservation_id = self.env["pms.reservation"].browse(reservation_id)
+        reservation_id.write(
+            {
+                "children": children,
+            }
+        )
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:reservation_id>/segmentation/<int:segmentation_id>",
+                ],
+                "PATCH",
+            )
+        ],
+        auth="jwt_api_pms",
+    )
+    def update_segmentation_id(self, reservation_id, segmentation_id):
+        reservation_id = self.env["pms.reservation"].browse(reservation_id)
+        reservation_id.write(
+            {
+                "segmentation_ids": [segmentation_id],
+            }
+        )
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:reservation_id>/checkin_partner/<int:checkin_partner_id>",
+                ],
+                "PATCH",
+            )
+        ],
+        input_param=Datamodel("pms.checkin.partner.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def write_reservation_checkin_partner(
+        self, reservation_id, checkin_partner_id, pms_checkin_partner_info
+    ):
+        checkin_partner = self.env["pms.checkin.partner"].search(
+            [("id", "=", checkin_partner_id), ("reservation_id", "=", reservation_id)]
+        )
+        if checkin_partner:
+            vals = dict()
+            if pms_checkin_partner_info.firstname:
+                vals.update({"firstname": pms_checkin_partner_info.firstname})
+            if pms_checkin_partner_info.lastname:
+                vals.update({"lastname": pms_checkin_partner_info.lastname})
+            if pms_checkin_partner_info.lastname2:
+                vals.update({"lastname2": pms_checkin_partner_info.lastname2})
+            if pms_checkin_partner_info.email:
+                vals.update({"email": pms_checkin_partner_info.email})
+            if pms_checkin_partner_info.mobile:
+                vals.update({"mobile": pms_checkin_partner_info.mobile})
+            if pms_checkin_partner_info.documentType:
+                document_type = self.env["res.partner.id_category"].search(
+                    [("name", "=", pms_checkin_partner_info.documentType)]
+                )
+                vals.update({"document_type": document_type})
+            if pms_checkin_partner_info.documentNumber:
+                vals.update(
+                    {"document_number": pms_checkin_partner_info.documentNumber}
+                )
+            if pms_checkin_partner_info.documentExpeditionDate:
+                document_expedition_date = datetime.strptime(
+                    pms_checkin_partner_info.documentExpeditionDate, "%d/%m/%Y"
+                )
+                document_expedition_date = document_expedition_date.strftime("%Y-%m-%d")
+                vals.update({"document_expedition_date": document_expedition_date})
+            if pms_checkin_partner_info.documentSupportNumber:
+                vals.update(
+                    {"support_number": pms_checkin_partner_info.documentSupportNumber}
+                )
+            if pms_checkin_partner_info.gender:
+                vals.update({"gender": pms_checkin_partner_info.gender})
+            if pms_checkin_partner_info.birthdate:
+                birthdate = datetime.strptime(
+                    pms_checkin_partner_info.birthdate, "%d/%m/%Y"
+                )
+                birthdate = birthdate.strftime("%Y-%m-%d")
+                vals.update({"birthdate_date": birthdate})
+            if pms_checkin_partner_info.residenceStreet:
+                vals.update(
+                    {"residence_street": pms_checkin_partner_info.residenceStreet}
+                )
+            if pms_checkin_partner_info.zip:
+                vals.update({"residence_zip": pms_checkin_partner_info.zip})
+            if pms_checkin_partner_info.residenceCity:
+                vals.update({"residence_city": pms_checkin_partner_info.residenceCity})
+            if pms_checkin_partner_info.nationality:
+                country_id = self.env["res.country"].search(
+                    [("name", "=", pms_checkin_partner_info.nationality)]
+                )
+                vals.update({"residence_country_id": country_id})
+            if pms_checkin_partner_info.countryState:
+                country_state = self.env["res.country.state"].search(
+                    [("name", "=", pms_checkin_partner_info.countryState)]
+                )
+                vals.update({"residence_state_id": country_state})
+            checkin_partner.write(vals)
