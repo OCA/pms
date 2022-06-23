@@ -12,6 +12,7 @@
         "web",
         "auth_signup",
         "auth_jwt_login",
+        "base_location",
     ],
     "external_dependencies": {
         "python": ["jwt", "simplejson", "marshmallow", "jose"],
