@@ -106,7 +106,13 @@ class PmsFolioService(Component):
                         "preferredRoomId": reservation.preferred_room_id.name
                         if reservation.preferred_room_id
                         else "",
-                        "roomTypeId": reservation.room_type_id.name
+                        "preferredRoomCapacity": reservation.preferred_room_id.capacity
+                        if reservation.preferred_room_id
+                        else "",
+                        "roomTypeName": reservation.room_type_id.name
+                        if reservation.room_type_id
+                        else "",
+                        "roomTypeId": reservation.room_type_id.id
                         if reservation.room_type_id
                         else "",
                         "priceTotal": reservation.price_total,
@@ -156,7 +162,9 @@ class PmsFolioService(Component):
                         "departureHour": reservation.departure_hour,
                         "pendingCheckinData": reservation.pending_checkin_data,
                         "createDate": reservation.create_date,
-                        "segmentations": segmentation_ids,
+                        "segmentations": segmentation_ids[0]
+                        if segmentation_ids
+                        else "",
                         "cancellationPolicy": reservation.pricelist_id.cancelation_rule_id.name
                         if reservation.pricelist_id.cancelation_rule_id.name
                         else "",
