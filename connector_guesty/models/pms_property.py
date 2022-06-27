@@ -67,6 +67,11 @@ class PmsProperty(models.Model):
     picture_ids = fields.One2many("pms.property.picture", "property_id")
     website_picture_ids = fields.Many2many("pms.property.picture")
     front_picture = fields.Many2one("pms.property.picture")
+    guesty_parent = fields.Char()
+    guesty_child = fields.Char()
+    time = fields.Datetime()
+    is_listen = fields.Boolean()
+    booking_window = fields.Char()
 
     @api.depends("room_ids")
     def _compute_qty_beds(self):
