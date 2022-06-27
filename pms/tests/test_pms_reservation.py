@@ -97,7 +97,7 @@ class TestPmsReservations(TestPms):
             {
                 "name": "partner1",
                 "is_agency": True,
-                "invoice_to_agency": True,
+                "invoice_to_agency": "always",
                 "default_commission": 15,
                 "sale_channel_id": self.sale_channel1.id,
             }
@@ -1775,7 +1775,7 @@ class TestPmsReservations(TestPms):
                 "name": "partner1",
                 "is_agency": True,
                 "sale_channel_id": sale_channel1.id,
-                "invoice_to_agency": True,
+                "invoice_to_agency": "always",
             }
         )
 

@@ -71,7 +71,7 @@ class TestPmsFolio(TestPms):
             {
                 "name": "partner1",
                 "is_agency": True,
-                "invoice_to_agency": True,
+                "invoice_to_agency": "always",
                 "default_commission": 15,
                 "sale_channel_id": self.sale_channel1.id,
             }
