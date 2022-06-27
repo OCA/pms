@@ -535,6 +535,14 @@ class PmsFolio(models.Model):
         compute="_compute_autoinvoice_date",
         store=True,
     )
+    invoice_to_agency = fields.Boolean(
+        string="Invoice Agency",
+        help="""Indicates if agency invoices partner
+            (it only affects those nights/services sold through the agency)""",
+        compute="_compute_invoice_to_agengy",
+        store=True,
+        readonly=False,
+    )
 
     def name_get(self):
         result = []
@@ -899,7 +907,7 @@ class PmsFolio(models.Model):
         for folio in self:
             if folio.reservation_type == "out":
                 folio.partner_id = False
-            elif folio.agency_id and folio.agency_id.invoice_to_agency:
+            elif folio.agency_id and folio.invoice_to_agency:
                 folio.partner_id = folio.agency_id.id
             elif folio.document_number and folio.document_type:
                 self._create_partner(folio)
@@ -1335,6 +1343,16 @@ class PmsFolio(models.Model):
             if record.reservation_ids:
                 checkouts = record.reservation_ids.mapped("checkout")
                 record.last_checkout = max(checkouts)
+
+    @api.depends("agency_id")
+    def _compute_invoice_to_agengy(self):
+        for record in self:
+            if not record.agency_id or record.agency_id.invoice_to_agency == "never":
+                record.invoice_to_agency = False
+            elif record.agency_id.invoice_to_agency == "always":
+                record.invoice_to_agency = True
+            elif not record.invoice_to_agency:
+                record.invoice_to_agency = False
 
     def _search_invoice_ids(self, operator, value):
         if operator == "in" and value:
@@ -2455,11 +2473,7 @@ class PmsFolio(models.Model):
     def _apply_partner_name(self, record):
         if record.partner_id:
             record.partner_name = record.partner_id.name
-        elif (
-            record.agency_id
-            and not record.agency_id.invoice_to_agency
-            and not record.partner_name
-        ):
+        elif record.agency_id and not record.partner_name:
             # if the customer not is the agency but we dont know the customer's name,
             # set the name provisional
             record.partner_name = _("Reservation from ") + record.agency_id.name
