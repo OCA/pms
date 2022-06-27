@@ -60,7 +60,7 @@ class ChannelWubookPmsFolioImporter(Component):
             if any([
                 res.reservation_line_ids.mapped(
                     "room_id.room_type_id.id"
-                ) != [res.room_type_id.id]  for res in folio.reservation_ids
+                ) != [res.room_type_id.id] for res in folio.reservation_ids
             ]):
                 self.env["channel.wubook.pms.availability"].export_data(
                     backend_id=binding.backend_id,
@@ -116,17 +116,15 @@ class ChannelWubookPmsFolioImporter(Component):
                             email_from=self.env.user.partner_id.email_formatted
                             or folio.pms_property_id.email_formatted,
                         )
-
+            # We omit those payments from agencies that that have already been registered in previous imports,
+            # that the total of the folio is zero, or that do not have a journal configured
             if (
                 folio.payment_ids.filtered(lambda p: p.state == "posted")
                 or folio.amount_total == 0
+                or not journal
             ):
                 return
-            if not journal:
-                raise NotImplementedError(
-                    _("Not configure journal payments to %s OTA")
-                    % (folio.agency_id.name,)
-                )
+
             payment_amount = binding.payment_gateway_fee if binding.payment_gateway_fee <= folio.amount_total else folio.amount_total
             folio.do_payment(
                 journal,
