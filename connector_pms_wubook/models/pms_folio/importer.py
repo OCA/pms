@@ -76,13 +76,18 @@ class ChannelWubookPmsFolioImporter(Component):
 
         # Pre payment Folio
         if binding.payment_gateway_fee > 0:
+            # REVIEW: If the agency has configured invoice the agency manually,
+            # and a payment from the agency enters, we preset in the folio invoice the agency to true
+            # (p.e. Expedia Collect)
+            if folio.agency_id and folio.agency_id.invoice_to_agency == "manual":
+                folio.invoice_to_agency = True
             # Wubook Pre payment
             if (
                 folio.channel_type_id
                 == binding.backend_id.backend_type_id.child_id.direct_channel_type_id
             ):
                 journal = binding.backend_id.wubook_journal_id
-            # OTAs Pre payment
+            # Other OTAs Pre payment
             else:
                 journal = binding.backend_id.backend_journal_ota_ids.filtered(
                     lambda x: x.agency_id.id == folio.agency_id.id
