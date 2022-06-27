@@ -870,7 +870,6 @@ class PmsReservation(models.Model):
 
     @api.depends(
         "reservation_type",
-        "agency_id",
         "folio_id",
         "folio_id.agency_id",
         "document_number",
@@ -886,8 +885,6 @@ class PmsReservation(models.Model):
                     reservation.partner_id = False
                 elif reservation.folio_id and reservation.folio_id.partner_id:
                     reservation.partner_id = reservation.folio_id.partner_id
-                elif reservation.agency_id and reservation.agency_id.invoice_to_agency:
-                    reservation.partner_id = reservation.agency_id
                 elif reservation.document_number and reservation.document_type:
                     self.env["pms.folio"]._create_partner(reservation)
                 elif not reservation.partner_id:
