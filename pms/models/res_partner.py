@@ -37,9 +37,16 @@ class ResPartner(models.Model):
         string="Apply Pricelist",
         help="Indicates if agency pricelist is applied to his reservations",
     )
-    invoice_to_agency = fields.Boolean(
+    invoice_to_agency = fields.Selection(
         string="Invoice Agency",
         help="Indicates if agency invoices partner",
+        selection=[
+            ("never", "Never"),
+            ("manual", "Manual"),
+            ("always", "Always"),
+        ],
+        default="never",
+        required=True,
     )
     pms_property_ids = fields.Many2many(
         string="Properties",

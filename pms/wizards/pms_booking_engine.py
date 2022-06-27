@@ -150,7 +150,7 @@ class BookingEngine(models.TransientModel):
     @api.depends("agency_id")
     def _compute_partner_id(self):
         for record in self:
-            if record.agency_id and record.agency_id.invoice_to_agency:
+            if record.agency_id and record.agency_id.invoice_to_agency == "always":
                 record.partner_id = record.agency_id.id
             elif not record.partner_id:
                 record.partner_id = False
@@ -162,7 +162,7 @@ class BookingEngine(models.TransientModel):
                 record.partner_name = record.partner_id.name
             if (
                 record.agency_id
-                and not record.agency_id.invoice_to_agency
+                and not record.agency_id.invoice_to_agency == "always"
                 and not record.partner_name
             ):
                 record.partner_name = _("Reservation from ") + record.agency_id.name
