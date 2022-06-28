@@ -1320,6 +1320,11 @@ msgid "Already exists another room type with the same code and properties"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__res_partner__invoice_to_agency__always
+msgid "Always"
+msgstr ""
+
+#. module: pms
 #: model:ir.ui.menu,name:pms.menu_action_pms_room_amenity_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
 msgid "Amenities"
@@ -4920,6 +4925,13 @@ msgid "Indicates if agency invoices partner"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_folio__invoice_to_agency
+msgid ""
+"Indicates if agency invoices partner\n"
+"            (it only affects those nights/services sold through the agency)"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__apply_pricelist
 #: model:ir.model.fields,help:pms.field_res_partner__apply_pricelist
 #: model:ir.model.fields,help:pms.field_res_users__apply_pricelist
@@ -5198,6 +5210,7 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_folio__invoice_to_agency
 #: model:ir.model.fields,field_description:pms.field_pms_property__invoice_to_agency
 #: model:ir.model.fields,field_description:pms.field_res_partner__invoice_to_agency
 #: model:ir.model.fields,field_description:pms.field_res_users__invoice_to_agency
@@ -5870,6 +5883,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_property__default_invoicing_policy__manual
+#: model:ir.model.fields.selection,name:pms.selection__res_partner__invoice_to_agency__manual
 #: model:ir.model.fields.selection,name:pms.selection__res_partner__invoicing_policy__manual
 msgid "Manual"
 msgstr ""
@@ -6248,6 +6262,11 @@ msgstr ""
 msgid ""
 "Nationality:\n"
 "                                                        <br/>"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__res_partner__invoice_to_agency__never
+msgid "Never"
 msgstr ""
 
 #. module: pms
