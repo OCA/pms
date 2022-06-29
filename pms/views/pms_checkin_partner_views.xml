@@ -138,7 +138,7 @@
         <field name="arch" type="xml">
             <tree
                 editable="bottom"
-                decoration-danger="state == 'draft'"
+                decoration-danger="state == 'dummy'"
                 decoration-info="state == 'done'"
                 decoration-muted="state == 'cancel'"
                 decoration-success="state == 'onboard'"
@@ -183,7 +183,7 @@
             <tree
                 editable="bottom"
                 create="false"
-                decoration-danger="state == 'draft'"
+                decoration-danger="state == 'dummy'"
                 decoration-info="state == 'done'"
                 decoration-muted="state == 'cancel'"
                 decoration-success="state == 'onboard'"
@@ -312,7 +312,7 @@
                                     <!--TODO: Use npm avatar generation? https://github.com/Ashwinvalento/cartoon-avatar-->
                                     <img
                                         alt="Draft"
-                                        t-if="record.state.raw_value === 'draft'"
+                                        t-if="record.state.raw_value === 'dummy'"
                                         t-att-src="&quot;pms/static/description/avatar.png&quot;"
                                     />
                                     <img
@@ -330,7 +330,7 @@
                                                 <field
                                                     name="state"
                                                     widget="label_selection"
-                                                    options="{'classes': {'draft': 'default', 'precheckin': 'info', 'onboard': 'warning', 'onboard': 'success', 'done': 'secondary'}}"
+                                                    options="{'classes': {'dummy': 'default', 'precheckin': 'info', 'onboard': 'warning', 'onboard': 'success', 'done': 'secondary'}}"
                                                 />
                                             </div>
                                             <field
