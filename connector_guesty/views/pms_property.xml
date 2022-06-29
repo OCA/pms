@@ -42,7 +42,7 @@
                         </group>
                     </group>
                 </page>
-                <page string="Guesty Technical Info">
+                <page string="Guesty Technical Info" id="tech_info_page">
                     <group>
                         <group>
                             <field name="guesty_id" string="Guesty ID" readonly="1" />
@@ -56,7 +56,7 @@
                         </group>
                     </group>
                 </page>
-                <page string="Calendar">
+                <page string="Calendar" id="calendar_page">
                     <field name="calendar_ids" readonly="1">
                         <tree
                             decoration-success="state=='available'"
@@ -67,7 +67,7 @@
                         </tree>
                     </field>
                 </page>
-                <page string="Pictures">
+                <page string="Pictures" id="pictures_page">
                     <style>
                         .oe_listing_pic img {
                         max-width: 90px;
@@ -100,7 +100,7 @@
                         </kanban>
                     </field>
                 </page>
-                <page string="Website gallery">
+                <page string="Website gallery" id="website_gallery_page">
                     <field
                         name="website_picture_ids"
                         mode="kanban"
@@ -135,7 +135,7 @@
                         </kanban>
                     </field>
                 </page>
-                <page string="Other website options">
+                <page string="Other website options" id="other_website_page">
                     <group>
                         <group>
                             <field
