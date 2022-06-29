@@ -51,3 +51,9 @@ class PmsCheckinParnert(models.Model):
         if depends or (country and country.code == CODE_SPAIN):
             mandatory_fields.append("residence_state_id")
         return mandatory_fields
+
+    @api.model
+    def _checkin_manual_fields(self, country=False, depends=False):
+        manual_fields = super(PmsCheckinParnert, self)._checkin_manual_fields(depends)
+        manual_fields.extend(["support_number"])
+        return manual_fields

@@ -1013,7 +1013,7 @@ class PmsReservation(models.Model):
                 lambda c: c.state in ("precheckin", "onboard", "done")
             )
             unassigned_checkins = reservation.checkin_partner_ids.filtered(
-                lambda c: c.state == "draft"
+                lambda c: c.state in ("dummy", "draft")
             )
             leftover_unassigneds_count = (
                 len(assigned_checkins) + len(unassigned_checkins) - adults
@@ -1047,7 +1047,7 @@ class PmsReservation(models.Model):
         for reservation in self:
             reservation.count_pending_arrival = len(
                 reservation.checkin_partner_ids.filtered(
-                    lambda c: c.state in ("draft", "precheckin")
+                    lambda c: c.state in ("dummy", "draft", "precheckin")
                 )
             )
 
@@ -1065,7 +1065,9 @@ class PmsReservation(models.Model):
     def _compute_pending_checkin_data(self):
         for reservation in self:
             reservation.pending_checkin_data = len(
-                reservation.checkin_partner_ids.filtered(lambda c: c.state == "draft")
+                reservation.checkin_partner_ids.filtered(
+                    lambda c: c.state in ("dummy", "draft")
+                )
             )
 
     @api.depends("pending_checkin_data")
@@ -1088,7 +1090,7 @@ class PmsReservation(models.Model):
                 if (
                     record.reservation_type != "out"
                     and record.overnight_room
-                    and record.state in ["draft", "confirm", "arrival_delayed"]
+                    and record.state in ("draft", "confirm", "arrival_delayed")
                     and record.checkin <= fields.Date.today()
                 )
                 else False
