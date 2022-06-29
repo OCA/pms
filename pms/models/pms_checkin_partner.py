@@ -118,7 +118,8 @@ class PmsCheckinPartner(models.Model):
         readonly=True,
         store=True,
         selection=[
-            ("draft", "Unkown Guest"),
+            ("dummy", "Unkown Guest"),
+            ("draft", "Incomplete data"),
             ("precheckin", "Pending arrival"),
             ("onboard", "On Board"),
             ("done", "Out"),
@@ -406,15 +407,20 @@ class PmsCheckinPartner(models.Model):
         for record in self.filtered("reservation_id"):
             record.folio_id = record.reservation_id.folio_id
 
-    @api.depends(lambda self: self._checkin_mandatory_fields(depends=True))
+    @api.depends(lambda self: self._checkin_manual_fields(depends=True))
     def _compute_state(self):
         for record in self:
             if not record.state:
-                record.state = "draft"
+                record.state = "dummy"
             if record.reservation_id.state == "cancel":
                 record.state = "cancel"
-            elif record.state in ("draft", "precheckin", "cancel"):
-                if any(
+            elif record.state in ("dummy", "draft", "precheckin", "cancel"):
+                if all(
+                    not getattr(record, field)
+                    for field in record._checkin_manual_fields()
+                ):
+                    record.state = "dummy"
+                elif any(
                     not getattr(record, field)
                     for field in record._checkin_mandatory_fields(
                         country=record.nationality_id
@@ -692,8 +698,8 @@ class PmsCheckinPartner(models.Model):
         # the reservation adults are computed
         if not reservation.checkin_partner_ids:
             reservation.flush()
-        draft_checkins = reservation.checkin_partner_ids.filtered(
-            lambda c: c.state == "draft"
+        dummy_checkins = reservation.checkin_partner_ids.filtered(
+            lambda c: c.state == "dummy"
         )
         if len(reservation.checkin_partner_ids) < reservation.adults:
             if vals.get("identifier", _("New")) == _("New") or "identifier" not in vals:
@@ -705,9 +711,9 @@ class PmsCheckinPartner(models.Model):
                 pms_property = self.env["pms.property"].browse(pms_property_id)
                 vals["identifier"] = pms_property.checkin_sequence_id._next_do()
             return super(PmsCheckinPartner, self).create(vals)
-        if len(draft_checkins) > 0:
-            draft_checkins[0].write(vals)
-            return draft_checkins[0]
+        if len(dummy_checkins) > 0:
+            dummy_checkins[0].write(vals)
+            return dummy_checkins[0]
         raise ValidationError(
             _("Is not possible to create the proposed check-in in this reservation")
         )
@@ -717,6 +723,34 @@ class PmsCheckinPartner(models.Model):
         res = super().unlink()
         reservations._compute_checkin_partner_ids()
         return res
+
+    @api.model
+    def _checkin_manual_fields(self, country=False, depends=False):
+        manual_fields = [
+            "name",
+            "partner_id",
+            "email",
+            "mobile",
+            "phone",
+            "gender",
+            "firstname",
+            "lastname",
+            "lastname2",
+            "birthdate_date",
+            "document_number",
+            "document_expedition_date",
+            "nationality_id",
+            "residence_street",
+            "residence_street2",
+            "residence_zip",
+            "residence_city",
+            "residence_country_id",
+            "residence_state_id",
+        ]
+        # api.depends need "reservation_id.state" in the lambda function
+        if depends:
+            manual_fields.append("reservation_id.state")
+        return manual_fields
 
     @api.model
     def _checkin_mandatory_fields(self, country=False, depends=False):
