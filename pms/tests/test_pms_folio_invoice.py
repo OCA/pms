@@ -814,14 +814,14 @@ class TestPmsFolioInvoice(TestPms):
             "Billed services and overnights invoicing wrong compute",
         )
 
-    def test_not_autoinvoice_unpaid_folio_partner_policy(self):
+    def test_not_autoinvoice_unpaid_cancel_folio_partner_policy(self):
         """
         Test create and invoice the cron by partner preconfig automation
         --------------------------------------
         Set partner invoicing_policy to checkout, create a reservation
         with room, board service and normal service, run autoinvoicing
         method and check that not invoice was created becouse
-        the folio is not paid
+        the folio is cancel and not paid
         """
         # ARRANGE
         self.partner_id.invoicing_policy = "checkout"
@@ -881,6 +881,7 @@ class TestPmsFolioInvoice(TestPms):
                 "reservation_id": self.reservation1.id,
             }
         )
+        self.reservation1.action_cancel()
         self.property.autoinvoicing()
 
         # ASSERT

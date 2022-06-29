@@ -585,7 +585,7 @@ class PmsProperty(models.Model):
     @api.model
     def autoinvoicing(self):
         """
-        This method is used to autoinvoicing the folios
+        This method is used to invoicing automatically the folios
         """
         folios = self.env["pms.folio"].search(
             [
@@ -595,10 +595,14 @@ class PmsProperty(models.Model):
         )
         paid_folios = folios.filtered(lambda f: f.pending_amount <= 0)
         unpaid_folios = folios.filtered(lambda f: f.pending_amount > 0)
+        folios_to_invoice = paid_folios
         for folio in unpaid_folios:
-            # TODO: Autoinvoice unpaid agency folios?
-            folio.message_post(body=_("Not invoiced due to pending amounts"))
-        for folio in paid_folios:
+            # REVIEW: Change this by state flow folio control
+            if any([res.state != "cancel" for res in folio.reservation_ids]):
+                folios_to_invoice += folio
+            else:
+                folio.message_post(body=_("Not invoiced due to pending amounts"))
+        for folio in folios_to_invoice:
             try:
                 invoice = folio.with_context(autoinvoice=True)._create_invoices(
                     grouped=True,
