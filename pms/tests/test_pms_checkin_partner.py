@@ -1,6 +1,7 @@
 import datetime
 import logging
 
+from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 
 from odoo import fields
@@ -457,8 +458,8 @@ class TestPmsCheckinPartner(TestPms):
         has already passed and the resrvation had not yet changed its state to onboard.
 
         The date that was previously set was 2012-01-14,
-        it was advanced one day (to 2012-01-15).
-        There are three reservations with checkin day on 2012-01-14,
+        it was advanced two days (to 2012-01-16).
+        There are three reservations with checkin day on 2012-01-15,
         after invoking the method auto_arrival_delayed
         those reservation change their state to 'auto_arrival_delayed'
         """
@@ -517,13 +518,13 @@ class TestPmsCheckinPartner(TestPms):
         )
         self.reservation_1.write(
             {
-                "checkin": datetime.date.today() + datetime.timedelta(days=4),
+                "checkin": datetime.date.today() + datetime.timedelta(days=1),
                 "checkout": datetime.date.today() + datetime.timedelta(days=6),
                 "adults": 1,
             }
         )
         reservation2_vals = {
-            "checkin": datetime.date.today() + datetime.timedelta(days=4),
+            "checkin": datetime.date.today() + datetime.timedelta(days=1),
             "checkout": datetime.date.today() + datetime.timedelta(days=6),
             "adults": 1,
             "room_type_id": self.room_type1.id,
@@ -532,7 +533,7 @@ class TestPmsCheckinPartner(TestPms):
             "folio_id": self.reservation_1.folio_id.id,
         }
         reservation3_vals = {
-            "checkin": datetime.date.today() + datetime.timedelta(days=4),
+            "checkin": datetime.date.today() + datetime.timedelta(days=1),
             "checkout": datetime.date.today() + datetime.timedelta(days=6),
             "adults": 1,
             "room_type_id": self.room_type1.id,
@@ -546,7 +547,7 @@ class TestPmsCheckinPartner(TestPms):
         PmsReservation = self.env["pms.reservation"]
 
         # ACTION
-        freezer = freeze_time("2012-01-19 10:00:00")
+        freezer = freeze_time("2012-01-16 10:00:00")
         freezer.start()
         PmsReservation.auto_arrival_delayed()
 
@@ -557,6 +558,120 @@ class TestPmsCheckinPartner(TestPms):
         # ASSERT
         self.assertEqual(
             len(arrival_delayed_reservations),
+            3,
+            "Reservations not set like No Show",
+        )
+        freezer.stop()
+
+    @freeze_time("2012-01-14")
+    def test_auto_arrival_delayed_checkout(self):
+        """
+        The state of reservation 'arrival_delayed' happen when the checkin day
+        has already passed and the resrvation had not yet changed its state to onboard.
+        But, if checkout day is passed without checkout, the reservation pass to
+        departure delayed with a reservation note warning
+
+        The date that was previously set was 2012-01-14,
+        it was advanced two days (to 2012-01-16).
+        There are three reservations with checkout day on 2012-01-15,
+        after invoking the method auto_arrival_delayed
+        those reservation change their state to 'departure_delayed'
+        """
+
+        # ARRANGE
+        self.host2 = self.env["res.partner"].create(
+            {
+                "name": "Carlos",
+                "mobile": "654667733",
+                "email": "carlos@example.com",
+                "birthdate_date": "1995-12-10",
+                "gender": "male",
+            }
+        )
+        self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category.id,
+                "name": "61369791H",
+                "valid_from": datetime.date.today(),
+                "partner_id": self.host2.id,
+            }
+        )
+        self.host3 = self.env["res.partner"].create(
+            {
+                "name": "Enmanuel",
+                "mobile": "654667733",
+                "email": "enmanuel@example.com",
+                "birthdate_date": "1995-12-10",
+                "gender": "male",
+            }
+        )
+        self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category.id,
+                "name": "53563260D",
+                "valid_from": datetime.date.today(),
+                "partner_id": self.host3.id,
+            }
+        )
+        self.host4 = self.env["res.partner"].create(
+            {
+                "name": "Enrique",
+                "mobile": "654667733",
+                "email": "enrique@example.com",
+                "birthdate_date": "1995-12-10",
+                "gender": "male",
+            }
+        )
+        self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category.id,
+                "name": "63742138F",
+                "valid_from": datetime.date.today(),
+                "partner_id": self.host4.id,
+            }
+        )
+        self.reservation_1.write(
+            {
+                "checkin": datetime.date.today(),
+                "checkout": datetime.date.today() + datetime.timedelta(days=1),
+                "adults": 1,
+            }
+        )
+        reservation2_vals = {
+            "checkin": datetime.date.today(),
+            "checkout": datetime.date.today() + datetime.timedelta(days=1),
+            "adults": 1,
+            "room_type_id": self.room_type1.id,
+            "partner_id": self.host1.id,
+            "pms_property_id": self.pms_property1.id,
+            "folio_id": self.reservation_1.folio_id.id,
+        }
+        reservation3_vals = {
+            "checkin": datetime.date.today(),
+            "checkout": datetime.date.today() + datetime.timedelta(days=1),
+            "adults": 1,
+            "room_type_id": self.room_type1.id,
+            "partner_id": self.host1.id,
+            "pms_property_id": self.pms_property1.id,
+            "folio_id": self.reservation_1.folio_id.id,
+        }
+        self.reservation_2 = self.env["pms.reservation"].create(reservation2_vals)
+        self.reservation_3 = self.env["pms.reservation"].create(reservation3_vals)
+        folio_1 = self.reservation_1.folio_id
+        PmsReservation = self.env["pms.reservation"]
+
+        # ACTION
+        freezer = freeze_time("2012-01-16 10:00:00")
+        freezer.start()
+        PmsReservation.auto_arrival_delayed()
+
+        departure_delayed_reservations = folio_1.reservation_ids.filtered(
+            lambda r: r.state == "departure_delayed"
+        )
+
+        # ASSERT
+        self.assertEqual(
+            len(departure_delayed_reservations),
             3,
             "Reservations not set like No Show",
         )
@@ -1201,15 +1316,15 @@ class TestPmsCheckinPartner(TestPms):
         is = 20 years old and document_date = today + 1 year. The expected
         expedition date has to be doc_date - 5 years
         """
-        doc_date = fields.date.today() + datetime.timedelta(days=366)
+        doc_date = fields.date.today() + relativedelta(years=1)
         doc_date_str = str(doc_date)
 
         # age=20 years old
-        birthdate = fields.date.today() - datetime.timedelta(days=7305)
+        birthdate = fields.date.today() - relativedelta(years=20)
         birthdate_str = str(birthdate)
 
         # expected_expedition_date = doc_date - 5 years
-        expected_exp_date = doc_date - datetime.timedelta(days=1826.25)
+        expected_exp_date = doc_date - relativedelta(years=5)
         expedition_date = (
             self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
                 self.id_category, doc_date_str, birthdate_str
@@ -1237,15 +1352,15 @@ class TestPmsCheckinPartner(TestPms):
         is = 40 years old and document_date = today + 1 year. The expected
         expedition date has to be doc_date - 10 years
         """
-        doc_date = fields.date.today() + datetime.timedelta(days=366)
+        doc_date = fields.date.today() + relativedelta(years=1)
         doc_date_str = str(doc_date)
 
         # age=40 years old
-        birthdate = fields.date.today() - datetime.timedelta(days=14610)
+        birthdate = fields.date.today() - relativedelta(years=40)
         birthdate_str = str(birthdate)
 
         # expected_expedition_date = doc_date - 10 years
-        expected_exp_date = doc_date - datetime.timedelta(days=3652.5)
+        expected_exp_date = doc_date - relativedelta(years=10)
         expedition_date = (
             self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
                 self.id_category, doc_date_str, birthdate_str
@@ -1273,15 +1388,15 @@ class TestPmsCheckinPartner(TestPms):
         is = 20 years old and document_date = today + 1 year. The expected
         expedition date has to be doc_date - 5 years
         """
-        doc_date = fields.date.today() + datetime.timedelta(days=366)
+        doc_date = fields.date.today() + relativedelta(years=1)
         doc_date_str = str(doc_date)
 
         # age=20 years old
-        birthdate = fields.date.today() - datetime.timedelta(days=7305)
+        birthdate = fields.date.today() - relativedelta(years=20)
         birthdate_str = str(birthdate)
 
         # expected_expedition_date = doc_date - 5 years
-        expected_exp_date = doc_date - datetime.timedelta(days=1826.25)
+        expected_exp_date = doc_date - relativedelta(years=5)
         expedition_date = (
             self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
                 self.id_category, doc_date_str, birthdate_str
@@ -1310,15 +1425,15 @@ class TestPmsCheckinPartner(TestPms):
         expedition date has to be doc_date - 10 years
         """
         doc_type_id = self.env["res.partner.id_category"].search([("code", "=", "P")])
-        doc_date = fields.date.today() + datetime.timedelta(days=366)
+        doc_date = fields.date.today() + relativedelta(years=1)
         doc_date_str = str(doc_date)
 
         # age=40 years old
-        birthdate = fields.date.today() - datetime.timedelta(days=14610)
+        birthdate = fields.date.today() - relativedelta(years=40)
         birthdate_str = str(birthdate)
 
         # expected_expedition_date = doc_date - 10 years
-        expected_exp_date = doc_date - datetime.timedelta(days=3652.5)
+        expected_exp_date = doc_date - relativedelta(years=10)
         expedition_date = (
             self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
                 doc_type_id, doc_date_str, birthdate_str
@@ -1347,15 +1462,15 @@ class TestPmsCheckinPartner(TestPms):
         expedition date has to be doc_date - 10 years
         """
         doc_type_id = self.env["res.partner.id_category"].search([("code", "=", "C")])
-        doc_date = fields.date.today() + datetime.timedelta(days=366)
+        doc_date = fields.date.today() + relativedelta(years=1)
         doc_date_str = str(doc_date)
 
         # age=40 years old
-        birthdate = fields.date.today() - datetime.timedelta(days=14610)
+        birthdate = fields.date.today() - relativedelta(years=40)
         birthdate_str = str(birthdate)
 
         # expected_expedition_date = doc_date - 10 years
-        expected_exp_date = doc_date - datetime.timedelta(days=3652.5)
+        expected_exp_date = doc_date - relativedelta(years=10)
         expedition_date = (
             self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
                 doc_type_id, doc_date_str, birthdate_str
@@ -1384,9 +1499,9 @@ class TestPmsCheckinPartner(TestPms):
         expedition date has to be the value of doc_date.
         """
         doc_type_id = self.env["res.partner.id_category"].search([("code", "=", "D")])
-        doc_date = fields.date.today() - datetime.timedelta(days=366)
+        doc_date = fields.date.today() - relativedelta(years=1)
         doc_date_str = str(doc_date)
-        birthdate = fields.date.today() - datetime.timedelta(days=7305)
+        birthdate = fields.date.today() - relativedelta(years=20)
         birthdate_str = str(birthdate)
         expedition_date = (
             self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
@@ -1435,7 +1550,7 @@ class TestPmsCheckinPartner(TestPms):
             "lastname2": "Gonzalez",
             "document_type": self.id_category.code,
             "document_number": "18038946T",
-            "document_expedition_date": "2015-10-07",
+            "document_expedition_date": "2010-10-07",
             "birthdate_date": "1983-10-05",
             "mobile": "60595595",
             "email": "serafin@example.com",
@@ -1450,7 +1565,7 @@ class TestPmsCheckinPartner(TestPms):
         checkin_partner_vals.update(
             {
                 "birthdate_date": datetime.date(1983, 10, 5),
-                "document_expedition_date": datetime.date(2015, 10, 7),
+                "document_expedition_date": datetime.date(2010, 10, 7),
                 "nationality_id": nationality_id,
             }
         )

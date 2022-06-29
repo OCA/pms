@@ -904,7 +904,7 @@ class PmsCheckinPartner(models.Model):
         if values.get("document_expedition_date"):
             doc_type = values.get("document_type")
             doc_type = self.env["res.partner.id_category"].search(
-                [("name", "=", doc_type)]
+                [("code", "=", doc_type)]
             )
             doc_date = values.get("document_expedition_date")
             birthdate = values.get("birthdate_date")
