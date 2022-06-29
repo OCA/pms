@@ -337,7 +337,7 @@ class PortalPrecheckin(CustomerPortal):
                 "checkin_pos": 0,
             }
         )
-        if checkin_partner.state != "draft":
+        if checkin_partner.state not in ["dummy", "draft"]:
             return request.render("pms.portal_not_checkin", values)
         return request.render("pms.portal_my_reservation_precheckin", values)
 
@@ -403,7 +403,7 @@ class PortalPrecheckin(CustomerPortal):
             self._precheckin_get_page_view_values(checkin_partner_id.id, access_token)
         )
         values.update({"no_breadcrumbs": True})
-        if checkin_partner_id.state != "draft":
+        if checkin_partner_id.state not in ["dummy", "draft"]:
             return request.render("pms.portal_not_checkin", values)
         return request.render("pms.portal_my_precheckin_detail", values)
 
