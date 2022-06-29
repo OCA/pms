@@ -1091,7 +1091,7 @@ class PmsReservation(models.Model):
                     record.reservation_type != "out"
                     and record.overnight_room
                     and record.state in ("draft", "confirm", "arrival_delayed")
-                    and record.checkin <= fields.Date.today()
+                    and fields.Date.today() >= record.checkin
                 )
                 else False
             )
@@ -1103,7 +1103,7 @@ class PmsReservation(models.Model):
                 True
                 if (
                     record.state in ["onboard", "departure_delayed"]
-                    and record.checkout >= fields.Date.today()
+                    and fields.Date.today() >= record.checkout
                 )
                 else False
             )
@@ -1954,19 +1954,15 @@ class PmsReservation(models.Model):
         )
 
     @api.model
-    def autocheckout(self):
-        reservations = self.env["pms.reservation"].search(
-            [
-                ("state", "not in", ["done", "cancel"]),
-                ("checkout", "<", fields.Date.today()),
-            ]
-        )
-        for res in reservations:
-            res.action_reservation_checkout()
-        res_without_checkin = reservations.filtered(lambda r: r.state != "onboard")
-        for res in res_without_checkin:
+    def autocheckout(self, reservation):
+        reservation.action_reservation_checkout()
+        if not any(
+            [checkin.state == "done" for checkin in reservation.checkin_partner_ids]
+        ):
             msg = _("No checkin was made for this reservation")
-            res.message_post(subject=_("No Checkins!"), subtype="mt_comment", body=msg)
+            reservation.message_post(
+                subject=_("No Checkins!"), subtype="mt_comment", body=msg
+            )
         return True
 
     @api.model
@@ -2089,29 +2085,39 @@ class PmsReservation(models.Model):
     @api.model
     def auto_arrival_delayed(self):
         # No show when pass 1 day from checkin day
-        arrival_delayed_reservations = self.env["pms.reservation"].search(
+        reservations = self.env["pms.reservation"].search(
             [
-                ("state", "in", ("draft", "confirm")),
+                ("state", "in", ("draft", "confirm", "arrival_delayed")),
                 ("checkin", "<", fields.Date.today()),
+                ("overnight_room", "=", True),
             ]
         )
-        for record in arrival_delayed_reservations:
-            if record.overnight_room:
-                record.state = "arrival_delayed"
+        for reservation in reservations:
+            if reservation.checkout > fields.Datetime.today().date():
+                reservation.state = "arrival_delayed"
+            else:
+                reservation.state = "departure_delayed"
+                reservation.message_post(
+                    body=_(
+                        """No entry has been recorded in this reservation""",
+                    )
+                )
 
     @api.model
     def auto_departure_delayed(self):
         # No checkout when pass checkout hour
         reservations = self.env["pms.reservation"].search(
             [
-                ("state", "in", ("onboard",)),
-                ("checkout", "<=", fields.Datetime.today()),
+                ("state", "in", ("onboard", "departure_delayed")),
+                ("checkout", "<=", fields.Datetime.today().date()),
             ]
         )
         for reservation in reservations:
             if reservation.overnight_room:
-                if reservation.checkout_datetime <= fields.Datetime.now():
-                    reservations.state = "departure_delayed"
+                if reservation.checkout == fields.Datetime.today().date():
+                    reservation.state = "departure_delayed"
+                else:
+                    reservation.autocheckout(reservation)
             else:
                 reservation.state = "done"
 
