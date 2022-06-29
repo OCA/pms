@@ -1701,13 +1701,6 @@ msgid "Automated Mails"
 msgstr ""
 
 #. module: pms
-#: model:ir.actions.server,name:pms.autocheckout_reservations_ir_actions_server
-#: model:ir.cron,cron_name:pms.autocheckout_reservations
-#: model:ir.cron,name:pms.autocheckout_reservations
-msgid "Automatic Checkout on past reservations"
-msgstr ""
-
-#. module: pms
 #: model:ir.model,name:pms.model_pms_automated_mails
 msgid "Automatic Mails"
 msgstr ""
@@ -6385,6 +6378,12 @@ msgstr ""
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid "No checkin was made for this reservation"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid "No entry has been recorded in this reservation"
 msgstr ""
 
 #. module: pms
