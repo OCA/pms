@@ -4875,6 +4875,11 @@ msgid "Income Account"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__pms_checkin_partner__state__draft
+msgid "Incomplete data"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__overbooking
 msgid "Indicate if exists overbooking"
 msgstr ""
@@ -10912,7 +10917,7 @@ msgid "Units"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_checkin_partner__state__draft
+#: model:ir.model.fields.selection,name:pms.selection__pms_checkin_partner__state__dummy
 msgid "Unkown Guest"
 msgstr ""
 
