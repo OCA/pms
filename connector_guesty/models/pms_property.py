@@ -72,6 +72,7 @@ class PmsProperty(models.Model):
     time = fields.Datetime()
     is_listen = fields.Boolean()
     booking_window = fields.Char()
+    warehouse_id = fields.Many2one("stock.warehouse")
 
     @api.depends("room_ids")
     def _compute_qty_beds(self):
