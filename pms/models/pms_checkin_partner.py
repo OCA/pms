@@ -18,7 +18,6 @@ class PmsCheckinPartner(models.Model):
     _description = "Partner Checkins"
     _inherit = ["portal.mixin"]
     _rec_name = "identifier"
-    _check_pms_properties_auto = True
 
     identifier = fields.Char(
         string="Identifier",
@@ -40,7 +39,6 @@ class PmsCheckinPartner(models.Model):
         string="Reservation",
         help="Reservation to which checkin partners belong",
         comodel_name="pms.reservation",
-        check_pms_properties=True,
     )
     folio_id = fields.Many2one(
         string="Folio",
@@ -48,7 +46,6 @@ class PmsCheckinPartner(models.Model):
         store=True,
         comodel_name="pms.folio",
         compute="_compute_folio_id",
-        check_pms_properties=True,
     )
     pms_property_id = fields.Many2one(
         string="Property",
@@ -57,7 +54,6 @@ class PmsCheckinPartner(models.Model):
         store=True,
         comodel_name="pms.property",
         related="folio_id.pms_property_id",
-        check_pms_properties=True,
     )
     name = fields.Char(
         string="Name", help="Checkin partner name", related="partner_id.name"
@@ -703,12 +699,7 @@ class PmsCheckinPartner(models.Model):
         )
         if len(reservation.checkin_partner_ids) < reservation.adults:
             if vals.get("identifier", _("New")) == _("New") or "identifier" not in vals:
-                pms_property_id = (
-                    self.env.user.get_active_property_ids()[0]
-                    if "pms_property_id" not in vals
-                    else vals["pms_property_id"]
-                )
-                pms_property = self.env["pms.property"].browse(pms_property_id)
+                pms_property = reservation.pms_property_id
                 vals["identifier"] = pms_property.checkin_sequence_id._next_do()
             return super(PmsCheckinPartner, self).create(vals)
         if len(dummy_checkins) > 0:
