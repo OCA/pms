@@ -7,7 +7,7 @@ import babel.dates
 
 from odoo import _, api, fields, models
 from odoo.osv import expression
-from odoo.tools import float_compare, float_is_zero
+from odoo.tools import float_compare
 from odoo.tools.misc import get_lang
 
 
@@ -530,7 +530,7 @@ class FolioSaleLine(models.Model):
             # REVIEW: if qty_to_invoice < 0 (invoice qty > sale qty),
             # why status to_invoice?? this behavior is copied from sale order
             # https://github.com/OCA/OCB/blob/14.0/addons/sale/models/sale.py#L1160
-            elif not float_is_zero(line.qty_to_invoice, precision_digits=precision):
+            elif line.qty_to_invoice > 0:
                 line.invoice_status = "to_invoice"
             elif (
                 float_compare(
