@@ -9,6 +9,9 @@ class PmsReservationUpdates(Datamodel):
     preferredRoomId = fields.Integer(required=False, allow_none=True)
     boardServiceId = fields.Integer(required=False, allow_none=True)
     pricelistId = fields.Integer(required=False, allow_none=True)
+    adults = fields.Integer(required=False, allow_none=True)
+    children = fields.Integer(required=False, allow_none=True)
+    segmentationId = fields.Integer(required=False, allow_none=True)
 
 
 class PmsCalendarSwapInfo(Datamodel):
