@@ -51,7 +51,7 @@ class PmsPartnerService(Component):
     )
     def get_partner_by_doc_number(self, document_type, document_number):
         doc_type = self.env["res.partner.id_category"].search(
-            [("name", "=", document_type)]
+            [("id", "=", document_type)]
         )
         doc_number = self.env["res.partner.id_number"].search(
             [("name", "=", document_number), ("category_id", "=", doc_type.id)]
@@ -88,7 +88,7 @@ class PmsPartnerService(Component):
                     mobile=doc_number.partner_id.mobile
                     if doc_number.partner_id.mobile
                     else "",
-                    documentType=doc_type.name,
+                    documentType=doc_type.id,
                     documentNumber=doc_number.name,
                     documentExpeditionDate=document_expedition_date
                     if doc_number.valid_from
@@ -111,12 +111,12 @@ class PmsPartnerService(Component):
                     residenceCity=doc_number.partner_id.residence_city
                     if doc_number.partner_id.residence_city
                     else "",
-                    nationality=doc_number.partner_id.nationality_id.name
+                    nationality=doc_number.partner_id.nationality_id.id
                     if doc_number.partner_id.nationality_id
-                    else "",
-                    countryState=doc_number.partner_id.residence_state_id.name
+                    else -1,
+                    countryState=doc_number.partner_id.residence_state_id.id
                     if doc_number.partner_id.residence_state_id
-                    else "",
+                    else -1,
                 )
             )
         return partners
