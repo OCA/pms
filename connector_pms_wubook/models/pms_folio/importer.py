@@ -108,14 +108,16 @@ class ChannelWubookPmsFolioImporter(Component):
                             email_from=self.env.user.partner_id.email_formatted
                             or folio.pms_property_id.email_formatted,
                         )
-                    elif folio.amount_total < binding.payment_gateway_fee:
+                    elif binding.payment_gateway_fee != sum(ota_payments.mapped("amount")) :
                         ota_payments.action_draft()
-                        ota_payments[0].amount = folio.amount_total
+                        ota_payments[0].amount = binding.payment_gateway_fee
                         ota_payments[0].action_post()
+                        if len(ota_payments) > 1:
+                            ota_payments[1:].action_cancel()
                         folio.message_post(
                             body=_(
                                 "The amount of the payment has been updated to %s by OTA modification"
-                                % folio.amount_total
+                                % binding.payment_gateway_fee
                             ),
                             subtype_id=self.env.ref("mail.mt_note").id,
                             email_from=self.env.user.partner_id.email_formatted
