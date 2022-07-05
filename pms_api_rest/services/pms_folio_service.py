@@ -90,7 +90,7 @@ class PmsFolioService(Component):
                 segmentation_ids = []
                 if reservation.segmentation_ids:
                     for segmentation in reservation.segmentation_ids:
-                        segmentation_ids.append(segmentation.name)
+                        segmentation_ids.append(segmentation.id)
 
                 reservations.append(
                     {
@@ -149,9 +149,7 @@ class PmsFolioService(Component):
                         "roomTypeCode": reservation.room_type_id.default_code
                         if reservation.room_type_id
                         else "",
-                        "children": reservation.children
-                        if reservation.children
-                        else "",
+                        "children": reservation.children if reservation.children else 0,
                         "countServices": len(reservation.service_ids)
                         if reservation.service_ids
                         else 0,
@@ -162,9 +160,9 @@ class PmsFolioService(Component):
                         "departureHour": reservation.departure_hour,
                         "pendingCheckinData": reservation.pending_checkin_data,
                         "createDate": reservation.create_date,
-                        "segmentations": segmentation_ids[0]
+                        "segmentationId": segmentation_ids[0]
                         if segmentation_ids
-                        else "",
+                        else 0,
                         "cancellationPolicy": reservation.pricelist_id.cancelation_rule_id.name
                         if reservation.pricelist_id.cancelation_rule_id.name
                         else "",
