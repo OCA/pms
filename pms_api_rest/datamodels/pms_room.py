@@ -5,9 +5,13 @@ from odoo.addons.datamodel.core import Datamodel
 
 class PmsRoomSearchParam(Datamodel):
     _name = "pms.room.search.param"
-    id = fields.Integer(required=False, allow_none=True)
-    name = fields.String(required=False, allow_none=True)
-    pms_property_id = fields.Integer(required=False, allow_none=True)
+    id = fields.Integer(required=False, allow_none=False)
+    name = fields.String(required=False, allow_none=False)
+    pms_property_id = fields.Integer(required=True, allow_none=False)
+    availabilityFrom = fields.String(required=False, allow_none=False)
+    availabilityTo = fields.String(required=False, allow_none=False)
+    currentLines = fields.List(fields.Integer(), required=False, allow_none=False)
+    pricelistId = fields.Integer(required=False, allow_none=False)
 
 
 class PmsRoomInfo(Datamodel):
