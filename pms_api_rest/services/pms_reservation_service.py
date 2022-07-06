@@ -212,6 +212,27 @@ class PmsReservationService(Component):
         [
             (
                 [
+                    "/<int:_reservation_id>/reservation-lines/<int:reservation_line_id>",
+                ],
+                "PATCH",
+            )
+        ],
+        input_param=Datamodel("pms.reservation.line.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def update_reservation_lines(
+        self, _reservation_id, reservation_line_id, reservation_line_param
+    ):
+        if reservation_line_param.roomId:
+            reservation_line_id = self.env["pms.reservation.line"].browse(
+                reservation_line_id
+            )
+            reservation_line_id.room_id = reservation_line_param.roomId
+
+    @restapi.method(
+        [
+            (
+                [
                     "/<int:reservation_id>/checkinpartners",
                 ],
                 "GET",
