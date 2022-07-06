@@ -26,9 +26,9 @@ class PmsUbicationService(Component):
         ubication_all_properties = self.env["pms.ubication"].search(
             [("pms_property_ids", "=", False)]
         )
-        if ubication_search_param.pms_property_ids:
+        if ubication_search_param.pmsPropertyIds:
             ubication = set()
-            for index, prop in enumerate(ubication_search_param.pms_property_ids):
+            for index, prop in enumerate(ubication_search_param.pmsPropertyIds):
                 ubication_with_query_property = self.env["pms.ubication"].search(
                     [("pms_property_ids", "=", prop)]
                 )
@@ -55,7 +55,7 @@ class PmsUbicationService(Component):
                 PmsUbicationInfo(
                     id=room.id,
                     name=room.name,
-                    pms_property_ids=room.pms_property_ids.mapped("id"),
+                    pmsPropertyIds=room.pms_property_ids.mapped("id"),
                 )
             )
         return result_ubications
