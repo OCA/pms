@@ -26,9 +26,9 @@ class PmsCalendarService(Component):
     )
     def get_calendar(self, calendar_search_param):
         domain = list()
-        domain.append(("date", ">=", calendar_search_param.date_from))
-        domain.append(("date", "<=", calendar_search_param.date_to))
-        domain.append(("pms_property_id", "=", calendar_search_param.pms_property_id))
+        domain.append(("date", ">=", calendar_search_param.dateFrom))
+        domain.append(("date", "<=", calendar_search_param.dateTo))
+        domain.append(("pms_property_id", "=", calendar_search_param.pmsPropertyId))
         domain.append(("state", "!=", "cancel"))
         result_lines = []
         PmsCalendarInfo = self.env.datamodels["pms.calendar.info"]
@@ -117,7 +117,7 @@ class PmsCalendarService(Component):
                 ("room_id", "=", room_id_b),
                 ("date", ">=", swap_info.swapFrom),
                 ("date", "<=", swap_info.swapTo),
-                ("pms_property_id", "=", swap_info.pms_property_id),
+                ("pms_property_id", "=", swap_info.pmsPropertyId),
             ]
         )
         lines_room_a.occupies_availability = False
@@ -146,24 +146,24 @@ class PmsCalendarService(Component):
     def get_daily_invoincing(self, pms_calendar_search_param):
         reservation_lines = self.env["pms.reservation.line"].search(
             [
-                ("date", ">=", pms_calendar_search_param.date_from),
-                ("date", "<=", pms_calendar_search_param.date_to),
-                ("pms_property_id", "=", pms_calendar_search_param.pms_property_id),
+                ("date", ">=", pms_calendar_search_param.dateFrom),
+                ("date", "<=", pms_calendar_search_param.dateTo),
+                ("pms_property_id", "=", pms_calendar_search_param.pmsPropertyId),
             ]
         )
         service_lines = self.env["pms.service.line"].search(
             [
-                ("date", ">=", pms_calendar_search_param.date_from),
-                ("date", "<=", pms_calendar_search_param.date_to),
-                ("pms_property_id", "=", pms_calendar_search_param.pms_property_id),
+                ("date", ">=", pms_calendar_search_param.dateFrom),
+                ("date", "<=", pms_calendar_search_param.dateTo),
+                ("pms_property_id", "=", pms_calendar_search_param.pmsPropertyId),
             ]
         )
 
         date_from = datetime.strptime(
-            pms_calendar_search_param.date_from, "%Y-%m-%d"
+            pms_calendar_search_param.dateFrom, "%Y-%m-%d"
         ).date()
         date_to = datetime.strptime(
-            pms_calendar_search_param.date_to, "%Y-%m-%d"
+            pms_calendar_search_param.dateTo, "%Y-%m-%d"
         ).date()
 
         result = []
@@ -201,10 +201,10 @@ class PmsCalendarService(Component):
     def get_free_rooms(self, pms_calendar_search_param):
 
         date_from = datetime.strptime(
-            pms_calendar_search_param.date_from, "%Y-%m-%d"
+            pms_calendar_search_param.dateFrom, "%Y-%m-%d"
         ).date()
         date_to = datetime.strptime(
-            pms_calendar_search_param.date_to, "%Y-%m-%d"
+            pms_calendar_search_param.dateTo, "%Y-%m-%d"
         ).date()
         result = []
         PmsCalendarFreeDailyRoomsByType = self.env.datamodels[
@@ -214,7 +214,7 @@ class PmsCalendarService(Component):
             date_from + timedelta(d) for d in range((date_to - date_from).days + 1)
         ):
             rooms = self.env["pms.room"].search(
-                [("pms_property_id", "=", pms_calendar_search_param.pms_property_id)]
+                [("pms_property_id", "=", pms_calendar_search_param.pmsPropertyId)]
             )
             for room_type_iterator in self.env["pms.room.type"].search(
                 [("id", "in", rooms.mapped("room_type_id").ids)]
@@ -227,7 +227,7 @@ class PmsCalendarService(Component):
                         (
                             "pms_property_id",
                             "=",
-                            pms_calendar_search_param.pms_property_id,
+                            pms_calendar_search_param.pmsPropertyId,
                         ),
                     ]
                 )
@@ -236,7 +236,7 @@ class PmsCalendarService(Component):
                         (
                             "pms_property_id",
                             "=",
-                            pms_calendar_search_param.pms_property_id,
+                            pms_calendar_search_param.pmsPropertyId,
                         ),
                         ("room_type_id", "=", room_type_iterator.id),
                     ]
@@ -274,10 +274,10 @@ class PmsCalendarService(Component):
     def get_alerts_per_day(self, pms_calendar_search_param):
         PmsCalendarAlertsPerDay = self.env.datamodels["pms.calendar.alerts.per.day"]
         date_from = datetime.strptime(
-            pms_calendar_search_param.date_from, "%Y-%m-%d"
+            pms_calendar_search_param.dateFrom, "%Y-%m-%d"
         ).date()
         date_to = datetime.strptime(
-            pms_calendar_search_param.date_to, "%Y-%m-%d"
+            pms_calendar_search_param.dateTo, "%Y-%m-%d"
         ).date()
         result = []
         for day in (
@@ -286,7 +286,7 @@ class PmsCalendarService(Component):
             lines = self.env["pms.reservation.line"].search_count(
                 [
                     ("date", "=", day),
-                    ("pms_property_id", "=", pms_calendar_search_param.pms_property_id),
+                    ("pms_property_id", "=", pms_calendar_search_param.pmsPropertyId),
                     ("overbooking", "=", True),
                 ]
             )
