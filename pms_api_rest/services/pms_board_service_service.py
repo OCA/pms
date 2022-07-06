@@ -106,14 +106,14 @@ class PmsBoardServiceService(Component):
     def get_board_service_lines(self, board_service_id, pms_search_param):
         domain = list()
         domain.append(("pms_board_service_room_type_id", "=", board_service_id))
-        if pms_search_param.pms_property_id:
+        if pms_search_param.pmsPropertyId:
             domain.extend(
                 [
                     "|",
                     (
                         "pms_property_ids",
                         "in",
-                        pms_search_param.pms_property_id,
+                        pms_search_param.pmsPropertyId,
                     ),
                     ("pms_property_ids", "=", False),
                 ]
