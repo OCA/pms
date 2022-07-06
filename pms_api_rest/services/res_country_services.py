@@ -37,7 +37,7 @@ class ResCountryService(Component):
         [
             (
                 [
-                    "/<int:country_id>/country_states",
+                    "/<int:country_id>/country-states",
                 ],
                 "GET",
             )
