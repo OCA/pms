@@ -96,7 +96,7 @@ class PmsPropertyService(Component):
         [
             (
                 [
-                    "/<int:property_id>/paymentmethods",
+                    "/<int:property_id>/payment-methods",
                 ],
                 "GET",
             )
@@ -120,7 +120,7 @@ class PmsPropertyService(Component):
                     PmsAccountJournalInfo(
                         id=payment_method.id,
                         name=payment_method.name,
-                        allowed_pms_payments=payment_method.allowed_pms_payments,
+                        allowedPmsPayments=payment_method.allowed_pms_payments,
                     )
                 )
         return res
