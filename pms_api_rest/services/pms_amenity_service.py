@@ -26,7 +26,7 @@ class PmsAmenityService(Component):
         auth="jwt_api_pms",
     )
     def get_amenities(self, amenities_search_param):
-        domain = []
+        domain = [("pms_amenity_type_id", "!=", False)]
         if amenities_search_param.name:
             domain.append(("name", "like", amenities_search_param.name))
         if amenities_search_param.id:
@@ -50,8 +50,7 @@ class PmsAmenityService(Component):
                 PmsAmenityInfo(
                     id=amenity.id,
                     name=amenity.name,
-                    defaultCode=amenity.default_code,
-                    pmsAmenityTypeId=amenity.pms_amenity_type_id.id,
+                    amenityTypeId=amenity.pms_amenity_type_id.id,
                 )
             )
         return result_amenities
