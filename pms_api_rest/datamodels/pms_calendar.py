@@ -20,15 +20,15 @@ class PmsCalendarSwapInfo(Datamodel):
     swapTo = fields.String(required=True, allow_none=False)
     roomIdA = fields.Integer(required=True, allow_none=False)
     roomIdB = fields.Integer(required=True, allow_none=False)
-    pms_property_id = fields.Integer(required=False, allow_none=True)
+    pmsPropertyId = fields.Integer(required=False, allow_none=True)
 
 
 class PmsCalendarSearchParam(Datamodel):
     _name = "pms.calendar.search.param"
-    date_from = fields.String(required=False, allow_none=True)
-    date_to = fields.String(required=False, allow_none=True)
-    pms_property_id = fields.Integer(required=True, allow_none=False)
-    pricelist_id = fields.Integer(required=False, allow_none=True)
+    dateFrom = fields.String(required=False, allow_none=True)
+    dateTo = fields.String(required=False, allow_none=True)
+    pmsPropertyId = fields.Integer(required=True, allow_none=False)
+    pricelistId = fields.Integer(required=False, allow_none=True)
 
 
 class PmsCalendarFreeDailyRoomsByType(Datamodel):
