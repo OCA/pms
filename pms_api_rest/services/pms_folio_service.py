@@ -30,16 +30,16 @@ class PmsFolioService(Component):
         domain_fields = list()
 
         domain_fields.append(
-            ("pms_property_id", "=", folio_search_param.pms_property_id)
+            ("pms_property_id", "=", folio_search_param.pmsPropertyId)
         )
 
-        if folio_search_param.date_to and folio_search_param.date_from:
+        if folio_search_param.dateTo and folio_search_param.dateFrom:
             reservation_lines = (
                 self.env["pms.reservation.line"]
                 .search(
                     [
-                        ("date", ">=", folio_search_param.date_from),
-                        ("date", "<", folio_search_param.date_to),
+                        ("date", ">=", folio_search_param.dateFrom),
+                        ("date", "<", folio_search_param.dateTo),
                     ]
                 )
                 .mapped("reservation_id")
@@ -107,7 +107,7 @@ class PmsFolioService(Component):
                         ).isoformat(),
                         "preferredRoomId": reservation.preferred_room_id.id
                         if reservation.preferred_room_id
-                        else "",
+                        else 0,
                         "preferredRoomCapacity": reservation.preferred_room_id.capacity
                         if reservation.preferred_room_id
                         else "",
@@ -219,7 +219,7 @@ class PmsFolioService(Component):
     def get_folio_payments(self, folio_id, pms_search_param):
         domain = list()
         domain.append(("id", "=", folio_id))
-        domain.append(("pms_property_id", "=", pms_search_param.pms_property_id))
+        domain.append(("pms_property_id", "=", pms_search_param.pmsPropertyId))
         folio = self.env["pms.folio"].search(domain)
         payments = []
         PmsPaymentInfo = self.env.datamodels["pms.payment.info"]
@@ -271,7 +271,7 @@ class PmsFolioService(Component):
         reservation = self.env["pms.reservation"].create(
             {
                 "partner_name": pms_reservation_info.partner,
-                "pms_property_id": pms_reservation_info.pms_property_id,
+                "pms_property_id": pms_reservation_info.pmsPropertyId,
                 "room_type_id": pms_reservation_info.roomTypeId,
                 "pricelist_id": pms_reservation_info.pricelistId,
                 "checkin": pms_reservation_info.checkin,

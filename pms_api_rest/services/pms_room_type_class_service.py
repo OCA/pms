@@ -26,9 +26,9 @@ class PmsRoomTypeClassService(Component):
         room_type_class_all_properties = self.env["pms.room.type.class"].search(
             [("pms_property_ids", "=", False)]
         )
-        if room_type_class_search_param.pms_property_ids:
+        if room_type_class_search_param.pmsPropertyIds:
             room_type_class = set()
-            for index, prop in enumerate(room_type_class_search_param.pms_property_ids):
+            for index, prop in enumerate(room_type_class_search_param.pmsPropertyds):
                 room_type_class_with_query_property = self.env[
                     "pms.room.type.class"
                 ].search([("pms_property_ids", "=", prop)])
@@ -57,7 +57,7 @@ class PmsRoomTypeClassService(Component):
                 PmsRoomTypeClassInfo(
                     id=room.id,
                     name=room.name,
-                    pms_property_ids=room.pms_property_ids.mapped("id"),
+                    pmsPropertyIds=room.pms_property_ids.mapped("id"),
                 )
             )
         return result_room_type_class

@@ -32,8 +32,8 @@ class PmsAvailabilityPlanService(Component):
             [("pms_property_ids", "=", False)]
         )
         availabilities = set()
-        if pms_search_param.pms_property_ids:
-            for index, prop in enumerate(pms_search_param.pms_property_ids):
+        if pms_search_param.pmsPropertyIds:
+            for index, prop in enumerate(pms_search_param.pmsPropertyIds):
                 availabilities_with_query_property = self.env[
                     "pms.availability.plan"
                 ].search([("pms_property_ids", "=", prop)])
@@ -59,7 +59,7 @@ class PmsAvailabilityPlanService(Component):
                 PmsAvialabilityPlanInfo(
                     id=availability.id,
                     name=availability.name,
-                    pms_property_ids=availability.pms_property_ids.mapped("id"),
+                    pmsPropertyIds=availability.pms_property_ids.mapped("id"),
                 )
             )
         return result_availabilities
@@ -92,15 +92,15 @@ class PmsAvailabilityPlanService(Component):
                 (
                     "pms_property_id",
                     "=",
-                    availability_plan_rule_search_param.pms_property_id,
+                    availability_plan_rule_search_param.pmsPropertyId,
                 )
             ]
         )
         date_from = datetime.strptime(
-            availability_plan_rule_search_param.date_from, "%Y-%m-%d"
+            availability_plan_rule_search_param.dateFrom, "%Y-%m-%d"
         ).date()
         date_to = datetime.strptime(
-            availability_plan_rule_search_param.date_to, "%Y-%m-%d"
+            availability_plan_rule_search_param.dateTo, "%Y-%m-%d"
         ).date()
 
         for date in (

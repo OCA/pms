@@ -32,9 +32,9 @@ class PmsPricelistService(Component):
         pricelists_all_properties = self.env["product.pricelist"].search(
             [("pms_property_ids", "=", False)]
         )
-        if pms_search_param.pms_property_ids:
+        if pms_search_param.pmsPropertyIds:
             pricelists = set()
-            for index, prop in enumerate(pms_search_param.pms_property_ids):
+            for index, prop in enumerate(pms_search_param.pmsPropertyIds):
                 pricelists_with_query_property = self.env["product.pricelist"].search(
                     [("pms_property_ids", "=", prop)]
                 )
@@ -60,7 +60,7 @@ class PmsPricelistService(Component):
                 PmsPricelistInfo(
                     id=pricelist.id,
                     name=pricelist.name,
-                    pms_property_ids=pricelist.pms_property_ids.mapped("id"),
+                    pmsPropertyIds=pricelist.pms_property_ids.mapped("id"),
                 )
             )
         return result_pricelists
@@ -87,13 +87,13 @@ class PmsPricelistService(Component):
             raise MissingError
         PmsPricelistItemInfo = self.env.datamodels["pms.pricelist.item.info"]
         rooms = self.env["pms.room"].search(
-            [("pms_property_id", "=", pricelist_item_search_param.pms_property_id)]
+            [("pms_property_id", "=", pricelist_item_search_param.pmsPropertyId)]
         )
         date_from = datetime.strptime(
-            pricelist_item_search_param.date_from, "%Y-%m-%d"
+            pricelist_item_search_param.dateFrom, "%Y-%m-%d"
         ).date()
         date_to = datetime.strptime(
-            pricelist_item_search_param.date_to, "%Y-%m-%d"
+            pricelist_item_search_param.dateTo, "%Y-%m-%d"
         ).date()
 
         for date in (
