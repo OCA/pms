@@ -7,7 +7,7 @@ class PmsRoomSearchParam(Datamodel):
     _name = "pms.room.search.param"
     id = fields.Integer(required=False, allow_none=False)
     name = fields.String(required=False, allow_none=False)
-    pms_property_id = fields.Integer(required=True, allow_none=False)
+    pmsPropertyId = fields.Integer(required=True, allow_none=False)
     availabilityFrom = fields.String(required=False, allow_none=False)
     availabilityTo = fields.String(required=False, allow_none=False)
     currentLines = fields.List(fields.Integer(), required=False, allow_none=False)
