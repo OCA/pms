@@ -27,8 +27,8 @@ class PmsReservationService(Component):
     def get_reservation(self, reservation_id, pms_search_param):
         domain = list()
         domain.append(("id", "=", reservation_id))
-        if pms_search_param.pms_property_id:
-            domain.append(("pms_property_id", "=", pms_search_param.pms_property_id))
+        if pms_search_param.pmsPropertyId:
+            domain.append(("pms_property_id", "=", pms_search_param.pmsPropertyId))
         reservation = self.env["pms.reservation"].search(domain)
         res = []
         PmsReservationInfo = self.env.datamodels["pms.reservation.info"]
@@ -233,7 +233,7 @@ class PmsReservationService(Component):
         [
             (
                 [
-                    "/<int:reservation_id>/checkinpartners",
+                    "/<int:reservation_id>/checkin-partners",
                 ],
                 "GET",
             )
@@ -314,7 +314,7 @@ class PmsReservationService(Component):
         [
             (
                 [
-                    "/<int:reservation_id>/checkin_partners/<int:checkin_partner_id>",
+                    "/<int:reservation_id>/checkin-partners/<int:checkin_partner_id>",
                 ],
                 "PATCH",
             )
@@ -337,7 +337,7 @@ class PmsReservationService(Component):
         [
             (
                 [
-                    "/<int:reservation_id>/checkin_partners",
+                    "/<int:reservation_id>/checkin-partners",
                 ],
                 "POST",
             )
@@ -368,7 +368,7 @@ class PmsReservationService(Component):
         [
             (
                 [
-                    "/<int:reservation_id>/checkin_partners/<int:checkin_partner_id>",
+                    "/<int:reservation_id>/checkin-partners/<int:checkin_partner_id>",
                 ],
                 "DELETE",
             )
