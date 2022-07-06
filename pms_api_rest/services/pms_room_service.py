@@ -33,12 +33,12 @@ class PmsRoomService(Component):
             domain.append(("name", "like", room_search_param.name))
         if room_search_param.id:
             domain.append(("id", "=", room_search_param.id))
-        if room_search_param.pms_property_id:
-            domain.append(("pms_property_id", "=", room_search_param.pms_property_id))
+        if room_search_param.pmsPropertyId:
+            domain.append(("pms_property_id", "=", room_search_param.pmsPropertyId))
         if (
             room_search_param.availabilityFrom
             and room_search_param.availabilityTo
-            and room_search_param.pms_property_id
+            and room_search_param.pmsPropertyId
             and room_search_param.pricelistId
         ):
             date_from = datetime.strptime(
@@ -48,7 +48,7 @@ class PmsRoomService(Component):
                 room_search_param.availabilityTo, "%Y-%m-%d"
             ).date()
             pms_property = self.env["pms.property"].browse(
-                room_search_param.pms_property_id
+                room_search_param.pmsPropertyId
             )
             pms_property = pms_property.with_context(
                 checkin=date_from,
