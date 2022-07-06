@@ -14,5 +14,4 @@ class PmsAmenityInfo(Datamodel):
     _name = "pms.amenity.info"
     id = fields.Integer(required=True, allow_none=False)
     name = fields.String(required=True, allow_none=False)
-    defaultCode = fields.String(required=False, allow_none=True)
-    pmsAmenityTypeId = fields.Integer(required=True, allow_none=False)
+    amenityTypeId = fields.Integer(required=True, allow_none=False)
