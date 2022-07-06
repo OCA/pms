@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from odoo import _
 from odoo.exceptions import MissingError
 
@@ -33,6 +35,30 @@ class PmsRoomService(Component):
             domain.append(("id", "=", room_search_param.id))
         if room_search_param.pms_property_id:
             domain.append(("pms_property_id", "=", room_search_param.pms_property_id))
+        if (
+            room_search_param.availabilityFrom
+            and room_search_param.availabilityTo
+            and room_search_param.pms_property_id
+            and room_search_param.pricelistId
+        ):
+            date_from = datetime.strptime(
+                room_search_param.availabilityFrom, "%Y-%m-%d"
+            ).date()
+            date_to = datetime.strptime(
+                room_search_param.availabilityTo, "%Y-%m-%d"
+            ).date()
+            pms_property = self.env["pms.property"].browse(
+                room_search_param.pms_property_id
+            )
+            pms_property = pms_property.with_context(
+                checkin=date_from,
+                checkout=date_to,
+                room_type_id=False,  # Allows to choose any available room
+                current_lines=room_search_param.currentLines,
+                pricelist_id=room_search_param.pricelistId,
+                real_avail=True,
+            )
+            domain.append(("id", "in", pms_property.free_room_ids.ids))
 
         result_rooms = []
         PmsRoomInfo = self.env.datamodels["pms.room.info"]
@@ -54,6 +80,7 @@ class PmsRoomService(Component):
                     roomTypeClassId=room.room_type_id.class_id,
                     ubicationId=room.ubication_id,
                     extraBedsAllowed=room.extra_beds_allowed,
+                    roomAmenityIds=room.room_amenity_ids.ids,
                 )
             )
         return result_rooms

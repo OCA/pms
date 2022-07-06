@@ -82,7 +82,9 @@ class PmsFolioService(Component):
                     reservation_lines.append(
                         {
                             "id": reservation_line.id,
-                            "date": reservation_line.date,
+                            "date": datetime.combine(
+                                reservation_line.date, datetime.min.time()
+                            ).isoformat(),
                             "roomId": reservation_line.room_id.id,
                             "roomName": reservation_line.room_id.name,
                         }
@@ -103,7 +105,7 @@ class PmsFolioService(Component):
                         "checkout": datetime.combine(
                             reservation.checkout, datetime.min.time()
                         ).isoformat(),
-                        "preferredRoomId": reservation.preferred_room_id.name
+                        "preferredRoomId": reservation.preferred_room_id.id
                         if reservation.preferred_room_id
                         else "",
                         "preferredRoomCapacity": reservation.preferred_room_id.capacity
