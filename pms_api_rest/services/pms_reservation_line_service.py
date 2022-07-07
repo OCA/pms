@@ -64,8 +64,6 @@ class PmsReservationLineService(Component):
         domain = []
         if reservation_lines_search_param.date:
             domain.append(("date", "=", reservation_lines_search_param.date))
-        if reservation_lines_search_param.id:
-            domain.append(("id", "=", reservation_lines_search_param.id))
         if reservation_lines_search_param.reservationId:
             domain.append(
                 ("reservation_id", "=", reservation_lines_search_param.reservationId)
