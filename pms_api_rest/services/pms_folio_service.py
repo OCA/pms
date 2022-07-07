@@ -73,20 +73,6 @@ class PmsFolioService(Component):
         for folio in self.env["pms.folio"].search(
             [("id", "in", reservations_result)],
         ):
-            for reservation in folio.reservation_ids:
-                reservation_lines = []
-                for reservation_line in reservation.reservation_line_ids:
-                    reservation_lines.append(
-                        {
-                            "id": reservation_line.id,
-                            "date": datetime.combine(
-                                reservation_line.date, datetime.min.time()
-                            ).isoformat(),
-                            "roomId": reservation_line.room_id.id,
-                            "roomName": reservation_line.room_id.name,
-                        }
-                    )
-
             result_folios.append(
                 PmsFolioInfo(
                     id=folio.id,
