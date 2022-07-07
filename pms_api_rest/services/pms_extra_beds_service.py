@@ -26,8 +26,6 @@ class PmsExtraBedsService(Component):
         domain = [("is_extra_bed", "=", True)]
         if extra_beds_search_param.name:
             domain.append(("name", "like", extra_beds_search_param.name))
-        if extra_beds_search_param.id:
-            domain.append(("id", "=", extra_beds_search_param.id))
         if extra_beds_search_param.pmsPropertyId:
             domain.extend(
                 [
