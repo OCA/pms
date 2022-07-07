@@ -31,8 +31,6 @@ class PmsProductService(Component):
         domain = [("sale_ok", "=", True)]
         if product_search_param.name:
             domain.append(("name", "like", product_search_param.name))
-        if product_search_param.ids:
-            domain.append(("id", "in", product_search_param.ids))
         if product_search_param.pmsPropertyId:
             domain.extend(
                 [
