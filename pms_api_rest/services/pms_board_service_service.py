@@ -88,7 +88,7 @@ class PmsBoardServiceService(Component):
                 amount=board_service.amount,
             )
         else:
-            raise MissingError(_("Amenity Type not found"))
+            raise MissingError(_("Board Service not found"))
 
     @restapi.method(
         [
