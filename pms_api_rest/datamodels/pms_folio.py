@@ -23,7 +23,6 @@ class PmsFolioInfo(Datamodel):
     agency = fields.String(required=False, allow_none=True)
     state = fields.String(required=False, allow_none=True)
     pendingAmount = fields.Float(required=False, allow_none=True)
-    reservations = fields.List(fields.Dict(required=False, allow_none=True))
     salesPerson = fields.String(required=False, allow_none=True)
     paymentState = fields.String(required=False, allow_none=True)
     propertyId = fields.Integer(required=False, allow_none=True)
