@@ -29,8 +29,6 @@ class PmsBoardServiceService(Component):
         domain = []
         if board_services_search_param.name:
             domain.append(("name", "like", board_services_search_param.name))
-        if board_services_search_param.ids:
-            domain.append(("id", "in", board_services_search_param.ids))
         if board_services_search_param.roomTypeId:
             domain.append(
                 ("pms_room_type_id", "=", board_services_search_param.roomTypeId)
