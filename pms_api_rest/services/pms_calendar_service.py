@@ -162,9 +162,7 @@ class PmsCalendarService(Component):
         date_from = datetime.strptime(
             pms_calendar_search_param.dateFrom, "%Y-%m-%d"
         ).date()
-        date_to = datetime.strptime(
-            pms_calendar_search_param.dateTo, "%Y-%m-%d"
-        ).date()
+        date_to = datetime.strptime(pms_calendar_search_param.dateTo, "%Y-%m-%d").date()
 
         result = []
         PmsCalendarDailyInvoicing = self.env.datamodels["pms.calendar.daily.invoicing"]
@@ -203,9 +201,7 @@ class PmsCalendarService(Component):
         date_from = datetime.strptime(
             pms_calendar_search_param.dateFrom, "%Y-%m-%d"
         ).date()
-        date_to = datetime.strptime(
-            pms_calendar_search_param.dateTo, "%Y-%m-%d"
-        ).date()
+        date_to = datetime.strptime(pms_calendar_search_param.dateTo, "%Y-%m-%d").date()
         result = []
         PmsCalendarFreeDailyRoomsByType = self.env.datamodels[
             "pms.calendar.free.daily.rooms.by.type"
@@ -276,9 +272,7 @@ class PmsCalendarService(Component):
         date_from = datetime.strptime(
             pms_calendar_search_param.dateFrom, "%Y-%m-%d"
         ).date()
-        date_to = datetime.strptime(
-            pms_calendar_search_param.dateTo, "%Y-%m-%d"
-        ).date()
+        date_to = datetime.strptime(pms_calendar_search_param.dateTo, "%Y-%m-%d").date()
         result = []
         for day in (
             date_from + timedelta(d) for d in range((date_to - date_from).days + 1)
