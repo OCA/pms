@@ -5,7 +5,6 @@ from odoo.addons.datamodel.core import Datamodel
 
 class PmsAmenityTypeSearchParam(Datamodel):
     _name = "pms.amenity.type.search.param"
-    id = fields.Integer(required=False, allow_none=True)
     name = fields.String(required=False, allow_none=True)
     pmsPropertyId = fields.Integer(required=True, allow_none=False)
 
