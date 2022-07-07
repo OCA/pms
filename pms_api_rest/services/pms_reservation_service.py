@@ -1,4 +1,7 @@
 from datetime import datetime, timedelta
+from odoo.exceptions import MissingError
+from odoo import _
+
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
@@ -35,75 +38,80 @@ class PmsReservationService(Component):
         if not reservation:
             pass
         else:
-            services = []
-            for service in reservation.service_ids:
-                if service.is_board_service:
-                    services.append(
-                        {
-                            "id": service.id,
-                            "name": service.name,
-                            "quantity": service.product_qty,
-                            "priceTotal": service.price_total,
-                            "priceSubtotal": service.price_subtotal,
-                            "priceTaxes": service.price_tax,
-                            "discount": service.discount,
-                        }
-                    )
-            messages = []
-            import re
+            # services = []
+            # for service in reservation.service_ids:
+            #     if service.is_board_service:
+            #         services.append(
+            #             {
+            #                 "id": service.id,
+            #                 "name": service.name,
+            #                 "quantity": service.product_qty,
+            #                 "priceTotal": service.price_total,
+            #                 "priceSubtotal": service.price_subtotal,
+            #                 "priceTaxes": service.price_tax,
+            #                 "discount": service.discount,
+            #             }
+            #         )
+            # messages = []
+            # import re
 
-            text = re.compile("<.*?>")
-            for message in reservation.message_ids.sorted(key=lambda x: x.date):
-                messages.append(
-                    {
-                        "author": message.author_id.name,
-                        "date": str(message.date),
-                        # print(self.env["ir.fields.converter"].text_from_html(message.body))
-                        "body": re.sub(text, "", message.body),
-                    }
-                )
+            # text = re.compile("<.*?>")
+            # for message in reservation.message_ids.sorted(key=lambda x: x.date):
+            #     messages.append(
+            #         {
+            #             "author": message.author_id.name,
+            #             "date": str(message.date),
+            #             # print(self.env["ir.fields.converter"].text_from_html(message.body))
+            #             "body": re.sub(text, "", message.body),
+            #         }
+            #     )
             res = PmsReservationInfo(
                 id=reservation.id,
-                partner=reservation.partner_id.name if reservation.partner_id else "",
-                checkin=str(reservation.checkin),
-                checkout=str(reservation.checkout),
-                preferredRoomId=reservation.preferred_room_id.id
-                if reservation.preferred_room_id
-                else 0,
-                preferredRoomName=reservation.preferred_room_id.name
-                if reservation.preferred_room_id
-                else "",
-                roomTypeId=reservation.room_type_id.id
-                if reservation.room_type_id
-                else 0,
-                roomTypeName=reservation.room_type_id.name
-                if reservation.room_type_id
-                else "",
                 name=reservation.name,
-                priceTotal=reservation.price_room_services_set,
-                priceOnlyServices=reservation.price_services
-                if reservation.price_services
-                else 0.0,
-                priceOnlyRoom=reservation.price_total,
-                pricelistName=reservation.pricelist_id.name
-                if reservation.pricelist_id
-                else "",
-                pricelistId=reservation.pricelist_id.id
-                if reservation.pricelist_id
-                else 0,
-                services=services if services else [],
-                messages=messages,
-                boardServiceId=reservation.board_service_room_id.id
-                if reservation.board_service_room_id
-                else 0,
-                boardServiceName=reservation.board_service_room_id.pms_board_service_id.name
-                if reservation.board_service_room_id
-                else "",
-                # review if its an agency
-                channelTypeId=reservation.channel_type_id.id
-                if reservation.channel_type_id
-                else 0,
+                folioId=reservation.folio_id.id,
+                folioSequence=reservation.folio_sequence,
+                partnerName=reservation.partner_name,
+                pmsPropertyId=reservation.pms_property_id.id,
+                boardServiceId=reservation.board_service_room_id.id or None,
+                saleChannelId=reservation.channel_type_id.id or None,
+                agencyId=reservation.agency_id.id or None,
+                checkin=datetime.combine(
+                    reservation.checkin, datetime.min.time()
+                ).isoformat(),
+                checkout=datetime.combine(
+                    reservation.checkout, datetime.min.time()
+                ).isoformat(),
+                arrivalHour=reservation.arrival_hour,
+                departureHour=reservation.departure_hour,
+                roomTypeId=reservation.room_type_id.id or None,
+                preferredRoomId=reservation.preferred_room_id.id or None,
+                pricelistId=reservation.pricelist_id.id,
                 adults=reservation.adults,
+                overbooking=reservation.overbooking,
+                externalReference=reservation.external_reference or None,
+                state=reservation.state,
+                children=reservation.children or None,
+                readyForCheckin=reservation.ready_for_checkin,
+                allowedCheckout=reservation.allowed_checkout,
+                isSplitted=reservation.splitted,
+                pendingCheckinData=reservation.pending_checkin_data,
+                createDate=datetime.combine(
+                    reservation.create_date, datetime.min.time()
+                ).isoformat(),
+                segmentationId=reservation.segmentation_ids[0].id
+                if reservation.segmentation_ids
+                else None,
+                cancellationPolicyId=reservation.pricelist_id.cancelation_rule_id.id
+                or None,
+                toAssign=reservation.to_assign,
+                reservationType=reservation.reservation_type,
+                priceTotal=reservation.price_room_services_set,
+                discount=reservation.discount,
+                commissionAmount=reservation.commission_amount or None,
+                commissionPercent=reservation.commission_percent or None,
+                priceOnlyServices=reservation.price_services,
+                priceOnlyRoom=reservation.price_total,
+                pendingAmount=reservation.folio_pending_amount,
             )
         return res
 
@@ -207,6 +215,41 @@ class PmsReservationService(Component):
                     }
                 )
             reservation_to_update.write(reservation_vals)
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:reservation_id>/reservation-lines",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.reservation.line.info", is_list=True),
+        auth="jwt_api_pms",
+    )
+    def get_reservation_line(self, reservation_id):
+        reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
+        if not reservation:
+            raise MissingError(_("Reservation not found"))
+        result_lines = []
+        PmsReservationLineInfo = self.env.datamodels["pms.reservation.line.info"]
+        for reservation_line in reservation.reservation_line_ids:
+            result_lines.append(
+                PmsReservationLineInfo(
+                    id=reservation_line.id,
+                    date=datetime.combine(
+                        reservation_line.date, datetime.min.time()
+                    ).isoformat(),
+                    price=reservation_line.price,
+                    discount=reservation_line.discount,
+                    cancelDiscount=reservation_line.cancel_discount,
+                    roomId=reservation_line.room_id.id,
+                    reservationId=reservation_line.reservation_id.id,
+                    pmsPropertyId=reservation_line.pms_property_id.id,
+                )
+            )
+        return result_lines
 
     @restapi.method(
         [
