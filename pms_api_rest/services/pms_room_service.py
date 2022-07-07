@@ -31,8 +31,6 @@ class PmsRoomService(Component):
         domain = []
         if room_search_param.name:
             domain.append(("name", "like", room_search_param.name))
-        if room_search_param.id:
-            domain.append(("id", "=", room_search_param.id))
         if room_search_param.pmsPropertyId:
             domain.append(("pms_property_id", "=", room_search_param.pmsPropertyId))
         if (
