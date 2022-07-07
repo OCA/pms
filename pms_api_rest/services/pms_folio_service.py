@@ -29,9 +29,7 @@ class PmsFolioService(Component):
     def get_folios(self, folio_search_param):
         domain_fields = list()
 
-        domain_fields.append(
-            ("pms_property_id", "=", folio_search_param.pmsPropertyId)
-        )
+        domain_fields.append(("pms_property_id", "=", folio_search_param.pmsPropertyId))
 
         if folio_search_param.dateTo and folio_search_param.dateFrom:
             reservation_lines = (
@@ -75,7 +73,6 @@ class PmsFolioService(Component):
         for folio in self.env["pms.folio"].search(
             [("id", "in", reservations_result)],
         ):
-            reservations = []
             for reservation in folio.reservation_ids:
                 reservation_lines = []
                 for reservation_line in reservation.reservation_line_ids:
@@ -89,8 +86,6 @@ class PmsFolioService(Component):
                             "roomName": reservation_line.room_id.name,
                         }
                     )
-
-
 
             result_folios.append(
                 PmsFolioInfo(
@@ -205,8 +200,12 @@ class PmsFolioService(Component):
                             boardServiceId=reservation.board_service_room_id.id or None,
                             saleChannelId=reservation.channel_type_id.id or None,
                             agencyId=reservation.agency_id.id or None,
-                            checkin=datetime.combine(reservation.checkin, datetime.min.time()).isoformat(),
-                            checkout=datetime.combine(reservation.checkout, datetime.min.time()).isoformat(),
+                            checkin=datetime.combine(
+                                reservation.checkin, datetime.min.time()
+                            ).isoformat(),
+                            checkout=datetime.combine(
+                                reservation.checkout, datetime.min.time()
+                            ).isoformat(),
                             arrivalHour=reservation.arrival_hour,
                             departureHour=reservation.departure_hour,
                             roomTypeId=reservation.room_type_id.id or None,
@@ -221,9 +220,14 @@ class PmsFolioService(Component):
                             allowedCheckout=reservation.allowed_checkout,
                             isSplitted=reservation.splitted,
                             pendingCheckinData=reservation.pending_checkin_data,
-                            createDate=datetime.combine(reservation.create_date , datetime.min.time()).isoformat(),
-                            segmentationId=reservation.segmentation_ids[0].id if reservation.segmentation_ids else None,
-                            cancellationPolicyId=reservation.pricelist_id.cancelation_rule_id.id or None,
+                            createDate=datetime.combine(
+                                reservation.create_date, datetime.min.time()
+                            ).isoformat(),
+                            segmentationId=reservation.segmentation_ids[0].id
+                            if reservation.segmentation_ids
+                            else None,
+                            cancellationPolicyId=reservation.pricelist_id.cancelation_rule_id.id
+                            or None,
                             toAssign=reservation.to_assign,
                             reservationType=reservation.reservation_type,
                             priceTotal=reservation.price_room_services_set,
@@ -237,7 +241,6 @@ class PmsFolioService(Component):
                     )
 
         return reservations
-
 
     # @restapi.method(
     #     [
