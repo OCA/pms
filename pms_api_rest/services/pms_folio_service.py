@@ -155,7 +155,7 @@ class PmsFolioService(Component):
                         if reservation.agency_id
                         else None,
                         "agencyImage": reservation.agency_id.image_1024.decode("utf-8")
-                        if reservation.agency_id
+                        if reservation.agency_id and reservation.agency_id.image_1024
                         else None,
                         "state": reservation.state if reservation.state else None,
                         "roomTypeCode": reservation.room_type_id.default_code
@@ -200,7 +200,9 @@ class PmsFolioService(Component):
                     if folio.payment_state
                     else None,
                     propertyId=folio.pms_property_id,
-                    agencyImage=folio.agency_id.image_1024 if folio.agency_id else None,
+                    agencyImage=folio.agency_id.image_1024
+                    if folio.agency_id and folio.agency_id.image_1024
+                    else None,
                 )
             )
         return result_folios
