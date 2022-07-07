@@ -89,90 +89,9 @@ class PmsFolioService(Component):
                             "roomName": reservation_line.room_id.name,
                         }
                     )
-                segmentation_ids = []
-                if reservation.segmentation_ids:
-                    for segmentation in reservation.segmentation_ids:
-                        segmentation_ids.append(segmentation.id)
 
-                reservations.append(
-                    {
-                        "id": reservation.id,
-                        "name": reservation.name,
-                        "folioSequence": reservation.folio_sequence,
-                        "checkin": datetime.combine(
-                            reservation.checkin, datetime.min.time()
-                        ).isoformat(),
-                        "checkout": datetime.combine(
-                            reservation.checkout, datetime.min.time()
-                        ).isoformat(),
-                        "preferredRoomId": reservation.preferred_room_id.id
-                        if reservation.preferred_room_id
-                        else 0,
-                        "preferredRoomCapacity": reservation.preferred_room_id.capacity
-                        if reservation.preferred_room_id
-                        else "",
-                        "roomTypeName": reservation.room_type_id.name
-                        if reservation.room_type_id
-                        else "",
-                        "roomTypeId": reservation.room_type_id.id
-                        if reservation.room_type_id
-                        else "",
-                        "priceTotal": reservation.price_total,
-                        "priceRoomServicesSet": reservation.price_room_services_set,
-                        "discount": reservation.discount,
-                        "commission": reservation.agency_id.default_commission,
-                        "partnerName": reservation.partner_name,
-                        "adults": reservation.adults,
-                        "pricelist": reservation.pricelist_id.name,
-                        "boardService": (
-                            reservation.board_service_room_id.pms_board_service_id.name
-                        )
-                        if reservation.board_service_room_id
-                        else "",
-                        "reservationLines": []
-                        if not reservation_lines
-                        else reservation_lines,
-                        "folioId": reservation.folio_id.id
-                        if reservation.folio_id
-                        else "",
-                        "saleChannel": reservation.channel_type_id.name
-                        if reservation.channel_type_id
-                        else "",
-                        "externalReference": reservation.external_reference
-                        if reservation.external_reference
-                        else "",
-                        "agency": reservation.agency_id.name
-                        if reservation.agency_id
-                        else "",
-                        "agencyImage": reservation.agency_id.image_1024.decode("utf-8")
-                        if reservation.agency_id
-                        else "",
-                        "state": reservation.state if reservation.state else "",
-                        "roomTypeCode": reservation.room_type_id.default_code
-                        if reservation.room_type_id
-                        else "",
-                        "children": reservation.children if reservation.children else 0,
-                        "countServices": len(reservation.service_ids)
-                        if reservation.service_ids
-                        else 0,
-                        "readyForCheckin": reservation.ready_for_checkin,
-                        "allowedCheckout": reservation.allowed_checkout,
-                        "isSplitted": reservation.splitted,
-                        "arrivalHour": reservation.arrival_hour,
-                        "departureHour": reservation.departure_hour,
-                        "pendingCheckinData": reservation.pending_checkin_data,
-                        "createDate": reservation.create_date,
-                        "segmentationId": segmentation_ids[0]
-                        if segmentation_ids
-                        else 0,
-                        "cancellationPolicy": reservation.pricelist_id.cancelation_rule_id.name
-                        if reservation.pricelist_id.cancelation_rule_id.name
-                        else "",
-                        "pendingAmount": reservation.folio_id.pending_amount,
-                        "toAssign": reservation.to_assign,
-                        "reservationType": reservation.reservation_type,
-                    }
-                )
+
+
             result_folios.append(
                 PmsFolioInfo(
                     id=folio.id,
@@ -188,7 +107,6 @@ class PmsFolioService(Component):
                         folio.state
                     ],
                     pendingAmount=folio.pending_amount,
-                    reservations=[] if not reservations else reservations,
                     salesPerson=folio.user_id.name if folio.user_id else "",
                     paymentState=dict(
                         folio.fields_get(["payment_state"])["payment_state"][
@@ -259,25 +177,91 @@ class PmsFolioService(Component):
         [
             (
                 [
-                    "/",
+                    "/<int:id>/reservations",
                 ],
-                "POST",
+                "GET",
             )
         ],
-        input_param=Datamodel("pms.reservation.info", is_list=False),
+        output_param=Datamodel("pms.reservation.info", is_list=True),
         auth="jwt_api_pms",
     )
-    def create_reservation(self, pms_reservation_info):
-        reservation = self.env["pms.reservation"].create(
-            {
-                "partner_name": pms_reservation_info.partner,
-                "pms_property_id": pms_reservation_info.pmsPropertyId,
-                "room_type_id": pms_reservation_info.roomTypeId,
-                "pricelist_id": pms_reservation_info.pricelistId,
-                "checkin": pms_reservation_info.checkin,
-                "checkout": pms_reservation_info.checkout,
-                "board_service_room_id": pms_reservation_info.boardServiceId,
-                "channel_type_id": pms_reservation_info.channelTypeId,
-            }
-        )
-        return reservation.id
+    def get_folio_reservations(self, folio_id):
+        folio = self.env["pms.folio"].browse(folio_id)
+        reservations = []
+        PmsReservationInfo = self.env.datamodels["pms.reservation.info"]
+        if not folio:
+            pass
+        else:
+            if folio.reservation_ids:
+                for reservation in folio.reservation_ids:
+                    reservations.append(
+                        PmsReservationInfo(
+                            id=reservation.id,
+                            name=reservation.name,
+                            folioId=reservation.folio_id.id,
+                            folioSequence=reservation.folio_sequence,
+                            partnerName=reservation.partner_name,
+                            pmsPropertyId=reservation.pms_property_id.id,
+                            boardServiceId=reservation.board_service_room_id.id or None,
+                            saleChannelId=reservation.channel_type_id.id or None,
+                            agencyId=reservation.agency_id.id or None,
+                            checkin=datetime.combine(reservation.checkin, datetime.min.time()).isoformat(),
+                            checkout=datetime.combine(reservation.checkout, datetime.min.time()).isoformat(),
+                            arrivalHour=reservation.arrival_hour,
+                            departureHour=reservation.departure_hour,
+                            roomTypeId=reservation.room_type_id.id or None,
+                            preferredRoomId=reservation.preferred_room_id.id or None,
+                            pricelistId=reservation.pricelist_id.id,
+                            adults=reservation.adults,
+                            overbooking=reservation.overbooking,
+                            externalReference=reservation.external_reference or None,
+                            state=reservation.state,
+                            children=reservation.children or None,
+                            readyForCheckin=reservation.ready_for_checkin,
+                            allowedCheckout=reservation.allowed_checkout,
+                            isSplitted=reservation.splitted,
+                            pendingCheckinData=reservation.pending_checkin_data,
+                            createDate=datetime.combine(reservation.create_date , datetime.min.time()).isoformat(),
+                            segmentationId=reservation.segmentation_ids[0].id if reservation.segmentation_ids else None,
+                            cancellationPolicyId=reservation.pricelist_id.cancelation_rule_id.id or None,
+                            toAssign=reservation.to_assign,
+                            reservationType=reservation.reservation_type,
+                            priceTotal=reservation.price_room_services_set,
+                            discount=reservation.discount,
+                            commissionAmount=reservation.commission_amount or None,
+                            commissionPercent=reservation.commission_percent or None,
+                            priceOnlyServices=reservation.price_services,
+                            priceOnlyRoom=reservation.price_total,
+                            pendingAmount=reservation.folio_pending_amount,
+                        )
+                    )
+
+        return reservations
+
+
+    # @restapi.method(
+    #     [
+    #         (
+    #             [
+    #                 "/",
+    #             ],
+    #             "POST",
+    #         )
+    #     ],
+    #     input_param=Datamodel("pms.reservation.info", is_list=False),
+    #     auth="jwt_api_pms",
+    # )
+    # def create_reservation(self, pms_reservation_info):
+    #     reservation = self.env["pms.reservation"].create(
+    #         {
+    #             "partner_name": pms_reservation_info.partner,
+    #             "pms_property_id": pms_reservation_info.pmsPropertyId,
+    #             "room_type_id": pms_reservation_info.roomTypeId,
+    #             "pricelist_id": pms_reservation_info.pricelistId,
+    #             "checkin": pms_reservation_info.checkin,
+    #             "checkout": pms_reservation_info.checkout,
+    #             "board_service_room_id": pms_reservation_info.boardServiceId,
+    #             "channel_type_id": pms_reservation_info.channelTypeId,
+    #         }
+    #     )
+    #     return reservation.id
