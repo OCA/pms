@@ -5,7 +5,6 @@ from odoo.addons.datamodel.core import Datamodel
 
 class PmsBoardServiceSearchParam(Datamodel):
     _name = "pms.board.service.search.param"
-    ids = fields.List(fields.Integer(required=False, allow_none=True))
     name = fields.String(required=False, allow_none=True)
     pmsPropertyId = fields.Integer(required=False, allow_none=True)
     roomTypeId = fields.Integer(required=False, allow_none=True)
