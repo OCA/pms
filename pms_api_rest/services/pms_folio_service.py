@@ -1,6 +1,9 @@
-from datetime import datetime
-
+from datetime import datetime, timedelta
+from odoo import _, fields
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 from odoo.osv import expression
+from odoo.exceptions import MissingError
+
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
@@ -17,33 +20,79 @@ class PmsFolioService(Component):
         [
             (
                 [
+                    "/<int:folio_id>",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.folio.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def get_folio(self, folio_id):
+        folio = self.env["pms.folio"].search([
+            ("id", "=", folio_id),
+        ])
+        if folio:
+            PmsFolioInfo = self.env.datamodels["pms.folio.info"]
+            return PmsFolioInfo(
+                id=folio.id,
+                name=folio.name,
+                partnerName=folio.partner_name if folio.partner_name else None,
+                partnerPhone=folio.mobile if folio.mobile else None,
+                partnerEmail=folio.email if folio.email else None,
+                saleChannelId=folio.channel_type_id.id
+                if folio.channel_type_id
+                else None,
+                agencyId=folio.agency_id.id if folio.agency_id else None,
+                state=dict(folio.fields_get(["state"])["state"]["selection"])[
+                    folio.state
+                ],
+                pendingAmount=folio.pending_amount,
+                salesPersonId=folio.user_id.id if folio.user_id else None,
+                paymentState=dict(
+                    folio.fields_get(["payment_state"])["payment_state"][
+                        "selection"
+                    ]
+                )[folio.payment_state],
+                propertyId=folio.pms_property_id.id,
+            )
+        else:
+            raise MissingError(_("Folio not found"))
+
+    @restapi.method(
+        [
+            (
+                [
                     "/",
                 ],
                 "GET",
             )
         ],
         input_param=Datamodel("pms.folio.search.param"),
-        output_param=Datamodel("pms.folio.info", is_list=True),
+        output_param=Datamodel("pms.folio.short.info", is_list=True),
         auth="jwt_api_pms",
     )
     def get_folios(self, folio_search_param):
         domain_fields = list()
 
-        domain_fields.append(("pms_property_id", "=", folio_search_param.pmsPropertyId))
+        domain_fields.append(
+            ("pms_property_id", "=", folio_search_param.pmsPropertyId)
+        )
 
         if folio_search_param.dateTo and folio_search_param.dateFrom:
-            reservation_lines = (
+            date_from = fields.Date.from_string(folio_search_param.dateFrom)
+            date_to = fields.Date.from_string(folio_search_param.dateTo)
+            dates = [
+                date_from + timedelta(days=x)
+                for x in range(0, (date_to - date_from).days + 1)
+            ]
+            reservation_lines = list(set(
                 self.env["pms.reservation.line"]
-                .search(
-                    [
-                        ("date", ">=", folio_search_param.dateFrom),
-                        ("date", "<", folio_search_param.dateTo),
-                    ]
-                )
+                .search([("date", "in", dates)])
                 .mapped("reservation_id")
                 .mapped("folio_id")
                 .ids
-            )
+            ))
             domain_fields.append(("folio_id", "in", reservation_lines))
 
         domain_filter = list()
@@ -69,35 +118,89 @@ class PmsFolioService(Component):
             self.env["pms.reservation"].search(domain).mapped("folio_id").ids
         )
 
-        PmsFolioInfo = self.env.datamodels["pms.folio.info"]
+        PmsFolioShortInfo = self.env.datamodels["pms.folio.short.info"]
         for folio in self.env["pms.folio"].search(
             [("id", "in", reservations_result)],
         ):
+            reservations = []
+            for reservation in folio.reservation_ids:
+                reservations.append(
+                    {
+                        "id": reservation.id,
+                        "name": reservation.name,
+                        "folioSequence": reservation.folio_sequence,
+                        "checkin": datetime.combine(
+                            reservation.checkin, datetime.min.time()
+                        ).isoformat(),
+                        "checkout": datetime.combine(
+                            reservation.checkout, datetime.min.time()
+                        ).isoformat(),
+                        "preferredRoomId": reservation.preferred_room_id.id
+                        if reservation.preferred_room_id
+                        else None,
+                        "roomTypeName": reservation.room_type_id.name
+                        if reservation.room_type_id
+                        else None,
+                        "adults": reservation.adults,
+                        "pricelist": reservation.pricelist_id.name,
+                        "boardService": (
+                            reservation.board_service_room_id.pms_board_service_id.name
+                        )
+                        if reservation.board_service_room_id
+                        else None,
+                        "saleChannel": reservation.channel_type_id.name
+                        if reservation.channel_type_id
+                        else None,
+                        "agency": reservation.agency_id.name
+                        if reservation.agency_id
+                        else None,
+                        "agencyImage": reservation.agency_id.image_1024.decode("utf-8")
+                        if reservation.agency_id
+                        else None,
+                        "state": reservation.state if reservation.state else None,
+                        "roomTypeCode": reservation.room_type_id.default_code
+                        if reservation.room_type_id
+                        else None,
+                        "children": reservation.children if reservation.children else None,
+                        "countServices": len(reservation.service_ids)
+                        if reservation.service_ids
+                        else None,
+                        "readyForCheckin": reservation.ready_for_checkin,
+                        "allowedCheckout": reservation.allowed_checkout,
+                        "isSplitted": reservation.splitted,
+                        "arrivalHour": reservation.arrival_hour,
+                        "departureHour": reservation.departure_hour,
+                        "pendingCheckinData": reservation.pending_checkin_data,
+                        "toAssign": reservation.to_assign,
+                        "reservationType": reservation.reservation_type,
+                    }
+                )
             result_folios.append(
-                PmsFolioInfo(
+                PmsFolioShortInfo(
                     id=folio.id,
                     name=folio.name,
-                    partnerName=folio.partner_name if folio.partner_name else "",
-                    partnerPhone=folio.mobile if folio.mobile else "",
-                    partnerEmail=folio.email if folio.email else "",
+                    partnerName=folio.partner_name if folio.partner_name else None,
+                    partnerPhone=folio.mobile if folio.mobile else None,
+                    partnerEmail=folio.email if folio.email else None,
                     saleChannel=folio.channel_type_id.name
                     if folio.channel_type_id
-                    else "",
-                    agency=folio.agency_id.name if folio.agency_id else "",
+                    else None,
+                    agency=folio.agency_id.name if folio.agency_id else None,
                     state=dict(folio.fields_get(["state"])["state"]["selection"])[
                         folio.state
                     ],
                     pendingAmount=folio.pending_amount,
-                    salesPerson=folio.user_id.name if folio.user_id else "",
+                    reservations=[] if not reservations else reservations,
+                    salesPerson=folio.user_id.name if folio.user_id else None,
                     paymentState=dict(
                         folio.fields_get(["payment_state"])["payment_state"][
                             "selection"
                         ]
                     )[folio.payment_state]
                     if folio.payment_state
-                    else "",
+                    else None,
                     propertyId=folio.pms_property_id,
-                    agencyImage=folio.agency_id.image_1024 if folio.agency_id else "",
+                    agencyImage=folio.agency_id.image_1024 if folio.agency_id else None,
                 )
             )
         return result_folios
@@ -106,7 +209,7 @@ class PmsFolioService(Component):
         [
             (
                 [
-                    "/<int:id>/payments",
+                    "/<int:folio_id>/payments",
                 ],
                 "GET",
             )
@@ -158,7 +261,7 @@ class PmsFolioService(Component):
         [
             (
                 [
-                    "/<int:id>/reservations",
+                    "/<int:folio_id>/reservations",
                 ],
                 "GET",
             )
@@ -200,7 +303,9 @@ class PmsFolioService(Component):
                             adults=reservation.adults,
                             overbooking=reservation.overbooking,
                             externalReference=reservation.external_reference or None,
-                            state=reservation.state,
+                            state=dict(reservation.fields_get(["state"])["state"]["selection"])[
+                                reservation.state
+                            ],
                             children=reservation.children or None,
                             readyForCheckin=reservation.ready_for_checkin,
                             allowedCheckout=reservation.allowed_checkout,
