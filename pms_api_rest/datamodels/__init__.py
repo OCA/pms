@@ -39,3 +39,5 @@ from . import pms_board_service
 from . import pms_board_service_line
 
 from . import pms_product
+from . import pms_sale_channel
+from . import pms_cancelation_rule
