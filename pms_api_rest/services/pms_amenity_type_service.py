@@ -29,8 +29,6 @@ class PmsAmenityTypeService(Component):
         domain = []
         if amenity_types_search_param.name:
             domain.append(("name", "like", amenity_types_search_param.name))
-        if amenity_types_search_param.id:
-            domain.append(("id", "=", amenity_types_search_param.id))
         if amenity_types_search_param.pmsPropertyId:
             domain.extend(
                 [
