@@ -5,7 +5,6 @@ from odoo.addons.datamodel.core import Datamodel
 
 class PmsSaleChannelSearchParam(Datamodel):
     _name = "pms.sale.channel.search.param"
-    id = fields.Integer(required=False, allow_none=True)
     pmsPropertyIds = fields.List(fields.Integer(), required=False)
 
 
