@@ -1,4 +1,3 @@
-from sre_parse import State
 from marshmallow import fields
 
 from odoo.addons.datamodel.core import Datamodel
@@ -48,5 +47,5 @@ class PmsReservationInfo(Datamodel):
     pendingAmount = fields.Float(required=False, allow_none=True)
 
     # TODO: Refact
-    #services = fields.List(fields.Dict(required=False, allow_none=True))
-    #messages = fields.List(fields.Dict(required=False, allow_none=True))
+    # services = fields.List(fields.Dict(required=False, allow_none=True))
+    # messages = fields.List(fields.Dict(required=False, allow_none=True))
