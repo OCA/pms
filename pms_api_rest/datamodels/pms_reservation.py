@@ -3,14 +3,29 @@ from marshmallow import fields
 from odoo.addons.datamodel.core import Datamodel
 
 
+class PmsReservationShortInfo(Datamodel):
+    _name = "pms.reservation.short.info"
+    id = fields.Integer(required=False, allow_none=True)
+    boardServiceName = fields.String(required=False, allow_none=True)
+    checkin = fields.String(required=False, allow_none=True)
+    checkout = fields.String(required=False, allow_none=True)
+    roomTypeName = fields.String(required=False, allow_none=True)
+    preferredRoomShortName = fields.String(required=False, allow_none=True)
+    adults = fields.Integer(required=False, allow_none=True)
+    state = fields.String(required=False, allow_none=True)
+    children = fields.Integer(required=False, allow_none=True)
+    readyForCheckin = fields.Boolean(required=False, allow_none=True)
+    allowedCheckout = fields.Boolean(required=False, allow_none=True)
+    isSplitted = fields.Boolean(required=False, allow_none=True)
+    priceTotal = fields.Float(required=False, allow_none=True)
+
+
 class PmsReservationInfo(Datamodel):
     _name = "pms.reservation.info"
     id = fields.Integer(required=False, allow_none=True)
     name = fields.String(required=False, allow_none=True)
     folioId = fields.Integer(required=False, allow_none=True)
-    folioSequence = fields.Integer(required=False, allow_none=True)
     partnerName = fields.String(required=False, allow_none=True)
-    pmsPropertyId = fields.Integer(required=False, allow_none=True)
     boardServiceId = fields.Integer(required=False, allow_none=True)
     saleChannelId = fields.Integer(required=False, allow_none=True)
     agencyId = fields.Integer(required=False, allow_none=True)
@@ -41,10 +56,8 @@ class PmsReservationInfo(Datamodel):
     priceTotal = fields.Float(required=False, allow_none=True)
     discount = fields.Float(required=False, allow_none=True)
     commissionAmount = fields.Float(required=False, allow_none=True)
-    commissionPercent = fields.Float(required=False, allow_none=True)
     priceOnlyServices = fields.Float(required=False, allow_none=True)
     priceOnlyRoom = fields.Float(required=False, allow_none=True)
-    pendingAmount = fields.Float(required=False, allow_none=True)
 
     # TODO: Refact
     # services = fields.List(fields.Dict(required=False, allow_none=True))
