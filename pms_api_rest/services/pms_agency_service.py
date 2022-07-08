@@ -56,10 +56,12 @@ class PmsAgencyService(Component):
         auth="jwt_api_pms",
     )
     def get_agency(self, agency_id):
-        agency = self.env["res.partner"].search([
-            ("id", "=", agency_id),
-            ("is_agency", "=", True),
-        ])
+        agency = self.env["res.partner"].search(
+            [
+                ("id", "=", agency_id),
+                ("is_agency", "=", True),
+            ]
+        )
         if agency:
             PmsAgencieInfo = self.env.datamodels["pms.agency.info"]
             return PmsAgencieInfo(
