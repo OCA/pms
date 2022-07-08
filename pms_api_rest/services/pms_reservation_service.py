@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
-from odoo.exceptions import MissingError
-from odoo import _
 
+from odoo import _
+from odoo.exceptions import MissingError
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
@@ -69,9 +69,7 @@ class PmsReservationService(Component):
                 id=reservation.id,
                 name=reservation.name,
                 folioId=reservation.folio_id.id,
-                folioSequence=reservation.folio_sequence,
                 partnerName=reservation.partner_name,
-                pmsPropertyId=reservation.pms_property_id.id,
                 boardServiceId=reservation.board_service_room_id.id or None,
                 saleChannelId=reservation.channel_type_id.id or None,
                 agencyId=reservation.agency_id.id or None,
@@ -89,7 +87,9 @@ class PmsReservationService(Component):
                 adults=reservation.adults,
                 overbooking=reservation.overbooking,
                 externalReference=reservation.external_reference or None,
-                state=reservation.state,
+                state=dict(reservation.fields_get(["state"])["state"]["selection"])[
+                    reservation.state
+                ],
                 children=reservation.children or None,
                 readyForCheckin=reservation.ready_for_checkin,
                 allowedCheckout=reservation.allowed_checkout,
@@ -108,10 +108,8 @@ class PmsReservationService(Component):
                 priceTotal=reservation.price_room_services_set,
                 discount=reservation.discount,
                 commissionAmount=reservation.commission_amount or None,
-                commissionPercent=reservation.commission_percent or None,
                 priceOnlyServices=reservation.price_services,
                 priceOnlyRoom=reservation.price_total,
-                pendingAmount=reservation.folio_pending_amount,
             )
         return res
 
