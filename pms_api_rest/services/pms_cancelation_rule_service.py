@@ -29,9 +29,13 @@ class PmsCancelationRuleService(Component):
         domain = []
 
         if cancelation_rule_search_param.pricelistId:
-            domain.append(("pricelist_ids", "in", cancelation_rule_search_param.pricelistId))
+            domain.append(
+                ("pricelist_ids", "in", cancelation_rule_search_param.pricelistId)
+            )
         if cancelation_rule_search_param.pmsPropertyId:
-            domain.append(("pms_property_ids", "in", cancelation_rule_search_param.pmsPropertyId))
+            domain.append(
+                ("pms_property_ids", "in", cancelation_rule_search_param.pmsPropertyId)
+            )
 
         result_cancelation_rules = []
         PmsCancelationRuleInfo = self.env.datamodels["pms.cancelation.rule.info"]
@@ -70,4 +74,3 @@ class PmsCancelationRuleService(Component):
             )
         else:
             raise MissingError(_("Cancelation Rule not found"))
-
