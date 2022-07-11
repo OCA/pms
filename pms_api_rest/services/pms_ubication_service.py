@@ -6,7 +6,7 @@ from odoo.addons.component.core import Component
 class PmsUbicationService(Component):
     _inherit = "base.rest.service"
     _name = "pms.ubication.service"
-    _usage = "ubication"
+    _usage = "ubications"
     _collection = "pms.services"
 
     @restapi.method(
@@ -47,15 +47,15 @@ class PmsUbicationService(Component):
 
         result_ubications = []
         PmsUbicationInfo = self.env.datamodels["pms.ubication.info"]
-        for room in self.env["pms.ubication"].search(
+        for ubication in self.env["pms.ubication"].search(
             domain,
         ):
 
             result_ubications.append(
                 PmsUbicationInfo(
-                    id=room.id,
-                    name=room.name,
-                    pmsPropertyIds=room.pms_property_ids.mapped("id"),
+                    id=ubication.id,
+                    name=ubication.name,
+                    pmsPropertyIds=ubication.pms_property_ids.mapped("id"),
                 )
             )
         return result_ubications
