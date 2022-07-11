@@ -3,7 +3,7 @@ from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
 
-class PmsExtraBedsService(Component):
+class PmsExtraBedService(Component):
     _inherit = "base.rest.service"
     _name = "pms.extra.beds.service"
     _usage = "extra-beds"
