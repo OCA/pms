@@ -8,5 +8,4 @@ class PmsPaymentInfo(Datamodel):
     id = fields.Integer(required=False, allow_none=True)
     amount = fields.Float(required=False, allow_none=True)
     journalId = fields.Integer(required=False, allow_none=True)
-    journalName = fields.String(required=False, allow_none=True)
     date = fields.String(required=False, allow_none=True)
