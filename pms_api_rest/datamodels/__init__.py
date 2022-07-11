@@ -23,7 +23,7 @@ from . import pms_pricelist_item
 from . import pms_availability_plan
 from . import pms_availability_plan_rule
 
-from . import pms_id_categories
+from . import pms_id_category
 from . import res_country
 from . import res_partner_category
 from . import res_city_zip

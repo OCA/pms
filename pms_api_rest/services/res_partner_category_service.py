@@ -3,9 +3,9 @@ from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
 
-class PmsIdCategoriesService(Component):
+class PmsPartnerCategoriesService(Component):
     _inherit = "base.rest.service"
-    _name = "res.partner.category.services"
+    _name = "res.partner.category.service"
     _usage = "segmentations"
     _collection = "pms.services"
 

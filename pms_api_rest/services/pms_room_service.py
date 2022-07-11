@@ -78,7 +78,9 @@ class PmsRoomService(Component):
                     roomTypeClassId=room.room_type_id.class_id,
                     ubicationId=room.ubication_id,
                     extraBedsAllowed=room.extra_beds_allowed,
-                    roomAmenityIds=room.room_amenity_ids.ids,
+                    roomAmenityIds=room.room_amenity_ids.ids
+                    if room.room_amenity_ids
+                    else None,
                 )
             )
         return result_rooms
