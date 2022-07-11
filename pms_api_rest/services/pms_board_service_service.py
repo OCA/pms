@@ -9,7 +9,7 @@ from odoo.addons.component.core import Component
 class PmsBoardServiceService(Component):
     _inherit = "base.rest.service"
     _name = "pms.board.service.service"
-    _usage = "board-service"
+    _usage = "board-services"
     _collection = "pms.services"
 
     @restapi.method(
