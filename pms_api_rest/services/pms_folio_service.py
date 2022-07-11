@@ -254,6 +254,11 @@ class PmsFolioService(Component):
                             allowedCheckout=reservation.allowed_checkout,
                             isSplitted=reservation.splitted,
                             priceTotal=reservation.price_room_services_set,
+                            servicesCount=len(
+                                reservation.service_ids.filtered(
+                                    lambda x: not x.is_board_service
+                                )
+                            ),
                         )
                     )
 
