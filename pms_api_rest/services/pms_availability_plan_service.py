@@ -86,7 +86,9 @@ class PmsAvailabilityPlanService(Component):
         )
         if not record_availability_plan_id:
             raise MissingError
-        PmsAvailabilityPlanInfo = self.env.datamodels["pms.availability.plan.rule.info"]
+        PmsAvailabilityPlanRuleInfo = self.env.datamodels[
+            "pms.availability.plan.rule.info"
+        ]
         rooms = self.env["pms.room"].search(
             [
                 (
@@ -121,7 +123,7 @@ class PmsAvailabilityPlanService(Component):
                     ]
                 )
                 if rule:
-                    availability_plan_rule_info = PmsAvailabilityPlanInfo(
+                    availability_plan_rule_info = PmsAvailabilityPlanRuleInfo(
                         roomTypeId=room_type.id,
                         date=datetime.combine(date, datetime.min.time()).isoformat(),
                         availabilityRuleId=rule.id,

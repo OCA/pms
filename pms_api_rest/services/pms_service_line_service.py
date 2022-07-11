@@ -11,7 +11,7 @@ from odoo.addons.component.core import Component
 class PmsServiceService(Component):
     _inherit = "base.rest.service"
     _name = "pms.reservation.line.service"
-    _usage = "service"
+    _usage = "services"
     _collection = "pms.services"
 
     @restapi.method(
@@ -27,9 +27,7 @@ class PmsServiceService(Component):
         auth="jwt_api_pms",
     )
     def get_service_lines(self, service_id):
-        service = self.env["pms.service"].search(
-            [("id", "=", service_id)]
-        )
+        service = self.env["pms.service"].search([("id", "=", service_id)])
         if not service:
             raise MissingError(_("Service not found"))
         result_service_lines = []
@@ -49,4 +47,3 @@ class PmsServiceService(Component):
                 )
             )
         return result_service_lines
-
