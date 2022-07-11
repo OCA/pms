@@ -6,7 +6,7 @@ from odoo.addons.component.core import Component
 class PmsRoomTypeClassService(Component):
     _inherit = "base.rest.service"
     _name = "pms.room.type.class.service"
-    _usage = "room-type-class"
+    _usage = "room-type-classes"
     _collection = "pms.services"
 
     @restapi.method(

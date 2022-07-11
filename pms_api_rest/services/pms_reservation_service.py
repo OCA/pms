@@ -38,20 +38,6 @@ class PmsReservationService(Component):
         if not reservation:
             pass
         else:
-            # services = []
-            # for service in reservation.service_ids:
-            #     if service.is_board_service:
-            #         services.append(
-            #             {
-            #                 "id": service.id,
-            #                 "name": service.name,
-            #                 "quantity": service.product_qty,
-            #                 "priceTotal": service.price_total,
-            #                 "priceSubtotal": service.price_subtotal,
-            #                 "priceTaxes": service.price_tax,
-            #                 "discount": service.discount,
-            #             }
-            #         )
             # messages = []
             # import re
 
@@ -69,10 +55,15 @@ class PmsReservationService(Component):
                 id=reservation.id,
                 name=reservation.name,
                 folioId=reservation.folio_id.id,
+                folioSequence=reservation.folio_sequence,
                 partnerName=reservation.partner_name,
-                boardServiceId=reservation.board_service_room_id.id or None,
-                saleChannelId=reservation.channel_type_id.id or None,
-                agencyId=reservation.agency_id.id or None,
+                boardServiceId=reservation.board_service_room_id.id
+                if reservation.board_service_room_id
+                else None,
+                saleChannelId=reservation.channel_type_id.id
+                if reservation.channel_type_id
+                else None,
+                agencyId=reservation.agency_id.id if reservation.agency_id else None,
                 checkin=datetime.combine(
                     reservation.checkin, datetime.min.time()
                 ).isoformat(),
@@ -81,16 +72,25 @@ class PmsReservationService(Component):
                 ).isoformat(),
                 arrivalHour=reservation.arrival_hour,
                 departureHour=reservation.departure_hour,
-                roomTypeId=reservation.room_type_id.id or None,
-                preferredRoomId=reservation.preferred_room_id.id or None,
-                pricelistId=reservation.pricelist_id.id,
-                adults=reservation.adults,
+                roomTypeId=reservation.room_type_id.id
+                if reservation.room_type_id
+                else None,
+                preferredRoomId=reservation.preferred_room_id.id
+                if reservation.preferred_room_id
+                else None,
+                pricelistId=reservation.pricelist_id.id
+                if reservation.pricelist_id
+                else None,
+                adults=reservation.adults if reservation.adults else None,
                 overbooking=reservation.overbooking,
-                externalReference=reservation.external_reference or None,
-                state=dict(reservation.fields_get(["state"])["state"]["selection"])[
-                    reservation.state
-                ],
-                children=reservation.children or None,
+                externalReference=reservation.external_reference
+                if reservation.external_reference
+                else None,
+                stateCode=reservation.state,
+                stateDescription=dict(
+                    reservation.fields_get(["state"])["state"]["selection"]
+                )[reservation.state],
+                children=reservation.children if reservation.children else None,
                 readyForCheckin=reservation.ready_for_checkin,
                 allowedCheckout=reservation.allowed_checkout,
                 isSplitted=reservation.splitted,
@@ -101,13 +101,13 @@ class PmsReservationService(Component):
                 segmentationId=reservation.segmentation_ids[0].id
                 if reservation.segmentation_ids
                 else None,
-                cancellationPolicyId=reservation.pricelist_id.cancelation_rule_id.id
-                or None,
                 toAssign=reservation.to_assign,
                 reservationType=reservation.reservation_type,
                 priceTotal=reservation.price_room_services_set,
                 discount=reservation.discount,
-                commissionAmount=reservation.commission_amount or None,
+                commissionAmount=reservation.commission_amount
+                if reservation.commission_amount
+                else None,
                 priceOnlyServices=reservation.price_services,
                 priceOnlyRoom=reservation.price_total,
             )
@@ -338,46 +338,46 @@ class PmsReservationService(Component):
                         name=checkin_partner.name if checkin_partner.name else "",
                         firstname=checkin_partner.firstname
                         if checkin_partner.firstname
-                        else "",
+                        else None,
                         lastname=checkin_partner.lastname
                         if checkin_partner.lastname
-                        else "",
+                        else None,
                         lastname2=checkin_partner.lastname2
                         if checkin_partner.lastname2
-                        else "",
+                        else None,
                         email=checkin_partner.email if checkin_partner.email else "",
                         mobile=checkin_partner.mobile if checkin_partner.mobile else "",
                         documentType=checkin_partner.document_type.id
                         if checkin_partner.document_type
-                        else -1,
+                        else None,
                         documentNumber=checkin_partner.document_number
                         if checkin_partner.document_number
-                        else "",
+                        else None,
                         documentExpeditionDate=document_expedition_date
                         if checkin_partner.document_expedition_date
-                        else "",
+                        else None,
                         documentSupportNumber=checkin_partner.support_number
                         if checkin_partner.support_number
-                        else "",
+                        else None,
                         gender=checkin_partner.gender if checkin_partner.gender else "",
                         birthdate=birthdate_date
                         if checkin_partner.birthdate_date
-                        else "",
+                        else None,
                         residenceStreet=checkin_partner.residence_street
                         if checkin_partner.residence_street
-                        else "",
+                        else None,
                         zip=checkin_partner.residence_zip
                         if checkin_partner.residence_zip
-                        else "",
+                        else None,
                         residenceCity=checkin_partner.residence_city
                         if checkin_partner.residence_city
-                        else "",
+                        else None,
                         nationality=checkin_partner.residence_country_id.id
                         if checkin_partner.residence_country_id
-                        else -1,
+                        else None,
                         countryState=checkin_partner.residence_state_id.id
                         if checkin_partner.residence_state_id
-                        else -1,
+                        else None,
                         checkinPartnerState=checkin_partner.state,
                     )
                 )

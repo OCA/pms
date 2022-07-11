@@ -72,8 +72,10 @@ class PmsAmenityService(Component):
             return PmsAmenityInfo(
                 id=amenity.id,
                 name=amenity.name,
-                defaultCode=amenity.default_code,
-                pmsAmenityTypeId=amenity.pms_amenity_type_id.id,
+                defaultCode=amenity.default_code if amenity.default_code else None,
+                amenityTypeId=amenity.pms_amenity_type_id.id
+                if amenity.pms_amenity_type_id
+                else None,
             )
         else:
             raise MissingError(_("Amenity not found"))

@@ -3,10 +3,10 @@ from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
 
-class PmsIdCategoriesService(Component):
+class ResCityZipService(Component):
     _inherit = "base.rest.service"
-    _name = "res.city.zip.services"
-    _usage = "zip"
+    _name = "res.city.zip.service"
+    _usage = "zips"
     _collection = "pms.services"
 
     @restapi.method(

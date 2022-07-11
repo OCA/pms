@@ -9,7 +9,7 @@ from odoo.addons.component.core import Component
 class PmsCancelationRuleService(Component):
     _inherit = "base.rest.service"
     _name = "pms.cancelation.rule.service"
-    _usage = "cancelation-rule"
+    _usage = "cancelation-rules"
     _collection = "pms.services"
 
     @restapi.method(
