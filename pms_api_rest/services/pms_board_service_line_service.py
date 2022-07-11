@@ -9,7 +9,7 @@ from odoo.addons.component.core import Component
 class PmsBoardServiceService(Component):
     _inherit = "base.rest.service"
     _name = "pms.board.service.line.service"
-    _usage = "board-service-line"
+    _usage = "board-service-lines"
     _collection = "pms.services"
 
     @restapi.method(
@@ -27,12 +27,12 @@ class PmsBoardServiceService(Component):
     )
     def get_board_service_lines(self, board_service_lines_search_param):
         domain = []
-        if board_service_lines_search_param.pmsBoardServiceId:
+        if board_service_lines_search_param.boardServiceId:
             domain.append(
                 (
                     "pms_board_service_room_type_id",
                     "=",
-                    board_service_lines_search_param.pmsBoardServiceId,
+                    board_service_lines_search_param.boardServiceId,
                 )
             )
 
