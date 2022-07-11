@@ -39,6 +39,9 @@ class PmsAgencyService(Component):
                 PmsAgencyInfo(
                     id=agency.id,
                     name=agency.name,
+                    image=agency.image_1024.decode("utf-8")
+                    if agency.image_1024
+                    else None,
                 )
             )
         return result_agencies
@@ -66,7 +69,8 @@ class PmsAgencyService(Component):
             PmsAgencieInfo = self.env.datamodels["pms.agency.info"]
             return PmsAgencieInfo(
                 id=agency.id,
-                name=agency.name,
+                name=agency.name if agency.name else None,
+                image=agency.image_1024.decode("utf-8") if agency.image_1024 else None,
             )
         else:
             raise MissingError(_("Agency not found"))
