@@ -9,7 +9,7 @@ from odoo.addons.component.core import Component
 class PmsSaleChannelService(Component):
     _inherit = "base.rest.service"
     _name = "pms.sale.channel.service"
-    _usage = "sale-channel"
+    _usage = "sale-channels"
     _collection = "pms.services"
 
     @restapi.method(
@@ -58,7 +58,7 @@ class PmsSaleChannelService(Component):
             result_sale_channels.append(
                 PmsSaleChannelInfo(
                     id=sale_channel.id,
-                    name=sale_channel.name,
+                    name=sale_channel.name if sale_channel.name else None,
                 )
             )
         return result_sale_channels
@@ -83,7 +83,7 @@ class PmsSaleChannelService(Component):
             PmsSaleChannelInfo = self.env.datamodels["pms.sale.channel.info"]
             return PmsSaleChannelInfo(
                 id=sale_channel.id,
-                name=sale_channel.name,
+                name=sale_channel.name if sale_channel else None,
             )
         else:
             raise MissingError(_("Sale Channel not found"))
