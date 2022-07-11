@@ -5,7 +5,7 @@ from odoo.addons.datamodel.core import Datamodel
 
 class PmsBoardServiceLineSearchParam(Datamodel):
     _name = "pms.board.service.line.search.param"
-    pmsBoarServiceId = fields.Integer(required=True, allow_none=False)
+    boardServiceId = fields.Integer(required=True, allow_none=False)
 
 
 class PmsBoardServiceLineInfo(Datamodel):

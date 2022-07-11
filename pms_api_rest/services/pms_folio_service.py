@@ -123,20 +123,23 @@ class PmsFolioService(Component):
                         "checkout": datetime.combine(
                             reservation.checkout, datetime.min.time()
                         ).isoformat(),
-                        "preferredRoomShortName": reservation.preferred_room_id.short_name
+                        "preferredRoomId": reservation.preferred_room_id.id
                         if reservation.preferred_room_id
                         else None,
+                        "roomTypeId": reservation.room_type_id.id
+                        if reservation.room_type_id
+                        else None,
                         "adults": reservation.adults,
-                        "pricelistName": reservation.pricelist_id.name,
-                        "saleChannel": reservation.channel_type_id.name
+                        "pricelistId": reservation.pricelist_id.id
+                        if reservation.pricelist_id
+                        else None,
+                        "saleChannelId": reservation.channel_type_id.id
                         if reservation.channel_type_id
                         else None,
-                        "agency": reservation.agency_id.name
+                        "agencyId": reservation.agency_id.id
                         if reservation.agency_id
                         else None,
-                        "agencyImage": reservation.agency_id.image_1024.decode("utf-8")
-                        if reservation.agency_id and reservation.agency_id.image_1024
-                        else None,
+                        "splitted": reservation.splitted,
                     }
                 )
             result_folios.append(
@@ -147,13 +150,12 @@ class PmsFolioService(Component):
                     partnerEmail=folio.email if folio.email else None,
                     amountTotal=folio.amount_total,
                     reservations=[] if not reservations else reservations,
-                    paymentState=dict(
+                    paymentStateCode=folio.payment_state,
+                    paymentStateDescription=dict(
                         folio.fields_get(["payment_state"])["payment_state"][
                             "selection"
                         ]
-                    )[folio.payment_state]
-                    if folio.payment_state
-                    else None,
+                    )[folio.payment_state],
                 )
             )
         return result_folios
@@ -174,7 +176,8 @@ class PmsFolioService(Component):
     def get_folio_payments(self, folio_id, pms_search_param):
         domain = list()
         domain.append(("id", "=", folio_id))
-        domain.append(("pms_property_id", "=", pms_search_param.pmsPropertyId))
+        if pms_search_param.pmsPropertyId:
+            domain.append(("pms_property_id", "=", pms_search_param.pmsPropertyId))
         folio = self.env["pms.folio"].search(domain)
         payments = []
         PmsPaymentInfo = self.env.datamodels["pms.payment.info"]
@@ -191,9 +194,10 @@ class PmsFolioService(Component):
                             PmsPaymentInfo(
                                 id=payment.id,
                                 amount=payment.amount,
-                                journalId=payment.journal_id,
-                                journalName=payment.journal_id.name,
-                                date=str(payment.date),
+                                journalId=payment.journal_id.id,
+                                date=datetime.combine(
+                                    payment.date, datetime.min.time()
+                                ).isoformat(),
                             )
                         )
                 if folio.payment_ids:
@@ -203,9 +207,10 @@ class PmsFolioService(Component):
                                 PmsPaymentInfo(
                                     id=payment.id,
                                     amount=payment.amount,
-                                    journalId=payment.journal_id,
-                                    journalName=payment.journal_id.name,
-                                    date=str(payment.date),
+                                    journalId=payment.journal_id.id,
+                                    date=datetime.combine(
+                                        payment.date, datetime.min.time()
+                                    ).isoformat(),
                                 )
                             )
         return payments
@@ -234,25 +239,32 @@ class PmsFolioService(Component):
                     reservations.append(
                         PmsReservationShortInfo(
                             id=reservation.id,
-                            boardServiceName=reservation.board_service_room_id.pms_board_service_id.name
-                            or None,
+                            boardServiceId=reservation.board_service_room_id.id
+                            if reservation.board_service_room_id
+                            else None,
                             checkin=datetime.combine(
                                 reservation.checkin, datetime.min.time()
                             ).isoformat(),
                             checkout=datetime.combine(
                                 reservation.checkout, datetime.min.time()
                             ).isoformat(),
-                            roomTypeName=reservation.room_type_id.name or None,
-                            preferredRoomShortName=reservation.preferred_room_id.short_name
-                            or None,
+                            roomTypeId=reservation.room_type_id.id
+                            if reservation.room_type_id
+                            else None,
+                            preferredRoomId=reservation.preferred_room_id.id
+                            if reservation.preferred_room_id
+                            else None,
                             adults=reservation.adults,
-                            state=dict(
+                            stateCode=reservation.state,
+                            stateDescription=dict(
                                 reservation.fields_get(["state"])["state"]["selection"]
                             )[reservation.state],
-                            children=reservation.children or None,
+                            children=reservation.children
+                            if reservation.children
+                            else None,
                             readyForCheckin=reservation.ready_for_checkin,
                             allowedCheckout=reservation.allowed_checkout,
-                            isSplitted=reservation.splitted,
+                            splitted=reservation.splitted,
                             priceTotal=reservation.price_room_services_set,
                             servicesCount=len(
                                 reservation.service_ids.filtered(

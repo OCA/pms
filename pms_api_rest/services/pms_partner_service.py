@@ -32,7 +32,7 @@ class PmsPartnerService(Component):
             result_partners.append(
                 PmsPartnerInfo(
                     id=partner.id,
-                    name=partner.name,
+                    name=partner.name if partner.name else None,
                 )
             )
         return result_partners
@@ -72,51 +72,51 @@ class PmsPartnerService(Component):
                     # id=doc_number.partner_id.id,
                     name=doc_number.partner_id.name
                     if doc_number.partner_id.name
-                    else "",
+                    else None,
                     firstname=doc_number.partner_id.firstname
                     if doc_number.partner_id.firstname
-                    else "",
+                    else None,
                     lastname=doc_number.partner_id.lastname
                     if doc_number.partner_id.lastname
-                    else "",
+                    else None,
                     lastname2=doc_number.partner_id.lastname2
                     if doc_number.partner_id.lastname2
-                    else "",
+                    else None,
                     email=doc_number.partner_id.email
                     if doc_number.partner_id.email
-                    else "",
+                    else None,
                     mobile=doc_number.partner_id.mobile
                     if doc_number.partner_id.mobile
-                    else "",
+                    else None,
                     documentType=doc_type.id,
                     documentNumber=doc_number.name,
                     documentExpeditionDate=document_expedition_date
                     if doc_number.valid_from
-                    else "",
+                    else None,
                     documentSupportNumber=doc_number.support_number
                     if doc_number.support_number
-                    else "",
+                    else None,
                     gender=doc_number.partner_id.gender
                     if doc_number.partner_id.gender
-                    else "",
+                    else None,
                     birthdate=birthdate_date
                     if doc_number.partner_id.birthdate_date
-                    else "",
+                    else None,
                     residenceStreet=doc_number.partner_id.residence_street
                     if doc_number.partner_id.residence_street
-                    else "",
+                    else None,
                     zip=doc_number.partner_id.residence_zip
                     if doc_number.partner_id.residence_zip
-                    else "",
+                    else None,
                     residenceCity=doc_number.partner_id.residence_city
                     if doc_number.partner_id.residence_city
-                    else "",
+                    else None,
                     nationality=doc_number.partner_id.nationality_id.id
                     if doc_number.partner_id.nationality_id
-                    else -1,
+                    else None,
                     countryState=doc_number.partner_id.residence_state_id.id
                     if doc_number.partner_id.residence_state_id
-                    else -1,
+                    else None,
                 )
             )
         return partners
