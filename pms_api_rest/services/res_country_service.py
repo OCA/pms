@@ -5,7 +5,7 @@ from odoo.addons.component.core import Component
 
 class ResCountryService(Component):
     _inherit = "base.rest.service"
-    _name = "res.country.services"
+    _name = "res.country.service"
     _usage = "countries"
     _collection = "pms.services"
 
