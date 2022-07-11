@@ -253,6 +253,38 @@ class PmsReservationService(Component):
         [
             (
                 [
+                    "/<int:reservation_id>/services",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.service.info", is_list=True),
+        auth="jwt_api_pms",
+    )
+    def get_reservation_services(self, reservation_id):
+        reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
+        if not reservation:
+            raise MissingError(_("Reservation not found"))
+        result_services = []
+        PmsServiceInfo = self.env.datamodels["pms.service.info"]
+        for service in reservation.service_ids:
+            result_services.append(
+                PmsServiceInfo(
+                    id=service.id,
+                    name=service.name,
+                    quantity=service.product_qty,
+                    priceTotal=service.price_total,
+                    priceSubtotal=service.price_subtotal,
+                    priceTaxes=service.price_tax,
+                    discount=service.discount,
+                )
+            )
+        return result_services
+
+    @restapi.method(
+        [
+            (
+                [
                     "/<int:_reservation_id>/reservation-lines/<int:reservation_line_id>",
                 ],
                 "PATCH",
