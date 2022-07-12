@@ -64,5 +64,4 @@ class PmsReservationInfo(Datamodel):
     priceOnlyRoom = fields.Float(required=False, allow_none=True)
 
     # TODO: Refact
-    # services = fields.List(fields.Dict(required=False, allow_none=True))
     # messages = fields.List(fields.Dict(required=False, allow_none=True))
