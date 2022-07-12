@@ -47,7 +47,7 @@ class PmsBoardServiceService(Component):
                     name=line.pms_board_service_room_type_id.display_name,
                     boardServiceId=line.pms_board_service_room_type_id.id,
                     productId=line.product_id.id,
-                    amount=line.amount,
+                    amount=round(line.amount,2),
                 )
             )
         return result_board_service_lines
@@ -75,7 +75,7 @@ class PmsBoardServiceService(Component):
                 name=board_service_line.pms_board_service_room_type_id.display_name,
                 boardServiceId=board_service_line.pms_board_service_room_type_id.id,
                 productId=board_service_line.product_id.id,
-                amount=board_service_line.amount,
+                amount=round(board_service_line.amount,2),
             )
         else:
             raise MissingError(_("Board service line not found"))
