@@ -105,7 +105,7 @@ class PmsReservationService(Component):
                 reservationType=reservation.reservation_type,
                 priceTotal=reservation.price_room_services_set,
                 discount=reservation.discount,
-                commissionAmount=reservation.commission_amount
+                commissionAmount=round(reservation.commission_amount, 2)
                 if reservation.commission_amount
                 else None,
                 priceOnlyServices=reservation.price_services,
