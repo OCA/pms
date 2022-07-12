@@ -52,7 +52,7 @@ class PmsProductService(Component):
                 PmsProductInfo(
                     id=product.id,
                     name=product.name,
-                    price=self._get_product_price(product, product_search_param),
+                    price=round(self._get_product_price(product, product_search_param),2),
                     perDay=product.per_day,
                     perPerson=product.per_person,
                 )
@@ -79,7 +79,7 @@ class PmsProductService(Component):
             return PmsProductInfo(
                 id=product.id,
                 name=product.name,
-                price=self._get_product_price(product, product_search_param),
+                price=round(self._get_product_price(product, product_search_param),2),
                 perDay=product.per_day,
                 perPerson=product.per_person,
             )
