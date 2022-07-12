@@ -19,7 +19,7 @@ class PmsRoomTypeService(Component):
             )
         ],
         input_param=Datamodel("pms.room.type.search.param"),
-        output_param=Datamodel("pms.room.info", is_list=True),
+        output_param=Datamodel("pms.room.type.info", is_list=True),
         auth="jwt_api_pms",
     )
     def get_room_types(self, room_type_search_param):
@@ -59,7 +59,7 @@ class PmsRoomTypeService(Component):
                     name=room.name,
                     pmsPropertyIds=room.pms_property_ids.mapped("id"),
                     defaultCode=room.default_code,
-                    price=room.list_price,
+                    price=round(room.list_price,2),
                 )
             )
         return result_rooms

@@ -46,7 +46,7 @@ class PmsPartnerService(Component):
                 "GET",
             )
         ],
-        output_param=Datamodel("pms.partner.info", is_list=True),
+        output_param=Datamodel("pms.checkin.partner.info", is_list=True),
         auth="jwt_api_pms",
     )
     def get_partner_by_doc_number(self, document_type, document_number):
