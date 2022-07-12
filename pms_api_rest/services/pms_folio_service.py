@@ -266,10 +266,13 @@ class PmsFolioService(Component):
                             allowedCheckout=reservation.allowed_checkout,
                             splitted=reservation.splitted,
                             priceTotal=reservation.price_room_services_set,
-                            servicesCount=len(
+                            # TODO: REVIEW IF THIS OR QTY OF EACH ONE
+                            servicesCount=sum(
                                 reservation.service_ids.filtered(
+
                                     lambda x: not x.is_board_service
                                 )
+                                .mapped("product_qty")
                             ),
                         )
                     )
