@@ -73,8 +73,8 @@ class PmsCalendarService(Component):
                     isFirstNight=line.reservation_id.checkin == line.date,
                     isLastNight=line.reservation_id.checkout + timedelta(days=-1)
                     == line.date,
-                    totalPrice=line.reservation_id.price_total,
-                    pendingPayment=line.reservation_id.folio_pending_amount,
+                    totalPrice=round(line.reservation_id.price_total,2),
+                    pendingPayment=round(line.reservation_id.folio_pending_amount,2),
                     numNotifications=line.reservation_id.message_needaction_counter,
                     adults=line.reservation_id.adults,
                     nextLineSplitted=next_line_splitted,
@@ -176,8 +176,8 @@ class PmsCalendarService(Component):
             result.append(
                 PmsCalendarDailyInvoicing(
                     date=datetime.combine(day, datetime.min.time()).isoformat(),
-                    invoicingTotal=sum(reservation_lines_by_day.mapped("price"))
-                    + sum(service_lines_by_day.mapped("price_day_total")),
+                    invoicingTotal=round(sum(reservation_lines_by_day.mapped("price"))
+                    + sum(service_lines_by_day.mapped("price_day_total")),2)
                 )
             )
 
