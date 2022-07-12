@@ -60,10 +60,12 @@ class PmsPricelistService(Component):
                 PmsPricelistInfo(
                     id=pricelist.id,
                     name=pricelist.name,
-                    cancellationPolicyId=pricelist.cancelation_rule_id.id
+                    cancelationRuleId=pricelist.cancelation_rule_id.id
                     if pricelist.cancelation_rule_id
                     else None,
-                    defaultAvailabilityPlanId=pricelist.availability_plan_id.id,
+                    defaultAvailabilityPlanId=pricelist.availability_plan_id.id
+                    if pricelist.availability_plan_id else None
+                    ,
                     pmsPropertyIds=pricelist.pms_property_ids.mapped("id"),
                 )
             )
