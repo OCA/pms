@@ -91,7 +91,8 @@ class PmsReservation(models.Model):
             )
         return super().write(values)
 
-    def action_draft(self, ignore_push_event=False):
+    def action_draft(self):
+        ignore_push_event = self.env.context.get("ignore_push_event", False)
         company = self.property_id.company_id or self.env.company
         if self.stage_id.id != self.env.company.guesty_backend_id.stage_inquiry_id.id:
             self.write(
@@ -106,7 +107,9 @@ class PmsReservation(models.Model):
                     )
                 )
 
-    def action_book(self, ignore_push_event=False):
+    def action_book(self):
+        ignore_push_event = self.env.context.get("ignore_push_event", False)
+
         if self.stage_id.id in [
             self.env.company.guesty_backend_id.stage_reserved_id.id,
             self.env.company.guesty_backend_id.stage_confirmed_id.id,
@@ -120,10 +123,12 @@ class PmsReservation(models.Model):
             self.guesty_push_reservation_reserve()
         return res
 
-    def action_confirm(self, ignore_push_event=False):
+    def action_confirm(self):
         # If the reservation is already confirmed, we don´t do more
         if self.stage_id.id == self.env.company.guesty_backend_id.stage_confirmed_id.id:
             return None
+
+        ignore_push_event = self.env.context.get("ignore_push_event", False)
 
         res = super(PmsReservation, self).action_confirm()
 
@@ -137,7 +142,9 @@ class PmsReservation(models.Model):
             self.guesty_push_reservation_confirm()
         return res
 
-    def action_cancel(self, ignore_push_event=False):
+    def action_cancel(self):
+        ignore_push_event = self.env.context.get("ignore_push_event", False)
+
         res = super(PmsReservation, self).action_cancel()
         company = self.property_id.company_id or self.env.company
         _log.info("Cancelling reservation with company {}".format(company))
@@ -376,25 +383,31 @@ class PmsReservation(models.Model):
         if reservation_data["status"] in ["canceled", "declined", "expired", "closed"]:
             if reservation_id.stage_id.id != backend.stage_canceled_id.id:
                 _log.info("Canceling reservation {}".format(reservation_id.id))
-                reservation_id.sudo().action_cancel(ignore_push_event=True)
+                reservation_id.sudo().with_context(
+                    ignore_push_event=True
+                ).action_cancel()
                 reservation_id.action_cancel_sale_order()
             else:
                 _log.info("Reservation {} already canceled".format(reservation_id.id))
         elif reservation_data["status"] == "inquiry":
             if reservation_id.stage_id.id != backend.stage_inquiry_id.id:
-                reservation_id.sudo().action_draft(ignore_push_event=True)
+                reservation_id.sudo().with_context(
+                    ignore_push_event=True
+                ).action_draft()
             else:
                 _log.info("Reservation {} already inquiry".format(reservation_id.id))
         elif reservation_data["status"] in ["reserved"]:
             if reservation_id.stage_id.id != backend.stage_reserved_id.id:
                 _log.info("Reservation {} reserved".format(reservation_id.id))
-                reservation_id.sudo().action_book(ignore_push_event=True)
+                reservation_id.sudo().with_context(ignore_push_event=True).action_book()
             else:
                 _log.info("Reservation {} already reserved".format(reservation_id.id))
         elif reservation_data["status"] in ["confirmed"]:
             if reservation_id.stage_id.id != backend.stage_confirmed_id.id:
                 _log.info("Reservation {} confirmed".format(reservation_id.id))
-                reservation_id.sudo().action_confirm(ignore_push_event=True)
+                reservation_id.sudo().with_context(
+                    ignore_push_event=True
+                ).action_confirm()
             else:
                 _log.info("Reservation {} already confirmed".format(reservation_id.id))
             try:
