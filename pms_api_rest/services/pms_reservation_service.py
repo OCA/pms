@@ -103,13 +103,13 @@ class PmsReservationService(Component):
                 else None,
                 toAssign=reservation.to_assign,
                 reservationType=reservation.reservation_type,
-                priceTotal=reservation.price_room_services_set,
-                discount=reservation.discount,
+                priceTotal=round(reservation.price_room_services_set,2),
+                discount=round(reservation.discount,2),
                 commissionAmount=round(reservation.commission_amount, 2)
                 if reservation.commission_amount
                 else None,
-                priceOnlyServices=reservation.price_services,
-                priceOnlyRoom=reservation.price_total,
+                priceOnlyServices=round(reservation.price_services,2),
+                priceOnlyRoom=round(reservation.price_total,2),
             )
         return res
 
@@ -239,9 +239,9 @@ class PmsReservationService(Component):
                     date=datetime.combine(
                         reservation_line.date, datetime.min.time()
                     ).isoformat(),
-                    price=reservation_line.price,
-                    discount=reservation_line.discount,
-                    cancelDiscount=reservation_line.cancel_discount,
+                    price=round(reservation_line.price,2),
+                    discount=round(reservation_line.discount,2),
+                    cancelDiscount=round(reservation_line.cancel_discount,2),
                     roomId=reservation_line.room_id.id,
                     reservationId=reservation_line.reservation_id.id,
                     pmsPropertyId=reservation_line.pms_property_id.id,
@@ -273,10 +273,10 @@ class PmsReservationService(Component):
                     id=service.id,
                     name=service.name,
                     quantity=service.product_qty,
-                    priceTotal=service.price_total,
-                    priceSubtotal=service.price_subtotal,
-                    priceTaxes=service.price_tax,
-                    discount=service.discount,
+                    priceTotal=round(service.price_total,2),
+                    priceSubtotal=round(service.price_subtotal,2),
+                    priceTaxes=round(service.price_tax,2),
+                    discount=round(service.discount,2),
                 )
             )
         return result_services
