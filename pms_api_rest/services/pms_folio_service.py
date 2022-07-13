@@ -44,7 +44,7 @@ class PmsFolioService(Component):
                 state=dict(folio.fields_get(["state"])["state"]["selection"])[
                     folio.state
                 ],
-                amountTotal=round(folio.amount_total,2),
+                amountTotal=round(folio.amount_total, 2),
             )
         else:
             raise MissingError(_("Folio not found"))
@@ -148,7 +148,7 @@ class PmsFolioService(Component):
                     partnerName=folio.partner_name if folio.partner_name else None,
                     partnerPhone=folio.mobile if folio.mobile else None,
                     partnerEmail=folio.email if folio.email else None,
-                    amountTotal=round(folio.amount_total,2),
+                    amountTotal=round(folio.amount_total, 2),
                     reservations=[] if not reservations else reservations,
                     paymentStateCode=folio.payment_state,
                     paymentStateDescription=dict(
@@ -193,7 +193,7 @@ class PmsFolioService(Component):
                         payments.append(
                             PmsPaymentInfo(
                                 id=payment.id,
-                                amount=round(payment.amount,2),
+                                amount=round(payment.amount, 2),
                                 journalId=payment.journal_id.id,
                                 date=datetime.combine(
                                     payment.date, datetime.min.time()
@@ -206,7 +206,7 @@ class PmsFolioService(Component):
                             payments.append(
                                 PmsPaymentInfo(
                                     id=payment.id,
-                                    amount=round(payment.amount,2),
+                                    amount=round(payment.amount, 2),
                                     journalId=payment.journal_id.id,
                                     date=datetime.combine(
                                         payment.date, datetime.min.time()
@@ -265,13 +265,11 @@ class PmsFolioService(Component):
                             readyForCheckin=reservation.ready_for_checkin,
                             allowedCheckout=reservation.allowed_checkout,
                             splitted=reservation.splitted,
-                            priceTotal=round(reservation.price_room_services_set,2),
+                            priceTotal=round(reservation.price_room_services_set, 2),
                             servicesCount=sum(
                                 reservation.service_ids.filtered(
-
                                     lambda x: not x.is_board_service
-                                )
-                                .mapped("product_qty")
+                                ).mapped("product_qty")
                             ),
                         )
                     )
