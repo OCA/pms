@@ -12,3 +12,4 @@ class PmsServiceInfo(Datamodel):
     priceSubtotal = fields.Float(required=False, allow_none=True)
     priceTaxes = fields.Float(required=False, allow_none=True)
     discount = fields.Float(required=False, allow_none=True)
+    isBoardService = fields.Boolean(required=False, allow_none=True)
