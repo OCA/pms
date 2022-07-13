@@ -64,6 +64,7 @@ class PmsReservationService(Component):
                 if reservation.channel_type_id
                 else None,
                 agencyId=reservation.agency_id.id if reservation.agency_id else None,
+                userId=reservation.user_id.id,
                 checkin=datetime.combine(
                     reservation.checkin, datetime.min.time()
                 ).isoformat(),
@@ -103,13 +104,13 @@ class PmsReservationService(Component):
                 else None,
                 toAssign=reservation.to_assign,
                 reservationType=reservation.reservation_type,
-                priceTotal=round(reservation.price_room_services_set,2),
-                discount=round(reservation.discount,2),
+                priceTotal=round(reservation.price_room_services_set, 2),
+                discount=round(reservation.discount, 2),
                 commissionAmount=round(reservation.commission_amount, 2)
                 if reservation.commission_amount
                 else None,
-                priceOnlyServices=round(reservation.price_services,2),
-                priceOnlyRoom=round(reservation.price_total,2),
+                priceOnlyServices=round(reservation.price_services, 2),
+                priceOnlyRoom=round(reservation.price_total, 2),
             )
         return res
 
@@ -239,9 +240,9 @@ class PmsReservationService(Component):
                     date=datetime.combine(
                         reservation_line.date, datetime.min.time()
                     ).isoformat(),
-                    price=round(reservation_line.price,2),
-                    discount=round(reservation_line.discount,2),
-                    cancelDiscount=round(reservation_line.cancel_discount,2),
+                    price=round(reservation_line.price, 2),
+                    discount=round(reservation_line.discount, 2),
+                    cancelDiscount=round(reservation_line.cancel_discount, 2),
                     roomId=reservation_line.room_id.id,
                     reservationId=reservation_line.reservation_id.id,
                     pmsPropertyId=reservation_line.pms_property_id.id,
@@ -273,10 +274,11 @@ class PmsReservationService(Component):
                     id=service.id,
                     name=service.name,
                     quantity=service.product_qty,
-                    priceTotal=round(service.price_total,2),
-                    priceSubtotal=round(service.price_subtotal,2),
-                    priceTaxes=round(service.price_tax,2),
-                    discount=round(service.discount,2),
+                    priceTotal=round(service.price_total, 2),
+                    priceSubtotal=round(service.price_subtotal, 2),
+                    priceTaxes=round(service.price_tax, 2),
+                    discount=round(service.discount, 2),
+                    isBoardService=service.is_board_service,
                 )
             )
         return result_services
