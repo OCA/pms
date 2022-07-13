@@ -9,6 +9,7 @@ from . import pms_reservation_line_service
 from . import pms_property_service
 from . import pms_login_service
 from . import pms_pricelist_service
+from . import pms_price_service
 from . import pms_availability_plan_service
 from . import pms_id_category_service
 from . import res_country_service
