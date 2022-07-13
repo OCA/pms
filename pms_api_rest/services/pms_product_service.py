@@ -52,9 +52,6 @@ class PmsProductService(Component):
                 PmsProductInfo(
                     id=product.id,
                     name=product.name,
-                    price=round(
-                        self._get_product_price(product, product_search_param), 2
-                    ),
                     perDay=product.per_day,
                     perPerson=product.per_person,
                 )
@@ -81,37 +78,9 @@ class PmsProductService(Component):
             return PmsProductInfo(
                 id=product.id,
                 name=product.name,
-                price=round(self._get_product_price(product, product_search_param), 2),
                 perDay=product.per_day,
                 perPerson=product.per_person,
             )
         else:
             raise MissingError(_("Product not found"))
 
-    def _get_product_price(self, product, product_search_param):
-        pms_property = self.env["pms.property"].browse(
-            product_search_param.pmsPropertyId
-        )
-        product_context = dict(
-            self.env.context,
-            date=datetime.today().date(),
-            pricelist=product_search_param.pricelistId or False,
-            uom=product.uom_id.id,
-            fiscal_position=False,
-            property=product_search_param.pmsPropertyId,
-        )
-        if product_search_param.dateConsumption:
-            product_context["consumption_date"] = product_search_param.dateConsumption
-        product = product.with_context(product_context)
-        return self.env["account.tax"]._fix_tax_included_price_company(
-            self.env["product.product"]._pms_get_display_price(
-                pricelist_id=product_search_param.pricelistId,
-                product=product,
-                company_id=pms_property.company_id.id,
-                product_qty=product_search_param.productQty or 1,
-                partner_id=product_search_param.partnerId,
-            ),
-            product.taxes_id,
-            product.taxes_id,  # Not exist service line, we repeat product taxes
-            pms_property.company_id,
-        )
