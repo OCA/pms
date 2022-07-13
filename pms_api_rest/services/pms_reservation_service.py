@@ -252,6 +252,30 @@ class PmsReservationService(Component):
         [
             (
                 [
+                    "/<int:reservation_id>/reservation-lines/<int:reservation_line_id>",
+                ],
+                "DELETE",
+            )
+        ],
+        auth="jwt_api_pms",
+    )
+    def delete_reservation_line(self, reservation_id, reservation_line_id):
+        reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
+        line = reservation.reservation_line_ids.filtered(lambda l: l.id == reservation_line_id)
+        if (
+            line
+            and len(reservation.reservation_line_ids) == 1
+            and line.date > min(reservation.reservation_line_ids.mapped("date"))
+            and line.date < max(reservation.reservation_line_ids.mapped("date"))
+        ):
+            line.unlink()
+        else:
+            raise MissingError(_("It was not possible to remove the reservation line"))
+
+    @restapi.method(
+        [
+            (
+                [
                     "/<int:reservation_id>/services",
                 ],
                 "GET",
