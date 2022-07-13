@@ -120,3 +120,25 @@ class PmsPropertyService(Component):
                     )
                 )
         return res
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:property_id>/users",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("res.users.info", is_list=True),
+        auth="jwt_api_pms",
+    )
+    def get_users(self, pms_property_id):
+        result_users = []
+        ResUsersInfo = self.env.datamodels["res.users.info"]
+        users = self.env["res.users"].search(
+            [("pms_property_id", "=", pms_property_id)]
+        )
+        for user in users:
+            result_users.append(ResUsersInfo(id=user.id, name=user.name))
+        return result_users
