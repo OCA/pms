@@ -37,9 +37,9 @@ class PmsReservationLineService(Component):
                 date=datetime.combine(
                     reservation_line.date, datetime.min.time()
                 ).isoformat(),
-                price=round(reservation_line.price,2),
-                discount=round(reservation_line.discount,2),
-                cancelDiscount=round(reservation_line.cancel_discount,2),
+                price=round(reservation_line.price, 2),
+                discount=round(reservation_line.discount, 2),
+                cancelDiscount=round(reservation_line.cancel_discount, 2),
                 roomId=reservation_line.room_id.id,
                 reservationId=reservation_line.reservation_id.id,
                 pmsPropertyId=reservation_line.pms_property_id.id,
@@ -90,9 +90,9 @@ class PmsReservationLineService(Component):
                     date=datetime.combine(
                         reservation_line.date, datetime.min.time()
                     ).isoformat(),
-                    price=round(reservation_line.price,2),
-                    discount=round(reservation_line.discount,2),
-                    cancelDiscount=round(reservation_line.cancel_discount,2),
+                    price=round(reservation_line.price, 2),
+                    discount=round(reservation_line.discount, 2),
+                    cancelDiscount=round(reservation_line.cancel_discount, 2),
                     roomId=reservation_line.room_id.id,
                     reservationId=reservation_line.reservation_id.id,
                     pmsPropertyId=reservation_line.pms_property_id.id,

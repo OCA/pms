@@ -56,7 +56,7 @@ class PmsBoardServiceService(Component):
                     id=board_service.id,
                     name=board_service.pms_board_service_id.display_name,
                     roomTypeId=board_service.pms_room_type_id.id,
-                    amount=round(board_service.amount,2),
+                    amount=round(board_service.amount, 2),
                 )
             )
         return result_board_services
@@ -127,7 +127,7 @@ class PmsBoardServiceService(Component):
                     name=line.pms_board_service_room_type_id.display_name,
                     boardServiceId=line.pms_board_service_room_type_id.id,
                     productId=line.product_id.id,
-                    amount=round(line.amount,2),
+                    amount=round(line.amount, 2),
                 )
             )
         return result_board_service_lines

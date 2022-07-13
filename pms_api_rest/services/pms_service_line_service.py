@@ -41,9 +41,9 @@ class PmsServiceService(Component):
                     date=datetime.combine(
                         service_line.date, datetime.min.time()
                     ).isoformat(),
-                    priceUnit=round(service_line.price_unit,2),
-                    priceTotal=round(service_line.price_day_total,2),
-                    discount=round(service_line.discount,2),
+                    priceUnit=round(service_line.price_unit, 2),
+                    priceTotal=round(service_line.price_day_total, 2),
+                    discount=round(service_line.discount, 2),
                 )
             )
         return result_service_lines

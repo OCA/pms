@@ -32,6 +32,7 @@ class PmsReservationInfo(Datamodel):
     boardServiceId = fields.Integer(required=False, allow_none=True)
     saleChannelId = fields.Integer(required=False, allow_none=True)
     agencyId = fields.Integer(required=False, allow_none=True)
+    userId = fields.Integer(required=False, allow_none=True)
 
     checkin = fields.String(required=False, allow_none=True)
     checkout = fields.String(required=False, allow_none=True)
