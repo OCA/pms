@@ -252,6 +252,41 @@ class PmsReservationService(Component):
         [
             (
                 [
+                    "/<int:reservation_id>/reservation-lines",
+                ],
+                "POST",
+            )
+        ],
+        input_param=Datamodel("pms.reservation.line.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def create_reservation_line(self, reservation_id, reservation_line_info):
+        reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
+        date = datetime.strptime(reservation_line_info.date, "%Y-%m-%d").date()
+        if not reservation:
+            raise MissingError(_("Reservation not found"))
+        if not reservation_line_info.date or not reservation_line_info.price:
+            raise MissingError(_("Date and price are required"))
+        if (
+            date != reservation.checkin - timedelta(days=1)
+            and date != reservation.checkout
+        ):
+            raise MissingError(_("It is only allowed to create contiguous nights to the reservation"))
+        vals = dict()
+        vals.update({
+            "reservation_id": reservation.id,
+            "date": date,
+            "price": reservation_line_info.price,
+            "room_id": reservation_line_info.roomId
+            if reservation_line_info.roomId
+            else reservation.preferred_room_id.id,
+        })
+        self.env["pms.reservation.line"].create(vals)
+
+    @restapi.method(
+        [
+            (
+                [
                     "/<int:reservation_id>/reservation-lines/<int:reservation_line_id>",
                 ],
                 "DELETE",
