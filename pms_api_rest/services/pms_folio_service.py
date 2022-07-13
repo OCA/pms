@@ -45,6 +45,7 @@ class PmsFolioService(Component):
                     folio.state
                 ],
                 amountTotal=round(folio.amount_total, 2),
+                reservationType=folio.reservation_type,
             )
         else:
             raise MissingError(_("Folio not found"))

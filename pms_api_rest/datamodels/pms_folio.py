@@ -21,6 +21,7 @@ class PmsFolioInfo(Datamodel):
     partnerEmail = fields.String(required=False, allow_none=True)
     state = fields.String(required=False, allow_none=True)
     amountTotal = fields.Float(required=False, allow_none=True)
+    reservationType = fields.String(required=False, allow_none=True)
 
 
 class PmsFolioShortInfo(Datamodel):
