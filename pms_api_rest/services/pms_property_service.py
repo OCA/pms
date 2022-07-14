@@ -28,6 +28,9 @@ class PmsPropertyService(Component):
         for prop in self.env["pms.property"].search(
             domain,
         ):
+            avail_rule_names = []
+            for avail_field in prop.availability_rule_field_ids:
+                avail_rule_names.append(avail_field.name)
             result_properties.append(
                 PmsPropertyInfo(
                     id=prop.id,
@@ -46,6 +49,7 @@ class PmsPropertyService(Component):
                     simpleOutColor=prop.simple_out_color,
                     simpleInColor=prop.simple_in_color,
                     simpleFutureColor=prop.simple_future_color,
+                    availabilityRuleFields=avail_rule_names,
                 )
             )
         return result_properties
@@ -65,10 +69,13 @@ class PmsPropertyService(Component):
     def get_property(self, property_id):
         pms_property = self.env["pms.property"].search([("id", "=", property_id)])
         res = []
+        avail_rule_names = []
         PmsPropertyInfo = self.env.datamodels["pms.property.info"]
         if not pms_property:
             pass
         else:
+            for avail_field in pms_property.availability_rule_field_ids:
+                avail_rule_names.append(avail_field.name)
             res = PmsPropertyInfo(
                 id=pms_property.id,
                 name=pms_property.name,
@@ -84,6 +91,7 @@ class PmsPropertyService(Component):
                 staffReservationColor=pms_property.staff_reservation_color,
                 toAssignReservationColor=pms_property.to_assign_reservation_color,
                 pendingPaymentReservationColor=pms_property.pending_payment_reservation_color,
+                availabilityRuleFields=avail_rule_names
             )
 
         return res

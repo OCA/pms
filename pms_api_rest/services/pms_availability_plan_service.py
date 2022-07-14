@@ -220,14 +220,13 @@ class PmsAvailabilityPlanService(Component):
                 vals.update(
                     {"max_stay_arrival": pms_avail_plan_rule_info.maxStayArrival}
                 )
-            if pms_avail_plan_rule_info.closed:
-                vals.update({"closed": pms_avail_plan_rule_info.closed})
-            if pms_avail_plan_rule_info.closedDeparture:
-                vals.update(
-                    {"closed_departure": pms_avail_plan_rule_info.closedDeparture}
-                )
-            if pms_avail_plan_rule_info.closedArrival:
-                vals.update({"closed_arrival": pms_avail_plan_rule_info.closedArrival})
             if pms_avail_plan_rule_info.quota:
                 vals.update({"quota": pms_avail_plan_rule_info.quota})
+            vals.update(
+                {
+                    "closed": pms_avail_plan_rule_info.closed,
+                    "closed_departure": pms_avail_plan_rule_info.closedDeparture,
+                    "closed_arrival": pms_avail_plan_rule_info.closedArrival
+                }
+            )
         avail_rule.write(vals)
