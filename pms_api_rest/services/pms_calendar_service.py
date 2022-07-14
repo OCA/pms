@@ -108,7 +108,7 @@ class PmsCalendarService(Component):
                 ("room_id", "=", room_id_a),
                 ("date", ">=", swap_info.swapFrom),
                 ("date", "<=", swap_info.swapTo),
-                ("pms_property_id", "=", swap_info.pms_property_id),
+                ("pms_property_id", "=", swap_info.pmsPropertyId),
             ]
         )
 
