@@ -299,7 +299,6 @@ class PmsReservationService(Component):
         line = reservation.reservation_line_ids.filtered(lambda l: l.id == reservation_line_id)
         if (
             line
-            and len(reservation.reservation_line_ids) == 1
             and line.date > min(reservation.reservation_line_ids.mapped("date"))
             and line.date < max(reservation.reservation_line_ids.mapped("date"))
         ):
