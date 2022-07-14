@@ -137,7 +137,7 @@ class PmsPropertyService(Component):
         result_users = []
         ResUsersInfo = self.env.datamodels["res.users.info"]
         users = self.env["res.users"].search(
-            [("pms_property_id", "=", pms_property_id)]
+            [("pms_property_ids", "in", pms_property_id)]
         )
         for user in users:
             result_users.append(ResUsersInfo(id=user.id, name=user.name))
