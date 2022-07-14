@@ -27,3 +27,4 @@ class PmsPropertyInfo(Datamodel):
     simpleOutColor = fields.String(required=False, allow_none=True)
     simpleInColor = fields.String(required=False, allow_none=True)
     simpleFutureColor = fields.String(required=False, allow_none=True)
+    availabilityRuleFields = fields.List(fields.String(), required=False, allow_none=True)
