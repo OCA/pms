@@ -10,6 +10,7 @@ class PmsPriceSearchParam(Datamodel):
     pmsPropertyId = fields.Integer(required=True, allow_none=True)
     pricelistId = fields.Integer(required=True, allow_none=True)
     roomTypeId = fields.Integer(required=False, allow_none=True)
+    boardServiceId = fields.Integer(required=False, allow_none=True)
     productId = fields.Integer(required=False, allow_none=True)
     productQty = fields.Integer(required=False, allow_none=True)
     partnerId = fields.Integer(required=False, allow_none=True)
