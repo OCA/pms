@@ -96,9 +96,7 @@ class PmsReservationService(Component):
                 allowedCheckout=reservation.allowed_checkout,
                 isSplitted=reservation.splitted,
                 pendingCheckinData=reservation.pending_checkin_data,
-                createDate=datetime.combine(
-                    reservation.create_date, datetime.min.time()
-                ).isoformat(),
+                createDate=reservation.create_date.isoformat(),
                 segmentationId=reservation.segmentation_ids[0].id
                 if reservation.segmentation_ids
                 else None,
