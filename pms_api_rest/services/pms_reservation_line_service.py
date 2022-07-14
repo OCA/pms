@@ -47,58 +47,58 @@ class PmsReservationLineService(Component):
         else:
             raise MissingError(_("Reservation Line not found"))
 
-    @restapi.method(
-        [
-            (
-                [
-                    "/",
-                ],
-                "GET",
-            )
-        ],
-        input_param=Datamodel("pms.reservation.line.search.param"),
-        output_param=Datamodel("pms.reservation.line.info", is_list=True),
-        auth="jwt_api_pms",
-    )
-    def get_reservation_lines(self, reservation_lines_search_param):
-        domain = []
-        if reservation_lines_search_param.date:
-            domain.append(("date", "=", reservation_lines_search_param.date))
-        if reservation_lines_search_param.reservationId:
-            domain.append(
-                ("reservation_id", "=", reservation_lines_search_param.reservationId)
-            )
-        if reservation_lines_search_param.pmsPropertyId:
-            domain.extend(
-                [
-                    (
-                        "pms_property_id",
-                        "=",
-                        reservation_lines_search_param.pmsPropertyId,
-                    ),
-                ]
-            )
+    # @restapi.method(
+    #     [
+    #         (
+    #             [
+    #                 "/",
+    #             ],
+    #             "GET",
+    #         )
+    #     ],
+    #     input_param=Datamodel("pms.reservation.line.search.param"),
+    #     output_param=Datamodel("pms.reservation.line.info", is_list=True),
+    #     auth="jwt_api_pms",
+    # )
+    # def get_reservation_lines(self, reservation_lines_search_param):
+    #     domain = []
+    #     if reservation_lines_search_param.date:
+    #         domain.append(("date", "=", reservation_lines_search_param.date))
+    #     if reservation_lines_search_param.reservationId:
+    #         domain.append(
+    #             ("reservation_id", "=", reservation_lines_search_param.reservationId)
+    #         )
+    #     if reservation_lines_search_param.pmsPropertyId:
+    #         domain.extend(
+    #             [
+    #                 (
+    #                     "pms_property_id",
+    #                     "=",
+    #                     reservation_lines_search_param.pmsPropertyId,
+    #                 ),
+    #             ]
+    #         )
 
-        result_lines = []
-        PmsReservationLineInfo = self.env.datamodels["pms.reservation.line.info"]
-        for reservation_line in self.env["pms.reservation.line"].search(
-            domain,
-        ):
-            result_lines.append(
-                PmsReservationLineInfo(
-                    id=reservation_line.id,
-                    date=datetime.combine(
-                        reservation_line.date, datetime.min.time()
-                    ).isoformat(),
-                    price=round(reservation_line.price, 2),
-                    discount=round(reservation_line.discount, 2),
-                    cancelDiscount=round(reservation_line.cancel_discount, 2),
-                    roomId=reservation_line.room_id.id,
-                    reservationId=reservation_line.reservation_id.id,
-                    pmsPropertyId=reservation_line.pms_property_id.id,
-                )
-            )
-        return result_lines
+    #     result_lines = []
+    #     PmsReservationLineInfo = self.env.datamodels["pms.reservation.line.info"]
+    #     for reservation_line in self.env["pms.reservation.line"].search(
+    #         domain,
+    #     ):
+    #         result_lines.append(
+    #             PmsReservationLineInfo(
+    #                 id=reservation_line.id,
+    #                 date=datetime.combine(
+    #                     reservation_line.date, datetime.min.time()
+    #                 ).isoformat(),
+    #                 price=round(reservation_line.price, 2),
+    #                 discount=round(reservation_line.discount, 2),
+    #                 cancelDiscount=round(reservation_line.cancel_discount, 2),
+    #                 roomId=reservation_line.room_id.id,
+    #                 reservationId=reservation_line.reservation_id.id,
+    #                 pmsPropertyId=reservation_line.pms_property_id.id,
+    #             )
+    #         )
+    #     return result_lines
 
     @restapi.method(
         [
