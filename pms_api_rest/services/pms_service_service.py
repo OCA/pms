@@ -10,7 +10,7 @@ from odoo.addons.component.core import Component
 
 class PmsServiceService(Component):
     _inherit = "base.rest.service"
-    _name = "pms.reservation.line.service"
+    _name = "pms.service.service"
     _usage = "services"
     _collection = "pms.services"
 
