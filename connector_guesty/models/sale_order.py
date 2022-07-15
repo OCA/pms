@@ -151,6 +151,12 @@ class SaleOrder(models.Model):
     def action_confirm(self):
         self.manually_confirmed = self._context.get("default_manually_confirmed")
         original_return = super(SaleOrder, self).action_confirm()
+
+        reservations = self.sale_get_active_reservation()
+        if reservations:
+            if not self.has_to_be_paid():
+                reservations.action_confirm()
+
         if self.manually_confirmed:
             try:
                 self.send_manually_confirmed_email()
