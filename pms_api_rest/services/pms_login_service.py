@@ -60,6 +60,9 @@ class PmsLoginService(Component):
             key="pms_secret_key_example",
             algorithm=jwt.ALGORITHMS.HS256,
         )
+        avail_rule_names = []
+        for avail_field in user_record.availability_rule_field_ids:
+            avail_rule_names.append(avail_field.name)
 
         return PmsApiRestUserOutput(
             token=token,
@@ -69,4 +72,5 @@ class PmsLoginService(Component):
             defaultPropertyId=user_record.pms_property_id.id,
             defaultPropertyName=user_record.pms_property_id.name,
             userImageBase64=user_record.partner_id.image_1024,
+            availabilityRuleFields=avail_rule_names,
         )

@@ -82,21 +82,3 @@ class PmsProperty(models.Model):
         help="Color for pending payment reservations in the planning.",
         default="rgba(162,70,137)",
     )
-
-    availability_rule_field_ids = fields.Many2many(
-        string="Availability Rules",
-        help="Configurable availability rules",
-        default=lambda x: x._get_default_avail_rule_fields(),
-        comodel_name="ir.model.fields",
-        relation="ir_model_fields_pms_property_rel",
-        column1="ir_model_fields",
-        column2="pms_property",
-
-    )
-
-    def _get_default_avail_rule_fields(self):
-        avail_rule_fields = self.env['ir.model.fields'].search([('model_id', '=', 'pms.availability.plan.rule'), ('name', 'in', ('min_stay', 'quota'))])
-        if avail_rule_fields:
-            return avail_rule_fields.ids
-        else:
-            return []
