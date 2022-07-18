@@ -18,6 +18,36 @@ class PmsServiceService(Component):
         [
             (
                 [
+                    "/<int:service_id>",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.service.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def get_service(self, service_id):
+        service = self.env["pms.service"].search([("id", "=", service_id)])
+        if not service:
+            raise MissingError(_("Service not found"))
+        PmsServiceInfo = self.env.datamodels["pms.service.info"]
+
+        return PmsServiceInfo(
+            id=service.id,
+            name=service.name,
+            productId=service.product_id.id,
+            quantity=service.product_qty,
+            priceTotal=round(service.price_total, 2),
+            priceSubtotal=round(service.price_subtotal, 2),
+            priceTaxes=round(service.price_tax, 2),
+            discount=round(service.discount, 2),
+            isBoardService=service.is_board_service,
+        )
+
+    @restapi.method(
+        [
+            (
+                [
                     "/<int:service_id>/service-lines",
                 ],
                 "GET",
