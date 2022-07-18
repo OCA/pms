@@ -14,6 +14,10 @@ class PmsReservationService(Component):
     _usage = "reservations"
     _collection = "pms.services"
 
+    # ------------------------------------------------------------------------------------
+    # HEAD RESERVATION--------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
+
     @restapi.method(
         [
             (
@@ -213,6 +217,10 @@ class PmsReservationService(Component):
                 )
             reservation_to_update.write(reservation_vals)
 
+    # ------------------------------------------------------------------------------------
+    # RESERVATION LINES-------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
+
     @restapi.method(
         [
             (
@@ -299,12 +307,39 @@ class PmsReservationService(Component):
         line = reservation.reservation_line_ids.filtered(lambda l: l.id == reservation_line_id)
         if (
             line
-            and line.date > min(reservation.reservation_line_ids.mapped("date"))
-            and line.date < max(reservation.reservation_line_ids.mapped("date"))
+            and (
+                line.date == min(reservation.reservation_line_ids.mapped("date"))
+                or line.date == max(reservation.reservation_line_ids.mapped("date"))
+            )
         ):
             line.unlink()
         else:
             raise MissingError(_("It was not possible to remove the reservation line"))
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:_reservation_id>/reservation-lines/<int:reservation_line_id>",
+                ],
+                "PATCH",
+            )
+        ],
+        input_param=Datamodel("pms.reservation.line.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def update_reservation_lines(
+        self, _reservation_id, reservation_line_id, reservation_line_param
+    ):
+        if reservation_line_param.roomId:
+            reservation_line_id = self.env["pms.reservation.line"].browse(
+                reservation_line_id
+            )
+            reservation_line_id.room_id = reservation_line_param.roomId
+
+    # ------------------------------------------------------------------------------------
+    # RESERVATION SERVICES----------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     @restapi.method(
         [
@@ -329,6 +364,7 @@ class PmsReservationService(Component):
                 PmsServiceInfo(
                     id=service.id,
                     name=service.name,
+                    productId=service.product_id.id,
                     quantity=service.product_qty,
                     priceTotal=round(service.price_total, 2),
                     priceSubtotal=round(service.price_subtotal, 2),
@@ -343,22 +379,28 @@ class PmsReservationService(Component):
         [
             (
                 [
-                    "/<int:_reservation_id>/reservation-lines/<int:reservation_line_id>",
+                    "/<int:reservation_id>/services",
                 ],
-                "PATCH",
+                "POST",
             )
         ],
-        input_param=Datamodel("pms.reservation.line.info", is_list=False),
+        input_param=Datamodel("pms.service.info", is_list=False),
         auth="jwt_api_pms",
     )
-    def update_reservation_lines(
-        self, _reservation_id, reservation_line_id, reservation_line_param
-    ):
-        if reservation_line_param.roomId:
-            reservation_line_id = self.env["pms.reservation.line"].browse(
-                reservation_line_id
-            )
-            reservation_line_id.room_id = reservation_line_param.roomId
+    def create_reservation_service(self, reservation_id, service_info):
+        reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
+        if not reservation:
+            raise MissingError(_("Reservation not found"))
+        vals = {
+            "product_id": service_info.quantity,
+            "reservation_id": reservation.id,
+        }
+        service = self.env["pms.service"].create(vals)
+        return service.id
+
+    # ------------------------------------------------------------------------------------
+    # RESERVATION CHECKINS----------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     @restapi.method(
         [
