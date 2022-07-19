@@ -74,7 +74,7 @@ class PmsProperty(models.Model):
     to_assign_reservation_color = fields.Char(
         string="OTA Reservation To Assign",
         help="Color for to_assign reservations in the planning.",
-        default="rgba(237,114,46,)",
+        default="rgba(237,114,46)",
     )
 
     pending_payment_reservation_color = fields.Char(
