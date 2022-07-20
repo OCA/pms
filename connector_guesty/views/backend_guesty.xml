@@ -55,6 +55,10 @@
                                 attrs="{'readonly': [('active', '=', True)]}"
                             />
                             <field
+                                name="auth_type"
+                                attrs="{'readonly': [('active', '=', True)]}"
+                            />
+                            <field
                                 name="api_key"
                                 attrs="{'readonly': [('active', '=', True)]}"
                             />
