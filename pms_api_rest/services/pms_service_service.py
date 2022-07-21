@@ -42,6 +42,7 @@ class PmsServiceService(Component):
             priceTaxes=round(service.price_tax, 2),
             discount=round(service.discount, 2),
             isBoardService=service.is_board_service,
+
         )
 
     @restapi.method(
@@ -66,14 +67,12 @@ class PmsServiceService(Component):
             result_service_lines.append(
                 PmsServiceLineInfo(
                     id=service_line.id,
-                    isBoardService=service_line.is_board_service,
-                    productId=service_line.product_id.id,
                     date=datetime.combine(
                         service_line.date, datetime.min.time()
                     ).isoformat(),
                     priceUnit=round(service_line.price_unit, 2),
-                    priceTotal=round(service_line.price_day_total, 2),
                     discount=round(service_line.discount, 2),
+                    quantity=service_line.day_qty,
                 )
             )
         return result_service_lines
