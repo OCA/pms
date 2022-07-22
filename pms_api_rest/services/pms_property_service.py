@@ -65,7 +65,6 @@ class PmsPropertyService(Component):
     def get_property(self, property_id):
         pms_property = self.env["pms.property"].search([("id", "=", property_id)])
         res = []
-        avail_rule_names = []
         PmsPropertyInfo = self.env.datamodels["pms.property.info"]
         if not pms_property:
             pass
