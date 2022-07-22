@@ -392,9 +392,17 @@ class PmsReservationService(Component):
         if not reservation:
             raise MissingError(_("Reservation not found"))
         vals = {
-            "product_id": service_info.quantity,
+            "product_id": service_info.productId,
             "reservation_id": reservation.id,
+            "is_board_service": service_info.isBoardService or False,
         }
+        if service_info.serviceLines:
+            vals["service_line_ids"] = [(0, False, {
+                "date": line.date,
+                "price_unit": line.priceUnit,
+                "discount": line.discount or 0,
+                "day_qty": line.quantity
+            }) for line in service_info.serviceLines]
         service = self.env["pms.service"].create(vals)
         return service.id
 
@@ -608,3 +616,4 @@ class PmsReservationService(Component):
         ):
             vals.update({"residence_state_id": pms_checkin_partner_info.countryState})
         return vals
+
