@@ -18,4 +18,6 @@ class PmsApiRestUserOutput(Datamodel):
     userImageBase64 = fields.String(required=False, allow_none=True)
     defaultPropertyId = fields.Integer(required=True, allow_none=False)
     defaultPropertyName = fields.String(required=True, allow_none=False)
-    availabilityRuleFields = fields.List(fields.String(), required=False, allow_none=True)
+    availabilityRuleFields = fields.List(
+        fields.String(), required=False, allow_none=True
+    )
