@@ -200,7 +200,6 @@ class PmsAvailabilityPlanService(Component):
     def write_availability_plan_rule(
         self, availability_plan_id, availability_plan_rule_id, pms_avail_plan_rule_info
     ):
-        vals = dict()
         avail_rule = self.env["pms.availability.plan.rule"].search(
             [
                 ("availability_plan_id", "=", availability_plan_id),
@@ -216,6 +215,6 @@ class PmsAvailabilityPlanService(Component):
                     "quota": pms_avail_plan_rule_info.quota,
                     "closed": pms_avail_plan_rule_info.closed,
                     "closed_departure": pms_avail_plan_rule_info.closedDeparture,
-                    "closed_arrival": pms_avail_plan_rule_info.closedArrival
+                    "closed_arrival": pms_avail_plan_rule_info.closedArrival,
                 }
             )
