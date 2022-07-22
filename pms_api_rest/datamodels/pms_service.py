@@ -15,4 +15,4 @@ class PmsServiceInfo(Datamodel):
     priceTaxes = fields.Float(required=False, allow_none=True)
     discount = fields.Float(required=False, allow_none=True)
     isBoardService = fields.Boolean(required=False, allow_none=True)
-    serviceLines = NestedModel("pms.service.line.info", many=True)
+    serviceLines = fields.List(NestedModel("pms.service.line.info"))
