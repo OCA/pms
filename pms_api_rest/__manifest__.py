@@ -20,7 +20,10 @@
     "data": [
         "data/auth_jwt_validator.xml",
         "views/pms_property_views.xml",
-        "views/res_users_views.xml"
+        "views/res_users_views.xml",
+    ],
+    "demo": [
+        "demo/pms_api_rest_master_data.xml",
     ],
     "installable": True,
 }
