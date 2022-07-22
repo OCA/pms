@@ -357,9 +357,23 @@ class PmsReservationService(Component):
         reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
         if not reservation:
             raise MissingError(_("Reservation not found"))
+
         result_services = []
         PmsServiceInfo = self.env.datamodels["pms.service.info"]
         for service in reservation.service_ids:
+            PmsServiceLineInfo = self.env.datamodels["pms.service.line.info"]
+            service_lines = []
+            for line in service.service_line_ids:
+                service_lines.append(PmsServiceLineInfo(
+                    id=line.id,
+                    date=datetime.combine(
+                        line.date, datetime.min.time()
+                    ).isoformat(),
+                    priceUnit=line.price_unit,
+                    discount=line.discount,
+                    quantity=line.day_qty,
+                ))
+
             result_services.append(
                 PmsServiceInfo(
                     id=service.id,
@@ -371,6 +385,7 @@ class PmsReservationService(Component):
                     priceTaxes=round(service.price_tax, 2),
                     discount=round(service.discount, 2),
                     isBoardService=service.is_board_service,
+                    serviceLines=service_lines,
                 )
             )
         return result_services
