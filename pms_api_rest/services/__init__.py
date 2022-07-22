@@ -31,3 +31,4 @@ from . import pms_cancelation_rule_service
 
 from . import pms_agency_service
 from . import pms_service_service
+from . import pms_service_line_service
