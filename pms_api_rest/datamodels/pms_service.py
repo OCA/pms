@@ -1,6 +1,7 @@
 from marshmallow import fields
 
 from odoo.addons.datamodel.core import Datamodel
+from odoo.addons.datamodel.fields import NestedModel
 
 
 class PmsServiceInfo(Datamodel):
@@ -14,3 +15,4 @@ class PmsServiceInfo(Datamodel):
     priceTaxes = fields.Float(required=False, allow_none=True)
     discount = fields.Float(required=False, allow_none=True)
     isBoardService = fields.Boolean(required=False, allow_none=True)
+    serviceLines = NestedModel("pms.service.line.info", many=True)
