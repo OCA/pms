@@ -31,7 +31,17 @@ class PmsServiceService(Component):
         if not service:
             raise MissingError(_("Service not found"))
         PmsServiceInfo = self.env.datamodels["pms.service.info"]
-
+        lines = [
+            self.env.datamodels["pms.service.line.info"](
+                id=line.id,
+                date=datetime.combine(
+                    line.date, datetime.min.time()
+                ).isoformat(),
+                priceUnit=line.price_unit,
+                discount=line.discount,
+                quantity=line.day_qty,
+            ) for line in service.service_line_ids
+        ]
         return PmsServiceInfo(
             id=service.id,
             name=service.name,
@@ -42,15 +52,27 @@ class PmsServiceService(Component):
             priceTaxes=round(service.price_tax, 2),
             discount=round(service.discount, 2),
             isBoardService=service.is_board_service,
-            serviceLines=[self.env.datamodels["pms.service.line.info"](
-                id=line.id,
-                date=datetime.combine(
-                    line.date, datetime.min.time()
-                ).isoformat(),
-                priceUnit=line.price_unit,
-                discount=line.discount,
-            ) for line in service.service_line_ids],
+            serviceLines=lines,
         )
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:service_id>",
+                ],
+                "DELETE",
+            )
+        ],
+        auth="jwt_api_pms",
+    )
+    def delete_service(self, service_id):
+        # esto tb podría ser con un browse
+        service = self.env["pms.service"].search([("id", "=", service_id)])
+        if service:
+            service.unlink()
+        else:
+            raise MissingError(_("Service not found"))
 
     @restapi.method(
         [
