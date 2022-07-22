@@ -42,7 +42,14 @@ class PmsServiceService(Component):
             priceTaxes=round(service.price_tax, 2),
             discount=round(service.discount, 2),
             isBoardService=service.is_board_service,
-
+            serviceLines=[self.env.datamodels["pms.service.line.info"](
+                id=line.id,
+                date=datetime.combine(
+                    line.date, datetime.min.time()
+                ).isoformat(),
+                priceUnit=line.price_unit,
+                discount=line.discount,
+            ) for line in service.service_line_ids],
         )
 
     @restapi.method(
