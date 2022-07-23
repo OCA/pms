@@ -74,8 +74,20 @@ class WizardIne(models.TransientModel):
                         ("room_id.in_ine", "=", True),
                         ("date", "=", p_date),
                         ("room_id.capacity", "=", 2),
-                        ("reservation_id.adults", "=", 1),
+                        (
+                            "reservation_id.state",
+                            "in",
+                            ["confirmed", "onboard", "done"],
+                        ),
                     ]
+                )
+                .filtered(
+                    lambda l: len(
+                        l.reservation_id.checkin_partner_ids.filtered(
+                            lambda c: c.state not in ["draft", "cancel"]
+                        )
+                    )
+                    == 1
                 )
                 .mapped("room_id")
             )
@@ -91,8 +103,20 @@ class WizardIne(models.TransientModel):
                         ("room_id.in_ine", "=", True),
                         ("date", "=", p_date),
                         ("room_id.capacity", "=", 2),
-                        ("reservation_id.adults", "=", 2),
+                        (
+                            "reservation_id.state",
+                            "in",
+                            ["confirmed", "onboard", "done"],
+                        ),
                     ]
+                )
+                .filtered(
+                    lambda l: len(
+                        l.reservation_id.checkin_partner_ids.filtered(
+                            lambda c: c.state not in ["draft", "cancel"]
+                        )
+                    )
+                    == 2
                 )
                 .mapped("room_id")
             )
@@ -103,6 +127,7 @@ class WizardIne(models.TransientModel):
                     ("pms_property_id", "=", pms_property_id.id),
                     ("product_id.is_extra_bed", "=", True),
                     ("reservation_id.reservation_type", "=", "normal"),
+                    ("reservation_id.state", "in", ["confirmed", "onboard", "done"]),
                     ("date", "=", p_date),
                 ]
             )
@@ -133,7 +158,20 @@ class WizardIne(models.TransientModel):
                         ("reservation_id.reservation_type", "=", "normal"),
                         ("room_id.in_ine", "=", True),
                         ("pms_property_id", "=", pms_property_id.id),
+                        (
+                            "reservation_id.state",
+                            "in",
+                            ["confirmed", "onboard", "done"],
+                        ),
                     ]
+                )
+                .filtered(
+                    lambda l: len(
+                        l.reservation_id.checkin_partner_ids.filtered(
+                            lambda c: c.state not in ["draft", "cancel"]
+                        )
+                    )
+                    > 0
                 )
                 .mapped("room_id")
             )
@@ -260,6 +298,13 @@ class WizardIne(models.TransientModel):
                         )  # .ine_code
                         ine_code = residence_state_id.ine_code
 
+                        if not ine_code:
+                            raise ValidationError(
+                                _(
+                                    "%s does not have the INE Code configured"
+                                    % residence_state_id.name
+                                )
+                            )
                         # get count of each result
                         num_spain = entry_from_spain["__count"]
 
@@ -272,20 +317,12 @@ class WizardIne(models.TransientModel):
 
                         if not nationalities[CODE_SPAIN][ine_code].get(date):
                             nationalities[CODE_SPAIN][ine_code][date] = dict()
-
                         nationalities[CODE_SPAIN][ine_code][date][
                             type_of_entry
                         ] = num_spain
 
         # result object
         nationalities = dict()
-
-        # fake partners to remove when process finished
-        fake_partners_ids = list()
-
-        # default country and state
-        country_spain = self.env["res.country"].search([("code", "=", "ES")])
-        state_madrid = self.env["res.country.state"].search([("name", "=", "Madrid")])
 
         # iterate days between start_date and end_date
         for p_date in [
@@ -298,54 +335,14 @@ class WizardIne(models.TransientModel):
                     ("pms_property_id", "=", pms_property_id),
                     ("checkin", "<=", p_date),
                     ("checkout", ">=", p_date),
-                    ("reservation_id.state", "!=", "cancel"),
                     ("reservation_id.reservation_type", "=", "normal"),
+                    ("state", "not in", ["dummy", "draft", "cancel"]),
                 ]
             )
-            for host in hosts:
-                # host without checkin
-                if host.state not in ["onboard", "done"]:
-                    # search other host same reservation with checkin
-                    chk_part_same_reserv_with_checkin = (
-                        hosts.reservation_id.checkin_partner_ids.filtered(
-                            lambda x: x.partner_id
-                            and x.id != host.id
-                            and x.state in ["onboard", "done"]
-                            and x.reservation_id.id == host.reservation_id.id
-                        )
-                    )
-                    # if there are some checkin partners in the same reservation
-                    if chk_part_same_reserv_with_checkin:
-                        # create partner with same country & state
-                        country_other = chk_part_same_reserv_with_checkin[
-                            0
-                        ].partner_id.nationality_id.id
-                        state_other = chk_part_same_reserv_with_checkin[
-                            0
-                        ].partner_id.residence_state_id.id
-                        dummy_partner = self.env["res.partner"].create(
-                            {
-                                "name": "partner1",
-                                "country_id": country_other,
-                                "nationality_id": country_other,
-                                "residence_state_id": state_other,
-                            }
-                        )
-
-                    else:
-                        # create partner from madrid
-                        dummy_partner = self.env["res.partner"].create(
-                            {
-                                "name": "partner1",
-                                "country_id": country_spain.id,
-                                "nationality_id": country_spain.id,
-                                "residence_state_id": state_madrid.id,
-                            }
-                        )
-                    fake_partners_ids.append(dummy_partner.id)
-                    host.partner_id = dummy_partner
             hosts = hosts.filtered(
-                lambda x: x.reservation_id.reservation_line_ids.mapped("room_id").in_ine
+                lambda x: all(
+                    x.reservation_id.reservation_line_ids.mapped("room_id.in_ine")
+                )
             )
 
             # arrivals
@@ -393,19 +390,6 @@ class WizardIne(models.TransientModel):
                 p_date, "pernoctations", read_by_pernoctations
             )
 
-        checkin_partners_to_unlink = self.env["pms.checkin.partner"].search(
-            [
-                ("partner_id", "in", fake_partners_ids),
-            ]
-        )
-        checkin_partners_to_unlink.partner_id = False
-
-        partners_to_unlink = self.env["res.partner"].search(
-            [
-                ("id", "in", fake_partners_ids),
-            ]
-        )
-        partners_to_unlink.unlink()
         return nationalities
 
     def ine_calculate_adr(self, start_date, end_date, domain=False):
@@ -683,139 +667,110 @@ class WizardIne(models.TransientModel):
             )
         )
 
-        # TODO:
-        #  Evaluate how to get occupation & ADR for:
-        #       -traditional/online tour-operator
-        #       -traditional/online agency
-        #       -companys
+        total_groups_domains = {
+            "tour_operator_offline": [
+                ("reservation_id.agency_id.sale_channel_id.name", "ilike", "Operator"),
+                ("reservation_id.agency_id.sale_channel_id.is_on_line", "=", True),
+            ],
+            "tour_operator_online": [
+                ("reservation_id.agency_id.sale_channel_id.name", "ilike", "Operator"),
+                ("reservation_id.agency_id.sale_channel_id.is_on_line", "=", False),
+            ],
+            "companies": [
+                ("reservation_id.partner_id", "!=", False),
+                ("reservation_id.partner_id.is_company", "=", True),
+            ],
+            "agencies": [
+                ("reservation_id.agency_id", "!=", False),
+                ("reservation_id.agency_id.sale_channel_id.is_on_line", "=", False),
+            ],
+            "otas": [
+                ("reservation_id.agency_id", "!=", False),
+                ("reservation_id.agency_id.sale_channel_id.is_on_line", "=", True),
+            ],
+            "persons": [
+                "|",
+                ("reservation_id.partner_id", "=", False),
+                ("reservation_id.partner_id.is_company", "=", False),
+            ],
+            "groups": [("reservation_id.folio_id.number_of_rooms", ">=", 4)],
+            "internet": [("reservation_id.channel_type_id.is_on_line", "=", True)],
+            "others": [
+                "|",
+                ("reservation_id.channel_type_id.is_on_line", "!=", True),
+                ("reservation_id.channel_type_id", "=", False),
+            ],
+        }
 
-        ET.SubElement(prices_tag, "ADR_TOUROPERADOR_TRADICIONAL").text = "0"
+        percents = {}
+        adrs = {}
+        for group, domain in total_groups_domains.items():
+            percents[group] = self.ine_calculate_occupancy(
+                self.start_date,
+                self.end_date,
+                domain,
+            )
+            adrs[group] = self.ine_calculate_adr(
+                self.start_date,
+                self.end_date,
+                domain,
+            )
+
+        # In this point, the groups adrs and percents are well calculated.... but,
+        # our statist friends want the total of the percentage groupings to add up = 100%,
+        # without conceiving that the groupings overlap, so they cannot receive real data
+        # and force us to pervert the original data so that it fits in their grid notebook.
+        # The purpose of the following lines of code is only to show the inefficiency
+        # of the state statistics,
+        # so at least I will feel that the effort made some sense :)
+
+        total_percent = sum([val for val in percents.values()])
+        for group in total_groups_domains.keys():
+            percents[group] = round(percents[group] * 100 / total_percent, 2)
+
+        ET.SubElement(prices_tag, "ADR_TOUROPERADOR_TRADICIONAL").text = str(
+            adrs["tour_operator_offline"]
+        )
         ET.SubElement(
             prices_tag, "PCTN_HABITACIONES_OCUPADAS_TOUROPERADOR_TRADICIONAL"
-        ).text = "0"
-        ET.SubElement(prices_tag, "ADR_TOUROPERADOR_ONLINE").text = "0"
+        ).text = str(percents["tour_operator_offline"])
+        ET.SubElement(prices_tag, "ADR_TOUROPERADOR_ONLINE").text = str(
+            adrs["tour_operator_online"]
+        )
         ET.SubElement(
             prices_tag, "PCTN_HABITACIONES_OCUPADAS_TOUROPERADOR_ONLINE"
-        ).text = "0"
-        ET.SubElement(prices_tag, "ADR_EMPRESAS").text = str(
-            self.ine_calculate_adr(
-                self.start_date,
-                self.end_date,
-                [
-                    ("reservation_id.partner_id", "!=", False),
-                    ("reservation_id.partner_id.is_company", "=", True),
-                ],
-            )
-        )
+        ).text = str(percents["tour_operator_online"])
+        ET.SubElement(prices_tag, "ADR_EMPRESAS").text = str(adrs["companies"])
         ET.SubElement(prices_tag, "PCTN_HABITACIONES_OCUPADAS_EMPRESAS").text = str(
-            self.ine_calculate_occupancy(
-                self.start_date,
-                self.end_date,
-                [
-                    ("reservation_id.partner_id", "!=", False),
-                    ("reservation_id.partner_id.is_company", "=", True),
-                ],
-            )
+            percents["companies"]
         )
         ET.SubElement(prices_tag, "ADR_AGENCIA_DE_VIAJE_TRADICIONAL").text = str(
-            self.ine_calculate_adr(
-                self.start_date,
-                self.end_date,
-                [
-                    ("reservation_id.agency_id", "!=", False),
-                    ("reservation_id.agency_id.sale_channel_id.is_on_line", "=", False),
-                ],
-            )
+            adrs["agencies"]
         )
         ET.SubElement(
             prices_tag, "PCTN_HABITACIONES_OCUPADAS_AGENCIA_TRADICIONAL"
-        ).text = str(
-            self.ine_calculate_occupancy(
-                self.start_date,
-                self.end_date,
-                [
-                    ("reservation_id.agency_id", "!=", False),
-                    ("reservation_id.agency_id.sale_channel_id.is_on_line", "=", False),
-                ],
-            )
-        )
+        ).text = str(percents["agencies"])
         ET.SubElement(prices_tag, "ADR_AGENCIA_DE_VIAJE_ONLINE").text = str(
-            self.ine_calculate_adr(
-                self.start_date,
-                self.end_date,
-                [
-                    ("reservation_id.agency_id", "!=", False),
-                    ("reservation_id.agency_id.sale_channel_id.is_on_line", "=", True),
-                ],
-            )
+            adrs["otas"]
         )
         ET.SubElement(
             prices_tag, "PCTN_HABITACIONES_OCUPADAS_AGENCIA_ONLINE"
-        ).text = str(
-            self.ine_calculate_occupancy(
-                self.start_date,
-                self.end_date,
-                [
-                    ("reservation_id.agency_id", "!=", False),
-                    ("reservation_id.agency_id.sale_channel_id.is_on_line", "=", True),
-                ],
-            )
-        )
-        ET.SubElement(prices_tag, "ADR_PARTICULARES").text = str(
-            self.ine_calculate_adr(
-                self.start_date,
-                self.end_date,
-                [
-                    "|",
-                    ("reservation_id.partner_id", "=", False),
-                    ("reservation_id.partner_id.is_company", "!=", False),
-                ],
-            )
-        )
+        ).text = str(percents["otas"])
+        ET.SubElement(prices_tag, "ADR_PARTICULARES").text = str(adrs["persons"])
         ET.SubElement(prices_tag, "PCTN_HABITACIONES_OCUPADAS_PARTICULARES").text = str(
-            self.ine_calculate_occupancy(
-                self.start_date,
-                self.end_date,
-                [
-                    "|",
-                    ("reservation_id.partner_id", "=", False),
-                    ("reservation_id.partner_id.is_company", "=", False),
-                ],
-            )
+            percents["persons"]
         )
-        ET.SubElement(prices_tag, "ADR_GRUPOS").text = "0"
-        ET.SubElement(prices_tag, "PCTN_HABITACIONES_OCUPADAS_GRUPOS").text = "0"
-        ET.SubElement(prices_tag, "ADR_INTERNET").text = str(
-            self.ine_calculate_adr(
-                self.start_date,
-                self.end_date,
-                [("reservation_id.channel_type_id.is_on_line", "=", True)],
-            )
+        ET.SubElement(prices_tag, "ADR_GRUPOS").text = str(adrs["groups"])
+        ET.SubElement(prices_tag, "PCTN_HABITACIONES_OCUPADAS_GRUPOS").text = str(
+            percents["groups"]
         )
+        ET.SubElement(prices_tag, "ADR_INTERNET").text = str(adrs["internet"])
         ET.SubElement(prices_tag, "PCTN_HABITACIONES_OCUPADAS_INTERNET").text = str(
-            self.ine_calculate_occupancy(
-                self.start_date,
-                self.end_date,
-                [("reservation_id.channel_type_id.is_on_line", "=", True)],
-            )
+            percents["internet"]
         )
-        ET.SubElement(prices_tag, "ADR_OTROS").text = str(
-            self.ine_calculate_adr(
-                self.start_date,
-                self.end_date,
-                [("reservation_id.channel_type_id.is_on_line", "!=", True)],
-            )
-        )
+        ET.SubElement(prices_tag, "ADR_OTROS").text = str(adrs["others"])
         ET.SubElement(prices_tag, "PCTN_HABITACIONES_OCUPADAS_OTROS").text = str(
-            self.ine_calculate_occupancy(
-                self.start_date,
-                self.end_date,
-                [
-                    "|",
-                    ("reservation_id.channel_type_id.is_on_line", "!=", True),
-                    ("reservation_id.channel_type_id", "=", False),
-                ],
-            )
+            percents["others"]
         )
 
         staff_tag = ET.SubElement(survey_tag, "PERSONAL_OCUPADO")
