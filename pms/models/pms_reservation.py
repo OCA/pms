@@ -1892,7 +1892,7 @@ class PmsReservation(models.Model):
 
     @api.constrains("sale_channel_ids")
     def _check_lines_with_sale_channel_id(self):
-        for record in self:
+        for record in self.filtered("sale_channel_origin_id"):
             if record.reservation_line_ids:
                 if record.sale_channel_origin_id not in record.sale_channel_ids:
                     raise ValidationError(
@@ -2041,36 +2041,15 @@ class PmsReservation(models.Model):
             and "sale_channel_origin_id" in vals
             and ("partner_name" in vals or "partner_id" in vals or "agency_id" in vals)
         ):
-            folio_vals = {
-                "pms_property_id": vals["pms_property_id"],
-            }
-            if vals.get("sale_channel_origin_id"):
-                folio_vals["sale_channel_origin_id"] = vals.get(
-                    "sale_channel_origin_id"
-                )
-            if vals.get("partner_id"):
-                folio_vals["partner_id"] = vals.get("partner_id")
-            elif vals.get("agency_id"):
-                folio_vals["agency_id"] = vals.get("agency_id")
-            elif vals.get("partner_name"):
-                folio_vals["partner_name"] = vals.get("partner_name")
-                folio_vals["mobile"] = vals.get("mobile")
-                folio_vals["email"] = vals.get("email")
-            elif vals.get("reservation_type") != "out":
-                raise ValidationError(_("Partner contact name is required"))
+            folio_vals = self._get_folio_vals(vals)
+
+            self._check_clousure_reason(
+                reservation_type=vals.get("reservation_type"),
+                clousure_reason=vals.get("clousure_reason_id"),
+            )
+
             # Create the folio in case of need
             # (To allow to create reservations direct)
-            if vals.get("reservation_type"):
-                folio_vals["reservation_type"] = vals.get("reservation_type")
-                if vals.get("reservation_type") == "out" and not vals.get(
-                    "closure_reason_id"
-                ):
-                    raise ValidationError(
-                        _(
-                            "A closure reason is mandatory when reservation"
-                            " type is 'out of service'"
-                        )
-                    )
             folio = self.env["pms.folio"].create(folio_vals)
             vals.update(
                 {
@@ -2132,6 +2111,35 @@ class PmsReservation(models.Model):
         if "adults" in vals:
             self._check_capacity()
         return res
+
+    def _get_folio_vals(self, reservation_vals):
+        folio_vals = {
+            "pms_property_id": reservation_vals["pms_property_id"],
+        }
+        if reservation_vals.get("sale_channel_origin_id"):
+            folio_vals["sale_channel_origin_id"] = reservation_vals.get(
+                "sale_channel_origin_id"
+            )
+        if reservation_vals.get("partner_id"):
+            folio_vals["partner_id"] = reservation_vals.get("partner_id")
+        elif reservation_vals.get("agency_id"):
+            folio_vals["agency_id"] = reservation_vals.get("agency_id")
+        elif reservation_vals.get("partner_name"):
+            folio_vals["partner_name"] = reservation_vals.get("partner_name")
+            folio_vals["mobile"] = reservation_vals.get("mobile")
+            folio_vals["email"] = reservation_vals.get("email")
+        elif reservation_vals.get("reservation_type") != "out":
+            raise ValidationError(_("Partner contact name is required"))
+        return folio_vals
+
+    def _check_clousure_reason(self, reservation_type, clousure_reason):
+        if reservation_type == "out" and not clousure_reason:
+            raise ValidationError(
+                _(
+                    "A closure reason is mandatory when reservation"
+                    " type is 'out of service'"
+                )
+            )
 
     def _check_services(self, vals):
         # If we create a reservation with board service and other service at the same time,
