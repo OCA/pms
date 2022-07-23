@@ -9,6 +9,13 @@ from .common import TestPms
 class TestWizardTravellerReport(TestPms):
     def setUp(self):
         super().setUp()
+        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+            {
+                "name": "Door",
+                "channel_type": "direct",
+            }
+        )
+
         # number of seats established in the property
         self.pms_property1.ine_seats = 50
 
@@ -108,6 +115,7 @@ class TestWizardTravellerReport(TestPms):
                 "partner_id": self.partner_1.id,
                 "adults": 1,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         self.checkin1 = self.env["pms.checkin.partner"].create(
@@ -127,6 +135,7 @@ class TestWizardTravellerReport(TestPms):
                 "partner_id": self.partner_2.id,
                 "adults": 1,
                 "pms_property_id": self.pms_property2.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         self.checkin2 = self.env["pms.checkin.partner"].create(
@@ -169,6 +178,7 @@ class TestWizardTravellerReport(TestPms):
                 "partner_id": self.partner_1.id,
                 "adults": 1,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         self.checkin1 = self.env["pms.checkin.partner"].create(
@@ -189,6 +199,7 @@ class TestWizardTravellerReport(TestPms):
                 "partner_id": self.partner_2.id,
                 "adults": 1,
                 "pms_property_id": self.pms_property2.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         self.checkin2 = self.env["pms.checkin.partner"].create(
