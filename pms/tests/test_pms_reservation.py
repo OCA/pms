@@ -3863,6 +3863,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "reservation_type": "out",
                 "closure_reason_id": closure_reason,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         # ASSERT
