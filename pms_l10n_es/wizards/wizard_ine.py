@@ -74,7 +74,11 @@ class WizardIne(models.TransientModel):
                         ("room_id.in_ine", "=", True),
                         ("date", "=", p_date),
                         ("room_id.capacity", "=", 2),
-                        ("reservation_id.state", "in", ["confirmed", "done"]),
+                        (
+                            "reservation_id.state",
+                            "in",
+                            ["confirmed", "onboard", "done"],
+                        ),
                     ]
                 )
                 .filtered(
@@ -99,7 +103,11 @@ class WizardIne(models.TransientModel):
                         ("room_id.in_ine", "=", True),
                         ("date", "=", p_date),
                         ("room_id.capacity", "=", 2),
-                        ("reservation_id.state", "in", ["confirmed", "done"]),
+                        (
+                            "reservation_id.state",
+                            "in",
+                            ["confirmed", "onboard", "done"],
+                        ),
                     ]
                 )
                 .filtered(
@@ -114,24 +122,14 @@ class WizardIne(models.TransientModel):
             )
 
             # service lines with extra beds
-            extra_bed_service_lines = (
-                self.env["pms.service.line"]
-                .search(
-                    [
-                        ("pms_property_id", "=", pms_property_id.id),
-                        ("product_id.is_extra_bed", "=", True),
-                        ("reservation_id.reservation_type", "=", "normal"),
-                        ("date", "=", p_date),
-                    ]
-                )
-                .filtered(
-                    lambda s: len(
-                        s.reservation_id.checkin_partner_ids.filtered(
-                            lambda c: c.state not in ["draft", "cancel"]
-                        )
-                    )
-                    > s.reservation_id.adults
-                )
+            extra_bed_service_lines = self.env["pms.service.line"].search(
+                [
+                    ("pms_property_id", "=", pms_property_id.id),
+                    ("product_id.is_extra_bed", "=", True),
+                    ("reservation_id.reservation_type", "=", "normal"),
+                    ("reservation_id.state", "in", ["confirmed", "onboard", "done"]),
+                    ("date", "=", p_date),
+                ]
             )
 
             extra_beds = 0
@@ -160,7 +158,11 @@ class WizardIne(models.TransientModel):
                         ("reservation_id.reservation_type", "=", "normal"),
                         ("room_id.in_ine", "=", True),
                         ("pms_property_id", "=", pms_property_id.id),
-                        ("reservation_id.state", "in", ["confirmed", "done"]),
+                        (
+                            "reservation_id.state",
+                            "in",
+                            ["confirmed", "onboard", "done"],
+                        ),
                     ]
                 )
                 .filtered(
