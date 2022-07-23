@@ -1335,7 +1335,13 @@ class PmsReservation(models.Model):
                 reservation.preferred_room_id = False
             else:
                 reservation.splitted = False
-                if room_ids:
+                # Set automatically preferred_room_id if, and only if,
+                # all nights has the same room
+                if (
+                    len(room_ids) == 1
+                    and len(reservation.reservation_line_ids)
+                    == (reservation.checkout - reservation.checkin).days
+                ):
                     reservation.preferred_room_id = room_ids[0]
 
     @api.depends(
@@ -2045,7 +2051,7 @@ class PmsReservation(models.Model):
 
             self._check_clousure_reason(
                 reservation_type=vals.get("reservation_type"),
-                clousure_reason=vals.get("clousure_reason_id"),
+                closure_reason_id=vals.get("closure_reason_id"),
             )
 
             # Create the folio in case of need
@@ -2130,10 +2136,12 @@ class PmsReservation(models.Model):
             folio_vals["email"] = reservation_vals.get("email")
         elif reservation_vals.get("reservation_type") != "out":
             raise ValidationError(_("Partner contact name is required"))
+        if reservation_vals.get("reservation_type"):
+            folio_vals["reservation_type"] = reservation_vals.get("reservation_type")
         return folio_vals
 
-    def _check_clousure_reason(self, reservation_type, clousure_reason):
-        if reservation_type == "out" and not clousure_reason:
+    def _check_clousure_reason(self, reservation_type, closure_reason_id):
+        if reservation_type == "out" and not closure_reason_id:
             raise ValidationError(
                 _(
                     "A closure reason is mandatory when reservation"
