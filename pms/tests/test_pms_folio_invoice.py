@@ -84,6 +84,14 @@ class TestPmsFolioInvoice(TestPms):
             }
         )
 
+        # create a sale channel
+        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+            {
+                "name": "Door",
+                "channel_type": "direct",
+            }
+        )
+
     def create_configuration_accounting_scenario(self):
         """
         Method to simplified scenario to payments and accounting:
@@ -134,14 +142,6 @@ class TestPmsFolioInvoice(TestPms):
             ]
         )
         journals.allowed_pms_payments = True
-
-        # create a sale channel
-        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
-            {
-                "name": "Door",
-                "channel_type": "direct",
-            }
-        )
 
     def test_invoice_full_folio(self):
         """
@@ -391,7 +391,6 @@ class TestPmsFolioInvoice(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
-                "service_ids": [(6, 0, [self.service1.id])],
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
@@ -435,7 +434,6 @@ class TestPmsFolioInvoice(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
-                "service_ids": [(6, 0, [self.service1.id])],
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
@@ -480,7 +478,6 @@ class TestPmsFolioInvoice(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
-                "service_ids": [(6, 0, [self.service1.id])],
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
@@ -697,6 +694,7 @@ class TestPmsFolioInvoice(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
 
@@ -728,6 +726,7 @@ class TestPmsFolioInvoice(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
 
@@ -799,6 +798,7 @@ class TestPmsFolioInvoice(TestPms):
                 "room_type_id": self.demo_room_type_double.id,
                 "partner_id": self.partner_id.id,
                 "board_service_room_id": self.board_service_room_type1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         self.service = self.env["pms.service"].create(
@@ -896,6 +896,7 @@ class TestPmsFolioInvoice(TestPms):
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
                 "board_service_room_id": self.board_service_room_type1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         self.service = self.env["pms.service"].create(

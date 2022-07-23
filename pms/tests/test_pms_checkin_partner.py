@@ -57,9 +57,13 @@ class TestPmsCheckinPartner(TestPms):
                 "gender": "male",
             }
         )
-        self.id_category = self.env["res.partner.id_category"].create(
-            {"name": "DNI", "code": "D"}
+        self.id_category = self.env["res.partner.id_category"].search(
+            [("code", "=", "D")]
         )
+        if not self.id_category:
+            self.id_category = self.env["res.partner.id_category"].create(
+                {"name": "DNI", "code": "D"}
+            )
         self.env["res.partner.id_number"].create(
             {
                 "category_id": self.id_category.id,
@@ -1609,6 +1613,7 @@ class TestPmsCheckinPartner(TestPms):
                 "partner_id": self.host1.id,
                 "adults": 1,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         checkin_partner_id = self.reservation.checkin_partner_ids[0]
