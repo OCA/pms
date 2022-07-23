@@ -15,6 +15,7 @@
                 name="out_service_description"
             >Extra privacy for school field trip.</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
+            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
         </record>
         <record id="pms_reservation_double_out_01" model="pms.reservation">
             <field name="partner_id" ref="main_pms_property" />
@@ -26,6 +27,7 @@
             <field name="closure_reason_id" ref="pms_room_closure_reason_maintenance" />
             <field name="out_service_description">Carpet replacement.</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
+            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
         </record>
         <record id="pms_reservation_double_out_02" model="pms.reservation">
             <field name="partner_id" ref="main_pms_property" />
@@ -448,6 +450,7 @@
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="channel_type_id" ref="pms.main_pms_sale_channel_mail" />
             <field name="state">done</field>
+            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
         </record>
         <record id="pms_checkin_partner_r_sng_03" model="pms.checkin.partner">
             <field name="partner_id" ref="base.res_partner_address_32" />
