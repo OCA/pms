@@ -3871,6 +3871,7 @@ class TestPmsReservations(TestPms):
             "The out of service reservation should be created properly with "
             "a closure reason.",
         )
+
     # tests for several sale channels in reservation
     @freeze_time("2000-11-10")
     def test_reservation_sale_channel_origin_in_reservation_lines(self):

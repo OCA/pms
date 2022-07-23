@@ -358,10 +358,6 @@
                                 widget="many2many_tags"
                                 options="{'no_create': True,'no_open': True}"
                             />
-                            <field
-                                name="channel_type_id"
-                                attrs="{'readonly':[('agency_id','!=', False)], 'invisible':[('reservation_type', 'not in', 'normal')]}"
-                            />
                         </group>
                         <div class="oe_clear" />
 
