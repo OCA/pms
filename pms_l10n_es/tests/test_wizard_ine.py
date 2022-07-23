@@ -841,35 +841,22 @@ class TestWizardINE(TestPms):
         third_date = datetime.date(2021, 2, 3)
         end_date = datetime.date(2021, 2, 4)
 
-        country_spain = self.env["res.country"].search([("code", "=", "ES")])
-        state_madrid = self.env["res.country.state"].search([("name", "=", "Madrid")])
         expected_result = {
             self.country_russia.code: {
                 start_date: {
-                    "arrivals": 2,
-                    "pernoctations": 2,
+                    "arrivals": 1,
+                    "pernoctations": 1,
                 },
                 second_date: {
                     "arrivals": 2,
                     "pernoctations": 2,
-                    "departures": 2,
+                    "departures": 1,
                 },
                 third_date: {
                     "pernoctations": 2,
                 },
                 end_date: {
                     "departures": 2,
-                },
-            },
-            country_spain.code: {
-                state_madrid.ine_code: {
-                    second_date: {
-                        "arrivals": 2,
-                        "pernoctations": 2,
-                    },
-                    third_date: {
-                        "departures": 2,
-                    },
                 },
             },
         }
