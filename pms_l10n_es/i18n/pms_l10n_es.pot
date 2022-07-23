@@ -14,6 +14,12 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: pms_l10n_es
+#: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
+#, python-format
+msgid "%s does not have the INE Code configured"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.actions.server,name:pms_l10n_es.autosend_traveller_report_ir_actions_server
 #: model:ir.cron,cron_name:pms_l10n_es.autosend_traveller_report
 #: model:ir.cron,name:pms_l10n_es.autosend_traveller_report
