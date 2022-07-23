@@ -3,10 +3,11 @@ import datetime
 from freezegun import freeze_time
 
 from odoo import fields
+
 from .common import TestPms
 
-class TestPmsService(TestPms):
 
+class TestPmsService(TestPms):
     def setUp(self):
         super().setUp()
         # create room type
@@ -112,7 +113,7 @@ class TestPmsService(TestPms):
         self.assertEqual(
             self.reservation.sale_channel_origin_id,
             self.reservation.service_ids.sale_channel_origin_id,
-            "sale_channel_origin of board_Service must be the same as its reservation"
+            "sale_channel_origin of board_Service must be the same as its reservation",
         )
 
     @freeze_time("2002-01-03")
@@ -169,7 +170,7 @@ class TestPmsService(TestPms):
         self.assertEqual(
             self.reservation.service_ids.sale_channel_origin_id,
             self.reservation.service_ids.service_line_ids.mapped("sale_channel_id"),
-            "sale_channel_origin of board_Service must be the same as its service_lines"
+            "sale_channel_origin of board_Service must be the same as its service_lines",
         )
 
     @freeze_time("2002-01-05")
@@ -237,7 +238,7 @@ class TestPmsService(TestPms):
             self.reservation.service_ids.sale_channel_origin_id,
             self.reservation.service_ids.service_line_ids.mapped("sale_channel_id"),
             "sale_channel_origin of board_Service must corresponds to the"
-            "sale_channel_id of its new service_line"
+            "sale_channel_id of its new service_line",
         )
 
     @freeze_time("2002-01-07")
@@ -298,23 +299,26 @@ class TestPmsService(TestPms):
         self.env["pms.service.line"].create(
             {
                 "service_id": self.reservation.service_ids.id,
-                "sale_channel_id": self.sale_channel_phone.id
+                "sale_channel_id": self.sale_channel_phone.id,
             }
         )
         sale_channel_ids = [
             self.reservation.folio_id.sale_channel_ids.ids,
             self.reservation.sale_channel_ids.ids,
-            self.reservation.service_ids.sale_channel_ids.ids
+            self.reservation.service_ids.sale_channel_ids.ids,
         ]
 
-        expected_sale_channel_ids = [self.sale_channel_door.id, self.sale_channel_phone.id]
+        expected_sale_channel_ids = [
+            self.sale_channel_door.id,
+            self.sale_channel_phone.id,
+        ]
         # ASSERT
         for sale_channel in sale_channel_ids:
             with self.subTest(k=sale_channel):
                 self.assertItemsEqual(
                     sale_channel,
                     expected_sale_channel_ids,
-                    "sale_channel_ids must contain sale_channel_id of all board_service_lines"
+                    "sale_channel_ids must contain sale_channel_id of all board_service_lines",
                 )
 
     @freeze_time("2002-01-09")
@@ -372,7 +376,8 @@ class TestPmsService(TestPms):
         self.assertEqual(
             self.reservation.service_ids.sale_channel_ids,
             self.reservation.service_ids.service_line_ids.mapped("sale_channel_id"),
-            "sale_channel_ids of board_Service must correspond to the sale_channel_id set of its service_lines"
+            """sale_channel_ids of board_Service must correspond
+            to the sale_channel_id set of its service_lines""",
         )
 
     @freeze_time("2002-01-11")
@@ -438,7 +443,8 @@ class TestPmsService(TestPms):
         self.assertNotEqual(
             self.reservation.sale_channel_origin_id,
             self.reservation.service_ids.sale_channel_origin_id,
-            "sale_channel_origin_id mustn't match with sale_channel_origin_id of its reservation"
+            """sale_channel_origin_id mustn't match
+            with sale_channel_origin_id of its reservation""",
         )
 
     @freeze_time("2002-01-13")
@@ -503,7 +509,7 @@ class TestPmsService(TestPms):
         self.env["pms.service.line"].create(
             {
                 "service_id": self.reservation.service_ids.id,
-                "sale_channel_id": self.sale_channel_phone.id
+                "sale_channel_id": self.sale_channel_phone.id,
             }
         )
         # ACT
@@ -513,7 +519,8 @@ class TestPmsService(TestPms):
         self.assertIn(
             self.sale_channel_mail,
             self.reservation.service_ids.service_line_ids.mapped("sale_channel_id"),
-            "new sale_channel_origin_id of board service must be changed in lines with same sale_channel"
+            """new sale_channel_origin_id of board service
+            must be changed in lines with same sale_channel""",
         )
 
     @freeze_time("2002-01-15")
@@ -578,7 +585,7 @@ class TestPmsService(TestPms):
         self.env["pms.service.line"].create(
             {
                 "service_id": self.reservation.service_ids.id,
-                "sale_channel_id": self.sale_channel_phone.id
+                "sale_channel_id": self.sale_channel_phone.id,
             }
         )
         # ACT
@@ -588,7 +595,8 @@ class TestPmsService(TestPms):
         self.assertIn(
             self.sale_channel_phone,
             self.reservation.service_ids.service_line_ids.mapped("sale_channel_id"),
-            "new sale_channel_origin_id of board service mustn't changed in lines with different sale_channel"
+            """new sale_channel_origin_id of board service
+            mustn't changed in lines with different sale_channel""",
         )
 
     @freeze_time("2002-01-17")
@@ -601,7 +609,8 @@ class TestPmsService(TestPms):
                     |
                     ---> board_service.sale_channel_origin = Door
 
-        Change origin of board services to Phone and check sale_channel_ids of reservation and folio:
+        Change origin of board services to Phone and
+        check sale_channel_ids of reservation and folio:
         Reservation --> sale_channel_origin = Door        sale_channel_ids = {Door, Phone}
                     |
                     ---> board_service.sale_channel_origin = Phone
@@ -655,14 +664,17 @@ class TestPmsService(TestPms):
             self.reservation.sale_channel_ids.ids,
         ]
 
-        expected_sale_channel_ids = [self.sale_channel_door.id, self.sale_channel_phone.id]
+        expected_sale_channel_ids = [
+            self.sale_channel_door.id,
+            self.sale_channel_phone.id,
+        ]
         # ASSERT
         for sale_channel in sale_channel_ids:
             with self.subTest(k=sale_channel):
                 self.assertItemsEqual(
                     sale_channel,
                     expected_sale_channel_ids,
-                    "sale_channel_ids must contain sale_channel_origin_id of all board_service"
+                    "sale_channel_ids must contain sale_channel_origin_id of all board_service",
                 )
 
     @freeze_time("2002-01-19")
@@ -729,7 +741,7 @@ class TestPmsService(TestPms):
         self.assertIn(
             self.reservation.sale_channel_origin_id,
             self.reservation.service_ids.sale_channel_origin_id,
-            "sale_channel_origin_id of service must be the same that its reservation "
+            "sale_channel_origin_id of service must be the same that its reservation ",
         )
 
     @freeze_time("2002-02-01")
@@ -776,7 +788,7 @@ class TestPmsService(TestPms):
         self.assertEqual(
             self.reservation.sale_channel_origin_id,
             self.service1.sale_channel_origin_id,
-            "sale_channel_origin of service must be the same as its reservation"
+            "sale_channel_origin of service must be the same as its reservation",
         )
 
     @freeze_time("2002-02-03")
@@ -844,7 +856,9 @@ class TestPmsService(TestPms):
             self.reservation.sale_channel_ids,
         ]
 
-        expected_sale_channel_ids = self.reservation.service_ids.mapped("sale_channel_origin_id")
+        expected_sale_channel_ids = self.reservation.service_ids.mapped(
+            "sale_channel_origin_id"
+        )
 
         # ASSERT
         for sale_channel in sale_channel_ids:
@@ -852,7 +866,7 @@ class TestPmsService(TestPms):
                 self.assertItemsEqual(
                     sale_channel,
                     expected_sale_channel_ids,
-                    "sale_channel_ids must contain sale_channel_id of all board_service_lines"
+                    "sale_channel_ids must contain sale_channel_id of all board_service_lines",
                 )
 
     @freeze_time("2002-02-16")
@@ -908,7 +922,8 @@ class TestPmsService(TestPms):
         self.assertNotEqual(
             self.reservation.sale_channel_origin_id,
             self.reservation.service_ids.sale_channel_origin_id,
-            "sale_channel_origin_id mustn't match with sale_channel_origin_id of its reservation"
+            """sale_channel_origin_id mustn't match
+            with sale_channel_origin_id of its reservation""",
         )
 
     @freeze_time("2002-02-23")
@@ -970,7 +985,10 @@ class TestPmsService(TestPms):
             self.reservation.sale_channel_ids.ids,
         ]
 
-        expected_sale_channel_ids = [self.sale_channel_door.id, self.sale_channel_mail.id]
+        expected_sale_channel_ids = [
+            self.sale_channel_door.id,
+            self.sale_channel_mail.id,
+        ]
 
         # ASSERT
         for sale_channel in sale_channel_ids:
@@ -978,7 +996,7 @@ class TestPmsService(TestPms):
                 self.assertItemsEqual(
                     sale_channel,
                     expected_sale_channel_ids,
-                    "sale_channel_ids must contain sale_channel_origin_id of all services"
+                    "sale_channel_ids must contain sale_channel_origin_id of all services",
                 )
 
     @freeze_time("2002-02-25")
@@ -1045,7 +1063,7 @@ class TestPmsService(TestPms):
         self.assertIn(
             self.reservation.sale_channel_origin_id,
             self.reservation.service_ids.mapped("sale_channel_origin_id"),
-            "sale_channel_origin_id of that service should be changed"
+            "sale_channel_origin_id of that service should be changed",
         )
 
     @freeze_time("2002-03-29")
@@ -1112,7 +1130,7 @@ class TestPmsService(TestPms):
         self.assertIn(
             self.sale_channel_phone,
             self.reservation.service_ids.mapped("sale_channel_origin_id"),
-            "sale_channel_origin_id of that service shouldn't be changed"
+            "sale_channel_origin_id of that service shouldn't be changed",
         )
 
     @freeze_time("2002-03-01")
@@ -1147,14 +1165,14 @@ class TestPmsService(TestPms):
             {
                 "product_id": self.product1.id,
                 "is_board_service": False,
-                "folio_id":self.folio1.id,
+                "folio_id": self.folio1.id,
             }
         )
         # ASSERT
         self.assertEqual(
             self.folio1.sale_channel_origin_id,
             self.service1.sale_channel_origin_id,
-            "Service that is just created must have its folio sale_channel_origin"
+            "Service that is just created must have its folio sale_channel_origin",
         )
 
     @freeze_time("2002-03-03")
@@ -1203,7 +1221,7 @@ class TestPmsService(TestPms):
         self.assertEqual(
             self.folio1.sale_channel_origin_id,
             self.service1.sale_channel_origin_id,
-            "Service must have equal sale_channel_origin than folio"
+            "Service must have equal sale_channel_origin than folio",
         )
 
     @freeze_time("2002-03-05")
@@ -1252,7 +1270,7 @@ class TestPmsService(TestPms):
         self.assertEqual(
             self.folio1.sale_channel_origin_id,
             self.service1.sale_channel_origin_id,
-            "Service must have equal sale_channel_origin than folio"
+            "Service must have equal sale_channel_origin than folio",
         )
 
     @freeze_time("2002-03-07")
@@ -1299,17 +1317,19 @@ class TestPmsService(TestPms):
                 "product_id": self.product1.id,
                 "is_board_service": False,
                 "folio_id": self.folio1.id,
-                "sale_channel_origin_id": self.sale_channel_mail.id
+                "sale_channel_origin_id": self.sale_channel_mail.id,
             }
         )
 
-        expected_sale_channels = self.folio1.service_ids.mapped("sale_channel_origin_id")
+        expected_sale_channels = self.folio1.service_ids.mapped(
+            "sale_channel_origin_id"
+        )
 
         # ASSERT
         self.assertEqual(
             self.folio1.sale_channel_ids,
             expected_sale_channels,
-            "sale_channel_ids must be the set of sale_channel_origin of its services"
+            "sale_channel_ids must be the set of sale_channel_origin of its services",
         )
 
     @freeze_time("2002-03-10")
@@ -1361,7 +1381,7 @@ class TestPmsService(TestPms):
                 "product_id": self.product1.id,
                 "is_board_service": False,
                 "folio_id": self.folio1.id,
-                "sale_channel_origin_id": self.sale_channel_mail.id
+                "sale_channel_origin_id": self.sale_channel_mail.id,
             }
         )
         # ACT
@@ -1371,7 +1391,7 @@ class TestPmsService(TestPms):
         self.assertIn(
             self.sale_channel_phone,
             self.folio1.service_ids.mapped("sale_channel_origin_id"),
-            "sale_channel_origin_id of that service must be changed"
+            "sale_channel_origin_id of that service must be changed",
         )
 
     @freeze_time("2002-03-13")
@@ -1424,7 +1444,7 @@ class TestPmsService(TestPms):
                 "product_id": self.product1.id,
                 "is_board_service": False,
                 "folio_id": self.folio1.id,
-                "sale_channel_origin_id": self.sale_channel_mail.id
+                "sale_channel_origin_id": self.sale_channel_mail.id,
             }
         )
         # ACT
@@ -1434,5 +1454,5 @@ class TestPmsService(TestPms):
         self.assertIn(
             self.sale_channel_mail,
             self.folio1.service_ids.mapped("sale_channel_origin_id"),
-            "sale_channel_origin_id of that service mustn't be changed"
+            "sale_channel_origin_id of that service mustn't be changed",
         )

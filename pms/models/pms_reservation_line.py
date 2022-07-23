@@ -119,6 +119,7 @@ class PmsReservationLine(models.Model):
         comodel_name="pms.sale.channel",
         check_pms_properties=True,
     )
+
     _sql_constraints = [
         (
             "rule_availability",
