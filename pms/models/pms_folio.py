@@ -1507,18 +1507,6 @@ class PmsFolio(models.Model):
             ("sale_line_ids.invoice_lines.move_id", operator, value),
         ]
 
-    # @api.constrains("agency_id", "channel_type_id")
-    # def _check_only_one_channel(self):
-    #     for record in self:
-    #         if (
-    #             record.agency_id
-    #             and record.channel_type_id.channel_type
-    #             != record.agency_id.sale_channel_id.channel_type
-    #         ):
-    #             raise models.ValidationError(
-    #                 _("The Sale Channel does not correspond to the agency's")
-    #             )
-
     @api.constrains("name")
     def _check_required_partner_name(self):
         for record in self:

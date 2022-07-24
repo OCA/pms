@@ -1089,13 +1089,6 @@
                         icon="fa-bookmark"
                         color="#875A7B"
                     />
-<!--                    <field-->
-<!--                        name="channel_type_id"-->
-<!--                        string="Channel"-->
-<!--                        enable_counters="1"-->
-<!--                        icon="fa-sitemap"-->
-<!--                        expand="1"-->
-<!--                    />-->
                 </searchpanel>
             </search>
         </field>
