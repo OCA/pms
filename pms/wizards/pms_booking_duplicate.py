@@ -145,7 +145,9 @@ class BookingDuplicate(models.TransientModel):
     def _compute_channel_type_id(self):
         for record in self.filtered("reference_folio_id"):
             if record.reference_folio_id.agency_id == record.agency_id:
-                record.channel_type_id = record.reference_folio_id.channel_type_id
+                record.channel_type_id = (
+                    record.reference_folio_id.sale_channel_origin_id
+                )
             elif record.agency_id:
                 record.channel_type_id = record.agency_id.sale_channel_id.id
 
@@ -301,7 +303,7 @@ class BookingDuplicate(models.TransientModel):
                 "partner_name": self.partner_name,
                 "pms_property_id": self.pms_property_id.id,
                 "agency_id": self.agency_id.id,
-                "channel_type_id": self.channel_type_id.id,
+                "sale_channel_origin_id": self.channel_type_id.id,
                 "segmentation_ids": [(6, 0, self.segmentation_ids.ids)],
                 "internal_comment": self.internal_comment,
             }
