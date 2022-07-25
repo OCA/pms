@@ -146,14 +146,6 @@ class PmsService(models.Model):
             ("no", "Nothing to Invoice"),
         ],
     )
-    sale_channel_ids = fields.Many2many(
-        string="Sale Channels",
-        help="Sale Channels through which service lines were managed",
-        store=True,
-        compute="_compute_sale_channel_ids",
-        comodel_name="pms.sale.channel",
-        check_pms_properties=True,
-    )
     sale_channel_origin_id = fields.Many2one(
         string="Sale Channel Origin",
         help="Sale Channel through which service was created, the original",
@@ -198,6 +190,17 @@ class PmsService(models.Model):
         creating a new service with lines in vals
         """,
         default=False,
+    )
+    default_invoice_to = fields.Many2one(
+        string="Invoice to",
+        help="""Indicates the contact to which this line will be
+        billed by default, if it is not established,
+        a guest or the generic contact will be used instead""",
+        readonly=False,
+        store=True,
+        compute="_compute_default_invoice_to",
+        comodel_name="res.partner",
+        ondelete="restrict",
     )
 
     # Compute and Search methods
@@ -427,12 +430,18 @@ class PmsService(models.Model):
                 line.discount = record.discount
                 line.cancel_discount = 0
 
-    @api.depends("service_line_ids", "service_line_ids.sale_channel_id")
-    def _compute_sale_channel_ids(self):
+    @api.depends("sale_channel_origin_id", "folio_id.agency_id")
+    def _compute_default_invoice_to(self):
         for record in self:
-            record.sale_channel_ids = [
-                (6, 0, record.mapped("service_line_ids.sale_channel_id.id"))
-            ]
+            agency = record.folio_id.agency_id
+            if (
+                agency
+                and agency.invoice_to_agency == "always"
+                and agency.sale_channel_id == record.sale_channel_origin_id
+            ):
+                record.default_invoice_to = agency
+            elif not record.default_invoice_to:
+                record.default_invoice_to = False
 
     def name_get(self):
         result = []
@@ -566,7 +575,6 @@ class PmsService(models.Model):
         lines_to_update_channel = self.env["pms.service.line"]
         if "sale_channel_origin_id" in vals:
             folios_to_update_channel = self.get_folios_to_update_channel(vals)
-            lines_to_update_channel = self.get_service_lines_to_update_channel(vals)
         res = super(PmsService, self).write(vals)
         if folios_to_update_channel:
             folios_to_update_channel.sale_channel_origin_id = vals[
@@ -590,13 +598,3 @@ class PmsService(models.Model):
             ):
                 folios_to_update_channel += folio
         return folios_to_update_channel
-
-    def get_service_lines_to_update_channel(self, vals):
-        lines_to_update_channel = self.env["pms.service.line"]
-        for record in self:
-            for service_line in record.service_line_ids:
-                if service_line.sale_channel_id == self.sale_channel_origin_id and (
-                    vals["sale_channel_origin_id"] != service_line.sale_channel_id.id
-                ):
-                    lines_to_update_channel += service_line
-            return lines_to_update_channel

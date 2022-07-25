@@ -1,9 +1,11 @@
 # Copyright 2020  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from datetime import timedelta
 from math import ceil
 
 import babel.dates
+from dateutil import relativedelta
 
 from odoo import _, api, fields, models
 from odoo.osv import expression
@@ -44,6 +46,15 @@ class FolioSaleLine(models.Model):
         comodel_name="pms.service",
         ondelete="cascade",
     )
+    pms_property_id = fields.Many2one(
+        string="Property",
+        help="Property with access to the element;",
+        readonly=True,
+        store=True,
+        comodel_name="pms.property",
+        related="folio_id.pms_property_id",
+        check_pms_properties=True,
+    )
     is_board_service = fields.Boolean(
         string="Board Service",
         help="Indicates if the service included in "
@@ -51,7 +62,6 @@ class FolioSaleLine(models.Model):
         store=True,
         related="service_id.is_board_service",
     )
-
     name = fields.Text(
         string="Description",
         help="Description of folio sale line",
@@ -259,13 +269,6 @@ class FolioSaleLine(models.Model):
         index=True,
         related="folio_id.company_id",
     )
-    folio_partner_id = fields.Many2one(
-        string="Customer",
-        help="Related customer with Folio Sale Line",
-        readonly=False,
-        store=True,
-        related="folio_id.partner_id",
-    )
     origin_agency_id = fields.Many2one(
         string="Origin Agency",
         help="The agency where the folio sale line originates",
@@ -330,14 +333,38 @@ class FolioSaleLine(models.Model):
         store=True,
         compute="_compute_date_order",
     )
+    default_invoice_to = fields.Many2one(
+        string="Invoice to",
+        help="""Indicates the contact to which this line will be
+        billed by default, if it is not established,
+        a guest or the generic contact will be used instead""",
+        comodel_name="res.partner",
+        ondelete="restrict",
+    )
+    autoinvoice_date = fields.Date(
+        string="Autoinvoice Date",
+        compute="_compute_autoinvoice_date",
+        store=True,
+    )
 
     @api.depends(
+        "folio_id.agency_id",
         "reservation_line_ids",
-        "reservation_id.agency_id",
+        "service_line_ids",
     )
     def _compute_origin_agency_id(self):
+        """
+        Set the origin agency if the origin lines channel
+        match with the agency's channel
+        """
         for rec in self:
-            rec.origin_agency_id = rec.folio_id.agency_id
+            # TODO: ServiceLines agency
+            if rec.folio_id.agency_id and list(
+                set(rec.reservation_line_ids.mapped("sale_channel_id.id"))
+            ) == rec.folio_id.agency_id.mapped("sale_channel_id.id"):
+                rec.origin_agency_id = rec.folio_id.agency_id
+            else:
+                rec.origin_agency_id = False
 
     @api.depends("qty_to_invoice")
     def _compute_service_order(self):
@@ -369,6 +396,54 @@ class FolioSaleLine(models.Model):
                 )
             else:
                 record.date_order = 0
+
+    @api.depends(
+        "default_invoice_to",
+        "invoice_status",
+        "folio_id.last_checkout",
+        "reservation_id.checkout",
+        "service_id.reservation_id.checkout",
+    )
+    def _compute_autoinvoice_date(self):
+        self.autoinvoice_date = False
+        for record in self.filtered(lambda r: r.invoice_status == "to_invoice"):
+            record.autoinvoice_date = record._get_to_invoice_date()
+
+    def _get_to_invoice_date(self):
+        self.ensure_one()
+        partner = self.default_invoice_to
+        if self.reservation_id:
+            last_checkout = self.reservation_id.checkout
+        elif self.service_id and self.service_id.reservation_id:
+            last_checkout = self.service_id.reservation_id.checkout
+        else:
+            last_checkout = self.folio_id.last_checkout
+        invoicing_policy = (
+            self.pms_property_id.default_invoicing_policy
+            if not partner or partner.invoicing_policy == "property"
+            else partner.invoicing_policy
+        )
+        if invoicing_policy == "manual":
+            return False
+        if invoicing_policy == "checkout":
+            margin_days = (
+                self.pms_property_id.margin_days_autoinvoice
+                if not partner or partner.invoicing_policy == "property"
+                else partner.margin_days_autoinvoice
+            )
+            return last_checkout + timedelta(days=margin_days)
+        if invoicing_policy == "month_day":
+            month_day = (
+                self.pms_property_id.invoicing_month_day
+                if not partner or partner.invoicing_policy == "property"
+                else partner.invoicing_month_day
+            )
+            if last_checkout.day <= month_day:
+                self.autoinvoice_date = last_checkout.replace(day=month_day)
+            else:
+                self.autoinvoice_date = (
+                    last_checkout + relativedelta.relativedelta(months=1)
+                ).replace(day=month_day)
 
     @api.depends("date_order")
     def _compute_reservation_order(self):

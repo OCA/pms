@@ -9,7 +9,6 @@
                     <field name="product_id" />
                     <field name="day_qty" />
                     <field name="date" />
-                    <field name="sale_channel_id" />
                     <field name="price_unit" />
                     <field
                         name="discount"
@@ -30,7 +29,6 @@
                 <field name="product_id" />
                 <field name="day_qty" />
                 <field name="date" />
-                <field name="sale_channel_id" />
                 <field name="price_unit" />
                 <field
                     name="discount"

@@ -126,18 +126,22 @@ class PmsServiceLine(models.Model):
         readonly=True,
         store=True,
     )
-    sale_channel_id = fields.Many2one(
-        string="Sale Channel",
-        help="Sale Channel through which service line was created",
-        comodel_name="pms.sale.channel",
-        check_pms_properties=True,
-    )
     auto_qty = fields.Boolean(
         string="Qty automated setted",
         help="Show if the day qty was calculated automatically",
         compute="_compute_auto_qty",
         readonly=False,
         store=True,
+    )
+    default_invoice_to = fields.Many2one(
+        string="Invoice to",
+        help="""Indicates the contact to which this line will be
+        billed by default, if it is not established,
+        a guest or the generic contact will be used instead""",
+        comodel_name="res.partner",
+        store=True,
+        related="service_id.default_invoice_to",
+        ondelete="restrict",
     )
 
     @api.depends("day_qty", "discount", "price_unit", "tax_ids")
@@ -254,15 +258,6 @@ class PmsServiceLine(models.Model):
                         _("%s limit exceeded for %s")
                         % (record.service_id.product_id.name, record.date)
                     )
-
-    @api.model
-    def create(self, vals):
-        if vals.get("service_id") and not vals.get("sale_channel_id"):
-            service = self.env["pms.service"].browse(vals["service_id"])
-            if service.sale_channel_origin_id:
-                vals["sale_channel_id"] = service.sale_channel_origin_id.id
-        record = super(PmsServiceLine, self).create(vals)
-        return record
 
     # Business methods
     def _cancel_discount(self):
