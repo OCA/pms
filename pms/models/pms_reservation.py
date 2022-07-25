@@ -1635,12 +1635,10 @@ class PmsReservation(models.Model):
             else:
                 record.lang = self.env["res.lang"].get_installed()
 
-
     @api.depends(
         "reservation_line_ids",
         "reservation_line_ids.sale_channel_id",
         "service_ids",
-        "service_ids.sale_channel_ids",
         "service_ids.sale_channel_origin_id",
     )
     def _compute_sale_channel_ids(self):
@@ -1650,7 +1648,7 @@ class PmsReservation(models.Model):
                 for sale in record.reservation_line_ids.mapped("sale_channel_id.id"):
                     sale_channel_ids.append(sale)
             if record.service_ids:
-                for sale in record.service_ids.mapped("sale_channel_ids.id"):
+                for sale in record.service_ids.mapped("sale_channel_origin_id.id"):
                     sale_channel_ids.append(sale)
             sale_channel_ids = list(set(sale_channel_ids))
             record.sale_channel_ids = [(6, 0, sale_channel_ids)]

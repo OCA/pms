@@ -157,7 +157,6 @@
                         name="margin_days_autoinvoice"
                         attrs="{'invisible': [('invoicing_policy', '!=', 'checkout')]}"
                     />
-                    <field name="default_invoice_lines" />
                 </group>
             </xpath>
         </field>
