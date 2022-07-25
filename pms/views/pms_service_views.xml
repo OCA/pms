@@ -28,7 +28,7 @@
                             force_save="1"
                         />
                         <field name="sale_channel_origin_id" />
-                        <field name="sale_channel_ids" widget="many2many_tags" />
+                        <field name="default_invoice_to" />
                     </group>
 
                     <field name="tax_ids" widget="many2many_tags" invisible="1" />
@@ -38,7 +38,6 @@
                     <field name="service_line_ids" nolabel="1">
                         <tree string="Days" editable="bottom">
                             <field name="date" />
-                            <field name="sale_channel_id" />
                             <field name="day_qty" />
                             <field name="price_unit" />
                             <field
@@ -91,7 +90,7 @@
                     force_save="1"
                 />
                 <field name="sale_channel_origin_id" />
-                <field name="sale_channel_ids" />
+                <field name="default_invoice_to" />
                 <button
                     type="object"
                     class="oe_stat_button"
@@ -106,7 +105,6 @@
                 <field name="service_line_ids" invisible="1">
                     <tree string="Days">
                         <field name="date" />
-                        <field name="sale_channel_id" />
                         <field name="day_qty" />
                         <field
                             name="discount"

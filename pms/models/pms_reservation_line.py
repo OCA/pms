@@ -45,8 +45,7 @@ class PmsReservationLine(models.Model):
     )
     pms_property_id = fields.Many2one(
         string="Property",
-        help="Property with access to the element;"
-        " if not set, all properties can access",
+        help="Property with access to the element",
         readonly=True,
         store=True,
         comodel_name="pms.property",
@@ -118,6 +117,17 @@ class PmsReservationLine(models.Model):
         help="Sale Channel through which reservation line was created",
         comodel_name="pms.sale.channel",
         check_pms_properties=True,
+    )
+    default_invoice_to = fields.Many2one(
+        string="Invoice to",
+        help="""Indicates the contact to which this line will be
+        billed by default, if it is not established,
+        a guest or the generic contact will be used instead""",
+        readonly=False,
+        store=True,
+        compute="_compute_default_invoice_to",
+        comodel_name="res.partner",
+        ondelete="restrict",
     )
 
     _sql_constraints = [
@@ -501,6 +511,19 @@ class PmsReservationLine(models.Model):
                 pms_property_id=reservation.pms_property_id.id,
             )
         return records
+
+    @api.depends("sale_channel_id", "reservation_id.agency_id")
+    def _compute_default_invoice_to(self):
+        for record in self:
+            agency = record.reservation_id.agency_id
+            if (
+                agency
+                and agency.invoice_to_agency == "always"
+                and agency.sale_channel_id == record.sale_channel_id
+            ):
+                record.default_invoice_to = agency
+            elif not record.default_invoice_to:
+                record.default_invoice_to = False
 
     # Constraints and onchanges
     @api.constrains("date")

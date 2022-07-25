@@ -500,6 +500,7 @@
                                         attrs="{'column_invisible': [('parent.state','!=','cancel')]}"
                                     />
                                     <field name="sale_channel_id" />
+                                    <field name="default_invoice_to" />
                                     <field name="pms_property_id" invisible="1" />
                                 </tree>
                             </field>
@@ -564,6 +565,10 @@
                                             force_save="1"
                                         />
                                         <field name="sale_channel_origin_id" />
+                                        <field
+                                            name="default_invoice_to"
+                                            optional="hide"
+                                        />
                                         <button
                                             type="object"
                                             class="oe_stat_button"

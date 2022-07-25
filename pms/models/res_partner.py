@@ -192,22 +192,6 @@ class ResPartner(models.Model):
         string="Days from Checkout",
         help="Days from Checkout to generate the invoice",
     )
-    default_invoice_lines = fields.Selection(
-        string="Invoice...",
-        help="""Use to preconfigure the sale lines to autoinvoice
-        for this partner. All (invoice reservations and services),
-        Only overnights to invoice only the reservations
-        with overnight and board services(exclude parkings, salon, etc...),
-        All reservations to include all reservations,
-        and Services only include services not boards""",
-        selection=[
-            ("all", "All"),
-            ("overnights", "Only Overnights"),
-            ("reservations", "All reservations"),
-            ("services", "Services"),
-        ],
-        default="all",
-    )
     vat_document_type = fields.Selection(
         string="Document Type",
         help="""The vat document type of the partner,

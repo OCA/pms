@@ -239,7 +239,6 @@ class TestPmsFolioInvoice(TestPms):
             r1.folio_id.invoice_status,
             "The status after a partial invoicing is not correct",
         )
-
         # qty to 2 to 1st folio sale line
         dict_lines[
             r1.folio_id.sale_line_ids.filtered(lambda l: not l.display_type)[0].id
@@ -699,9 +698,9 @@ class TestPmsFolioInvoice(TestPms):
         )
 
         # ASSERT
-        self.assertEqual(
+        self.assertIn(
             datetime.date.today() + datetime.timedelta(days=3),
-            self.reservation1.folio_id.autoinvoice_date,
+            self.reservation1.folio_id.mapped("sale_line_ids.autoinvoice_date"),
             "The autoinvoice date in folio with property checkout policy is wrong",
         )
 
@@ -729,18 +728,21 @@ class TestPmsFolioInvoice(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
+        self.reservation1.reservation_line_ids.default_invoice_to = self.partner_id
 
         # ASSERT
         self.assertEqual(
             datetime.date.today() + datetime.timedelta(days=5),
-            self.reservation1.folio_id.autoinvoice_date,
+            self.reservation1.folio_id.sale_line_ids.filtered(
+                lambda l: l.invoice_status == "to_invoice"
+            )[0].autoinvoice_date,
             "The autoinvoice date in folio with property checkout policy is wrong",
         )
 
     def test_autoinvoice_paid_folio_overnights_partner_policy(self):
         """
         Test create and invoice the cron by partner preconfig automation
-        with only overnights reservations (included board services)
+        with partner setted as default invoiced to in reservation lines
         --------------------------------------
         Set partner invoicing_policy to checkout, create a reservation
         with room, board service and normal service, run autoinvoicing
@@ -750,9 +752,18 @@ class TestPmsFolioInvoice(TestPms):
         """
         # ARRANGE
         self.create_configuration_accounting_scenario()
+        self.partner_id2 = self.env["res.partner"].create(
+            {
+                "name": "Sara",
+                "vat": "ES123456787",
+                "country_id": self.env.ref("base.es").id,
+                "city": "Madrid",
+                "zip": "28013",
+                "street": "Street 321",
+            }
+        )
         self.partner_id.invoicing_policy = "checkout"
         self.partner_id.margin_days_autoinvoice = 0
-        self.partner_id.default_invoice_lines = "overnights"
         self.product1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -796,7 +807,7 @@ class TestPmsFolioInvoice(TestPms):
                 "checkout": datetime.date.today(),
                 "adults": 2,
                 "room_type_id": self.demo_room_type_double.id,
-                "partner_id": self.partner_id.id,
+                "partner_id": self.partner_id2.id,
                 "board_service_room_id": self.board_service_room_type1.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
@@ -810,6 +821,11 @@ class TestPmsFolioInvoice(TestPms):
         )
         folio = self.reservation1.folio_id
         reservation1 = self.reservation1
+        reservation1.reservation_line_ids.default_invoice_to = self.partner_id
+        reservation1.service_ids.filtered(
+            "is_board_service"
+        ).default_invoice_to = self.partner_id
+
         folio.do_payment(
             journal=self.env["account.journal"].browse(
                 reservation1.folio_id.pms_property_id._get_payment_methods().ids[0]
@@ -850,7 +866,6 @@ class TestPmsFolioInvoice(TestPms):
         # ARRANGE
         self.partner_id.invoicing_policy = "checkout"
         self.partner_id.margin_days_autoinvoice = 0
-        self.partner_id.default_invoice_lines = "overnights"
         self.product1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
