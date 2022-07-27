@@ -45,7 +45,7 @@ class SaleOrder(models.Model):
     def action_cancel(self, ignore_push_event=False, cancel_reservation=True):
         reservation_ids = self.sale_get_active_reservation()
         if reservation_ids and cancel_reservation:
-            reservation_ids.action_cancel(ignore_push_event=ignore_push_event)
+            reservation_ids.with_context(ignore_push_event=ignore_push_event).action_cancel()
 
         self.manually_confirmed = False
         return super().action_cancel()

@@ -110,6 +110,10 @@ class PmsReservation(models.Model):
     def action_book(self):
         ignore_push_event = self.env.context.get("ignore_push_event", False)
 
+        _log.info("Ignore push events: {}".format(ignore_push_event))
+        _log.info(self.stage_id)
+        _log.info(self.env.company.guesty_backend_id)
+
         if self.stage_id.id in [
             self.env.company.guesty_backend_id.stage_reserved_id.id,
             self.env.company.guesty_backend_id.stage_confirmed_id.id,
