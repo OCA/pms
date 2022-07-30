@@ -82,7 +82,11 @@ class PmsAvailabilityPlan(models.Model):
 
     @api.model
     def update_quota(
-        self, pricelist_id, room_type_id, date, pms_property_id, impacts_quota_id=False
+        self,
+        pricelist_id,
+        room_type_id,
+        date,
+        pms_property_id,
     ):
         if pricelist_id and room_type_id and date:
             rule = self.env["pms.availability.plan.rule"].search(
@@ -97,38 +101,8 @@ class PmsAvailabilityPlan(models.Model):
             if rule:
                 rule.ensure_one()
                 if rule and rule.quota != -1 and rule.quota > 0:
-
-                    # the line has no rule item applied before
-                    if not impacts_quota_id:
-                        rule.quota -= 1
-                        return rule.id
-
-                    # the line has a rule item applied before
-                    elif impacts_quota_id != rule.id:
-
-                        # decrement quota on current rule item
-                        rule.quota -= 1
-
-                        # check old rule item
-                        old_rule = self.env["pms.availability.plan.rule"].search(
-                            [("id", "=", impacts_quota_id)]
-                        )
-
-                        # restore quota in old rule item
-                        if old_rule:
-                            old_rule.quota += 1
-
-                        return rule.id
-
-        # in any case, check old rule item
-        if impacts_quota_id:
-            old_rule = self.env["pms.availability.plan.rule"].search(
-                [("id", "=", impacts_quota_id)]
-            )
-            # and restore quota in old rule item
-            if old_rule and (not rule or rule.id != old_rule.id):
-                old_rule.quota += 1
-
+                    rule.quota -= 1
+                    return True
         return False
 
     # Action methods
