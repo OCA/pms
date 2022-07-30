@@ -4822,11 +4822,6 @@ msgid "Image of the service"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_reservation_line__impacts_quota
-msgid "Impacts quota"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__standard_price
 msgid ""
 "In Standard Price & AVCO: value of the product (automatically computed in AVCO).\n"
@@ -10446,11 +10441,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__price_extra
 msgid "This is the sum of the extra price of all attributes"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_reservation_line__impacts_quota
-msgid "This line has been taken into account in the avail quota"
 msgstr ""
 
 #. module: pms
