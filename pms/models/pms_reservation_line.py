@@ -102,13 +102,6 @@ class PmsReservationLine(models.Model):
         store=True,
         compute="_compute_occupies_availability",
     )
-    impacts_quota = fields.Integer(
-        string="Impacts quota",
-        help="This line has been taken into account in the avail quota",
-        readonly=True,
-        store=True,
-        compute="_compute_impacts_quota",
-    )
     overnight_room = fields.Boolean(
         related="reservation_id.overnight_room",
         store=True,
@@ -341,19 +334,6 @@ class PmsReservationLine(models.Model):
                             # no matter what it is
                             line.room_id = list(bests.keys())[0]
 
-    @api.depends("reservation_id.room_type_id", "reservation_id.pricelist_id")
-    def _compute_impacts_quota(self):
-        for line in self:
-            reservation = line.reservation_id
-            impacts_quota_id = line.impacts_quota
-            line.impacts_quota = self.env["pms.availability.plan"].update_quota(
-                pricelist_id=reservation.pricelist_id.id,
-                room_type_id=reservation.room_type_id.id,
-                date=line.date,
-                pms_property_id=reservation.pms_property_id.id,
-                impacts_quota_id=impacts_quota_id,
-            )
-
     @api.depends(
         "reservation_id",
         "reservation_id.room_type_id",
@@ -497,6 +477,19 @@ class PmsReservationLine(models.Model):
                     record.overbooking = False
             else:
                 record.overbooking = False
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        for line in records:
+            reservation = line.reservation_id
+            self.env["pms.availability.plan"].update_quota(
+                pricelist_id=reservation.pricelist_id.id,
+                room_type_id=reservation.room_type_id.id,
+                date=line.date,
+                pms_property_id=reservation.pms_property_id.id,
+            )
+        return records
 
     # Constraints and onchanges
     @api.constrains("date")
