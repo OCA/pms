@@ -1,0 +1,20 @@
+<odoo>
+    <record id="pms_guesty_listing_form_view" model="ir.ui.view">
+        <field name="name">Guesty Listing</field>
+        <field name="model">pms.guesty.listing</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        name="create_pms_property"
+                        type="object"
+                        string="Create Property"
+                    />
+                </header>
+                <sheet>
+                    <field name="name" />
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

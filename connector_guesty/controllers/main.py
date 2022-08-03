@@ -72,13 +72,12 @@ class GuestyController(http.Controller):
         csrf=False,
         type="json",
     )
-    def listing_webhook(self, **data):
-        company, backend = self.validate_get_company(data)
-        event = data.get("event")
-        listing = event.get("listing")
-        if not listing:
-            raise ValidationError(_("Listing data not found"))
-        request.env["pms.property"].with_delay().guesty_pull_listing(backend, listing)
+    def listing_webhook(self):
+        data = request.jsonrequest
+        if data["event"] == "listing.updated" and "listing" in data:
+            request.env["pms.guesty.listing"].sudo().with_delay().guesty_pull_listing(
+                data["listing"]
+            )
         return {"success": True}
 
     @http.route(

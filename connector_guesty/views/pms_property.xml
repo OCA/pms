@@ -45,7 +45,12 @@
                 <page string="Guesty Technical Info" id="tech_info_page">
                     <group>
                         <group>
-                            <field name="guesty_id" string="Guesty ID" readonly="1" />
+                            <field
+                                name="guesty_id"
+                                string="Guesty ID"
+                                readonly="1"
+                                force_save="1"
+                            />
                             <field name="guesty_listing_ids" string="Guesty Listings">
                                 <tree>
                                     <field name="name" />
