@@ -73,13 +73,6 @@ class PmsReservation(models.Model):
 
     @api.model
     def create(self, values):
-        if "guesty_id" in values:
-            values["guesty_reservation_id"] = (
-                self.env["pms.guesty.reservation"]
-                .create({"uuid": values["guesty_id"], "state": "ND"})
-                .id
-            )
-
         return super().create(values)
 
     def write(self, values):

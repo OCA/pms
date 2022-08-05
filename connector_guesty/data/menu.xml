@@ -4,10 +4,26 @@
         <field name="res_model">pms.guesty.listing</field>
         <field name="view_mode">tree,form</field>
     </record>
+
+
+    <record id="guesty_reservations_menu_action" model="ir.actions.act_window">
+        <field name="name">Guesty reservations</field>
+        <field name="res_model">pms.guesty.reservation</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
     <menuitem
         id="guesty_listings_menu"
         action="guesty_listings_menu_action"
         name="Guesty Listings"
         parent="pms_base.menu_data"
     />
+    <menuitem
+        id="guesty_reservations_menu"
+        action="guesty_reservations_menu_action"
+        name="Guesty Reservations"
+        parent="pms_base.menu_data"
+    />
+
 </odoo>

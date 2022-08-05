@@ -50,19 +50,8 @@ class GuestyController(http.Controller):
         if event_name not in ["reservation.new", "reservation.updated"]:
             raise ValidationError(_("Invalid event name {}".format(event_name)))
 
-        guesty_listing_id = reservation_info.get("listingId")
-        listing_sudo = request.env["pms.guesty.listing"].sudo()
-        listing_obj = listing_sudo.search(
-            [("external_id", "=", guesty_listing_id)], limit=1
-        )
-
-        if not listing_obj.exists():
-            raise ValidationError(_("Listing not found {}".format(guesty_listing_id)))
-
-        reservation_sudo = request.env["pms.reservation"].sudo()
-        reservation_sudo.with_delay().guesty_pull_reservation(
-            reservation_info, event_name
-        )
+        reservation_model = request.env["pms.guesty.reservation"].sudo()
+        reservation_model.with_delay(10).pull_reservation(reservation_info)
         return {"success": True}
 
     @http.route(
