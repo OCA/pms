@@ -399,10 +399,18 @@ class BackendGuesty(models.Model):
             self.reservation_pull_start_date = reservation_last_date
 
     def download_calendars(self):
+        date_now = datetime.datetime.now()
+        date_limit = date_now + datetime.timedelta(days=180)
+
+        date_start = date_now.strftime("%Y-%m-%d")
+        date_stop = date_limit.strftime("%Y-%m-%d")
+
         properties = self.env["pms.property"].search([("guesty_id", "!=", False)])
+        time_sleep = 0.0
         for property_id in properties:
-            self.env["pms.guesty.calendar"].with_delay().guesty_pull_calendar(
-                self, property_id, "2021-12-01", "2022-12-31"
+            time_sleep += 0.5
+            self.env["pms.guesty.calendar"].with_delay(time_sleep).guesty_pull_calendar(
+                self, property_id, date_start, date_stop
             )
 
     def call_get_request(
