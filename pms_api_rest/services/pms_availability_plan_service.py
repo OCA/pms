@@ -135,6 +135,7 @@ class PmsAvailabilityPlanService(Component):
                         closedDeparture=rule.closed_departure,
                         closedArrival=rule.closed_arrival,
                         quota=rule.quota if rule.quota != -1 else 0,
+                        maxAvailability=rule.max_avail,
                     )
                     result.append(availability_plan_rule_info)
 
@@ -181,6 +182,8 @@ class PmsAvailabilityPlanService(Component):
             vals.update({"closed_arrival": pms_avail_plan_rule_info.closedArrival})
         if pms_avail_plan_rule_info.quota:
             vals.update({"quota": pms_avail_plan_rule_info.quota})
+        if pms_avail_plan_rule_info.maxAvailability:
+            vals.update({"max_avail": pms_avail_plan_rule_info.maxAvailability})
         avail_plan_rule = self.env["pms.availability.plan.rule"].create(vals)
         return avail_plan_rule.id
 
@@ -207,14 +210,29 @@ class PmsAvailabilityPlanService(Component):
             ]
         )
         if avail_rule:
-            avail_rule.write(
-                {
-                    "min_stay": pms_avail_plan_rule_info.minStay,
-                    "max_stay": pms_avail_plan_rule_info.maxStay,
-                    "max_stay_arrival": pms_avail_plan_rule_info.maxStayArrival,
-                    "quota": pms_avail_plan_rule_info.quota,
-                    "closed": pms_avail_plan_rule_info.closed,
-                    "closed_departure": pms_avail_plan_rule_info.closedDeparture,
-                    "closed_arrival": pms_avail_plan_rule_info.closedArrival,
-                }
-            )
+            vals = dict()
+            if pms_avail_plan_rule_info.minStay:
+                vals.update({"min_stay": pms_avail_plan_rule_info.minStay})
+            if pms_avail_plan_rule_info.minStayArrival:
+                vals.update(
+                    {"min_stay_arrival": pms_avail_plan_rule_info.minStayArrival}
+                )
+            if pms_avail_plan_rule_info.maxStay:
+                vals.update({"max_stay": pms_avail_plan_rule_info.maxStay})
+            if pms_avail_plan_rule_info.maxStayArrival:
+                vals.update(
+                    {"max_stay_arrival": pms_avail_plan_rule_info.maxStayArrival}
+                )
+            if pms_avail_plan_rule_info.closed:
+                vals.update({"closed": pms_avail_plan_rule_info.closed})
+            if pms_avail_plan_rule_info.closedDeparture:
+                vals.update(
+                    {"closed_departure": pms_avail_plan_rule_info.closedDeparture}
+                )
+            if pms_avail_plan_rule_info.closedArrival:
+                vals.update({"closed_arrival": pms_avail_plan_rule_info.closedArrival})
+            if pms_avail_plan_rule_info.quota:
+                vals.update({"quota": pms_avail_plan_rule_info.quota})
+            if pms_avail_plan_rule_info.maxAvailability:
+                vals.update({"max_avail": pms_avail_plan_rule_info.maxAvailability})
+            avail_rule.write(vals)
