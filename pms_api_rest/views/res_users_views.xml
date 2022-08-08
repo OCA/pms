@@ -15,7 +15,7 @@
                             name="availability_rule_field_ids"
                             widget="many2many_tags"
                             options="{'no_create': True}"
-                            domain="['&amp;',('model_id', '=', 'pms.availability.plan.rule'), ('name', 'in', ('min_stay', 'max_stay', 'quota',  'max_stay_arrival', 'closed_arrival', 'closed', 'closed_departure'))]"
+                            domain="['&amp;',('model_id', '=', 'pms.availability.plan.rule'), ('name', 'in', ('min_stay', 'max_stay', 'quota',  'max_stay_arrival', 'closed_arrival', 'closed', 'closed_departure', 'min_stay_arrival', 'max_avail'))]"
                         />
                     </group>
                 </group>
