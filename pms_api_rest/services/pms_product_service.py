@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from odoo import _
 from odoo.exceptions import MissingError
 
@@ -54,6 +52,7 @@ class PmsProductService(Component):
                     name=product.name,
                     perDay=product.per_day,
                     perPerson=product.per_person,
+                    consumedOn=product.consumed_on,
                 )
             )
         return result_products
@@ -83,4 +82,3 @@ class PmsProductService(Component):
             )
         else:
             raise MissingError(_("Product not found"))
-
