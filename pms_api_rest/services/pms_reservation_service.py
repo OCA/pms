@@ -125,97 +125,92 @@ class PmsReservationService(Component):
                 "PATCH",
             )
         ],
-        input_param=Datamodel("pms.reservation.updates", is_list=False),
+        input_param=Datamodel("pms.reservation.info", is_list=False),
         auth="jwt_api_pms",
     )
-    def update_reservation(self, reservation_id, reservation_lines_changes):
-        if reservation_lines_changes.reservationLinesChanges:
-
-            # get date of first reservation id to change
-            first_reservation_line_id_to_change = (
-                reservation_lines_changes.reservationLinesChanges[0][
-                    "reservationLineId"
-                ]
-            )
-            first_reservation_line_to_change = self.env["pms.reservation.line"].browse(
-                first_reservation_line_id_to_change
-            )
-            date_first_reservation_line_to_change = datetime.strptime(
-                reservation_lines_changes.reservationLinesChanges[0]["date"], "%Y-%m-%d"
-            )
-
-            # iterate changes
-            for change_iterator in sorted(
-                reservation_lines_changes.reservationLinesChanges,
-                # adjust order to start changing from last/first reservation line
-                # to avoid reservation line date constraint
-                reverse=first_reservation_line_to_change.date
-                < date_first_reservation_line_to_change.date(),
-                key=lambda x: datetime.strptime(x["date"], "%Y-%m-%d"),
+    def update_reservation(self, reservation_id, reservation_data):
+        reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
+        reservation_vals = {}
+        if reservation_data.reservationLines:
+            reservation_lines_vals = []
+            date_list = []
+            for line_data in sorted(
+                reservation_data.reservationLines,
+                key=lambda x: datetime.strptime(x.date, "%Y-%m-%d"),
             ):
-                # recordset of each line
-                line_to_change = self.env["pms.reservation.line"].search(
-                    [
-                        ("reservation_id", "=", reservation_id),
-                        ("id", "=", change_iterator["reservationLineId"]),
-                    ]
+                date_line = datetime.strptime(line_data.date, "%Y-%m-%d").date()
+                date_list.append(date_line)
+                # 1- update values in existing lines
+                reservation_line = self.env["pms.reservation.line"].search(
+                    [("reservation_id", "=", reservation_id), ("date", "=", date_line)]
                 )
-                # modifying date, room_id, ...
-                if "date" in change_iterator:
-                    line_to_change.date = change_iterator["date"]
-                if (
-                    "roomId" in change_iterator
-                    and line_to_change.room_id.id != change_iterator["roomId"]
-                ):
-                    line_to_change.room_id = change_iterator["roomId"]
-
-            max_value = max(
-                first_reservation_line_to_change.reservation_id.reservation_line_ids.mapped(
-                    "date"
-                )
-            ) + timedelta(days=1)
-            min_value = min(
-                first_reservation_line_to_change.reservation_id.reservation_line_ids.mapped(
-                    "date"
-                )
-            )
-            reservation = self.env["pms.reservation"].browse(reservation_id)
-            reservation.checkin = min_value
-            reservation.checkout = max_value
-
-        else:
-            reservation_to_update = (
-                self.env["pms.reservation"].sudo().search([("id", "=", reservation_id)])
-            )
-            reservation_vals = {}
-
-            if reservation_lines_changes.preferredRoomId:
-                reservation_vals.update(
-                    {"preferred_room_id": reservation_lines_changes.preferredRoomId}
-                )
-            if reservation_lines_changes.boardServiceId:
-                reservation_vals.update(
-                    {"board_service_room_id": reservation_lines_changes.boardServiceId}
-                )
-            if reservation_lines_changes.pricelistId:
-                reservation_vals.update(
-                    {"pricelist_id": reservation_lines_changes.pricelistId}
-                )
-            if reservation_lines_changes.adults:
-                reservation_vals.update({"adults": reservation_lines_changes.adults})
-            if reservation_lines_changes.children:
-                reservation_vals.update(
-                    {"children": reservation_lines_changes.children}
-                )
-            if reservation_lines_changes.segmentationId:
+                if reservation_line:
+                    line_vals = self._get_reservation_lines_mapped(
+                        line_data, reservation_line
+                    )
+                    if line_vals:
+                        reservation_lines_vals.append(
+                            (1, reservation_line.id, line_vals)
+                        )
+                # 2- create new lines
+                else:
+                    line_vals = self._get_reservation_lines_mapped(line_data)
+                    line_vals["date"] = line_data.date
+                    reservation_lines_vals.append((0, False, line_vals))
+            # 3- delete old lines:
+            for line in reservation.reservation_line_ids.filtered(
+                lambda l: l.date not in date_list
+            ):
+                reservation_lines_vals.append((2, line.id))
+            if reservation_lines_vals:
                 reservation_vals.update(
                     {
-                        "segmentation_ids": [
-                            (6, 0, [reservation_lines_changes.segmentationId])
-                        ]
+                        "reservation_line_ids": reservation_lines_vals,
                     }
                 )
-            reservation_to_update.write(reservation_vals)
+
+        if reservation_data.preferredRoomId:
+            reservation_vals.update(
+                {"preferred_room_id": reservation_data.preferredRoomId}
+            )
+        if reservation_data.boardServiceId:
+            reservation_vals.update(
+                {"board_service_room_id": reservation_data.boardServiceId}
+            )
+        if reservation_data.pricelistId:
+            reservation_vals.update({"pricelist_id": reservation_data.pricelistId})
+        if reservation_data.adults:
+            reservation_vals.update({"adults": reservation_data.adults})
+        if reservation_data.children:
+            reservation_vals.update({"children": reservation_data.children})
+        if reservation_data.segmentationId:
+            reservation_vals.update(
+                {"segmentation_ids": [(6, 0, [reservation_data.segmentationId])]}
+            )
+        reservation.write(reservation_vals)
+
+    def _get_reservation_lines_mapped(self, origin_data, reservation_line=False):
+        # Return dict witch reservation.lines values (only modified if line exist,
+        # or all pass values if line not exist)
+        line_vals = {}
+        if origin_data.price and (
+            not reservation_line or origin_data.price != reservation_line.price
+        ):
+            line_vals["price"] = origin_data.price
+        if origin_data.discount and (
+            not reservation_line or origin_data.discount != reservation_line.discount
+        ):
+            line_vals["discount"] = origin_data.discount
+        if origin_data.cancelDiscount and (
+            not reservation_line
+            or origin_data.cancelDiscount != reservation_line.cancelDiscount
+        ):
+            line_vals["cancel_discount"] = origin_data.cancelDiscount
+        if origin_data.roomId and (
+            not reservation_line or origin_data.roomId != reservation_line.room_id
+        ):
+            line_vals["room_id"] = origin_data.roomId
+        return line_vals
 
     # ------------------------------------------------------------------------------------
     # RESERVATION LINES-------------------------------------------------------------------
@@ -279,16 +274,20 @@ class PmsReservationService(Component):
             date != reservation.checkin - timedelta(days=1)
             and date != reservation.checkout
         ):
-            raise MissingError(_("It is only allowed to create contiguous nights to the reservation"))
+            raise MissingError(
+                _("It is only allowed to create contiguous nights to the reservation")
+            )
         vals = dict()
-        vals.update({
-            "reservation_id": reservation.id,
-            "date": date,
-            "price": reservation_line_info.price,
-            "room_id": reservation_line_info.roomId
-            if reservation_line_info.roomId
-            else reservation.preferred_room_id.id,
-        })
+        vals.update(
+            {
+                "reservation_id": reservation.id,
+                "date": date,
+                "price": reservation_line_info.price,
+                "room_id": reservation_line_info.roomId
+                if reservation_line_info.roomId
+                else reservation.preferred_room_id.id,
+            }
+        )
         self.env["pms.reservation.line"].create(vals)
 
     @restapi.method(
@@ -304,13 +303,12 @@ class PmsReservationService(Component):
     )
     def delete_reservation_line(self, reservation_id, reservation_line_id):
         reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
-        line = reservation.reservation_line_ids.filtered(lambda l: l.id == reservation_line_id)
-        if (
-            line
-            and (
-                line.date == min(reservation.reservation_line_ids.mapped("date"))
-                or line.date == max(reservation.reservation_line_ids.mapped("date"))
-            )
+        line = reservation.reservation_line_ids.filtered(
+            lambda l: l.id == reservation_line_id
+        )
+        if line and (
+            line.date == min(reservation.reservation_line_ids.mapped("date"))
+            or line.date == max(reservation.reservation_line_ids.mapped("date"))
         ):
             line.unlink()
         else:
@@ -364,15 +362,17 @@ class PmsReservationService(Component):
             PmsServiceLineInfo = self.env.datamodels["pms.service.line.info"]
             service_lines = []
             for line in service.service_line_ids:
-                service_lines.append(PmsServiceLineInfo(
-                    id=line.id,
-                    date=datetime.combine(
-                        line.date, datetime.min.time()
-                    ).isoformat(),
-                    priceUnit=line.price_unit,
-                    discount=line.discount,
-                    quantity=line.day_qty,
-                ))
+                service_lines.append(
+                    PmsServiceLineInfo(
+                        id=line.id,
+                        date=datetime.combine(
+                            line.date, datetime.min.time()
+                        ).isoformat(),
+                        priceUnit=line.price_unit,
+                        discount=line.discount,
+                        quantity=line.day_qty,
+                    )
+                )
 
             result_services.append(
                 PmsServiceInfo(
@@ -412,12 +412,19 @@ class PmsReservationService(Component):
             "is_board_service": service_info.isBoardService or False,
         }
         if service_info.serviceLines:
-            vals["service_line_ids"] = [(0, False, {
-                "date": line.date,
-                "price_unit": line.priceUnit,
-                "discount": line.discount or 0,
-                "day_qty": line.quantity
-            }) for line in service_info.serviceLines]
+            vals["service_line_ids"] = [
+                (
+                    0,
+                    False,
+                    {
+                        "date": line.date,
+                        "price_unit": line.priceUnit,
+                        "discount": line.discount or 0,
+                        "day_qty": line.quantity,
+                    },
+                )
+                for line in service_info.serviceLines
+            ]
         service = self.env["pms.service"].create(vals)
         return service.id
 
@@ -631,4 +638,3 @@ class PmsReservationService(Component):
         ):
             vals.update({"residence_state_id": pms_checkin_partner_info.countryState})
         return vals
-
