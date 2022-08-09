@@ -294,3 +294,104 @@ class PmsCalendarService(Component):
                 )
             )
         return result
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:reservation_id>",
+                ],
+                "PATCH",
+            )
+        ],
+        input_param=Datamodel("pms.reservation.updates", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def update_reservation(self, reservation_id, reservation_lines_changes):
+        if reservation_lines_changes.reservationLinesChanges:
+
+            # get date of first reservation id to change
+            first_reservation_line_id_to_change = (
+                reservation_lines_changes.reservationLinesChanges[0][
+                    "reservationLineId"
+                ]
+            )
+            first_reservation_line_to_change = self.env["pms.reservation.line"].browse(
+                first_reservation_line_id_to_change
+            )
+            date_first_reservation_line_to_change = datetime.strptime(
+                reservation_lines_changes.reservationLinesChanges[0]["date"], "%Y-%m-%d"
+            )
+
+            # iterate changes
+            for change_iterator in sorted(
+                reservation_lines_changes.reservationLinesChanges,
+                # adjust order to start changing from last/first reservation line
+                # to avoid reservation line date constraint
+                reverse=first_reservation_line_to_change.date
+                < date_first_reservation_line_to_change.date(),
+                key=lambda x: datetime.strptime(x["date"], "%Y-%m-%d"),
+            ):
+                # recordset of each line
+                line_to_change = self.env["pms.reservation.line"].search(
+                    [
+                        ("reservation_id", "=", reservation_id),
+                        ("id", "=", change_iterator["reservationLineId"]),
+                    ]
+                )
+                # modifying date, room_id, ...
+                if "date" in change_iterator:
+                    line_to_change.date = change_iterator["date"]
+                if (
+                    "roomId" in change_iterator
+                    and line_to_change.room_id.id != change_iterator["roomId"]
+                ):
+                    line_to_change.room_id = change_iterator["roomId"]
+
+            max_value = max(
+                first_reservation_line_to_change.reservation_id.reservation_line_ids.mapped(
+                    "date"
+                )
+            ) + timedelta(days=1)
+            min_value = min(
+                first_reservation_line_to_change.reservation_id.reservation_line_ids.mapped(
+                    "date"
+                )
+            )
+            reservation = self.env["pms.reservation"].browse(reservation_id)
+            reservation.checkin = min_value
+            reservation.checkout = max_value
+
+        else:
+            reservation_to_update = (
+                self.env["pms.reservation"].sudo().search([("id", "=", reservation_id)])
+            )
+            reservation_vals = {}
+
+            if reservation_lines_changes.preferredRoomId:
+                reservation_vals.update(
+                    {"preferred_room_id": reservation_lines_changes.preferredRoomId}
+                )
+            if reservation_lines_changes.boardServiceId:
+                reservation_vals.update(
+                    {"board_service_room_id": reservation_lines_changes.boardServiceId}
+                )
+            if reservation_lines_changes.pricelistId:
+                reservation_vals.update(
+                    {"pricelist_id": reservation_lines_changes.pricelistId}
+                )
+            if reservation_lines_changes.adults:
+                reservation_vals.update({"adults": reservation_lines_changes.adults})
+            if reservation_lines_changes.children:
+                reservation_vals.update(
+                    {"children": reservation_lines_changes.children}
+                )
+            if reservation_lines_changes.segmentationId:
+                reservation_vals.update(
+                    {
+                        "segmentation_ids": [
+                            (6, 0, [reservation_lines_changes.segmentationId])
+                        ]
+                    }
+                )
+            reservation_to_update.write(reservation_vals)
