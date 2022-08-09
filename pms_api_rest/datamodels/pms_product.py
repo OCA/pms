@@ -15,3 +15,4 @@ class PmProductInfo(Datamodel):
     name = fields.String(required=False, allow_none=True)
     perDay = fields.Boolean(required=False, allow_none=True)
     perPerson = fields.Boolean(required=False, allow_none=True)
+    consumedOn = fields.String(required=False, allow_none=True)
