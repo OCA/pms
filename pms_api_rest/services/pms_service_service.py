@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 from odoo import _
@@ -6,6 +7,8 @@ from odoo.exceptions import MissingError
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
+
+_logger = logging.getLogger(__name__)
 
 
 class PmsServiceService(Component):
@@ -34,13 +37,12 @@ class PmsServiceService(Component):
         lines = [
             self.env.datamodels["pms.service.line.info"](
                 id=line.id,
-                date=datetime.combine(
-                    line.date, datetime.min.time()
-                ).isoformat(),
+                date=datetime.combine(line.date, datetime.min.time()).isoformat(),
                 priceUnit=line.price_unit,
                 discount=line.discount,
                 quantity=line.day_qty,
-            ) for line in service.service_line_ids
+            )
+            for line in service.service_line_ids
         ]
         return PmsServiceInfo(
             id=service.id,
@@ -54,6 +56,70 @@ class PmsServiceService(Component):
             isBoardService=service.is_board_service,
             serviceLines=lines,
         )
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:service_id>",
+                ],
+                "PATCH",
+            )
+        ],
+        input_param=Datamodel("pms.service.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def update_service(self, service_id, service_data):
+        service = self.env["pms.service"].search([("id", "=", service_id)])
+        if not service:
+            raise MissingError(_("Service not found"))
+        vals = {}
+        if service_data.serviceLines:
+            cmds_lines = []
+            date_list = []
+            for line_data in service_data.serviceLines:
+                date_line = datetime.strptime(line_data.date, "%Y-%m-%d").date()
+                date_list.append(date_line)
+                service_line = service.service_line_ids.filtered(
+                    lambda l: l.date == date_line
+                )
+                # 1- update values in existing lines
+                if service_line:
+                    line_vals = self._get_service_lines_mapped(line_data, service_line)
+                    cmds_lines.append((1, service_line.id, line_vals))
+                # 2- create new lines
+                else:
+                    line_vals = self._get_service_lines_mapped(line_data)
+                    line_vals["date"] = line_data.date
+                    cmds_lines.append((0, False, line_vals))
+            # 3- delete old lines:
+            for line in service.service_line_ids.filtered(
+                lambda l: l.date not in date_list
+            ):
+                cmds_lines.append((2, line.id))
+            if cmds_lines:
+                vals["service_line_ids"] = cmds_lines
+        _logger.info(vals)
+        if vals:
+            service.write(vals)
+
+    def _get_service_lines_mapped(self, origin_data, service_line=False):
+        # Return dict witch reservation.lines values (only modified if line exist,
+        # or all pass values if line not exist)
+        line_vals = {}
+        if origin_data.priceUnit and (
+            not service_line or origin_data.priceUnit != service_line.price_unit
+        ):
+            line_vals["price_unit"] = origin_data.priceUnit
+        if origin_data.discount and (
+            not service_line or origin_data.discount != service_line.discount
+        ):
+            line_vals["discount"] = origin_data.discount
+        if origin_data.quantity and (
+            not service_line or origin_data.quantity != service_line.day_qty
+        ):
+            line_vals["day_qty"] = origin_data.quantity
+        return line_vals
 
     @restapi.method(
         [
