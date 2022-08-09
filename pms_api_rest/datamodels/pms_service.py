@@ -8,7 +8,7 @@ class PmsServiceInfo(Datamodel):
     _name = "pms.service.info"
     id = fields.Integer(required=False, allow_none=True)
     name = fields.String(required=False, allow_none=True)
-    productId = fields.Integer(required=True, allow_none=False)
+    productId = fields.Integer(required=False, allow_none=True)
     quantity = fields.Integer(required=False, allow_none=True)
     priceTotal = fields.Float(required=False, allow_none=True)
     priceSubtotal = fields.Float(required=False, allow_none=True)
