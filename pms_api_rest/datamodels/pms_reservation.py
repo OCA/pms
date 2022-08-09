@@ -1,6 +1,7 @@
 from marshmallow import fields
 
 from odoo.addons.datamodel.core import Datamodel
+from odoo.addons.datamodel.fields import NestedModel
 
 
 class PmsReservationShortInfo(Datamodel):
@@ -63,6 +64,8 @@ class PmsReservationInfo(Datamodel):
     commissionAmount = fields.Float(required=False, allow_none=True)
     priceOnlyServices = fields.Float(required=False, allow_none=True)
     priceOnlyRoom = fields.Float(required=False, allow_none=True)
+
+    reservationLines = fields.List(NestedModel("pms.reservation.line.info"))
 
     # TODO: Refact
     # messages = fields.List(fields.Dict(required=False, allow_none=True))
