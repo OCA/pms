@@ -151,57 +151,44 @@ class PmsPricelistService(Component):
                 "POST",
             )
         ],
-        input_param=Datamodel("pms.pricelist.item.info", is_list=False),
+        input_param=Datamodel("pms.pricelist.items.info", is_list=False),
         auth="jwt_api_pms",
     )
     def create_pricelist_item(self, pricelist_id, pms_pricelist_item_info):
-        day = datetime.strptime(
-            pms_pricelist_item_info.date[:10], "%Y-%m-%d"
-        ) + timedelta(days=1)
-        product_id = (
-            self.env["pms.room.type"]
-            .browse(pms_pricelist_item_info.roomTypeId)
-            .product_id
-        )
-        pricelist_item = self.env["product.pricelist.item"].create(
-            {
-                "applied_on": "0_product_variant",
-                "product_id": product_id.id,
-                "pms_property_ids": [pms_pricelist_item_info.pmsPropertyId],
-                "date_start_consumption": day,
-                "date_end_consumption": day,
-                "compute_price": "fixed",
-                "fixed_price": pms_pricelist_item_info.price,
-                "pricelist_id": pricelist_id,
-            }
-        )
-        return pricelist_item.id
-
-    @restapi.method(
-        [
-            (
+        for pms_pricelist_item in pms_pricelist_item_info.pricelistItems:
+            date = datetime.strptime(
+                pms_pricelist_item.date[:10], "%Y-%m-%d"
+            ) + timedelta(days=1)
+            product_id = (
+                self.env["pms.room.type"]
+                .browse(pms_pricelist_item.roomTypeId)
+                .product_id
+            )
+            product_pricelist_item = self.env["product.pricelist.item"].search(
                 [
-                    "/<int:pricelist_id>/pricelist-items/<int:pricelist_item_id>",
-                ],
-                "PATCH",
+                    ("pricelist_id", "=", pricelist_id),
+                    ("product_id", "=", product_id.id),
+                    ("pms_property_ids", "in", pms_pricelist_item.pmsPropertyId),
+                    ("date_start_consumption", "=", date),
+                    ("date_end_consumption", "=",  date),
+                ]
             )
-        ],
-        input_param=Datamodel("pms.pricelist.item.info", is_list=False),
-        auth="jwt_api_pms",
-    )
-    def write_pricelist_item(
-        self, pricelist_id, pricelist_item_id, pms_pricelist_item_info
-    ):
-
-        product_pricelist_item = self.env["product.pricelist.item"].search(
-            [
-                ("pricelist_id", "=", pricelist_id),
-                ("id", "=", pricelist_item_id),
-            ]
-        )
-        if product_pricelist_item and pms_pricelist_item_info.price:
-            product_pricelist_item.write(
-                {
-                    "fixed_price": pms_pricelist_item_info.price,
-                }
-            )
+            if product_pricelist_item:
+                product_pricelist_item.write(
+                    {
+                        "fixed_price": pms_pricelist_item.price,
+                    }
+                )
+            else:
+                self.env["product.pricelist.item"].create(
+                    {
+                        "applied_on": "0_product_variant",
+                        "product_id": product_id.id,
+                        "pms_property_ids": [pms_pricelist_item.pmsPropertyId],
+                        "date_start_consumption": date,
+                        "date_end_consumption": date,
+                        "compute_price": "fixed",
+                        "fixed_price": pms_pricelist_item.price,
+                        "pricelist_id": pricelist_id,
+                    }
+                )
