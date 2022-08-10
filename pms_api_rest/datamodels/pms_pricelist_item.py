@@ -1,6 +1,7 @@
 from marshmallow import fields
 
 from odoo.addons.datamodel.core import Datamodel
+from odoo.addons.datamodel.fields import NestedModel
 
 
 class PmsPricelistItemSearchParam(Datamodel):
@@ -16,4 +17,9 @@ class PmsPricelistItemInfo(Datamodel):
     price = fields.Float(required=False, allow_none=True)
     roomTypeId = fields.Integer(required=False, allow_none=True)
     date = fields.String(required=False, allow_none=True)
+    pricelistId = fields.Integer(required=False, allow_none=True)
     pmsPropertyId = fields.Integer(required=False, allow_none=True)
+
+class PmsPricelistItemsInfo(Datamodel):
+    _name = "pms.pricelist.items.info"
+    pricelistItems = fields.List(NestedModel("pms.pricelist.item.info"))
