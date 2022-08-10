@@ -150,89 +150,56 @@ class PmsAvailabilityPlanService(Component):
                 "POST",
             )
         ],
-        input_param=Datamodel("pms.availability.plan.rule.info", is_list=False),
+        input_param=Datamodel("pms.availability.plan.rules.info", is_list=False),
         auth="jwt_api_pms",
     )
     def create_availability_plan_rule(
-        self, availability_plan_id, pms_avail_plan_rule_info
+        self, availability_plan_id, pms_avail_plan_rules_info
     ):
-        day = datetime.strptime(
-            pms_avail_plan_rule_info.date[:10], "%Y-%m-%d"
-        ) + timedelta(days=1)
-        vals = {
-            "room_type_id": pms_avail_plan_rule_info.roomTypeId,
-            "date": day,
-            "pms_property_id": pms_avail_plan_rule_info.pmsPropertyId,
-            "availability_plan_id": availability_plan_id,
-        }
-
-        if pms_avail_plan_rule_info.minStay:
-            vals.update({"min_stay": pms_avail_plan_rule_info.minStay})
-        if pms_avail_plan_rule_info.minStayArrival:
-            vals.update({"min_stay_arrival": pms_avail_plan_rule_info.minStayArrival})
-        if pms_avail_plan_rule_info.maxStay:
-            vals.update({"max_stay": pms_avail_plan_rule_info.maxStay})
-        if pms_avail_plan_rule_info.maxStayArrival:
-            vals.update({"max_stay_arrival": pms_avail_plan_rule_info.maxStayArrival})
-        if pms_avail_plan_rule_info.closed:
-            vals.update({"closed": pms_avail_plan_rule_info.closed})
-        if pms_avail_plan_rule_info.closedDeparture:
-            vals.update({"closed_departure": pms_avail_plan_rule_info.closedDeparture})
-        if pms_avail_plan_rule_info.closedArrival:
-            vals.update({"closed_arrival": pms_avail_plan_rule_info.closedArrival})
-        if pms_avail_plan_rule_info.quota:
-            vals.update({"quota": pms_avail_plan_rule_info.quota})
-        if pms_avail_plan_rule_info.maxAvailability:
-            vals.update({"max_avail": pms_avail_plan_rule_info.maxAvailability})
-        avail_plan_rule = self.env["pms.availability.plan.rule"].create(vals)
-        return avail_plan_rule.id
-
-    @restapi.method(
-        [
-            (
-                [
-                    "/<int:availability_plan_id>/"
-                    "availability-plan-rules/<int:availability_plan_rule_id>",
-                ],
-                "PATCH",
-            )
-        ],
-        input_param=Datamodel("pms.availability.plan.rule.info", is_list=False),
-        auth="jwt_api_pms",
-    )
-    def write_availability_plan_rule(
-        self, availability_plan_id, availability_plan_rule_id, pms_avail_plan_rule_info
-    ):
-        avail_rule = self.env["pms.availability.plan.rule"].search(
-            [
-                ("availability_plan_id", "=", availability_plan_id),
-                ("id", "=", availability_plan_rule_id),
-            ]
-        )
-        if avail_rule:
+        for avail_plan_rule in pms_avail_plan_rules_info.availabilityPlanRules:
             vals = dict()
-            if pms_avail_plan_rule_info.minStay:
-                vals.update({"min_stay": pms_avail_plan_rule_info.minStay})
-            if pms_avail_plan_rule_info.minStayArrival:
+            date = datetime.strptime(
+                avail_plan_rule.date[:10], "%Y-%m-%d"
+            ) + timedelta(days=1)
+            if avail_plan_rule.minStay:
+                vals.update({"min_stay": avail_plan_rule.minStay})
+            if avail_plan_rule.minStayArrival:
                 vals.update(
-                    {"min_stay_arrival": pms_avail_plan_rule_info.minStayArrival}
+                    {"min_stay_arrival": avail_plan_rule.minStayArrival}
                 )
-            if pms_avail_plan_rule_info.maxStay:
-                vals.update({"max_stay": pms_avail_plan_rule_info.maxStay})
-            if pms_avail_plan_rule_info.maxStayArrival:
+            if avail_plan_rule.maxStay:
+                vals.update({"max_stay": avail_plan_rule.maxStay})
+            if avail_plan_rule.maxStayArrival:
                 vals.update(
-                    {"max_stay_arrival": pms_avail_plan_rule_info.maxStayArrival}
+                    {"max_stay_arrival": avail_plan_rule.maxStayArrival}
                 )
-            if pms_avail_plan_rule_info.closed:
-                vals.update({"closed": pms_avail_plan_rule_info.closed})
-            if pms_avail_plan_rule_info.closedDeparture:
+            if avail_plan_rule.closed:
+                vals.update({"closed": avail_plan_rule.closed})
+            if avail_plan_rule.closedDeparture:
                 vals.update(
-                    {"closed_departure": pms_avail_plan_rule_info.closedDeparture}
+                    {"closed_departure": avail_plan_rule.closedDeparture}
                 )
-            if pms_avail_plan_rule_info.closedArrival:
-                vals.update({"closed_arrival": pms_avail_plan_rule_info.closedArrival})
-            if pms_avail_plan_rule_info.quota:
-                vals.update({"quota": pms_avail_plan_rule_info.quota})
-            if pms_avail_plan_rule_info.maxAvailability:
-                vals.update({"max_avail": pms_avail_plan_rule_info.maxAvailability})
-            avail_rule.write(vals)
+            if avail_plan_rule.closedArrival:
+                vals.update({"closed_arrival": avail_plan_rule.closedArrival})
+            if avail_plan_rule.quota:
+                vals.update({"quota": avail_plan_rule.quota})
+            avail_rule = self.env["pms.availability.plan.rule"].search(
+                [
+                    ("availability_plan_id", "=", availability_plan_id),
+                    ("pms_property_id", "=", avail_plan_rule.pmsPropertyId),
+                    ("room_type_id", "=", avail_plan_rule.roomTypeId),
+                    ("date", "=", date),
+                ]
+            )
+            if avail_rule:
+                avail_rule.write(vals)
+            else:
+                vals.update(
+                    {
+                        "room_type_id": avail_plan_rule.roomTypeId,
+                        "date": date,
+                        "pms_property_id": avail_plan_rule.pmsPropertyId,
+                        "availability_plan_id": availability_plan_id,
+                    }
+                )
+                self.env["pms.availability.plan.rule"].create(vals)
