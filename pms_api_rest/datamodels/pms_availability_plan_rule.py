@@ -26,6 +26,7 @@ class PmsAvailabilityPlanRuleInfo(Datamodel):
     quota = fields.Integer(required=False, allow_none=True)
     maxAvailability = fields.Integer(required=False, allow_none=True)
     pmsPropertyId = fields.Integer(required=False, allow_none=True)
+    availabilityPlanId = fields.Integer(required=False, allow_none=True)
 
 
 class PmsAvailabilityPlanRulesInfo(Datamodel):
