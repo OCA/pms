@@ -20,6 +20,7 @@ class PmsPricelistItemInfo(Datamodel):
     pricelistId = fields.Integer(required=False, allow_none=True)
     pmsPropertyId = fields.Integer(required=False, allow_none=True)
 
+
 class PmsPricelistItemsInfo(Datamodel):
     _name = "pms.pricelist.items.info"
     pricelistItems = fields.List(NestedModel("pms.pricelist.item.info"))

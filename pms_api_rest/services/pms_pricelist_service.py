@@ -166,11 +166,11 @@ class PmsPricelistService(Component):
             )
             product_pricelist_item = self.env["product.pricelist.item"].search(
                 [
-                    ("pricelist_id", "=", pricelist_id),
+                    ("pricelist_id", "=", pms_pricelist_item.pricelistId),
                     ("product_id", "=", product_id.id),
                     ("pms_property_ids", "in", pms_pricelist_item.pmsPropertyId),
                     ("date_start_consumption", "=", date),
-                    ("date_end_consumption", "=",  date),
+                    ("date_end_consumption", "=", date),
                 ]
             )
             if product_pricelist_item:
@@ -189,6 +189,6 @@ class PmsPricelistService(Component):
                         "date_end_consumption": date,
                         "compute_price": "fixed",
                         "fixed_price": pms_pricelist_item.price,
-                        "pricelist_id": pricelist_id,
+                        "pricelist_id": pms_pricelist_item.pricelistId,
                     }
                 )
