@@ -158,34 +158,28 @@ class PmsAvailabilityPlanService(Component):
     ):
         for avail_plan_rule in pms_avail_plan_rules_info.availabilityPlanRules:
             vals = dict()
-            date = datetime.strptime(
-                avail_plan_rule.date[:10], "%Y-%m-%d"
-            ) + timedelta(days=1)
+            date = datetime.strptime(avail_plan_rule.date[:10], "%Y-%m-%d") + timedelta(
+                days=1
+            )
             if avail_plan_rule.minStay:
                 vals.update({"min_stay": avail_plan_rule.minStay})
             if avail_plan_rule.minStayArrival:
-                vals.update(
-                    {"min_stay_arrival": avail_plan_rule.minStayArrival}
-                )
+                vals.update({"min_stay_arrival": avail_plan_rule.minStayArrival})
             if avail_plan_rule.maxStay:
                 vals.update({"max_stay": avail_plan_rule.maxStay})
             if avail_plan_rule.maxStayArrival:
-                vals.update(
-                    {"max_stay_arrival": avail_plan_rule.maxStayArrival}
-                )
+                vals.update({"max_stay_arrival": avail_plan_rule.maxStayArrival})
             if avail_plan_rule.closed:
                 vals.update({"closed": avail_plan_rule.closed})
             if avail_plan_rule.closedDeparture:
-                vals.update(
-                    {"closed_departure": avail_plan_rule.closedDeparture}
-                )
+                vals.update({"closed_departure": avail_plan_rule.closedDeparture})
             if avail_plan_rule.closedArrival:
                 vals.update({"closed_arrival": avail_plan_rule.closedArrival})
             if avail_plan_rule.quota:
                 vals.update({"quota": avail_plan_rule.quota})
             avail_rule = self.env["pms.availability.plan.rule"].search(
                 [
-                    ("availability_plan_id", "=", availability_plan_id),
+                    ("availability_plan_id", "=", avail_plan_rule.availabilityPlanId),
                     ("pms_property_id", "=", avail_plan_rule.pmsPropertyId),
                     ("room_type_id", "=", avail_plan_rule.roomTypeId),
                     ("date", "=", date),
@@ -199,7 +193,7 @@ class PmsAvailabilityPlanService(Component):
                         "room_type_id": avail_plan_rule.roomTypeId,
                         "date": date,
                         "pms_property_id": avail_plan_rule.pmsPropertyId,
-                        "availability_plan_id": availability_plan_id,
+                        "availability_plan_id": avail_plan_rule.availabilityPlanId,
                     }
                 )
                 self.env["pms.availability.plan.rule"].create(vals)
