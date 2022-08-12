@@ -8,7 +8,20 @@ class ResUsers(models.Model):
         string="Availability Rules",
         help="Configurable availability rules",
         comodel_name="ir.model.fields",
+        default=lambda self: self._get_default_avail_rule_fields(),
         relation="ir_model_fields_res_users_rel",
         column1="ir_model_fields",
         column2="res_users",
     )
+
+    def _get_default_avail_rule_fields(self):
+        default_avail_rule_fields = self.env["ir.model.fields"].search(
+            [
+                ("model_id", "=", "pms.availability.plan.rule"),
+                ("name", "in", ("min_stay", "quota")),
+            ]
+        )
+        if default_avail_rule_fields:
+            return default_avail_rule_fields.ids
+        else:
+            return []
