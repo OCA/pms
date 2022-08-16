@@ -126,6 +126,11 @@ class PmsProperty(models.Model):
         comodel_name="mail.template",
     )
 
+    property_exit_template = fields.Many2one(
+        string="Exit Email",
+        comodel_name="mail.template",
+    )
+
     property_canceled_template = fields.Many2one(
         string="Cancellation Email",
         help="Cancellation email template",
@@ -134,6 +139,7 @@ class PmsProperty(models.Model):
 
     is_confirmed_auto_mail = fields.Boolean(string="Auto Send Confirmation Mail")
     is_modified_auto_mail = fields.Boolean(string="Auto Send Modification Mail")
+    is_exit_auto_mail = fields.Boolean(string="Auto Send Exit Mail")
     is_canceled_auto_mail = fields.Boolean(string="Auto Send Cancellation Mail")
 
     default_invoicing_policy = fields.Selection(
