@@ -1014,10 +1014,12 @@ msgid "Action"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_needaction
 #: model:ir.model.fields,field_description:pms.field_pms_folio__message_needaction
 #: model:ir.model.fields,field_description:pms.field_pms_property__message_needaction
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__message_needaction
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__message_needaction
+#: model:ir.model.fields,field_description:pms.field_pms_team__message_needaction
 msgid "Action Needed"
 msgstr ""
 
@@ -1031,6 +1033,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_room__active
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__active
 #: model:ir.model.fields,field_description:pms.field_pms_room_type_class__active
+#: model:ir.model.fields,field_description:pms.field_pms_team__active
 msgid "Active"
 msgstr ""
 
@@ -1040,6 +1043,7 @@ msgid "Active Lang Count"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__activity_ids
 #: model:ir.model.fields,field_description:pms.field_pms_folio__activity_ids
 #: model:ir.model.fields,field_description:pms.field_pms_property__activity_ids
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__activity_ids
@@ -1048,6 +1052,7 @@ msgid "Activities"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__activity_exception_decoration
 #: model:ir.model.fields,field_description:pms.field_pms_folio__activity_exception_decoration
 #: model:ir.model.fields,field_description:pms.field_pms_property__activity_exception_decoration
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__activity_exception_decoration
@@ -1056,6 +1061,7 @@ msgid "Activity Exception Decoration"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__activity_state
 #: model:ir.model.fields,field_description:pms.field_pms_folio__activity_state
 #: model:ir.model.fields,field_description:pms.field_pms_property__activity_state
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__activity_state
@@ -1064,6 +1070,7 @@ msgid "Activity State"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__activity_type_icon
 #: model:ir.model.fields,field_description:pms.field_pms_folio__activity_type_icon
 #: model:ir.model.fields,field_description:pms.field_pms_property__activity_type_icon
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__activity_type_icon
@@ -1590,6 +1597,11 @@ msgid "Apply pricelists on"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_team_view_form
+msgid "Archived"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_reservation__state__arrival_delayed
 msgid "Arrival Delayed"
 msgstr ""
@@ -1633,10 +1645,12 @@ msgid "At which ubication the room is located."
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_attachment_count
 #: model:ir.model.fields,field_description:pms.field_pms_folio__message_attachment_count
 #: model:ir.model.fields,field_description:pms.field_pms_property__message_attachment_count
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__message_attachment_count
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__message_attachment_count
+#: model:ir.model.fields,field_description:pms.field_pms_team__message_attachment_count
 msgid "Attachment Count"
 msgstr ""
 
@@ -1670,6 +1684,11 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 msgid "Auto Send Email"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__is_exit_auto_mail
+msgid "Auto Send Exit Mail"
 msgstr ""
 
 #. module: pms
@@ -1794,6 +1813,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio_availability_wizard__num_rooms_available
 msgid "Available rooms"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_team_view_form
+msgid "Avatar"
 msgstr ""
 
 #. module: pms
@@ -2228,6 +2252,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 msgid "Channel"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_team__member_ids
+msgid "Channel Members"
 msgstr ""
 
 #. module: pms
@@ -2951,6 +2980,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_service__create_uid
 #: model:ir.model.fields,field_description:pms.field_pms_service_line__create_uid
 #: model:ir.model.fields,field_description:pms.field_pms_several_partners_wizard__create_uid
+#: model:ir.model.fields,field_description:pms.field_pms_team__create_uid
 #: model:ir.model.fields,field_description:pms.field_pms_ubication__create_uid
 #: model:ir.model.fields,field_description:pms.field_pms_wizard_reservation_lines_split__create_uid
 #: model:ir.model.fields,field_description:pms.field_room_closure_reason__create_uid
@@ -2992,6 +3022,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_service__create_date
 #: model:ir.model.fields,field_description:pms.field_pms_service_line__create_date
 #: model:ir.model.fields,field_description:pms.field_pms_several_partners_wizard__create_date
+#: model:ir.model.fields,field_description:pms.field_pms_team__create_date
 #: model:ir.model.fields,field_description:pms.field_pms_ubication__create_date
 #: model:ir.model.fields,field_description:pms.field_pms_wizard_reservation_lines_split__create_date
 #: model:ir.model.fields,field_description:pms.field_room_closure_reason__create_date
@@ -3542,6 +3573,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_service__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_service_line__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_several_partners_wizard__display_name
+#: model:ir.model.fields,field_description:pms.field_pms_team__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_ubication__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_wizard_reservation_lines_split__display_name
 #: model:ir.model.fields,field_description:pms.field_product_pricelist__display_name
@@ -3876,6 +3908,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__departure
 msgid "Exit"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__property_exit_template
+msgid "Exit Email"
 msgstr ""
 
 #. module: pms
@@ -4258,30 +4295,44 @@ msgid "Folios/"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_team_view_form
+msgid ""
+"Follow this team to automatically track the events associated to users of "
+"this team."
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_follower_ids
 #: model:ir.model.fields,field_description:pms.field_pms_folio__message_follower_ids
 #: model:ir.model.fields,field_description:pms.field_pms_property__message_follower_ids
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__message_follower_ids
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__message_follower_ids
+#: model:ir.model.fields,field_description:pms.field_pms_team__message_follower_ids
 msgid "Followers"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_channel_ids
 #: model:ir.model.fields,field_description:pms.field_pms_folio__message_channel_ids
 #: model:ir.model.fields,field_description:pms.field_pms_property__message_channel_ids
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__message_channel_ids
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__message_channel_ids
+#: model:ir.model.fields,field_description:pms.field_pms_team__message_channel_ids
 msgid "Followers (Channels)"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_partner_ids
 #: model:ir.model.fields,field_description:pms.field_pms_folio__message_partner_ids
 #: model:ir.model.fields,field_description:pms.field_pms_property__message_partner_ids
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__message_partner_ids
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__message_partner_ids
+#: model:ir.model.fields,field_description:pms.field_pms_team__message_partner_ids
 msgid "Followers (Partners)"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__activity_type_icon
 #: model:ir.model.fields,help:pms.field_pms_folio__activity_type_icon
 #: model:ir.model.fields,help:pms.field_pms_property__activity_type_icon
 #: model:ir.model.fields,help:pms.field_pms_reservation__activity_type_icon
@@ -4632,6 +4683,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_service__id
 #: model:ir.model.fields,field_description:pms.field_pms_service_line__id
 #: model:ir.model.fields,field_description:pms.field_pms_several_partners_wizard__id
+#: model:ir.model.fields,field_description:pms.field_pms_team__id
 #: model:ir.model.fields,field_description:pms.field_pms_ubication__id
 #: model:ir.model.fields,field_description:pms.field_pms_wizard_reservation_lines_split__id
 #: model:ir.model.fields,field_description:pms.field_product_pricelist__id
@@ -4655,6 +4707,7 @@ msgid "IM Status"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__activity_exception_icon
 #: model:ir.model.fields,field_description:pms.field_pms_folio__activity_exception_icon
 #: model:ir.model.fields,field_description:pms.field_pms_property__activity_exception_icon
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__activity_exception_icon
@@ -4663,6 +4716,7 @@ msgid "Icon"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__activity_exception_icon
 #: model:ir.model.fields,help:pms.field_pms_folio__activity_exception_icon
 #: model:ir.model.fields,help:pms.field_pms_property__activity_exception_icon
 #: model:ir.model.fields,help:pms.field_pms_reservation__activity_exception_icon
@@ -4698,6 +4752,8 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__message_needaction
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__message_unread
 #: model:ir.model.fields,help:pms.field_pms_folio__message_needaction
 #: model:ir.model.fields,help:pms.field_pms_folio__message_unread
 #: model:ir.model.fields,help:pms.field_pms_property__message_needaction
@@ -4706,10 +4762,14 @@ msgstr ""
 #: model:ir.model.fields,help:pms.field_pms_reservation__message_unread
 #: model:ir.model.fields,help:pms.field_pms_room_type__message_needaction
 #: model:ir.model.fields,help:pms.field_pms_room_type__message_unread
+#: model:ir.model.fields,help:pms.field_pms_team__message_needaction
+#: model:ir.model.fields,help:pms.field_pms_team__message_unread
 msgid "If checked, new messages require your attention."
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__message_has_error
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__message_has_sms_error
 #: model:ir.model.fields,help:pms.field_pms_folio__message_has_error
 #: model:ir.model.fields,help:pms.field_pms_folio__message_has_sms_error
 #: model:ir.model.fields,help:pms.field_pms_property__message_has_error
@@ -4718,6 +4778,8 @@ msgstr ""
 #: model:ir.model.fields,help:pms.field_pms_reservation__message_has_sms_error
 #: model:ir.model.fields,help:pms.field_pms_room_type__message_has_error
 #: model:ir.model.fields,help:pms.field_pms_room_type__message_has_sms_error
+#: model:ir.model.fields,help:pms.field_pms_team__message_has_error
+#: model:ir.model.fields,help:pms.field_pms_team__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr ""
 
@@ -4728,6 +4790,8 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__team_id
+#: model:ir.model.fields,help:pms.field_res_partner__team_id
+#: model:ir.model.fields,help:pms.field_res_users__team_id
 msgid ""
 "If set, this Sales Team will be used for sales and assignments related to "
 "this partner"
@@ -5329,10 +5393,12 @@ msgid "Is Board Service"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_is_follower
 #: model:ir.model.fields,field_description:pms.field_pms_folio__message_is_follower
 #: model:ir.model.fields,field_description:pms.field_pms_property__message_is_follower
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__message_is_follower
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__message_is_follower
+#: model:ir.model.fields,field_description:pms.field_pms_team__message_is_follower
 msgid "Is Follower"
 msgstr ""
 
@@ -5617,6 +5683,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_service____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_service_line____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_several_partners_wizard____last_update
+#: model:ir.model.fields,field_description:pms.field_pms_team____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_ubication____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_wizard_reservation_lines_split____last_update
 #: model:ir.model.fields,field_description:pms.field_product_pricelist____last_update
@@ -5672,6 +5739,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_service__write_uid
 #: model:ir.model.fields,field_description:pms.field_pms_service_line__write_uid
 #: model:ir.model.fields,field_description:pms.field_pms_several_partners_wizard__write_uid
+#: model:ir.model.fields,field_description:pms.field_pms_team__write_uid
 #: model:ir.model.fields,field_description:pms.field_pms_ubication__write_uid
 #: model:ir.model.fields,field_description:pms.field_pms_wizard_reservation_lines_split__write_uid
 #: model:ir.model.fields,field_description:pms.field_room_closure_reason__write_uid
@@ -5713,6 +5781,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_service__write_date
 #: model:ir.model.fields,field_description:pms.field_pms_service_line__write_date
 #: model:ir.model.fields,field_description:pms.field_pms_several_partners_wizard__write_date
+#: model:ir.model.fields,field_description:pms.field_pms_team__write_date
 #: model:ir.model.fields,field_description:pms.field_pms_ubication__write_date
 #: model:ir.model.fields,field_description:pms.field_pms_wizard_reservation_lines_split__write_date
 #: model:ir.model.fields,field_description:pms.field_room_closure_reason__write_date
@@ -5841,20 +5910,17 @@ msgid "Mail Information"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_reservation__to_send_mail
-msgid "Mail Sent"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__privacy_policy
 msgid "Mail privacy policy "
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_main_attachment_id
 #: model:ir.model.fields,field_description:pms.field_pms_folio__message_main_attachment_id
 #: model:ir.model.fields,field_description:pms.field_pms_property__message_main_attachment_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__message_main_attachment_id
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__message_main_attachment_id
+#: model:ir.model.fields,field_description:pms.field_pms_team__message_main_attachment_id
 msgid "Main Attachment"
 msgstr ""
 
@@ -6019,10 +6085,12 @@ msgid "Maximum stay if checkin is today"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_has_error
 #: model:ir.model.fields,field_description:pms.field_pms_folio__message_has_error
 #: model:ir.model.fields,field_description:pms.field_pms_property__message_has_error
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__message_has_error
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__message_has_error
+#: model:ir.model.fields,field_description:pms.field_pms_team__message_has_error
 msgid "Message Delivery error"
 msgstr ""
 
@@ -6042,10 +6110,12 @@ msgid "Message for Sales Order Line"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_ids
 #: model:ir.model.fields,field_description:pms.field_pms_folio__message_ids
 #: model:ir.model.fields,field_description:pms.field_pms_property__message_ids
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__message_ids
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__message_ids
+#: model:ir.model.fields,field_description:pms.field_pms_team__message_ids
 msgid "Messages"
 msgstr ""
 
@@ -6176,6 +6246,7 @@ msgid "Multi Properties"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__my_activity_date_deadline
 #: model:ir.model.fields,field_description:pms.field_pms_folio__my_activity_date_deadline
 #: model:ir.model.fields,field_description:pms.field_pms_property__my_activity_date_deadline
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__my_activity_date_deadline
@@ -6317,6 +6388,7 @@ msgid "Next 7 days"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__activity_date_deadline
 #: model:ir.model.fields,field_description:pms.field_pms_folio__activity_date_deadline
 #: model:ir.model.fields,field_description:pms.field_pms_property__activity_date_deadline
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__activity_date_deadline
@@ -6325,6 +6397,7 @@ msgid "Next Activity Deadline"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__activity_summary
 #: model:ir.model.fields,field_description:pms.field_pms_folio__activity_summary
 #: model:ir.model.fields,field_description:pms.field_pms_property__activity_summary
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__activity_summary
@@ -6333,6 +6406,7 @@ msgid "Next Activity Summary"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__activity_type_id
 #: model:ir.model.fields,field_description:pms.field_pms_folio__activity_type_id
 #: model:ir.model.fields,field_description:pms.field_pms_property__activity_type_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__activity_type_id
@@ -6474,10 +6548,12 @@ msgid "Notice under the signature on the traveler's ticket."
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_needaction_counter
 #: model:ir.model.fields,field_description:pms.field_pms_folio__message_needaction_counter
 #: model:ir.model.fields,field_description:pms.field_pms_property__message_needaction_counter
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__message_needaction_counter
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__message_needaction_counter
+#: model:ir.model.fields,field_description:pms.field_pms_team__message_needaction_counter
 msgid "Number of Actions"
 msgstr ""
 
@@ -6536,10 +6612,12 @@ msgid "Number of children there in guest list whose presence counts"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_has_error_counter
 #: model:ir.model.fields,field_description:pms.field_pms_folio__message_has_error_counter
 #: model:ir.model.fields,field_description:pms.field_pms_property__message_has_error_counter
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__message_has_error_counter
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__message_has_error_counter
+#: model:ir.model.fields,field_description:pms.field_pms_team__message_has_error_counter
 msgid "Number of errors"
 msgstr ""
 
@@ -6561,18 +6639,22 @@ msgid "Number of guest with pending checkin"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__message_needaction_counter
 #: model:ir.model.fields,help:pms.field_pms_folio__message_needaction_counter
 #: model:ir.model.fields,help:pms.field_pms_property__message_needaction_counter
 #: model:ir.model.fields,help:pms.field_pms_reservation__message_needaction_counter
 #: model:ir.model.fields,help:pms.field_pms_room_type__message_needaction_counter
+#: model:ir.model.fields,help:pms.field_pms_team__message_needaction_counter
 msgid "Number of messages which requires an action"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__message_has_error_counter
 #: model:ir.model.fields,help:pms.field_pms_folio__message_has_error_counter
 #: model:ir.model.fields,help:pms.field_pms_property__message_has_error_counter
 #: model:ir.model.fields,help:pms.field_pms_reservation__message_has_error_counter
 #: model:ir.model.fields,help:pms.field_pms_room_type__message_has_error_counter
+#: model:ir.model.fields,help:pms.field_pms_team__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr ""
 
@@ -6619,10 +6701,12 @@ msgid "Number of services that were sold"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__message_unread_counter
 #: model:ir.model.fields,help:pms.field_pms_folio__message_unread_counter
 #: model:ir.model.fields,help:pms.field_pms_property__message_unread_counter
 #: model:ir.model.fields,help:pms.field_pms_reservation__message_unread_counter
 #: model:ir.model.fields,help:pms.field_pms_room_type__message_unread_counter
+#: model:ir.model.fields,help:pms.field_pms_team__message_unread_counter
 msgid "Number of unread messages"
 msgstr ""
 
@@ -6899,6 +6983,22 @@ msgstr ""
 #. module: pms
 #: model:ir.ui.menu,name:pms.pms_management_menu
 msgid "PMS Management"
+msgstr ""
+
+#. module: pms
+#: model:ir.model,name:pms.model_pms_team
+#: model:ir.model.fields,field_description:pms.field_pms_property__team_id
+#: model:ir.model.fields,field_description:pms.field_pms_team__name
+#: model:ir.model.fields,field_description:pms.field_res_partner__team_id
+#: model:ir.model.fields,field_description:pms.field_res_users__team_id
+#: model_terms:ir.ui.view,arch_db:pms.pms_team_view_form
+#: model_terms:ir.ui.view,arch_db:pms.pms_team_view_tree
+msgid "PMS Team"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_team_view_form
+msgid "PMS Team name..."
 msgstr ""
 
 #. module: pms
@@ -7800,6 +7900,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_room__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_service__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_service_line__pms_property_id
+#: model:ir.model.fields,field_description:pms.field_pms_team__pms_property_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
@@ -8391,6 +8492,7 @@ msgid "Residence Address"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__activity_user_id
 #: model:ir.model.fields,field_description:pms.field_pms_folio__activity_user_id
 #: model:ir.model.fields,field_description:pms.field_pms_property__activity_user_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__activity_user_id
@@ -8703,10 +8805,12 @@ msgid "Rules to overwrite on massive changes"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_has_sms_error
 #: model:ir.model.fields,field_description:pms.field_pms_folio__message_has_sms_error
 #: model:ir.model.fields,field_description:pms.field_pms_property__message_has_sms_error
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__message_has_sms_error
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__message_has_sms_error
+#: model:ir.model.fields,field_description:pms.field_pms_team__message_has_sms_error
 msgid "SMS Delivery error"
 msgstr ""
 
@@ -8844,11 +8948,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__list_price
 msgid "Sales Price"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_property__team_id
-msgid "Sales Team"
 msgstr ""
 
 #. module: pms
@@ -9049,6 +9148,11 @@ msgid "Send Confirmation Email"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
+msgid "Send Exit Email"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_invitations
 msgid "Send Invitation"
 msgstr ""
@@ -9074,6 +9178,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__sequence
 #: model:ir.model.fields,field_description:pms.field_pms_room_type_class__sequence
 #: model:ir.model.fields,field_description:pms.field_pms_service__sequence
+#: model:ir.model.fields,field_description:pms.field_pms_team__sequence
 #: model:ir.model.fields,field_description:pms.field_pms_ubication__sequence
 msgid "Sequence"
 msgstr ""
@@ -9518,6 +9623,7 @@ msgid "Status"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__activity_state
 #: model:ir.model.fields,help:pms.field_pms_folio__activity_state
 #: model:ir.model.fields,help:pms.field_pms_property__activity_state
 #: model:ir.model.fields,help:pms.field_pms_reservation__activity_state
@@ -9719,6 +9825,22 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_folio_advance_payment_inv__deposit_taxes_id
 msgid "Taxes used for deposits"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_team__user_id
+msgid "Team Leader"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_team_view_form
+msgid "Team Members"
+msgstr ""
+
+#. module: pms
+#: model:ir.actions.act_window,name:pms.pms_team_action
+#: model:ir.ui.menu,name:pms.pms_team_menu
+msgid "Teams"
 msgstr ""
 
 #. module: pms
@@ -10557,6 +10679,11 @@ msgid "To Invoice Quantity"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__to_send_mail
+msgid "To Send Mail"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 msgid "To be paid"
 msgstr ""
@@ -10784,6 +10911,7 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__activity_exception_decoration
 #: model:ir.model.fields,help:pms.field_pms_folio__activity_exception_decoration
 #: model:ir.model.fields,help:pms.field_pms_property__activity_exception_decoration
 #: model:ir.model.fields,help:pms.field_pms_reservation__activity_exception_decoration
@@ -10911,18 +11039,22 @@ msgid "Unkown Guest"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_unread
 #: model:ir.model.fields,field_description:pms.field_pms_folio__message_unread
 #: model:ir.model.fields,field_description:pms.field_pms_property__message_unread
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__message_unread
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__message_unread
+#: model:ir.model.fields,field_description:pms.field_pms_team__message_unread
 msgid "Unread Messages"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_unread_counter
 #: model:ir.model.fields,field_description:pms.field_pms_folio__message_unread_counter
 #: model:ir.model.fields,field_description:pms.field_pms_property__message_unread_counter
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__message_unread_counter
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__message_unread_counter
+#: model:ir.model.fields,field_description:pms.field_pms_team__message_unread_counter
 msgid "Unread Messages Counter"
 msgstr ""
 
@@ -11018,6 +11150,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__user_id
 msgid "User who manages the reservation"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_res_users__pms_team_id
+msgid "User's PMS Team"
 msgstr ""
 
 #. module: pms
@@ -11170,18 +11307,22 @@ msgid "Website Link"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__website_message_ids
 #: model:ir.model.fields,field_description:pms.field_pms_folio__website_message_ids
 #: model:ir.model.fields,field_description:pms.field_pms_property__website_message_ids
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__website_message_ids
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__website_message_ids
+#: model:ir.model.fields,field_description:pms.field_pms_team__website_message_ids
 msgid "Website Messages"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__website_message_ids
 #: model:ir.model.fields,help:pms.field_pms_folio__website_message_ids
 #: model:ir.model.fields,help:pms.field_pms_property__website_message_ids
 #: model:ir.model.fields,help:pms.field_pms_reservation__website_message_ids
 #: model:ir.model.fields,help:pms.field_pms_room_type__website_message_ids
+#: model:ir.model.fields,help:pms.field_pms_team__website_message_ids
 msgid "Website communication history"
 msgstr ""
 
@@ -11265,9 +11406,41 @@ msgid "You must assign a customer name"
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/pms_folio.py:0
+#, python-format
+msgid ""
+"You must select a cancelation template in the email configuration menu of "
+"the property"
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/wizards/wizard_several_partners.py:0
 #, python-format
 msgid "You must select a client to be able to add it to the reservation "
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_folio.py:0
+#, python-format
+msgid ""
+"You must select a confirmation template in the email configuration menu of "
+"the property"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_folio.py:0
+#, python-format
+msgid ""
+"You must select a exit template in the email configuration menu of the "
+"property"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_folio.py:0
+#, python-format
+msgid ""
+"You must select a modification template in the email configuration menu of "
+"the property"
 msgstr ""
 
 #. module: pms
