@@ -6,7 +6,7 @@ from odoo.addons.component.core import Component
 class PmsPartnerCategoriesService(Component):
     _inherit = "base.rest.service"
     _name = "res.partner.category.service"
-    _usage = "segmentations"
+    _usage = "categories"
     _collection = "pms.services"
 
     @restapi.method(
@@ -21,17 +21,17 @@ class PmsPartnerCategoriesService(Component):
         output_param=Datamodel("res.partner.category.info", is_list=True),
         auth="jwt_api_pms",
     )
-    def get_parent_segmentation_ids(self):
-        result_segmentation_ids = []
+    def get_categories(self):
+        result_categories = []
         ResPartnerCategoryInfo = self.env.datamodels["res.partner.category.info"]
-        for segmentation_id in self.env["res.partner.category"].search([]):
-            result_segmentation_ids.append(
+        for category in self.env["res.partner.category"].search([]):
+            result_categories.append(
                 ResPartnerCategoryInfo(
-                    id=segmentation_id.id,
-                    name=segmentation_id.name,
-                    parentId=segmentation_id.parent_id.id
-                    if segmentation_id.parent_id.id
+                    id=category.id,
+                    name=category.name,
+                    parentId=category.parent_id.id
+                    if category.parent_id.id
                     else 0,
                 )
             )
-        return result_segmentation_ids
+        return result_categories
