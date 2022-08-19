@@ -22,6 +22,7 @@ class PmsFolioInfo(Datamodel):
     state = fields.String(required=False, allow_none=True)
     amountTotal = fields.Float(required=False, allow_none=True)
     reservationType = fields.String(required=False, allow_none=True)
+    pendingAmount = fields.Float(required=False, allow_none=True)
 
 
 class PmsFolioShortInfo(Datamodel):
