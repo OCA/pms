@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 from odoo import _, fields
 from odoo.exceptions import MissingError
+from datetime import datetime, timedelta
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
