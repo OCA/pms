@@ -25,8 +25,6 @@ class ResUsers(models.Model):
         domain="[('company_id','in',company_ids)]",
     )
 
-    pms_team_id = fields.Many2one("pms.team", "User's PMS Team")
-
     @api.model
     def get_active_property_ids(self):
         # TODO: Require performance test and security (dont allow any property id)

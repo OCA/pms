@@ -186,7 +186,6 @@ class PmsAvailability(models.Model):
                 room=room.parent_id,
                 checkin=checkin,
                 checkout=checkout,
-                pms_property_id=room.pms_property_id.id,
             ):
                 occupied_room_ids.append(room.id)
         for room in rooms.filtered("child_ids"):
@@ -194,7 +193,6 @@ class PmsAvailability(models.Model):
                 rooms=room.child_ids,
                 checkin=checkin,
                 checkout=checkout,
-                pms_property_id=room.pms_property_id.id,
             ):
                 occupied_room_ids.append(room.id)
         occupied_room_ids.extend(
@@ -212,7 +210,7 @@ class PmsAvailability(models.Model):
         return occupied_room_ids
 
     @api.model
-    def get_occupied_parent_rooms(self, room, checkin, checkout, pms_property_id):
+    def get_occupied_parent_rooms(self, room, checkin, checkout):
         RoomLines = self.env["pms.reservation.line"]
         if (
             RoomLines.search_count(
@@ -220,7 +218,6 @@ class PmsAvailability(models.Model):
                     ("date", ">=", checkin),
                     ("date", "<=", checkout - datetime.timedelta(1)),
                     ("room_id", "=", room.id),
-                    ("pms_property_id", "=", pms_property_id),
                     ("occupies_availability", "=", True),
                 ]
             )
@@ -229,22 +226,23 @@ class PmsAvailability(models.Model):
             return True
         if room.parent_id:
             return self.get_occupied_parent_rooms(
-                room=room.parent_room_id,
-                checkin=checkin,
-                checkout=checkout,
+                room=room.parent_id, checkin=checkin, checkout=checkout
             )
         return False
 
     @api.model
-    def get_occupied_child_rooms(self, rooms, checkin, checkout, pms_property_id):
+    def get_occupied_child_rooms(self, rooms, checkin, checkout):
         RoomLines = self.env["pms.reservation.line"]
+        mapped_properties = list(set(rooms.mapped("pms_property_id.id")))
+        if len(mapped_properties) > 1:
+            raise ValidationError(_("Rooms shared between different properties"))
+
         if (
             RoomLines.search_count(
                 [
                     ("date", ">=", checkin),
                     ("date", "<=", checkout - datetime.timedelta(1)),
                     ("room_id", "in", rooms.ids),
-                    ("pms_property_id", "=", pms_property_id),
                     ("occupies_availability", "=", True),
                 ]
             )

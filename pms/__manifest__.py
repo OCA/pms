@@ -93,7 +93,6 @@
         "views/res_partner_id_category.xml",
         "views/payment_transaction_views.xml",
         "views/account_move_line_views.xml",
-        "views/pms_team_views.xml",
     ],
     "demo": [
         "demo/pms_master_data.xml",
