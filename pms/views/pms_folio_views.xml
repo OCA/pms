@@ -586,6 +586,11 @@
                         <page string="Other data">
                             <group>
                                 <field name="user_id" />
+                                <field name="manager_user_id" />
+                                <field name="revenue_user_id" />
+                                <field name="administrative_user_id" />
+                            </group>
+                            <group>
                                 <field name="force_nothing_to_invoice" />
                             </group>
                         </page>
