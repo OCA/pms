@@ -190,6 +190,19 @@ class PmsProperty(models.Model):
         help="Maximum amount to create the simplified invoice",
         default=400.0,
     )
+    user_id = fields.Many2one(
+        string="Team Leader",
+        copy=False,
+        comodel_name="res.users",
+        ondelete="restrict",
+        tracking=True,
+    )
+    member_ids = fields.One2many(
+        string="Team Members",
+        comodel_name="pms.team.member",
+        inverse_name="pms_property_id",
+        copy=False,
+    )
 
     @api.depends_context(
         "checkin",
