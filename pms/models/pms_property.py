@@ -214,6 +214,7 @@ class PmsProperty(models.Model):
         copy=False,
         comodel_name="res.users",
         ondelete="restrict",
+        tracking=True,
     )
     member_ids = fields.One2many(
         string="Team Members",
