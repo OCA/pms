@@ -68,8 +68,8 @@
                         attrs="{'invisible':['|','|',('to_send_mail', '=', False), ('state', 'not in', 'cancel'),('reservation_type', 'in', 'out')]}"
                     />
                     <field name="state" widget="statusbar" />
-                    <field name="to_send_mail" invisible="0" />
-                    <field name="is_modified_reservation" invisible="0" />
+                    <field name="to_send_mail" invisible="1" />
+                    <field name="is_modified_reservation" invisible="1" />
                 </header>
                 <div
                     class="alert alert-info"

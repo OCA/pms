@@ -153,14 +153,47 @@ class PmsFolio(models.Model):
         compute="_compute_commission",
     )
     user_id = fields.Many2one(
-        string="Salesperson",
-        help="The user who created the folio",
+        string="Reception Manager",
+        help="The reception manager in the folio",
         readonly=False,
         index=True,
         store=True,
         comodel_name="res.users",
         ondelete="restrict",
         compute="_compute_user_id",
+        tracking=True,
+    )
+    revenue_user_id = fields.Many2one(
+        string="Revenue Manager",
+        help="The revenue manager in the folio",
+        readonly=False,
+        index=True,
+        store=True,
+        comodel_name="res.users",
+        ondelete="restrict",
+        compute="_compute_revenue_user_id",
+        tracking=True,
+    )
+    administrative_user_id = fields.Many2one(
+        string="Administrative Manager",
+        help="The administrative manager in the folio",
+        readonly=False,
+        index=True,
+        store=True,
+        comodel_name="res.users",
+        ondelete="restrict",
+        compute="_compute_administrative_user_id",
+        tracking=True,
+    )
+    manager_user_id = fields.Many2one(
+        string="Main Manager",
+        help="The main manager in the folio",
+        readonly=False,
+        index=True,
+        store=True,
+        comodel_name="res.users",
+        ondelete="restrict",
+        compute="_compute_manager_user_id",
         tracking=True,
     )
     agency_id = fields.Many2one(
@@ -912,11 +945,54 @@ class PmsFolio(models.Model):
             elif not folio.partner_id:
                 folio.partner_id = False
 
-    @api.depends("partner_id")
+    @api.depends("pms_property_id")
     def _compute_user_id(self):
+        active_user_id = self.env.uid
         for folio in self:
             if not folio.user_id:
-                folio.user_id = (folio.partner_id.user_id.id or self.env.uid,)
+                property_users = folio.pms_property_id.member_ids.filtered(
+                    lambda u: u.pms_role == "reception"
+                ).mapped("user_id")
+                if property_users:
+                    if active_user_id in property_users.ids:
+                        folio.user_id = active_user_id
+                    elif property_users:
+                        folio.user_id = property_users[0]
+                    else:
+                        folio.user_id = active_user_id or folio.pms_property_id.user_id
+
+    @api.depends("pms_property_id")
+    def _compute_revenue_user_id(self):
+        for folio in self:
+            revenue_users = folio.pms_property_id.member_ids.filtered(
+                lambda u: u.pms_role == "revenue"
+            ).mapped("user_id")
+            if revenue_users:
+                folio.revenue_user_id = revenue_users[0]
+            else:
+                folio.revenue_user_id = False
+
+    @api.depends("pms_property_id")
+    def _compute_administrative_user_id(self):
+        for folio in self:
+            administrative_users = folio.pms_property_id.member_ids.filtered(
+                lambda u: u.pms_role == "administrative"
+            ).mapped("user_id")
+            if administrative_users:
+                folio.administrative_user_id = administrative_users[0]
+            else:
+                folio.administrative_user_id = False
+
+    @api.depends("pms_property_id")
+    def _compute_manager_user_id(self):
+        for folio in self:
+            manager_users = folio.pms_property_id.member_ids.filtered(
+                lambda u: u.pms_role == "manager"
+            ).mapped("user_id")
+            if manager_users:
+                folio.manager_user_id = manager_users[0]
+            else:
+                folio.manager_user_id = False
 
     @api.depends(
         "partner_id",

@@ -191,13 +191,15 @@ class PmsReservation(models.Model):
         check_pms_properties=True,
     )
     user_id = fields.Many2one(
-        string="Salesperson",
-        help="User who manages the reservation",
+        string="Reception Manager",
+        help="The reception manager in the folio",
         readonly=False,
+        index=True,
         store=True,
-        related="folio_id.user_id",
-        depends=["folio_id.user_id"],
-        default=lambda self: self.env.user.id,
+        comodel_name="res.users",
+        ondelete="restrict",
+        compute="_compute_user_id",
+        tracking=True,
     )
     show_update_pricelist = fields.Boolean(
         string="Has Pricelist Changed",
@@ -987,6 +989,22 @@ class PmsReservation(models.Model):
                     reservation.pricelist_id = (
                         reservation.pms_property_id.default_pricelist_id
                     )
+
+    @api.depends("folio_id", "pms_property_id")
+    def _compute_user_id(self):
+        active_user_id = self.env.uid
+        for res in self:
+            if not res.user_id and not res.folio_id:
+                property_users = res.pms_property_id.member_ids.filtered(
+                    lambda u: u.pms_role == "reception"
+                ).mapped("user_id")
+                if property_users:
+                    if active_user_id in property_users.ids:
+                        res.user_id = active_user_id
+                    elif property_users:
+                        res.user_id = property_users[0]
+                    else:
+                        res.user_id = active_user_id or res.pms_property_id.user_id
 
     @api.depends("pricelist_id", "room_type_id")
     def _compute_show_update_pricelist(self):
