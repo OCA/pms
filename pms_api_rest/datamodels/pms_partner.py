@@ -57,3 +57,5 @@ class PmsPartnerInfo(Datamodel):
     daysAutoInvoice = fields.Integer(required=False, allow_none=True)
     invoicingMonthDay = fields.Integer(required=False, allow_none=True)
     invoiceToAgency = fields.String(required=False, allow_none=True)
+    tagIds = fields.List(fields.Integer(required=False, allow_none=True))
+    lastStay = fields.String(required=False, allow_none=True)
