@@ -29,9 +29,7 @@ class PmsPartnerCategoriesService(Component):
                 ResPartnerCategoryInfo(
                     id=category.id,
                     name=category.name,
-                    parentId=category.parent_id.id
-                    if category.parent_id.id
-                    else 0,
+                    parentId=category.parent_id.id if category.parent_id.id else 0,
                 )
             )
         return result_categories
