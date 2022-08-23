@@ -107,6 +107,7 @@ class PmsPartnerService(Component):
                     invoiceToAgency=partner.invoice_to_agency
                     if partner.invoice_to_agency
                     else None,
+                    tagIds=partner.category_id.ids if partner.category_id else [],
                 )
             )
         return result_partners
@@ -154,7 +155,7 @@ class PmsPartnerService(Component):
                 "GET",
             )
         ],
-        output_param=Datamodel("pms.checkin.partner.info", is_list=True),
+        output_param=Datamodel("pms.partner.info", is_list=True),
         auth="jwt_api_pms",
     )
     def get_partner_by_doc_number(self, document_type, document_number):
@@ -162,7 +163,7 @@ class PmsPartnerService(Component):
             [("name", "=", document_number), ("category_id", "=", int(document_type))]
         )
         partners = []
-        PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
+        PmsPartnerInfo = self.env.datamodels["pms.partner.info"]
         if not doc_number:
             pass
         else:
@@ -173,7 +174,7 @@ class PmsPartnerService(Component):
                     "%d/%m/%Y"
                 )
             partners.append(
-                PmsCheckinPartnerInfo(
+                PmsPartnerInfo(
                     # id=doc_number.partner_id.id,
                     name=doc_number.partner_id.name
                     if doc_number.partner_id.name
