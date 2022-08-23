@@ -37,5 +37,5 @@ class PmsPartnerInfo(Datamodel):
     countryName = fields.String(required=False, allow_none=True)
     tagIds = fields.List(fields.Integer(required=False, allow_none=True))
     documentNumbers = fields.List(fields.Integer(required=False, allow_none=True))
-    lastStay = fields.String(required=False, allow_none=True)
     website = fields.String(required=False, allow_none=True)
+    lastStay = fields.String(required=False, allow_none=True)
