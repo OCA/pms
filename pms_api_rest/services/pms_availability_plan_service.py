@@ -158,24 +158,22 @@ class PmsAvailabilityPlanService(Component):
     ):
         for avail_plan_rule in pms_avail_plan_rules_info.availabilityPlanRules:
             vals = dict()
-            date = datetime.strptime(avail_plan_rule.date[:10], "%Y-%m-%d") + timedelta(
-                days=1
-            )
-            if avail_plan_rule.minStay:
+            date = datetime.strptime(avail_plan_rule.date, "%Y-%m-%d").date()
+            if avail_plan_rule.minStay is not None:
                 vals.update({"min_stay": avail_plan_rule.minStay})
-            if avail_plan_rule.minStayArrival:
+            if avail_plan_rule.minStayArrival is not None:
                 vals.update({"min_stay_arrival": avail_plan_rule.minStayArrival})
-            if avail_plan_rule.maxStay:
+            if avail_plan_rule.maxStay is not None:
                 vals.update({"max_stay": avail_plan_rule.maxStay})
-            if avail_plan_rule.maxStayArrival:
+            if avail_plan_rule.maxStayArrival is not None:
                 vals.update({"max_stay_arrival": avail_plan_rule.maxStayArrival})
-            if avail_plan_rule.closed:
+            if avail_plan_rule.closed is not None:
                 vals.update({"closed": avail_plan_rule.closed})
-            if avail_plan_rule.closedDeparture:
+            if avail_plan_rule.closedDeparture is not None:
                 vals.update({"closed_departure": avail_plan_rule.closedDeparture})
-            if avail_plan_rule.closedArrival:
+            if avail_plan_rule.closedArrival is not None:
                 vals.update({"closed_arrival": avail_plan_rule.closedArrival})
-            if avail_plan_rule.quota:
+            if avail_plan_rule.quota is not None:
                 vals.update({"quota": avail_plan_rule.quota})
             avail_rule = self.env["pms.availability.plan.rule"].search(
                 [
