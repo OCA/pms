@@ -156,9 +156,7 @@ class PmsPricelistService(Component):
     )
     def create_pricelist_item(self, pricelist_id, pms_pricelist_item_info):
         for pms_pricelist_item in pms_pricelist_item_info.pricelistItems:
-            date = datetime.strptime(
-                pms_pricelist_item.date[:10], "%Y-%m-%d"
-            ) + timedelta(days=1)
+            date = datetime.strptime(pms_pricelist_item.date, "%Y-%m-%d").date()
             product_id = (
                 self.env["pms.room.type"]
                 .browse(pms_pricelist_item.roomTypeId)
