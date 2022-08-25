@@ -175,6 +175,8 @@ class PmsAvailabilityPlanService(Component):
                 vals.update({"closed_arrival": avail_plan_rule.closedArrival})
             if avail_plan_rule.quota is not None:
                 vals.update({"quota": avail_plan_rule.quota})
+            if avail_plan_rule.maxAvailability is not None:
+                vals.update({"max_avail": avail_plan_rule.maxAvailability})
             avail_rule = self.env["pms.availability.plan.rule"].search(
                 [
                     ("availability_plan_id", "=", avail_plan_rule.availabilityPlanId),
