@@ -47,6 +47,7 @@ class PmsFolioService(Component):
                 amountTotal=round(folio.amount_total, 2),
                 reservationType=folio.reservation_type,
                 pendingAmount=folio.pending_amount,
+                lastCheckout=str(folio.last_checkout)
             )
         else:
             raise MissingError(_("Folio not found"))
@@ -186,41 +187,29 @@ class PmsFolioService(Component):
         if not folio:
             pass
         else:
-            if folio.payment_state == "not_paid":
-                pass
-                # si el folio está sin pagar no tendrá ningún pago o envíar []?
-            else:
-                # if folio.statement_line_ids:
-                #     for payment in folio.statement_line_ids:
-                #         payments.append(
-                #             PmsPaymentInfo(
-                #                 id=payment.id,
-                #                 amount=round(payment.amount, 2),
-                #                 journalId=payment.journal_id.id,
-                #                 date=datetime.combine(
-                #                     payment.date, datetime.min.time()
-                #                 ).isoformat(),
-                #             )
-                #         )
-                if folio.payment_ids:
-                    for payment in folio.payment_ids:
-                        payments.append(
-                            PmsPaymentInfo(
-                                id=payment.id,
-                                amount=round(payment.amount, 2),
-                                journalId=payment.journal_id.id,
-                                date=datetime.combine(
-                                    payment.date, datetime.min.time()
-                                ).isoformat(),
-                            )
+            # if folio.payment_state == "not_paid":
+            #     pass
+            # else:
+            if folio.payment_ids:
+                for payment in folio.payment_ids:
+                    payments.append(
+                        PmsPaymentInfo(
+                            id=payment.id,
+                            amount=round(payment.amount, 2),
+                            journalId=payment.journal_id.id,
+                            date=datetime.combine(
+                                payment.date, datetime.min.time()
+                            ).isoformat(),
+                            paymentType=payment.payment_type,
                         )
+                    )
         return payments
 
     @restapi.method(
         [
             (
                 [
-                    "/<int:folio_id>/payments",
+                    "/<int:folio_id>/charge",
                 ],
                 "POST",
             )
@@ -229,27 +218,11 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def create_folio_charge(self, folio_id, pms_account_payment_info):
-        partner = self.env["res.partner"].search(
-            [("name", "=", pms_account_payment_info.partnerName)]
-        )
         folio = self.env["pms.folio"].browse(folio_id)
-
-        if partner:
-            partner_id = partner
-        elif not partner and pms_account_payment_info.partnerName:
-            partner_id = self.env["res.partner"].create(
-                {"name": pms_account_payment_info.partnerName}
-            )
+        if pms_account_payment_info.partnerId:
+            partner_id = self.env["res.partner"].browse(int(pms_account_payment_info.partnerId))
         else:
             partner_id = folio.partner_id
-        charge_date_str = (
-            pms_account_payment_info.date[3:5]
-            + "/"
-            + pms_account_payment_info.date[:2]
-            + "/"
-            + pms_account_payment_info.date[6:]
-        )
-        charge_date = datetime.strptime(charge_date_str, "%m/%d/%Y")
         journal_id = self.env["account.journal"].browse(
             pms_account_payment_info.journalId
         )
@@ -259,10 +232,43 @@ class PmsFolioService(Component):
             self.env.user,
             pms_account_payment_info.amount,
             folio,
+            reservations=pms_account_payment_info.reservationIds,
+            services=False,
+            partner=partner_id,
+            date=datetime.strptime(pms_account_payment_info.date, "%m/%d/%Y"),
+        )
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:folio_id>/refund",
+                ],
+                "POST",
+            )
+        ],
+        input_param=Datamodel("pms.account.payment.short.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def create_folio_refund(self, folio_id, pms_account_payment_info):
+        folio = self.env["pms.folio"].browse(folio_id)
+        if pms_account_payment_info.partnerId:
+            partner_id = self.env["res.partner"].browse(pms_account_payment_info.partnerId)
+        else:
+            partner_id = folio.partner_id
+        journal_id = self.env["account.journal"].browse(
+            pms_account_payment_info.journalId
+        )
+        self.env["pms.folio"].do_refund(
+            journal_id,
+            journal_id.suspense_account_id,
+            self.env.user,
+            pms_account_payment_info.amount,
+            folio,
             reservations=False,
             services=False,
             partner=partner_id,
-            date=charge_date,
+            date=datetime.strptime(pms_account_payment_info.date, "%m/%d/%Y"),
         )
 
     @restapi.method(

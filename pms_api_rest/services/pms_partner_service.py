@@ -79,6 +79,7 @@ class PmsPartnerService(Component):
             )
         return result_partners
 
+    # REVIEW: analyze in which service file this method should be
     @restapi.method(
         [
             (

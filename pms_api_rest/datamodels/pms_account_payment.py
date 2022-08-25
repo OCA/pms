@@ -9,6 +9,7 @@ class PmsPaymentInfo(Datamodel):
     amount = fields.Float(required=False, allow_none=True)
     journalId = fields.Integer(required=False, allow_none=True)
     date = fields.String(required=False, allow_none=True)
+    paymentType = fields.String(required=False, allow_none=True)
 
 
 class PmsAccountPaymentInfo(Datamodel):
@@ -17,4 +18,5 @@ class PmsAccountPaymentInfo(Datamodel):
     date = fields.String(required=False, allow_none=True)
     journalId = fields.Integer(required=False, allow_none=True)
     amount = fields.Float(required=False, allow_none=True)
-    partnerName = fields.String(required=False, allow_none=True)
+    partnerId = fields.Integer(required=False, allow_none=True)
+    reservationIds = fields.List(fields.Integer(), required=False)
