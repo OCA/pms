@@ -47,7 +47,7 @@ class PmsFolioService(Component):
                 amountTotal=round(folio.amount_total, 2),
                 reservationType=folio.reservation_type,
                 pendingAmount=folio.pending_amount,
-                lastCheckout=str(folio.last_checkout)
+                lastCheckout=str(folio.last_checkout),
             )
         else:
             raise MissingError(_("Folio not found"))
@@ -219,10 +219,7 @@ class PmsFolioService(Component):
     )
     def create_folio_charge(self, folio_id, pms_account_payment_info):
         folio = self.env["pms.folio"].browse(folio_id)
-        if pms_account_payment_info.partnerId:
-            partner_id = self.env["res.partner"].browse(int(pms_account_payment_info.partnerId))
-        else:
-            partner_id = folio.partner_id
+        partner_id = self.env["res.partner"].browse(pms_account_payment_info.partnerId)
         journal_id = self.env["account.journal"].browse(
             pms_account_payment_info.journalId
         )
@@ -252,10 +249,7 @@ class PmsFolioService(Component):
     )
     def create_folio_refund(self, folio_id, pms_account_payment_info):
         folio = self.env["pms.folio"].browse(folio_id)
-        if pms_account_payment_info.partnerId:
-            partner_id = self.env["res.partner"].browse(pms_account_payment_info.partnerId)
-        else:
-            partner_id = folio.partner_id
+        partner_id = self.env["res.partner"].browse(pms_account_payment_info.partnerId)
         journal_id = self.env["account.journal"].browse(
             pms_account_payment_info.journalId
         )
@@ -269,6 +263,7 @@ class PmsFolioService(Component):
             services=False,
             partner=partner_id,
             date=datetime.strptime(pms_account_payment_info.date, "%m/%d/%Y"),
+            ref=pms_account_payment_info.reference,
         )
 
     @restapi.method(
