@@ -150,7 +150,9 @@ class PmsGuestyCalendar(models.Model):
         )
 
         if not property_id:
-            raise ValidationError(_("Property not found"))
+            message = f"Property not found: {calendar_info['listingId']}"
+            _log.warning(message)
+            return False, message
 
         payload = {
             "listing_id": calendar_info["listingId"],
@@ -162,6 +164,6 @@ class PmsGuestyCalendar(models.Model):
         }
 
         if not calendar_id.exists():
-            return self.sudo().create(payload)
+            return True, self.sudo().create(payload)
         else:
-            return calendar_id.sudo().write(payload)
+            return True, calendar_id.sudo().write(payload)
