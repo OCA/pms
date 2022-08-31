@@ -2,6 +2,7 @@ from marshmallow import fields
 
 from odoo.addons.datamodel.core import Datamodel
 
+
 class PmsPartnerSearchParam(Datamodel):
     _name = "pms.partner.search.param"
     id = fields.Integer(required=False, allow_none=True)

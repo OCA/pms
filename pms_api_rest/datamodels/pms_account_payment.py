@@ -19,4 +19,5 @@ class PmsAccountPaymentInfo(Datamodel):
     journalId = fields.Integer(required=False, allow_none=True)
     amount = fields.Float(required=False, allow_none=True)
     partnerId = fields.Integer(required=False, allow_none=True)
+    reference = fields.String(required=False, allow_none=True)
     reservationIds = fields.List(fields.Integer(), required=False)
