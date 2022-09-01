@@ -2076,6 +2076,7 @@ class PmsFolio(models.Model):
         partner=False,
         date=False,
         pay_type=False,
+        ref=False,
     ):
         """
         create folio refund
@@ -2087,6 +2088,8 @@ class PmsFolio(models.Model):
         reference = folio.name
         if folio.external_reference:
             reference += " - " + folio.external_reference
+        if ref:
+            reference += ": " + ref
         vals = {
             "journal_id": journal.id,
             "partner_id": partner.id,
