@@ -281,6 +281,8 @@
                     </group>
                     <group>
                         <group string="General Info" name="contact_details">
+                            <field name="days_to_checkin" />
+                            <field name="days_to_checkout" />
                             <field
                                 name="document_type"
                                 attrs="{'invisible':[('reservation_type','in',('out'))]}"
