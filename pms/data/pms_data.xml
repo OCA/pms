@@ -145,39 +145,5 @@ else:
     failed = True
             </field>
         </record>
-<!--        pms.automated_mails-->
-        <record id="pms_auto_mail_confirm" model="pms.automated.mails">
-            <field name="name">Confirmed Reservation</field>
-            <field name="active">False</field>
-            <field name="template_id" ref="pms.confirmed_reservation_email" />
-            <field name="action">creation</field>
-            <field
-                name="pms_property_ids"
-                eval="[(6, False, [ref('main_pms_property')])]"
-            />
-            <field name="moment">in_act</field>
-        </record>
-        <record id="pms_auto_mail_write" model="pms.automated.mails">
-            <field name="name">Modified Reservation</field>
-            <field name="active">False</field>
-            <field name="template_id" ref="pms.modified_reservation_email" />
-            <field name="action">write</field>
-            <field
-                name="pms_property_ids"
-                eval="[(6, False, [ref('main_pms_property')])]"
-            />
-            <field name="moment">in_act</field>
-        </record>
-        <record id="pms_auto_mail_cancel" model="pms.automated.mails">
-            <field name="name">Cancelled Reservation</field>
-            <field name="active">False</field>
-            <field name="template_id" ref="pms.cancelled_reservation_email" />
-            <field name="action">cancel</field>
-            <field
-                name="pms_property_ids"
-                eval="[(6, False, [ref('main_pms_property')])]"
-            />
-            <field name="moment">in_act</field>
-        </record>
     </data>
 </odoo>
