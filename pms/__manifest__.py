@@ -86,7 +86,6 @@
         "views/traveller_report_template.xml",
         "views/assets.xml",
         "wizards/wizard_split_join_swap_reservation.xml",
-        "views/pms_automated_mails_views.xml",
         "views/precheckin_portal_templates.xml",
         "wizards/wizard_massive_changes.xml",
         "wizards/wizard_advanced_filters.xml",

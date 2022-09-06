@@ -1,12 +1,10 @@
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import logging
+
 from datetime import timedelta
 
 from odoo import _, api, fields, models
-
-_logger = logging.getLogger(__name__)
 
 
 class PmsService(models.Model):
@@ -298,8 +296,7 @@ class PmsService(models.Model):
             service.name = name
 
     @api.depends(
-        "reservation_id.checkin",
-        "reservation_id.checkout",
+        "reservation_id.reservation_line_ids",
         "product_id",
         "reservation_id.adults",
     )

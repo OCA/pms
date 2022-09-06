@@ -540,26 +540,37 @@ class PmsFolio(models.Model):
         compute="_compute_document_id",
         ondelete="restrict",
     )
-
     possible_existing_customer_ids = fields.One2many(
         string="Possible existing customer",
         compute="_compute_possible_existing_customer_ids",
         comodel_name="res.partner",
         inverse_name="folio_possible_customer_id",
     )
-
     first_checkin = fields.Date(
         string="First Folio Checkin",
         readonly=False,
         store=True,
         compute="_compute_first_checkin",
     )
-
+    days_to_checkin = fields.Integer(
+        string="Days to Checkin",
+        help="""Technical field to facilitate
+            filtering by dates related to checkin""",
+        compute="_compute_days_to_checkin",
+        search="_search_days_to_checkin",
+    )
     last_checkout = fields.Date(
         string="Last Folio Checkout",
         readonly=False,
         store=True,
         compute="_compute_last_checkout",
+    )
+    days_to_checkout = fields.Integer(
+        string="Days to Checkout",
+        help="""Technical field to facilitate
+            filtering by dates related to checkout""",
+        compute="_compute_days_to_checkout",
+        search="_search_days_to_checkout",
     )
     autoinvoice_date = fields.Date(
         string="Autoinvoice Date",
@@ -1411,12 +1422,36 @@ class PmsFolio(models.Model):
                 checkins = record.reservation_ids.mapped("checkin")
                 record.first_checkin = min(checkins)
 
+    def _compute_days_to_checkin(self):
+        for record in self:
+            record.days_to_checkin = (record.first_checkin - fields.Date.today()).days
+
+    def _search_days_to_checkin(self, operator, value):
+        target_date = fields.Date.today() + timedelta(days=value)
+        if operator in ("=", ">=", ">", "<=", "<"):
+            return [("first_checkin", operator, target_date)]
+        raise UserError(
+            _("Unsupported operator %s for searching on date") % (operator,)
+        )
+
     @api.depends("reservation_ids", "reservation_ids.checkout")
     def _compute_last_checkout(self):
         for record in self:
             if record.reservation_ids:
                 checkouts = record.reservation_ids.mapped("checkout")
                 record.last_checkout = max(checkouts)
+
+    def _compute_days_to_checkout(self):
+        for record in self:
+            record.days_to_checkout = (record.last_checkout - fields.Date.today()).days
+
+    def _search_days_to_checkout(self, operator, value):
+        target_date = fields.Date.today() + timedelta(days=value)
+        if operator in ("=", ">=", ">", "<=", "<"):
+            return [("last_checkout", operator, target_date)]
+        raise UserError(
+            _("Unsupported operator %s for searching on date") % (operator,)
+        )
 
     @api.depends("agency_id")
     def _compute_invoice_to_agengy(self):
@@ -1597,94 +1632,26 @@ class PmsFolio(models.Model):
 
         return True
 
-    # CHECKIN/OUT PROCESS
+    # MAIL FLOWS
 
-    def action_open_mail_composer(self):
+    def action_open_confirmation_mail_composer(self):
         self.ensure_one()
+        res_id = False
         res_ids = []
         partner_ids = []
-        if all(
-            reservation.to_send_mail
-            and not reservation.is_modified_reservation
-            and reservation.state in "confirm"
-            for reservation in self.reservation_ids
-        ):
-            if self.pms_property_id.property_confirmed_template:
-                template = self.pms_property_id.property_confirmed_template
-            else:
-                raise ValidationError(
-                    _(
-                        "You must select a confirmation template "
-                        "in the email configuration menu of the property"
-                    )
+        if self.pms_property_id.property_confirmed_template:
+            template = self.pms_property_id.property_confirmed_template
+        else:
+            raise ValidationError(
+                _(
+                    "You must select a confirmation template "
+                    "in the email configuration menu of the property"
                 )
-            model = "pms.folio"
-            partner_ids = [self.partner_id.id]
-            res_id = self.id
-            composition_mode = "comment"
-        elif any(
-            reservation.to_send_mail and reservation.is_modified_reservation
-            for reservation in self.reservation_ids
-        ) and all(
-            reservation.state not in "cancel" for reservation in self.reservation_ids
-        ):
-            if self.pms_property_id.property_modified_template:
-                template = self.pms_property_id.property_modified_template
-            else:
-                raise ValidationError(
-                    _(
-                        "You must select a modification template "
-                        "in the email configuration menu of the property"
-                    )
-                )
-            model = "pms.folio"
-            partner_ids = [self.partner_id.id]
-            res_id = self.id
-            composition_mode = "comment"
-        elif any(
-            reservation.to_send_mail and reservation.state in "cancel"
-            for reservation in self.reservation_ids
-        ):
-            if self.pms_property_id.property_canceled_template:
-                template = self.pms_property_id.property_canceled_template
-            else:
-                raise ValidationError(
-                    _(
-                        "You must select a cancelation template "
-                        "in the email configuration menu of the property"
-                    )
-                )
-            model = "pms.reservation"
-            composition_mode = "mass_mail"
-            for reservation in self.reservation_ids:
-                if reservation.state in "cancel" and reservation.to_send_mail:
-                    partner_ids.append(reservation.partner_id.id)
-                    res_ids.append(reservation.id)
-        elif any(
-            reservation.to_send_mail and reservation.state in "done"
-            for reservation in self.reservation_ids
-        ):
-            if self.pms_property_id.property_exit_template:
-                template = self.pms_property_id.property_exit_template
-            else:
-                raise ValidationError(
-                    _(
-                        "You must select a exit template in "
-                        "the email configuration menu of the property"
-                    )
-                )
-            model = "pms.checkin.partner"
-            composition_mode = "mass_mail"
-            for checkin_partner in self.checkin_partner_ids:
-                if (
-                    checkin_partner.state == "done"
-                    and checkin_partner.reservation_id.to_send_mail
-                ):
-                    partner_ids.append(checkin_partner.partner_id.id)
-                    res_ids.append(checkin_partner.id)
-        compose_form = self.env.ref(
-            "mail.email_compose_message_wizard_form", raise_if_not_found=False
-        )
+            )
+        model = "pms.folio"
+        partner_ids = [self.partner_id.id]
+        res_id = self.id
+        composition_mode = "comment"
         ctx = dict(
             model=model,
             default_model=model,
@@ -1693,6 +1660,103 @@ class PmsFolio(models.Model):
             partner_ids=partner_ids,
             force_email=True,
         )
+        return self.action_open_mail_composer(ctx, res_id=res_id, res_ids=res_ids)
+
+    def action_open_modification_mail_composer(self):
+        self.ensure_one()
+        res_id = False
+        res_ids = []
+        partner_ids = []
+        if self.pms_property_id.property_modified_template:
+            template = self.pms_property_id.property_modified_template
+        else:
+            raise ValidationError(
+                _(
+                    "You must select a modification template "
+                    "in the email configuration menu of the property"
+                )
+            )
+        model = "pms.folio"
+        partner_ids = [self.partner_id.id]
+        res_id = self.id
+        composition_mode = "comment"
+
+        ctx = dict(
+            model=model,
+            default_model=model,
+            default_template_id=template and template.id or False,
+            default_composition_mode=composition_mode,
+            partner_ids=partner_ids,
+            force_email=True,
+        )
+        return self.action_open_mail_composer(ctx, res_id=res_id, res_ids=res_ids)
+
+    def action_open_exit_mail_composer(self):
+        self.ensure_one()
+        res_id = False
+        res_ids = []
+        partner_ids = []
+
+        if self.pms_property_id.property_exit_template:
+            template = self.pms_property_id.property_exit_template
+        else:
+            raise ValidationError(
+                _(
+                    "You must select a exit template in "
+                    "the email configuration menu of the property"
+                )
+            )
+        model = "pms.checkin.partner"
+        composition_mode = "mass_mail"
+        for checkin_partner in self.checkin_partner_ids:
+            if checkin_partner.state == "done":
+                partner_ids.append(checkin_partner.partner_id.id)
+                res_ids.append(checkin_partner.id)
+        ctx = dict(
+            model=model,
+            default_model=model,
+            default_template_id=template and template.id or False,
+            default_composition_mode=composition_mode,
+            partner_ids=partner_ids,
+            force_email=True,
+        )
+        return self.action_open_mail_composer(ctx, res_id=res_id, res_ids=res_ids)
+
+    def action_open_cancelation_mail_composer(self):
+        self.ensure_one()
+        res_id = False
+        res_ids = []
+        partner_ids = []
+        if self.pms_property_id.property_canceled_template:
+            template = self.pms_property_id.property_canceled_template
+        else:
+            raise ValidationError(
+                _(
+                    "You must select a cancelation template "
+                    "in the email configuration menu of the property"
+                )
+            )
+        model = "pms.reservation"
+        composition_mode = "mass_mail"
+        for reservation in self.reservation_ids:
+            if reservation.state == "cancel":
+                partner_ids.append(reservation.partner_id.id)
+                res_ids.append(reservation.id)
+        ctx = dict(
+            model=model,
+            default_model=model,
+            default_template_id=template and template.id or False,
+            default_composition_mode=composition_mode,
+            partner_ids=partner_ids,
+            force_email=True,
+        )
+        return self.action_open_mail_composer(ctx, res_id=res_id, res_ids=res_ids)
+
+    def action_open_mail_composer(self, ctx, res_id=False, res_ids=False):
+        compose_form = self.env.ref(
+            "mail.email_compose_message_wizard_form", raise_if_not_found=False
+        )
+        composition_mode = ctx.get("default_composition_mode")
         if composition_mode == "comment":
             ctx.update(
                 default_res_id=res_id,

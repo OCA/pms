@@ -5358,11 +5358,6 @@ msgid "Invoicing Policy"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_reservation__is_modified_reservation
-msgid "Is A Modified Reservation"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__is_agency
 #: model:ir.model.fields,field_description:pms.field_res_partner__is_agency
 #: model:ir.model.fields,field_description:pms.field_res_users__is_agency
@@ -10689,11 +10684,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__qty_to_invoice
 msgid "To Invoice Quantity"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_reservation__to_send_mail
-msgid "To Send Mail"
 msgstr ""
 
 #. module: pms
