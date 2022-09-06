@@ -303,7 +303,7 @@ class PmsReservation(models.Model):
     tax_ids = fields.Many2many(
         string="Taxes",
         help="Taxes applied in the reservation",
-        readonly="False",
+        readonly=False,
         store=True,
         compute="_compute_tax_ids",
         comodel_name="account.tax",
@@ -656,20 +656,43 @@ class PmsReservation(models.Model):
         comodel_name="res.partner",
         inverse_name="reservation_possible_customer_id",
     )
-    to_send_mail = fields.Boolean(
-        string="To Send Mail",
-        compute="_compute_to_send_mail",
+
+    avoid_mails = fields.Boolean(
+        string="Avoid comunication mails",
+        help="Field to indicate not sent mail comunications",
+        compute="_compute_avoid_mails",
         readonly=False,
         store=True,
-        default=False,
     )
 
-    is_modified_reservation = fields.Boolean(
-        string="Is A Modified Reservation",
-        compute="_compute_is_modified_reservation",
+    to_send_confirmation_mail = fields.Boolean(
+        string="To Send Confirmation Mail",
+        compute="_compute_to_send_confirmation_mail",
         readonly=False,
         store=True,
     )
+
+    to_send_modification_mail = fields.Boolean(
+        string="To Send Modification Mail",
+        compute="_compute_to_send_modification_mail",
+        readonly=False,
+        store=True,
+    )
+
+    to_send_exit_mail = fields.Boolean(
+        string="To Send Exit Mail",
+        compute="_compute_to_send_exit_mail",
+        readonly=False,
+        store=True,
+    )
+
+    to_send_cancelation_mail = fields.Boolean(
+        string="To Send Cancelation Mail",
+        compute="_compute_to_send_cancelation_mail",
+        readonly=False,
+        store=True,
+    )
+
     overnight_room = fields.Boolean(
         related="room_type_id.overnight_room",
         store=True,
@@ -1529,20 +1552,53 @@ class PmsReservation(models.Model):
             else:
                 record.possible_existing_customer_ids = False
 
-    @api.depends("checkin", "checkout")
-    def _compute_is_modified_reservation(self):
+    @api.depends("reservation_type")
+    def _compute_avoid_mails(self):
         for record in self:
-            if record.state in "draft":
-                record.is_modified_reservation = False
-            elif (
-                record._origin.checkin != record.checkin
-                or record._origin.checkout != record.checkout
-            ) and not record.to_send_mail:
-                record.is_modified_reservation = True
-                for reservations in record.folio_id.reservation_ids:
-                    reservations.to_send_mail = True
+            if record.reservation_type == "out":
+                record.avoid_mails = True
+            elif not record.avoid_mails:
+                record.avoid_mails = False
+
+    @api.depends("reservation_type", "state")
+    def _compute_to_send_confirmation_mail(self):
+        for record in self:
+            if record.state in ("confirm") and not record.avoid_mails:
+                record.to_send_confirmation_mail = True
             else:
-                record.is_modified_reservation = False
+                record.to_send_confirmation_mail = False
+
+    @api.depends("checkin", "checkout")
+    def _compute_to_send_modification_mail(self):
+        for record in self:
+            if (
+                record.state == "confirm"
+                and not record.to_send_confirmation_mail
+                and not record.avoid_mails
+                and (
+                    record._origin.checkin != record.checkin
+                    or record._origin.checkout != record.checkout
+                )
+            ):
+                record.to_send_modification_mail = True
+            else:
+                record.to_send_modification_mail = False
+
+    @api.depends("reservation_type", "state")
+    def _compute_to_send_exit_mail(self):
+        for record in self:
+            if record.state in ("done") and not record.avoid_mails:
+                record.to_send_exit_mail = True
+            else:
+                record.to_send_exit_mail = False
+
+    @api.depends("reservation_type", "state")
+    def _compute_to_send_cancelation_mail(self):
+        for record in self:
+            if record.state in ("cancel") and not record.avoid_mails:
+                record.to_send_cancelation_mail = True
+            else:
+                record.to_send_cancelation_mail = False
 
     @api.depends("partner_id")
     def _compute_lang(self):
@@ -1551,14 +1607,6 @@ class PmsReservation(models.Model):
                 record.lang = record.partner_id.lang
             else:
                 record.lang = self.env["res.lang"].get_installed()
-
-    @api.depends("reservation_type", "state")
-    def _compute_to_send_mail(self):
-        for record in self:
-            if record.state in ("confirm", "done", "cancel"):
-                record.to_send_mail = True
-            if record.reservation_type == "out":
-                record.to_send_mail = False
 
     def _search_allowed_checkin(self, operator, value):
         if operator not in ("=",):
@@ -1832,8 +1880,17 @@ class PmsReservation(models.Model):
             },
         }
 
-    def action_open_mail_composer(self):
-        return self.folio_id.action_open_mail_composer()
+    def action_open_confirmation_mail_composer(self):
+        return self.folio_id.action_open_confirmation_mail_composer()
+
+    def action_open_modification_mail_composer(self):
+        return self.folio_id.action_open_modification_mail_composer()
+
+    def action_open_exit_mail_composer(self):
+        return self.folio_id.action_open_exit_mail_composer()
+
+    def action_open_cancelation_mail_composer(self):
+        return self.folio_id.action_open_cancelation_mail_composer()
 
     def open_wizard_several_partners(self):
         ctx = dict(
