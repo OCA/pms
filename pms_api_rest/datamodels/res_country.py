@@ -7,6 +7,7 @@ class PmsResCountriesInfo(Datamodel):
     _name = "res.country.info"
     id = fields.Integer(required=False, allow_none=True)
     name = fields.String(required=False, allow_none=True)
+    alpha3 = fields.String(required=False, allow_none=True)
 
 
 class PmsResCountryStatesInfo(Datamodel):

@@ -29,6 +29,11 @@ class PmsPartnerService(Component):
         domain = []
         PmsPartnerInfo = self.env.datamodels["pms.partner.info"]
         for partner in self.env["res.partner"].search(domain):
+            checkouts = (
+                self.env["pms.checkin.partner"]
+                .search([("partner_id.id", "=", partner.id)])
+                .mapped("checkout")
+            )
             result_partners.append(
                 PmsPartnerInfo(
                     id=partner.id,
@@ -37,7 +42,6 @@ class PmsPartnerService(Component):
                     lastname=partner.lastname if partner.lastname else None,
                     lastname2=partner.lastname2 if partner.lastname2 else None,
                     email=partner.email if partner.email else None,
-                    mobile=partner.mobile if partner.mobile else None,
                     phone=partner.phone if partner.phone else None,
                     gender=partner.gender if partner.gender else None,
                     birthdate=datetime.combine(
@@ -107,7 +111,10 @@ class PmsPartnerService(Component):
                     invoiceToAgency=partner.invoice_to_agency
                     if partner.invoice_to_agency
                     else None,
+                    agencyStateId=partner.state_id.id if partner.state_id else None,
+                    agencyCity=partner.city if partner.city else None,
                     tagIds=partner.category_id.ids if partner.category_id else [],
+                    lastStay=max(checkouts).strftime("%d/%m/%Y") if checkouts else "",
                 )
             )
         return result_partners
@@ -128,6 +135,51 @@ class PmsPartnerService(Component):
         vals = self.mapping_partner_values(partner_info)
         self.env["res.partner"].create(vals)
 
+
+    @restapi.method(
+    [
+        (
+            [                    "/<int:partner_id>/hosted-reservations",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.reservation.short.info", is_list=True),
+        auth="jwt_api_pms",
+    )
+    def get_partner_as_host(self, partner_id):
+        checkins = self.env["pms.checkin.partner"].search(
+            [("partner_id", "=", partner_id)]
+        )
+        PmsReservationShortInfo = self.env.datamodels["pms.reservation.short.info"]
+        reservations = []
+        if checkins:
+            for checkin in checkins:
+                reservation = self.env["pms.reservation"].search(
+                    [("id", "=", checkin.reservation_id.id)]
+                )
+                folio = self.env["pms.folio"].search(
+                    [("id", "=", reservation.folio_id.id)]
+                )
+                reservations.append(
+                    PmsReservationShortInfo(
+                        id=reservation.id,
+                        checkin=reservation.checkin.strftime("%d/%m/%Y"),
+                        checkout=reservation.checkout.strftime("%d/%m/%Y"),
+                        adults=reservation.adults,
+                        priceTotal=round(reservation.price_room_services_set, 2),
+                        stateDescription=dict(
+                            reservation.fields_get(["state"])["state"]["selection"]
+                        )[reservation.state],
+                        paymentStateDescription=dict(
+                            folio.fields_get(["payment_state"])["payment_state"][
+                                "selection"
+                            ]
+                        )[folio.payment_state],
+                    )
+                )
+            return reservations
+
     @restapi.method(
         [
             (
@@ -146,6 +198,49 @@ class PmsPartnerService(Component):
             partner.write(self.mapping_partner_values(partner_info))
 
     # REVIEW: analyze in which service file this method should be
+
+
+    @restapi.method(
+    [
+        (
+            [                    "/<int:partner_id>/customer-reservations",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.reservation.short.info", is_list=True),
+        auth="jwt_api_pms",
+    )
+    def get_partner_as_customer(self, partner_id):
+        partnerReservations = self.env["pms.reservation"].search(
+            [("partner_id", "=", partner_id)]
+        )
+        PmsReservationShortInfo = self.env.datamodels["pms.reservation.short.info"]
+        reservations = []
+        for reservation in partnerReservations:
+            folio = self.env["pms.folio"].search([("id", "=", reservation.folio_id.id)])
+            reservations.append(
+                PmsReservationShortInfo(
+                    checkin=datetime.combine(
+                        reservation.checkin, datetime.min.time()
+                    ).isoformat(),
+                    checkout=datetime.combine(
+                        reservation.checkout, datetime.min.time()
+                    ).isoformat(),
+                    adults=reservation.adults,
+                    priceTotal=round(reservation.price_room_services_set, 2),
+                    stateDescription=dict(
+                        reservation.fields_get(["state"])["state"]["selection"]
+                    )[reservation.state],
+                    paymentStateDescription=dict(
+                        folio.fields_get(["payment_state"])["payment_state"][
+                            "selection"
+                        ]
+                    )[folio.payment_state],
+                )
+            )
+            return reservations
+
     @restapi.method(
         [
             (
