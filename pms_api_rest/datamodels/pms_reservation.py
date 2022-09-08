@@ -16,6 +16,7 @@ class PmsReservationShortInfo(Datamodel):
     stateCode = fields.String(required=False, allow_none=True)
     stateDescription = fields.String(required=False, allow_none=True)
     children = fields.Integer(required=False, allow_none=True)
+    paymentStateDescription = fields.String(required=False, allow_none=True)
     readyForCheckin = fields.Boolean(required=False, allow_none=True)
     allowedCheckout = fields.Boolean(required=False, allow_none=True)
     splitted = fields.Boolean(required=False, allow_none=True)
