@@ -14,6 +14,7 @@ from . import pms_partner
 
 from . import pms_property
 from . import pms_account_journal
+from . import pms_account_move
 from . import pms_payment
 
 from . import pms_user
