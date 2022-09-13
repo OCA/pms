@@ -68,7 +68,7 @@ class PmsReservationService(Component):
                 if reservation.channel_type_id
                 else None,
                 agencyId=reservation.agency_id.id if reservation.agency_id else None,
-                userId=reservation.user_id.id,
+                userId=reservation.user_id.id if reservation.user_id else None,
                 checkin=datetime.combine(
                     reservation.checkin, datetime.min.time()
                 ).isoformat(),
