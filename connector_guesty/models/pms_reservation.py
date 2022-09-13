@@ -280,7 +280,6 @@ class PmsReservation(models.Model):
                     break
 
             if self.guesty_id:
-                _log.info(body)
                 success, res = backend.call_put_request(
                     url_path="reservations/{}".format(self.guesty_id), body=body
                 )
@@ -288,9 +287,14 @@ class PmsReservation(models.Model):
                 success, res = backend.call_post_request(
                     url_path="reservations", body=body
                 )
-                if success:
-                    guesty_id = res.get("_id")
-                    self.write({"guesty_id": guesty_id})
+
+            if success:
+                guesty_id = res.get("_id")
+                payload = {"guesty_id": guesty_id}
+                if "confirmationCode" in res:
+                    confirmation_code = res.get("confirmationCode")
+                    payload.update({"confirmation_code": confirmation_code})
+                self.write(payload)
 
             if not success:
                 if "Invalid dates" in res:
