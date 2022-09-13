@@ -245,6 +245,69 @@ class PmsPartnerService(Component):
         [
             (
                 [
+                    "/<int:partner_id>/payments",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.payment.info", is_list=True),
+        auth="jwt_api_pms",
+    )
+    def get_partner_payments(self, partner_id):
+        partnerPayments = self.env["account.payment"].search(
+            [("partner_id", "=", partner_id)]
+        )
+        PmsPaymentInfo = self.env.datamodels["pms.payment.info"]
+        payments = []
+        for payment in partnerPayments:
+            payments.append(
+                PmsPaymentInfo(
+                    id=payment.id,
+                    amount=round(payment.amount, 2),
+                    journalId=payment.journal_id.id,
+                    date=payment.date.strftime("%d/%m/%Y"),
+                    memo=payment.ref,
+                )
+            )
+        return payments
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:partner_id>/invoices",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.account.move.info", is_list=True),
+        auth="jwt_api_pms",
+    )
+    def get_partner_invoices(self, partner_id):
+        partnerInvoices = self.env["account.move"].search(
+            [("partner_id", "=", partner_id)]
+        )
+        PmsAcoountMoveInfo = self.env.datamodels["pms.account.move.info"]
+        invoices = []
+        for invoice in partnerInvoices:
+            invoices.append(
+                PmsAcoountMoveInfo(
+                    id=invoice.id,
+                    name=invoice.name,
+                    amount=round(invoice.amount_total, 2),
+                    date=invoice.date.strftime("%d/%m/%Y"),
+                    state=invoice.state,
+                    paymentState=invoice.payment_state
+                    if invoice.payment_state
+                    else None,
+                )
+            )
+        return invoices
+
+    @restapi.method(
+        [
+            (
+                [
                     "/<string:documentType>/<string:documentNumber>",
                 ],
                 "GET",
