@@ -15,4 +15,5 @@ class PmsRoomTypeInfo(Datamodel):
     name = fields.String(required=False, allow_none=True)
     pmsPropertyIds = fields.List(fields.Integer(), required=False)
     defaultCode = fields.String(required=False, allow_none=True)
+    classId = fields.Integer(required=False, allow_none=True)
     price = fields.Float(required=False, allow_none=True)
