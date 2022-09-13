@@ -92,39 +92,6 @@ class PmsPropertyService(Component):
         [
             (
                 [
-                    "/<int:property_id>/payment-methods",
-                ],
-                "GET",
-            )
-        ],
-        output_param=Datamodel("pms.account.journal.info", is_list=True),
-        auth="jwt_api_pms",
-    )
-    def get_method_payments_property(self, property_id):
-
-        pms_property = self.env["pms.property"].search([("id", "=", property_id)])
-        PmsAccountJournalInfo = self.env.datamodels["pms.account.journal.info"]
-        res = []
-        if not pms_property:
-            pass
-        else:
-            for method in pms_property._get_payment_methods(automatic_included=True):
-                payment_method = self.env["account.journal"].search(
-                    [("id", "=", method.id)]
-                )
-                res.append(
-                    PmsAccountJournalInfo(
-                        id=payment_method.id,
-                        name=payment_method.name,
-                        allowedPayments=payment_method.allowed_pms_payments,
-                    )
-                )
-        return res
-
-    @restapi.method(
-        [
-            (
-                [
                     "/<int:property_id>/users",
                 ],
                 "GET",
