@@ -455,7 +455,10 @@
                                 name="force_update_origin"
                                 attrs="{'invisible': [('is_origin_channel_check_visible','=',False)]}"
                             />
-                            <field name="is_origin_channel_check_visible" invisible="1" />
+                            <field
+                                name="is_origin_channel_check_visible"
+                                invisible="1"
+                            />
                             <field
                                 name="sale_channel_ids"
                                 widget="many2many_tags"

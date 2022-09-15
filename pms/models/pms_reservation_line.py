@@ -497,6 +497,12 @@ class PmsReservationLine(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get("reservation_id") and not vals.get("sale_channel_id"):
+                reservation = self.env["pms.reservation"].browse(
+                    vals.get("reservation_id")
+                )
+                vals["sale_channel_id"] = reservation.sale_channel_origin_id.id
         records = super().create(vals_list)
         for line in records:
             reservation = line.reservation_id
