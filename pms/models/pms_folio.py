@@ -1391,7 +1391,7 @@ class PmsFolio(models.Model):
             record.days_to_checkin = (record.first_checkin - fields.Date.today()).days
 
     def _search_days_to_checkin(self, operator, value):
-        target_date = fields.Date.today() + timedelta(days=value)
+        target_date = fields.Date.today() + datetime.timedelta(days=value)
         if operator in ("=", ">=", ">", "<=", "<"):
             return [("first_checkin", operator, target_date)]
         raise UserError(
@@ -1410,7 +1410,7 @@ class PmsFolio(models.Model):
             record.days_to_checkout = (record.last_checkout - fields.Date.today()).days
 
     def _search_days_to_checkout(self, operator, value):
-        target_date = fields.Date.today() + timedelta(days=value)
+        target_date = fields.Date.today() + datetime.timedelta(days=value)
         if operator in ("=", ">=", ">", "<=", "<"):
             return [("last_checkout", operator, target_date)]
         raise UserError(
