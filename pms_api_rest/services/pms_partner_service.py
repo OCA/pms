@@ -285,7 +285,10 @@ class PmsPartnerService(Component):
     )
     def get_partner_invoices(self, partner_id):
         partnerInvoices = self.env["account.move"].search(
-            [("partner_id", "=", partner_id)]
+            [
+                ("partner_id", "=", partner_id),
+                ("move_type", "in", self.env["account.move"].get_invoice_types()),
+            ]
         )
         PmsAcoountMoveInfo = self.env.datamodels["pms.account.move.info"]
         invoices = []
