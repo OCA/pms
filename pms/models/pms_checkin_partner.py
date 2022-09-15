@@ -952,7 +952,7 @@ class PmsCheckinPartner(models.Model):
             )[self.id]
             self.reservation_id.message_post(body=body)
 
-        if self.reservation_id.to_send_mail:
+        if self.reservation_id.to_send_exit_mail:
             emails = self.reservation_id.checkin_partner_ids.mapped("email")
             if (
                 self.reservation_id.partner_id
@@ -972,4 +972,4 @@ class PmsCheckinPartner(models.Model):
                     "body_html", [6, 0, self.id], compute_lang=True, post_process=True
                 )[self.id]
                 self.reservation_id.message_post(body=body)
-            self.reservation_id.to_send_mail = False
+            self.reservation_id.to_send_exit_mail = False
