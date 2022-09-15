@@ -1009,11 +1009,6 @@ msgid "Account used for deposits"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_automated_mails__action
-msgid "Action"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_needaction
 #: model:ir.model.fields,field_description:pms.field_pms_folio__message_needaction
 #: model:ir.model.fields,field_description:pms.field_pms_property__message_needaction
@@ -1025,7 +1020,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__active
 #: model:ir.model.fields,field_description:pms.field_pms_amenity_type__active
-#: model:ir.model.fields,field_description:pms.field_pms_automated_mails__active
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan__active
 #: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule__active
 #: model:ir.model.fields,field_description:pms.field_pms_property__active
@@ -1169,11 +1163,6 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.advanced_filters_wizard
 msgid "Advanced filters"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_automated_mails__moment__after
-msgid "After"
 msgstr ""
 
 #. module: pms
@@ -1408,11 +1397,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__invoices_paid
 msgid "Amount of invoices paid"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_automated_mails__time
-msgid "Amount of time"
 msgstr ""
 
 #. module: pms
@@ -1710,19 +1694,6 @@ msgid "Autoinvoice Date"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_automated_mails__automated_actions_id
-msgid "Automated Actions"
-msgstr ""
-
-#. module: pms
-#: model:ir.actions.act_window,name:pms.open_pms_automated_mails_tree
-#: model:ir.ui.menu,name:pms.menu_pms_automated_mails
-#: model_terms:ir.ui.view,arch_db:pms.pms_automated_mails_view
-#: model_terms:ir.ui.view,arch_db:pms.view_automated_mails_tree
-msgid "Automated Mails"
-msgstr ""
-
-#. module: pms
 #: model:ir.model,name:pms.model_pms_automated_mails
 msgid "Automatic Mails"
 msgstr ""
@@ -1829,6 +1800,11 @@ msgid "Avialability Readonly"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__avoid_mails
+msgid "Avoid comunication mails"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__bank_account_count
 msgid "Bank"
 msgstr ""
@@ -1857,11 +1833,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_property__barcode
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__barcode
 msgid "Barcode"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_automated_mails__moment__before
-msgid "Before"
 msgstr ""
 
 #. module: pms
@@ -2324,7 +2295,6 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__checkin
-#: model:ir.model.fields.selection,name:pms.selection__pms_automated_mails__action__checkin
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation
 msgid "Checkin"
 msgstr ""
@@ -2474,7 +2444,6 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__checkout
-#: model:ir.model.fields.selection,name:pms.selection__pms_automated_mails__action__checkout
 #: model:ir.model.fields.selection,name:pms.selection__pms_property__default_invoicing_policy__checkout
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation
 msgid "Checkout"
@@ -3264,7 +3233,6 @@ msgid "Dates incrongruence"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_automated_mails__time_type__day
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_service_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_service_view_tree
@@ -3301,6 +3269,16 @@ msgstr ""
 msgid ""
 "Days on which the cancelation rule applies when the reason is no show. Can "
 "be first, all days or specify the days."
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_folio__days_to_checkin
+msgid "Days to Checkin"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_folio__days_to_checkout
+msgid "Days to Checkout"
 msgstr ""
 
 #. module: pms
@@ -4018,6 +3996,11 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation__avoid_mails
+msgid "Field to indicate not sent mail comunications"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_folio_sale_line__reservation_order
 msgid "Field to order by reservation id"
 msgstr ""
@@ -4624,11 +4607,6 @@ msgid "Hosts"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_automated_mails__time_type__hour
-msgid "Hour"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_account_bank_statement__id
 #: model:ir.model.fields,field_description:pms.field_account_bank_statement_line__id
 #: model:ir.model.fields,field_description:pms.field_account_journal__id
@@ -4878,11 +4856,6 @@ msgid ""
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_automated_mails__moment__in_act
-msgid "In the act"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__partner_name
 msgid "In the name of whom the reservation is made"
 msgstr ""
@@ -4995,11 +4968,6 @@ msgstr ""
 #: model:ir.model.fields,help:pms.field_product_product__is_extra_bed
 #: model:ir.model.fields,help:pms.field_product_template__is_extra_bed
 msgid "Indicates if that product is a extra bed, add +1 capacity in the room"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_automated_mails__active
-msgid "Indicates if the automated mail is active"
 msgstr ""
 
 #. module: pms
@@ -5237,7 +5205,6 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__invoice_warn
-#: model:ir.model.fields.selection,name:pms.selection__pms_automated_mails__action__invoice
 #: model_terms:ir.ui.view,arch_db:pms.report_invoice_document
 msgid "Invoice"
 msgstr ""
@@ -6148,11 +6115,6 @@ msgid "Minimum stay if checkin is today"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_automated_mails__time_type__minutes
-msgid "Minutes"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__mobile
 #: model:ir.model.fields,field_description:pms.field_pms_folio__mobile
 #: model:ir.model.fields,field_description:pms.field_pms_property__mobile
@@ -6192,16 +6154,6 @@ msgid "Modification email template"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_automated_mails__moment
-msgid "Moment"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_automated_mails__moment
-msgid "Moment in relation to the action in which the email will be sent"
-msgstr ""
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
 #: model_terms:ir.ui.view,arch_db:pms.wizard_folio_changes_view_form
 msgid "Monday"
@@ -6211,11 +6163,6 @@ msgstr ""
 #: model:ir.model.fields.selection,name:pms.selection__pms_property__default_invoicing_policy__month_day
 #: model:ir.model.fields.selection,name:pms.selection__res_partner__invoicing_policy__month_day
 msgid "Month Day Invoice"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_automated_mails__time_type__month
-msgid "Months"
 msgstr ""
 
 #. module: pms
@@ -7176,7 +7123,6 @@ msgid "Payable Limit"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_automated_mails__action__payment
 #: model_terms:ir.ui.view,arch_db:pms.wizard_payment_folio_view_form
 msgid "Payment"
 msgstr ""
@@ -7831,7 +7777,6 @@ msgstr ""
 #: model:ir.model.fields,help:pms.field_account_journal__pms_property_ids
 #: model:ir.model.fields,help:pms.field_pms_amenity__pms_property_ids
 #: model:ir.model.fields,help:pms.field_pms_amenity_type__pms_property_ids
-#: model:ir.model.fields,help:pms.field_pms_automated_mails__pms_property_ids
 #: model:ir.model.fields,help:pms.field_pms_availability_plan__pms_property_ids
 #: model:ir.model.fields,help:pms.field_pms_board_service__pms_property_ids
 #: model:ir.model.fields,help:pms.field_pms_board_service_line__pms_property_ids
@@ -7864,7 +7809,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_account_bank_statement_line__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_account_move__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_account_payment__pms_property_id
-#: model:ir.model.fields,field_description:pms.field_pms_automated_mails__pms_property_ids
 #: model:ir.model.fields,field_description:pms.field_pms_availability__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan_rule__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__pms_property_id
@@ -8347,16 +8291,6 @@ msgid "Reservation availability plan"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_automated_mails__action__cancel
-msgid "Reservation cancellation"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_automated_mails__action__creation
-msgid "Reservation creation"
-msgstr ""
-
-#. module: pms
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid "Reservation dates should be consecutives"
@@ -8380,11 +8314,6 @@ msgstr ""
 msgid ""
 "Reservation lines associated with folio sale line, they corresponds with "
 "nights"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_automated_mails__action__write
-msgid "Reservation modification"
 msgstr ""
 
 #. module: pms
@@ -9888,6 +9817,20 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_folio__days_to_checkin
+msgid ""
+"Technical field to facilitate\n"
+"            filtering by dates related to checkin"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_folio__days_to_checkout
+msgid ""
+"Technical field to facilitate\n"
+"            filtering by dates related to checkout"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_account_bank_statement_line__is_simplified_invoice
 #: model:ir.model.fields,help:pms.field_account_move__is_simplified_invoice
 #: model:ir.model.fields,help:pms.field_account_payment__is_simplified_invoice
@@ -9929,11 +9872,6 @@ msgid ""
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_automated_mails__template_id
-msgid "Template"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__note
 msgid "Terms and conditions"
 msgstr ""
@@ -9962,11 +9900,6 @@ msgstr ""
 msgid ""
 "The Tax Identification Number. Complete it if the contact is subjected to "
 "government taxes. Used in some legal statements."
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_automated_mails__action
-msgid "The action that will cause the email to be sent "
 msgstr ""
 
 #. module: pms
@@ -10169,13 +10102,6 @@ msgstr ""
 msgid ""
 "The member role in the organizationIt can be 'Reception', 'Revenue', "
 "'Administrative', or 'Manager'"
-msgstr ""
-
-#. module: pms
-#: code:addons/pms/models/pms_automated_mails.py:0
-#: code:addons/pms/models/pms_automated_mails.py:0
-#, python-format
-msgid "The moment for this action cannot be 'Before'"
 msgstr ""
 
 #. module: pms
@@ -10412,11 +10338,6 @@ msgid ""
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_automated_mails__template_id
-msgid "The template that will be sent by email"
-msgstr ""
-
-#. module: pms
 #: code:addons/pms/models/account_move.py:0
 #, python-format
 msgid ""
@@ -10637,16 +10558,6 @@ msgid "Thursday"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_automated_mails__time
-msgid "Time"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_automated_mails__time_type
-msgid "Time Range"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__tz
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 msgid "Timezone"
@@ -10684,6 +10595,26 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__qty_to_invoice
 msgid "To Invoice Quantity"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__to_send_cancelation_mail
+msgid "To Send Cancelation Mail"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__to_send_confirmation_mail
+msgid "To Send Confirmation Mail"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__to_send_exit_mail
+msgid "To Send Exit Mail"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__to_send_modification_mail
+msgid "To Send Modification Mail"
 msgstr ""
 
 #. module: pms
@@ -10897,11 +10828,6 @@ msgid "Type"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_automated_mails__time_type
-msgid "Type of date range"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__reservation_type
 msgid "Type of reservations. It can be 'normal', 'staff' or 'out of service"
 msgstr ""
@@ -11057,6 +10983,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__message_unread_counter
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__message_unread_counter
 msgid "Unread Messages Counter"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_folio.py:0 code:addons/pms/models/pms_folio.py:0
+#, python-format
+msgid "Unsupported operator %s for searching on date"
 msgstr ""
 
 #. module: pms
@@ -11504,11 +11436,6 @@ msgid ""
 "allows you to send different parameters in the context (checkin(required), "
 "checkout(required), room_type_id, ubication_id, capacity,amenity_ids and / "
 "or pricelist_id) check the availability for the hotel"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_automated_mails__automated_actions_id
-msgid "automated action that is created when creating automated emails "
 msgstr ""
 
 #. module: pms
