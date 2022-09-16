@@ -146,9 +146,8 @@ class PmsReservation(models.Model):
         compute="_compute_force_update_origin",
     )
     is_origin_channel_check_visible = fields.Boolean(
-        string="Update Sale Channel Origin",
-        help="This field is for force update in sale channel "
-        "origin of folio and another reservations",
+        string="Check force update origin visible",
+        help="Technical field to make visible update " "origin channel check",
         store=True,
         readonly=False,
         compute="_compute_is_origin_channel_check_visible",
