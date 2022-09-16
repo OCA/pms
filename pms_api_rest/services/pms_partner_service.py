@@ -68,12 +68,8 @@ class PmsPartnerService(Component):
                     ).isoformat()
                     if partner.birthdate_date
                     else None,
-                    zip=partner.residence_zip if partner.residence_zip else None,
                     nationality=partner.nationality_id.id
                     if partner.nationality_id
-                    else None,
-                    countryState=partner.residence_state_id.id
-                    if partner.residence_state_id
                     else None,
                     isAgency=partner.is_agency,
                     mobile=str(partner.mobile),
@@ -106,7 +102,6 @@ class PmsPartnerService(Component):
                     tagIds=partner.category_id.ids if partner.category_id else [],
                     documentNumber=dni if dni else None,
                     documentNumbers=partner.id_numbers if partner.id_numbers else [],
-                    vat=partner.vat if partner.vat else None,
                     website=partner.website if partner.website else None,
                     lastStay=max(checkouts).strftime("%d/%m/%Y") if checkouts else "",
                     vatNumber=partner.vat if partner.vat else None,
@@ -144,11 +139,11 @@ class PmsPartnerService(Component):
                 }
             )
 
-
     @restapi.method(
-    [
-        (
-            [                    "/<int:partner_id>/hosted-reservations",
+        [
+            (
+                [
+                    "/<int:partner_id>/hosted-reservations",
                 ],
                 "GET",
             )
@@ -232,11 +227,11 @@ class PmsPartnerService(Component):
 
     # REVIEW: analyze in which service file this method should be
 
-
     @restapi.method(
-    [
-        (
-            [                    "/<int:partner_id>/customer-reservations",
+        [
+            (
+                [
+                    "/<int:partner_id>/customer-reservations",
                 ],
                 "GET",
             )
@@ -405,7 +400,7 @@ class PmsPartnerService(Component):
                     residenceStreet=doc_number.partner_id.residence_street
                     if doc_number.partner_id.residence_street
                     else None,
-                    zip=doc_number.partner_id.residence_zip
+                    residenceZip=doc_number.partner_id.residence_zip
                     if doc_number.partner_id.residence_zip
                     else None,
                     residenceCity=doc_number.partner_id.residence_city
@@ -432,7 +427,7 @@ class PmsPartnerService(Component):
             "gender": pms_partner_info.gender,
             "residence_street": pms_partner_info.residenceStreet,
             "nationality_id": pms_partner_info.nationality,
-            "residence_zip": pms_partner_info.zip,
+            "residence_zip": pms_partner_info.residenceZip,
             "residence_city": pms_partner_info.residenceCity,
             "residence_state_id": pms_partner_info.countryState,
             "residence_country_id": pms_partner_info.nationality,
