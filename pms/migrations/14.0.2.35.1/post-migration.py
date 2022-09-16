@@ -7,7 +7,7 @@ def migrate(env, version):
         env.cr,
         """
         UPDATE pms_reservation
-        SET to_send_confirmation_mail = to_send_mail,
+        SET to_send_confirmation_mail = False,
         to_send_cancelation_mail = False,
         to_send_exit_mail = False,
         to_send_modification_mail = False;
