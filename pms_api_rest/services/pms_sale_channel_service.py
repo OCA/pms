@@ -59,6 +59,7 @@ class PmsSaleChannelService(Component):
                 PmsSaleChannelInfo(
                     id=sale_channel.id,
                     name=sale_channel.name if sale_channel.name else None,
+                    channelType=sale_channel.channel_type if sale_channel.channel_type else None,
                 )
             )
         return result_sale_channels
