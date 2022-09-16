@@ -12,3 +12,4 @@ class PmsSaleChannelInfo(Datamodel):
     _name = "pms.sale.channel.info"
     id = fields.Integer(required=True, allow_none=False)
     name = fields.String(required=True, allow_none=False)
+    channelType = fields.String(required=True, allow_none=True)
