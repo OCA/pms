@@ -50,6 +50,7 @@ class PmsPartnerService(Component):
                     if partner.birthdate_date
                     else None,
                     age=partner.age if partner.age else None,
+                    mobile=str(partner.mobile),
                     residenceStreet=partner.residence_street
                     if partner.residence_street
                     else None,
@@ -135,11 +136,11 @@ class PmsPartnerService(Component):
         vals = self.mapping_partner_values(partner_info)
         self.env["res.partner"].create(vals)
 
-
     @restapi.method(
-    [
-        (
-            [                    "/<int:partner_id>/hosted-reservations",
+        [
+            (
+                [
+                    "/<int:partner_id>/hosted-reservations",
                 ],
                 "GET",
             )
@@ -199,11 +200,11 @@ class PmsPartnerService(Component):
 
     # REVIEW: analyze in which service file this method should be
 
-
     @restapi.method(
-    [
-        (
-            [                    "/<int:partner_id>/customer-reservations",
+        [
+            (
+                [
+                    "/<int:partner_id>/customer-reservations",
                 ],
                 "GET",
             )
@@ -372,7 +373,7 @@ class PmsPartnerService(Component):
                     residenceStreet=doc_number.partner_id.residence_street
                     if doc_number.partner_id.residence_street
                     else None,
-                    zip=doc_number.partner_id.residence_zip
+                    residenceZip=doc_number.partner_id.residence_zip
                     if doc_number.partner_id.residence_zip
                     else None,
                     residenceCity=doc_number.partner_id.residence_city
@@ -533,7 +534,7 @@ class PmsPartnerService(Component):
             "residence_street": pms_partner_info.residenceStreet,
             "residence_street2": pms_partner_info.residenceStreet2,
             "nationality_id": pms_partner_info.nationality,
-            "residence_zip": pms_partner_info.zip,
+            "residence_zip": pms_partner_info.residenceZip,
             "residence_city": pms_partner_info.residenceCity,
             "residence_state_id": pms_partner_info.residenceStateId,
             "residence_country_id": pms_partner_info.residenceCountryId,
