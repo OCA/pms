@@ -27,16 +27,16 @@ class PmsServiceLineService(Component):
         auth="jwt_api_pms",
     )
     def get_service_line(self, service_line_id):
-        service_line = self.env["pms.service.line"].search([("id", "=", service_line_id)])
+        service_line = self.env["pms.service.line"].search(
+            [("id", "=", service_line_id)]
+        )
         if not service_line:
             raise MissingError(_("Service line not found"))
         PmsServiceLineInfo = self.env.datamodels["pms.service.line.info"]
 
         return PmsServiceLineInfo(
             id=service_line.id,
-            date=datetime.combine(
-                service_line.date, datetime.min.time()
-            ).isoformat(),
+            date=datetime.combine(service_line.date, datetime.min.time()).isoformat(),
             priceUnit=round(service_line.price_unit, 2),
             discount=round(service_line.discount, 2),
             quantity=service_line.day_qty,
@@ -55,7 +55,9 @@ class PmsServiceLineService(Component):
         auth="jwt_api_pms",
     )
     def update_service_line(self, service_line_id, pms_service_line_info_data):
-        service_line = self.env["pms.service.line"].search([("id", "=", service_line_id)])
+        service_line = self.env["pms.service.line"].search(
+            [("id", "=", service_line_id)]
+        )
         vals = {}
         if service_line:
             if pms_service_line_info_data.date:
@@ -85,9 +87,10 @@ class PmsServiceLineService(Component):
     )
     def delete_service_line(self, service_line_id):
         # esto tb podría ser con un browse
-        service_line = self.env["pms.service.line"].search([("id", "=", service_line_id)])
+        service_line = self.env["pms.service.line"].search(
+            [("id", "=", service_line_id)]
+        )
         if service_line:
             service_line.unlink()
         else:
             raise MissingError(_("Service line not found"))
-
