@@ -1,6 +1,7 @@
+from datetime import datetime, timedelta
+
 from odoo import _, fields
 from odoo.exceptions import MissingError
-from datetime import datetime, timedelta
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
@@ -29,15 +30,24 @@ class PmsAgencyService(Component):
     def get_prices(self, prices_search_param):
         product = room_type = board_service = False
         if prices_search_param.roomTypeId:
-            room_type = self.env["pms.room.type"].search([("id", "=", prices_search_param.roomTypeId)])
+            room_type = self.env["pms.room.type"].search(
+                [("id", "=", prices_search_param.roomTypeId)]
+            )
         if prices_search_param.productId:
-            product = self.env["product.product"].search([("id", "=", prices_search_param.productId)])
+            product = self.env["product.product"].search(
+                [("id", "=", prices_search_param.productId)]
+            )
         if prices_search_param.boardServiceId:
-            board_service = self.env["pms.board.service.room.type"].search([
-                ("id", "=", prices_search_param.boardServiceId)]
+            board_service = self.env["pms.board.service.room.type"].search(
+                [("id", "=", prices_search_param.boardServiceId)]
             )
         if sum([var is not False for var in [product, room_type, board_service]]) != 1:
-            raise MissingError(_("It is necessary to indicate one and only one product, board service or room type"))
+            raise MissingError(
+                _(
+                    "It is necessary to indicate one and only one product,"
+                    " board service or room type"
+                )
+            )
 
         PmsPriceInfo = self.env.datamodels["pms.price.info"]
         result_prices = []
@@ -61,8 +71,9 @@ class PmsAgencyService(Component):
                                 pricelist_id=prices_search_param.pricelistId,
                                 partner_id=prices_search_param.partnerId,
                                 product_qty=prices_search_param.productQty,
-                                date_consumption=price_date
-                            ), 2
+                                date_consumption=price_date,
+                            ),
+                            2,
                         ),
                     )
                 )
@@ -79,8 +90,9 @@ class PmsAgencyService(Component):
                                 pricelist_id=prices_search_param.pricelistId,
                                 partner_id=prices_search_param.partnerId,
                                 product_qty=prices_search_param.productQty,
-                                date_consumption=price_date
-                            ), 2
+                                date_consumption=price_date,
+                            ),
+                            2,
                         ),
                     )
                 )
@@ -96,9 +108,7 @@ class PmsAgencyService(Component):
         date_consumption=False,
         board_service_id=False,
     ):
-        pms_property = self.env["pms.property"].browse(
-            pms_property_id
-        )
+        pms_property = self.env["pms.property"].browse(pms_property_id)
         product_context = dict(
             self.env.context,
             date=datetime.today().date(),
