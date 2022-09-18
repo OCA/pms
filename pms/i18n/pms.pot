@@ -1200,11 +1200,6 @@ msgid "Agency that made the reservation"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__res_partner__default_invoice_lines__all
-msgid "All"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_cancelation_rule__apply_on_late__all
 #: model:ir.model.fields.selection,name:pms.selection__pms_cancelation_rule__apply_on_noshow__all
 msgid "All Days"
@@ -1214,11 +1209,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
 #: model_terms:ir.ui.view,arch_db:pms.wizard_folio_changes_view_form
 msgid "All days"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__res_partner__default_invoice_lines__reservations
-msgid "All reservations"
 msgstr ""
 
 #. module: pms
@@ -1689,6 +1679,7 @@ msgid "Auto confirm to Save"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_folio_sale_line__autoinvoice_date
 #: model:ir.model.fields,field_description:pms.field_pms_folio__autoinvoice_date
 msgid "Autoinvoice Date"
 msgstr ""
@@ -2058,11 +2049,6 @@ msgid "CIF:"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_service__channel_type__call
-msgid "Call Center"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__can_image_1024_be_zoomed
 msgid "Can Image 1024 be zoomed"
 msgstr ""
@@ -2223,17 +2209,6 @@ msgid "Change cuantity service per day"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_search
-#: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
-msgid "Channel"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_reservation__channel_type_id
-msgid "Channel Type"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__channel_ids
 msgid "Channels"
 msgstr ""
@@ -2254,6 +2229,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_split_join_swap_wizard__checkout
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Check Out"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__is_origin_channel_check_visible
+msgid "Check force update origin visible"
 msgstr ""
 
 #. module: pms
@@ -3067,7 +3047,6 @@ msgid "Custom Values"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_folio_sale_line__folio_partner_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__partner_id
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_partner_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_search
@@ -3437,7 +3416,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__channel_type_id
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__channel_type_id
-#: model:ir.model.fields,field_description:pms.field_pms_folio__channel_type_id
 msgid "Direct Sale Channel"
 msgstr ""
 
@@ -3651,11 +3629,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard__pms_domain
 msgid "Domain"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_service__channel_type__door
-msgid "Door"
 msgstr ""
 
 #. module: pms
@@ -5035,6 +5008,17 @@ msgid "Indicates the cause of out of service"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_folio_sale_line__default_invoice_to
+#: model:ir.model.fields,help:pms.field_pms_reservation_line__default_invoice_to
+#: model:ir.model.fields,help:pms.field_pms_service__default_invoice_to
+#: model:ir.model.fields,help:pms.field_pms_service_line__default_invoice_to
+msgid ""
+"Indicates the contact to which this line will be\n"
+"        billed by default, if it is not established,\n"
+"        a guest or the generic contact will be used instead"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__ready_for_checkin
 msgid ""
 "Indicates the reservations with checkin_partner data enought to checkin"
@@ -5265,10 +5249,11 @@ msgid "Invoice address for current partner"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_property__default_invoice_lines
-#: model:ir.model.fields,field_description:pms.field_res_partner__default_invoice_lines
-#: model:ir.model.fields,field_description:pms.field_res_users__default_invoice_lines
-msgid "Invoice..."
+#: model:ir.model.fields,field_description:pms.field_folio_sale_line__default_invoice_to
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_line__default_invoice_to
+#: model:ir.model.fields,field_description:pms.field_pms_service__default_invoice_to
+#: model:ir.model.fields,field_description:pms.field_pms_service_line__default_invoice_to
+msgid "Invoice to"
 msgstr ""
 
 #. module: pms
@@ -5840,11 +5825,6 @@ msgstr ""
 #: model:product.product,name:pms.pms_service_lunch
 #: model:product.template,name:pms.pms_service_lunch_product_template
 msgid "Lunch"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_service__channel_type__mail
-msgid "Mail"
 msgstr ""
 
 #. module: pms
@@ -6679,11 +6659,6 @@ msgid "On Line"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__res_partner__default_invoice_lines__overnights
-msgid "Only Overnights"
-msgstr ""
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Only Room"
 msgstr ""
@@ -6696,11 +6671,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__agency_id
 msgid "Only allowed if the field of partner is_agency is True"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_folio__channel_type_id
-msgid "Only allowed if the field of sale channel channel_type is 'direct'"
 msgstr ""
 
 #. module: pms
@@ -7277,7 +7247,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_property__phone
 #: model:ir.model.fields,field_description:pms.field_res_partner__phone
 #: model:ir.model.fields,field_description:pms.field_res_users__phone
-#: model:ir.model.fields.selection,name:pms.selection__pms_service__channel_type__phone
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid "Phone"
 msgstr ""
@@ -7809,6 +7778,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_account_bank_statement_line__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_account_move__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_account_payment__pms_property_id
+#: model:ir.model.fields,field_description:pms.field_folio_sale_line__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_availability__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan_rule__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__pms_property_id
@@ -7938,8 +7908,12 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation_line__pms_property_id
-msgid ""
-"Property with access to the element; if not set, all properties can access"
+msgid "Property with access to the element"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_folio_sale_line__pms_property_id
+msgid "Property with access to the element;"
 msgstr ""
 
 #. module: pms
@@ -8162,11 +8136,6 @@ msgid "Related Company"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_folio_sale_line__folio_partner_id
-msgid "Related customer with Folio Sale Line"
-msgstr ""
-
-#. module: pms
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid "Remove some of the leftover assigned checkins first"
@@ -8314,6 +8283,15 @@ msgstr ""
 msgid ""
 "Reservation lines associated with folio sale line, they corresponds with "
 "nights"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid ""
+"Reservation must have one reservation line with sale channel equal to sale "
+"channel origin of reservation.Change sale_channel_origin of reservation "
+"before"
 msgstr ""
 
 #. module: pms
@@ -8751,6 +8729,7 @@ msgstr ""
 #. module: pms
 #: model:ir.actions.act_window,name:pms.open_pms_sale_channel_form_tree
 #: model:ir.model.fields,field_description:pms.field_pms_property__sale_channel_id
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_line__sale_channel_id
 #: model:ir.model.fields,field_description:pms.field_res_partner__sale_channel_id
 #: model:ir.model.fields,field_description:pms.field_res_users__sale_channel_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_sale_channel_view_form
@@ -8761,6 +8740,13 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_sale_channel__name
 msgid "Sale Channel Name"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_folio__sale_channel_origin_id
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__sale_channel_origin_id
+#: model:ir.model.fields,field_description:pms.field_pms_service__sale_channel_origin_id
+msgid "Sale Channel Origin"
 msgstr ""
 
 #. module: pms
@@ -8781,8 +8767,40 @@ msgid "Sale Channel must be entered"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_folio__sale_channel_origin_id
+msgid "Sale Channel through which folio was created, the original"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation_line__sale_channel_id
+msgid "Sale Channel through which reservation line was created"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation__sale_channel_origin_id
+msgid "Sale Channel through which reservation was created, the original"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_service__sale_channel_origin_id
+msgid "Sale Channel through which service was created, the original"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_folio__sale_channel_ids
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__sale_channel_ids
 #: model:ir.ui.menu,name:pms.menu_open_pms_sale_channel_form_tree
 msgid "Sale Channels"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation__sale_channel_ids
+msgid "Sale Channels through which reservation lines were managed"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_folio__sale_channel_ids
+msgid "Sale Channels through which reservations were managed"
 msgstr ""
 
 #. module: pms
@@ -8846,14 +8864,12 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model,name:pms.model_pms_sale_channel
-#: model:ir.model.fields,field_description:pms.field_pms_service__channel_type
 msgid "Sales Channel"
 msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_booking_duplicate__channel_type_id
 #: model:ir.model.fields,help:pms.field_pms_booking_engine__channel_type_id
-#: model:ir.model.fields,help:pms.field_pms_reservation__channel_type_id
 msgid "Sales Channel through which the reservation was managed"
 msgstr ""
 
@@ -9187,7 +9203,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__service_ids
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__service_ids
 #: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__service_ids
-#: model:ir.model.fields.selection,name:pms.selection__res_partner__default_invoice_lines__services
 #: model:ir.ui.menu,name:pms.menu_services_pms
 #: model:ir.ui.menu,name:pms.pms_services_menu
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
@@ -9844,6 +9859,11 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation__is_origin_channel_check_visible
+msgid "Technical field to make visible update origin channel check"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__allowed_checkin
 msgid ""
 "Technical field, Indicates if there isn't a checkin_partner dataOnly can be "
@@ -9884,13 +9904,7 @@ msgstr ""
 #. module: pms
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
-msgid "The Property are mandatory in the reservation"
-msgstr ""
-
-#. module: pms
-#: code:addons/pms/models/pms_folio.py:0
-#, python-format
-msgid "The Sale Channel does not correspond to the agency's"
+msgid "The Property and Sale Channel Origin are mandatory in the reservation"
 msgstr ""
 
 #. module: pms
@@ -10447,6 +10461,13 @@ msgstr ""
 msgid ""
 "This account will be used instead of the default one as the receivable "
 "account for the current partner"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation__force_update_origin
+msgid ""
+"This field is for force update in sale channel origin of folio and another "
+"reservations"
 msgstr ""
 
 #. module: pms
@@ -11017,6 +11038,11 @@ msgid "Update Prices"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__force_update_origin
+msgid "Update Sale Channel Origin"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__folio_sale_line__invoice_status__upselling
 #: model:ir.model.fields.selection,name:pms.selection__pms_reservation__invoice_status__upselling
 msgid "Upselling Opportunity"
@@ -11048,19 +11074,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_account_journal__allowed_pms_payments
 msgid "Use to pay for reservations"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_property__default_invoice_lines
-#: model:ir.model.fields,help:pms.field_res_partner__default_invoice_lines
-#: model:ir.model.fields,help:pms.field_res_users__default_invoice_lines
-msgid ""
-"Use to preconfigure the sale lines to autoinvoice\n"
-"        for this partner. All (invoice reservations and services),\n"
-"        Only overnights to invoice only the reservations\n"
-"        with overnight and board services(exclude parkings, salon, etc...),\n"
-"        All reservations to include all reservations,\n"
-"        and Services only include services not boards"
 msgstr ""
 
 #. module: pms
@@ -11222,11 +11235,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__cardex_warning
 msgid "Warning in Cardex"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_service__channel_type__web
-msgid "Web"
 msgstr ""
 
 #. module: pms
@@ -11559,13 +11567,6 @@ msgstr ""
 msgid ""
 "pricelist items\n"
 "                    <u>will be overwritten:</u>"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_service__channel_type
-msgid ""
-"sales channel through which the service was sold.It can be 'door', 'mail', "
-"'phone', 'call' or 'web'"
 msgstr ""
 
 #. module: pms
