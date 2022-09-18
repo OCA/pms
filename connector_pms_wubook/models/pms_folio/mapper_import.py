@@ -66,12 +66,12 @@ class ChannelWubookPmsFolioMapperImport(Component):
 
     @only_create
     @mapping
-    def channel_type_id(self, record):
+    def sale_channel_origin_id(self, record):
         if record["id_channel"] == 0:
             type_id = (
                 self.backend_record.backend_type_id.child_id.direct_channel_type_id.id
             )
-            return {"channel_type_id": type_id}
+            return {"sale_channel_origin_id": type_id}
 
     @only_create
     @mapping

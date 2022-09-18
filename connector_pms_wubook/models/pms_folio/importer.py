@@ -83,7 +83,7 @@ class ChannelWubookPmsFolioImporter(Component):
                 folio.invoice_to_agency = True
             # Wubook Pre payment
             if (
-                folio.channel_type_id
+                folio.sale_channel_origin_id
                 == binding.backend_id.backend_type_id.child_id.direct_channel_type_id
             ):
                 journal = binding.backend_id.wubook_journal_id
