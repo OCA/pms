@@ -694,11 +694,13 @@ class WizardIne(models.TransientModel):
                 ("reservation_id.partner_id.is_company", "=", False),
             ],
             "groups": [("reservation_id.folio_id.number_of_rooms", ">=", 4)],
-            "internet": [("reservation_id.channel_type_id.is_on_line", "=", True)],
+            "internet": [
+                ("reservation_id.sale_channel_origin_id.is_on_line", "=", True)
+            ],
             "others": [
                 "|",
-                ("reservation_id.channel_type_id.is_on_line", "!=", True),
-                ("reservation_id.channel_type_id", "=", False),
+                ("reservation_id.sale_channel_origin_id.is_on_line", "!=", True),
+                ("reservation_id.sale_channel_origin_id", "=", False),
             ],
         }
 
