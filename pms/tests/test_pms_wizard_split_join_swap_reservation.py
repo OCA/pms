@@ -56,6 +56,14 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
 
         self.partner1 = self.env["res.partner"].create({"name": "Antón"})
 
+        # create a sale channel
+        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+            {
+                "name": "Door",
+                "channel_type": "direct",
+            }
+        )
+
     # UNIFY TESTS # review
     def test_unify_reservation_avail_should(self):
         """
@@ -83,6 +91,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r1.flush()
@@ -119,6 +128,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r2 = self.env["pms.reservation"].create(
@@ -129,6 +139,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r1 = self.env["pms.reservation"].create(
@@ -139,6 +150,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "room_type_id": self.test_room_type_double.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r2.flush()
@@ -164,6 +176,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r2 = self.env["pms.reservation"].create(
@@ -174,6 +187,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r2.flush()
@@ -215,6 +229,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r2 = self.env["pms.reservation"].create(
@@ -225,6 +240,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r1.flush()
@@ -274,6 +290,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r2 = self.env["pms.reservation"].create(
@@ -284,6 +301,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r1.flush()
@@ -332,6 +350,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r2 = self.env["pms.reservation"].create(
@@ -342,6 +361,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r1.flush()
@@ -394,6 +414,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r2 = self.env["pms.reservation"].create(
@@ -404,6 +425,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r1.flush()
@@ -456,6 +478,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r2 = self.env["pms.reservation"].create(
@@ -466,6 +489,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r1.flush()
@@ -515,6 +539,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
 
@@ -561,6 +586,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
 
@@ -572,6 +598,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r2 = self.env["pms.reservation"].create(
@@ -582,6 +609,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r1.flush()
@@ -633,6 +661,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
 
@@ -644,6 +673,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r2 = self.env["pms.reservation"].create(
@@ -654,6 +684,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r1.flush()
@@ -699,6 +730,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
 
@@ -736,6 +768,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r1.flush()
@@ -773,6 +806,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r1.flush()
@@ -819,6 +853,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r1.flush()
@@ -861,6 +896,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r1.flush()
@@ -900,6 +936,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r1.flush()
@@ -930,6 +967,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r1.flush()
@@ -959,6 +997,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r1 = self.env["pms.reservation"].create(
@@ -969,6 +1008,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r1.flush()

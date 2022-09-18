@@ -25,5 +25,5 @@ class ResCompany(models.Model):
         string="Check minimum partner data for invoices",
         help="""Check minimum partner data for invoices:
             - VAT, name, street, city, country""",
-        default=True,
+        default=False,
     )

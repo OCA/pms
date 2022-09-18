@@ -4,10 +4,7 @@
 
 import datetime
 import logging
-from datetime import timedelta
 from itertools import groupby
-
-from dateutil import relativedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
@@ -204,17 +201,19 @@ class PmsFolio(models.Model):
         ondelete="restrict",
         check_pms_properties=True,
     )
-    channel_type_id = fields.Many2one(
-        string="Direct Sale Channel",
-        help="Only allowed if the field of sale channel channel_type is 'direct'",
-        readonly=False,
+    sale_channel_ids = fields.Many2many(
+        string="Sale Channels",
+        help="Sale Channels through which reservations were managed",
         store=True,
+        compute="_compute_sale_channel_ids",
         comodel_name="pms.sale.channel",
-        domain=[("channel_type", "=", "direct")],
-        ondelete="restrict",
-        compute="_compute_channel_type_id",
-        check_pms_properties=True,
     )
+    sale_channel_origin_id = fields.Many2one(
+        string="Sale Channel Origin",
+        help="Sale Channel through which folio was created, the original",
+        comodel_name="pms.sale.channel",
+    )
+
     transaction_ids = fields.Many2many(
         string="Transactions",
         help="Payments made through payment acquirer",
@@ -623,13 +622,11 @@ class PmsFolio(models.Model):
             folio_lines_to_invoice = folio.sale_line_ids.filtered(
                 lambda l: l.id in list(lines_to_invoice.keys())
             )
-            folio_partner_invoice_id = partner_invoice_id
-            if not folio_partner_invoice_id:
-                folio_partner_invoice_id = folio._get_default_partner_invoice_id()
-
+            folio._set_default_partner_invoice_id(
+                folio_lines_to_invoice, partner_invoice_id
+            )
             groups_invoice_lines = folio._get_groups_invoice_lines(
                 lines_to_invoice=folio_lines_to_invoice,
-                partner_invoice_id=folio_partner_invoice_id,
             )
             for group in groups_invoice_lines:
                 folio = folio.with_company(folio.company_id)
@@ -696,60 +693,49 @@ class PmsFolio(models.Model):
                 invoice_vals_list.append(invoice_vals)
         return invoice_vals_list
 
-    def _get_groups_invoice_lines(self, lines_to_invoice, partner_invoice_id):
+    def _get_groups_invoice_lines(self, lines_to_invoice):
         self.ensure_one()
-        target_lines = lines_to_invoice
-        if self._context.get("lines_auto_add") and partner_invoice_id:
-            folio_partner_invoice = self.env["res.partner"].browse(partner_invoice_id)
-            if folio_partner_invoice.default_invoice_lines == "overnights":
-                target_lines = target_lines.filtered(
-                    lambda r: r.is_board_service
-                    or (r.reservation_line_ids and r.reservation_id.overnight_room)
-                )
-            elif folio_partner_invoice.default_invoice_lines == "reservations":
-                target_lines = target_lines.filtered(
-                    lambda r: r.is_board_service or r.reservation_line_ids
-                )
-            elif folio_partner_invoice.default_invoice_lines == "services":
-                target_lines = target_lines.filtered(
-                    lambda r: not r.is_board_service or r.service_line_ids
-                )
-        groups_invoice_lines = [
-            {
-                "partner_id": partner_invoice_id,
-                "lines": target_lines,
-            }
-        ]
-        if (
-            self.autoinvoice_date
-            and self.autoinvoice_date <= fields.Date.today()
-            and len(target_lines) < len(lines_to_invoice)
-        ):
-            other_partner_to_invoice = self.partner_invoice_ids.filtered(
-                lambda p: p.id != partner_invoice_id
-            )
-            if not other_partner_to_invoice:
-                other_partner_to_invoice = self.env.ref("pms.various_pms_partner")
+        groups_invoice_lines = []
+        partners = lines_to_invoice.mapped("default_invoice_to")
+        for partner in partners:
             groups_invoice_lines.append(
                 {
-                    "partner_id": other_partner_to_invoice.id,
-                    "lines": lines_to_invoice - target_lines,
+                    "partner_id": partner.id,
+                    "lines": lines_to_invoice.filtered(
+                        lambda l: l.default_invoice_to == partner
+                    ),
                 }
             )
         return groups_invoice_lines
 
-    def _get_default_partner_invoice_id(self):
+    def _set_default_partner_invoice_id(
+        self, lines_to_invoice, folio_partner_invoice_id=False
+    ):
+        # By priotiy:
+        #   1º- Partner set in parameter,
+        #   2º- Partner in default_invoice_to in line
+        #   3º- Partner in folio,
+        #   4º- Partner in checkins,
+        #   5º- Generic various partner
         self.ensure_one()
-        folio_partner_invoice_id = False
-        if self.partner_id and self.partner_id.vat:
-            folio_partner_invoice_id = self.partner_id.id
-        if not folio_partner_invoice_id:
-            folio_partner_invoice_id = (
-                self.partner_invoice_ids[0].id if self.partner_invoice_ids else False
+        for line in lines_to_invoice:
+            if not folio_partner_invoice_id and line.default_invoice_to:
+                folio_partner_invoice_id = line.default_invoice_to
+            if (
+                not folio_partner_invoice_id
+                and self.partner_id
+                and self.partner_id._check_enought_invoice_data()
+                and not self.partner_id.is_agency
+            ):
+                folio_partner_invoice_id = self.partner_id.id
+            checkin_invoice_partner = self.checkin_partner_ids.filtered(
+                lambda c: c.partner_id and c.partner_id._check_enought_invoice_data()
             )
-        if not folio_partner_invoice_id:
-            folio_partner_invoice_id = self.env.ref("pms.various_pms_partner").id
-        return folio_partner_invoice_id
+            if not folio_partner_invoice_id and checkin_invoice_partner:
+                folio_partner_invoice_id = checkin_invoice_partner[0].partner_id
+            if not folio_partner_invoice_id:
+                folio_partner_invoice_id = self.env.ref("pms.various_pms_partner").id
+            line.default_invoice_to = folio_partner_invoice_id
 
     def _get_tax_amount_by_group(self):
         self.ensure_one()
@@ -787,42 +773,6 @@ class PmsFolio(models.Model):
         else:
             return False
 
-    @api.depends("partner_id", "invoice_status", "last_checkout", "partner_invoice_ids")
-    def _compute_autoinvoice_date(self):
-        self.autoinvoice_date = False
-        for record in self.filtered(lambda r: r.invoice_status == "to_invoice"):
-            record.autoinvoice_date = record._get_to_invoice_date()
-
-    def _get_to_invoice_date(self):
-        self.ensure_one()
-        partner = self.partner_id
-        invoicing_policy = (
-            self.pms_property_id.default_invoicing_policy
-            if not partner or partner.invoicing_policy == "property"
-            else partner.invoicing_policy
-        )
-        if invoicing_policy == "manual":
-            return False
-        if invoicing_policy == "checkout":
-            margin_days = (
-                self.pms_property_id.margin_days_autoinvoice
-                if not partner or partner.invoicing_policy == "property"
-                else partner.margin_days_autoinvoice
-            )
-            return self.last_checkout + timedelta(days=margin_days)
-        if invoicing_policy == "month_day":
-            month_day = (
-                self.pms_property_id.invoicing_month_day
-                if not partner or partner.invoicing_policy == "property"
-                else partner.invoicing_month_day
-            )
-            if self.last_checkout.day <= month_day:
-                self.autoinvoice_date = self.last_checkout.replace(day=month_day)
-            else:
-                self.autoinvoice_date = (
-                    self.last_checkout + relativedelta.relativedelta(months=1)
-                ).replace(day=month_day)
-
     @api.depends("reservation_ids", "reservation_ids.state")
     def _compute_number_of_rooms(self):
         for folio in self:
@@ -846,6 +796,7 @@ class PmsFolio(models.Model):
         "reservation_ids",
         "service_ids",
         "service_ids.reservation_id",
+        "service_ids.default_invoice_to",
         "service_ids.service_line_ids.price_day_total",
         "service_ids.service_line_ids.discount",
         "service_ids.service_line_ids.cancel_discount",
@@ -855,6 +806,7 @@ class PmsFolio(models.Model):
         "reservation_ids.reservation_line_ids.price",
         "reservation_ids.reservation_line_ids.discount",
         "reservation_ids.reservation_line_ids.cancel_discount",
+        "reservation_ids.reservation_line_ids.default_invoice_to",
         "reservation_ids.tax_ids",
     )
     def _compute_sale_line_ids(self):
@@ -1048,11 +1000,23 @@ class PmsFolio(models.Model):
                 if reservation.commission_amount != 0:
                     folio.commission = folio.commission + reservation.commission_amount
 
-    @api.depends("agency_id")
-    def _compute_channel_type_id(self):
-        for folio in self:
-            if folio.agency_id:
-                folio.channel_type_id = folio.agency_id.sale_channel_id.id
+    @api.depends(
+        "reservation_ids",
+        "reservation_ids.sale_channel_ids",
+        "service_ids",
+        "service_ids.sale_channel_origin_id",
+    )
+    def _compute_sale_channel_ids(self):
+        for record in self:
+            sale_channel_ids = []
+            if record.reservation_ids:
+                for sale in record.reservation_ids.mapped("sale_channel_ids.id"):
+                    sale_channel_ids.append(sale)
+            if record.service_ids:
+                for sale in record.service_ids.mapped("sale_channel_origin_id.id"):
+                    sale_channel_ids.append(sale)
+            sale_channel_ids = list(set(sale_channel_ids))
+            record.sale_channel_ids = [(6, 0, sale_channel_ids)]
 
     @api.depends("sale_line_ids.invoice_lines")
     def _compute_get_invoiced(self):
@@ -1427,7 +1391,7 @@ class PmsFolio(models.Model):
             record.days_to_checkin = (record.first_checkin - fields.Date.today()).days
 
     def _search_days_to_checkin(self, operator, value):
-        target_date = fields.Date.today() + timedelta(days=value)
+        target_date = fields.Date.today() + datetime.timedelta(days=value)
         if operator in ("=", ">=", ">", "<=", "<"):
             return [("first_checkin", operator, target_date)]
         raise UserError(
@@ -1446,7 +1410,7 @@ class PmsFolio(models.Model):
             record.days_to_checkout = (record.last_checkout - fields.Date.today()).days
 
     def _search_days_to_checkout(self, operator, value):
-        target_date = fields.Date.today() + timedelta(days=value)
+        target_date = fields.Date.today() + datetime.timedelta(days=value)
         if operator in ("=", ">=", ">", "<=", "<"):
             return [("last_checkout", operator, target_date)]
         raise UserError(
@@ -1491,18 +1455,6 @@ class PmsFolio(models.Model):
             ("sale_line_ids.invoice_lines.move_id", operator, value),
         ]
 
-    @api.constrains("agency_id", "channel_type_id")
-    def _check_only_one_channel(self):
-        for record in self:
-            if (
-                record.agency_id
-                and record.channel_type_id.channel_type
-                != record.agency_id.sale_channel_id.channel_type
-            ):
-                raise models.ValidationError(
-                    _("The Sale Channel does not correspond to the agency's")
-                )
-
     @api.constrains("name")
     def _check_required_partner_name(self):
         for record in self:
@@ -1522,6 +1474,52 @@ class PmsFolio(models.Model):
         result = super(PmsFolio, self).create(vals)
         result.access_token = result._portal_ensure_token()
         return result
+
+    def write(self, vals):
+        reservations_to_update = self.env["pms.reservation"]
+        services_to_update = self.env["pms.service"]
+        if "sale_channel_origin_id" in vals:
+            reservations_to_update = self.get_reservations_to_update_channel(vals)
+            services_to_update = self.get_services_to_update_channel(vals)
+
+        res = super(PmsFolio, self).write(vals)
+        if reservations_to_update:
+            reservations_to_update.sale_channel_origin_id = vals[
+                "sale_channel_origin_id"
+            ]
+
+        if services_to_update:
+            services_to_update.sale_channel_origin_id = vals["sale_channel_origin_id"]
+
+        return res
+
+    def get_reservations_to_update_channel(self, vals):
+        reservations_to_update = self.env["pms.reservation"]
+        for record in self:
+            for reservation in record.reservation_ids:
+                if (
+                    reservation.sale_channel_origin_id == self.sale_channel_origin_id
+                ) and (
+                    vals["sale_channel_origin_id"]
+                    != reservation.sale_channel_origin_id.id
+                ):
+                    reservations_to_update += reservation
+        return reservations_to_update
+
+    def get_services_to_update_channel(self, vals):
+        services_to_update = self.env["pms.service"]
+        for record in self:
+            for service in record.service_ids:
+                if (
+                    not service.reservation_id
+                    and (service.sale_channel_origin_id == self.sale_channel_origin_id)
+                    and (
+                        vals["sale_channel_origin_id"]
+                        != service.sale_channel_origin_id.id
+                    )
+                ):
+                    services_to_update += service
+        return services_to_update
 
     def action_pay(self):
         self.ensure_one()
@@ -1860,9 +1858,17 @@ class PmsFolio(models.Model):
             self = self.with_context(lines_auto_add=True)
             lines_to_invoice = dict()
             for line in self.sale_line_ids:
-                lines_to_invoice[line.id] = (
-                    0 if line.display_type else line.qty_to_invoice
-                )
+                if not self._context.get("autoinvoice"):
+                    lines_to_invoice[line.id] = (
+                        0 if line.display_type else line.qty_to_invoice
+                    )
+                elif (
+                    line.autoinvoice_date
+                    and line.autoinvoice_date <= fields.Date.today()
+                ):
+                    lines_to_invoice[line.id] = (
+                        0 if line.display_type else line.qty_to_invoice
+                    )
         invoice_vals_list = self.get_invoice_vals_list(
             final=final,
             lines_to_invoice=lines_to_invoice,
@@ -2325,8 +2331,8 @@ class PmsFolio(models.Model):
                 ("reservation_id", "=", reservation.id),
                 ("cancel_discount", "<", 100),
             ],
-            ["price", "discount", "cancel_discount"],
-            ["price", "discount", "cancel_discount"],
+            ["price", "discount", "cancel_discount", "default_invoice_to"],
+            ["price", "discount", "cancel_discount", "default_invoice_to"],
             lazy=False,
         )
         current_sale_line_ids = reservation.sale_line_ids.filtered(
@@ -2341,13 +2347,17 @@ class PmsFolio(models.Model):
             final_discount = self.concat_discounts(
                 item["discount"], item["cancel_discount"]
             )
-
+            partner_invoice = lines_to.mapped("default_invoice_to")
             if current_sale_line_ids and index <= (len(current_sale_line_ids) - 1):
+
                 current = {
                     "price_unit": item["price"],
                     "discount": final_discount,
                     "reservation_line_ids": [(6, 0, lines_to.ids)],
                     "sequence": sequence,
+                    "default_invoice_to": partner_invoice[0].id
+                    if partner_invoice
+                    else current_sale_line_ids[index].default_invoice_to,
                 }
                 sale_reservation_vals.append(
                     (1, current_sale_line_ids[index].id, current)
@@ -2362,6 +2372,9 @@ class PmsFolio(models.Model):
                     "tax_ids": [(6, 0, reservation.tax_ids.ids)],
                     "reservation_line_ids": [(6, 0, lines_to.ids)],
                     "sequence": sequence,
+                    "default_invoice_to": partner_invoice[0].id
+                    if partner_invoice
+                    else False,
                 }
                 sale_reservation_vals.append((0, 0, new))
         folio_sale_lines_to_remove = []
@@ -2384,8 +2397,8 @@ class PmsFolio(models.Model):
                     ("service_id", "=", service.id),
                     ("cancel_discount", "<", 100),
                 ],
-                ["price_unit", "discount", "cancel_discount"],
-                ["price_unit", "discount", "cancel_discount"],
+                ["price_unit", "discount", "cancel_discount", "default_invoice_to"],
+                ["price_unit", "discount", "cancel_discount", "default_invoice_to"],
                 lazy=False,
             )
             current_sale_service_ids = reservation.sale_line_ids.filtered(
@@ -2399,7 +2412,7 @@ class PmsFolio(models.Model):
                 final_discount = self.concat_discounts(
                     item["discount"], item["cancel_discount"]
                 )
-
+                partner_invoice = lines_to.mapped("default_invoice_to")
                 if current_sale_service_ids and index <= (
                     len(current_sale_service_ids) - 1
                 ):
@@ -2408,6 +2421,9 @@ class PmsFolio(models.Model):
                         "discount": final_discount,
                         "service_line_ids": [(6, 0, lines_to.ids)],
                         "sequence": sequence,
+                        "default_invoice_to": partner_invoice[0].id
+                        if partner_invoice
+                        else current_sale_service_ids[index].default_invoice_to,
                     }
                     sale_service_vals.append(
                         (1, current_sale_service_ids[index].id, current)
@@ -2423,6 +2439,9 @@ class PmsFolio(models.Model):
                         "product_id": service.product_id.id,
                         "tax_ids": [(6, 0, service.tax_ids.ids)],
                         "sequence": sequence,
+                        "default_invoice_to": partner_invoice[0].id
+                        if partner_invoice
+                        else False,
                     }
                     sale_service_vals.append((0, 0, new))
                 sequence = sequence + 1

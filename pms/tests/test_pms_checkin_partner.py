@@ -57,15 +57,25 @@ class TestPmsCheckinPartner(TestPms):
                 "gender": "male",
             }
         )
-        self.id_category = self.env["res.partner.id_category"].create(
-            {"name": "DNI", "code": "D"}
+        self.id_category = self.env["res.partner.id_category"].search(
+            [("code", "=", "D")]
         )
+        if not self.id_category:
+            self.id_category = self.env["res.partner.id_category"].create(
+                {"name": "DNI", "code": "D"}
+            )
         self.env["res.partner.id_number"].create(
             {
                 "category_id": self.id_category.id,
                 "name": "30065089H",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.host1.id,
+            }
+        )
+        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+            {
+                "name": "Door",
+                "channel_type": "direct",
             }
         )
         reservation_vals = {
@@ -75,6 +85,7 @@ class TestPmsCheckinPartner(TestPms):
             "partner_id": self.host1.id,
             "adults": 3,
             "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct1.id,
         }
         self.reservation_1 = self.env["pms.reservation"].create(reservation_vals)
         self.checkin1 = self.env["pms.checkin.partner"].create(
@@ -1091,6 +1102,7 @@ class TestPmsCheckinPartner(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": partner.name,
                 "email": partner.email,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # ACT
@@ -1133,6 +1145,7 @@ class TestPmsCheckinPartner(TestPms):
                 "room_type_id": self.room_type1.id,
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": partner.name,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # ACT
@@ -1178,6 +1191,7 @@ class TestPmsCheckinPartner(TestPms):
                 "room_type_id": self.room_type1.id,
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": partner.name,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         checkin = self.env["pms.checkin.partner"].create(
@@ -1239,6 +1253,7 @@ class TestPmsCheckinPartner(TestPms):
                 "room_type_id": self.room_type1.id,
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": partner1.name,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
 
@@ -1286,6 +1301,7 @@ class TestPmsCheckinPartner(TestPms):
                 "room_type_id": self.room_type1.id,
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": "Rosa Costa",
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         checkin = self.env["pms.checkin.partner"].create(
@@ -1539,6 +1555,7 @@ class TestPmsCheckinPartner(TestPms):
                 "partner_id": self.host1.id,
                 "adults": 1,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         checkin_partner_id = self.reservation.checkin_partner_ids[0]
@@ -1596,6 +1613,7 @@ class TestPmsCheckinPartner(TestPms):
                 "partner_id": self.host1.id,
                 "adults": 1,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         checkin_partner_id = self.reservation.checkin_partner_ids[0]

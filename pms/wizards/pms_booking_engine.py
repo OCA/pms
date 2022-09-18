@@ -237,7 +237,7 @@ class BookingEngine(models.TransientModel):
                         "partner_name": record.partner_name,
                         "pms_property_id": record.pms_property_id.id,
                         "agency_id": record.agency_id.id,
-                        "channel_type_id": record.channel_type_id.id,
+                        "sale_channel_origin_id": record.channel_type_id.id,
                         "segmentation_ids": [(6, 0, record.segmentation_ids.ids)],
                         "internal_comment": record.internal_comment,
                     }
@@ -310,7 +310,7 @@ class AvailabilityWizard(models.TransientModel):
     num_rooms_available = fields.Integer(
         string="Available rooms",
         help="Number of rooms that are available",
-        store="true",
+        store=True,
         compute="_compute_num_rooms_available",
     )
     num_rooms_selected = fields.Many2one(
@@ -429,7 +429,6 @@ class AvailabilityWizard(models.TransientModel):
             checkin + datetime.timedelta(days=x)
             for x in range(0, (checkout - checkin).days)
         ]:
-
             product = room_type.product_id
             product = product.with_company(pms_property.company_id).with_context(
                 quantity=1,
@@ -450,5 +449,4 @@ class AvailabilityWizard(models.TransientModel):
             room_type_total_price_per_room += (
                 board_service_room.amount * nights * adults
             )
-
         return room_type_total_price_per_room

@@ -90,6 +90,9 @@ class TestPmsReservations(TestPms):
         self.id_category = self.env["res.partner.id_category"].create(
             {"name": "DNI", "code": "D"}
         )
+        self.sale_channel_direct = self.env["pms.sale.channel"].create(
+            {"name": "sale channel direct", "channel_type": "direct"}
+        )
         self.sale_channel1 = self.env["pms.sale.channel"].create(
             {"name": "saleChannel1", "channel_type": "indirect"}
         )
@@ -155,6 +158,7 @@ class TestPmsReservations(TestPms):
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
                 "reservation_line_ids": [
                     (0, False, {"date": today}),
                     (0, False, {"date": tomorrow}),
@@ -197,6 +201,7 @@ class TestPmsReservations(TestPms):
             "room_type_id": self.room_type_double.id,
             "partner_id": self.partner1.id,
             "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
         }
 
         # ACT
@@ -226,6 +231,7 @@ class TestPmsReservations(TestPms):
             "room_type_id": self.room_type_double.id,
             "partner_id": self.partner1.id,
             "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
         }
 
         # ACT
@@ -262,6 +268,7 @@ class TestPmsReservations(TestPms):
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r_test.flush()
@@ -300,6 +307,7 @@ class TestPmsReservations(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r_test.flush()
@@ -331,6 +339,7 @@ class TestPmsReservations(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r1.reservation_line_ids[0].room_id = self.room2.id
@@ -344,6 +353,7 @@ class TestPmsReservations(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r2.reservation_line_ids[0].room_id = self.room3.id
@@ -357,6 +367,7 @@ class TestPmsReservations(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r3.reservation_line_ids[0].room_id = self.room1.id
@@ -370,6 +381,7 @@ class TestPmsReservations(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r4.reservation_line_ids[0].room_id = self.room3.id
@@ -385,6 +397,7 @@ class TestPmsReservations(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r_test.flush()
@@ -419,6 +432,7 @@ class TestPmsReservations(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r1.reservation_line_ids[0].room_id = self.room2.id
@@ -432,6 +446,7 @@ class TestPmsReservations(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r2.reservation_line_ids[0].room_id = self.room3.id
@@ -445,6 +460,7 @@ class TestPmsReservations(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r3.reservation_line_ids[0].room_id = self.room1.id
@@ -458,6 +474,7 @@ class TestPmsReservations(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r4.reservation_line_ids[0].room_id = self.room3.id
@@ -471,6 +488,7 @@ class TestPmsReservations(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r5.reservation_line_ids[0].room_id = self.room2.id
@@ -485,6 +503,7 @@ class TestPmsReservations(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r_test.flush()
@@ -524,6 +543,7 @@ class TestPmsReservations(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r1.reservation_line_ids[0].room_id = self.room1
@@ -566,6 +586,7 @@ class TestPmsReservations(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r1.reservation_line_ids[0].room_id = self.room1
@@ -608,6 +629,7 @@ class TestPmsReservations(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r1.reservation_line_ids[0].room_id = self.room1
@@ -623,6 +645,7 @@ class TestPmsReservations(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r2.reservation_line_ids[0].room_id = self.room2
@@ -638,6 +661,7 @@ class TestPmsReservations(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r3.reservation_line_ids[0].room_id = self.room3
@@ -722,6 +746,7 @@ class TestPmsReservations(TestPms):
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         computed_priority = res.priority
@@ -758,6 +783,7 @@ class TestPmsReservations(TestPms):
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -860,6 +886,7 @@ class TestPmsReservations(TestPms):
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -902,6 +929,7 @@ class TestPmsReservations(TestPms):
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         host1 = self.env["res.partner"].create(
@@ -971,6 +999,7 @@ class TestPmsReservations(TestPms):
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         host1 = self.env["res.partner"].create(
@@ -1032,6 +1061,7 @@ class TestPmsReservations(TestPms):
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         computed_priority = res.priority
@@ -1069,6 +1099,7 @@ class TestPmsReservations(TestPms):
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         host1 = self.env["res.partner"].create(
@@ -1134,6 +1165,7 @@ class TestPmsReservations(TestPms):
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         host1 = self.env["res.partner"].create(
@@ -1209,6 +1241,7 @@ class TestPmsReservations(TestPms):
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         computed_priority = res.priority
@@ -1247,6 +1280,7 @@ class TestPmsReservations(TestPms):
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         computed_priority = res.priority
@@ -1288,6 +1322,7 @@ class TestPmsReservations(TestPms):
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         host1 = self.env["res.partner"].create(
@@ -1366,6 +1401,7 @@ class TestPmsReservations(TestPms):
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         host1 = self.env["res.partner"].create(
@@ -1444,6 +1480,7 @@ class TestPmsReservations(TestPms):
                 "preferred_room_id": self.room2.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         host1 = self.env["res.partner"].create(
@@ -1514,6 +1551,7 @@ class TestPmsReservations(TestPms):
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         # ACT
@@ -1539,6 +1577,7 @@ class TestPmsReservations(TestPms):
                 "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -1568,6 +1607,7 @@ class TestPmsReservations(TestPms):
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -1596,6 +1636,7 @@ class TestPmsReservations(TestPms):
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         # ACT
@@ -1618,6 +1659,7 @@ class TestPmsReservations(TestPms):
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         # ACT
@@ -1660,6 +1702,7 @@ class TestPmsReservations(TestPms):
                 "room_type_id": self.room_type_double.id,
                 "partner_id": host.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r1.flush()
@@ -1729,6 +1772,7 @@ class TestPmsReservations(TestPms):
                 "checkout": fields.date.today() + datetime.timedelta(days=305),
                 "partner_id": self.partner1.id,
                 "room_type_id": self.room_type_double.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         r = reservation.checkin
@@ -1766,6 +1810,7 @@ class TestPmsReservations(TestPms):
                 "partner_id": self.partner1.id,
                 "room_type_id": self.room_type_double.id,
                 "pricelist_id": self.pricelist1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         self.assertEqual(
@@ -1804,6 +1849,7 @@ class TestPmsReservations(TestPms):
                 "checkout": fields.date.today() + datetime.timedelta(days=152),
                 "agency_id": agency.id,
                 "room_type_id": self.room_type_double.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -1849,6 +1895,7 @@ class TestPmsReservations(TestPms):
                 "checkout": fields.date.today() + datetime.timedelta(days=152),
                 "agency_id": agency.id,
                 "room_type_id": self.room_type_double.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         self.assertEqual(
@@ -1871,6 +1918,7 @@ class TestPmsReservations(TestPms):
                 "checkout": fields.date.today() + datetime.timedelta(days=152),
                 "partner_id": self.partner1.id,
                 "room_type_id": self.room_type_double.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -1931,6 +1979,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "adults": 3,
                 "room_type_id": self.room_type_triple.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         self.checkin1 = self.env["pms.checkin.partner"].create(
@@ -2112,6 +2161,7 @@ class TestPmsReservations(TestPms):
                 "checkout": fields.date.today() + datetime.timedelta(days=65),
                 "pms_property_id": self.pms_property1.id,
                 "partner_id": self.host1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         self.reservation2 = self.env["pms.reservation"].create(
@@ -2121,6 +2171,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "partner_id": self.host1.id,
                 "folio_id": self.reservation.folio_id.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         self.assertTrue(
@@ -2145,6 +2196,7 @@ class TestPmsReservations(TestPms):
                 "checkout": fields.date.today() + datetime.timedelta(days=65),
                 "pms_property_id": self.pms_property1.id,
                 "partner_id": self.host1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         self.assertFalse(
@@ -2175,6 +2227,7 @@ class TestPmsReservations(TestPms):
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.host1.id,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -2223,6 +2276,7 @@ class TestPmsReservations(TestPms):
                 "partner_id": self.host1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -2276,6 +2330,7 @@ class TestPmsReservations(TestPms):
                 "partner_id": self.host1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -2327,6 +2382,7 @@ class TestPmsReservations(TestPms):
                 "partner_id": self.host1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         reservation.action_cancel()
@@ -2365,6 +2421,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "adults": 3,
                 "room_type_id": self.room_type_triple.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         self.checkin1 = self.env["pms.checkin.partner"].create(
@@ -2425,6 +2482,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "room_type_id": self.room_type_triple.id,
                 "adults": 3,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         self.checkin1 = self.env["pms.checkin.partner"].create(
@@ -2479,6 +2537,7 @@ class TestPmsReservations(TestPms):
                 "allowed_checkout": True,
                 "pms_property_id": self.pms_property1.id,
                 "room_type_id": self.room_type_double.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -2512,6 +2571,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "folio_id": self.folio1.id,
                 "room_type_id": self.room_type_double.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         # ACT AND ASSERT
@@ -2551,6 +2611,7 @@ class TestPmsReservations(TestPms):
                 "checkout": fields.date.today() + datetime.timedelta(days=152),
                 "agency_id": agency.id,
                 "room_type_id": self.room_type_double.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -2605,6 +2666,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist1.id,
                 "service_ids": [self.board_service.id],
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         # ACTION
@@ -2649,6 +2711,7 @@ class TestPmsReservations(TestPms):
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -2705,6 +2768,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist1.id,
                 "service_ids": [self.service.id],
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -2766,6 +2830,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist1.id,
                 "service_ids": [self.board_service.id],
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -2842,6 +2907,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist1.id,
                 "service_ids": [self.service.id, self.board_service.id],
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -2916,6 +2982,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist1.id,
                 "service_ids": [self.service.id, self.board_service.id],
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -2965,6 +3032,7 @@ class TestPmsReservations(TestPms):
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -3045,6 +3113,7 @@ class TestPmsReservations(TestPms):
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         diff_days = (checkout - checkin).days
@@ -3079,6 +3148,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist1.id,
                 "reservation_type": "staff",
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         # ASSERT
@@ -3118,6 +3188,7 @@ class TestPmsReservations(TestPms):
                 "pricelist_id": self.pricelist1.id,
                 "reservation_type": "out",
                 "closure_reason_id": closure_reason.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         # ASSERT
@@ -3147,6 +3218,7 @@ class TestPmsReservations(TestPms):
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
                 "reservation_type": "staff",
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -3183,6 +3255,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "reservation_type": "out",
                 "closure_reason_id": closure_reason.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -3260,6 +3333,7 @@ class TestPmsReservations(TestPms):
                 "reservation_type": "out",
                 "closure_reason_id": closure_reason.id,
                 "partner_name": "Install furniture",
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -3296,6 +3370,7 @@ class TestPmsReservations(TestPms):
                 "mobile": "61568547",
                 "document_type": self.id_category.id,
                 "document_number": "31640132K",
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         # ASSERT
@@ -3347,6 +3422,7 @@ class TestPmsReservations(TestPms):
                 "partner_name": partner.name,
                 "document_type": self.document_id.category_id.id,
                 "document_number": self.document_id.name,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         # ASSERT
@@ -3402,6 +3478,7 @@ class TestPmsReservations(TestPms):
                 "partner_name": partner.name,
                 "document_type": self.document_id.category_id.id,
                 "document_number": self.document_id.name,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         # ASSERT
@@ -3440,6 +3517,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": partner.name,
                 "email": partner.email,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         # ASSERT
@@ -3477,6 +3555,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": partner.name,
                 "mobile": partner.mobile,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         # ASSERT
@@ -3517,6 +3596,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": partner.name,
                 "email": partner.email,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -3534,81 +3614,6 @@ class TestPmsReservations(TestPms):
             partner.id,
             "The partner was not added to the reservation ",
         )
-
-    # def test_is_modified_reservation(self):
-    #     """
-    #     Checked that the is_modified_reservation field is correctly set
-    #     to True when the checkin or checkout fields are modified in a
-    #     reservation.
-    #     ----------------------
-    #     A reservation is created. The checkin and checkout fields of
-    #     the reservation are modified. The state of the boolean
-    #     to_send_mail is changed to False so that the compute of
-    #     the is_modified_reservation field is activated correctly
-    #     and it is verified that the state of this field is True.
-    #     """
-    #     # ARRANGE
-    #     checkin = fields.date.today()
-    #     checkout = fields.date.today() + datetime.timedelta(days=2)
-    #     reservation_vals = {
-    #         "checkin": checkin,
-    #         "checkout": checkout,
-    #         "room_type_id": self.room_type_double.id,
-    #         "partner_id": self.partner1.id,
-    #         "pms_property_id": self.pms_property1.id,
-    #     }
-    #
-    #     reservation = self.env["pms.reservation"].create(reservation_vals)
-    #
-    #     # ACT
-    #     writed_checkin = fields.date.today() + datetime.timedelta(days=4)
-    #     writed_checkout = fields.date.today() + datetime.timedelta(days=6)
-    #     reservation.to_send_mail = False
-    #     reservation.update(
-    #         {
-    #             "checkin": writed_checkin,
-    #             "checkout": writed_checkout,
-    #         }
-    #     )
-    #
-    #     # ASSERT
-    #     self.assertTrue(
-    #         reservation.is_modified_reservation,
-    #         "is_modified_reservation field should be True ",
-    #     )
-
-    # @freeze_time("2012-01-14")
-    # def test_is_not_modified_reservation(self):
-    #     """
-    #     Checked that the is_modified_reservation field is correctly set
-    #     to False when the reservation is modified but not the checkin
-    #     or checkout fields.
-    #     ----------------------
-    #     A reservation is created. The adults, arrival_hour and departure_hours
-    #     fields of the reservation are modified.The it is verified that the state
-    #     of this field is False.
-    #     """
-    #     # ARRANGE
-    #     checkin = fields.date.today()
-    #     checkout = fields.date.today() + datetime.timedelta(days=2)
-    #     reservation_vals = {
-    #         "checkin": checkin,
-    #         "checkout": checkout,
-    #         "room_type_id": self.room_type_double.id,
-    #         "partner_id": self.partner1.id,
-    #         "pms_property_id": self.pms_property1.id,
-    #     }
-
-    #     reservation = self.env["pms.reservation"].create(reservation_vals)
-    #     reservation.update(
-    #         {"adults": 1, "arrival_hour": "18:00", "departure_hour": "08:00"}
-    #     )
-
-    #     # ASSERT
-    #     self.assertFalse(
-    #         reservation.is_modified_reservation,
-    #         "is_modified_reservation field should be False ",
-    #     )
 
     @freeze_time("2012-01-14")
     def test_not_add_several_possibles_customers(self):
@@ -3648,6 +3653,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": partner1.name,
                 "email": partner1.email,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -3688,6 +3694,7 @@ class TestPmsReservations(TestPms):
                 "room_type_id": self.room_type_double.id,
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": "Rosa Costa",
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
 
@@ -3772,6 +3779,7 @@ class TestPmsReservations(TestPms):
             "pms_property_id": self.pms_property1.id,
             "agency_id": self.agency1.id,
             "service_ids": [self.service.id],
+            "sale_channel_origin_id": self.sale_channel_direct.id,
         }
         # ACT
         reservation = self.env["pms.reservation"].create(reservation_vals)
@@ -3791,6 +3799,7 @@ class TestPmsReservations(TestPms):
                     self.commission
                     + service.price_total * self.agency1.default_commission / 100
                 )
+        # ASSERT
         self.assertEqual(
             self.commission,
             reservation.commission_amount,
@@ -3854,6 +3863,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "reservation_type": "out",
                 "closure_reason_id": closure_reason,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
         # ASSERT
@@ -3862,3 +3872,378 @@ class TestPmsReservations(TestPms):
             "The out of service reservation should be created properly with "
             "a closure reason.",
         )
+
+    # tests for several sale channels in reservation
+    @freeze_time("2000-11-10")
+    def test_reservation_sale_channel_origin_in_reservation_lines(self):
+        """
+        Check that reservation_lines have sale_channel_id
+        corresponding to sale_channel_origin_id of their reservation
+
+        When a reservation was created with a sale channel, it corresponds
+        to the sale_channel_origin.
+        Reservation lines will have as sale_channel_id the sale_channel_origin_id
+        of reservation when creating them
+
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = checkin + datetime.timedelta(days=3)
+        reservation_vals = {
+            "checkin": checkin,
+            "checkout": checkout,
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+
+        # ACT
+        reservation = self.env["pms.reservation"].create(reservation_vals)
+
+        # ASSERT
+        self.assertEqual(
+            reservation.sale_channel_origin_id,
+            reservation.reservation_line_ids.mapped("sale_channel_id"),
+            "Sale channel of reservation lines must be the same that their reservation",
+        )
+
+    @freeze_time("2000-10-10")
+    def test_reservation_sale_channel_origin_in_folio(self):
+        """
+        Check that folio have sale_channel_origin_id
+        corresponding to sale_channel_origin_id of the reservation
+        that was created before the folio
+
+        When a reservation was created with a sale channel, it corresponds
+        to the sale_channel_origin.
+        If reservation didn't have folio previously, the folio to be created
+        will have the same sale_channel_origin as the reservation
+
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = checkin + datetime.timedelta(days=3)
+        reservation_vals = {
+            "checkin": checkin,
+            "checkout": checkout,
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+
+        # ACT
+        reservation = self.env["pms.reservation"].create(reservation_vals)
+
+        # ASSERT
+        self.assertEqual(
+            reservation.sale_channel_origin_id,
+            reservation.folio_id.sale_channel_origin_id,
+            "Sale channel of folio must be the same that it reservation",
+        )
+
+    @freeze_time("2001-10-15")
+    def test_reservation_sale_channel_origin_of_folio(self):
+        """
+        Check that the reservation has sale_channel_origin_id
+        as the folio sale_channel_origin_id in
+        which reservation was created when a folio has already
+        another reservations.
+
+        Testing whether it works when the folio sale_channel_origin_id
+        is given by a previously created reservation
+
+        When a reservation is created on a folio
+        that already has a sale_channel_origin
+        that reservation will have the same sale_channel_origin
+
+        """
+        # ARRANGE
+        reservation_vals = {
+            "checkin": datetime.datetime.now(),
+            "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+        reservation1 = self.env["pms.reservation"].create(reservation_vals)
+        # ACT
+        reservation2 = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "folio_id": reservation1.folio_id.id,
+            }
+        )
+        # ASSERT
+        self.assertEqual(
+            reservation1.sale_channel_origin_id.id,
+            reservation2.sale_channel_origin_id.id,
+            "Sale channel of reservations must be the same",
+        )
+
+    @freeze_time("2000-10-19")
+    def test_reservation_lines_same_sale_channel(self):
+        """
+        Check if sale_channel_ids of reservation correspond to
+        sale_channel_id of its reservation.
+
+        In this case, the reservation has several reservation_lines
+        with the same sale_channel_id. Reservation lines are created
+        with sale_channel_origin_id of the reservation and haven't been
+        modified.
+
+        """
+        # ARRANGE
+        reservation_vals = {
+            "checkin": datetime.datetime.now(),
+            "checkout": datetime.datetime.now() + datetime.timedelta(days=4),
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+        # ACT
+        reservation1 = self.env["pms.reservation"].create(reservation_vals)
+
+        # ASSERT
+        self.assertEqual(
+            reservation1.sale_channel_ids,
+            reservation1.reservation_line_ids.mapped("sale_channel_id"),
+            "Sale_channel_ids of reservation must be the same as "
+            "sale channels of its reservation lines",
+        )
+
+    @freeze_time("2000-10-24")
+    def test_reservation_sale_channel_origin_change_check_lines(self):
+        """
+        Check that sale_channel_id of reservation_lines changes when
+        sale_channel_origin_id of its reservation has changed
+        """
+        # ARRANGE
+        sale_channel_direct2 = self.env["pms.sale.channel"].create(
+            {
+                "name": "sale channel 2",
+                "channel_type": "direct",
+            }
+        )
+        reservation_vals = {
+            "checkin": datetime.datetime.now(),
+            "checkout": datetime.datetime.now() + datetime.timedelta(days=4),
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+        reservation1 = self.env["pms.reservation"].create(reservation_vals)
+
+        # ACT
+        reservation1.sale_channel_origin_id = sale_channel_direct2.id
+
+        # ASSERT
+        self.assertEqual(
+            reservation1.sale_channel_origin_id,
+            reservation1.reservation_line_ids.mapped("sale_channel_id"),
+            "Sale_channel_id of reservation lines must also be changed",
+        )
+
+    @freeze_time("2000-10-29")
+    def test_reservation_lines_not_change_sale_channel(self):
+        """
+            Check that when changing sale_channel_origin_id of a reservation,
+            reservation lines that didn't have the same sale_channel_id didn't
+            change it
+
+            Reservation1:
+                --> sale_channel_origin_id : sale_channel1.id
+                --> reservation_lines:
+                       --> 1: sale_channel_id: sale_channel1.id
+                       --> 2: sale_channel_id: sale_channel1.id
+                       --> 3: sale_channel_id: sale_channel1.id
+                       --> 4: sale_channel_id: sale_channel_phone.id
+
+            Change reservation1.sale_channel_origin_id = sale_channel_mail.id
+
+            Expected result:
+            Reservation1:
+               --> sale_channel_origin_id : sale_channel_mail.id
+               --> reservation_lines:
+                    --> 1: sale_channel_id: sale_channel_mail.id
+                    --> 2: sale_channel_id: sale_channel_mail.id
+                    --> 3: sale_channel_id: sale_channel_mail.id
+                    --> 4: sale_channel_id: sale_channel_phone.id
+
+        In short, sale channel of those reservations lines of the reservation
+        that didn't coincide with sale chanel origin that has been modified,
+        shouldn't be changed. That is, the last reservation_line must have
+        sale_channel_id = sale_channel_phone
+        """
+        # ARRANGE
+        sale_channel_phone = self.env["pms.sale.channel"].create(
+            {
+                "name": "phone",
+                "channel_type": "direct",
+            }
+        )
+        sale_channel_mail = self.env["pms.sale.channel"].create(
+            {
+                "name": "mail",
+                "channel_type": "direct",
+            }
+        )
+        reservation_vals = {
+            "checkin": datetime.datetime.now(),
+            "checkout": datetime.datetime.now() + datetime.timedelta(days=4),
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+        reservation1 = self.env["pms.reservation"].create(reservation_vals)
+
+        # ACT
+        reservation_lines = reservation1.reservation_line_ids
+        reservation_lines[
+            len(reservation_lines) - 1
+        ].sale_channel_id = sale_channel_phone.id
+
+        reservation1.sale_channel_origin_id = sale_channel_mail
+
+        # ASSERT
+        self.assertNotEqual(
+            reservation1.sale_channel_origin_id,
+            reservation_lines[len(reservation_lines) - 1].sale_channel_id,
+            "Sale_channel_id of that reservation line shouldn't have changed",
+        )
+
+    @freeze_time("2000-11-29")
+    def test_several_sale_channel_in_lines(self):
+        """
+        Check that when a reservation has more than one sale_channel_id
+        in its reservation_lines, sale_channel_ids of reservation is well
+        calculated
+        """
+        # ARRANGE
+        sale_channel_phone = self.env["pms.sale.channel"].create(
+            {
+                "name": "phone",
+                "channel_type": "direct",
+            }
+        )
+        reservation_vals = {
+            "checkin": datetime.datetime.now(),
+            "checkout": datetime.datetime.now() + datetime.timedelta(days=4),
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+        reservation1 = self.env["pms.reservation"].create(reservation_vals)
+
+        # ACT
+        reservation_lines = reservation1.reservation_line_ids
+        reservation_lines[0].sale_channel_id = sale_channel_phone.id
+
+        expected_sale_channels = []
+        for line in reservation_lines:
+            expected_sale_channels.append(line.sale_channel_id.id)
+
+        # ASSERT
+        self.assertItemsEqual(
+            reservation1.sale_channel_ids.ids,
+            list(set(expected_sale_channels)),
+            "Sale_channel_ids of that reservation must match those of its lines",
+        )
+
+    @freeze_time("2000-12-01")
+    def test_reservation_no_sale_channel_origin(self):
+        """
+        Check that you can't create a reservation without sale_channel_origin
+        """
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="Error, it has been allowed to create a reservation without sale channel",
+        ):
+            self.env["pms.reservation"].create(
+                {
+                    "room_type_id": self.room_type_double.id,
+                    "partner_id": self.partner1.id,
+                    "pms_property_id": self.pms_property1.id,
+                    "checkin": datetime.datetime.now(),
+                    "checkout": datetime.datetime.now() + datetime.timedelta(days=4),
+                }
+            )
+
+    @freeze_time("2000-12-01")
+    def test_one_reservation_change_sale_channel_origin(self):
+        """
+        Check that when changing the sale_channel_origin of a reservation,
+        sale_channel_origin of its folio changes if folio only has one reservation
+        """
+        # ARRANGE
+        sale_channel_phone = self.env["pms.sale.channel"].create(
+            {
+                "name": "phone",
+                "channel_type": "direct",
+            }
+        )
+        reservation_vals = {
+            "checkin": datetime.datetime.now(),
+            "checkout": datetime.datetime.now() + datetime.timedelta(days=4),
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+        reservation1 = self.env["pms.reservation"].create(reservation_vals)
+
+        # ACT
+        reservation1.sale_channel_origin_id = sale_channel_phone.id
+
+        # ASSERT
+        self.assertEqual(
+            reservation1.folio_id.sale_channel_origin_id,
+            reservation1.sale_channel_origin_id,
+            "Sale_channel_origin_id of folio must be the same as "
+            "sale_channel_origin of rservation",
+        )
+
+    @freeze_time("2000-12-10")
+    def test_check_sale_channel_origin_in_reservation_lines(self):
+        """
+        Check that a reservation has at least one reservation_line woth the
+        same sale_channel_id as its sale_channel_origin_id
+        """
+        # ARRANGE
+        sale_channel_phone = self.env["pms.sale.channel"].create(
+            {
+                "name": "phone",
+                "channel_type": "direct",
+            }
+        )
+        reservation_vals = {
+            "checkin": datetime.datetime.now(),
+            "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+        reservation1 = self.env["pms.reservation"].create(reservation_vals)
+
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="Error, there cannot be a reservation in which at least one of its reservation"
+            "lines doesn't have as sale_channel_id the sale_channel_origin_id of reservation",
+        ):
+            reservation1.reservation_line_ids.write(
+                {"sale_channel_id": sale_channel_phone}
+            )
+            reservation1.flush()

@@ -607,7 +607,7 @@ class PmsProperty(models.Model):
         """
         folios = self.env["pms.folio"].search(
             [
-                ("autoinvoice_date", "=", fields.date.today()),
+                ("sale_line_ids.autoinvoice_date", "=", fields.date.today()),
                 ("invoice_status", "=", "to_invoice"),
             ]
         )

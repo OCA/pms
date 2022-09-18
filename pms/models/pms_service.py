@@ -146,17 +146,11 @@ class PmsService(models.Model):
             ("no", "Nothing to Invoice"),
         ],
     )
-    channel_type = fields.Selection(
-        string="Sales Channel",
-        help="sales channel through which the service was sold."
-        "It can be 'door', 'mail', 'phone', 'call' or 'web'",
-        selection=[
-            ("door", "Door"),
-            ("mail", "Mail"),
-            ("phone", "Phone"),
-            ("call", "Call Center"),
-            ("web", "Web"),
-        ],
+    sale_channel_origin_id = fields.Many2one(
+        string="Sale Channel Origin",
+        help="Sale Channel through which service was created, the original",
+        comodel_name="pms.sale.channel",
+        check_pms_properties=True,
     )
     price_subtotal = fields.Monetary(
         string="Subtotal",
@@ -196,6 +190,17 @@ class PmsService(models.Model):
         creating a new service with lines in vals
         """,
         default=False,
+    )
+    default_invoice_to = fields.Many2one(
+        string="Invoice to",
+        help="""Indicates the contact to which this line will be
+        billed by default, if it is not established,
+        a guest or the generic contact will be used instead""",
+        readonly=False,
+        store=True,
+        compute="_compute_default_invoice_to",
+        comodel_name="res.partner",
+        ondelete="restrict",
     )
 
     # Compute and Search methods
@@ -425,6 +430,19 @@ class PmsService(models.Model):
                 line.discount = record.discount
                 line.cancel_discount = 0
 
+    @api.depends("sale_channel_origin_id", "folio_id.agency_id")
+    def _compute_default_invoice_to(self):
+        for record in self:
+            agency = record.folio_id.agency_id
+            if (
+                agency
+                and agency.invoice_to_agency == "always"
+                and agency.sale_channel_id == record.sale_channel_origin_id
+            ):
+                record.default_invoice_to = agency
+            elif not record.default_invoice_to:
+                record.default_invoice_to = False
+
     def name_get(self):
         result = []
         for rec in self:
@@ -534,3 +552,49 @@ class PmsService(models.Model):
                 )
             else:
                 return 0
+
+    @api.model
+    def create(self, vals):
+        if vals.get("reservation_id") and not vals.get("sale_channel_origin_id"):
+            reservation = self.env["pms.reservation"].browse(vals["reservation_id"])
+            if reservation.sale_channel_origin_id:
+                vals["sale_channel_origin_id"] = reservation.sale_channel_origin_id.id
+        elif (
+            vals.get("folio_id")
+            and not vals.get("reservation_id")
+            and not vals.get("sale_channel_origin_id")
+        ):
+            folio = self.env["pms.folio"].browse(vals["folio_id"])
+            if folio.sale_channel_origin_id:
+                vals["sale_channel_origin_id"] = folio.sale_channel_origin_id.id
+        record = super(PmsService, self).create(vals)
+        return record
+
+    def write(self, vals):
+        folios_to_update_channel = self.env["pms.folio"]
+        lines_to_update_channel = self.env["pms.service.line"]
+        if "sale_channel_origin_id" in vals:
+            folios_to_update_channel = self.get_folios_to_update_channel(vals)
+        res = super(PmsService, self).write(vals)
+        if folios_to_update_channel:
+            folios_to_update_channel.sale_channel_origin_id = vals[
+                "sale_channel_origin_id"
+            ]
+        if lines_to_update_channel:
+            lines_to_update_channel.sale_channel_id = vals["sale_channel_origin_id"]
+        return res
+
+    def get_folios_to_update_channel(self, vals):
+        folios_to_update_channel = self.env["pms.folio"]
+        for folio in self.mapped("folio_id"):
+            if (
+                any(
+                    service.sale_channel_origin_id == folio.sale_channel_origin_id
+                    for service in self.filtered(lambda r: r.folio_id == folio)
+                )
+                and vals["sale_channel_origin_id"] != folio.sale_channel_origin_id.id
+                and (len(folio.reservation_ids) == 0)
+                and (len(folio.service_ids) == 1)
+            ):
+                folios_to_update_channel += folio
+        return folios_to_update_channel

@@ -11,6 +11,14 @@ from .common import TestPms
 class TestWizardINE(TestPms):
     def setUp(self):
         super().setUp()
+
+        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+            {
+                "name": "Door",
+                "channel_type": "direct",
+            }
+        )
+
         # number of seats established in the property
         self.pms_property1.ine_seats = 50
 
@@ -235,6 +243,7 @@ class TestWizardINE(TestPms):
                 "partner_id": self.partner_1.id,
                 "adults": 2,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         self.checkin1 = self.env["pms.checkin.partner"].create(
@@ -259,6 +268,7 @@ class TestWizardINE(TestPms):
                 "partner_id": self.partner_3.id,
                 "adults": 2,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         self.checkin3 = self.env["pms.checkin.partner"].create(
@@ -282,6 +292,7 @@ class TestWizardINE(TestPms):
                 "partner_id": self.partner_5.id,
                 "adults": 1,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         self.checkin5 = self.env["pms.checkin.partner"].create(
@@ -299,6 +310,7 @@ class TestWizardINE(TestPms):
                 "partner_id": self.partner_5.id,
                 "adults": 1,
                 "pms_property_id": self.pms_property2.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         self.checkin5_other_property = self.env["pms.checkin.partner"].create(
@@ -331,6 +343,7 @@ class TestWizardINE(TestPms):
                 "adults": 2,
                 "pms_property_id": self.pms_property1.id,
                 "service_ids": [(0, 0, vals_service_extra_bed)],
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         self.checkin6 = self.env["pms.checkin.partner"].create(
@@ -431,6 +444,7 @@ class TestWizardINE(TestPms):
                 "partner_id": self.partner_russia_1.id,
                 "adults": 2,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         self.reservation_2 = self.env["pms.reservation"].create(
@@ -441,6 +455,7 @@ class TestWizardINE(TestPms):
                 "partner_id": self.partner_russia_2.id,
                 "adults": 2,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         self.reservation_3 = self.env["pms.reservation"].create(
@@ -451,6 +466,7 @@ class TestWizardINE(TestPms):
                 "partner_id": self.partner_russia_3.id,
                 "adults": 2,
                 "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         # Create 3 checkin partners (1 russian -> r1, 2 russian -> r3 )

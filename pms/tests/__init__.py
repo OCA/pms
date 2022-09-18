@@ -40,3 +40,4 @@ from . import test_pms_multiproperty
 from . import test_shared_room
 
 # from . import test_automated_mails
+from . import test_pms_service
