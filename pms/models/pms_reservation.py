@@ -1893,18 +1893,18 @@ class PmsReservation(models.Model):
                             )
                         )
 
-    @api.constrains("sale_channel_ids")
-    def _check_lines_with_sale_channel_id(self):
-        for record in self.filtered("sale_channel_origin_id"):
-            if record.reservation_line_ids:
-                if record.sale_channel_origin_id not in record.sale_channel_ids:
-                    raise ValidationError(
-                        _(
-                            "Reservation must have one reservation line "
-                            "with sale channel equal to sale channel origin of reservation."
-                            "Change sale_channel_origin of reservation before"
-                        )
-                    )
+    # @api.constrains("sale_channel_ids")
+    # def _check_lines_with_sale_channel_id(self):
+    #     for record in self.filtered("sale_channel_origin_id"):
+    #         if record.reservation_line_ids:
+    #             if record.sale_channel_origin_id not in record.sale_channel_ids:
+    #                 raise ValidationError(
+    #                     _(
+    #                         "Reservation must have one reservation line "
+    #                         "with sale channel equal to sale channel origin of reservation."
+    #                         "Change sale_channel_origin of reservation before"
+    #                     )
+    #                 )
 
     # Action methods
     def open_partner(self):

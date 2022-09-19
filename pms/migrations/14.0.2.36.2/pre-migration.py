@@ -51,8 +51,3 @@ def migrate(env, version):
         WHERE fol.id = ser.folio_id
         """,
     )
-
-    _logger.info("Recompute reservations sale channel ids...")
-    env["pms.reservation"].search(
-        [("reservation_type", "!=", "out")]
-    )._compute_sale_channel_ids()
