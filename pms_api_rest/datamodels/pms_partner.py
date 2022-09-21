@@ -8,7 +8,6 @@ class PmsPartnerSearchParam(Datamodel):
     id = fields.Integer(required=False, allow_none=True)
     vat = fields.String(required=False, allow_none=True)
 
-
 class PmsPartnerSearchParam(Datamodel):
     _name = "pms.partner.search.param"
     id = fields.Integer(required=False, allow_none=True)

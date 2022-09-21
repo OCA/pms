@@ -43,6 +43,7 @@ class PmsPartnerService(Component):
                     email=partner.email if partner.email else None,
                     mobile=partner.mobile if partner.mobile else None,
                     phone=partner.phone if partner.phone else None,
+                    gender=partner.gender if partner.gender else None,
                     birthdate=datetime.combine(
                         partner.birthdate_date, datetime.min.time()
                     ).isoformat()
@@ -72,7 +73,6 @@ class PmsPartnerService(Component):
                     if partner.residence_country_id
                     else None,
                     tagIds=partner.category_id.ids if partner.category_id else [],
-                    documentNumbers=partner.id_numbers if partner.id_numbers else [],
                     vat=partner.vat if partner.vat else None,
                     website=partner.website if partner.website else None,
                 )
