@@ -159,9 +159,7 @@ class PmsPartnerService(Component):
                 reservation = self.env["pms.reservation"].search(
                     [("id", "=", checkin.reservation_id.id)]
                 )
-                folio = self.env["pms.folio"].search(
-                    [("id", "=", reservation.folio_id.id)]
-                )
+
                 reservations.append(
                     PmsReservationShortInfo(
                         id=reservation.id,
@@ -169,14 +167,8 @@ class PmsPartnerService(Component):
                         checkout=reservation.checkout.strftime("%d/%m/%Y"),
                         adults=reservation.adults,
                         priceTotal=round(reservation.price_room_services_set, 2),
-                        stateDescription=dict(
-                            reservation.fields_get(["state"])["state"]["selection"]
-                        )[reservation.state],
-                        paymentStateDescription=dict(
-                            folio.fields_get(["payment_state"])["payment_state"][
-                                "selection"
-                            ]
-                        )[folio.payment_state],
+                        stateCode=reservation.state,
+                        paymentState=reservation.folio_payment_state,
                     )
                 )
             return reservations
@@ -219,7 +211,6 @@ class PmsPartnerService(Component):
         PmsReservationShortInfo = self.env.datamodels["pms.reservation.short.info"]
         reservations = []
         for reservation in partnerReservations:
-            folio = self.env["pms.folio"].search([("id", "=", reservation.folio_id.id)])
             reservations.append(
                 PmsReservationShortInfo(
                     checkin=datetime.combine(
@@ -230,14 +221,8 @@ class PmsPartnerService(Component):
                     ).isoformat(),
                     adults=reservation.adults,
                     priceTotal=round(reservation.price_room_services_set, 2),
-                    stateDescription=dict(
-                        reservation.fields_get(["state"])["state"]["selection"]
-                    )[reservation.state],
-                    paymentStateDescription=dict(
-                        folio.fields_get(["payment_state"])["payment_state"][
-                            "selection"
-                        ]
-                    )[folio.payment_state],
+                    stateCode=reservation.state,
+                    paymentState=reservation.folio_payment_state,
                 )
             )
             return reservations
@@ -382,6 +367,7 @@ class PmsPartnerService(Component):
                     nationality=doc_number.partner_id.nationality_id.id
                     if doc_number.partner_id.nationality_id
                     else None,
+                    # aquí tiene que ser id
                     countryState=doc_number.partner_id.residence_state_id.id
                     if doc_number.partner_id.residence_state_id
                     else None,
