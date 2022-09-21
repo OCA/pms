@@ -29,7 +29,7 @@ class ResCountryService(Component):
                 ResCountriesInfo(
                     id=country.id,
                     name=country.name,
-                    alpha3=country.code_alpha3 if country.code_alpha3 else None,
+                    code=country.code if country.code else None,
                 )
             )
         return result_countries
