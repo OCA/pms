@@ -50,7 +50,10 @@ class PmsBoardServiceLine(models.Model):
     @api.depends_context("allowed_pms_property_ids")
     def _compute_amount(self):
         for record in self:
-            pms_property_id = self.env.user.get_active_property_ids()[0]
+            pms_property_id = (
+                self.env.context.get("property")
+                or self.env.user.get_active_property_ids()[0]
+            )
             record.amount = self.env["ir.pms.property"].get_field_value(
                 pms_property_id,
                 self._name,
@@ -61,7 +64,10 @@ class PmsBoardServiceLine(models.Model):
 
     def _inverse_amount(self):
         for record in self:
-            pms_property_id = self.env.user.get_active_property_ids()[0]
+            pms_property_id = (
+                self.env.context.get("property")
+                or self.env.user.get_active_property_ids()[0]
+            )
             self.env["ir.pms.property"].set_field_value(
                 pms_property_id,
                 self._name,
