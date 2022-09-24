@@ -38,12 +38,43 @@ class PmsBoardServiceLine(models.Model):
         string="Amount",
         help="Price for this Board Service Line/Product",
         default=lambda self: self._get_default_price(),
+        compute="_compute_amount",
+        inverse="_inverse_amount",
         digits=("Product Price"),
     )
 
     def _get_default_price(self):
         if self.product_id:
             return self.product_id.list_price
+
+    @api.depends_context("allowed_pms_property_ids")
+    def _compute_amount(self):
+        for record in self:
+            pms_property_id = (
+                self.env.context.get("property")
+                or self.env.user.get_active_property_ids()[0]
+            )
+            record.amount = self.env["ir.pms.property"].get_field_value(
+                pms_property_id,
+                self._name,
+                "amount",
+                record.id,
+                type(record.amount),
+            )
+
+    def _inverse_amount(self):
+        for record in self:
+            pms_property_id = (
+                self.env.context.get("property")
+                or self.env.user.get_active_property_ids()[0]
+            )
+            self.env["ir.pms.property"].set_field_value(
+                pms_property_id,
+                self._name,
+                "amount",
+                record.id,
+                record.amount,
+            )
 
     @api.onchange("product_id")
     def onchange_product_id(self):
