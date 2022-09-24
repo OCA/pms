@@ -2897,6 +2897,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_advance_payment_inv__create_uid
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__create_uid
+#: model:ir.model.fields,field_description:pms.field_ir_pms_property__create_uid
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard__create_uid
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__create_uid
 #: model:ir.model.fields,field_description:pms.field_pms_amenity_type__create_uid
@@ -2939,6 +2940,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_advance_payment_inv__create_date
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__create_date
+#: model:ir.model.fields,field_description:pms.field_ir_pms_property__create_date
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard__create_date
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__create_date
 #: model:ir.model.fields,field_description:pms.field_pms_amenity_type__create_date
@@ -3494,6 +3496,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__display_name
 #: model:ir.model.fields,field_description:pms.field_ir_config_parameter__display_name
 #: model:ir.model.fields,field_description:pms.field_ir_http__display_name
+#: model:ir.model.fields,field_description:pms.field_ir_pms_property__display_name
 #: model:ir.model.fields,field_description:pms.field_mail_compose_message__display_name
 #: model:ir.model.fields,field_description:pms.field_payment_transaction__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard__display_name
@@ -3943,6 +3946,11 @@ msgid "Female"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_ir_pms_property__field_id
+msgid "Field"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__cancelled_reason
 msgid ""
 "Field indicating type of cancellation. It can be 'late', 'intime' or "
@@ -4062,6 +4070,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_folio__fiscal_position_id
 #: model:ir.model.fields,field_description:pms.field_pms_property__property_account_position_id
 msgid "Fiscal Position"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_ir_pms_property__value_float
+msgid "Float Field Value"
 msgstr ""
 
 #. module: pms
@@ -4590,6 +4603,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__id
 #: model:ir.model.fields,field_description:pms.field_ir_config_parameter__id
 #: model:ir.model.fields,field_description:pms.field_ir_http__id
+#: model:ir.model.fields,field_description:pms.field_ir_pms_property__id
 #: model:ir.model.fields,field_description:pms.field_mail_compose_message__id
 #: model:ir.model.fields,field_description:pms.field_payment_transaction__id
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard__id
@@ -5048,6 +5062,11 @@ msgid "Information"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_ir_pms_property__value_integer
+msgid "Integer Field Value"
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/models/pms_board_service.py:0
 #, python-format
 msgid ""
@@ -5307,6 +5326,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_res_partner__invoicing_policy
 #: model:ir.model.fields,field_description:pms.field_res_users__invoicing_policy
 msgid "Invoicing Policy"
+msgstr ""
+
+#. module: pms
+#: model:ir.model,name:pms.model_ir_pms_property
+msgid "IrPmsProperty"
 msgstr ""
 
 #. module: pms
@@ -5579,6 +5603,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line____last_update
 #: model:ir.model.fields,field_description:pms.field_ir_config_parameter____last_update
 #: model:ir.model.fields,field_description:pms.field_ir_http____last_update
+#: model:ir.model.fields,field_description:pms.field_ir_pms_property____last_update
 #: model:ir.model.fields,field_description:pms.field_mail_compose_message____last_update
 #: model:ir.model.fields,field_description:pms.field_payment_transaction____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard____last_update
@@ -5638,6 +5663,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_advance_payment_inv__write_uid
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__write_uid
+#: model:ir.model.fields,field_description:pms.field_ir_pms_property__write_uid
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard__write_uid
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__write_uid
 #: model:ir.model.fields,field_description:pms.field_pms_amenity_type__write_uid
@@ -5680,6 +5706,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_advance_payment_inv__write_date
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__write_date
+#: model:ir.model.fields,field_description:pms.field_ir_pms_property__write_date
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard__write_date
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__write_date
 #: model:ir.model.fields,field_description:pms.field_pms_amenity_type__write_date
@@ -6113,6 +6140,7 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_ir_pms_property__model_id
 #: model_terms:ir.ui.view,arch_db:pms.advanced_filters_wizard
 msgid "Model"
 msgstr ""
@@ -7383,6 +7411,8 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__list_price
+#: model:ir.model.fields,help:pms.field_product_product__list_price
+#: model:ir.model.fields,help:pms.field_product_template__list_price
 msgid "Price at which the product is sold to customers."
 msgstr ""
 
@@ -7702,6 +7732,7 @@ msgstr ""
 #. module: pms
 #: model:ir.actions.act_window,name:pms.pms_property_action
 #: model:ir.model.fields,field_description:pms.field_account_journal__pms_property_ids
+#: model:ir.model.fields,field_description:pms.field_ir_pms_property__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__pms_property_ids
 #: model:ir.model.fields,field_description:pms.field_pms_amenity_type__pms_property_ids
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan__pms_property_ids
@@ -8083,6 +8114,11 @@ msgid "Recompute priority on reservations"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_ir_pms_property__record
+msgid "Record Id"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_folio_sale_line__price_reduce
 msgid "Reduced price amount, that is, total price with discounts applied"
 msgstr ""
@@ -8093,6 +8129,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__code
 #, python-format
 msgid "Reference"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_ir_pms_property__value_reference
+msgid "Reference Field Value"
 msgstr ""
 
 #. module: pms
@@ -8283,15 +8324,6 @@ msgstr ""
 msgid ""
 "Reservation lines associated with folio sale line, they corresponds with "
 "nights"
-msgstr ""
-
-#. module: pms
-#: code:addons/pms/models/pms_reservation.py:0
-#, python-format
-msgid ""
-"Reservation must have one reservation line with sale channel equal to sale "
-"channel origin of reservation.Change sale_channel_origin of reservation "
-"before"
 msgstr ""
 
 #. module: pms
@@ -8897,6 +8929,8 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__list_price
+#: model:ir.model.fields,field_description:pms.field_product_product__list_price
+#: model:ir.model.fields,field_description:pms.field_product_template__list_price
 msgid "Sales Price"
 msgstr ""
 
