@@ -108,3 +108,20 @@ class ProductTemplate(models.Model):
             self.env["ir.pms.property"].set_field_value(
                 pms_property_id, self._name, "list_price", record.id, record.list_price
             )
+            # Set default value in other properties
+            other_properties = self.env["pms.property"].search([])
+            for other_property in other_properties.ids:
+                if not self.env["ir.pms.property"].get_field_value(
+                    other_property,
+                    self._name,
+                    "list_price",
+                    record.id,
+                    type(record.list_price),
+                ):
+                    self.env["ir.pms.property"].set_field_value(
+                        other_property,
+                        self._name,
+                        "list_price",
+                        record.id,
+                        record.list_price,
+                    )
