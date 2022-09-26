@@ -27,27 +27,12 @@ class PmsPartnerService(Component):
     def get_partners(self, pms_partner_search_params):
         result_partners = []
         domain = []
-        dni = ""
         if pms_partner_search_params.vat:
             domain.append(("vat", "=", pms_partner_search_params.vat))
+        if pms_partner_search_params.name:
+            domain.append(("name", "ilike", pms_partner_search_params.name))
         PmsPartnerInfo = self.env.datamodels["pms.partner.info"]
         for partner in self.env["res.partner"].search(domain):
-            if partner.id_numbers:
-                doc_type_id = (
-                    self.env["res.partner.id_category"]
-                    .search([("name", "=", "DNI")])
-                    .id
-                )
-                dni = (
-                    self.env["res.partner.id_number"]
-                    .search(
-                        [
-                            ("partner_id", "=", partner.id),
-                            ("category_id", "=", doc_type_id),
-                        ]
-                    )
-                    .name
-                )
             result_partners.append(
                 PmsPartnerInfo(
                     id=partner.id,
@@ -87,7 +72,6 @@ class PmsPartnerService(Component):
                     if partner.residence_country_id
                     else None,
                     tagIds=partner.category_id.ids if partner.category_id else [],
-                    documentNumber=dni if dni else None,
                     documentNumbers=partner.id_numbers if partner.id_numbers else [],
                     vat=partner.vat if partner.vat else None,
                     website=partner.website if partner.website else None,
