@@ -2583,7 +2583,7 @@ class PmsFolio(models.Model):
 
     @api.model
     def _apply_partner_name(self, record):
-        if record.partner_id:
+        if record.partner_id and record.partner_id != record.agency_id:
             record.partner_name = record.partner_id.name
         elif record.agency_id and not record.partner_name:
             # if the customer not is the agency but we dont know the customer's name,
