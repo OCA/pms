@@ -71,7 +71,12 @@ class ChannelWubookPmsFolioMapperImport(Component):
             type_id = (
                 self.backend_record.backend_type_id.child_id.direct_channel_type_id.id
             )
-            return {"sale_channel_origin_id": type_id}
+        else:
+            agency = self.backend_record.backend_type_id.child_id.ota_ids.filtered(
+                lambda x: x.wubook_ota == record["id_channel"]
+            ).agency_id
+            type_id = agency.sale_channel_id.id
+        return {"sale_channel_origin_id": type_id}
 
     @only_create
     @mapping
