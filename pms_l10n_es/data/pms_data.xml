@@ -4,7 +4,6 @@
         <record id="document_type_dni" model="res.partner.id_category">
             <field name="name">DNI</field>
             <field name="code">D</field>
-            <field name="is_vat_equivalent">True</field>
             <field name="validation_code">
 letters = {
     0: "T",

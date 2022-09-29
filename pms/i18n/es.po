@@ -3926,16 +3926,6 @@ msgid "Document Number"
 msgstr "Nº de documento"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_type
-#: model:ir.model.fields,field_description:pms.field_pms_folio__document_type
-#: model:ir.model.fields,field_description:pms.field_pms_property__vat_document_type
-#: model:ir.model.fields,field_description:pms.field_pms_reservation__document_type
-#: model:ir.model.fields,field_description:pms.field_res_partner__vat_document_type
-#: model:ir.model.fields,field_description:pms.field_res_users__vat_document_type
-msgid "Document Type"
-msgstr "Tipo de documento"
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Document number"
 msgstr "Número de documento"
@@ -10723,15 +10713,6 @@ msgstr "Usuario que creo la ficha"
 #, python-format
 msgid "The value of the down payment amount must be positive."
 msgstr "El valor del pago inicial debe ser positivo."
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_property__vat_document_type
-#: model:ir.model.fields,help:pms.field_res_partner__vat_document_type
-#: model:ir.model.fields,help:pms.field_res_users__vat_document_type
-msgid ""
-"The vat document type of the partner,\n"
-"        set if is a fiscal document, passport, etc..."
-msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_folio
