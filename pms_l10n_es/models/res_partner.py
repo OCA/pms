@@ -147,3 +147,4 @@ class ResPartner(models.Model):
                     record.with_context({"ignore_vat_update": True}).write(
                         {"vat": vat_with_code}
                     )
+
