@@ -41,7 +41,7 @@ class ResPartner(models.Model):
                 not self.vat
                 or not self.country_id
                 or not self.city
-                or not (self.street and self.street2)
+                or not (self.street or self.street2)
             ):
                 return False
         return True

@@ -18,6 +18,8 @@
         "partner_contact_nationality",
         "base_iso3166",
         "queue_job",
+        "l10n_es_aeat",
+        "l10n_es_aeat_partner_identification",
     ],
     "external_dependencies": {
         "python": [

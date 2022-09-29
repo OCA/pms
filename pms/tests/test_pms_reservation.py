@@ -2989,10 +2989,14 @@ class TestPmsReservations(TestPms):
         # ACTION
         reservation.action_cancel()
         reservation.flush()
-        expected_price = (
-            self.service.price_total
-            + self.board_service.price_total * reservation.adults
-        ) - reservation.services_discount
+        expected_price = round(
+            (
+                self.service.price_total
+                + self.board_service.price_total * reservation.adults
+            )
+            - reservation.services_discount,
+            2,
+        )
 
         # ASSERT
         self.assertEqual(

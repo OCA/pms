@@ -42,5 +42,36 @@ else:
             </field>
 <!--            <field name="has_unique_numbers">True</field>-->
         </record>
+
+         <!-- aeat document type mapped -->
+
+        <record id="pms_l10n_es.document_type_dni" model="res.partner.id_category">
+            <field name="aeat_identification_type">02</field>
+        </record>
+        <record
+            id="pms.document_type_spanish_residence"
+            model="res.partner.id_category"
+        >
+            <field name="aeat_identification_type">05</field>
+        </record>
+        <record
+            id="pms.document_type_european_residence"
+            model="res.partner.id_category"
+        >
+            <field name="aeat_identification_type">05</field>
+        </record>
+        <record id="pms.document_type_passport" model="res.partner.id_category">
+            <field name="aeat_identification_type">03</field>
+        </record>
+        <record id="pms.document_type_driving_license" model="res.partner.id_category">
+            <field name="aeat_identification_type">06</field>
+        </record>
+        <record
+            id="pms.document_type_identification_document"
+            model="res.partner.id_category"
+        >
+            <field name="aeat_identification_type">06</field>
+        </record>
+
     </data>
 </odoo>

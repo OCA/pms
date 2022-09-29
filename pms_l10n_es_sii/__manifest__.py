@@ -9,9 +9,9 @@
     "version": "14.0.1.0.2",
     "license": "AGPL-3",
     "depends": [
-        "pms",
         "l10n_es_aeat_sii_oca",
+        "l10n_es_aeat_partner_identification",
     ],
-    "data": ["data/pms_data.xml", "views/res_partner_id_category.xml"],
+    "data": ["data/pms_data.xml"],
     "installable": True,
 }
