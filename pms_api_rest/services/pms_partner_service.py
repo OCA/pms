@@ -21,14 +21,21 @@ class PmsPartnerService(Component):
             )
         ],
         input_param=Datamodel("pms.partner.search.param", is_list=False),
-        output_param=Datamodel("pms.partner.info", is_list=True),
+        output_param=Datamodel("pms.partner.results", is_list=False),
         auth="jwt_api_pms",
     )
     def get_partners(self, pms_partner_search_params):
         result_partners = []
         domain = []
+        PmsPartnerResults = self.env.datamodels["pms.partner.results"]
         PmsPartnerInfo = self.env.datamodels["pms.partner.info"]
-        for partner in self.env["res.partner"].search(domain):
+        total_partners = self.env["res.partner"].search_count(domain)
+        for partner in self.env["res.partner"].search(
+            domain,
+            order=pms_partner_search_params.orderBy,
+            limit=pms_partner_search_params.limit,
+            offset=pms_partner_search_params.offset
+        ):
             checkouts = (
                 self.env["pms.checkin.partner"]
                 .search([("partner_id.id", "=", partner.id)])
@@ -118,7 +125,10 @@ class PmsPartnerService(Component):
                     lastStay=max(checkouts).strftime("%d/%m/%Y") if checkouts else "",
                 )
             )
-        return result_partners
+        return PmsPartnerResults(
+            partners=result_partners,
+            total=total_partners
+        )
 
     @restapi.method(
         [
