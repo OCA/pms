@@ -1,10 +1,12 @@
 from marshmallow import fields
 
 from odoo.addons.datamodel.core import Datamodel
+from odoo.addons.datamodel.fields import NestedModel
 
 
 class PmsPartnerSearchParam(Datamodel):
     _name = "pms.partner.search.param"
+    _inherit = "pms.rest.metadata"
     id = fields.Integer(required=False, allow_none=True)
     vatNumber = fields.String(required=False, allow_none=True)
     documentType = fields.Integer(required=False, allow_none=True)
@@ -59,3 +61,9 @@ class PmsPartnerInfo(Datamodel):
     invoiceToAgency = fields.String(required=False, allow_none=True)
     tagIds = fields.List(fields.Integer(required=False, allow_none=True))
     lastStay = fields.String(required=False, allow_none=True)
+
+
+class PmsPartnerResults(Datamodel):
+    _name = "pms.partner.results"
+    partners = fields.List(NestedModel("pms.partner.info"))
+    total = fields.Integer(required=False, allow_none=True)
