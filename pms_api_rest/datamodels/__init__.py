@@ -8,7 +8,7 @@ from . import pms_room_type_class
 
 from . import pms_reservation
 from . import pms_reservation_line
-
+from . import pms_rest_metadata
 from . import pms_checkin_partner
 from . import pms_partner
 
