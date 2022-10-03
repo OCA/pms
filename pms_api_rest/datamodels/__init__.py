@@ -46,3 +46,5 @@ from . import pms_agency
 from . import pms_service
 from . import pms_service_line
 from . import res_users
+from . import res_lang
+from . import pms_account_payment_term
