@@ -75,12 +75,10 @@ class PmsPartnerService(Component):
                     residenceCountryId=partner.residence_country_id.id
                     if partner.residence_country_id
                     else None,
-                    tagIds=partner.category_id.ids if partner.category_id else [],
                     vatNumber=partner.vat if partner.vat else None,
                     vatDocumentType=partner.vat_document_type
                     if partner.vat_document_type
                     else None,
-                    website=partner.website if partner.website else None,
                     comment=partner.comment if partner.comment else None,
                     language=partner.lang if partner.lang else None,
                     userId=partner.user_id if partner.user_id else None,
@@ -103,6 +101,12 @@ class PmsPartnerService(Component):
                     daysAutoInvoice=partner.margin_days_autoinvoice
                     if partner.margin_days_autoinvoice
                     else None,
+                    invoicingMonthDay=partner.invoicing_month_day
+                    if partner.invoicing_month_day
+                    else None,
+                    invoiceToAgency=partner.invoice_to_agency
+                    if partner.invoice_to_agency
+                    else None,
                 )
             )
         return result_partners
@@ -121,18 +125,7 @@ class PmsPartnerService(Component):
     )
     def create_partner(self, partner_info):
         vals = self.mapping_partner_values(partner_info)
-        partner = self.env["res.partner"].create(vals)
-        if partner_info.documentNumber:
-            doc_type_id = (
-                self.env["res.partner.id_category"].search([("name", "=", "DNI")]).id
-            )
-            self.env["res.partner.id_number"].create(
-                {
-                    "partner_id": partner.id,
-                    "category_id": doc_type_id,
-                    "name": partner_info.documentNumber,
-                }
-            )
+        self.env["res.partner"].create(vals)
 
     @restapi.method(
         [
@@ -150,30 +143,88 @@ class PmsPartnerService(Component):
         partner = self.env["res.partner"].browse(partner_id)
         if partner:
             partner.write(self.mapping_partner_values(partner_info))
-        if partner_info.documentNumber:
-            doc_type_id = (
-                self.env["res.partner.id_category"].search([("name", "=", "DNI")]).id
-            )
-            doc_number = self.env["res.partner.id_number"].search(
+
+    # REVIEW: analyze in which service file this method should be
+    @restapi.method(
+        [
+            (
                 [
-                    ("partner_id", "=", partner_id),
-                    ("name", "=", partner_info.documentNumber),
-                    ("category_id", "=", doc_type_id),
-                ]
+                    "/<string:documentType>/<string:documentNumber>",
+                ],
+                "GET",
             )
-            if not doc_number:
-                self.env["res.partner.id_number"].create(
-                    {
-                        "category_id": doc_type_id,
-                        "name": partner_info.documentNumber,
-                    }
+        ],
+        output_param=Datamodel("pms.checkin.partner.info", is_list=True),
+        auth="jwt_api_pms",
+    )
+    def get_partner_by_doc_number(self, document_type, document_number):
+        doc_number = self.env["res.partner.id_number"].search(
+            [("name", "=", document_number), ("category_id", "=", int(document_type))]
+        )
+        partners = []
+        PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
+        if not doc_number:
+            pass
+        else:
+            if doc_number.valid_from:
+                document_expedition_date = doc_number.valid_from.strftime("%d/%m/%Y")
+            if doc_number.partner_id.birthdate_date:
+                birthdate_date = doc_number.partner_id.birthdate_date.strftime(
+                    "%d/%m/%Y"
                 )
-            else:
-                doc_number.write(
-                    {
-                        "name": partner_info.documentNumber,
-                    }
+            partners.append(
+                PmsCheckinPartnerInfo(
+                    # id=doc_number.partner_id.id,
+                    name=doc_number.partner_id.name
+                    if doc_number.partner_id.name
+                    else None,
+                    firstname=doc_number.partner_id.firstname
+                    if doc_number.partner_id.firstname
+                    else None,
+                    lastname=doc_number.partner_id.lastname
+                    if doc_number.partner_id.lastname
+                    else None,
+                    lastname2=doc_number.partner_id.lastname2
+                    if doc_number.partner_id.lastname2
+                    else None,
+                    email=doc_number.partner_id.email
+                    if doc_number.partner_id.email
+                    else None,
+                    mobile=doc_number.partner_id.mobile
+                    if doc_number.partner_id.mobile
+                    else None,
+                    documentType=int(document_type),
+                    documentNumber=doc_number.name,
+                    documentExpeditionDate=document_expedition_date
+                    if doc_number.valid_from
+                    else None,
+                    documentSupportNumber=doc_number.support_number
+                    if doc_number.support_number
+                    else None,
+                    gender=doc_number.partner_id.gender
+                    if doc_number.partner_id.gender
+                    else None,
+                    birthdate=birthdate_date
+                    if doc_number.partner_id.birthdate_date
+                    else None,
+                    residenceStreet=doc_number.partner_id.residence_street
+                    if doc_number.partner_id.residence_street
+                    else None,
+                    zip=doc_number.partner_id.residence_zip
+                    if doc_number.partner_id.residence_zip
+                    else None,
+                    residenceCity=doc_number.partner_id.residence_city
+                    if doc_number.partner_id.residence_city
+                    else None,
+                    nationality=doc_number.partner_id.nationality_id.id
+                    if doc_number.partner_id.nationality_id
+                    else None,
+                    countryState=doc_number.partner_id.residence_state_id.id
+                    if doc_number.partner_id.residence_state_id
+                    else None,
                 )
+            )
+        return partners
 
     @restapi.method(
         [
@@ -213,31 +264,22 @@ class PmsPartnerService(Component):
             )
         ],
         input_param=Datamodel("pms.partner.search.param", is_list=False),
-        output_param=Datamodel("pms.checkin.partner.info", is_list=False),
+        output_param=Datamodel("pms.partner.info", is_list=False),
         auth="jwt_api_pms",
     )
     def get_partner(self, pms_partner_search_params):
         domain = []
-        # if pms_partner_search_params.documentType
-        #  and pms_partner_search_params.documentNumber:
-        #     doc_number = self.env["res.partner.id_number"].search(
-        #         [
-        #             ("name", "=", pms_partner_search_params.documentNumber),
-        #             ("category_id", "=", pms_partner_search_params.documentType)
-        #         ]
-        #     )
-        #     if doc_number.valid_from:
-        #         document_expedition_date = doc_number.valid_from.strftime("%d/%m/%Y")
-        #     document_type = pms_partner_search_params.documentType
-        #     document_number = pms_partner_search_params.documentNumber
-        #     domain.append(('id_numbers', 'in', doc_number))
         PmsPartnerInfo = self.env.datamodels["pms.partner.info"]
         if pms_partner_search_params.vatNumber:
-            domain.append(("vat", "=", pms_partner_search_params.vatNumber))
+            domain = [
+                "|",
+                ("vat", "=", pms_partner_search_params.vatNumber),
+                ("aeat_identification", "=", pms_partner_search_params.vatNumber),
+            ]
         partner = self.env["res.partner"].search(domain)
-        if len(partner) > 1:
-            partner = partner.filtered("is_company")
-        if partner:
+        if not partner:
+            return PmsPartnerInfo()
+        else:
             return PmsPartnerInfo(
                 id=partner.id,
                 name=partner.name if partner.name else None,
@@ -281,12 +323,10 @@ class PmsPartnerService(Component):
                 residenceCountryId=partner.residence_country_id.id
                 if partner.residence_country_id
                 else None,
-                tagIds=partner.category_id.ids if partner.category_id else [],
                 vatNumber=partner.vat if partner.vat else None,
                 vatDocumentType=partner.vat_document_type
                 if partner.vat_document_type
                 else None,
-                website=partner.website if partner.website else None,
                 comment=partner.comment if partner.comment else None,
                 language=partner.lang if partner.lang else None,
                 userId=partner.user_id if partner.user_id else None,
@@ -309,9 +349,13 @@ class PmsPartnerService(Component):
                 daysAutoInvoice=partner.margin_days_autoinvoice
                 if partner.margin_days_autoinvoice
                 else None,
+                invoicingMonthDay=partner.invoicing_month_day
+                if partner.invoicing_month_day
+                else None,
+                invoiceToAgency=partner.invoice_to_agency
+                if partner.invoice_to_agency
+                else None,
             )
-        else:
-            return []
 
     def mapping_partner_values(self, pms_partner_info):
         vals = dict()
@@ -333,7 +377,6 @@ class PmsPartnerService(Component):
             "residence_country_id": pms_partner_info.residenceCountryId,
             "is_agency": pms_partner_info.isAgency,
             "is_company": pms_partner_info.isCompany,
-            "vat": pms_partner_info.vatNumber,
             "street": pms_partner_info.street,
             "street2": pms_partner_info.street2,
             "zip": pms_partner_info.zip,
@@ -350,7 +393,32 @@ class PmsPartnerService(Component):
             "default_commission": pms_partner_info.commission,
             "invoicing_policy": pms_partner_info.invoicingPolicy,
             "margin_days_autoinvoice": pms_partner_info.daysAutoInvoice,
+            "invoicing_month_day": pms_partner_info.invoicingMonthDay,
+            "invoice_to_agency": pms_partner_info.invoiceToAgency,
         }
+
+        if (
+            pms_partner_info.isAgency
+            or pms_partner_info.isCompany
+            or (
+                pms_partner_info.vatDocumentType == "02"
+                or pms_partner_info.vatDocumentType == "04"
+            )
+        ):
+            partner_fields.update(
+                {
+                    "vat": pms_partner_info.vatNumber,
+                    "vat_document_type": "vat",
+                }
+            )
+        else:
+            partner_fields.update(
+                {
+                    "aeat_identification_type": pms_partner_info.vatDocumentType,
+                    "aeat_identification": pms_partner_info.vatNumber,
+                }
+            )
+
         if pms_partner_info.birthdate:
             birthdate = datetime.strptime(pms_partner_info.birthdate, "%d/%m/%Y")
             birthdate = birthdate.strftime("%Y-%m-%d")
