@@ -10,6 +10,7 @@ class PmsPaymentInfo(Datamodel):
     journalId = fields.Integer(required=False, allow_none=True)
     date = fields.String(required=False, allow_none=True)
     paymentType = fields.String(required=False, allow_none=True)
+    reference = fields.String(required=False, allow_none=True)
 
 
 class PmsAccountPaymentInfo(Datamodel):

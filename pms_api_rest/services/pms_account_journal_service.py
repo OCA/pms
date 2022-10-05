@@ -23,29 +23,24 @@ class PmsAccountJournalService(Component):
         auth="jwt_api_pms",
     )
     def get_method_payments(self, account_journal_search_param):
-        domain = []
-        if account_journal_search_param.pmsPropertyId:
-            domain.extend(
-                [
-                    "|",
-                    (
-                        "pms_property_ids",
-                        "in",
-                        account_journal_search_param.pmsPropertyId,
-                    ),
-                    ("pms_property_ids", "=", False),
-                ]
-            )
+        pms_property = self.env["pms.property"].search(
+            [("id", "=", account_journal_search_param.pmsPropertyId)]
+        )
         PmsAccountJournalInfo = self.env.datamodels["pms.account.journal.info"]
         result_account_journals = []
-        for account_journal in self.env["account.journal"].search(
-            domain,
-        ):
-            result_account_journals.append(
-                PmsAccountJournalInfo(
-                    id=account_journal.id,
-                    name=account_journal.name,
-                    allowedPayments=account_journal.allowed_pms_payments,
+        if not pms_property:
+            pass
+        else:
+            for method in pms_property._get_payment_methods(automatic_included=True):
+                payment_method = self.env["account.journal"].search(
+                    [("id", "=", method.id)]
                 )
-            )
+                result_account_journals.append(
+                    PmsAccountJournalInfo(
+                        id=payment_method.id,
+                        name=payment_method.name,
+                        allowedPayments=payment_method.allowed_pms_payments,
+                    )
+                )
+
         return result_account_journals
