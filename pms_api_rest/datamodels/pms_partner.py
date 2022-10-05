@@ -8,6 +8,7 @@ class PmsPartnerSearchParam(Datamodel):
     _name = "pms.partner.search.param"
     _inherit = "pms.rest.metadata"
     id = fields.Integer(required=False, allow_none=True)
+    vatNumber = fields.String(required=False, allow_none=True)
     documentType = fields.Integer(required=False, allow_none=True)
     documentNumber = fields.String(required=False, allow_none=True)
     name = fields.String(required=False, allow_none=True)
