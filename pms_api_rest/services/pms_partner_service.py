@@ -1,9 +1,10 @@
 from datetime import datetime
 
+from odoo.odoo.osv import expression
+
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
-from odoo.odoo.osv import expression
 
 
 class PmsPartnerService(Component):
@@ -32,8 +33,11 @@ class PmsPartnerService(Component):
         if pms_partner_search_params.name:
             domain_fields.append(("name", "ilike", pms_partner_search_params.name))
         if pms_partner_search_params.housed:
-            partners_housed = self.env["pms.checkin.partner"].search([("state", "=", "onboard")]).mapped(
-                "partner_id")
+            partners_housed = (
+                self.env["pms.checkin.partner"]
+                .search([("state", "=", "onboard")])
+                .mapped("partner_id")
+            )
             domain_fields.append(("id", "in", partners_housed.ids))
         domain_filter = list()
         if pms_partner_search_params.filter:
@@ -56,7 +60,7 @@ class PmsPartnerService(Component):
             domain,
             order=pms_partner_search_params.orderBy,
             limit=pms_partner_search_params.limit,
-            offset=pms_partner_search_params.offset
+            offset=pms_partner_search_params.offset,
         ):
             checkouts = (
                 self.env["pms.checkin.partner"]
@@ -141,16 +145,11 @@ class PmsPartnerService(Component):
                     invoiceToAgency=partner.invoice_to_agency
                     if partner.invoice_to_agency
                     else None,
-                    agencyStateId=partner.state_id.id if partner.state_id else None,
-                    agencyCity=partner.city if partner.city else None,
                     tagIds=partner.category_id.ids if partner.category_id else [],
                     lastStay=max(checkouts).strftime("%d/%m/%Y") if checkouts else "",
                 )
             )
-        return PmsPartnerResults(
-            partners=result_partners,
-            total=total_partners
-        )
+        return PmsPartnerResults(partners=result_partners, total=total_partners)
 
     @restapi.method(
         [
@@ -210,7 +209,7 @@ class PmsPartnerService(Component):
                     amount=round(payment.amount, 2),
                     journalId=payment.journal_id.id,
                     date=payment.date.strftime("%d/%m/%Y"),
-                    memo=payment.ref,
+                    reference=payment.ref,
                 )
             )
         return payments
@@ -384,7 +383,7 @@ class PmsPartnerService(Component):
                 ("aeat_identification", "=", pms_partner_search_params.vatNumber),
             ]
         partner = self.env["res.partner"].search(domain)
-        if not partner:
+        if not partner or len(partner) > 1:
             return PmsPartnerInfo()
         else:
             return PmsPartnerInfo(
