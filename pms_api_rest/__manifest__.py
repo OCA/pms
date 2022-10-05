@@ -13,6 +13,7 @@
         "auth_signup",
         "auth_jwt_login",
         "base_location",
+        "l10n_es_aeat",
     ],
     "external_dependencies": {
         "python": ["jwt", "simplejson", "marshmallow", "jose"],
