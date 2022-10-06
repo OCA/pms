@@ -26,7 +26,9 @@ class PmsFolioInfo(Datamodel):
     lastCheckout = fields.String(required=False, allow_none=True)
     pmsPropertyId = fields.Integer(required=False, allow_none=False)
     partnerId = fields.Integer(required=False, allow_none=False)
-    reservations = fields.List(NestedModel("pms.reservation.info"), required=False, allow_none=False)
+    reservations = fields.List(
+        NestedModel("pms.reservation.info"), required=False, allow_none=False
+    )
     pricelistId = fields.Integer(required=False, allow_none=False)
     saleChannelId = fields.Integer(required=False, allow_none=False)
     agency = fields.Integer(required=False, allow_none=False)
