@@ -1,11 +1,11 @@
 from marshmallow import fields
 
 from odoo.addons.datamodel.core import Datamodel
+from odoo.addons.datamodel.fields import NestedModel
 
 
 class PmsFolioSearchParam(Datamodel):
     _name = "pms.folio.search.param"
-
     pmsPropertyId = fields.Integer(required=True, allow_none=True)
     dateFrom = fields.String(required=False, allow_none=True)
     dateTo = fields.String(required=False, allow_none=True)
@@ -24,6 +24,14 @@ class PmsFolioInfo(Datamodel):
     reservationType = fields.String(required=False, allow_none=True)
     pendingAmount = fields.Float(required=False, allow_none=True)
     lastCheckout = fields.String(required=False, allow_none=True)
+    pmsPropertyId = fields.Integer(required=False, allow_none=False)
+    partnerId = fields.Integer(required=False, allow_none=False)
+    reservations = fields.List(NestedModel("pms.reservation.info"), required=False, allow_none=False)
+    pricelistId = fields.Integer(required=False, allow_none=False)
+    saleChannelId = fields.Integer(required=False, allow_none=False)
+    agency = fields.Integer(required=False, allow_none=False)
+    externalReference = fields.String(required=False, allow_none=True)
+    closureReasonId = fields.Integer(required=False, allow_none=True)
 
 
 class PmsFolioShortInfo(Datamodel):
