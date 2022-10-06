@@ -327,29 +327,70 @@ class PmsFolioService(Component):
 
         return reservations
 
-    # @restapi.method(
-    #     [
-    #         (
-    #             [
-    #                 "/",
-    #             ],
-    #             "POST",
-    #         )
-    #     ],
-    #     input_param=Datamodel("pms.reservation.info", is_list=False),
-    #     auth="jwt_api_pms",
-    # )
-    # def create_reservation(self, pms_reservation_info):
-    #     reservation = self.env["pms.reservation"].create(
-    #         {
-    #             "partner_name": pms_reservation_info.partner,
-    #             "pms_property_id": pms_reservation_info.pmsPropertyId,
-    #             "room_type_id": pms_reservation_info.roomTypeId,
-    #             "pricelist_id": pms_reservation_info.pricelistId,
-    #             "checkin": pms_reservation_info.checkin,
-    #             "checkout": pms_reservation_info.checkout,
-    #             "board_service_room_id": pms_reservation_info.boardServiceId,
-    #             "channel_type_id": pms_reservation_info.channelTypeId,
-    #         }
-    #     )
-    #     return reservation.id
+    @restapi.method(
+        [
+            (
+                [
+                    "/",
+                ],
+                "POST",
+            )
+        ],
+        input_param=Datamodel("pms.folio.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def create_folio(self, pms_folio_info):
+        if pms_folio_info.reservationType == 'out':
+            vals = {
+                "pms_property_id": pms_folio_info.pmsPropertyId,
+                "reservation_type": pms_folio_info.reservationType,
+                "closure_reason_id": pms_folio_info.closureReasonId,
+            }
+        else:
+            vals = {
+                "pms_property_id": pms_folio_info.pmsPropertyId,
+                "partner_id": pms_folio_info.partnerId,
+                "channel_type_id": pms_folio_info.saleChannelId,
+                "agency_id": pms_folio_info.agency,
+                "reservation_type": pms_folio_info.reservationType,
+            }
+        folio = self.env["pms.folio"].create(vals)
+        for reservation in pms_folio_info.reservations:
+            vals = {
+                "folio_id": folio.id,
+                "room_type_id": reservation.roomTypeId,
+                "checkin": reservation.checkin,
+                "checkout": reservation.checkout,
+                "pms_property_id": pms_folio_info.pmsPropertyId,
+                "pricelist_id": pms_folio_info.pricelistId,
+                "external_reference": pms_folio_info.externalReference,
+                "board_service_room_id": reservation.boardServiceId,
+                "preferred_room_id": reservation.preferredRoomId,
+                "adults": reservation.adults,
+                "reservation_type": pms_folio_info.reservationType,
+                "children": reservation.children,
+            }
+            reservation_record = self.env['pms.reservation'].create(vals)
+            if reservation.services:
+                for service in reservation.services:
+                    vals = {
+                        "product_id": service.productId,
+                        "reservation_id": reservation_record.id,
+                        "is_board_service": False,
+                        "service_line_ids": [
+                            (
+                                0,
+                                False,
+                                {
+                                    "date": line.date,
+                                    "price_unit": line.priceUnit,
+                                    "discount": line.discount or 0,
+                                    "day_qty": line.quantity,
+                                },
+                            )
+                            for line in service.serviceLines
+                        ]
+                    }
+                    self.env["pms.service"].create(vals)
+
+        return folio.id
