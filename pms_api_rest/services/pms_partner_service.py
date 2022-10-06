@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from odoo.odoo.osv import expression
+from odoo.osv import expression
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
