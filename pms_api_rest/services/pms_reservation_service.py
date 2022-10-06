@@ -64,8 +64,8 @@ class PmsReservationService(Component):
                 boardServiceId=reservation.board_service_room_id.id
                 if reservation.board_service_room_id
                 else None,
-                saleChannelId=reservation.channel_type_id.id
-                if reservation.channel_type_id
+                saleChannelId=reservation.sale_channel_origin_id.id
+                if reservation.sale_channel_origin_id
                 else None,
                 agencyId=reservation.agency_id.id if reservation.agency_id else None,
                 userId=reservation.user_id.id if reservation.user_id else None,
