@@ -138,8 +138,8 @@ class PmsPricelistService(Component):
                         ),
                     )
 
-                    pricelist_info.pricelistItemId = item.id
-                    pricelist_info.price = item.fixed_price
+                    pricelist_info.pricelistItemId = item[0].id
+                    pricelist_info.price = item[0].fixed_price
 
                     result.append(pricelist_info)
 
