@@ -154,4 +154,4 @@ class PmsAgencyService(Component):
                 product_qty=product_qty,
                 date_consumption=date_consumption,
             )
-        return
+        return price
