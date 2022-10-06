@@ -340,7 +340,7 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def create_folio(self, pms_folio_info):
-        if pms_folio_info.reservationType == 'out':
+        if pms_folio_info.reservationType == "out":
             vals = {
                 "pms_property_id": pms_folio_info.pmsPropertyId,
                 "reservation_type": pms_folio_info.reservationType,
@@ -370,7 +370,7 @@ class PmsFolioService(Component):
                 "reservation_type": pms_folio_info.reservationType,
                 "children": reservation.children,
             }
-            reservation_record = self.env['pms.reservation'].create(vals)
+            reservation_record = self.env["pms.reservation"].create(vals)
             if reservation.services:
                 for service in reservation.services:
                     vals = {
@@ -389,7 +389,7 @@ class PmsFolioService(Component):
                                 },
                             )
                             for line in service.serviceLines
-                        ]
+                        ],
                     }
                     self.env["pms.service"].create(vals)
 
