@@ -37,7 +37,6 @@ class PmsRoomService(Component):
             room_search_param.availabilityFrom
             and room_search_param.availabilityTo
             and room_search_param.pmsPropertyId
-            and room_search_param.pricelistId
         ):
             date_from = datetime.strptime(
                 room_search_param.availabilityFrom, "%Y-%m-%d"
@@ -48,16 +47,27 @@ class PmsRoomService(Component):
             pms_property = self.env["pms.property"].browse(
                 room_search_param.pmsPropertyId
             )
-            pms_property = pms_property.with_context(
-                checkin=date_from,
-                checkout=date_to,
-                room_type_id=False,  # Allows to choose any available room
-                current_lines=room_search_param.currentLines,
-                pricelist_id=room_search_param.pricelistId,
-                real_avail=True,
-            )
+            if not room_search_param.pricelistId:
+                pms_property = self.env["pms.property"].browse(
+                    room_search_param.pmsPropertyId
+                )
+                pms_property = pms_property.with_context(
+                    checkin=date_from,
+                    checkout=date_to,
+                    room_type_id=False,  # Allows to choose any available room
+                    current_lines=room_search_param.currentLines,
+                    real_avail=True,
+                )
+            else:
+                pms_property = pms_property.with_context(
+                    checkin=date_from,
+                    checkout=date_to,
+                    room_type_id=False,  # Allows to choose any available room
+                    current_lines=room_search_param.currentLines,
+                    pricelist_id=room_search_param.pricelistId,
+                    real_avail=True,
+                )
             domain.append(("id", "in", pms_property.free_room_ids.ids))
-
         result_rooms = []
         PmsRoomInfo = self.env.datamodels["pms.room.info"]
         for room in (

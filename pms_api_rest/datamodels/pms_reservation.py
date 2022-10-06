@@ -67,6 +67,8 @@ class PmsReservationInfo(Datamodel):
     priceOnlyRoom = fields.Float(required=False, allow_none=True)
 
     reservationLines = fields.List(NestedModel("pms.reservation.line.info"))
+    services = fields.List(NestedModel("pms.service.info"), required=False, allow_none=True)
+
 
     # TODO: Refact
     # messages = fields.List(fields.Dict(required=False, allow_none=True))
