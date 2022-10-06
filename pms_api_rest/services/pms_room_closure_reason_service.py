@@ -1,9 +1,3 @@
-from datetime import datetime, timedelta
-
-from odoo import _, fields
-from odoo.exceptions import MissingError
-from odoo.osv import expression
-
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
@@ -30,13 +24,10 @@ class PmsClosureReasonService(Component):
     def get_closure_reasons(self):
         closure_reasons = []
         PmsRoomClosureReasonInfo = self.env.datamodels["pms.room.closure.reason.info"]
-        for cl in self.env['room.closure.reason'].search([]):
+        for cl in self.env["room.closure.reason"].search([]):
             closure_reasons.append(
                 PmsRoomClosureReasonInfo(
-                    id=cl.id,
-                    name=cl.name,
-                    description=cl.description
-
-            )
+                    id=cl.id, name=cl.name, description=cl.description
+                )
             )
         return closure_reasons
