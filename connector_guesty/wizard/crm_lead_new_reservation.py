@@ -36,25 +36,17 @@ class WizCrmLeadNewReservation(models.TransientModel):
         return action
 
     def action_check_availability(self):
-        guesty_listing_list = self.execute_availability_query()
-        _search_props = self.env["pms.property"].search(
-            [("guesty_id", "!=", False), ("guesty_id", "in", guesty_listing_list)]
+        all_calendar = self.env["pms.guesty.calendar"].search(
+            [
+                ("listing_date", ">=", self.check_in),
+                ("listing_date", "<=", self.check_out),
+                ("state", "!=", "available"),
+            ]
         )
 
-        calendar_result = self.env.company.guesty_backend_id.guesty_get_calendar_info(
-            self.check_in, self.check_out, _search_props
-        )
-
-        calendar = [
-            {"listing": key, "info": calendar_result[key]}
-            for key in calendar_result
-            if len(calendar_result[key]["status"]) == 1
-            and "available" in calendar_result[key]["status"]
-        ]
-
-        calendar_ids = [a["listing"] for a in calendar]
-        _search_props = self.env["pms.property"].search(
-            [("guesty_id", "!=", False), ("guesty_id", "in", calendar_ids)]
+        guesty_ids = all_calendar.mapped("listing_id")
+        property_ids = self.env["pms.property"].search(
+            [("guesty_id", "not in", guesty_ids), ("guesty_id", "!=", False)]
         )
 
         self.env["crm.listing.availability"].sudo().search(
@@ -63,7 +55,7 @@ class WizCrmLeadNewReservation(models.TransientModel):
 
         no_nights = (self.check_out - self.check_in).days
 
-        for _prop in _search_props:
+        for _prop in property_ids:
             _product = (
                 self.env.company.guesty_backend_id.reservation_product_id.with_context(
                     pricelist=self.price_list_id.id,
@@ -75,7 +67,7 @@ class WizCrmLeadNewReservation(models.TransientModel):
             )
 
             # noinspection PyProtectedMember
-            _product._compute_product_price()
+            _product.with_context(price_source="local")._compute_product_price()
             custom_price = _product.price
 
             self.env["crm.listing.availability"].sudo().create(
@@ -93,34 +85,6 @@ class WizCrmLeadNewReservation(models.TransientModel):
         action = self.crm_lead_id.action_new_quotation_reservation()
         action["res_id"] = self.id
         return action
-
-    def execute_availability_query(self):
-        query = """
-        select count(*)     as no_states,
-               t.listing_id,
-               min(t.state) as first_state,
-               max(t.state) as last_state
-        from (
-                 select calendar.listing_id, calendar.state
-                 from pms_guesty_calendar calendar
-                 where calendar.listing_date between %(check_in)s and %(check_out)s
-                 group by calendar.listing_id, calendar.state
-             ) as t
-        group by t.listing_id
-                """
-
-        real_end_date = self.check_out - datetime.timedelta(days=1)
-        data = {"check_in": self.check_in, "check_out": real_end_date}
-        self.env.cr.execute(query, data)
-        res = self.env.cr.dictfetchall()
-
-        return [
-            a["listing_id"]
-            for a in res
-            if a["no_states"] == 1
-            and a["first_state"] == "available"
-            and a["last_state"] == "available"
-        ]
 
     @staticmethod
     def compute_default_ci_co(date_input, time_input):

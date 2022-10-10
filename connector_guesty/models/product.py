@@ -42,28 +42,46 @@ class ProductProduct(models.Model):
         return result
 
     def compute_reservation_price(self, property_id, start, stop, reservation_date):
-        real_stop_date = stop - datetime.timedelta(days=1)
-        success, result = self.env.company.guesty_backend_id.call_get_request(
-            url_path="availability-pricing/api/calendar/listings/{}".format(
-                property_id.guesty_id
-            ),
-            params={
-                "startDate": start.strftime("%Y-%m-%d"),
-                "endDate": real_stop_date.strftime("%Y-%m-%d"),
-            },
-            paginate=False,
-        )
-        if not success:
-            return None
+        if self.env.context.get("price_source", "guesty") == "guesty":
+            real_stop_date = stop - datetime.timedelta(days=1)
+            success, result = self.env.company.guesty_backend_id.call_get_request(
+                url_path="availability-pricing/api/calendar/listings/{}".format(
+                    property_id.guesty_id
+                ),
+                params={
+                    "startDate": start.strftime("%Y-%m-%d"),
+                    "endDate": real_stop_date.strftime("%Y-%m-%d"),
+                },
+                paginate=False,
+            )
+            if not success:
+                return None
 
-        dates_list = result["data"]["days"]
-        if len(dates_list) == 0:
-            return None
+            dates_list = result["data"]["days"]
+            if len(dates_list) == 0:
+                return None
 
-        prices = [calendar.get("price", 0.0) for calendar in dates_list]
-        avg_price = sum(prices) / len(prices)
+            prices = [calendar.get("price", 0.0) for calendar in dates_list]
+            avg_price = sum(prices) / len(prices)
+            currency_name = dates_list[0]["currency"]
 
-        currency_name = dates_list[0]["currency"]
+        else:
+            query = """
+                select avg(price) as price, min(currency) as currency
+                from pms_guesty_calendar pgc
+                where pgc.listing_id = %(listing_id)s
+            """
+
+            self.env.cr.execute(query, {"listing_id": property_id.guesty_id})
+            result = self.env.cr.dictfetchone()
+
+            if not result:
+                return None
+
+            currency_name = result["currency"]
+            avg_price = result["price"]
+
+        # compute currency convertion
         currency_id = (
             self.env["res.currency"]
             .sudo()

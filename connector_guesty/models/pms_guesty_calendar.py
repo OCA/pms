@@ -167,3 +167,9 @@ class PmsGuestyCalendar(models.Model):
             return True, self.sudo().create(payload)
         else:
             return True, calendar_id.sudo().write(payload)
+
+    def do_calendar_update(self, payload):
+        _log.info("Sync: {}".format(self._name))
+        calendar_dates = payload.get("calendar", [])
+        for calendar in calendar_dates:
+            self.sudo().guesty_pull_calendar_event(calendar)

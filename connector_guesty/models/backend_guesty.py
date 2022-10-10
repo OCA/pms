@@ -83,6 +83,7 @@ class BackendGuesty(models.Model):
 
     custom_field_ids = fields.One2many("pms.backend.custom_field", "backend_id")
     enable_guesty_discount = fields.Boolean(default=False)
+    company_id = fields.Many2one("res.company")
 
     @api.depends("guesty_environment")
     def _compute_environment_fields(self):

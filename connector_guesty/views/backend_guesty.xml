@@ -109,6 +109,7 @@
                         <page string="Configuration">
                             <group>
                                 <group>
+                                    <field name="company_id" />
                                     <field name="currency_id" />
                                     <field name="timezone" />
                                     <field name="reservation_product_id" />
