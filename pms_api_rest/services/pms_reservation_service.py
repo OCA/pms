@@ -120,7 +120,7 @@ class PmsReservationService(Component):
         [
             (
                 [
-                    "/<int:reservation_id>",
+                    "/p/<int:reservation_id>",
                 ],
                 "PATCH",
             )
@@ -128,6 +128,7 @@ class PmsReservationService(Component):
         input_param=Datamodel("pms.reservation.info", is_list=False),
         auth="jwt_api_pms",
     )
+    # TODO: route changed because bug route CORS patch
     def update_reservation(self, reservation_id, reservation_data):
         reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
         reservation_vals = {}
