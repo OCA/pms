@@ -188,6 +188,9 @@ class PmsReservationService(Component):
             reservation_vals.update(
                 {"segmentation_ids": [(6, 0, [reservation_data.segmentationId])]}
             )
+        if reservation_data.toAssign is not None and not reservation_data.toAssign:
+            reservation.action_assign()
+
         reservation.write(reservation_vals)
 
     def _get_reservation_lines_mapped(self, origin_data, reservation_line=False):
