@@ -71,6 +71,6 @@ class PmsLoginService(Component):
             userName=user_record.name,
             defaultPropertyId=user_record.pms_property_id.id,
             defaultPropertyName=user_record.pms_property_id.name,
-            userImageBase64=user_record.partner_id.image_1024,
+            userImageBase64=user_record.partner_id.image_1024 or None,
             availabilityRuleFields=avail_rule_names,
         )
