@@ -48,7 +48,12 @@ class PmsPartnerService(Component):
                     [("lastname", "ilike", search)],
                 ]
                 domain_filter.append(expression.OR(subdomains))
-        domain = []
+        if pms_partner_search_params.vatNumber:
+            domain_fields = [
+                "|",
+                ("vat", "ilike", pms_partner_search_params.vatNumber),
+                ("aeat_identification", "ilike", pms_partner_search_params.vatNumber),
+            ]
         if domain_filter:
             domain = expression.AND([domain_fields, domain_filter[0]])
         else:
@@ -165,7 +170,8 @@ class PmsPartnerService(Component):
     )
     def create_partner(self, partner_info):
         vals = self.mapping_partner_values(partner_info)
-        self.env["res.partner"].create(vals)
+        partner = self.env["res.partner"].create(vals)
+        return partner.id
 
     @restapi.method(
         [
@@ -364,26 +370,18 @@ class PmsPartnerService(Component):
         [
             (
                 [
-                    "/partner",
+                    "/<int:partner_id>",
                 ],
                 "GET",
             )
         ],
-        input_param=Datamodel("pms.partner.search.param", is_list=False),
         output_param=Datamodel("pms.partner.info", is_list=False),
         auth="jwt_api_pms",
     )
-    def get_partner(self, pms_partner_search_params):
-        domain = []
+    def get_partner(self, partner_id):
         PmsPartnerInfo = self.env.datamodels["pms.partner.info"]
-        if pms_partner_search_params.vatNumber:
-            domain = [
-                "|",
-                ("vat", "=", pms_partner_search_params.vatNumber),
-                ("aeat_identification", "=", pms_partner_search_params.vatNumber),
-            ]
-        partner = self.env["res.partner"].search(domain)
-        if not partner or len(partner) > 1:
+        partner = self.env["res.partner"].browse(partner_id)
+        if not partner:
             return PmsPartnerInfo()
         else:
             return PmsPartnerInfo(
