@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
 
-from odoo import api, fields, models
+from odoo import fields, models
 
 _log = logging.getLogger(__name__)
 
@@ -14,16 +14,7 @@ class SaleOrderLine(models.Model):
     guesty_type = fields.Char()
     guesty_normal_type = fields.Char()
     guesty_second_identifier = fields.Char()
-    allow_discount = fields.Boolean(default=False)
-
-    @api.onchange("product_id")
-    def _compute_allow_discount(self):
-        for record in self:
-            if record.product_id:
-                allow_discount = record.product_id.allow_discount
-                record.allow_discount = allow_discount
-                if not allow_discount:
-                    record.discount = 0
+    allow_discount = fields.Boolean(related="product_id.allow_discount")
 
     def write(self, values):
         return super().write(values)
