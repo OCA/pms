@@ -58,7 +58,7 @@ class ChannelCallControl:
     def add_result(self, res, data):
         self.obj.env["channel.backend.log"].create(
             {
-                "backend_id": self.obj.backend_record.id,
+                "backend_id": self.obj.backend_record.parent_id.id,
                 "timestamp": self.exec_timestamp,
                 "method_id": self.method.id,
                 "arguments": self.args,
