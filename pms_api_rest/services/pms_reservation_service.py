@@ -661,6 +661,7 @@ class PmsReservationService(Component):
         checkin_partner_fields = {
             "firstname": pms_checkin_partner_info.firstname,
             "lastname": pms_checkin_partner_info.lastname,
+            "lastname2": pms_checkin_partner_info.lastname2,
             "email": pms_checkin_partner_info.email,
             "mobile": pms_checkin_partner_info.mobile,
             "document_type": pms_checkin_partner_info.documentType,
