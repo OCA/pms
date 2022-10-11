@@ -269,11 +269,14 @@ class PmsPartnerService(Component):
         auth="jwt_api_pms",
     )
     def get_partner_by_doc_number(self, document_type, document_number):
+        doc_type = self.env["res.partner.id_category"].search(
+            [("id", "=", document_type)]
+        )
         doc_number = self.env["res.partner.id_number"].search(
-            [("name", "=", document_number), ("category_id", "=", int(document_type))]
+            [("name", "=", document_number), ("category_id", "=", doc_type.id)]
         )
         partners = []
-        PmsPartnerInfo = self.env.datamodels["pms.partner.info"]
+        PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
         if not doc_number:
             pass
         else:
@@ -284,8 +287,8 @@ class PmsPartnerService(Component):
                     "%d/%m/%Y"
                 )
             partners.append(
-                PmsPartnerInfo(
-                    # id=doc_number.partner_id.id,
+                PmsCheckinPartnerInfo(
+                    id=doc_number.partner_id.id,
                     name=doc_number.partner_id.name
                     if doc_number.partner_id.name
                     else None,
@@ -304,7 +307,7 @@ class PmsPartnerService(Component):
                     mobile=doc_number.partner_id.mobile
                     if doc_number.partner_id.mobile
                     else None,
-                    documentType=int(document_type),
+                    documentType=doc_type.id,
                     documentNumber=doc_number.name,
                     documentExpeditionDate=document_expedition_date
                     if doc_number.valid_from
@@ -321,7 +324,7 @@ class PmsPartnerService(Component):
                     residenceStreet=doc_number.partner_id.residence_street
                     if doc_number.partner_id.residence_street
                     else None,
-                    residenceZip=doc_number.partner_id.residence_zip
+                    zip=doc_number.partner_id.residence_zip
                     if doc_number.partner_id.residence_zip
                     else None,
                     residenceCity=doc_number.partner_id.residence_city
@@ -330,7 +333,6 @@ class PmsPartnerService(Component):
                     nationality=doc_number.partner_id.nationality_id.id
                     if doc_number.partner_id.nationality_id
                     else None,
-                    # aquí tiene que ser id
                     countryState=doc_number.partner_id.residence_state_id.id
                     if doc_number.partner_id.residence_state_id
                     else None,
