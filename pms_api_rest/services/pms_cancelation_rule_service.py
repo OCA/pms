@@ -34,7 +34,11 @@ class PmsCancelationRuleService(Component):
             )
         if cancelation_rule_search_param.pmsPropertyId:
             domain.append(
-                ("pms_property_ids", "in", [cancelation_rule_search_param.pmsPropertyId])
+                (
+                    "pms_property_ids",
+                    "in",
+                    [cancelation_rule_search_param.pmsPropertyId],
+                )
             )
 
         result_cancelation_rules = []

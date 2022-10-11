@@ -120,7 +120,11 @@ class PmsAvailabilityPlanService(Component):
                             record_availability_plan_id.id,
                         ),
                         ("room_type_id", "=", room_type.id),
-                        ("pms_property_id", "=", availability_plan_rule_search_param.pmsPropertyId)
+                        (
+                            "pms_property_id",
+                            "=",
+                            availability_plan_rule_search_param.pmsPropertyId,
+                        ),
                     ]
                 )
                 if rule:
