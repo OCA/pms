@@ -70,6 +70,7 @@ class PmsPartnerService(Component):
             checkouts = (
                 self.env["pms.checkin.partner"]
                 .search([("partner_id.id", "=", partner.id)])
+                .filtered(lambda x: x.checkout)
                 .mapped("checkout")
             )
             result_partners.append(
