@@ -322,7 +322,7 @@ class PmsReservationService(Component):
         [
             (
                 [
-                    "/<int:_reservation_id>/reservation-lines/<int:reservation_line_id>",
+                    "/p/<int:_reservation_id>/reservation-lines/<int:reservation_line_id>",
                 ],
                 "PATCH",
             )
@@ -521,7 +521,7 @@ class PmsReservationService(Component):
         [
             (
                 [
-                    "/<int:reservation_id>/checkin-partners/<int:checkin_partner_id>",
+                    "/p/<int:reservation_id>/checkin-partners/<int:checkin_partner_id>",
                 ],
                 "PATCH",
             )
