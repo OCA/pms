@@ -104,7 +104,7 @@ class PmsReservationLineService(Component):
         [
             (
                 [
-                    "/<int:reservation_line_id>",
+                    "/p/<int:reservation_line_id>",
                 ],
                 "PATCH",
             )
