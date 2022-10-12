@@ -177,7 +177,7 @@ class PmsPartnerService(Component):
         [
             (
                 [
-                    "/<int:partner_id>",
+                    "/p/<int:partner_id>",
                 ],
                 "PATCH",
             )
@@ -344,7 +344,7 @@ class PmsPartnerService(Component):
         [
             (
                 [
-                    "/<int:partner_id>/deactivate",
+                    "/p/<int:partner_id>/deactivate",
                 ],
                 "PATCH",
             )
@@ -358,7 +358,7 @@ class PmsPartnerService(Component):
         [
             (
                 [
-                    "/<int:partner_id>/activate",
+                    "/p/<int:partner_id>/activate",
                 ],
                 "PATCH",
             )
