@@ -299,7 +299,7 @@ class PmsCalendarService(Component):
         [
             (
                 [
-                    "/<int:reservation_id>",
+                    "/p/<int:reservation_id>",
                 ],
                 "PATCH",
             )

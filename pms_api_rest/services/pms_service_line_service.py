@@ -46,7 +46,7 @@ class PmsServiceLineService(Component):
         [
             (
                 [
-                    "/<int:service_line_id>",
+                    "/p/<int:service_line_id>",
                 ],
                 "PATCH",
             )
