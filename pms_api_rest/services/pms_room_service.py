@@ -126,7 +126,7 @@ class PmsRoomService(Component):
         [
             (
                 [
-                    "/<int:room_id>",
+                    "/p/<int:room_id>",
                 ],
                 "PATCH",
             )
