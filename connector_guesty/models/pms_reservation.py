@@ -42,6 +42,8 @@ class PmsReservation(models.Model):
         [("odoo", "Odoo"), ("guesty", "Guesty")], default="odoo"
     )
 
+    confirmation_code = fields.Char(copy=False)
+
     def _cancel_expired_cron(self):
         if not self.env.company.guesty_backend_id.cancel_expired_quotes:
             _log.info("Expired orders cancellation is disabled")
