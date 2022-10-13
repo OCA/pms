@@ -30,17 +30,20 @@ class PmsCancelationRuleService(Component):
 
         if cancelation_rule_search_param.pricelistId:
             domain.append(
-                ("pricelist_ids", "in", cancelation_rule_search_param.pricelistId)
+                ("pricelist_ids", "in", [cancelation_rule_search_param.pricelistId])
             )
         if cancelation_rule_search_param.pmsPropertyId:
-            domain.append(
-                (
-                    "pms_property_ids",
-                    "in",
-                    [cancelation_rule_search_param.pmsPropertyId],
+            domain.extend(
+                    [
+                        '|',
+                        (
+                            "pms_property_ids",
+                            "in",
+                            [cancelation_rule_search_param.pmsPropertyId],
+                        ),
+                        ("pms_property_ids", "=", False),
+                    ]
                 )
-            )
-
         result_cancelation_rules = []
         PmsCancelationRuleInfo = self.env.datamodels["pms.cancelation.rule.info"]
         for cancelation_rule in self.env["pms.cancelation.rule"].search(
