@@ -24,4 +24,5 @@ class PmsCheckinPartnerInfo(Datamodel):
     residenceCity = fields.String(required=False, allow_none=True)
     nationality = fields.Integer(required=False, allow_none=True)
     countryState = fields.Integer(required=False, allow_none=True)
+    countryId = fields.Integer(required=False, allow_none=True)
     checkinPartnerState = fields.String(required=False, allow_none=True)
