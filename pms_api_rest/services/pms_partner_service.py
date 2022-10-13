@@ -334,6 +334,9 @@ class PmsPartnerService(Component):
                     nationality=doc_number.partner_id.nationality_id.id
                     if doc_number.partner_id.nationality_id
                     else None,
+                    countryId=doc_number.partner_id.residence_country_id
+                    if doc_number.partner_id.residence_country_id
+                    else None,
                     countryState=doc_number.partner_id.residence_state_id.id
                     if doc_number.partner_id.residence_state_id
                     else None,

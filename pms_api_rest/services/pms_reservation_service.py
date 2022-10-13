@@ -512,6 +512,9 @@ class PmsReservationService(Component):
                         countryState=checkin_partner.residence_state_id.id
                         if checkin_partner.residence_state_id
                         else None,
+                        countryId=checkin_partner.residence_country_id.id
+                        if checkin_partner.residence_country_id
+                        else None,
                         checkinPartnerState=checkin_partner.state,
                     )
                 )
@@ -673,7 +676,7 @@ class PmsReservationService(Component):
             "residence_zip": pms_checkin_partner_info.zip,
             "residence_city": pms_checkin_partner_info.residenceCity,
             "residence_state_id": pms_checkin_partner_info.countryState,
-            "residence_country_id": pms_checkin_partner_info.nationality,
+            "residence_country_id": pms_checkin_partner_info.countryId,
         }
         if pms_checkin_partner_info.documentExpeditionDate:
             document_expedition_date = datetime.strptime(
