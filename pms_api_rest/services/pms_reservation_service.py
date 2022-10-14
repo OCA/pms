@@ -190,8 +190,12 @@ class PmsReservationService(Component):
             )
         if reservation_data.toAssign is not None and not reservation_data.toAssign:
             reservation.action_assign()
-
-        reservation.write(reservation_vals)
+        if reservation_data.stateCode == "cancel":
+            reservation.action_cancel()
+        if reservation_data.stateCode == "confirm":
+            reservation.confirm()
+        if reservation_vals:
+            reservation.write(reservation_vals)
 
     def _get_reservation_lines_mapped(self, origin_data, reservation_line=False):
         # Return dict witch reservation.lines values (only modified if line exist,
