@@ -28,39 +28,29 @@ class PmsPartnerService(Component):
     )
     def get_partners(self, pms_partner_search_params):
         result_partners = []
-        domain_fields = []
+        domain = []
 
         if pms_partner_search_params.name:
-            domain_fields.append(("name", "ilike", pms_partner_search_params.name))
+            domain.append(("name", "ilike", pms_partner_search_params.name))
         if pms_partner_search_params.housed:
             partners_housed = (
                 self.env["pms.checkin.partner"]
                 .search([("state", "=", "onboard")])
                 .mapped("partner_id")
             )
-            domain_fields.append(("id", "in", partners_housed.ids))
-        domain_filter = list()
+            domain.append(("id", "in", partners_housed.ids))
         if pms_partner_search_params.filter:
-            for search in pms_partner_search_params.filter.split(" "):
-                subdomains = [
-                    [("name", "ilike", search)],
-                    [("firstname", "ilike", search)],
-                    [("lastname", "ilike", search)],
-                ]
-                domain_filter.append(expression.OR(subdomains))
+            domain.append(("display_name", "ilike", pms_partner_search_params.filter))
         if pms_partner_search_params.vatNumber:
-            domain_fields = [
+            domain.append([
                 "|",
                 ("vat", "ilike", pms_partner_search_params.vatNumber),
                 ("aeat_identification", "ilike", pms_partner_search_params.vatNumber),
-            ]
-        if domain_filter:
-            domain = expression.AND([domain_fields, domain_filter[0]])
-        else:
-            domain = domain_fields
+            ])
         PmsPartnerResults = self.env.datamodels["pms.partner.results"]
         PmsPartnerInfo = self.env.datamodels["pms.partner.info"]
         total_partners = self.env["res.partner"].search_count(domain)
+
         for partner in self.env["res.partner"].search(
             domain,
             order=pms_partner_search_params.orderBy,
