@@ -128,6 +128,28 @@ class PmsReservationService(Component):
         input_param=Datamodel("pms.reservation.info", is_list=False),
         auth="jwt_api_pms",
     )
+    def _create_vals_from_params(self, reservation_vals, reservation_data):
+        if reservation_data.preferredRoomId:
+            reservation_vals.update(
+                {"preferred_room_id": reservation_data.preferredRoomId}
+            )
+        if reservation_data.boardServiceId:
+            reservation_vals.update(
+                {"board_service_room_id": reservation_data.boardServiceId}
+            )
+        if reservation_data.pricelistId:
+            reservation_vals.update({"pricelist_id": reservation_data.pricelistId})
+        if reservation_data.adults:
+            reservation_vals.update({"adults": reservation_data.adults})
+        if reservation_data.children:
+            reservation_vals.update({"children": reservation_data.children})
+        if reservation_data.segmentationId:
+            reservation_vals.update(
+                {"segmentation_ids": [(6, 0, [reservation_data.segmentationId])]}
+            )
+
+        return reservation_vals
+
     # TODO: route changed because bug route CORS patch
     def update_reservation(self, reservation_id, reservation_data):
         reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
@@ -170,30 +192,16 @@ class PmsReservationService(Component):
                     }
                 )
 
-        if reservation_data.preferredRoomId:
-            reservation_vals.update(
-                {"preferred_room_id": reservation_data.preferredRoomId}
-            )
-        if reservation_data.boardServiceId:
-            reservation_vals.update(
-                {"board_service_room_id": reservation_data.boardServiceId}
-            )
-        if reservation_data.pricelistId:
-            reservation_vals.update({"pricelist_id": reservation_data.pricelistId})
-        if reservation_data.adults:
-            reservation_vals.update({"adults": reservation_data.adults})
-        if reservation_data.children:
-            reservation_vals.update({"children": reservation_data.children})
-        if reservation_data.segmentationId:
-            reservation_vals.update(
-                {"segmentation_ids": [(6, 0, [reservation_data.segmentationId])]}
-            )
         if reservation_data.toAssign is not None and not reservation_data.toAssign:
             reservation.action_assign()
         if reservation_data.stateCode == "cancel":
             reservation.action_cancel()
         if reservation_data.stateCode == "confirm":
             reservation.confirm()
+
+        reservation_vals = self._create_vals_from_params(
+            reservation_vals, reservation_data
+        )
         if reservation_vals:
             reservation.write(reservation_vals)
 
