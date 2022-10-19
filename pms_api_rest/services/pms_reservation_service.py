@@ -1,3 +1,4 @@
+import base64
 from datetime import datetime, timedelta
 
 from odoo import _
@@ -196,6 +197,8 @@ class PmsReservationService(Component):
             reservation.action_cancel()
         if reservation_data.stateCode == "confirm":
             reservation.confirm()
+        if reservation_data.toCheckout is not None and reservation_data.toCheckout:
+            reservation.action_reservation_checkout()
 
         reservation_vals = self._create_vals_from_params(
             reservation_vals, reservation_data
@@ -548,6 +551,13 @@ class PmsReservationService(Component):
         checkin_partner = self.env["pms.checkin.partner"].search(
             [("id", "=", checkin_partner_id), ("reservation_id", "=", reservation_id)]
         )
+        if (
+            pms_checkin_partner_info.actionOnBoard
+            and pms_checkin_partner_info.actionOnBoard is not None
+            and pms_checkin_partner_info.actionOnBoard
+            and checkin_partner
+        ):
+            checkin_partner.action_on_board()
         if checkin_partner:
             checkin_partner.write(
                 self.mapping_checkin_partner_values(pms_checkin_partner_info)
@@ -682,7 +692,7 @@ class PmsReservationService(Component):
             "support_number": pms_checkin_partner_info.documentSupportNumber,
             "gender": pms_checkin_partner_info.gender,
             "residence_street": pms_checkin_partner_info.residenceStreet,
-            "nationality_id": pms_checkin_partner_info.nationality,
+            "nationality_id": pms_checkin_partner_info.countryId,
             "residence_zip": pms_checkin_partner_info.zip,
             "residence_city": pms_checkin_partner_info.residenceCity,
             "residence_state_id": pms_checkin_partner_info.countryState,
@@ -704,3 +714,60 @@ class PmsReservationService(Component):
             if v:
                 vals.update({k: v})
         return vals
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:reservation_id>/checkin-report",
+                ],
+                "GET",
+            )
+        ],
+        auth="jwt_api_pms",
+        output_param=Datamodel("pms.report.info", is_list=False),
+    )
+    def print_all_checkins(self, reservation_id):
+        reservations = False
+        if reservation_id:
+            reservations = self.env["pms.reservation"].sudo().browse(reservation_id)
+        checkins = reservations.checkin_partner_ids.filtered(
+            lambda x: x.state in ["precheckin", "onboard", "done"]
+        )
+        pdf = (
+            self.env.ref("pms.action_traveller_report")
+            .sudo()
+            ._render_qweb_pdf(checkins.ids)[0]
+        )
+        base64EncodedStr = base64.b64encode(pdf)
+        PmsResponse = self.env.datamodels["pms.report.info"]
+        return PmsResponse(pdf=base64EncodedStr)
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:reservation_id>/checkin-partners/"
+                    "<int:checkin_partner_id>/checkin-report",
+                ],
+                "GET",
+            )
+        ],
+        auth="jwt_api_pms",
+        output_param=Datamodel("pms.report.info", is_list=False),
+    )
+    def print_checkin(self, reservation_id, checkin_partner_id):
+        reservations = False
+        if reservation_id:
+            reservations = self.env["pms.reservation"].sudo().browse(reservation_id)
+        checkin_partner = reservations.checkin_partner_ids.filtered(
+            lambda x: x.id == checkin_partner_id
+        )
+        pdf = (
+            self.env.ref("pms.action_traveller_report")
+            .sudo()
+            ._render_qweb_pdf(checkin_partner.id)[0]
+        )
+        base64EncodedStr = base64.b64encode(pdf)
+        PmsResponse = self.env.datamodels["pms.report.info"]
+        return PmsResponse(pdf=base64EncodedStr)
