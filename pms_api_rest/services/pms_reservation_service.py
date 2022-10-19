@@ -116,18 +116,6 @@ class PmsReservationService(Component):
             )
         return res
 
-    @restapi.method(
-        [
-            (
-                [
-                    "/p/<int:reservation_id>",
-                ],
-                "PATCH",
-            )
-        ],
-        input_param=Datamodel("pms.reservation.info", is_list=False),
-        auth="jwt_api_pms",
-    )
     def _create_vals_from_params(self, reservation_vals, reservation_data):
         if reservation_data.preferredRoomId:
             reservation_vals.update(
@@ -148,8 +136,18 @@ class PmsReservationService(Component):
                 {"segmentation_ids": [(6, 0, [reservation_data.segmentationId])]}
             )
 
-        return reservation_vals
-
+    @restapi.method(
+        [
+            (
+                [
+                    "/p/<int:reservation_id>",
+                ],
+                "PATCH",
+            )
+        ],
+        input_param=Datamodel("pms.reservation.info", is_list=False),
+        auth="jwt_api_pms",
+    )
     # TODO: route changed because bug route CORS patch
     def update_reservation(self, reservation_id, reservation_data):
         reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
