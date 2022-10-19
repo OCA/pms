@@ -58,6 +58,7 @@ class PmsReservationInfo(Datamodel):
     segmentationId = fields.Integer(required=False, allow_none=True)
     cancelationRuleId = fields.Integer(required=False, allow_none=True)
     toAssign = fields.Boolean(required=False, allow_none=True)
+    toCheckout = fields.Boolean(required=False, allow_none=True)
     reservationType = fields.String(required=False, allow_none=True)
 
     priceTotal = fields.Float(required=False, allow_none=True)

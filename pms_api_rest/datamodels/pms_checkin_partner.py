@@ -26,3 +26,4 @@ class PmsCheckinPartnerInfo(Datamodel):
     countryState = fields.Integer(required=False, allow_none=True)
     countryId = fields.Integer(required=False, allow_none=True)
     checkinPartnerState = fields.String(required=False, allow_none=True)
+    actionOnBoard = fields.Boolean(required=False, allow_none=True)
