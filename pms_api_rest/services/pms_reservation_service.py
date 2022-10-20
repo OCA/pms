@@ -136,6 +136,7 @@ class PmsReservationService(Component):
             reservation_vals.update(
                 {"segmentation_ids": [(6, 0, [reservation_data.segmentationId])]}
             )
+        return reservation_vals
 
     @restapi.method(
         [
