@@ -88,7 +88,7 @@ class PmsPartnerService(Component):
                     if partner.birthdate_date
                     else None,
                     age=partner.age if partner.age else None,
-                    mobile=str(partner.mobile),
+                    mobile=partner.mobile if partner.mobile else None,
                     residenceStreet=partner.residence_street
                     if partner.residence_street
                     else None,
@@ -118,9 +118,15 @@ class PmsPartnerService(Component):
                     residenceCountryId=partner.residence_country_id.id
                     if partner.residence_country_id
                     else None,
-                    vatNumber=partner.vat if partner.vat else None,
-                    vatDocumentType=partner.vat_document_type
+                    vatNumber=partner.vat
+                    if partner.vat
+                    else partner.aeat_identification
+                    if partner.aeat_identification
+                    else None,
+                    vatDocumentType="02"
                     if partner.vat_document_type
+                    else partner.aeat_identification_type
+                    if partner.aeat_identification_type
                     else None,
                     comment=partner.comment if partner.comment else None,
                     language=partner.lang if partner.lang else None,
@@ -432,9 +438,15 @@ class PmsPartnerService(Component):
                 residenceCountryId=partner.residence_country_id.id
                 if partner.residence_country_id
                 else None,
-                vatNumber=partner.vat if partner.vat else None,
-                vatDocumentType=partner.vat_document_type
+                vatNumber=partner.vat
+                if partner.vat
+                else partner.aeat_identification
+                if partner.aeat_identification
+                else None,
+                vatDocumentType="02"
                 if partner.vat_document_type
+                else partner.aeat_identification_type
+                if partner.aeat_identification_type
                 else None,
                 comment=partner.comment if partner.comment else None,
                 language=partner.lang if partner.lang else None,
@@ -469,7 +481,6 @@ class PmsPartnerService(Component):
     def mapping_partner_values(self, pms_partner_info):
         vals = dict()
         partner_fields = {
-            "name": pms_partner_info.name,
             "firstname": pms_partner_info.firstname,
             "lastname": pms_partner_info.lastname,
             "lastname2": pms_partner_info.lastname2,
