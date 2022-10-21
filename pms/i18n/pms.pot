@@ -8308,6 +8308,7 @@ msgstr ""
 
 #. module: pms
 #: code:addons/pms/models/pms_folio.py:0
+#: code:addons/pms/models/pms_reservation.py:0
 #: code:addons/pms/wizards/pms_booking_duplicate.py:0
 #: code:addons/pms/wizards/pms_booking_engine.py:0
 #, python-format
