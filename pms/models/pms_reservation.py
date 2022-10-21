@@ -1461,10 +1461,16 @@ class PmsReservation(models.Model):
     )
     def _compute_partner_name(self):
         for record in self:
-            if record.reservation_type != "out":
-                self.env["pms.folio"]._apply_partner_name(record)
-            else:
-                record.partner_name = record.out_service_description
+            if record.partner_id and record.partner_id != record.agency_id:
+                record.partner_name = record.partner_id.name
+            if record.folio_id and not record.partner_name:
+                record.partner_name = record.folio_id.partner_name
+            elif record.agency_id and not record.partner_name:
+                # if the customer not is the agency but we dont know the customer's name,
+                # set the name provisional
+                record.partner_name = _("Reservation from ") + record.agency_id.name
+            elif not record.partner_name:
+                record.partner_name = False
 
     @api.depends("partner_id", "partner_id.email", "agency_id")
     def _compute_email(self):
