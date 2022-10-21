@@ -1103,7 +1103,14 @@ class PmsFolio(models.Model):
     @api.depends("partner_id", "partner_id.name", "agency_id", "reservation_type")
     def _compute_partner_name(self):
         for record in self:
-            self._apply_partner_name(record)
+            if record.partner_id and record.partner_id != record.agency_id:
+                record.partner_name = record.partner_id.name
+            elif record.agency_id and not record.partner_name:
+                # if the customer not is the agency but we dont know the customer's name,
+                # set the name provisional
+                record.partner_name = _("Reservation from ") + record.agency_id.name
+            elif not record.partner_name:
+                record.partner_name = False
 
     @api.depends("partner_id", "partner_id.email", "agency_id")
     def _compute_email(self):
@@ -2580,17 +2587,6 @@ class PmsFolio(models.Model):
             discount_factor = discount_factor * ((100.0 - discount) / 100.0)
         final_discount = 100.0 - (discount_factor * 100.0)
         return final_discount
-
-    @api.model
-    def _apply_partner_name(self, record):
-        if record.partner_id and record.partner_id != record.agency_id:
-            record.partner_name = record.partner_id.name
-        elif record.agency_id and not record.partner_name:
-            # if the customer not is the agency but we dont know the customer's name,
-            # set the name provisional
-            record.partner_name = _("Reservation from ") + record.agency_id.name
-        elif not record.partner_name:
-            record.partner_name = False
 
     @api.model
     def _apply_mobile(self, record):
