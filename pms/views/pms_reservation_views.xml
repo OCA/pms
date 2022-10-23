@@ -498,6 +498,7 @@
                                     <field name="date" readonly="1" force_save="1" />
                                     <field name="price" />
                                     <field name="discount" />
+                                    <field name="price_day_total" />
                                     <field
                                         name="cancel_discount"
                                         attrs="{'column_invisible': [('parent.state','!=','cancel')]}"
