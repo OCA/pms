@@ -88,12 +88,17 @@ class PmsReservationLine(models.Model):
         compute="_compute_avail_id",
         check_pms_properties=True,
     )
-
     discount = fields.Float(
         string="Discount (%)",
         help="",
         default=0.0,
         digits=("Discount"),
+    )
+    price_day_total = fields.Float(
+        string="Final price",
+        help="Get the price with discount applied",
+        store=True,
+        compute="_compute_price_day_total",
     )
     occupies_availability = fields.Boolean(
         string="Occupies",
@@ -472,6 +477,15 @@ class PmsReservationLine(models.Model):
                     )
             else:
                 record.avail_id = False
+
+    @api.depends("price", "discount", "cancel_discount")
+    def _compute_price_day_total(self):
+        for line in self:
+            first_discount = line.price * ((line.discount or 0.0) * 0.01)
+            price = line.price - first_discount
+            cancel_discount = price * ((line.cancel_discount or 0.0) * 0.01)
+            discount = first_discount + cancel_discount
+            line.price_day_total = line.price - discount
 
     @api.depends("reservation_id.overbooking")
     def _compute_overbooking(self):
