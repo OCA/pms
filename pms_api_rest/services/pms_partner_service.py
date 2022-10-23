@@ -124,7 +124,7 @@ class PmsPartnerService(Component):
                     if partner.aeat_identification
                     else None,
                     vatDocumentType="02"
-                    if partner.vat_document_type
+                    if partner.vat
                     else partner.aeat_identification_type
                     if partner.aeat_identification_type
                     else None,
@@ -444,7 +444,7 @@ class PmsPartnerService(Component):
                 if partner.aeat_identification
                 else None,
                 vatDocumentType="02"
-                if partner.vat_document_type
+                if partner.vat
                 else partner.aeat_identification_type
                 if partner.aeat_identification_type
                 else None,
