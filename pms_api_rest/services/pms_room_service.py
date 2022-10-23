@@ -75,7 +75,7 @@ class PmsRoomService(Component):
             .search(
                 domain,
             )
-            .sorted("capacity")
+            .sorted("sequence")
         ):
 
             result_rooms.append(
