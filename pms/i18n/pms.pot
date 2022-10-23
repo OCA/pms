@@ -4039,6 +4039,11 @@ msgid "Filters"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_line__price_day_total
+msgid "Final price"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_cancelation_rule__apply_on_late__first
 #: model:ir.model.fields.selection,name:pms.selection__pms_cancelation_rule__apply_on_noshow__first
 msgid "First Day"
@@ -4451,6 +4456,11 @@ msgstr ""
 #: model:ir.model.fields,help:pms.field_pms_room_type__board_price
 #: model:ir.model.fields,help:pms.field_product_product__board_price
 msgid "Get price on board service"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation_line__price_day_total
+msgid "Get the price with discount applied"
 msgstr ""
 
 #. module: pms
