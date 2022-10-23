@@ -25,64 +25,121 @@ class PmsCalendarService(Component):
         auth="jwt_api_pms",
     )
     def get_calendar(self, calendar_search_param):
-        domain = list()
-        domain.append(("date", ">=", calendar_search_param.dateFrom))
-        domain.append(("date", "<=", calendar_search_param.dateTo))
-        domain.append(("pms_property_id", "=", calendar_search_param.pmsPropertyId))
-        domain.append(("state", "!=", "cancel"))
-        result_lines = []
+        date_from = datetime.strptime(calendar_search_param.dateFrom, "%Y-%m-%d").date()
+        date_to = datetime.strptime(calendar_search_param.dateTo, "%Y-%m-%d").date()
+        count_nights = (date_to - date_from).days + 1
+        target_dates = [date_from + timedelta(days=x) for x in range(count_nights)]
+        pms_property_id = calendar_search_param.pmsPropertyId
+        self.env.cr.execute(
+            """
+            SELECT night.id as id, night.state, DATE(night.date), night.room_id,
+                pms_room_type.default_code, reservation.to_assign, reservation.splitted,
+                reservation.partner_id, reservation.partner_name, folio.id, reservation.id,
+                reservation.name, reservation.reservation_type, reservation.checkin,
+                reservation.checkout, reservation.price_total, folio.pending_amount,
+                reservation.adults
+            FROM    pms_reservation_line  night
+                    LEFT JOIN pms_reservation reservation
+                        ON reservation.id = night.reservation_id
+                    LEFT JOIN pms_room_type
+                        ON pms_room_type.id = reservation.room_type_id
+                    LEFT JOIN pms_folio folio
+                        ON folio.id = reservation.folio_id
+            WHERE   (night.pms_property_id = %s)
+                AND (night.date in %s)
+                AND (night.state != 'cancel')
+            """,
+            (
+                pms_property_id,
+                tuple(target_dates),
+            ),
+        )
+        SQL_FIELDS = [
+            "id",
+            "state",
+            "date",
+            "room_id",
+            "room_type_name",
+            "to_assign",
+            "splitted",
+            "partner_id",
+            "partner_name",
+            "folio_id",
+            "reservation_id",
+            "reservation_name",
+            "reservation_type",
+            "checkin",
+            "checkout",
+            "price_total",
+            "folio_pending_amount",
+            "adults",
+        ]
+        result_sql = self.env.cr.fetchall()
+        lines = []
+        for res in result_sql:
+            lines.append({field: res[SQL_FIELDS.index(field)] for field in SQL_FIELDS})
+
         PmsCalendarInfo = self.env.datamodels["pms.calendar.info"]
-        for line in self.env["pms.reservation.line"].search(
-            domain,
-        ):
+        result_lines = []
+        for line in lines:
             next_line_splitted = False
-            next_line = self.env["pms.reservation.line"].search(
-                [
-                    ("reservation_id", "=", line.reservation_id.id),
-                    ("date", "=", line.date + timedelta(days=1)),
-                ]
-            )
-            if next_line:
-                next_line_splitted = next_line.room_id != line.room_id
-
             previous_line_splitted = False
-            previous_line = self.env["pms.reservation.line"].search(
-                [
-                    ("reservation_id", "=", line.reservation_id.id),
-                    ("date", "=", line.date + timedelta(days=-1)),
-                ]
-            )
-            if previous_line:
-                previous_line_splitted = previous_line.room_id != line.room_id
+            is_first_night = line["checkin"] == line["date"]
+            is_last_night = line["checkout"] + timedelta(days=-1) == line["date"]
+            if line.get("splitted"):
+                next_line = next(
+                    (
+                        item
+                        for item in lines
+                        if item["reservation_id"] == line["reservation_id"]
+                        and item["date"] == line["date"] + timedelta(days=1)
+                    ),
+                    False,
+                )
+                if next_line:
+                    next_line_splitted = next_line["room_id"] != line["room_id"]
 
+                previous_line = next(
+                    (
+                        item
+                        for item in lines
+                        if item["reservation_id"] == line["reservation_id"]
+                        and item["date"] == line["date"] + timedelta(days=-1)
+                    ),
+                    False,
+                )
+                if previous_line:
+                    previous_line_splitted = previous_line["room_id"] != line["room_id"]
             result_lines.append(
                 PmsCalendarInfo(
-                    id=line.id,
-                    state=line.reservation_id.state,
-                    date=datetime.combine(line.date, datetime.min.time()).isoformat(),
-                    roomId=line.room_id.id,
-                    roomTypeName=str(line.reservation_id.room_type_id.default_code),
-                    toAssign=line.reservation_id.to_assign,
-                    splitted=line.reservation_id.splitted,
-                    partnerId=line.reservation_id.partner_id.id or None,
-                    partnerName=line.reservation_id.partner_name or None,
-                    folioId=line.reservation_id.folio_id,
-                    reservationId=line.reservation_id,
-                    reservationName=line.reservation_id.name,
-                    reservationType=line.reservation_id.reservation_type,
-                    isFirstNight=line.reservation_id.checkin == line.date,
-                    isLastNight=line.reservation_id.checkout + timedelta(days=-1)
-                    == line.date,
-                    totalPrice=round(line.reservation_id.price_total, 2),
-                    pendingPayment=round(line.reservation_id.folio_pending_amount, 2),
-                    numNotifications=line.reservation_id.message_needaction_counter,
-                    adults=line.reservation_id.adults,
+                    id=line["id"],
+                    state=line["state"],
+                    date=datetime.combine(
+                        line["date"], datetime.min.time()
+                    ).isoformat(),
+                    roomId=line["room_id"],
+                    roomTypeName=str(line["room_type_name"]),
+                    toAssign=line["to_assign"],
+                    splitted=line["splitted"],
+                    partnerId=line["partner_id"] or None,
+                    partnerName=line["partner_name"] or None,
+                    folioId=line["folio_id"],
+                    reservationId=line["reservation_id"],
+                    reservationName=line["reservation_name"],
+                    reservationType=line["reservation_type"],
+                    isFirstNight=is_first_night,
+                    isLastNight=is_last_night,
+                    totalPrice=round(line["price_total"], 2),
+                    pendingPayment=round(line["folio_pending_amount"], 2),
+                    # TODO: line.reservation_id.message_needaction_counter is computed field,
+                    numNotifications=0,
+                    adults=line["adults"],
                     nextLineSplitted=next_line_splitted,
                     previousLineSplitted=previous_line_splitted,
-                    hasNextLine=bool(next_line),
-                    closureReason=line.reservation_id.closure_reason_id.name
-                    if line.reservation_id.closure_reason_id
-                    else "",
+                    hasNextLine=not is_last_night,  # REVIEW: redundant with isLastNight?
+                    closureReason=line[
+                        "partner_name"
+                    ],  # REVIEW: is necesary closure_reason_id?
                 )
             )
         return result_lines
@@ -144,42 +201,75 @@ class PmsCalendarService(Component):
         auth="jwt_api_pms",
     )
     def get_daily_invoincing(self, pms_calendar_search_param):
-        reservation_lines = self.env["pms.reservation.line"].search(
-            [
-                ("date", ">=", pms_calendar_search_param.dateFrom),
-                ("date", "<=", pms_calendar_search_param.dateTo),
-                ("pms_property_id", "=", pms_calendar_search_param.pmsPropertyId),
-            ]
-        )
-        service_lines = self.env["pms.service.line"].search(
-            [
-                ("date", ">=", pms_calendar_search_param.dateFrom),
-                ("date", "<=", pms_calendar_search_param.dateTo),
-                ("pms_property_id", "=", pms_calendar_search_param.pmsPropertyId),
-            ]
-        )
-
         date_from = datetime.strptime(
             pms_calendar_search_param.dateFrom, "%Y-%m-%d"
         ).date()
         date_to = datetime.strptime(pms_calendar_search_param.dateTo, "%Y-%m-%d").date()
+        count_nights = (date_to - date_from).days + 1
+        target_dates = [date_from + timedelta(days=x) for x in range(count_nights)]
+        pms_property_id = pms_calendar_search_param.pmsPropertyId
+
+        self.env.cr.execute(
+            """
+            SELECT night.date, SUM(night.price_day_total) AS production
+            FROM    pms_reservation_line  night
+            WHERE   (night.pms_property_id = %s)
+                AND (night.date in %s)
+            GROUP BY night.date
+            """,
+            (
+                pms_property_id,
+                tuple(target_dates),
+            ),
+        )
+        production_per_nights_date = self.env.cr.fetchall()
+
+        self.env.cr.execute(
+            """
+            SELECT service.date, SUM(service.price_day_total) AS production
+            FROM    pms_service_line service
+            WHERE   (service.pms_property_id = %s)
+                AND (service.date in %s)
+            GROUP BY service.date
+            """,
+            (
+                pms_property_id,
+                tuple(target_dates),
+            ),
+        )
+        production_per_services_date = self.env.cr.fetchall()
+
+        production_per_nights_dict = [
+            {"date": item[0], "total": item[1]} for item in production_per_nights_date
+        ]
+        production_per_services_dict = [
+            {"date": item[0], "total": item[1]} for item in production_per_services_date
+        ]
 
         result = []
         PmsCalendarDailyInvoicing = self.env.datamodels["pms.calendar.daily.invoicing"]
-        for day in (
-            date_from + timedelta(d) for d in range((date_to - date_from).days + 1)
-        ):
-            reservation_lines_by_day = reservation_lines.filtered(
-                lambda d: d.date == day
+        for day in target_dates:
+            night_production = next(
+                (
+                    item["total"]
+                    for item in production_per_nights_dict
+                    if item["date"] == day
+                ),
+                False,
             )
-            service_lines_by_day = service_lines.filtered(lambda d: d.date == day)
+            service_production = next(
+                (
+                    item["total"]
+                    for item in production_per_services_dict
+                    if item["date"] == day
+                ),
+                False,
+            )
             result.append(
                 PmsCalendarDailyInvoicing(
                     date=datetime.combine(day, datetime.min.time()).isoformat(),
                     invoicingTotal=round(
-                        sum(reservation_lines_by_day.mapped("price"))
-                        + sum(service_lines_by_day.mapped("price_day_total")),
-                        2,
+                        (night_production or 0) + (service_production or 0), 2
                     ),
                 )
             )
