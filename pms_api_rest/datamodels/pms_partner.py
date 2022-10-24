@@ -14,6 +14,7 @@ class PmsPartnerSearchParam(Datamodel):
     name = fields.String(required=False, allow_none=True)
     housed = fields.Boolean(required=False, allow_none=True)
     filter = fields.String(required=False, allow_none=True)
+    filterByType = fields.String(required=False, allow_none=True)
 
 
 class PmsPartnerInfo(Datamodel):
