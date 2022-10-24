@@ -39,6 +39,17 @@ class PmsPartnerService(Component):
                 .mapped("partner_id")
             )
             domain.append(("id", "in", partners_housed.ids))
+        if (
+            pms_partner_search_params.filterByType
+            and pms_partner_search_params.filterByType != "all"
+        ):
+            if pms_partner_search_params.filterByType == "company":
+                domain.append(("is_company", "=", True))
+            elif pms_partner_search_params.filterByType == "agency":
+                domain.append(("is_agency", "=", True))
+            elif pms_partner_search_params.filterByType == "individual":
+                domain.append(("is_company", "=", False))
+                domain.append(("is_agency", "=", False))
         if pms_partner_search_params.filter:
             domain.append(("display_name", "ilike", pms_partner_search_params.filter))
         if pms_partner_search_params.vatNumberOrName:
