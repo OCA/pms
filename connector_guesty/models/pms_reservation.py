@@ -308,6 +308,31 @@ class PmsReservation(models.Model):
         else:
             raise ValidationError(_("No sale order linked to reservation"))
 
+    def _pull_reservation(self, backend, guesty_id, raise_if_not_found=True):
+        success, reservation_info = backend.sudo().call_get_request(
+            url_path="reservations/{}".format(guesty_id),
+            params={
+                "fields": " ".join(
+                    [
+                        "status",
+                        "checkIn",
+                        "checkOut",
+                        "listingId",
+                        "guestId",
+                        "listing.nickname",
+                        "createdAt",
+                        "lastUpdatedAt",
+                        "money",
+                        "nightsCount",
+                    ]
+                )
+            },
+        )
+
+        if not success and raise_if_not_found:
+            raise ValidationError(_("Unable to retrieve reservation"))
+        return success, reservation_info
+
     def guesty_pull_reservation(self, reservation_info, event_name):
         guesty_listing_id = reservation_info["listingId"]
         _log.info("Pulling reservation for listing {}".format(guesty_listing_id))
@@ -343,28 +368,9 @@ class PmsReservation(models.Model):
         if not backend:
             raise ValidationError(_("No backend defined"))
 
-        success, reservation_data = backend.sudo().call_get_request(
-            url_path="reservations/{}".format(reservation_info["_id"]),
-            params={
-                "fields": " ".join(
-                    [
-                        "status",
-                        "checkIn",
-                        "checkOut",
-                        "listingId",
-                        "guestId",
-                        "listing.nickname",
-                        "createdAt",
-                        "lastUpdatedAt",
-                        "money",
-                        "nightsCount",
-                    ]
-                )
-            },
+        success, reservation_data = self._pull_reservation(
+            backend, reservation_info["_id"]
         )
-
-        if not success:
-            raise ValidationError(_("Unable to retrieve reservation"))
 
         # validate the reservation already exists
         _id, reservation = self.sudo().guesty_parse_reservation(
@@ -496,7 +502,7 @@ class PmsReservation(models.Model):
             guesty_last_updated_date[0:19], "%Y-%m-%dT%H:%M:%S"
         )
 
-        return guesty_id, {
+        result_data = {
             "guesty_id": guesty_id,
             "property_id": property_id.id,
             "start": check_in_time,
@@ -504,6 +510,11 @@ class PmsReservation(models.Model):
             "partner_id": pms_guest.partner_id.id,
             "guesty_last_updated_date": guesty_last_updated_time,
         }
+
+        if "confirmationCode" in reservation:
+            result_data["confirmation_code"] = reservation["confirmationCode"]
+
+        return guesty_id, result_data
 
     def parse_push_reservation_data(self, backend):
         guesty_listing_price = self.property_id.reservation_ids.filtered(
