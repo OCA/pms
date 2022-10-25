@@ -369,6 +369,7 @@ class PmsFolioService(Component):
                 "adults": reservation.adults,
                 "reservation_type": pms_folio_info.reservationType,
                 "children": reservation.children,
+                "preconfirm": pms_folio_info.preconfirm,
             }
             reservation_record = self.env["pms.reservation"].create(vals)
             if reservation.services:
