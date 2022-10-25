@@ -89,15 +89,8 @@ class PmsPricelistService(Component):
         auth="jwt_api_pms",
     )
     def get_pricelists_items(self, pricelist_id, pricelist_item_search_param):
-        result = []
-        record_pricelist_id = self.env["product.pricelist"].search(
-            [("id", "=", pricelist_id)]
-        )
-        if not record_pricelist_id:
-            raise MissingError
-        PmsPricelistItemInfo = self.env.datamodels["pms.pricelist.item.info"]
-        rooms = self.env["pms.room"].search(
-            [("pms_property_id", "=", pricelist_item_search_param.pmsPropertyId)]
+        pms_property = self.env["pms.property"].browse(
+            pricelist_item_search_param.pmsPropertyId
         )
         date_from = datetime.strptime(
             pricelist_item_search_param.dateFrom, "%Y-%m-%d"
@@ -105,44 +98,39 @@ class PmsPricelistService(Component):
         date_to = datetime.strptime(
             pricelist_item_search_param.dateTo, "%Y-%m-%d"
         ).date()
-
-        for date in (
-            date_from + timedelta(d) for d in range((date_to - date_from).days + 1)
-        ):
-            for room_type in self.env["pms.room.type"].search(
-                [("id", "in", rooms.mapped("room_type_id").ids)]
-            ):
-                item = self.env["product.pricelist.item"].search(
-                    [
-                        ("pricelist_id", "=", pricelist_id),
-                        ("applied_on", "=", "0_product_variant"),
-                        ("product_id", "=", room_type.product_id.id),
-                        (
-                            "date_start_consumption",
-                            ">=",
-                            date,
-                        ),
-                        (
-                            "date_end_consumption",
-                            "<=",
-                            date,
-                        ),
-                    ]
+        count_nights = (date_to - date_from).days + 1
+        target_dates = [date_from + timedelta(days=x) for x in range(count_nights)]
+        record_pricelist = self.env["product.pricelist"].search(
+            [("id", "=", pricelist_id)]
+        )
+        if not record_pricelist:
+            raise MissingError
+        rooms = self.env["pms.room"].search(
+            [("pms_property_id", "=", pricelist_item_search_param.pmsPropertyId)]
+        )
+        room_types = rooms.mapped("room_type_id")
+        result = []
+        PmsPricelistItemInfo = self.env.datamodels["pms.pricelist.item.info"]
+        for date in target_dates:
+            products = [(product, 1, False) for product in room_types.product_id]
+            date_prices = record_pricelist.with_context(
+                quantity=1,
+                consumption_date=date,
+                property=pms_property.id,
+            )._compute_price_rule(products, datetime.today())
+            for product_id, v in date_prices.items():
+                room_type_id = (
+                    self.env["product.product"].browse(product_id).room_type_id.id
                 )
-
-                if item:
-                    pricelist_info = PmsPricelistItemInfo(
-                        roomTypeId=room_type.id,
-                        date=str(
-                            datetime.combine(date, datetime.min.time()).isoformat()
-                        ),
-                    )
-
-                    pricelist_info.pricelistItemId = item[0].id
-                    pricelist_info.price = item[0].fixed_price
-
-                    result.append(pricelist_info)
-
+                if not v[1]:
+                    continue
+                pricelist_info = PmsPricelistItemInfo(
+                    roomTypeId=room_type_id,
+                    date=str(datetime.combine(date, datetime.min.time()).isoformat()),
+                    pricelistItemId=v[1],
+                    price=v[0],
+                )
+                result.append(pricelist_info)
         return result
 
     @restapi.method(
