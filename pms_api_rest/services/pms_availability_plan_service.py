@@ -80,15 +80,21 @@ class PmsAvailabilityPlanService(Component):
     def get_availability_plan_rules(
         self, availability_plan_id, availability_plan_rule_search_param
     ):
-        result = []
+        date_from = datetime.strptime(
+            availability_plan_rule_search_param.dateFrom, "%Y-%m-%d"
+        ).date()
+        date_to = datetime.strptime(
+            availability_plan_rule_search_param.dateTo, "%Y-%m-%d"
+        ).date()
+        count_nights = (date_to - date_from).days + 1
+        target_dates = [date_from + timedelta(days=x) for x in range(count_nights)]
+        pms_property_id = availability_plan_rule_search_param.pmsPropertyId
         record_availability_plan_id = self.env["pms.availability.plan"].browse(
             availability_plan_id
         )
         if not record_availability_plan_id:
             raise MissingError
-        PmsAvailabilityPlanRuleInfo = self.env.datamodels[
-            "pms.availability.plan.rule.info"
-        ]
+
         rooms = self.env["pms.room"].search(
             [
                 (
@@ -98,50 +104,78 @@ class PmsAvailabilityPlanService(Component):
                 )
             ]
         )
-        date_from = datetime.strptime(
-            availability_plan_rule_search_param.dateFrom, "%Y-%m-%d"
-        ).date()
-        date_to = datetime.strptime(
-            availability_plan_rule_search_param.dateTo, "%Y-%m-%d"
-        ).date()
+        room_type_ids = rooms.mapped("room_type_id").ids
+        selected_fields = [
+            "id",
+            "date",
+            "room_type_id",
+            "min_stay",
+            "min_stay_arrival",
+            "max_stay",
+            "max_stay_arrival",
+            "closed",
+            "closed_departure",
+            "closed_arrival",
+            "quota",
+            "max_avail",
+        ]
+        sql_select = "SELECT %s" % ", ".join(selected_fields)
+        self.env.cr.execute(
+            f"""
+            {sql_select}
+            FROM    pms_availability_plan_rule  rule
+            WHERE   (pms_property_id = %s)
+                AND (date in %s)
+                AND (availability_plan_id = %s)
+                AND (room_type_id in %s)
+            """,
+            (
+                pms_property_id,
+                tuple(target_dates),
+                record_availability_plan_id.id,
+                tuple(room_type_ids),
+            ),
+        )
+        result_sql = self.env.cr.fetchall()
+        rules = []
+        for res in result_sql:
+            rules.append(
+                {field: res[selected_fields.index(field)] for field in selected_fields}
+            )
 
-        for date in (
-            date_from + timedelta(d) for d in range((date_to - date_from).days + 1)
-        ):
-            for room_type in self.env["pms.room.type"].search(
-                [("id", "in", rooms.mapped("room_type_id").ids)]
-            ):
-                rule = self.env["pms.availability.plan.rule"].search(
-                    [
-                        ("date", "=", date),
-                        (
-                            "availability_plan_id",
-                            "=",
-                            record_availability_plan_id.id,
-                        ),
-                        ("room_type_id", "=", room_type.id),
-                        (
-                            "pms_property_id",
-                            "=",
-                            availability_plan_rule_search_param.pmsPropertyId,
-                        ),
-                    ]
+        result = []
+        PmsAvailabilityPlanRuleInfo = self.env.datamodels[
+            "pms.availability.plan.rule.info"
+        ]
+
+        for date in target_dates:
+            for room_type_id in room_type_ids:
+                rule = next(
+                    (
+                        rule
+                        for rule in rules
+                        if rule["room_type_id"] == room_type_id and rule["date"] == date
+                    ),
+                    False,
                 )
+
                 if rule:
                     availability_plan_rule_info = PmsAvailabilityPlanRuleInfo(
-                        roomTypeId=room_type.id,
+                        roomTypeId=rule["room_type_id"],
                         date=datetime.combine(date, datetime.min.time()).isoformat(),
-                        availabilityRuleId=rule.id,
-                        minStay=rule.min_stay,
-                        minStayArrival=rule.min_stay_arrival,
-                        maxStay=rule.max_stay,
-                        maxStayArrival=rule.max_stay_arrival,
-                        closed=rule.closed,
-                        closedDeparture=rule.closed_departure,
-                        closedArrival=rule.closed_arrival,
-                        quota=rule.quota if rule.quota != -1 else 0,
-                        maxAvailability=rule.max_avail,
-                        availabilityPlanId=rule.availability_plan_id,
+                        availabilityRuleId=rule["id"],
+                        minStay=rule["min_stay"],
+                        minStayArrival=rule["min_stay_arrival"],
+                        maxStay=rule["max_stay"],
+                        maxStayArrival=rule["max_stay_arrival"],
+                        closed=rule["closed"],
+                        closedDeparture=rule["closed_departure"],
+                        closedArrival=rule["closed_arrival"],
+                        quota=rule["quota"] if rule["quota"] != -1 else 0,
+                        maxAvailability=rule["max_avail"]
+                        if rule["max_avail"] != -1
+                        else 0,
+                        availabilityPlanId=availability_plan_id,
                     )
                     result.append(availability_plan_rule_info)
 
