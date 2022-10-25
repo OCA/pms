@@ -34,6 +34,7 @@ class PmsFolioInfo(Datamodel):
     agency = fields.Integer(required=False, allow_none=False)
     externalReference = fields.String(required=False, allow_none=True)
     closureReasonId = fields.Integer(required=False, allow_none=True)
+    preconfirm = fields.Boolean(required=False, allow_none=True)
 
 
 class PmsFolioShortInfo(Datamodel):
