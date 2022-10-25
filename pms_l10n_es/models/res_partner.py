@@ -36,14 +36,12 @@ class ResPartner(models.Model):
         res = super(ResPartner, self)._check_enought_invoice_data()
         if not res:
             return res
-        if self.country_id.code == "ES":
-            if (
-                not self.vat
-                or not self.country_id
-                or not self.city
-                or not (self.street or self.street2)
-            ):
-                return False
+        if not self.country_id or not self.city or not (self.street or self.street2):
+            return False
+        if self.country_id.code == "ES" and not self.vat:
+            return False
+        elif self.country_id.code != "ES" and not self.aeat_identification:
+            return False
         return True
 
     def write(self, vals):
