@@ -30,14 +30,33 @@ class PmsCalendarService(Component):
         count_nights = (date_to - date_from).days + 1
         target_dates = [date_from + timedelta(days=x) for x in range(count_nights)]
         pms_property_id = calendar_search_param.pmsPropertyId
+
+        selected_fields_mapper = {
+            "id": "night.id",
+            "state": "night.state",
+            "date": "DATE(night.date)",
+            "room_id": "night.room_id",
+            "room_type_name": "pms_room_type.default_code",
+            "to_assign": "reservation.to_assign",
+            "splitted": "reservation.splitted",
+            "partner_id": "reservation.partner_id",
+            "partner_name": "reservation.partner_name",
+            "folio_id": "folio.id",
+            "reservation_id": "reservation.id",
+            "reservation_name": "reservation.name",
+            "reservation_type": "reservation.reservation_type",
+            "checkin": "reservation.checkin",
+            "checkout": "reservation.checkout",
+            "price_total": "reservation.price_total",
+            "folio_pending_amount": "folio.pending_amount",
+            "adults": "reservation.adults",
+        }
+        selected_fields_sql = list(selected_fields_mapper.values())
+        selected_fields = list(selected_fields_mapper.keys())
+        sql_select = "SELECT %s" % ", ".join(selected_fields_sql)
         self.env.cr.execute(
-            """
-            SELECT night.id as id, night.state, DATE(night.date), night.room_id,
-                pms_room_type.default_code, reservation.to_assign, reservation.splitted,
-                reservation.partner_id, reservation.partner_name, folio.id, reservation.id,
-                reservation.name, reservation.reservation_type, reservation.checkin,
-                reservation.checkout, reservation.price_total, folio.pending_amount,
-                reservation.adults
+            f"""
+            {sql_select}
             FROM    pms_reservation_line  night
                     LEFT JOIN pms_reservation reservation
                         ON reservation.id = night.reservation_id
@@ -54,30 +73,12 @@ class PmsCalendarService(Component):
                 tuple(target_dates),
             ),
         )
-        SQL_FIELDS = [
-            "id",
-            "state",
-            "date",
-            "room_id",
-            "room_type_name",
-            "to_assign",
-            "splitted",
-            "partner_id",
-            "partner_name",
-            "folio_id",
-            "reservation_id",
-            "reservation_name",
-            "reservation_type",
-            "checkin",
-            "checkout",
-            "price_total",
-            "folio_pending_amount",
-            "adults",
-        ]
         result_sql = self.env.cr.fetchall()
         lines = []
         for res in result_sql:
-            lines.append({field: res[SQL_FIELDS.index(field)] for field in SQL_FIELDS})
+            lines.append(
+                {field: res[selected_fields.index(field)] for field in selected_fields}
+            )
 
         PmsCalendarInfo = self.env.datamodels["pms.calendar.info"]
         result_lines = []
@@ -290,59 +291,64 @@ class PmsCalendarService(Component):
         auth="jwt_api_pms",
     )
     def get_free_rooms(self, pms_calendar_search_param):
-
         date_from = datetime.strptime(
             pms_calendar_search_param.dateFrom, "%Y-%m-%d"
         ).date()
         date_to = datetime.strptime(pms_calendar_search_param.dateTo, "%Y-%m-%d").date()
-        result = []
+        count_nights = (date_to - date_from).days + 1
+        target_dates = [date_from + timedelta(days=x) for x in range(count_nights)]
+        pms_property_id = pms_calendar_search_param.pmsPropertyId
+
+        self.env.cr.execute(
+            """
+            SELECT  night.date AS date, room.room_type_id AS room_type, COUNT(night.id) AS count
+            FROM    pms_reservation_line  night
+                    LEFT JOIN pms_room room
+                        ON night.room_id = room.id
+            WHERE   (night.pms_property_id = %s)
+                AND (night.date in %s)
+                AND (night.occupies_availability = True)
+            GROUP BY night.date, room.room_type_id
+            """,
+            (
+                pms_property_id,
+                tuple(target_dates),
+            ),
+        )
+        result_sql = self.env.cr.fetchall()
+        rooms = self.env["pms.room"].search([("pms_property_id", "=", pms_property_id)])
+        room_types = rooms.mapped("room_type_id")
+        total_rooms_by_room_type = [
+            {
+                "room_type_id": room_type.id,
+                "rooms_total": len(
+                    self.env["pms.room"].search([("room_type_id", "=", room_type.id)])
+                ),
+            }
+            for room_type in room_types
+        ]
         PmsCalendarFreeDailyRoomsByType = self.env.datamodels[
             "pms.calendar.free.daily.rooms.by.type"
         ]
-        for date in (
-            date_from + timedelta(d) for d in range((date_to - date_from).days + 1)
-        ):
-            rooms = self.env["pms.room"].search(
-                [("pms_property_id", "=", pms_calendar_search_param.pmsPropertyId)]
-            )
-            for room_type_iterator in self.env["pms.room.type"].search(
-                [("id", "in", rooms.mapped("room_type_id").ids)]
-            ):
-                reservation_lines_room_type = self.env["pms.reservation.line"].search(
-                    [
-                        ("date", "=", date),
-                        ("occupies_availability", "=", True),
-                        ("room_id.room_type_id", "=", room_type_iterator.id),
-                        (
-                            "pms_property_id",
-                            "=",
-                            pms_calendar_search_param.pmsPropertyId,
-                        ),
-                    ]
+        result = []
+        for day in target_dates:
+            for total_room_type in total_rooms_by_room_type:
+                count_occupied_night_by_room_type = next(
+                    (
+                        item[2]
+                        for item in result_sql
+                        if item[0] == day and item[1] == total_room_type["room_type_id"]
+                    ),
+                    0,
                 )
-                num_rooms_room_type = self.env["pms.room"].search_count(
-                    [
-                        (
-                            "pms_property_id",
-                            "=",
-                            pms_calendar_search_param.pmsPropertyId,
-                        ),
-                        ("room_type_id", "=", room_type_iterator.id),
-                    ]
-                )
-                if not reservation_lines_room_type:
-                    free_rooms_room_type = num_rooms_room_type
-                else:
-                    free_rooms_room_type = num_rooms_room_type - len(
-                        reservation_lines_room_type
-                    )
                 result.append(
                     PmsCalendarFreeDailyRoomsByType(
                         date=str(
-                            datetime.combine(date, datetime.min.time()).isoformat()
+                            datetime.combine(day, datetime.min.time()).isoformat()
                         ),
-                        roomTypeId=room_type_iterator.id,
-                        freeRooms=free_rooms_room_type,
+                        roomTypeId=total_room_type["room_type_id"],
+                        freeRooms=total_room_type["rooms_total"]
+                        - count_occupied_night_by_room_type,
                     )
                 )
         return result
@@ -361,26 +367,37 @@ class PmsCalendarService(Component):
         auth="jwt_api_pms",
     )
     def get_alerts_per_day(self, pms_calendar_search_param):
-        PmsCalendarAlertsPerDay = self.env.datamodels["pms.calendar.alerts.per.day"]
         date_from = datetime.strptime(
             pms_calendar_search_param.dateFrom, "%Y-%m-%d"
         ).date()
         date_to = datetime.strptime(pms_calendar_search_param.dateTo, "%Y-%m-%d").date()
+        count_nights = (date_to - date_from).days + 1
+        target_dates = [date_from + timedelta(days=x) for x in range(count_nights)]
+        pms_property_id = pms_calendar_search_param.pmsPropertyId
+
+        self.env.cr.execute(
+            """
+            SELECT  night.date AS date, COUNT(night.id) AS count
+            FROM    pms_reservation_line  night
+            WHERE   (night.pms_property_id = %s)
+                AND (night.date in %s)
+                AND (night.overbooking = True)
+            GROUP BY night.date
+            """,
+            (
+                pms_property_id,
+                tuple(target_dates),
+            ),
+        )
+        result_sql = self.env.cr.fetchall()
+        PmsCalendarAlertsPerDay = self.env.datamodels["pms.calendar.alerts.per.day"]
         result = []
-        for day in (
-            date_from + timedelta(d) for d in range((date_to - date_from).days + 1)
-        ):
-            lines = self.env["pms.reservation.line"].search_count(
-                [
-                    ("date", "=", day),
-                    ("pms_property_id", "=", pms_calendar_search_param.pmsPropertyId),
-                    ("overbooking", "=", True),
-                ]
-            )
+        for day in target_dates:
+            overbooking_lines = next((item for item in result_sql if item[0] == day), 0)
             result.append(
                 PmsCalendarAlertsPerDay(
                     date=str(datetime.combine(day, datetime.min.time()).isoformat()),
-                    overbooking=True if lines > 0 else False,
+                    overbooking=True if overbooking_lines > 0 else False,
                 )
             )
         return result
