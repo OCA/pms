@@ -565,6 +565,7 @@ class PmsReservationService(Component):
             checkin_partner.write(
                 self.mapping_checkin_partner_values(pms_checkin_partner_info)
             )
+        return checkin_partner.id
 
     @restapi.method(
         [
@@ -666,6 +667,7 @@ class PmsReservationService(Component):
             checkin_partner.write(
                 self.mapping_checkin_partner_values(pms_checkin_partner_info)
             )
+            return checkin_partner.id
 
     @restapi.method(
         [
