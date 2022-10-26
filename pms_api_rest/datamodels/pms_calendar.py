@@ -1,6 +1,7 @@
 from marshmallow import fields
 
 from odoo.addons.datamodel.core import Datamodel
+from odoo.addons.datamodel.fields import NestedModel
 
 
 class PmsReservationUpdates(Datamodel):
@@ -16,11 +17,10 @@ class PmsReservationUpdates(Datamodel):
 
 class PmsCalendarSwapInfo(Datamodel):
     _name = "pms.calendar.swap.info"
-    swapFrom = fields.String(required=True, allow_none=False)
-    swapTo = fields.String(required=True, allow_none=False)
-    roomIdA = fields.Integer(required=True, allow_none=False)
-    roomIdB = fields.Integer(required=True, allow_none=False)
-    pmsPropertyId = fields.Integer(required=False, allow_none=True)
+    pmsPropertyId = fields.Integer(required=True, allow_none=False)
+    roomId = fields.Integer(required=True, allow_none=False)
+    date = fields.String(required=True, allow_none=False)
+    reservationLineIds = fields.List(fields.Integer(required=True, allow_none=False))
 
 
 class PmsCalendarSearchParam(Datamodel):
