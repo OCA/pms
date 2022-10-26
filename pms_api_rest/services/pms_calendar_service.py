@@ -322,7 +322,12 @@ class PmsCalendarService(Component):
             {
                 "room_type_id": room_type.id,
                 "rooms_total": len(
-                    self.env["pms.room"].search([("room_type_id", "=", room_type.id)])
+                    self.env["pms.room"].search(
+                        [
+                            ("room_type_id", "=", room_type.id),
+                            ("pms_property_id", "=", pms_property_id),
+                        ]
+                    )
                 ),
             }
             for room_type in room_types
