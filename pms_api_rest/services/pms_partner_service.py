@@ -539,7 +539,6 @@ class PmsPartnerService(Component):
             partner_fields.update(
                 {
                     "vat": pms_partner_info.vatNumber,
-                    "vat_document_type": "vat",
                 }
             )
         else:
