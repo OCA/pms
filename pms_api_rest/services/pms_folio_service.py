@@ -351,7 +351,7 @@ class PmsFolioService(Component):
                 "pms_property_id": pms_folio_info.pmsPropertyId,
                 "partner_id": pms_folio_info.partnerId,
                 "sale_channel_origin_id": pms_folio_info.saleChannelId,
-                "agency_id": pms_folio_info.agency,
+                "agency_id": pms_folio_info.agencyId,
                 "reservation_type": pms_folio_info.reservationType,
             }
         folio = self.env["pms.folio"].create(vals)

@@ -31,7 +31,7 @@ class PmsFolioInfo(Datamodel):
     )
     pricelistId = fields.Integer(required=False, allow_none=False)
     saleChannelId = fields.Integer(required=False, allow_none=False)
-    agency = fields.Integer(required=False, allow_none=False)
+    agencyId = fields.Integer(required=False, allow_none=False)
     externalReference = fields.String(required=False, allow_none=True)
     closureReasonId = fields.Integer(required=False, allow_none=True)
     preconfirm = fields.Boolean(required=False, allow_none=True)
