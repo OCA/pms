@@ -158,11 +158,11 @@ class PmsCalendarService(Component):
         auth="jwt_api_pms",
     )
     def swap_reservation_slices(self, swap_info):
-        reservation_lines_target = self.env['pms.reservation.line'].search(
-            [
-                ("id", "in", swap_info.reservationLineIds)
-            ]
-        ).sorted(key=lambda l: l.date)
+        reservation_lines_target = (
+            self.env["pms.reservation.line"]
+            .search([("id", "in", swap_info.reservationLineIds)])
+            .sorted(key=lambda l: l.date)
+        )
 
         for reservation_line in reservation_lines_target:
             old_room_id = reservation_line.room_id
@@ -186,9 +186,6 @@ class PmsCalendarService(Component):
 
             reservation_line._compute_occupies_availability()
             affected_line._compute_occupies_availability()
-
-
-
 
     @restapi.method(
         [
