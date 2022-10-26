@@ -107,15 +107,15 @@ class PmsServiceService(Component):
         # Return dict witch reservation.lines values (only modified if line exist,
         # or all pass values if line not exist)
         line_vals = {}
-        if origin_data.priceUnit and (
+        if origin_data.priceUnit is not None and (
             not service_line or origin_data.priceUnit != service_line.price_unit
         ):
             line_vals["price_unit"] = origin_data.priceUnit
-        if origin_data.discount and (
+        if origin_data.discount is not None and (
             not service_line or origin_data.discount != service_line.discount
         ):
             line_vals["discount"] = origin_data.discount
-        if origin_data.quantity and (
+        if origin_data.quantity is not None and (
             not service_line or origin_data.quantity != service_line.day_qty
         ):
             line_vals["day_qty"] = origin_data.quantity
