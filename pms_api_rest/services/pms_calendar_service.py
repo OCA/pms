@@ -158,35 +158,37 @@ class PmsCalendarService(Component):
         auth="jwt_api_pms",
     )
     def swap_reservation_slices(self, swap_info):
-        room_id_a = swap_info.roomIdA
-        room_id_b = swap_info.roomIdB
-
-        lines_room_a = self.env["pms.reservation.line"].search(
+        reservation_lines_target = self.env['pms.reservation.line'].search(
             [
-                ("room_id", "=", room_id_a),
-                ("date", ">=", swap_info.swapFrom),
-                ("date", "<=", swap_info.swapTo),
-                ("pms_property_id", "=", swap_info.pmsPropertyId),
+                ("id", "in", swap_info.reservationLineIds)
             ]
-        )
+        ).sorted(key=lambda l: l.date)
 
-        lines_room_b = self.env["pms.reservation.line"].search(
-            [
-                ("room_id", "=", room_id_b),
-                ("date", ">=", swap_info.swapFrom),
-                ("date", "<=", swap_info.swapTo),
-                ("pms_property_id", "=", swap_info.pmsPropertyId),
-            ]
-        )
-        lines_room_a.occupies_availability = False
-        lines_room_b.occupies_availability = False
-        lines_room_a.flush()
-        lines_room_b.flush()
-        lines_room_a.room_id = room_id_b
-        lines_room_b.room_id = room_id_a
+        for reservation_line in reservation_lines_target:
+            old_room_id = reservation_line.room_id
+            affected_line = self.env["pms.reservation.line"].search(
+                [
+                    ("date", "=", reservation_line.date),
+                    ("room_id", "=", swap_info.roomId),
+                ]
+            )
+            reservation_line.occupies_availability = False
+            affected_line.occupies_availability = False
 
-        lines_room_a._compute_occupies_availability()
-        lines_room_b._compute_occupies_availability()
+            reservation_line.flush()
+            affected_line.flush()
+
+            reservation_line.room_id = swap_info.roomId
+            affected_line.room_id = old_room_id
+
+            reservation_line.occupies_availability = True
+            affected_line.occupies_availability = True
+
+            reservation_line._compute_occupies_availability()
+            affected_line._compute_occupies_availability()
+
+
+
 
     @restapi.method(
         [
