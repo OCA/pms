@@ -349,11 +349,35 @@ class PmsFolioService(Component):
         else:
             vals = {
                 "pms_property_id": pms_folio_info.pmsPropertyId,
-                "partner_id": pms_folio_info.partnerId,
                 "sale_channel_origin_id": pms_folio_info.saleChannelId,
                 "agency_id": pms_folio_info.agencyId,
                 "reservation_type": pms_folio_info.reservationType,
             }
+            if pms_folio_info.partnerId:
+                vals.update(
+                    {
+                        "partner_id": pms_folio_info.partnerId,
+                    }
+                )
+            else:
+                if pms_folio_info.partnerName:
+                    vals.update(
+                        {
+                            "partner_name": pms_folio_info.partnerName,
+                        }
+                    )
+                if pms_folio_info.partnerPhone:
+                    vals.update(
+                        {
+                            "mobile": pms_folio_info.partnerPhone,
+                        }
+                    )
+                if pms_folio_info.partnerEmail:
+                    vals.update(
+                        {
+                            "email": pms_folio_info.partnerEmail,
+                        }
+                    )
         folio = self.env["pms.folio"].create(vals)
         for reservation in pms_folio_info.reservations:
             vals = {
