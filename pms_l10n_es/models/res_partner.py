@@ -38,10 +38,11 @@ class ResPartner(models.Model):
             return res
         if not self.country_id or not self.city or not (self.street or self.street2):
             return False
-        if self.country_id.code == "ES" and not self.vat:
-            return False
-        elif self.country_id.code != "ES" and not self.aeat_identification:
-            return False
+        if not self.vat:
+            if self.country_id.code == "ES":
+                return False
+            elif not self.aeat_identification:
+                return False
         return True
 
     def write(self, vals):
