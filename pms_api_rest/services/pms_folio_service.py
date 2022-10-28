@@ -421,3 +421,118 @@ class PmsFolioService(Component):
                     self.env["pms.service"].create(vals)
 
         return folio.id
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:folio_id>/sale-lines",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.folio.sale.line.info", is_list=True),
+        auth="jwt_api_pms",
+    )
+    def get_folio_sale_lines(self, folio_id):
+        folio = self.env["pms.folio"].browse(folio_id)
+        sale_lines = []
+        if not folio:
+            pass
+        else:
+            PmsFolioSaleLineInfo = self.env.datamodels["pms.folio.sale.line.info"]
+            if folio.sale_line_ids:
+                for sale_line in folio.sale_line_ids:
+                    sale_lines.append(
+                        PmsFolioSaleLineInfo(
+                            id=sale_line.id if sale_line.id else None,
+                            name=sale_line.name if sale_line.name else None,
+                            priceUnit=sale_line.price_unit
+                            if sale_line.price_unit
+                            else None,
+                            qtyToInvoice=sale_line.qty_to_invoice
+                            if sale_line.qty_to_invoice
+                            else None,
+                            qtyInvoiced=sale_line.qty_invoiced
+                            if sale_line.qty_invoiced
+                            else None,
+                            priceTotal=sale_line.price_total
+                            if sale_line.price_total
+                            else None,
+                            productQty=sale_line.product_uom_qty
+                            if sale_line.product_uom_qty
+                            else None,
+                            reservationId=sale_line.reservation_id
+                            if sale_line.reservation_id
+                            else None,
+                            serviceId=sale_line.service_id
+                            if sale_line.service_id
+                            else None,
+                            displayType=sale_line.display_type
+                            if sale_line.display_type
+                            else None,
+                        )
+                    )
+
+        return sale_lines
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:folio_id>/invoices",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.account.move.info", is_list=True),
+        auth="jwt_api_pms",
+    )
+    def get_folio_invoices(self, folio_id):
+        folio = self.env["pms.folio"].browse(folio_id)
+        invoices = []
+        if not folio:
+            pass
+        else:
+            PmsFolioInvoiceInfo = self.env.datamodels["pms.account.move.info"]
+            PmsInvoiceLineInfo = self.env.datamodels["pms.invoice.line.info"]
+            if folio.move_ids:
+                for move_id in folio.move_ids:
+                    move_lines = []
+                    for move_line in move_id.invoice_line_ids:
+                        move_lines.append(
+                            PmsInvoiceLineInfo(
+                                id=move_line.id,
+                                name=move_line.name if move_line.name else None,
+                                quantity=move_line.quantity
+                                if move_line.quantity
+                                else None,
+                                total=move_line.price_total
+                                if move_line.price_total
+                                else None,
+                                displayType=move_line.display_type
+                                if move_line.display_type
+                                else None,
+                            )
+                        )
+                    invoices.append(
+                        PmsFolioInvoiceInfo(
+                            id=move_id.id if move_id.id else None,
+                            name=move_id.name if move_id.name else None,
+                            amount=round(move_id.amount_total, 2)
+                            if move_id.amount_total
+                            else None,
+                            date=move_id.date.strftime("%d/%m/%Y")
+                            if move_id.date
+                            else None,
+                            state=move_id.state if move_id.state else None,
+                            paymentState=move_id.payment_state
+                            if move_id.payment_state
+                            else None,
+                            partnerName=move_id.partner_id.name
+                            if move_id.partner_id.name
+                            else None,
+                            moveLines=move_lines if move_lines else None,
+                        )
+                    )
+        return invoices
