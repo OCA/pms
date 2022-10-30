@@ -11,14 +11,5 @@ class PmsPaymentInfo(Datamodel):
     date = fields.String(required=False, allow_none=True)
     paymentType = fields.String(required=False, allow_none=True)
     reference = fields.String(required=False, allow_none=True)
-
-
-class PmsAccountPaymentInfo(Datamodel):
-    _name = "pms.account.payment.short.info"
-    id = fields.Integer(required=False, allow_none=True)
-    date = fields.String(required=False, allow_none=True)
-    journalId = fields.Integer(required=False, allow_none=True)
-    amount = fields.Float(required=False, allow_none=True)
     partnerId = fields.Integer(required=False, allow_none=True)
-    reference = fields.String(required=False, allow_none=True)
     reservationIds = fields.List(fields.Integer(), required=False)
