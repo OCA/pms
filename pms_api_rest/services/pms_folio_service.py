@@ -214,7 +214,7 @@ class PmsFolioService(Component):
                 "POST",
             )
         ],
-        input_param=Datamodel("pms.account.payment.short.info", is_list=False),
+        input_param=Datamodel("pms.account.payment.info", is_list=False),
         auth="jwt_api_pms",
     )
     def create_folio_charge(self, folio_id, pms_account_payment_info):
@@ -244,7 +244,7 @@ class PmsFolioService(Component):
                 "POST",
             )
         ],
-        input_param=Datamodel("pms.account.payment.short.info", is_list=False),
+        input_param=Datamodel("pms.account.payment.info", is_list=False),
         auth="jwt_api_pms",
     )
     def create_folio_refund(self, folio_id, pms_account_payment_info):
@@ -485,7 +485,7 @@ class PmsFolioService(Component):
                 "GET",
             )
         ],
-        output_param=Datamodel("pms.account.move.info", is_list=True),
+        output_param=Datamodel("pms.account.info", is_list=True),
         auth="jwt_api_pms",
     )
     def get_folio_invoices(self, folio_id):
@@ -494,7 +494,7 @@ class PmsFolioService(Component):
         if not folio:
             pass
         else:
-            PmsFolioInvoiceInfo = self.env.datamodels["pms.account.move.info"]
+            PmsFolioInvoiceInfo = self.env.datamodels["pms.account.info"]
             PmsInvoiceLineInfo = self.env.datamodels["pms.invoice.line.info"]
             if folio.move_ids:
                 for move_id in folio.move_ids:
@@ -522,8 +522,8 @@ class PmsFolioService(Component):
                             amount=round(move_id.amount_total, 2)
                             if move_id.amount_total
                             else None,
-                            date=move_id.date.strftime("%d/%m/%Y")
-                            if move_id.date
+                            date=move_id.invoice_date.strftime("%d/%m/%Y")
+                            if move_id.invoice_date
                             else None,
                             state=move_id.state if move_id.state else None,
                             paymentState=move_id.payment_state
@@ -536,3 +536,43 @@ class PmsFolioService(Component):
                         )
                     )
         return invoices
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:folio_id>/invoices",
+                ],
+                "POST",
+            )
+        ],
+        input_param=Datamodel("pms.account.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def create_folio_invoices(self, folio_id, invoice_info):
+        # TODO: Missing payload data:
+        # - partnerId selected
+        # - quantity to invoice selected
+        # - front line description modification
+        # - data format mal formartted
+        # - invoice comment
+
+        # date_invoice = fields.Date.from_string(invoice_info.date)
+        # if not date_invoice:
+        #     raise MissingError(_("Date is required"))
+        lines_to_invoice_dict = dict()
+        for item in invoice_info.saleLines:
+            # TODO: Need get specific to_invoice front value
+            if item.qtyToInvoice:
+                lines_to_invoice_dict[item.id] = item.qtyToInvoice
+
+        sale_lines_to_invoice = self.env["folio.sale.line"].browse(
+            lines_to_invoice_dict.keys()
+        )
+        folios_to_invoice = sale_lines_to_invoice.folio_id
+        invoices = folios_to_invoice._create_invoices(
+            # date=date_invoice, TODO: Wrong format date from front
+            lines_to_invoice=lines_to_invoice_dict,
+            partner_invoice_id=105165,
+        )
+        return invoices.ids
