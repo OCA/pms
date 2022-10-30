@@ -246,7 +246,7 @@ class PmsPartnerService(Component):
                 "GET",
             )
         ],
-        output_param=Datamodel("pms.account.move.info", is_list=True),
+        output_param=Datamodel("pms.account.info", is_list=True),
         auth="jwt_api_pms",
     )
     def get_partner_invoices(self, partner_id):
@@ -256,7 +256,7 @@ class PmsPartnerService(Component):
                 ("move_type", "in", self.env["account.move"].get_invoice_types()),
             ]
         )
-        PmsAcoountMoveInfo = self.env.datamodels["pms.account.move.info"]
+        PmsAcoountMoveInfo = self.env.datamodels["pms.account.info"]
         invoices = []
         for invoice in partnerInvoices:
             invoices.append(
