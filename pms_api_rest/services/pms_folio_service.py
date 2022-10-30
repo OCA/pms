@@ -350,7 +350,9 @@ class PmsFolioService(Component):
             vals = {
                 "pms_property_id": pms_folio_info.pmsPropertyId,
                 "sale_channel_origin_id": pms_folio_info.saleChannelId,
-                "agency_id": pms_folio_info.agencyId,
+                "agency_id": pms_folio_info.agencyId
+                if pms_folio_info.agencyId
+                else False,
                 "reservation_type": pms_folio_info.reservationType,
             }
             if pms_folio_info.partnerId:
