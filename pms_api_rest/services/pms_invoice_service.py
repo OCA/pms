@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from odoo import _, fields
 
 from odoo.addons.base_rest import restapi
@@ -27,7 +25,6 @@ class PmsInvoiceService(Component):
     )
     def update_invoice(self, invoice_id, pms_invoice_info):
         invoice = self.env["account.move"].browse(invoice_id)
-        company = invoice.company_id
 
         # Build update values dict
         # TODO: Missing data:
@@ -73,7 +70,9 @@ class PmsInvoiceService(Component):
         # and the invoice stateit will be modified directly or a reverse
         # of the current invoice will be created to later create a new one
         # with the updated data.
-        if invoice.state != "draft" and company.corrective_invoice_policy == "strict":
+        # TODO: to create core pms correct_invoice_policy field
+        # if invoice.state != "draft" and company.corrective_invoice_policy == "strict":
+        if invoice.state != "draft":
             # invoice create refund
             # new invoice with new_vals
             move_reversal = (
@@ -81,7 +80,7 @@ class PmsInvoiceService(Component):
                 .with_context(active_model="account.move", active_ids=invoice.ids)
                 .create(
                     {
-                        "date": fields.Date.today() + datetime.timedelta(days=7),
+                        "date": fields.Date.today(),
                         "reason": _("Invoice modification"),
                         "refund_method": "modify",
                     }
