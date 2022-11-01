@@ -10,7 +10,16 @@
                     <h1>
                         <field name="name" class="oe_inline" />
                     </h1>
+                    <label for="company_id" />
                     <field name="company_id" class="oe_inline" />
+                    <div class="col-6">
+                        <label for="ref" />
+                        <field name="ref" />
+                    </div>
+                    <div class="col-6">
+                        <label for="pms_property_code" />
+                        <field name="pms_property_code" />
+                    </div>
                     <notebook>
                         <page string="General Information" name="property_general">
                             <group>
