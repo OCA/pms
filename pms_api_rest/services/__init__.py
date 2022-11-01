@@ -35,6 +35,7 @@ from . import pms_service_line_service
 from . import pms_room_closure_reason_service
 
 from . import res_lang_service
+from . import pms_account_payment_service
 from . import pms_account_payment_terms_service
 from . import pms_account_journal_service
 from . import pms_invoice_service
