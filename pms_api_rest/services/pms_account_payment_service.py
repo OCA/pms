@@ -27,7 +27,7 @@ class PmsAccountPaymentService(Component):
     )
     def get_payments(self, pms_payments_search_param):
         result_payments = []
-        domain_fields = []
+        domain_fields = [("state","=","posted")]
         available_journals = ()
         if pms_payments_search_param.pmsPropertyId:
             available_journals = self.env["account.journal"].search(
@@ -69,6 +69,17 @@ class PmsAccountPaymentService(Component):
         PmsPaymentInfo = self.env.datamodels["pms.payment.info"]
 
         total_payments = self.env["account.payment"].search_count(domain)
+        group_payments = self.env["account.payment"].read_group(
+            domain=domain,
+            fields=["amount:sum"],
+            groupby=["payment_type"]
+        )
+        amount_result = 0
+        if group_payments:
+            for item in group_payments:
+                total_inbound = item["amount"] if item["payment_type"] == "inbound" else 0
+                total_outbound = item["amount"] if item["payment_type"] == "outbound" else 0
+            amount_result = total_inbound - total_outbound
         for payment in self.env["account.payment"].search(
             domain,
             order=pms_payments_search_param.orderBy,
@@ -98,4 +109,4 @@ class PmsAccountPaymentService(Component):
                 )
             )
 
-        return PmsPaymentResults(payments=result_payments, total=23333, totalPayments=total_payments)
+        return PmsPaymentResults(payments=result_payments, total=amount_result, totalPayments=total_payments)
