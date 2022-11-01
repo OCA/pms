@@ -28,6 +28,10 @@ class PmsProperty(models.Model):
         required=True,
         ondelete="cascade",
     )
+    pms_property_code = fields.Char(
+        string="Property Code",
+        help="Short name property",
+    )
     company_id = fields.Many2one(
         string="Company",
         help="The company that owns or operates this property.",
@@ -444,6 +448,41 @@ class PmsProperty(models.Model):
                 return False
         return True
 
+    @api.constrains("ref")
+    def _check_unique_property_ref(self):
+        for record in self:
+            if record.ref:
+                duplicated = self.env["pms.property"].search(
+                    [("ref", "=", record.ref), ("id", "!=", record.id)]
+                )
+                if duplicated:
+                    raise ValidationError(
+                        _(
+                            "Alreay exist other property with this ref: %s (%s)",
+                            duplicated.name,
+                            duplicated.ref,
+                        )
+                    )
+
+    @api.constrains("pms_property_code")
+    def _check_unique_property_code(self):
+        for record in self:
+            if record.pms_property_code:
+                duplicated = self.env["pms.property"].search(
+                    [
+                        ("pms_property_code", "=", record.pms_property_code),
+                        ("id", "!=", record.id),
+                    ]
+                )
+                if duplicated:
+                    raise ValidationError(
+                        _(
+                            "Alreay exist other property with this code: %s (%s)",
+                            duplicated.name,
+                            duplicated.pms_property_code,
+                        )
+                    )
+
     @api.constrains("default_arrival_hour")
     def _check_arrival_hour(self):
         for record in self:
@@ -719,3 +758,38 @@ class PmsProperty(models.Model):
             return 0
         revpar = round(sum_group_price[0]["price"] / count_available_room_days, 2)
         return revpar
+
+    @api.model
+    def _name_search(
+        self, name, args=None, operator="ilike", limit=100, name_get_uid=None
+    ):
+        args = args or []
+        domain = []
+        if name:
+            domain = [
+                "|",
+                "|",
+                ("ref", "=ilike", name.split(" ")[0] + "%"),
+                ("pms_property_code", "=ilike", name.split(" ")[0] + "%"),
+                ("name", operator, name),
+            ]
+            if operator in expression.NEGATIVE_TERM_OPERATORS:
+                domain = ["&", "!"] + domain[1:]
+        return self._search(
+            expression.AND([domain, args]), limit=limit, access_rights_uid=name_get_uid
+        )
+
+    def name_get(self):
+        result = []
+        for record in self:
+            if self.env.context.get("only_code", False) and record.pms_property_code:
+                result.append((record.id, record.pms_property_code))
+            elif (
+                self.env.context.get("only_name", False) or not record.pms_property_code
+            ):
+                result.append((record.id, record.name))
+            else:
+                result.append(
+                    (record.id, record.name + " (" + record.pms_property_code + ")")
+                )
+        return result
