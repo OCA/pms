@@ -7,7 +7,7 @@ from odoo.addons.component.core import Component
 
 class PmsInvoiceService(Component):
     _inherit = "base.rest.service"
-    _name = "pms.room.service"
+    _name = "pms.invoice"
     _usage = "invoices"
     _collection = "pms.services"
 
