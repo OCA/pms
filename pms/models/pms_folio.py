@@ -2019,9 +2019,13 @@ class PmsFolio(models.Model):
                 _("Please define an accounting sales journal for the company %s (%s).")
                 % (self.company_id.name, self.company_id.id)
             )
-
+        ref = ""
+        if self.name:
+            ref = self.name
+        if self.external_reference:
+            ref += " - " + self.external_reference
         invoice_vals = {
-            "ref": self.name or "",
+            "ref": ref,
             "move_type": "out_invoice",
             "narration": self.note,
             "currency_id": self.pricelist_id.currency_id.id,
