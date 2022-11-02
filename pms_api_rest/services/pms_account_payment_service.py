@@ -1,9 +1,9 @@
-from datetime import datetime
+from odoo.odoo import fields
+from odoo.osv import expression
+
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
-from odoo.odoo import fields
-from odoo.osv import expression
 
 
 class PmsAccountPaymentService(Component):
@@ -27,7 +27,7 @@ class PmsAccountPaymentService(Component):
     )
     def get_payments(self, pms_payments_search_param):
         result_payments = []
-        domain_fields = [("state","=","posted")]
+        domain_fields = [("state", "=", "posted")]
         available_journals = ()
         if pms_payments_search_param.pmsPropertyId:
             available_journals = self.env["account.journal"].search(
@@ -38,7 +38,7 @@ class PmsAccountPaymentService(Component):
                 ]
             )
         domain_fields.append(("journal_id", "in", available_journals.ids))
-        domain_filter=list()
+        domain_filter = list()
         if pms_payments_search_param.filter:
             # TODO: filter by folio and invoice
             for search in pms_payments_search_param.filter.split(" "):
@@ -52,13 +52,17 @@ class PmsAccountPaymentService(Component):
         if pms_payments_search_param.dateStart and pms_payments_search_param.dateEnd:
             date_from = fields.Date.from_string(pms_payments_search_param.dateStart)
             date_to = fields.Date.from_string(pms_payments_search_param.dateEnd)
-            domain_fields.extend([
-                "&",
-                ("date", ">=", date_from),
-                ("date", "<", date_to),
-            ])
+            domain_fields.extend(
+                [
+                    "&",
+                    ("date", ">=", date_from),
+                    ("date", "<", date_to),
+                ]
+            )
         if pms_payments_search_param.paymentMethodId:
-            domain_fields.append(("journal_id","=",pms_payments_search_param.paymentMethodId))
+            domain_fields.append(
+                ("journal_id", "=", pms_payments_search_param.paymentMethodId)
+            )
         # TODO: payment tyope filter (partner_type, payment_type, is_transfer)
         if domain_filter:
             domain = expression.AND([domain_fields, domain_filter[0]])
@@ -70,15 +74,17 @@ class PmsAccountPaymentService(Component):
 
         total_payments = self.env["account.payment"].search_count(domain)
         group_payments = self.env["account.payment"].read_group(
-            domain=domain,
-            fields=["amount:sum"],
-            groupby=["payment_type"]
+            domain=domain, fields=["amount:sum"], groupby=["payment_type"]
         )
         amount_result = 0
         if group_payments:
             for item in group_payments:
-                total_inbound = item["amount"] if item["payment_type"] == "inbound" else 0
-                total_outbound = item["amount"] if item["payment_type"] == "outbound" else 0
+                total_inbound = (
+                    item["amount"] if item["payment_type"] == "inbound" else 0
+                )
+                total_outbound = (
+                    item["amount"] if item["payment_type"] == "outbound" else 0
+                )
             amount_result = total_inbound - total_outbound
         for payment in self.env["account.payment"].search(
             domain,
@@ -91,16 +97,10 @@ class PmsAccountPaymentService(Component):
                     id=payment.id,
                     name=payment.name if payment.name else None,
                     amount=payment.amount,
-                    journalId=payment.journal_id.id
-                    if payment.journal_id
-                    else None,
+                    journalId=payment.journal_id.id if payment.journal_id else None,
                     date=payment.date.strftime("%d/%m/%Y"),
-                    partnerId = payment.partner_id.id
-                    if payment.partner_id
-                    else None,
-                    partnerName = payment.partner_id.name
-                    if payment.partner_id
-                    else None,
+                    partnerId=payment.partner_id.id if payment.partner_id else None,
+                    partnerName=payment.partner_id.name if payment.partner_id else None,
                     paymentType=payment.payment_type,
                     partnerType=payment.partner_type,
                     isTransfer=payment.is_internal_transfer,
@@ -109,4 +109,44 @@ class PmsAccountPaymentService(Component):
                 )
             )
 
-        return PmsPaymentResults(payments=result_payments, total=amount_result, totalPayments=total_payments)
+        return PmsPaymentResults(
+            payments=result_payments, total=amount_result, totalPayments=total_payments
+        )
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/cash-register",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.cash.register.search.param", is_list=False),
+        output_param=Datamodel("pms.cash.register.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def get_cash_register(self, cash_register_search_param):
+        statement = (
+            self.env["account.bank.statement"]
+            .sudo()
+            .search(
+                [
+                    ("journal_id", "=", cash_register_search_param.journalId),
+                ],
+                limit=1,
+            )
+        )
+
+        CashRegister = self.env.datamodels["pms.cash.register.info"]
+        if not statement:
+            return CashRegister()
+        isOpen = True if statement.state == "open" else False
+        return CashRegister(
+            state="open" if isOpen else "close",
+            userId=statement.user_id.id,
+            balance=statement.balance_start if isOpen else statement.balance_end_real,
+            dateTime=statement.create_date.strftime("%d/%m/%Y")
+            if isOpen
+            else statement.date_done.strftime("%d/%m/%Y"),
+        )
