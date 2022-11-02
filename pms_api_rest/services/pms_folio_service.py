@@ -485,7 +485,7 @@ class PmsFolioService(Component):
                 "GET",
             )
         ],
-        output_param=Datamodel("pms.account.info", is_list=True),
+        output_param=Datamodel("pms.invoice.info", is_list=True),
         auth="jwt_api_pms",
     )
     def get_folio_invoices(self, folio_id):
@@ -494,18 +494,21 @@ class PmsFolioService(Component):
         if not folio:
             pass
         else:
-            PmsFolioInvoiceInfo = self.env.datamodels["pms.account.info"]
+            PmsFolioInvoiceInfo = self.env.datamodels["pms.invoice.info"]
             PmsInvoiceLineInfo = self.env.datamodels["pms.invoice.line.info"]
             if folio.move_ids:
-                for move_id in folio.move_ids:
+                for move in folio.move_ids:
                     move_lines = []
-                    for move_line in move_id.invoice_line_ids:
+                    for move_line in move.invoice_line_ids:
                         move_lines.append(
                             PmsInvoiceLineInfo(
                                 id=move_line.id,
                                 name=move_line.name if move_line.name else None,
                                 quantity=move_line.quantity
                                 if move_line.quantity
+                                else None,
+                                priceUnit=move_line.price_unit
+                                if move_line.price_unit
                                 else None,
                                 total=move_line.price_total
                                 if move_line.price_total
@@ -515,24 +518,32 @@ class PmsFolioService(Component):
                                 else None,
                             )
                         )
+                    portal_url = (
+                        self.env["ir.config_parameter"].sudo().get_param("web.base.url")
+                        + move.get_portal_url()
+                    )
                     invoices.append(
                         PmsFolioInvoiceInfo(
-                            id=move_id.id if move_id.id else None,
-                            name=move_id.name if move_id.name else None,
-                            amount=round(move_id.amount_total, 2)
-                            if move_id.amount_total
+                            id=move.id if move.id else None,
+                            name=move.name if move.name else None,
+                            amount=round(move.amount_total, 2)
+                            if move.amount_total
                             else None,
-                            date=move_id.invoice_date.strftime("%d/%m/%Y")
-                            if move_id.invoice_date
+                            date=move.invoice_date.strftime("%d/%m/%Y")
+                            if move.invoice_date
                             else None,
-                            state=move_id.state if move_id.state else None,
-                            paymentState=move_id.payment_state
-                            if move_id.payment_state
+                            state=move.state if move.state else None,
+                            paymentState=move.payment_state
+                            if move.payment_state
                             else None,
-                            partnerName=move_id.partner_id.name
-                            if move_id.partner_id.name
+                            partnerName=move.partner_id.name
+                            if move.partner_id.name
+                            else None,
+                            partnerId=move.partner_id.id
+                            if move.partner_id.id
                             else None,
                             moveLines=move_lines if move_lines else None,
+                            portalUrl=portal_url,
                         )
                     )
         return invoices
@@ -546,23 +557,19 @@ class PmsFolioService(Component):
                 "POST",
             )
         ],
-        input_param=Datamodel("pms.account.info", is_list=False),
+        input_param=Datamodel("pms.invoice.info", is_list=False),
         auth="jwt_api_pms",
     )
     def create_folio_invoices(self, folio_id, invoice_info):
         # TODO: Missing payload data:
-        # - partnerId selected
-        # - quantity to invoice selected
-        # - front line description modification
-        # - data format mal formartted
-        # - invoice comment
+        # - date format is in invoice_info but dont save
+        # - invoice comment is in invoice_info but dont save
 
-        # date_invoice = fields.Date.from_string(invoice_info.date)
-        # if not date_invoice:
-        #     raise MissingError(_("Date is required"))
+        date_invoice = fields.Date.from_string(invoice_info.date)
+        if not date_invoice:
+            raise MissingError(_("Date is required"))
         lines_to_invoice_dict = dict()
         for item in invoice_info.saleLines:
-            # TODO: Need get specific to_invoice front value
             if item.qtyToInvoice:
                 lines_to_invoice_dict[item.id] = item.qtyToInvoice
 
@@ -571,8 +578,8 @@ class PmsFolioService(Component):
         )
         folios_to_invoice = sale_lines_to_invoice.folio_id
         invoices = folios_to_invoice._create_invoices(
-            # date=date_invoice, TODO: Wrong format date from front
+            date=date_invoice,
             lines_to_invoice=lines_to_invoice_dict,
-            partner_invoice_id=105165,
+            partner_invoice_id=invoice_info.partnerId,
         )
         return invoices.ids
