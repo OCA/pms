@@ -7,7 +7,7 @@ from odoo.addons.component.core import Component
 
 class PmsInvoiceService(Component):
     _inherit = "base.rest.service"
-    _name = "pms.invoice"
+    _name = "pms.invoice.service"
     _usage = "invoices"
     _collection = "pms.services"
 
@@ -47,20 +47,21 @@ class PmsInvoiceService(Component):
         # send to service, the lines that are not sent we assume that
         # they have been eliminated
         if pms_invoice_info.moveLines and pms_invoice_info.moveLines is not None:
-            new_vals["reservation_line_ids"] = []
+            new_vals["invoice_line_ids"] = []
             for line in invoice.invoice_line_ids:
                 line_info = [
-                    item.id for item in pms_invoice_info.moveLines if item.id == line.id
+                    item for item in pms_invoice_info.moveLines if item.id == line.id
                 ]
                 if line_info:
+                    line_info = line_info[0]
                     line_values = {}
                     if line_info.name and line_info.name != line.name:
                         line_values["name"] = line_info.name
                     if line_info.quantity and line_info.quantity != line.quantity:
                         line_values["quantity"] = line_info.quantity
-                    new_vals["reservation_line_ids"].append((1, 4, line_values))
+                    new_vals["invoice_line_ids"].append((1, line.id, line_values))
                 else:
-                    new_vals["reservation_line_ids"].append((2, line.id))
+                    new_vals["invoice_line_ids"].append((2, line.id))
 
         if not new_vals:
             return invoice.id
