@@ -8,5 +8,7 @@ class PmsInvoiceLineInfo(Datamodel):
     id = fields.Integer(required=False, allow_none=True)
     name = fields.String(required=False, allow_none=True)
     quantity = fields.Float(required=False, allow_none=True)
+    priceUnit = fields.Float(required=False, allow_none=True)
     total = fields.Float(required=False, allow_none=True)
     displayType = fields.String(required=False, allow_none=True)
+    saleLineId = fields.Integer(required=False, allow_none=True)
