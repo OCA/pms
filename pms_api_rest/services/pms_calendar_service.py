@@ -30,12 +30,14 @@ class PmsCalendarService(Component):
         count_nights = (date_to - date_from).days + 1
         target_dates = [date_from + timedelta(days=x) for x in range(count_nights)]
         pms_property_id = calendar_search_param.pmsPropertyId
-        subselect_sum_services_price = "(" \
-                                       " SELECT COALESCE(SUM(s.price_day_total),0) price_day_total_services " \
-                                       " FROM pms_service_line s " \
-                                       " WHERE s.reservation_id = night.reservation_id " \
-                                       " AND s.date = night.date AND NOT s.is_board_service " \
-                                       " ) "
+        subselect_sum_services_price = (
+            "("
+            " SELECT COALESCE(SUM(s.price_day_total),0) price_day_total_services "
+            " FROM pms_service_line s "
+            " WHERE s.reservation_id = night.reservation_id "
+            " AND s.date = night.date AND NOT s.is_board_service "
+            " ) "
+        )
         selected_fields_mapper = {
             "id": "night.id",
             "state": "night.state",
@@ -56,7 +58,7 @@ class PmsCalendarService(Component):
             "folio_pending_amount": "folio.pending_amount",
             "adults": "reservation.adults",
             "price_day_total": "night.price_day_total",
-            "price_day_total_services": subselect_sum_services_price
+            "price_day_total_services": subselect_sum_services_price,
         }
         selected_fields_sql = list(selected_fields_mapper.values())
         selected_fields = list(selected_fields_mapper.keys())
