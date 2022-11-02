@@ -38,7 +38,7 @@ class PmsPaymentSearchParam(Datamodel):
 class PmsPaymentResults(Datamodel):
     _name = "pms.payment.results"
     payments = fields.List(NestedModel("pms.payment.info"))
-    total = fields.Integer(required=False, allow_none=True)
+    total = fields.Float(required=False, allow_none=True)
     totalPayments = fields.Integer(required=False, allow_none=True)
 
 

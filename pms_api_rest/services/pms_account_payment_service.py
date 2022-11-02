@@ -1,4 +1,9 @@
+from datetime import datetime
+
+from odoo import _
 from odoo.odoo import fields
+from odoo.odoo.exceptions import ValidationError
+from odoo.odoo.tools import get_lang
 from odoo.osv import expression
 
 from odoo.addons.base_rest import restapi
@@ -150,3 +155,115 @@ class PmsAccountPaymentService(Component):
             if isOpen
             else statement.date_done.strftime("%d/%m/%Y"),
         )
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/p/cash-register",
+                ],
+                "POST",
+            )
+        ],
+        input_param=Datamodel("pms.cash.register.action", is_list=False),
+        output_param=Datamodel("pms.cash.register.result", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def cash_register(self, cash_register_action):
+        PmsCashRegisterResult = self.env.datamodels["pms.cash.register.result"]
+        if cash_register_action.action == "open":
+            dict_result = self._action_open_cash_session(
+                pms_property_id=cash_register_action.pmsPropertyId,
+                amount=cash_register_action.amount,
+                journal_id=cash_register_action.journalId,
+                force=cash_register_action.forceAction,
+            )
+        elif cash_register_action.action == "close":
+            dict_result = self._action_close_cash_session(
+                pms_property_id=cash_register_action.pmsPropertyId,
+                amount=cash_register_action.amount,
+                journal_id=cash_register_action.journalId,
+                force=cash_register_action.forceAction,
+            )
+        else:
+            raise ValidationError(
+                _("No action cash register found (only allowed open/close actions")
+            )
+        return PmsCashRegisterResult(
+            result=dict_result["result"],
+            diff=dict_result["diff"],
+        )
+
+    def _action_open_cash_session(self, pms_property_id, amount, journal_id, force):
+        statement = (
+            self.env["account.bank.statement"]
+            .sudo()
+            .search(
+                [
+                    ("journal_id", "=", journal_id),
+                ],
+                limit=1,
+            )
+        )
+        if round(statement.balance_end_real, 2) == round(amount, 2) or force:
+            self.env["account.bank.statement"].sudo().create(
+                {
+                    "name": datetime.today().strftime(get_lang(self.env).date_format)
+                    + " ("
+                    + self.env.user.login
+                    + ")",
+                    "date": datetime.today(),
+                    "balance_start": amount,
+                    "journal_id": journal_id,
+                    "pms_property_id": pms_property_id,
+                }
+            )
+            diff = round(amount - statement.balance_end_real, 2)
+            return {"result": True, "diff": diff}
+        else:
+            diff = round(amount - statement.balance_end_real, 2)
+            return {"result": False, "diff": diff}
+
+    def _action_close_cash_session(self, pms_property_id, amount, journal_id, force):
+        statement = (
+            self.env["account.bank.statement"]
+            .sudo()
+            .search(
+                [
+                    ("journal_id", "=", journal_id),
+                    ("state", "=", "open"),
+                    ("pms_property_id", "=", pms_property_id),
+                ],
+                limit=1,
+            )
+        )
+        if round(statement.balance_end, 2) == round(amount, 2):
+            statement.sudo().balance_end_real = amount
+            statement.sudo().button_post()
+            return {
+                "result": True,
+                "diff": 0,
+            }
+        elif force:
+            # Not call to button post to avoid create profit/loss line
+            # (_check_balance_end_real_same_as_computed)
+            if not statement.name:
+                statement.sudo()._set_next_sequence()
+            statement.sudo().balance_end_real = amount
+            statement.write({"state": "posted"})
+            lines_of_moves_to_post = statement.line_ids.filtered(
+                lambda line: line.move_id.state != "posted"
+            )
+            if lines_of_moves_to_post:
+                lines_of_moves_to_post.move_id._post(soft=False)
+            diff = round(amount - statement.balance_end, 2)
+            return {
+                "result": True,
+                "diff": diff,
+            }
+        else:
+            diff = round(amount - statement.balance_end, 2)
+            return {
+                "result": False,
+                "diff": diff,
+            }
