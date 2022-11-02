@@ -108,6 +108,11 @@ msgid "&amp;nbsp;<span>on</span>&amp;nbsp;"
 msgstr ""
 
 #. module: pms
+#: model:ir.actions.report,print_report_name:pms.action_report_pms_pro_forma_invoice
+msgid "'PRO-FORMA - %s' % (object.name)"
+msgstr ""
+
+#. module: pms
 #: model:ir.actions.report,print_report_name:pms.action_report_folio
 #: model:ir.actions.report,print_report_name:pms.action_traveller_report
 msgid ""
@@ -403,6 +408,11 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "<span>Disc.%</span>"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_invoice_document
+msgid "<span>Pro-Forma Invoice # </span>"
 msgstr ""
 
 #. module: pms
@@ -1312,6 +1322,18 @@ msgstr ""
 #: code:addons/pms/models/pms_room_type.py:0
 #, python-format
 msgid "Already exists another room type with the same code and properties"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_property.py:0
+#, python-format
+msgid "Alreay exist other property with this code: %s (%s)"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_property.py:0
+#, python-format
+msgid "Alreay exist other property with this ref: %s (%s)"
 msgstr ""
 
 #. module: pms
@@ -6936,6 +6958,11 @@ msgid "PMS Team Member"
 msgstr ""
 
 #. module: pms
+#: model:ir.actions.report,name:pms.action_report_pms_pro_forma_invoice
+msgid "PRO-FORMA Invoice"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid "Page"
 msgstr ""
@@ -7847,6 +7874,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.view_account_move_line_filter
 #: model_terms:ir.ui.view,arch_db:pms.view_account_payment_search
 msgid "Property"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__pms_property_code
+msgid "Property Code"
 msgstr ""
 
 #. module: pms
@@ -9379,6 +9411,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room__short_name
 msgid "Short Name"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__pms_property_code
+msgid "Short name property"
 msgstr ""
 
 #. module: pms
