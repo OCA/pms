@@ -71,6 +71,7 @@ class PmsCalendarInfo(Datamodel):
     priceDayTotal = fields.Number(required=False, allow_none=True)
     priceDayTotalServices = fields.Number(required=False, allow_none=True)
 
+
 class PmsCalendarAlertsPerDay(Datamodel):
     _name = "pms.calendar.alerts.per.day"
     date = fields.String(required=True, allow_none=False)
