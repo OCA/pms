@@ -107,5 +107,9 @@ class PmsPropertyService(Component):
             [("pms_property_ids", "in", pms_property_id)]
         )
         for user in users:
-            result_users.append(ResUsersInfo(id=user.id, name=user.name))
+            result_users.append(ResUsersInfo(
+                id=user.id,
+                name=user.name,
+                userImageBase64=user.partner_id.image_1024 or None
+            ))
         return result_users
