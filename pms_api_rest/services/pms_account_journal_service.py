@@ -39,6 +39,7 @@ class PmsAccountJournalService(Component):
                     PmsAccountJournalInfo(
                         id=payment_method.id,
                         name=payment_method.name,
+                        type=payment_method.type,
                         allowedPayments=payment_method.allowed_pms_payments,
                     )
                 )
