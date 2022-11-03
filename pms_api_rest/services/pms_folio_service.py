@@ -214,7 +214,7 @@ class PmsFolioService(Component):
                 "POST",
             )
         ],
-        input_param=Datamodel("pms.account.payment.info", is_list=False),
+        input_param=Datamodel("pms.payment.info", is_list=False),
         auth="jwt_api_pms",
     )
     def create_folio_charge(self, folio_id, pms_account_payment_info):
@@ -223,13 +223,18 @@ class PmsFolioService(Component):
         journal_id = self.env["account.journal"].browse(
             pms_account_payment_info.journalId
         )
+        reservations = (
+            self.env["pms.reservation"].browse(pms_account_payment_info.reservationIds)
+            if pms_account_payment_info.reservationIds
+            else False
+        )
         self.env["pms.folio"].do_payment(
             journal_id,
             journal_id.suspense_account_id,
             self.env.user,
             pms_account_payment_info.amount,
             folio,
-            reservations=pms_account_payment_info.reservationIds,
+            reservations=reservations,
             services=False,
             partner=partner_id,
             date=datetime.strptime(pms_account_payment_info.date, "%m/%d/%Y"),
@@ -244,7 +249,7 @@ class PmsFolioService(Component):
                 "POST",
             )
         ],
-        input_param=Datamodel("pms.account.payment.info", is_list=False),
+        input_param=Datamodel("pms.payment.info", is_list=False),
         auth="jwt_api_pms",
     )
     def create_folio_refund(self, folio_id, pms_account_payment_info):
@@ -582,4 +587,13 @@ class PmsFolioService(Component):
             lines_to_invoice=lines_to_invoice_dict,
             partner_invoice_id=invoice_info.partnerId,
         )
+        for item in invoice_info.saleLines:
+            if item.id in invoices.invoice_line_ids.mapped("folio_line_ids.id"):
+                invoice_line = invoices.invoice_line_ids.filtered(
+                    lambda r: item.id in r.folio_line_ids.ids
+                )
+                invoice_line.write({"name": item.name})
+        if invoice_info.narration:
+            invoices.write({"narration": invoice_info.narration})
+
         return invoices.ids
