@@ -8,4 +8,3 @@ class PmsResUsersInfo(Datamodel):
     id = fields.Integer(required=False, allow_none=True)
     name = fields.String(required=False, allow_none=True)
     userImageBase64 = fields.String(required=False, allow_none=True)
-
