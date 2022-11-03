@@ -521,6 +521,9 @@ class PmsFolioService(Component):
                                 displayType=move_line.display_type
                                 if move_line.display_type
                                 else None,
+                                saleLineId=move_line.folio_line_ids
+                                if move_line.folio_line_ids
+                                else None,
                             )
                         )
                     portal_url = (
