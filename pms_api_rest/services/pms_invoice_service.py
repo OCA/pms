@@ -71,7 +71,7 @@ class PmsInvoiceService(Component):
                             {
                                 "name": line_info.name,
                                 "quantity": line_info.quantity,
-                                "sale_line_ids": [(6, 0, line_info.saleLineIds)],
+                                "sale_line_ids": [(6, 0, line_info.saleLineId)],
                             },
                         )
                     )
