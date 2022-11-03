@@ -62,6 +62,19 @@ class PmsInvoiceService(Component):
                     new_vals["invoice_line_ids"].append((1, line.id, line_values))
                 else:
                     new_vals["invoice_line_ids"].append((2, line.id))
+            for line_info in pms_invoice_info.moveLines:
+                if not line_info.id:
+                    new_vals["invoice_line_ids"].append(
+                        (
+                            0,
+                            0,
+                            {
+                                "name": line_info.name,
+                                "quantity": line_info.quantity,
+                                "sale_line_ids": [(6, 0, line_info.saleLineIds)],
+                            },
+                        )
+                    )
 
         if not new_vals:
             return invoice.id
