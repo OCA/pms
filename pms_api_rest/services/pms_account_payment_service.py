@@ -267,3 +267,37 @@ class PmsAccountPaymentService(Component):
                 "result": False,
                 "diff": diff,
             }
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/payment-report",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.payment.report.search.param", is_list=False),
+        output_param=Datamodel("pms.payment.report", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def payment_report(self, pms_payment_report_search_param):
+        pms_property_id = pms_payment_report_search_param.pmsPropertyId
+        date_from = pms_payment_report_search_param.dateFrom
+        date_to = pms_payment_report_search_param.dateTo
+        report_wizard = self.env["cash.daily.report.wizard"].create(
+            {
+                "date_start": date_from,
+                "date_end": date_to,
+                "pms_property_id": pms_property_id,
+            }
+        )
+        result = report_wizard._export()
+        file_name = result["xls_filename"]
+        base64EncodedStr = result["xls_binary"]
+        PmsResponse = self.env.datamodels["pms.payment.report"]
+        # REVIEW: Reuse pms.report.info by modifying the fields
+        # to support different types of documents?
+        # proposal: contentBase64 = fields.String,
+        # fileType = fields.String (pdf, xlsx, etc...)
+        return PmsResponse(fileName=file_name, binary=base64EncodedStr)
