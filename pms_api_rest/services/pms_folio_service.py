@@ -173,7 +173,7 @@ class PmsFolioService(Component):
             )
         ],
         input_param=Datamodel("pms.search.param"),
-        output_param=Datamodel("pms.payment.info", is_list=True),
+        output_param=Datamodel("pms.transaction.info", is_list=True),
         auth="jwt_api_pms",
     )
     def get_folio_payments(self, folio_id, pms_search_param):
@@ -183,7 +183,7 @@ class PmsFolioService(Component):
             domain.append(("pms_property_id", "=", pms_search_param.pmsPropertyId))
         folio = self.env["pms.folio"].search(domain)
         payments = []
-        PmsPaymentInfo = self.env.datamodels["pms.payment.info"]
+        PmsTransactiontInfo = self.env.datamodels["pms.transaction.info"]
         if not folio:
             pass
         else:
@@ -193,14 +193,14 @@ class PmsFolioService(Component):
             if folio.payment_ids:
                 for payment in folio.payment_ids:
                     payments.append(
-                        PmsPaymentInfo(
+                        PmsTransactiontInfo(
                             id=payment.id,
                             amount=round(payment.amount, 2),
                             journalId=payment.journal_id.id,
                             date=datetime.combine(
                                 payment.date, datetime.min.time()
                             ).isoformat(),
-                            paymentType=payment.payment_type,
+                            transactionTypeCode=payment.pms_api_transaction_type,
                         )
                     )
         return payments
@@ -214,7 +214,7 @@ class PmsFolioService(Component):
                 "POST",
             )
         ],
-        input_param=Datamodel("pms.payment.info", is_list=False),
+        input_param=Datamodel("pms.transaction.info", is_list=False),
         auth="jwt_api_pms",
     )
     def create_folio_charge(self, folio_id, pms_account_payment_info):
@@ -249,7 +249,7 @@ class PmsFolioService(Component):
                 "POST",
             )
         ],
-        input_param=Datamodel("pms.payment.info", is_list=False),
+        input_param=Datamodel("pms.transaction.info", is_list=False),
         auth="jwt_api_pms",
     )
     def create_folio_refund(self, folio_id, pms_account_payment_info):
