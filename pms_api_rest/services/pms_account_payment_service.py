@@ -153,7 +153,9 @@ class PmsAccountPaymentService(Component):
             balance=statement.balance_start if isOpen else statement.balance_end_real,
             dateTime=statement.create_date.strftime("%d/%m/%Y")
             if isOpen
-            else statement.date_done.strftime("%d/%m/%Y"),
+            else statement.date_done.strftime("%d/%m/%Y")
+            if statement.date_done
+            else None,
         )
 
     @restapi.method(
