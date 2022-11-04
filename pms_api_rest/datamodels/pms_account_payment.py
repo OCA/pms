@@ -42,11 +42,18 @@ class PmsPaymentResults(Datamodel):
     totalPayments = fields.Integer(required=False, allow_none=True)
 
 
-class PmsAccountPaymentInfo(Datamodel):
-    _name = "pms.account.payment.short.info"
+class PmsTransactionInfo(Datamodel):
+    _name = "pms.transaction.info"
     id = fields.Integer(required=False, allow_none=True)
     date = fields.String(required=False, allow_none=True)
     journalId = fields.Integer(required=False, allow_none=True)
     amount = fields.Float(required=False, allow_none=True)
     partnerId = fields.Integer(required=False, allow_none=True)
     reservationIds = fields.List(fields.Integer(), required=False)
+    folioId = fields.Integer(required=False, allow_none=True)
+
+    transactionType = fields.String(required=False, allow_none=True)
+    destinationJournalId = fields.Integer(required=False, allow_none=True)
+    reference = fields.String(required=False, allow_none=True)
+    pmsPropertyId = fields.Integer(required=False, allow_none=True)
+    createUid = fields.Integer(required=False, allow_none=True)
