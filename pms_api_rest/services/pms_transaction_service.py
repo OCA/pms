@@ -11,10 +11,10 @@ from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
 
-class PmsAccountPaymentService(Component):
+class PmsTransactionService(Component):
     _inherit = "base.rest.service"
-    _name = "pms.account.payment.service"
-    _usage = "payments"
+    _name = "pms.transaction.service"
+    _usage = "transactions"
     _collection = "pms.services"
 
     @restapi.method(
@@ -26,37 +26,42 @@ class PmsAccountPaymentService(Component):
                 "GET",
             )
         ],
-        input_param=Datamodel("pms.payment.search.param", is_list=False),
-        output_param=Datamodel("pms.payment.results", is_list=False),
+        input_param=Datamodel("pms.transaction.search.param", is_list=False),
+        output_param=Datamodel("pms.transaction.results", is_list=False),
         auth="jwt_api_pms",
     )
-    def get_payments(self, pms_payments_search_param):
-        result_payments = []
+    def get_transactions(self, pms_transactions_search_param):
+        result_transactions = []
         domain_fields = [("state", "=", "posted")]
         available_journals = ()
-        if pms_payments_search_param.pmsPropertyId:
+        if pms_transactions_search_param.pmsPropertyId:
             available_journals = self.env["account.journal"].search(
                 [
-                    "&",
-                    ("pms_property_ids", "in", pms_payments_search_param.pmsPropertyId),
-                    ("pms_property_ids", "!=", False),
+                    (
+                        "pms_property_ids",
+                        "in",
+                        pms_transactions_search_param.pmsPropertyId,
+                    ),
                 ]
             )
         domain_fields.append(("journal_id", "in", available_journals.ids))
         domain_filter = list()
-        if pms_payments_search_param.filter:
+        if pms_transactions_search_param.filter:
             # TODO: filter by folio and invoice
-            for search in pms_payments_search_param.filter.split(" "):
+            for search in pms_transactions_search_param.filter.split(" "):
                 subdomains = [
                     [("name", "ilike", search)],
-                    # [("folio_id.name", "ilike", search)],
+                    [("ref", "ilike", search)],
                     [("partner_id.display_name", "ilike", search)],
                 ]
                 domain_filter.append(expression.OR(subdomains))
 
-        if pms_payments_search_param.dateStart and pms_payments_search_param.dateEnd:
-            date_from = fields.Date.from_string(pms_payments_search_param.dateStart)
-            date_to = fields.Date.from_string(pms_payments_search_param.dateEnd)
+        if (
+            pms_transactions_search_param.dateStart
+            and pms_transactions_search_param.dateEnd
+        ):
+            date_from = fields.Date.from_string(pms_transactions_search_param.dateStart)
+            date_to = fields.Date.from_string(pms_transactions_search_param.dateEnd)
             domain_fields.extend(
                 [
                     "&",
@@ -64,26 +69,33 @@ class PmsAccountPaymentService(Component):
                     ("date", "<", date_to),
                 ]
             )
-        if pms_payments_search_param.paymentMethodId:
+        if pms_transactions_search_param.transactionMethodId:
             domain_fields.append(
-                ("journal_id", "=", pms_payments_search_param.paymentMethodId)
+                ("journal_id", "=", pms_transactions_search_param.transactionMethodId)
             )
-        # TODO: payment tyope filter (partner_type, payment_type, is_transfer)
+
+        if pms_transactions_search_param.transactionType:
+            domain_fields.append(
+                "pms_api_transaction_type",
+                "=",
+                pms_transactions_search_param.transactionType,
+            )
+
         if domain_filter:
             domain = expression.AND([domain_fields, domain_filter[0]])
         else:
             domain = domain_fields
 
-        PmsPaymentResults = self.env.datamodels["pms.payment.results"]
-        PmsPaymentInfo = self.env.datamodels["pms.payment.info"]
+        PmsTransactionResults = self.env.datamodels["pms.transaction.results"]
+        PmsTransactiontInfo = self.env.datamodels["pms.transaction.info"]
 
-        total_payments = self.env["account.payment"].search_count(domain)
-        group_payments = self.env["account.payment"].read_group(
+        total_transactions = self.env["account.payment"].search_count(domain)
+        group_transactions = self.env["account.payment"].read_group(
             domain=domain, fields=["amount:sum"], groupby=["payment_type"]
         )
         amount_result = 0
-        if group_payments:
-            for item in group_payments:
+        if group_transactions:
+            for item in group_transactions:
                 total_inbound = (
                     item["amount"] if item["payment_type"] == "inbound" else 0
                 )
@@ -91,32 +103,98 @@ class PmsAccountPaymentService(Component):
                     item["amount"] if item["payment_type"] == "outbound" else 0
                 )
             amount_result = total_inbound - total_outbound
-        for payment in self.env["account.payment"].search(
+        for transaction in self.env["account.payment"].search(
             domain,
-            order=pms_payments_search_param.orderBy,
-            limit=pms_payments_search_param.limit,
-            offset=pms_payments_search_param.offset,
+            order=pms_transactions_search_param.orderBy,
+            limit=pms_transactions_search_param.limit,
+            offset=pms_transactions_search_param.offset,
         ):
-            result_payments.append(
-                PmsPaymentInfo(
-                    id=payment.id,
-                    name=payment.name if payment.name else None,
-                    amount=payment.amount,
-                    journalId=payment.journal_id.id if payment.journal_id else None,
-                    date=payment.date.strftime("%d/%m/%Y"),
-                    partnerId=payment.partner_id.id if payment.partner_id else None,
-                    partnerName=payment.partner_id.name if payment.partner_id else None,
-                    paymentType=payment.payment_type,
-                    partnerType=payment.partner_type,
-                    isTransfer=payment.is_internal_transfer,
-                    reference=payment.ref if payment.ref else None,
-                    createUid=payment.create_uid if payment.create_uid else None,
+            result_transactions.append(
+                PmsTransactiontInfo(
+                    id=transaction.id,
+                    name=transaction.name if transaction.name else None,
+                    amount=transaction.amount,
+                    journalId=transaction.journal_id.id
+                    if transaction.journal_id
+                    else None,
+                    date=transaction.date.strftime("%d/%m/%Y"),
+                    partnerId=transaction.partner_id.id
+                    if transaction.partner_id
+                    else None,
+                    partnerName=transaction.partner_id.name
+                    if transaction.partner_id
+                    else None,
+                    reference=transaction.ref if transaction.ref else None,
+                    createUid=transaction.create_uid
+                    if transaction.create_uid
+                    else None,
+                    transactionType=transaction.pms_api_transaction_type,
                 )
             )
 
-        return PmsPaymentResults(
-            payments=result_payments, total=amount_result, totalPayments=total_payments
+        return PmsTransactionResults(
+            payments=result_transactions,
+            total=amount_result,
+            totalPayments=total_transactions,
         )
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:transaction_id>",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.transaction.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def get_transaction(self, transaction_id):
+        PmsTransactiontInfo = self.env.datamodels["pms.transaction.info"]
+        transaction = self.env["account.payment"].browse(transaction_id)
+        return PmsTransactiontInfo(
+            id=transaction.id,
+            name=transaction.name if transaction.name else None,
+            amount=transaction.amount,
+            journalId=transaction.journal_id.id if transaction.journal_id else None,
+            date=transaction.date.strftime("%d/%m/%Y"),
+            partnerId=transaction.partner_id.id if transaction.partner_id else None,
+            partnerName=transaction.partner_id.name if transaction.partner_id else None,
+            reference=transaction.ref if transaction.ref else None,
+            createUid=transaction.create_uid.id if transaction.create_uid else None,
+            transactionType=transaction.pms_api_transaction_type,
+        )
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/",
+                ],
+                "POST",
+            )
+        ],
+        input_param=Datamodel("pms.transaction.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def create_transaction(self):
+        return True
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/p/<int:transaction_id>",
+                ],
+                "PATCH",
+            )
+        ],
+        input_param=Datamodel("pms.transaction.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def update_transaction(self, transaction_id):
+        return True
 
     @restapi.method(
         [
