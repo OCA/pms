@@ -573,9 +573,6 @@ class PmsFolioService(Component):
         # - date format is in invoice_info but dont save
         # - invoice comment is in invoice_info but dont save
 
-        date_invoice = fields.Date.from_string(invoice_info.date)
-        if not date_invoice:
-            raise MissingError(_("Date is required"))
         lines_to_invoice_dict = dict()
         for item in invoice_info.saleLines:
             if item.qtyToInvoice:
@@ -586,7 +583,6 @@ class PmsFolioService(Component):
         )
         folios_to_invoice = sale_lines_to_invoice.folio_id
         invoices = folios_to_invoice._create_invoices(
-            date=date_invoice,
             lines_to_invoice=lines_to_invoice_dict,
             partner_invoice_id=invoice_info.partnerId,
         )

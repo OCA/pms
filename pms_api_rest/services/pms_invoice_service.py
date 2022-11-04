@@ -116,3 +116,18 @@ class PmsInvoiceService(Component):
         if previus_state == "posted":
             invoice.action_post()
         return invoice
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:invoice_id>/send-mail",
+                ],
+                "POST",
+            )
+        ],
+        input_param=Datamodel("pms.mail.info"),
+        auth="jwt_api_pms",
+    )
+    def send_invoice_mail(self, invoice_id, pms_mail_info):
+        return True
