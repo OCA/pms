@@ -3,14 +3,14 @@ from marshmallow import fields
 from odoo.addons.datamodel.core import Datamodel
 
 
-class PmsPaymentReportSearchParam(Datamodel):
-    _name = "pms.payment.report.search.param"
+class PmsTransactionReportSearchParam(Datamodel):
+    _name = "pms.transaction.report.search.param"
     dateFrom = fields.String(required=False, allow_none=True)
     dateTo = fields.String(required=False, allow_none=True)
     pmsPropertyId = fields.Integer(required=False, allow_none=True)
 
 
-class PmsPaymentReportInput(Datamodel):
-    _name = "pms.payment.report"
+class PmsTransactionReportInput(Datamodel):
+    _name = "pms.transaction.report"
     fileName = fields.String(required=False, allow_none=True)
     binary = fields.String(required=False, allow_none=True)
