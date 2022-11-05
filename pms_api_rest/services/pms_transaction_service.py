@@ -1,10 +1,9 @@
 from datetime import datetime
 
-from odoo import _
-from odoo.odoo import fields
-from odoo.odoo.exceptions import ValidationError
-from odoo.odoo.tools import get_lang
+from odoo import _, fields
+from odoo.exceptions import ValidationError
 from odoo.osv import expression
+from odoo.tools import get_lang
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
@@ -95,13 +94,23 @@ class PmsTransactionService(Component):
         )
         amount_result = 0
         if group_transactions:
-            for item in group_transactions:
-                total_inbound = (
-                    item["amount"] if item["payment_type"] == "inbound" else 0
-                )
-                total_outbound = (
-                    item["amount"] if item["payment_type"] == "outbound" else 0
-                )
+            total_inbound = next(
+                (
+                    item["amount"]
+                    for item in group_transactions
+                    if item["payment_type"] == "inbound"
+                ),
+                0,
+            )
+            total_outbound = next(
+                (
+                    item["amount"]
+                    for item in group_transactions
+                    if item["payment_type"] == "outbound"
+                ),
+                0,
+            )
+            amount_result = total_inbound - total_outbound
             amount_result = total_inbound - total_outbound
         for transaction in self.env["account.payment"].search(
             domain,
@@ -113,7 +122,7 @@ class PmsTransactionService(Component):
                 PmsTransactiontInfo(
                     id=transaction.id,
                     name=transaction.name if transaction.name else None,
-                    amount=transaction.amount,
+                    amount=round(transaction.amount, 2),
                     journalId=transaction.journal_id.id
                     if transaction.journal_id
                     else None,
@@ -128,14 +137,13 @@ class PmsTransactionService(Component):
                     createUid=transaction.create_uid
                     if transaction.create_uid
                     else None,
-                    transactionType=transaction.pms_api_transaction_type,
+                    transactionType=transaction.pms_api_transaction_type or None,
                 )
             )
-
         return PmsTransactionResults(
-            payments=result_transactions,
-            total=amount_result,
-            totalPayments=total_transactions,
+            transactions=result_transactions,
+            total=round(amount_result, 2),
+            totalTransactions=total_transactions,
         )
 
     @restapi.method(
@@ -163,7 +171,7 @@ class PmsTransactionService(Component):
             partnerName=transaction.partner_id.name if transaction.partner_id else None,
             reference=transaction.ref if transaction.ref else None,
             createUid=transaction.create_uid.id if transaction.create_uid else None,
-            transactionType=transaction.pms_api_transaction_type,
+            transactionType=transaction.pms_api_transaction_type or None,
         )
 
     @restapi.method(
@@ -352,19 +360,19 @@ class PmsTransactionService(Component):
         [
             (
                 [
-                    "/payment-report",
+                    "/transactions-report",
                 ],
                 "GET",
             )
         ],
-        input_param=Datamodel("pms.payment.report.search.param", is_list=False),
-        output_param=Datamodel("pms.payment.report", is_list=False),
+        input_param=Datamodel("pms.transaction.report.search.param", is_list=False),
+        output_param=Datamodel("pms.transaction.report", is_list=False),
         auth="jwt_api_pms",
     )
-    def payment_report(self, pms_payment_report_search_param):
-        pms_property_id = pms_payment_report_search_param.pmsPropertyId
-        date_from = pms_payment_report_search_param.dateFrom
-        date_to = pms_payment_report_search_param.dateTo
+    def transactions_report(self, pms_transaction_report_search_param):
+        pms_property_id = pms_transaction_report_search_param.pmsPropertyId
+        date_from = pms_transaction_report_search_param.dateFrom
+        date_to = pms_transaction_report_search_param.dateTo
         report_wizard = self.env["cash.daily.report.wizard"].create(
             {
                 "date_start": date_from,
@@ -375,7 +383,7 @@ class PmsTransactionService(Component):
         result = report_wizard._export()
         file_name = result["xls_filename"]
         base64EncodedStr = result["xls_binary"]
-        PmsResponse = self.env.datamodels["pms.payment.report"]
+        PmsResponse = self.env.datamodels["pms.transaction.report"]
         # REVIEW: Reuse pms.report.info by modifying the fields
         # to support different types of documents?
         # proposal: contentBase64 = fields.String,

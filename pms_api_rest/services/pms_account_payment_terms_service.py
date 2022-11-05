@@ -18,12 +18,14 @@ class PmsAccountPaymentTermService(Component):
                 "GET",
             )
         ],
-        output_param=Datamodel("pms.account.payment.term.info", is_list=True),
+        output_param=Datamodel("pms.account.transaction.term.info", is_list=True),
         auth="jwt_api_pms",
     )
     def get_account_payment_terms(self):
 
-        PmsAccountPaymenttermInfo = self.env.datamodels["pms.account.payment.term.info"]
+        PmsAccountPaymenttermInfo = self.env.datamodels[
+            "pms.account.transaction.term.info"
+        ]
         res = []
         for payment_term in self.env["account.payment.term"].search([]):
             res.append(
