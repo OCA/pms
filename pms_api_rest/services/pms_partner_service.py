@@ -233,7 +233,7 @@ class PmsPartnerService(Component):
                     journalId=payment.journal_id.id,
                     date=payment.date.strftime("%d/%m/%Y"),
                     reference=payment.ref,
-                    transactionTypeCode=payment.pms_api_transaction_type,
+                    transactionType=payment.pms_api_transaction_type,
                 )
             )
         return payments
