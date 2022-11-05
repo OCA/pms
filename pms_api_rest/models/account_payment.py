@@ -15,22 +15,22 @@ class AccountPayment(models.Model):
         string="PMS API Transaction Type",
         help="Transaction type for PMS API",
         compute="_compute_pms_api_transaction_type",
-        store=True,
     )
 
     @api.depends("payment_type", "partner_type")
     def _compute_pms_api_transaction_type(self):
         for record in self:
             if record.is_internal_transfer:
-                return "internal_transfer"
-            if record.partner_type == "customer":
+                record.pms_api_transaction_type = "internal_transfer"
+            elif record.partner_type == "customer":
                 if record.payment_type == "inbound":
-                    return "customer_payment"
+                    record.pms_api_transaction_type = "customer_inbound"
                 else:
-                    return "customer_refund"
-            if record.partner_type == "supplier":
+                    record.pms_api_transaction_type = "customer_outbound"
+            elif record.partner_type == "supplier":
                 if record.payment_type == "inbound":
-                    return "supplier_payment"
+                    record.pms_api_transaction_type = "supplier_outbound"
                 else:
-                    return "supplier_refund"
-            return False
+                    record.pms_api_transaction_type = "supplier_inbound"
+            else:
+                record.pms_api_transaction_type = False

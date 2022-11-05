@@ -9,4 +9,3 @@ class PmsMailInfo(Datamodel):
     bodyMail = fields.String(required=False, allow_none=True)
     partnerIds = fields.List(fields.Integer(), required=False)
     emailAddresses = fields.List(fields.String(), required=False)
-    pmsPropertyCc = fields.Boolean(required=False, allow_none=True)
