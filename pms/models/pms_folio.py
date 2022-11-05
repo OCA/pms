@@ -1836,6 +1836,7 @@ class PmsFolio(models.Model):
             "url": self.get_portal_url(),
         }
 
+    # flake8:noqa=C901
     def _create_invoices(
         self,
         grouped=False,
@@ -1887,6 +1888,46 @@ class PmsFolio(models.Model):
         # 2) Manage 'grouped' parameter: group by (partner_id, currency_id).
         if not grouped:
             invoice_vals_list = self._get_group_vals_list(invoice_vals_list)
+
+        partner_invoice = self.env["res.partner"].browse(partner_invoice_id)
+        partner_invoice_policy = (
+            self.pms_property_id.default_invoicing_policy
+            if partner_invoice.invoicing_policy == "property"
+            else partner_invoice.invoicing_policy
+        )
+
+        if date:
+            invoice_date = date
+        if partner_invoice_policy == "checkout":
+            margin_days_autoinvoice = (
+                self.pms_property_id.margin_days_autoinvoice
+                if partner_invoice.margin_days_autoinvoice == 0
+                else partner_invoice.margin_days_autoinvoice
+            )
+            invoice_date = max(
+                self.env["pms.reservation"]
+                .search([("sale_line_ids", "in", list(lines_to_invoice.keys()))])
+                .mapped("checkout")
+            ) + datetime.timedelta(days=margin_days_autoinvoice)
+        if partner_invoice_policy == "month_day":
+            month_day = (
+                self.pms_property_id.invoicing_month_day
+                if partner_invoice.invoicing_month_day == 0
+                else partner_invoice.invoicing_month_day
+            )
+            invoice_date = datetime.date(
+                datetime.date.today().year,
+                datetime.date.today().month,
+                month_day,
+            )
+            if invoice_date < datetime.date.today():
+                invoice_date = datetime.date(
+                    datetime.date.today().year,
+                    datetime.date.today().month + 1,
+                    month_day,
+                )
+        for vals in invoice_vals_list:
+            vals["invoice_date"] = invoice_date
 
         # 3) Create invoices.
 
