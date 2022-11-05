@@ -27,7 +27,7 @@ class PmsClosureReasonService(Component):
         for cl in self.env["room.closure.reason"].search([]):
             closure_reasons.append(
                 PmsRoomClosureReasonInfo(
-                    id=cl.id, name=cl.name, description=cl.description
+                    id=cl.id, name=cl.name, description=cl.description or None
                 )
             )
         return closure_reasons
