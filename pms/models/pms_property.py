@@ -643,6 +643,7 @@ class PmsProperty(models.Model):
     def autoinvoicing(self):
         """
         This method is used to invoicing automatically the folios
+        and validate the draft invoices created by the folios
         """
         folios = self.env["pms.folio"].search(
             [
@@ -653,8 +654,9 @@ class PmsProperty(models.Model):
         paid_folios = folios.filtered(lambda f: f.pending_amount <= 0)
         unpaid_folios = folios.filtered(lambda f: f.pending_amount > 0)
         folios_to_invoice = paid_folios
+        # If the folio is unpaid we will auto invoice only the
+        # not cancelled lines
         for folio in unpaid_folios:
-            # REVIEW: Change this by state flow folio control
             if any([res.state != "cancel" for res in folio.reservation_ids]):
                 folios_to_invoice += folio
             else:
@@ -668,6 +670,20 @@ class PmsProperty(models.Model):
                     invoice.action_post()
             except Exception as e:
                 folio.message_post(body=_("Error in autoinvoicing folio: " + str(e)))
+        draft_invoices_to_post = self.env["account.move"].search(
+            [
+                ("state", "=", "draft"),
+                ("invoice_date", "=", fields.date.today()),
+                ("folio_ids", "!=", False),
+            ]
+        )
+        for invoice in draft_invoices_to_post:
+            try:
+                invoice.action_post()
+            except Exception as e:
+                invoice.message_post(
+                    body=_("Error in autoinvoicing invoice: " + str(e))
+                )
         return True
 
     @api.constrains("journal_normal_invoice_id")
