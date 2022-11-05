@@ -167,7 +167,7 @@ class PmsFolioService(Component):
         [
             (
                 [
-                    "/<int:folio_id>/payments",
+                    "/<int:folio_id>/transactions",
                 ],
                 "GET",
             )
@@ -176,13 +176,13 @@ class PmsFolioService(Component):
         output_param=Datamodel("pms.transaction.info", is_list=True),
         auth="jwt_api_pms",
     )
-    def get_folio_payments(self, folio_id, pms_search_param):
+    def get_folio_transactions(self, folio_id, pms_search_param):
         domain = list()
         domain.append(("id", "=", folio_id))
         if pms_search_param.pmsPropertyId:
             domain.append(("pms_property_id", "=", pms_search_param.pmsPropertyId))
         folio = self.env["pms.folio"].search(domain)
-        payments = []
+        transactions = []
         PmsTransactiontInfo = self.env.datamodels["pms.transaction.info"]
         if not folio:
             pass
@@ -192,7 +192,8 @@ class PmsFolioService(Component):
             # else:
             if folio.payment_ids:
                 for payment in folio.payment_ids:
-                    payments.append(
+                    payment._compute_pms_api_transaction_type()
+                    transactions.append(
                         PmsTransactiontInfo(
                             id=payment.id,
                             amount=round(payment.amount, 2),
@@ -200,10 +201,10 @@ class PmsFolioService(Component):
                             date=datetime.combine(
                                 payment.date, datetime.min.time()
                             ).isoformat(),
-                            transactionTypeCode=payment.pms_api_transaction_type,
+                            transactionType=payment.pms_api_transaction_type,
                         )
                     )
-        return payments
+        return transactions
 
     @restapi.method(
         [
