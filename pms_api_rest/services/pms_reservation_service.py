@@ -730,7 +730,7 @@ class PmsReservationService(Component):
             )
         ],
         auth="jwt_api_pms",
-        output_param=Datamodel("pms.report.info", is_list=False),
+        output_param=Datamodel("pms.report", is_list=False),
     )
     def print_all_checkins(self, reservation_id):
         reservations = False
@@ -745,8 +745,8 @@ class PmsReservationService(Component):
             ._render_qweb_pdf(checkins.ids)[0]
         )
         base64EncodedStr = base64.b64encode(pdf)
-        PmsResponse = self.env.datamodels["pms.report.info"]
-        return PmsResponse(pdf=base64EncodedStr)
+        PmsResponse = self.env.datamodels["pms.report"]
+        return PmsResponse(binary=base64EncodedStr)
 
     @restapi.method(
         [
@@ -759,7 +759,7 @@ class PmsReservationService(Component):
             )
         ],
         auth="jwt_api_pms",
-        output_param=Datamodel("pms.report.info", is_list=False),
+        output_param=Datamodel("pms.report", is_list=False),
     )
     def print_checkin(self, reservation_id, checkin_partner_id):
         reservations = False
@@ -774,5 +774,5 @@ class PmsReservationService(Component):
             ._render_qweb_pdf(checkin_partner.id)[0]
         )
         base64EncodedStr = base64.b64encode(pdf)
-        PmsResponse = self.env.datamodels["pms.report.info"]
-        return PmsResponse(pdf=base64EncodedStr)
+        PmsResponse = self.env.datamodels["pms.report"]
+        return PmsResponse(binary=base64EncodedStr)
