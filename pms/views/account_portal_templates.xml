@@ -1,0 +1,17 @@
+<odoo>
+
+    <template
+        id="pms_proforma_invoice_template"
+        name="Invoice Proforma Portal Template"
+        inherit_id="account.portal_invoice_page"
+        priority="20"
+        primary="True"
+    >
+        <xpath expr="//iframe[@id='invoice_html']" position="attributes">
+            <attribute
+                name="t-att-src"
+            >invoice.get_proforma_portal_url(report_type='html')</attribute>
+        </xpath>
+    </template>
+
+</odoo>
