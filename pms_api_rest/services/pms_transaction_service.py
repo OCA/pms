@@ -365,8 +365,8 @@ class PmsTransactionService(Component):
                 "GET",
             )
         ],
-        input_param=Datamodel("pms.transaction.report.search.param", is_list=False),
-        output_param=Datamodel("pms.transaction.report", is_list=False),
+        input_param=Datamodel("pms.report.search.param", is_list=False),
+        output_param=Datamodel("pms.report", is_list=False),
         auth="jwt_api_pms",
     )
     def transactions_report(self, pms_transaction_report_search_param):
@@ -383,9 +383,5 @@ class PmsTransactionService(Component):
         result = report_wizard._export()
         file_name = result["xls_filename"]
         base64EncodedStr = result["xls_binary"]
-        PmsResponse = self.env.datamodels["pms.transaction.report"]
-        # REVIEW: Reuse pms.report.info by modifying the fields
-        # to support different types of documents?
-        # proposal: contentBase64 = fields.String,
-        # fileType = fields.String (pdf, xlsx, etc...)
+        PmsResponse = self.env.datamodels["pms.report"]
         return PmsResponse(fileName=file_name, binary=base64EncodedStr)
