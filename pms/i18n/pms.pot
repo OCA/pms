@@ -3856,6 +3856,12 @@ msgid "Error in autoinvoicing folio: "
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/pms_property.py:0
+#, python-format
+msgid "Error in autoinvoicing invoice: "
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/models/pms_checkin_partner.py:0
 #, python-format
 msgid ""
