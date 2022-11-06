@@ -527,9 +527,14 @@ class PmsFolioService(Component):
                                 else None,
                             )
                         )
+                    move_url = (
+                        move.get_proforma_portal_url()
+                        if move.state == "draft"
+                        else move.get_portal_url()
+                    )
                     portal_url = (
                         self.env["ir.config_parameter"].sudo().get_param("web.base.url")
-                        + move.get_portal_url()
+                        + move_url
                     )
                     invoices.append(
                         PmsFolioInvoiceInfo(
