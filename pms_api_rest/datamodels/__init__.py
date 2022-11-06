@@ -51,9 +51,8 @@ from . import res_lang
 from . import pms_account_payment_term
 
 from . import pms_room_closure_reason
-from . import pms_report
 from . import pms_cash_register
-from . import pms_transaction_report
+from . import pms_report
 from . import pms_folio_sale_line
 from . import pms_invoice_line
 from . import pms_mail
