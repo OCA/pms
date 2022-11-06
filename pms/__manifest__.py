@@ -94,6 +94,7 @@
         "views/account_move_line_views.xml",
         "report/proforma_report_templates.xml",
         "report/proforma_report.xml",
+        "views/account_portal_templates.xml",
     ],
     "demo": [
         "demo/pms_master_data.xml",

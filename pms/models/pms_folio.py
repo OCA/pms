@@ -1896,6 +1896,7 @@ class PmsFolio(models.Model):
             else partner_invoice.invoicing_policy
         )
 
+        invoice_date = False
         if date:
             invoice_date = date
         if partner_invoice_policy == "checkout":
@@ -1926,8 +1927,9 @@ class PmsFolio(models.Model):
                     datetime.date.today().month + 1,
                     month_day,
                 )
-        for vals in invoice_vals_list:
-            vals["invoice_date"] = invoice_date
+        if invoice_date:
+            for vals in invoice_vals_list:
+                vals["invoice_date"] = invoice_date
 
         # 3) Create invoices.
 
