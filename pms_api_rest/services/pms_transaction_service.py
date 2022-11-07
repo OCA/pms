@@ -111,7 +111,6 @@ class PmsTransactionService(Component):
                 0,
             )
             amount_result = total_inbound - total_outbound
-            amount_result = total_inbound - total_outbound
         for transaction in self.env["account.payment"].search(
             domain,
             order=pms_transactions_search_param.orderBy,
@@ -186,7 +185,7 @@ class PmsTransactionService(Component):
         input_param=Datamodel("pms.transaction.info", is_list=False),
         auth="jwt_api_pms",
     )
-    def create_transaction(self):
+    def create_transaction(self, pms_transaction_info):
         return True
 
     @restapi.method(
@@ -237,9 +236,9 @@ class PmsTransactionService(Component):
             state="open" if isOpen else "close",
             userId=statement.user_id.id,
             balance=statement.balance_start if isOpen else statement.balance_end_real,
-            dateTime=statement.create_date.strftime("%d/%m/%Y")
+            dateTime=statement.create_date.isoformat()
             if isOpen
-            else statement.date_done.strftime("%d/%m/%Y")
+            else statement.date_done.isoformat()
             if statement.date_done
             else None,
         )
@@ -248,7 +247,7 @@ class PmsTransactionService(Component):
         [
             (
                 [
-                    "/p/cash-register",
+                    "/cash-register",
                 ],
                 "POST",
             )
