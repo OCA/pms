@@ -28,7 +28,7 @@ class AccountPayment(models.Model):
                 else:
                     record.pms_api_transaction_type = "customer_outbound"
             elif record.partner_type == "supplier":
-                if record.payment_type == "inbound":
+                if record.payment_type == "outbound":
                     record.pms_api_transaction_type = "supplier_outbound"
                 else:
                     record.pms_api_transaction_type = "supplier_inbound"
