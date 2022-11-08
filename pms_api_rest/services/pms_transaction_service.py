@@ -31,7 +31,17 @@ class PmsTransactionService(Component):
     )
     def get_transactions(self, pms_transactions_search_param):
         result_transactions = []
-        domain_fields = [("state", "=", "posted")]
+        # In internal transfer payments, the APP only show
+        # the output payment, with the countrapart journal id
+        # (destinationJournalId), the domain ensure avoid
+        # get the input internal transfer payment
+        domain_fields = [
+            ("state", "=", "posted"),
+            "|",
+            ("is_internal_transfer", "=", False),
+            ("payment_type", "=", "outbound"),
+        ]
+
         available_journals = ()
         if pms_transactions_search_param.pmsPropertyId:
             available_journals = self.env["account.journal"].search(
@@ -117,6 +127,9 @@ class PmsTransactionService(Component):
             limit=pms_transactions_search_param.limit,
             offset=pms_transactions_search_param.offset,
         ):
+            destination_journal_id = False
+            if transaction.is_internal_transfer:
+                destination_journal_id = transaction.internal_transfer_id.journal_id.id
             result_transactions.append(
                 PmsTransactiontInfo(
                     id=transaction.id,
@@ -125,6 +138,7 @@ class PmsTransactionService(Component):
                     journalId=transaction.journal_id.id
                     if transaction.journal_id
                     else None,
+                    destinationJournalId=destination_journal_id or None,
                     date=transaction.date.strftime("%d/%m/%Y"),
                     partnerId=transaction.partner_id.id
                     if transaction.partner_id
@@ -160,11 +174,15 @@ class PmsTransactionService(Component):
     def get_transaction(self, transaction_id):
         PmsTransactiontInfo = self.env.datamodels["pms.transaction.info"]
         transaction = self.env["account.payment"].browse(transaction_id)
+        destination_journal_id = False
+        if transaction.is_internal_transfer:
+            destination_journal_id = transaction.internal_transfer_id.journal_id.id
         return PmsTransactiontInfo(
             id=transaction.id,
             name=transaction.name if transaction.name else None,
             amount=transaction.amount,
             journalId=transaction.journal_id.id if transaction.journal_id else None,
+            destinationJournalId=destination_journal_id or None,
             date=transaction.date.strftime("%d/%m/%Y"),
             partnerId=transaction.partner_id.id if transaction.partner_id else None,
             partnerName=transaction.partner_id.name if transaction.partner_id else None,
@@ -186,7 +204,57 @@ class PmsTransactionService(Component):
         auth="jwt_api_pms",
     )
     def create_transaction(self, pms_transaction_info):
-        return True
+        # TODO: FIX fron send data format ('%Y-%m-%d')
+        # use fields.Date.from_string(pms_transaction_info.date)
+        pay_date_wrong_format = pms_transaction_info.date
+        pay_date = datetime.strptime(pay_date_wrong_format, "%m/%d/%Y")
+        payment_type, partner_type = self._get_mapper_transaction_type(
+            pms_transaction_info.transactionType
+        )
+        journal = self.env["account.journal"].browse(pms_transaction_info.journalId)
+        is_internal_transfer = (
+            pms_transaction_info.transactionType == "internal_transfer"
+        )
+        partner_id = (
+            pms_transaction_info.partnerId
+            if pms_transaction_info.transactionType != "internal_transfer"
+            else journal.company_id.partner_id.id
+        )
+        vals = {
+            "amount": pms_transaction_info.amount,
+            "journal_id": pms_transaction_info.journalId,
+            "date": pay_date,
+            "partner_id": partner_id,
+            "ref": pms_transaction_info.reference,
+            "state": "draft",
+            "payment_type": payment_type,
+            "partner_type": partner_type,
+            "is_internal_transfer": is_internal_transfer,
+        }
+        if is_internal_transfer:
+            vals["partner_bank_id"] = (
+                self.env["account.journal"]
+                .browse(pms_transaction_info.destinationJournalId)
+                .bank_account_id.id
+            )
+        pay = self.env["account.payment"].create(vals)
+        pay.sudo().action_post()
+        if is_internal_transfer:
+            counterpart_vals = {
+                "amount": pms_transaction_info.amount,
+                "journal_id": pms_transaction_info.destinationJournalId,
+                "date": pay_date,
+                "partner_id": partner_id,
+                "ref": pms_transaction_info.reference,
+                "state": "draft",
+                "payment_type": "inbound",
+                "partner_type": partner_type,
+                "is_internal_transfer": is_internal_transfer,
+            }
+            countrepart_pay = self.env["account.payment"].create(counterpart_vals)
+            countrepart_pay.sudo().action_post()
+            pay.internal_transfer_id = countrepart_pay.id
+        return pay.id
 
     @restapi.method(
         [
@@ -201,7 +269,7 @@ class PmsTransactionService(Component):
         auth="jwt_api_pms",
     )
     def update_transaction(self, transaction_id):
-        return True
+        return transaction_id
 
     @restapi.method(
         [
@@ -384,3 +452,16 @@ class PmsTransactionService(Component):
         base64EncodedStr = result["xls_binary"]
         PmsResponse = self.env.datamodels["pms.report"]
         return PmsResponse(fileName=file_name, binary=base64EncodedStr)
+
+    def _get_mapper_transaction_type(self, transaction_type):
+        if transaction_type == "internal_transfer":
+            # counterpart is inbound supplier
+            return "outbound", "supplier"
+        elif transaction_type == "customer_inbound":
+            return "inbound", "customer"
+        elif transaction_type == "customer_outbound":
+            return "outbound", "customer"
+        elif transaction_type == "supplier_inbound":
+            return "inbound", "supplier"
+        elif transaction_type == "supplier_outbound":
+            return "outbound", "supplier"
