@@ -48,6 +48,9 @@ class PmsFolioService(Component):
                 reservationType=folio.reservation_type,
                 pendingAmount=folio.pending_amount,
                 lastCheckout=str(folio.last_checkout),
+                internalComment=folio.internal_comment
+                if folio.internal_comment
+                else None,
             )
         else:
             raise MissingError(_("Folio not found"))
@@ -360,6 +363,7 @@ class PmsFolioService(Component):
                 if pms_folio_info.agencyId
                 else False,
                 "reservation_type": pms_folio_info.reservationType,
+                "internal_comment": pms_folio_info.internalComment,
             }
             if pms_folio_info.partnerId:
                 vals.update(
