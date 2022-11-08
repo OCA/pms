@@ -436,6 +436,25 @@ class PmsFolioService(Component):
         [
             (
                 [
+                    "/p/<int:folio_id>",
+                ],
+                "PATCH",
+            )
+        ],
+        input_param=Datamodel("pms.folio.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def update_folio(self, folio_id, pms_folio_info):
+        folio = self.env["pms.folio"].browse(folio_id)
+        if folio:
+            folio.write({"internal_comment": pms_folio_info.internalComment})
+        else:
+            raise MissingError(_("Folio not found"))
+
+    @restapi.method(
+        [
+            (
+                [
                     "/<int:folio_id>/sale-lines",
                 ],
                 "GET",
