@@ -16,6 +16,11 @@ class AccountPayment(models.Model):
         help="Transaction type for PMS API",
         compute="_compute_pms_api_transaction_type",
     )
+    internal_transfer_id = fields.Many2one(
+        "account.payment",
+        string="Internal Transfer Relation",
+        help="Internal transfer relation",
+    )
 
     @api.depends("payment_type", "partner_type")
     def _compute_pms_api_transaction_type(self):
