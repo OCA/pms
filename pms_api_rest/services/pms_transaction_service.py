@@ -139,7 +139,9 @@ class PmsTransactionService(Component):
                     if transaction.journal_id
                     else None,
                     destinationJournalId=destination_journal_id or None,
-                    date=transaction.date.strftime("%d/%m/%Y"),
+                    date=datetime.combine(
+                        transaction.date, datetime.min.time()
+                    ).isoformat(),
                     partnerId=transaction.partner_id.id
                     if transaction.partner_id
                     else None,
@@ -183,7 +185,7 @@ class PmsTransactionService(Component):
             amount=transaction.amount,
             journalId=transaction.journal_id.id if transaction.journal_id else None,
             destinationJournalId=destination_journal_id or None,
-            date=transaction.date.strftime("%d/%m/%Y"),
+            date=datetime.combine(transaction.date, datetime.min.time()).isoformat(),
             partnerId=transaction.partner_id.id if transaction.partner_id else None,
             partnerName=transaction.partner_id.name if transaction.partner_id else None,
             reference=transaction.ref if transaction.ref else None,
@@ -438,8 +440,12 @@ class PmsTransactionService(Component):
     )
     def transactions_report(self, pms_transaction_report_search_param):
         pms_property_id = pms_transaction_report_search_param.pmsPropertyId
-        date_from = pms_transaction_report_search_param.dateFrom
-        date_to = pms_transaction_report_search_param.dateTo
+        date_from = (
+            datetime.strptime(pms_transaction_report_search_param.dateFrom, "%Y-%m-%d"),
+        )
+        date_to = (
+            datetime.strptime(pms_transaction_report_search_param.dateTo, "%Y-%m-%d"),
+        )
         report_wizard = self.env["cash.daily.report.wizard"].create(
             {
                 "date_start": date_from,
