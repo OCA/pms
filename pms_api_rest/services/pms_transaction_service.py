@@ -206,10 +206,7 @@ class PmsTransactionService(Component):
         auth="jwt_api_pms",
     )
     def create_transaction(self, pms_transaction_info):
-        # TODO: FIX fron send data format ('%Y-%m-%d')
-        # use fields.Date.from_string(pms_transaction_info.date)
-        pay_date_wrong_format = pms_transaction_info.date
-        pay_date = datetime.strptime(pay_date_wrong_format, "%m/%d/%Y")
+        pay_date = fields.Date.from_string(pms_transaction_info.date)
         payment_type, partner_type = self._get_mapper_transaction_type(
             pms_transaction_info.transactionType
         )
