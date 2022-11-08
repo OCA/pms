@@ -437,12 +437,9 @@ class PmsTransactionService(Component):
     )
     def transactions_report(self, pms_transaction_report_search_param):
         pms_property_id = pms_transaction_report_search_param.pmsPropertyId
-        date_from = (
-            datetime.strptime(pms_transaction_report_search_param.dateFrom, "%Y-%m-%d"),
-        )
-        date_to = (
-            datetime.strptime(pms_transaction_report_search_param.dateTo, "%Y-%m-%d"),
-        )
+        date_from = fields.Date.from_string(pms_transaction_report_search_param.dateFrom)
+        date_to = fields.Date.from_string(pms_transaction_report_search_param.dateTo)
+
         report_wizard = self.env["cash.daily.report.wizard"].create(
             {
                 "date_start": date_from,
