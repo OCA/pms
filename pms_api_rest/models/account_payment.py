@@ -16,10 +16,10 @@ class AccountPayment(models.Model):
         help="Transaction type for PMS API",
         compute="_compute_pms_api_transaction_type",
     )
-    internal_transfer_id = fields.Many2one(
-        "account.payment",
-        string="Internal Transfer Relation",
-        help="Internal transfer relation",
+    pms_api_counterpart_payment_id = fields.Many2one(
+        comodel_name="account.payment",
+        string="Int. Transfer Counterpart",
+        help="Payment counterpart for internal transfer",
     )
 
     @api.depends("payment_type", "partner_type")
