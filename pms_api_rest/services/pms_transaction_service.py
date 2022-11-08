@@ -31,15 +31,8 @@ class PmsTransactionService(Component):
     )
     def get_transactions(self, pms_transactions_search_param):
         result_transactions = []
-        # In internal transfer payments, the APP only show
-        # the output payment, with the countrapart journal id
-        # (destinationJournalId), the domain ensure avoid
-        # get the input internal transfer payment
         domain_fields = [
             ("state", "=", "posted"),
-            "|",
-            ("is_internal_transfer", "=", False),
-            ("payment_type", "=", "outbound"),
         ]
 
         available_journals = ()
@@ -73,21 +66,22 @@ class PmsTransactionService(Component):
             date_to = fields.Date.from_string(pms_transactions_search_param.dateEnd)
             domain_fields.extend(
                 [
-                    "&",
                     ("date", ">=", date_from),
                     ("date", "<", date_to),
                 ]
             )
         if pms_transactions_search_param.transactionMethodId:
             domain_fields.append(
-                ("journal_id", "=", pms_transactions_search_param.transactionMethodId)
+                ("journal_id", "=", pms_transactions_search_param.transactionMethodId),
             )
 
         if pms_transactions_search_param.transactionType:
             domain_fields.append(
-                "pms_api_transaction_type",
-                "=",
-                pms_transactions_search_param.transactionType,
+                (
+                    "pms_api_transaction_type",
+                    "=",
+                    pms_transactions_search_param.transactionType,
+                )
             )
 
         if domain_filter:
@@ -97,7 +91,6 @@ class PmsTransactionService(Component):
 
         PmsTransactionResults = self.env.datamodels["pms.transaction.results"]
         PmsTransactiontInfo = self.env.datamodels["pms.transaction.info"]
-
         total_transactions = self.env["account.payment"].search_count(domain)
         group_transactions = self.env["account.payment"].read_group(
             domain=domain, fields=["amount:sum"], groupby=["payment_type"]
@@ -121,15 +114,34 @@ class PmsTransactionService(Component):
                 0,
             )
             amount_result = total_inbound - total_outbound
-        for transaction in self.env["account.payment"].search(
+        transactions = self.env["account.payment"].search(
             domain,
             order=pms_transactions_search_param.orderBy,
             limit=pms_transactions_search_param.limit,
             offset=pms_transactions_search_param.offset,
-        ):
+        )
+        for transaction in transactions:
+            # In internal transfer payments, the APP only show
+            # the outbound payment, with the countrapart journal id
+            # (destinationJournalId), the domain ensure avoid
+            # get the input internal transfer payment
             destination_journal_id = False
             if transaction.is_internal_transfer:
-                destination_journal_id = transaction.internal_transfer_id.journal_id.id
+                outbound_transaction = (
+                    transaction
+                    if transaction.payment_type == "outbound"
+                    else transaction.pms_api_counterpart_payment_id
+                )
+                inbound_transaction = (
+                    transaction
+                    if transaction.payment_type == "inbound"
+                    else transaction.pms_api_counterpart_payment_id
+                )
+                if outbound_transaction:
+                    transaction = outbound_transaction
+                if inbound_transaction:
+                    destination_journal_id = inbound_transaction.journal_id.id
+
             result_transactions.append(
                 PmsTransactiontInfo(
                     id=transaction.id,
@@ -178,7 +190,9 @@ class PmsTransactionService(Component):
         transaction = self.env["account.payment"].browse(transaction_id)
         destination_journal_id = False
         if transaction.is_internal_transfer:
-            destination_journal_id = transaction.internal_transfer_id.journal_id.id
+            destination_journal_id = (
+                transaction.pms_api_counterpart_payment_id.journal_id.id
+            )
         return PmsTransactiontInfo(
             id=transaction.id,
             name=transaction.name if transaction.name else None,
@@ -252,7 +266,7 @@ class PmsTransactionService(Component):
             }
             countrepart_pay = self.env["account.payment"].create(counterpart_vals)
             countrepart_pay.sudo().action_post()
-            pay.internal_transfer_id = countrepart_pay.id
+            pay.pms_api_counterpart_payment_id = countrepart_pay.id
         return pay.id
 
     @restapi.method(
@@ -437,7 +451,9 @@ class PmsTransactionService(Component):
     )
     def transactions_report(self, pms_transaction_report_search_param):
         pms_property_id = pms_transaction_report_search_param.pmsPropertyId
-        date_from = fields.Date.from_string(pms_transaction_report_search_param.dateFrom)
+        date_from = fields.Date.from_string(
+            pms_transaction_report_search_param.dateFrom
+        )
         date_to = fields.Date.from_string(pms_transaction_report_search_param.dateTo)
 
         report_wizard = self.env["cash.daily.report.wizard"].create(
