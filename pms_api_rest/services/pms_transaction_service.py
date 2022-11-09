@@ -320,6 +320,7 @@ class PmsTransactionService(Component):
                 [
                     ("journal_id", "=", cash_register_search_param.journalId),
                 ],
+                order="date desc, id desc",
                 limit=1,
             )
         )
