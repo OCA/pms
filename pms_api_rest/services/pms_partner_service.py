@@ -51,22 +51,20 @@ class PmsPartnerService(Component):
                 domain.append(("is_company", "=", False))
                 domain.append(("is_agency", "=", False))
         if pms_partner_search_params.filter:
-            domain.append(("display_name", "ilike", pms_partner_search_params.filter))
-        if pms_partner_search_params.vatNumberOrName:
             subdomains = [
-                [("vat", "ilike", pms_partner_search_params.vatNumberOrName)],
+                [("vat", "like", pms_partner_search_params.filter)],
                 [
                     (
                         "aeat_identification",
-                        "ilike",
-                        pms_partner_search_params.vatNumberOrName,
+                        "like",
+                        pms_partner_search_params.filter,
                     )
                 ],
-                [("display_name", "ilike", pms_partner_search_params.vatNumberOrName)],
+                [("display_name", "like", pms_partner_search_params.filter)],
+                [("email", "like", pms_partner_search_params.filter)],
             ]
-            domain_vat_or_name = expression.OR(subdomains)
-            domain = expression.AND([domain, domain_vat_or_name])
-
+            domain_partner_search_field = expression.OR(subdomains)
+            domain = expression.AND([domain, domain_partner_search_field])
         PmsPartnerResults = self.env.datamodels["pms.partner.results"]
         PmsPartnerInfo = self.env.datamodels["pms.partner.info"]
         total_partners = self.env["res.partner"].search_count(domain)
