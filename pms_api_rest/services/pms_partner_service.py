@@ -52,16 +52,16 @@ class PmsPartnerService(Component):
                 domain.append(("is_agency", "=", False))
         if pms_partner_search_params.filter:
             subdomains = [
-                [("vat", "like", pms_partner_search_params.filter)],
+                [("vat", "ilike", pms_partner_search_params.filter)],
                 [
                     (
                         "aeat_identification",
-                        "like",
+                        "ilike",
                         pms_partner_search_params.filter,
                     )
                 ],
-                [("display_name", "like", pms_partner_search_params.filter)],
-                [("email", "like", pms_partner_search_params.filter)],
+                [("display_name", "ilike", pms_partner_search_params.filter)],
+                [("email", "ilike", pms_partner_search_params.filter)],
             ]
             domain_partner_search_field = expression.OR(subdomains)
             domain = expression.AND([domain, domain_partner_search_field])
