@@ -996,7 +996,7 @@ class FolioSaleLine(models.Model):
             should be added to the returned invoice line
         """
         self.ensure_one()
-        if (qty > self.qty_to_invoice or qty < 1) and not self.display_type:
+        if (qty > self.qty_to_invoice) and not self.display_type:
             raise ValueError(
                 _(
                     "The qty (%s) is wrong." % qty
