@@ -61,6 +61,8 @@ class PmsRoomTypeService(Component):
                     defaultCode=room.default_code,
                     price=round(room.list_price, 2),
                     classId=room.class_id,
+                    defaultMaxAvail=room.default_max_avail,
+                    defaultQuota=room.default_quota,
                 )
             )
         return result_rooms
