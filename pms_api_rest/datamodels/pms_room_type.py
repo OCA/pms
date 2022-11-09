@@ -17,3 +17,5 @@ class PmsRoomTypeInfo(Datamodel):
     defaultCode = fields.String(required=False, allow_none=True)
     classId = fields.Integer(required=False, allow_none=True)
     price = fields.Float(required=False, allow_none=True)
+    defaultMaxAvail = fields.Integer(required=False, allow_none=True)
+    defaultQuota = fields.Integer(required=False, allow_none=True)
