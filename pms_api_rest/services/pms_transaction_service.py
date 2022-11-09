@@ -1,4 +1,7 @@
+import logging
 from datetime import datetime
+
+import pytz
 
 from odoo import _, fields
 from odoo.exceptions import ValidationError
@@ -8,6 +11,8 @@ from odoo.tools import get_lang
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
+
+_logger = logging.getLogger(__name__)
 
 
 class PmsTransactionService(Component):
@@ -40,10 +45,16 @@ class PmsTransactionService(Component):
                 ("journal_id", "=", pms_transactions_search_param.transactionMethodId),
             )
         elif pms_transactions_search_param.pmsPropertyId:
-            pms_property = self.env['pms.property'].browse(pms_transactions_search_param.pmsPropertyId)
-            available_journals = pms_property._get_payment_methods(automatic_included=True)
+            pms_property = self.env["pms.property"].browse(
+                pms_transactions_search_param.pmsPropertyId
+            )
+            available_journals = pms_property._get_payment_methods(
+                automatic_included=True
+            )
             # REVIEW: avoid send to app generic company journals
-            available_journals = available_journals.filtered(lambda j: j.pms_property_ids)
+            available_journals = available_journals.filtered(
+                lambda j: j.pms_property_ids
+            )
             domain_fields.append(("journal_id", "in", available_journals.ids))
         domain_filter = list()
         if pms_transactions_search_param.filter:
@@ -121,6 +132,12 @@ class PmsTransactionService(Component):
             # get the input internal transfer payment
             destination_journal_id = False
             if transaction.is_internal_transfer:
+                if (
+                    transaction.payment_type == "inbound"
+                    and transaction.pms_api_counterpart_payment_id.id
+                    in transactions.ids
+                ):
+                    continue
                 outbound_transaction = (
                     transaction
                     if transaction.payment_type == "outbound"
@@ -131,8 +148,11 @@ class PmsTransactionService(Component):
                     if transaction.payment_type == "inbound"
                     else transaction.pms_api_counterpart_payment_id
                 )
-                if outbound_transaction:
-                    transaction = outbound_transaction
+                transaction = (
+                    outbound_transaction
+                    if outbound_transaction
+                    else inbound_transaction
+                )
                 if inbound_transaction:
                     destination_journal_id = inbound_transaction.journal_id.id
 
@@ -261,6 +281,7 @@ class PmsTransactionService(Component):
             countrepart_pay = self.env["account.payment"].create(counterpart_vals)
             countrepart_pay.sudo().action_post()
             pay.pms_api_counterpart_payment_id = countrepart_pay.id
+            countrepart_pay.pms_api_counterpart_payment_id = pay.id
         return pay.id
 
     @restapi.method(
@@ -302,16 +323,19 @@ class PmsTransactionService(Component):
                 limit=1,
             )
         )
-
         CashRegister = self.env.datamodels["pms.cash.register.info"]
         if not statement:
             return CashRegister()
         isOpen = True if statement.state == "open" else False
+        timezone = pytz.timezone(self.env.context.get("tz") or "UTC")
+        create_date_utc = pytz.UTC.localize(statement.create_date)
+        create_date = create_date_utc.astimezone(timezone)
+
         return CashRegister(
             state="open" if isOpen else "close",
             userId=statement.user_id.id,
             balance=statement.balance_start if isOpen else statement.balance_end_real,
-            dateTime=statement.create_date.isoformat()
+            dateTime=create_date.isoformat()
             if isOpen
             else statement.date_done.isoformat()
             if statement.date_done
@@ -399,32 +423,52 @@ class PmsTransactionService(Component):
                 limit=1,
             )
         )
-        if round(statement.balance_end, 2) == round(amount, 2):
-            statement.sudo().balance_end_real = amount
-            statement.sudo().button_post()
+        session_payments = (
+            self.env["account.payment"]
+            .sudo()
+            .search(
+                [
+                    ("journal_id", "=", journal_id),
+                    ("pms_property_id", "=", pms_property_id),
+                    ("state", "=", "posted"),
+                    ("create_date", ">=", statement.create_date),
+                ]
+            )
+        )
+        session_payments_amount = sum(
+            session_payments.filtered(lambda x: x.payment_type == "inbound").mapped(
+                "amount"
+            )
+        ) - sum(
+            session_payments.filtered(lambda x: x.payment_type == "outbound").mapped(
+                "amount"
+            )
+        )
+
+        compute_end_balance = round(
+            statement.balance_start + session_payments_amount, 2
+        )
+        if round(compute_end_balance, 2) == round(amount, 2):
+            self._session_create_statement_lines(
+                session_payments, statement, amount, auto_conciliation=True
+            )
+            if statement.all_lines_reconciled:
+                statement.sudo().button_validate_or_action()
             return {
                 "result": True,
                 "diff": 0,
             }
         elif force:
-            # Not call to button post to avoid create profit/loss line
-            # (_check_balance_end_real_same_as_computed)
-            if not statement.name:
-                statement.sudo()._set_next_sequence()
-            statement.sudo().balance_end_real = amount
-            statement.write({"state": "posted"})
-            lines_of_moves_to_post = statement.line_ids.filtered(
-                lambda line: line.move_id.state != "posted"
+            self._session_create_statement_lines(
+                session_payments, statement, amount, auto_conciliation=False
             )
-            if lines_of_moves_to_post:
-                lines_of_moves_to_post.move_id._post(soft=False)
-            diff = round(amount - statement.balance_end, 2)
+            diff = round(amount - compute_end_balance, 2)
             return {
                 "result": True,
                 "diff": diff,
             }
         else:
-            diff = round(amount - statement.balance_end, 2)
+            diff = round(amount - compute_end_balance, 2)
             return {
                 "result": False,
                 "diff": diff,
@@ -475,3 +519,66 @@ class PmsTransactionService(Component):
             return "inbound", "supplier"
         elif transaction_type == "supplier_outbound":
             return "outbound", "supplier"
+
+    def _session_create_statement_lines(
+        self, session_payments, statement, amount, auto_conciliation
+    ):
+        payment_statement_line_match_dict = []
+        for record in session_payments:
+            journal = record.journal_id
+            vals = {
+                "date": record.date,
+                "journal_id": journal.id,
+                "amount": record.amount
+                if record.payment_type == "inbound"
+                else -record.amount,
+                "payment_ref": record.ref,
+                "partner_id": record.partner_id.id,
+                "pms_property_id": record.pms_property_id.id,
+                "statement_id": statement.id,
+            }
+            statement_line = self.env["account.bank.statement.line"].sudo().create(vals)
+            payment_statement_line_match_dict.append(
+                {
+                    "payment_id": record.id,
+                    "statement_line_id": statement_line.id,
+                }
+            )
+
+        # Not call to button post to avoid create profit/loss line
+        # (_check_balance_end_real_same_as_computed)
+        if not statement.name:
+            statement.sudo()._set_next_sequence()
+        statement.sudo().balance_end_real = amount
+        statement.write({"state": "posted"})
+        lines_of_moves_to_post = statement.line_ids.filtered(
+            lambda line: line.move_id.state != "posted"
+        )
+        if lines_of_moves_to_post:
+            lines_of_moves_to_post.move_id._post(soft=False)
+
+        if auto_conciliation:
+            for match in payment_statement_line_match_dict:
+                payment = self.env["account.payment"].sudo().browse(match["payment_id"])
+                statement_line = (
+                    self.env["account.bank.statement.line"]
+                    .sudo()
+                    .browse(match["statement_line_id"])
+                )
+                payment_move_line = payment.move_id.line_ids.filtered(
+                    lambda x: x.reconciled is False
+                    and x.journal_id == journal
+                    and (
+                        x.account_id == journal.payment_debit_account_id
+                        or x.account_id == journal.payment_credit_account_id
+                    )
+                )
+                statement_line_move = statement_line.move_id
+                statement_move_line = statement_line_move.line_ids.filtered(
+                    lambda line: line.account_id.reconcile
+                    or line.account_id == line.journal_id.suspense_account_id
+                )
+                if payment_move_line and statement_move_line:
+                    statement_move_line.account_id = payment_move_line.account_id
+                    lines_to_reconcile = payment_move_line + statement_move_line
+                    lines_to_reconcile.reconcile()
