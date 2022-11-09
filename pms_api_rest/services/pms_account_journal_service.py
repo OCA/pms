@@ -31,10 +31,10 @@ class PmsAccountJournalService(Component):
         if not pms_property:
             pass
         else:
-            for method in pms_property._get_payment_methods(automatic_included=True):
-                payment_method = self.env["account.journal"].search(
-                    [("id", "=", method.id)]
-                )
+            for payment_method in pms_property._get_payment_methods(automatic_included=True):
+                # REVIEW: avoid send to app generic company journals
+                if not payment_method.pms_property_ids:
+                    continue
                 result_account_journals.append(
                     PmsAccountJournalInfo(
                         id=payment_method.id,
