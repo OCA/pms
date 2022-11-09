@@ -76,7 +76,7 @@ class PmsTransactionService(Component):
             domain_fields.extend(
                 [
                     ("date", ">=", date_from),
-                    ("date", "<", date_to),
+                    ("date", "<=", date_to),
                 ]
             )
 
