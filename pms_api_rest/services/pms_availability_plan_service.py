@@ -171,10 +171,8 @@ class PmsAvailabilityPlanService(Component):
                         closed=rule["closed"],
                         closedDeparture=rule["closed_departure"],
                         closedArrival=rule["closed_arrival"],
-                        quota=rule["quota"] if rule["quota"] != -1 else 0,
-                        maxAvailability=rule["max_avail"]
-                        if rule["max_avail"] != -1
-                        else 0,
+                        quota=rule["quota"],
+                        maxAvailability=rule["max_avail"],
                         availabilityPlanId=availability_plan_id,
                     )
                     result.append(availability_plan_rule_info)
