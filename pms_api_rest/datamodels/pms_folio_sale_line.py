@@ -11,6 +11,7 @@ class PmsFolioSaleInfo(Datamodel):
     qtyToInvoice = fields.Float(required=False, allow_none=True)
     qtyInvoiced = fields.Float(required=False, allow_none=True)
     priceTotal = fields.Float(required=False, allow_none=True)
+    discount = fields.Float(required=False, allow_none=True)
     productQty = fields.Float(required=False, allow_none=True)
     reservationId = fields.Integer(required=False, allow_none=True)
     serviceId = fields.Integer(required=False, allow_none=True)
