@@ -488,6 +488,7 @@ class PmsFolioService(Component):
                             priceTotal=sale_line.price_total
                             if sale_line.price_total
                             else None,
+                            discount=sale_line.discount if sale_line.discount else None,
                             productQty=sale_line.product_uom_qty
                             if sale_line.product_uom_qty
                             else None,
@@ -541,6 +542,9 @@ class PmsFolioService(Component):
                                 else None,
                                 total=move_line.price_total
                                 if move_line.price_total
+                                else None,
+                                discount=move_line.discount
+                                if move_line.discount
                                 else None,
                                 displayType=move_line.display_type
                                 if move_line.display_type
