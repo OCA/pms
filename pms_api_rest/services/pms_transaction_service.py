@@ -313,16 +313,8 @@ class PmsTransactionService(Component):
         auth="jwt_api_pms",
     )
     def get_cash_register(self, cash_register_search_param):
-        statement = (
-            self.env["account.bank.statement"]
-            .sudo()
-            .search(
-                [
-                    ("journal_id", "=", cash_register_search_param.journalId),
-                ],
-                order="date desc, id desc",
-                limit=1,
-            )
+        statement = self._get_last_cash_session(
+            journal_id=cash_register_search_param.journalId,
         )
         CashRegister = self.env.datamodels["pms.cash.register.info"]
         if not statement:
@@ -382,15 +374,9 @@ class PmsTransactionService(Component):
         )
 
     def _action_open_cash_session(self, pms_property_id, amount, journal_id, force):
-        statement = (
-            self.env["account.bank.statement"]
-            .sudo()
-            .search(
-                [
-                    ("journal_id", "=", journal_id),
-                ],
-                limit=1,
-            )
+        statement = self._get_last_cash_session(
+            journal_id=journal_id,
+            pms_property_id=pms_property_id,
         )
         if round(statement.balance_end_real, 2) == round(amount, 2) or force:
             self.env["account.bank.statement"].sudo().create(
@@ -412,17 +398,9 @@ class PmsTransactionService(Component):
             return {"result": False, "diff": diff}
 
     def _action_close_cash_session(self, pms_property_id, amount, journal_id, force):
-        statement = (
-            self.env["account.bank.statement"]
-            .sudo()
-            .search(
-                [
-                    ("journal_id", "=", journal_id),
-                    ("state", "=", "open"),
-                    ("pms_property_id", "=", pms_property_id),
-                ],
-                limit=1,
-            )
+        statement = self._get_last_cash_session(
+            journal_id=journal_id,
+            pms_property_id=pms_property_id,
         )
         session_payments = (
             self.env["account.payment"]
@@ -583,3 +561,17 @@ class PmsTransactionService(Component):
                     statement_move_line.account_id = payment_move_line.account_id
                     lines_to_reconcile = payment_move_line + statement_move_line
                     lines_to_reconcile.reconcile()
+
+    def _get_last_cash_session(self, journal_id, pms_property_id=False):
+        domain = [("journal_id", "=", journal_id)]
+        if pms_property_id:
+            domain.append(("pms_property_id", "=", pms_property_id))
+        return (
+            self.env["account.bank.statement"]
+            .sudo()
+            .search(
+                domain,
+                order="date desc, id desc",
+                limit=1,
+            )
+        )
