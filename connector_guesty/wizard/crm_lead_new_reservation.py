@@ -54,32 +54,33 @@ class WizCrmLeadNewReservation(models.TransientModel):
         ).unlink()
 
         no_nights = (self.check_out - self.check_in).days
-
+        backend = self.env.company.guesty_backend_id
         for _prop in property_ids:
-            _product = (
-                self.env.company.guesty_backend_id.reservation_product_id.with_context(
+            try:
+                _product = backend.reservation_product_id.with_context(
                     pricelist=self.price_list_id.id,
                     property_id=_prop,
                     reservation_start=self.check_in,
                     reservation_stop=self.check_out,
                     reservation_date=datetime.datetime.now(),
                 )
-            )
 
-            # noinspection PyProtectedMember
-            _product.with_context(price_source="local")._compute_product_price()
-            custom_price = _product.price
+                # noinspection PyProtectedMember
+                _product.with_context(price_source="local")._compute_product_price()
+                custom_price = _product.price
 
-            self.env["crm.listing.availability"].sudo().create(
-                {
-                    "crm_lead_id": self.crm_lead_id.id,
-                    "property_id": _prop.id,
-                    "price": custom_price,
-                    "currency": self.price_list_id.currency_id.name,
-                    "no_nights": no_nights,
-                    "total_price": no_nights * custom_price,
-                }
-            )
+                self.env["crm.listing.availability"].sudo().create(
+                    {
+                        "crm_lead_id": self.crm_lead_id.id,
+                        "property_id": _prop.id,
+                        "price": custom_price,
+                        "currency": self.price_list_id.currency_id.name,
+                        "no_nights": no_nights,
+                        "total_price": no_nights * custom_price,
+                    }
+                )
+            except Exception as ex:
+                _log.error(ex)
 
         self.write({"state": "availability"})
         action = self.crm_lead_id.action_new_quotation_reservation()

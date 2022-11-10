@@ -324,6 +324,7 @@ class PmsReservation(models.Model):
                         "lastUpdatedAt",
                         "money",
                         "nightsCount",
+                        "confirmationCode",
                     ]
                 )
             },

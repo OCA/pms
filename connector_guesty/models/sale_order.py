@@ -159,9 +159,11 @@ class SaleOrder(models.Model):
             if not self.has_to_be_paid():
                 reservations.action_confirm()
 
-        if self.manually_confirmed:
-            try:
-                self.send_manually_confirmed_email()
-            except Exception as e:
-                _log.error(e)
+        # removed because it causes to go back to waiting_approval
+        # todo: Check more in deep
+        # if self.manually_confirmed:
+        #     try:
+        #         self.send_manually_confirmed_email()
+        #     except Exception as e:
+        #         _log.error(e)
         return original_return
