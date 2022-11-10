@@ -1,5 +1,6 @@
 # Copyright (C) 2021 Casai (https://www.casai.com)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import datetime
 import logging
 import re
 import uuid
@@ -56,14 +57,18 @@ class CrmLead(models.Model):
         return lead
 
     def action_new_quotation(self):
-        # if self.partner_id and self.env.company.guesty_backend_id:
-        #     action = self.action_new_quotation_reservation()
-        #     action["context"] = {}
-        #     action["context"]["default_crm_lead_id"] = self.id
-        #     action["context"]["default_check_in"] = datetime.datetime.today()
-        #     action["context"]["default_check_out"] = datetime.datetime.today()
-        #     return action
-        # ============ DEPRECATED ===========
+        wizard_enabled = self.env["ir.config_parameter"].get_param(
+            "quotation_reservation_enabled", "0"
+        )
+
+        if self.partner_id and wizard_enabled == "1":
+            action = self.action_new_quotation_reservation()
+            action["context"] = {}
+            action["context"]["default_crm_lead_id"] = self.id
+            action["context"]["default_check_in"] = datetime.datetime.today()
+            action["context"]["default_check_out"] = datetime.datetime.today()
+            return action
+
         return super().action_new_quotation()
 
     def action_new_quotation_reservation(self):
