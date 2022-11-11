@@ -40,3 +40,4 @@ class PmsTransactionInfo(Datamodel):
     transactionType = fields.String(required=False, allow_none=True)
     # REVIEW: Fields to avoid?:
     partnerName = fields.String(required=False, allow_none=True)
+    isReconcilied = fields.Boolean(required=False, allow_none=True)
