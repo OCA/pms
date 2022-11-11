@@ -179,6 +179,8 @@ class PmsTransactionService(Component):
                     if transaction.create_uid
                     else None,
                     transactionType=transaction.pms_api_transaction_type or None,
+                    # TODO: calculate correctly this field
+                    isReconcilied=True,
                 )
             )
         return PmsTransactionResults(
@@ -296,7 +298,7 @@ class PmsTransactionService(Component):
         input_param=Datamodel("pms.transaction.info", is_list=False),
         auth="jwt_api_pms",
     )
-    def update_transaction(self, transaction_id):
+    def update_transaction(self, transaction_id, pms_transaction_info):
         return transaction_id
 
     @restapi.method(
