@@ -495,6 +495,7 @@
                                         optional="show"
                                     />
                                     <field name="price_total" widget="monetary" />
+                                    <field name="default_invoice_to" optional="show" />
                                     <field name="state" invisible="1" />
                                     <field name="invoice_status" invisible="1" />
                                     <field name="currency_id" invisible="1" />

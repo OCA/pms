@@ -501,6 +501,9 @@ class PmsFolioService(Component):
                             displayType=sale_line.display_type
                             if sale_line.display_type
                             else None,
+                            defaultInvoiceTo=sale_line.default_invoice_to
+                            if sale_line.default_invoice_to
+                            else None,
                         )
                     )
 
