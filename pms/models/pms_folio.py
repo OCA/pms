@@ -622,11 +622,9 @@ class PmsFolio(models.Model):
             folio_lines_to_invoice = folio.sale_line_ids.filtered(
                 lambda l: l.id in list(lines_to_invoice.keys())
             )
-            folio._set_default_partner_invoice_id(
-                folio_lines_to_invoice, partner_invoice_id
-            )
             groups_invoice_lines = folio._get_groups_invoice_lines(
                 lines_to_invoice=folio_lines_to_invoice,
+                partner_invoice_id=partner_invoice_id,
             )
             for group in groups_invoice_lines:
                 folio = folio.with_company(folio.company_id)
@@ -693,49 +691,37 @@ class PmsFolio(models.Model):
                 invoice_vals_list.append(invoice_vals)
         return invoice_vals_list
 
-    def _get_groups_invoice_lines(self, lines_to_invoice):
+    def _get_groups_invoice_lines(self, lines_to_invoice, partner_invoice_id=False):
         self.ensure_one()
         groups_invoice_lines = []
-        partners = lines_to_invoice.mapped("default_invoice_to")
-        for partner in partners:
+        if partner_invoice_id:
             groups_invoice_lines.append(
                 {
-                    "partner_id": partner.id,
-                    "lines": lines_to_invoice.filtered(
-                        lambda l: l.default_invoice_to == partner
-                    ),
+                    "partner_id": partner_invoice_id,
+                    "lines": lines_to_invoice,
                 }
             )
+        else:
+            partners = lines_to_invoice.mapped("default_invoice_to")
+            for partner in partners:
+                groups_invoice_lines.append(
+                    {
+                        "partner_id": partner.id,
+                        "lines": lines_to_invoice.filtered(
+                            lambda l: l.default_invoice_to == partner
+                        ),
+                    }
+                )
+            if any(not line.default_invoice_to for line in lines_to_invoice):
+                groups_invoice_lines.append(
+                    {
+                        "partner_id": self.env.ref("pms.various_pms_partner").id,
+                        "lines": lines_to_invoice.filtered(
+                            lambda l: not l.default_invoice_to
+                        ),
+                    }
+                )
         return groups_invoice_lines
-
-    def _set_default_partner_invoice_id(
-        self, lines_to_invoice, folio_partner_invoice_id=False
-    ):
-        # By priotiy:
-        #   1º- Partner set in parameter,
-        #   2º- Partner in default_invoice_to in line
-        #   3º- Partner in folio,
-        #   4º- Partner in checkins,
-        #   5º- Generic various partner
-        self.ensure_one()
-        for line in lines_to_invoice:
-            if not folio_partner_invoice_id and line.default_invoice_to:
-                folio_partner_invoice_id = line.default_invoice_to
-            if (
-                not folio_partner_invoice_id
-                and self.partner_id
-                and self.partner_id._check_enought_invoice_data()
-                and not self.partner_id.is_agency
-            ):
-                folio_partner_invoice_id = self.partner_id.id
-            checkin_invoice_partner = self.checkin_partner_ids.filtered(
-                lambda c: c.partner_id and c.partner_id._check_enought_invoice_data()
-            )
-            if not folio_partner_invoice_id and checkin_invoice_partner:
-                folio_partner_invoice_id = checkin_invoice_partner[0].partner_id
-            if not folio_partner_invoice_id:
-                folio_partner_invoice_id = self.env.ref("pms.various_pms_partner").id
-            line.default_invoice_to = folio_partner_invoice_id
 
     def _get_tax_amount_by_group(self):
         self.ensure_one()
