@@ -4,7 +4,7 @@ from datetime import datetime
 import pytz
 
 from odoo import _, fields
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 from odoo.osv import expression
 from odoo.tools import get_lang
 
@@ -179,8 +179,7 @@ class PmsTransactionService(Component):
                     if transaction.create_uid
                     else None,
                     transactionType=transaction.pms_api_transaction_type or None,
-                    # TODO: calculate correctly this field
-                    isReconcilied=True,
+                    isReconcilied=transaction.reconciled_statements_count > 0,
                 )
             )
         return PmsTransactionResults(
@@ -221,6 +220,7 @@ class PmsTransactionService(Component):
             reference=transaction.ref if transaction.ref else None,
             createUid=transaction.create_uid.id if transaction.create_uid else None,
             transactionType=transaction.pms_api_transaction_type or None,
+            isReconcilied=transaction.reconciled_statements_count > 0,
         )
 
     @restapi.method(
@@ -299,7 +299,94 @@ class PmsTransactionService(Component):
         auth="jwt_api_pms",
     )
     def update_transaction(self, transaction_id, pms_transaction_info):
-        return transaction_id
+        transaction = self.env["account.payment"].browse(transaction_id)
+        vals = {}
+        transacion_type = pms_transaction_info.transactionType
+        counterpart_transaction = False
+        # 1- calculo los valores genericos que se cambiaran (amount, partner_id, ref, date)
+        # 3- si es una transferencia interna hay que modificar el pago de contrapartida
+        # 2- si se cambia el journal_id habrá que cancelar y crear un nuevo pago
+
+        # Get generic update vals
+        if pms_transaction_info.amount and round(
+            pms_transaction_info.amount, 2
+        ) != round(transaction.amount, 2):
+            vals["amount"] = pms_transaction_info.amount
+        if (
+            pms_transaction_info.partnerId
+            and pms_transaction_info.partnerId != transaction.partner_id.id
+        ):
+            vals["partner_id"] = pms_transaction_info.partnerId
+        if (
+            pms_transaction_info.reference
+            and pms_transaction_info.reference != transaction.ref
+        ):
+            vals["ref"] = pms_transaction_info.reference
+        if pms_transaction_info.date and pms_transaction_info.date != transaction.date:
+            vals["date"] = fields.Date.from_string(pms_transaction_info.date)
+        if transacion_type == "internal_transfer":
+            counterpart_transaction = transaction.pms_api_counterpart_payment_id
+        if (
+            pms_transaction_info.journalId
+            and pms_transaction_info.journalId != transaction.journal_id.id
+        ):
+            new_journal = self.env["account.journal"].browse(
+                pms_transaction_info.journalId
+            )
+            if new_journal.type == "cash":
+                last_cash_session = self._get_last_cash_session(new_journal.id)
+                new_date = vals.get("date", transaction.date)
+                if new_date < last_cash_session.create_date.date():
+                    raise UserError(
+                        _(
+                            "You cannot create a cash payment for a date "
+                            "before the last cash session"
+                        )
+                    )
+            transaction.sudo().action_draft()
+            transaction.sudo().action_cancel()
+            vals["journal_id"] = new_journal.id
+            transaction = transaction.copy()
+        if counterpart_transaction:
+            if (
+                pms_transaction_info.destinationJournalId
+                and pms_transaction_info.destinationJournalId
+                != counterpart_transaction.journal_id.id
+            ):
+                new_counterpart_journal = self.env["account.journal"].browse(
+                    pms_transaction_info.destinationJournalId
+                )
+                counterpart_vals = vals.copy()
+                if new_counterpart_journal.type == "cash":
+                    last_cash_session = self._get_last_cash_session(
+                        new_counterpart_journal.id
+                    )
+                    new_date = vals.get("date", counterpart_transaction.date)
+                    if new_date < last_cash_session.create_date.date():
+                        raise UserError(
+                            _(
+                                "You cannot create a cash payment for a date "
+                                "before the last cash session"
+                            )
+                        )
+                counterpart_transaction.sudo().action_draft()
+                counterpart_transaction.sudo().action_cancel()
+                counterpart_vals["journal_id"] = new_counterpart_journal.id
+                counterpart_transaction = counterpart_transaction.copy()
+                vals["partner_bank_id"] = (
+                    self.env["account.journal"]
+                    .browse(pms_transaction_info.destinationJournalId)
+                    .bank_account_id.id
+                )
+                vals["counterpart_payment_id"] = counterpart_transaction.id
+                counterpart_vals["counterpart_payment_id"] = transaction.id
+        if vals:
+            transaction.sudo().write(vals)
+            transaction.sudo().action_post()
+        if counterpart_transaction:
+            counterpart_transaction.sudo().write(vals)
+            counterpart_transaction.sudo().action_post()
+        return transaction.id
 
     @restapi.method(
         [
