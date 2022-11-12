@@ -16,3 +16,4 @@ class PmsFolioSaleInfo(Datamodel):
     reservationId = fields.Integer(required=False, allow_none=True)
     serviceId = fields.Integer(required=False, allow_none=True)
     displayType = fields.String(required=False, allow_none=True)
+    defaultInvoiceTo = fields.Integer(required=False, allow_none=True)
