@@ -74,16 +74,12 @@ class PmsInvoiceService(Component):
                         }
                     )
                 )
-                reversal_action = move_reversal.reverse_moves()
-                reverse_invoice = self.env["account.move"].browse(
-                    reversal_action["res_id"]
-                )
-                invoice = reverse_invoice
-                invoice.sudo().action_post()
+                move_reversal.reverse_moves()
+                reverse_invoice = move_reversal.new_move_ids
                 # If change invoice by reversal, and new_vals has invoice_line_ids
                 # we need to mapp the new invoice lines with the new invoice
                 reverse_lines = []
-                for line in new_vals["invoice_line_ids"]:
+                for line in new_vals.get("invoice_line_ids", []):
                     origin_line = self.env["account.move.line"].browse(line[1])
                     sale_line_id = origin_line.sale_line_ids.id
                     reverse_line = reverse_invoice.invoice_line_ids.filtered(
@@ -99,8 +95,16 @@ class PmsInvoiceService(Component):
                         reverse_lines.append(line)
                 if reverse_lines:
                     new_vals["invoice_line_ids"] = reverse_lines
-
-            invoice = self._direct_move_update(invoice, new_vals)
+                new_vals["journal_id"] = (
+                    invoice.pms_property_id._get_folio_default_journal(
+                        new_vals.get("partner_id", invoice.partner_id.id)
+                    ).id,
+                )
+                reverse_invoice.write(new_vals)
+                invoice = reverse_invoice
+                invoice.sudo().action_post()
+            else:
+                invoice = self._direct_move_update(invoice, new_vals)
             # Update invoice lines name
             for item in pms_invoice_info.moveLines:
                 if item.saleLineId in invoice.invoice_line_ids.mapped(
