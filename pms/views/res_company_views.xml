@@ -16,6 +16,7 @@
             </xpath>
             <xpath expr="//field[@name='vat']" position="after">
                 <field name="check_min_partner_data_invoice" />
+                <field name="pms_invoice_downpayment_policy" />
             </xpath>
         </field>
     </record>

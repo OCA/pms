@@ -719,7 +719,7 @@ class FolioSaleLine(models.Model):
         Otherwise, the quantity delivered is used.
         """
         for line in self:
-            if line.folio_id.state not in ["draft"] and line.price_total > 0.0:
+            if line.folio_id.state not in ["draft"]:
                 line.qty_to_invoice = line.product_uom_qty - line.qty_invoiced
             else:
                 line.qty_to_invoice = 0
@@ -996,13 +996,6 @@ class FolioSaleLine(models.Model):
             should be added to the returned invoice line
         """
         self.ensure_one()
-        if (qty > self.qty_to_invoice or qty <= 0) and not self.display_type:
-            raise ValueError(
-                _(
-                    "The qty (%s) is wrong." % qty
-                    + " The quantity pending to invoice is %s" % self.qty_to_invoice
-                )
-            )
         res = {
             "display_type": self.display_type,
             "sequence": self.sequence,
