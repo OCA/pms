@@ -19,3 +19,4 @@ class PmsAccountInvoiceInfo(Datamodel):
     saleLines = fields.List(NestedModel("pms.folio.sale.line.info"))
     narration = fields.String(required=False, allow_none=True)
     portalUrl = fields.String(required=False, allow_none=True)
+    moveType = fields.String(required=False, allow_none=True)
