@@ -179,7 +179,10 @@ class PmsTransactionService(Component):
                     if transaction.create_uid
                     else None,
                     transactionType=transaction.pms_api_transaction_type or None,
-                    isReconcilied=transaction.reconciled_statements_count > 0,
+                    isReconcilied=(
+                        transaction.reconciled_statements_count > 0
+                        or transaction.reconciled_invoices_count > 0
+                    ),
                 )
             )
         return PmsTransactionResults(
@@ -220,7 +223,10 @@ class PmsTransactionService(Component):
             reference=transaction.ref if transaction.ref else None,
             createUid=transaction.create_uid.id if transaction.create_uid else None,
             transactionType=transaction.pms_api_transaction_type or None,
-            isReconcilied=transaction.reconciled_statements_count > 0,
+            isReconcilied=(
+                transaction.reconciled_statements_count > 0
+                or transaction.reconciled_invoices_count > 0
+            ),
         )
 
     @restapi.method(
