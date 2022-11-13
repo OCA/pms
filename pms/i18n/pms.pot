@@ -51,6 +51,17 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_res_company__pms_invoice_downpayment_policy
+msgid ""
+"\n"
+"            - Manual: Downpayment invoice will be created manually\n"
+"            - All: Downpayment invoice will be created automatically\n"
+"            - Current Month: Downpayment invoice will be created automatically\n"
+"                only for reservations with checkout date past of current month\n"
+"            "
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__product_variant_count
 msgid "# Product Variants"
 msgstr ""
@@ -1210,6 +1221,11 @@ msgid "Agency that made the reservation"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__res_company__pms_invoice_downpayment_policy__all
+msgid "All"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_cancelation_rule__apply_on_late__all
 #: model:ir.model.fields.selection,name:pms.selection__pms_cancelation_rule__apply_on_noshow__all
 msgid "All Days"
@@ -1810,6 +1826,12 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__avail_readonly
 msgid "Avialability Readonly"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_account_journal__avoid_autoinvoice_downpayment
+#: model:ir.model.fields,help:pms.field_account_journal__avoid_autoinvoice_downpayment
+msgid "Avoid autoinvoice downpayment"
 msgstr ""
 
 #. module: pms
@@ -2474,6 +2496,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__checkout
 msgid "Checkout date"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__res_company__pms_invoice_downpayment_policy__checkout_past_month
+msgid "Checkout past month"
 msgstr ""
 
 #. module: pms
@@ -3373,6 +3400,12 @@ msgid "Departure delayed"
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/account_payment.py:0
+#, python-format
+msgid "Deposit return"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__name
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__description
 #: model:ir.model.fields,field_description:pms.field_room_closure_reason__description
@@ -3721,6 +3754,11 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.folio_portal_template
 msgid "Download"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_res_company__pms_invoice_downpayment_policy
+msgid "Downpayment policy invoce"
 msgstr ""
 
 #. module: pms
@@ -5935,6 +5973,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_property__default_invoicing_policy__manual
+#: model:ir.model.fields.selection,name:pms.selection__res_company__pms_invoice_downpayment_policy__no
 #: model:ir.model.fields.selection,name:pms.selection__res_partner__invoice_to_agency__manual
 #: model:ir.model.fields.selection,name:pms.selection__res_partner__invoicing_policy__manual
 msgid "Manual"
@@ -10315,12 +10354,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_res_users__pms_property_id
 msgid "The property that is selected within those allowed for the user"
-msgstr ""
-
-#. module: pms
-#: code:addons/pms/models/folio_sale_line.py:0
-#, python-format
-msgid "The qty (%s) is wrong. The quantity pending to invoice is %s"
 msgstr ""
 
 #. module: pms
