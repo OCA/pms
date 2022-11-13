@@ -2032,7 +2032,7 @@ class PmsFolio(models.Model):
         (making sure to call super() to establish a clean extension chain).
         """
         self.ensure_one()
-        journal = self._get_folio_default_journal(partner_invoice_id)
+        journal = self.pms_property_id._get_folio_default_journal(partner_invoice_id)
         if not journal:
             journal = (
                 self.env["account.move"]
@@ -2073,17 +2073,6 @@ class PmsFolio(models.Model):
             "payment_reference": self.external_reference or self.reference,
         }
         return invoice_vals
-
-    def _get_folio_default_journal(self, partner_invoice_id):
-        self.ensure_one()
-        pms_property = self.pms_property_id
-        partner = self.env["res.partner"].browse(partner_invoice_id)
-        if not partner or (
-            not partner._check_enought_invoice_data()
-            and self._context.get("autoinvoice")
-        ):
-            return pms_property.journal_simplified_invoice_id
-        return pms_property.journal_normal_invoice_id
 
     def do_payment(
         self,

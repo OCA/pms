@@ -152,15 +152,21 @@ class FolioAdvancePaymentInv(models.TransientModel):
         return {}
 
     def _prepare_invoice_values(self, order, name, amount, line):
+        partner_id = (
+            self.partner_invoice_id.id
+            if self.partner_invoice_id
+            else order.partner_invoice_id.id
+        )
         invoice_vals = {
             "ref": order.name,
             "move_type": "out_invoice",
+            "journal_id": order.pms_property_id._get_folio_default_journal(
+                partner_id
+            ).id,
             "invoice_origin": order.name,
             "invoice_user_id": order.user_id.id,
             "narration": order.note,
-            "partner_id": self.partner_invoice_id
-            if self.partner_invoice_id
-            else order.partner_invoice_id.id,
+            "partner_id": partner_id,
             "currency_id": order.pricelist_id.currency_id.id,
             "folio_ids": [(6, 0, order.ids)],
             "payment_reference": order.reference,
@@ -199,7 +205,6 @@ class FolioAdvancePaymentInv(models.TransientModel):
         amount, name = self._get_advance_details(order)
 
         invoice_vals = self._prepare_invoice_values(order, name, amount, line)
-
         if order.fiscal_position_id:
             invoice_vals["fiscal_position_id"] = order.fiscal_position_id.id
         invoice = (
@@ -258,6 +263,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
                 )
 
             sale_line_obj = self.env["folio.sale.line"]
+            invoices = self.env["account.move"]
             for order in folios:
                 amount, name = self._get_advance_details(order)
 
@@ -293,9 +299,11 @@ class FolioAdvancePaymentInv(models.TransientModel):
                     order, analytic_tag_ids, tax_ids, amount
                 )
                 line = sale_line_obj.sudo().create(line_values)
-                self._create_invoice(order, line, amount)
+                invoices += self._create_invoice(order, line, amount)
         if self._context.get("open_invoices", False):
             return folios.action_view_invoice()
+        if self._context.get("return_invoices", False):
+            return invoices
         return {"type": "ir.actions.act_window_close"}
 
     def _prepare_deposit_product(self):
