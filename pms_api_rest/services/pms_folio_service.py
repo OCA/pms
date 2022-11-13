@@ -588,6 +588,7 @@ class PmsFolioService(Component):
                             else None,
                             moveLines=move_lines if move_lines else None,
                             portalUrl=portal_url,
+                            moveType=move.move_type,
                         )
                     )
         return invoices
