@@ -20,6 +20,11 @@ class AccountJournal(models.Model):
         string="For manual payments",
         help="Use to pay for reservations",
     )
+    avoid_autoinvoice_downpayment = fields.Boolean(
+        string="Avoid autoinvoice downpayment",
+        help="Avoid autoinvoice downpayment",
+        default=False,
+    )
     is_simplified_invoice = fields.Boolean(
         string="Simplified invoice",
         help="Use to simplified invoice",
