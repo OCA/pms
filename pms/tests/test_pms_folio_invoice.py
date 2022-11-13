@@ -253,42 +253,6 @@ class TestPmsFolioInvoice(TestPms):
             "The status after an invoicing is not correct",
         )
 
-    def test_invoice_partial_folio_wrong_qtys(self):
-        """
-        Check that an invoice of a folio with wrong amounts cannot be created.
-        ------------
-        A reservation is created. Then the create_invoices method of the folio
-        is launched with the lines to be invoiced with wrong amounts and through
-        subtest it is verified that the invoices cannot be created.
-        """
-        # ARRANGE
-        r1 = self.env["pms.reservation"].create(
-            {
-                "pms_property_id": self.property.id,
-                "checkin": datetime.datetime.now(),
-                "checkout": datetime.datetime.now() + datetime.timedelta(days=2),
-                "adults": 2,
-                "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "sale_channel_origin_id": self.sale_channel_direct1.id,
-            }
-        )
-        tcs = [-1, 0, 3]
-
-        for tc in tcs:
-            with self.subTest(k=tc):
-                with self.assertRaises(ValueError):
-                    # ARRANGE
-                    dict_lines = dict()
-                    dict_lines[
-                        r1.folio_id.sale_line_ids.filtered(
-                            lambda l: not l.display_type
-                        )[0].id
-                    ] = tc
-                    r1.folio_id._create_invoices(lines_to_invoice=dict_lines)
-                    # test does not work without invalidating cache
-                    self.env["account.move"].invalidate_cache()
-
     def test_amount_invoice_folio(self):
         """
         Test create and invoice from the Folio, and check amount of the reservation.

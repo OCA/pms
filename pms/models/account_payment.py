@@ -1,6 +1,8 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
+
+
+from odoo import _, api, fields, models
 
 
 class AccountPayment(models.Model):
@@ -143,21 +145,118 @@ class AccountPayment(models.Model):
     #     if msg:
     #         self.folio_id.message_post(subject=_("Payment Deleted"), body=msg)
 
-    # def post(self):
-    #     rec = super(AccountPayment, self).post()
-    #     if rec and not self._context.get("ignore_notification_post", False):
-    #         for pay in self:
-    #             if pay.folio_id:
-    #                 msg = _(
-    #                     "Payment of %s %s registered from %s \
-    #                         using %s payment method"
-    #                 ) % (
-    #                     pay.amount,
-    #                     pay.currency_id.symbol,
-    #                     pay.communication,
-    #                     pay.journal_id.name,
-    #                 )
-    #                 pay.folio_id.message_post(subject=_("Payment"), body=msg)
+    def action_post(self):
+        res = super(AccountPayment, self).action_post()
+        for payment in self:
+            if (
+                self.folio_ids
+                and self.company_id.pms_invoice_downpayment_policy != "no"
+                and not self.journal_id.avoid_autoinvoice_downpayment
+            ):
+                checkout_ref = max(self.folio_ids.mapped("last_checkout"))
+                if (
+                    self.company_id.pms_invoice_downpayment_policy == "all"
+                    and payment.date < checkout_ref
+                ) or (
+                    self.company_id.pms_invoice_downpayment_policy
+                    == "checkout_past_month"
+                    and checkout_ref.month > payment.date.month
+                    and checkout_ref.year >= payment.date.year
+                ):
+                    partner_id = (
+                        payment.partner_id.id
+                        or self.env.ref("pms.various_pms_partner").id
+                    )
+                    if payment.payment_type == "inbound":
+                        invoice_wizard = self.env["folio.advance.payment.inv"].create(
+                            {
+                                "partner_invoice_id": partner_id,
+                                "advance_payment_method": "fixed",
+                                "fixed_amount": payment.amount,
+                            }
+                        )
+                        move = invoice_wizard.with_context(
+                            active_ids=self.folio_ids.ids,
+                            return_invoices=True,
+                        ).create_invoices()
+                        move.action_post()
+                        move_lines = move.line_ids.filtered(
+                            lambda line: line.account_id.user_type_id.type
+                            in ("receivable", "payable")
+                        )
+                        payment_lines = payment.move_id.line_ids.filtered(
+                            lambda line: line.account_id == move_lines.account_id
+                        )
+                        if not move_lines.reconciled:
+                            (payment_lines + move_lines).reconcile()
+                    else:
+                        # We try to revert the advance payment invoice
+                        advance_invoices = self.env["account.move"].search(
+                            [
+                                ("folio_ids", "in", self.folio_ids.ids),
+                                ("state", "=", "posted"),
+                                ("payment_state", "=", "paid"),
+                                ("move_type", "=", "out_invoice"),
+                            ]
+                        )
+                        advance_invoices = advance_invoices.filtered(
+                            lambda inv: any(
+                                [
+                                    line.folio_line_ids.is_downpayment
+                                    for line in inv.invoice_line_ids
+                                ]
+                            )
+                        )
+                        if advance_invoices:
+                            match_inv = advance_invoices.filtered(
+                                lambda inv: round(inv.amount_total, 2)
+                                == round(payment.amount, 2)
+                            )
+                            move_reversal = (
+                                self.env["account.move.reversal"]
+                                .with_context(
+                                    active_model="account.move",
+                                    active_ids=match_inv.ids
+                                    if match_inv
+                                    else advance_invoices.ids,
+                                )
+                                .create(
+                                    {
+                                        "date": fields.Date.today(),
+                                        "reason": _("Deposit return"),
+                                        "refund_method": "refund",
+                                    }
+                                )
+                            )
+                            move_reversal.reverse_moves()
+                            move = move_reversal.new_move_ids
+                            invoice_line = move.invoice_line_ids.filtered(
+                                lambda l: not l.display_type
+                            )
+                            move.write(
+                                {
+                                    "invoice_line_ids": [
+                                        (
+                                            1,
+                                            invoice_line.id,
+                                            {
+                                                "price_unit": payment.amount,
+                                            },
+                                        )
+                                    ],
+                                }
+                            )
+                            move_lines = move.line_ids.filtered(
+                                lambda line: line.account_id.user_type_id.type
+                                in ("receivable", "payable")
+                            )
+                            payment_lines = payment.move_id.line_ids.filtered(
+                                lambda line: line.account_id == move_lines.account_id
+                            )
+                            move.sudo().action_post()
+                            if not move_lines.reconciled:
+                                (payment_lines + move_lines).reconcile()
+        return res
 
     # def modify_payment(self):
     #     self.ensure_one()
