@@ -6,7 +6,14 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="pms_property_ids" widget="many2many_tags" />
-                <field name="allowed_pms_payments" />
+                <field
+                    name="allowed_pms_payments"
+                    attrs="{'invisible':[('type','not in',('bank', 'cash'))]}"
+                />
+                <field
+                    name="avoid_autoinvoice_downpayment"
+                    attrs="{'invisible':[('type','not in',('bank', 'cash'))]}"
+                />
             </xpath>
         </field>
     </record>
