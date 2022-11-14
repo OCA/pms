@@ -205,6 +205,17 @@ class PmsFolioService(Component):
                                 payment.date, datetime.min.time()
                             ).isoformat(),
                             transactionType=payment.pms_api_transaction_type,
+                            partnerId=payment.partner_id.id
+                            if payment.partner_id
+                            else None,
+                            partnerName=payment.partner_id.name
+                            if payment.partner_id
+                            else None,
+                            reference=payment.ref if payment.ref else None,
+                            isReconcilied=(
+                                payment.reconciled_statements_count > 0
+                                or payment.reconciled_invoices_count > 0
+                            ),
                         )
                     )
         return transactions
