@@ -416,15 +416,17 @@ class PortalPrecheckin(CustomerPortal):
     )
     def portal_precheckin_invitation(self, folio_id, access_token=None, **kw):
         try:
-            folio_sudo = self._document_check_access(
+            folio_sudo = self.sudo()._document_check_access(
                 "pms.folio",
                 folio_id,
                 access_token=access_token,
             )
         except (AccessError, MissingError):
             return request.redirect("/my")
-        web_url = request.env["ir.config_parameter"].search(
-            [("key", "=", "web.base.url")]
+        web_url = (
+            request.env["ir.config_parameter"]
+            .sudo()
+            .search([("key", "=", "web.base.url")])
         )
         values = self._folio_get_page_view_values(folio_sudo, access_token, **kw)
         values.update({"no_breadcrumbs": True, "error": {}, "web_url": web_url.value})
