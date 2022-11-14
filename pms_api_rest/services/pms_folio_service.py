@@ -232,7 +232,9 @@ class PmsFolioService(Component):
             if pms_account_payment_info.reservationIds
             else False
         )
-        self.env["pms.folio"].do_payment(
+        # TODO: no_cash_register context to maintain compatibility
+        # with older versions, delete it in the future
+        self.env["pms.folio"].with_context(no_cash_register=True).do_payment(
             journal_id,
             journal_id.suspense_account_id,
             self.env.user,
@@ -262,7 +264,9 @@ class PmsFolioService(Component):
         journal_id = self.env["account.journal"].browse(
             pms_account_payment_info.journalId
         )
-        self.env["pms.folio"].do_refund(
+        # TODO: no_cash_register context to maintain compatibility
+        # with older versions, delete it in the future
+        self.env["pms.folio"].with_context(no_cash_register=True).do_refund(
             journal_id,
             journal_id.suspense_account_id,
             self.env.user,
