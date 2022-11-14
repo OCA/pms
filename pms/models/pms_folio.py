@@ -2129,7 +2129,8 @@ class PmsFolio(models.Model):
             move._autoreconcile_folio_payments()
 
         # Automatic register payment in cash register
-        if pay_type == "cash":
+        # TODO: no_cash_register to avoid flow in the new api (delete it in the future)
+        if pay_type == "cash" and not self.env.context.get("no_cash_register"):
             line = self._get_statement_line_vals(
                 journal=journal,
                 receivable_account=receivable_account,
@@ -2214,7 +2215,8 @@ class PmsFolio(models.Model):
         pay.action_post()
 
         # Automatic register refund in cash register
-        if pay_type == "cash":
+        # TODO: no_cash_register to avoid flow in the new api (delete it in the future)
+        if pay_type == "cash" and not self.env.context.get("no_cash_register"):
             line = self._get_statement_line_vals(
                 journal=journal,
                 receivable_account=receivable_account,
