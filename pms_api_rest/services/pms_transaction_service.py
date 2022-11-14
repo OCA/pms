@@ -387,6 +387,7 @@ class PmsTransactionService(Component):
                 vals["counterpart_payment_id"] = counterpart_transaction.id
                 counterpart_vals["counterpart_payment_id"] = transaction.id
         if vals:
+            transaction.sudo().action_draft()
             transaction.sudo().write(vals)
             transaction.sudo().action_post()
         if counterpart_transaction:
