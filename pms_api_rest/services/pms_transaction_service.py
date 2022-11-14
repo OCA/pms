@@ -309,10 +309,7 @@ class PmsTransactionService(Component):
         vals = {}
         transacion_type = pms_transaction_info.transactionType
         counterpart_transaction = False
-        # 1- calculo los valores genericos que se cambiaran (amount, partner_id, ref, date)
-        # 3- si es una transferencia interna hay que modificar el pago de contrapartida
-        # 2- si se cambia el journal_id habrá que cancelar y crear un nuevo pago
-
+        # TODO: Downpayment invoiced (search invoice, reverse it and create a new one)
         # Get generic update vals
         if pms_transaction_info.amount and round(
             pms_transaction_info.amount, 2
