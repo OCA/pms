@@ -76,6 +76,11 @@ class PmsInvoiceService(Component):
                 )
                 move_reversal.reverse_moves()
                 reverse_invoice = move_reversal.new_move_ids
+                invoice = reverse_invoice
+                invoice.journal_id = invoice.pms_property_id._get_folio_default_journal(
+                    partner_invoice_id=new_vals.get("partner_id", invoice.partner_id.id)
+                )
+                invoice.sudo().action_post()
                 # If change invoice by reversal, and new_vals has invoice_line_ids
                 # we need to mapp the new invoice lines with the new invoice
                 reverse_lines = []
