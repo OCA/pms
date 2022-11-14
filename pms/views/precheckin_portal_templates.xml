@@ -650,12 +650,12 @@
                 > your passage through reception will be much faster</strong>, being able to enjoy the comfort of your room right away.
             </center>
             <div class="col-12" style="margin-top:40px;">
-                <form
+                <a
+                    role="button"
                     class="col-6 float-left"
                     style="margin-bottom:50px"
-                    t-att-action="'/my/folios/'+str(folio.id)"
+                    t-att-href="folio.get_portal_url()"
                 >
-
                     <button
                         type="submit"
                         class="btn btn-primary"
@@ -664,7 +664,7 @@
                         <span class="fa fa-info" />
                         Reservation Info
                     </button>
-                </form>
+                </a>
                 <form
                     class="col-6 float-right"
                     style="margin-bottom:50px"
@@ -704,7 +704,10 @@
                 <t t-if="len(folio.checkin_partner_ids) &gt; 1">
                     <div>
                         If you wish, you can share with the rest of the guests the access to their check-in so that they can fill it out.
-                        <form t-att-action="'/my/folios/'+str(folio.id)+'/invitations'">
+                        <a
+                            role="button"
+                            t-att-href="folio.get_portal_url(suffix='/invitations')"
+                        >
                             <button
                                 type="submit"
                                 class="btn btn-primary"
@@ -713,7 +716,7 @@
                                 <span class="fa fa-share-square" />
                                 Send Invitations
                             </button>
-                        </form>
+                        </a>
                     </div>
                 </t>
 
