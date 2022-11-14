@@ -194,7 +194,9 @@ class PmsFolioService(Component):
             #     pass
             # else:
             if folio.payment_ids:
-                for payment in folio.payment_ids:
+                for payment in folio.payment_ids.filtered(
+                    lambda p: p.state == "posted"
+                ):
                     payment._compute_pms_api_transaction_type()
                     transactions.append(
                         PmsTransactiontInfo(
