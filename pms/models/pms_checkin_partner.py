@@ -886,6 +886,12 @@ class PmsCheckinPartner(models.Model):
             values.update({"nationality_id": False})
         if not values.get("document_type"):
             values.update({"document_type": False})
+        else:
+            doc_type_name = values.get("document_type")
+            doc_type = self.env["res.partner.id_category"].search(
+                [("name", "=", doc_type_name)]
+            )
+            values.update({"document_type": doc_type})
         if values.get("state"):
             residence_state_id = self.env["res.country.state"].search(
                 [("id", "=", values.get("state"))]
@@ -893,10 +899,6 @@ class PmsCheckinPartner(models.Model):
             values.update({"residence_state_id": residence_state_id})
             values.pop("state")
         if values.get("document_expedition_date"):
-            doc_type = values.get("document_type")
-            doc_type = self.env["res.partner.id_category"].search(
-                [("code", "=", doc_type)]
-            )
             doc_date = values.get("document_expedition_date")
             birthdate = values.get("birthdate_date")
             document_expedition_date = (
@@ -907,7 +909,6 @@ class PmsCheckinPartner(models.Model):
             values.update(
                 {
                     "document_expedition_date": document_expedition_date,
-                    "document_type": doc_type,
                 }
             )
 
