@@ -601,19 +601,6 @@
             }
 
 
-            let select_country = document.getElementById('country')
-
-            select_country.addEventListener("change", () => {
-            let country_value = select_country.value
-            Array.from(document.getElementById('state').options).forEach(element => {
-            if (element.getAttribute('country_id') == country_value ) {
-            element.style="";
-            } else {
-            element.style="display:none";
-            }
-            });
-            });
-
             var select_doc_type = document.getElementById("doc_type")
             var document_type_value = document.getElementById("docTypeId").textContent
             for (let i=0;i&lt;select_doc_type.length;i++){
