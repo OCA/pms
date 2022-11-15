@@ -23,33 +23,22 @@ class PmsUbicationService(Component):
         auth="jwt_api_pms",
     )
     def get_ubications(self, ubication_search_param):
-        ubication_all_properties = self.env["pms.ubication"].search(
-            [("pms_property_ids", "=", False)]
-        )
         if ubication_search_param.pmsPropertyIds:
-            ubication = set()
-            for index, prop in enumerate(ubication_search_param.pmsPropertyIds):
-                ubication_with_query_property = self.env["pms.ubication"].search(
-                    [("pms_property_ids", "=", prop)]
+            ubications = (
+                self.env["pms.room"]
+                .search(
+                    [("pms_property_id", "in", ubication_search_param.pmsPropertyIds)]
                 )
-                if index == 0:
-                    ubication = set(ubication_with_query_property.ids)
-                else:
-                    ubication = ubication.intersection(
-                        set(ubication_with_query_property.ids)
-                    )
-            ubication_total = list(set(list(ubication) + ubication_all_properties.ids))
+                .mapped("ubication_id")
+            )
         else:
-            ubication_total = list(ubication_all_properties.ids)
-        domain = [
-            ("id", "in", ubication_total),
-        ]
+            ubications = self.env["pms.ubication"].search(
+                [("pms_property_ids", "=", False)]
+            )
 
         result_ubications = []
         PmsUbicationInfo = self.env.datamodels["pms.ubication.info"]
-        for ubication in self.env["pms.ubication"].search(
-            domain,
-        ):
+        for ubication in ubications:
 
             result_ubications.append(
                 PmsUbicationInfo(

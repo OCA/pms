@@ -23,36 +23,28 @@ class PmsRoomTypeClassService(Component):
         auth="jwt_api_pms",
     )
     def get_room_type_class(self, room_type_class_search_param):
-        room_type_class_all_properties = self.env["pms.room.type.class"].search(
-            [("pms_property_ids", "=", False)]
-        )
         if room_type_class_search_param.pmsPropertyIds:
-            room_type_class = set()
-            for index, prop in enumerate(room_type_class_search_param.pmsPropertyds):
-                room_type_class_with_query_property = self.env[
-                    "pms.room.type.class"
-                ].search([("pms_property_ids", "=", prop)])
-                if index == 0:
-                    room_type_class = set(room_type_class_with_query_property.ids)
-                else:
-                    room_type_class = room_type_class.intersection(
-                        set(room_type_class_with_query_property.ids)
-                    )
-            room_type_class_total = list(
-                set(list(room_type_class) + room_type_class_all_properties.ids)
+            room_type_classes = (
+                self.env["pms.room"]
+                .search(
+                    [
+                        (
+                            "pms_property_id",
+                            "in",
+                            room_type_class_search_param.pmsPropertyIds,
+                        )
+                    ]
+                )
+                .mapped("room_type_id")
+                .mapped("class_id")
             )
         else:
-            room_type_class_total = list(room_type_class_all_properties.ids)
-        domain = [
-            ("id", "in", room_type_class_total),
-        ]
-
+            room_type_classes = self.env["pms.room.type.class"].search(
+                [("pms_property_ids", "=", False)]
+            )
         result_room_type_class = []
         PmsRoomTypeClassInfo = self.env.datamodels["pms.room.type.class.info"]
-        for room in self.env["pms.room.type.class"].search(
-            domain,
-        ):
-
+        for room in room_type_classes:
             result_room_type_class.append(
                 PmsRoomTypeClassInfo(
                     id=room.id,
