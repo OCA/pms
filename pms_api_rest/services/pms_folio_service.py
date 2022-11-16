@@ -643,6 +643,7 @@ class PmsFolioService(Component):
         invoices = folios_to_invoice._create_invoices(
             lines_to_invoice=lines_to_invoice_dict,
             partner_invoice_id=invoice_info.partnerId,
+            final=True,  # To force take into account down payments
         )
         for item in invoice_info.saleLines:
             if item.id in invoices.invoice_line_ids.mapped("folio_line_ids.id"):

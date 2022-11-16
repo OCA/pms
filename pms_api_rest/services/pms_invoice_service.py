@@ -135,6 +135,28 @@ class PmsInvoiceService(Component):
         [
             (
                 [
+                    "/",
+                ],
+                "POST",
+            )
+        ],
+        input_param=Datamodel("pms.invoice.info"),
+        auth="jwt_api_pms",
+    )
+    def create_invoice(self, pms_invoice_info):
+        if pms_invoice_info.originDownPaymentId:
+            if not pms_invoice_info.partnerId:
+                raise UserError(_("For manual invoice, partner is required"))
+            payment = self.env["account.payment"].browse(pms_invoice_info.paymentId)
+            self.env["account.payment"]._create_downpayment_invoice(
+                payment=payment,
+                partner_id=pms_invoice_info.partnerId,
+            )
+
+    @restapi.method(
+        [
+            (
+                [
                     "/<int:invoice_id>/send-mail",
                 ],
                 "POST",
