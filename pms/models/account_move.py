@@ -392,3 +392,17 @@ class AccountMove(models.Model):
             "#%s" % anchor if anchor else "",
         )
         return url
+
+    def _is_downpayment(self):
+        self.ensure_one()
+        if self.folio_ids:
+            return (
+                self.line_ids.folio_line_ids
+                and all(
+                    folio_line.is_downpayment
+                    for folio_line in self.line_ids.folio_line_ids
+                )
+                or False
+            )
+        else:
+            return super(AccountMove, self)._is_downpayment()
