@@ -13,3 +13,4 @@ class PmsInvoiceLineInfo(Datamodel):
     discount = fields.Float(required=False, allow_none=True)
     displayType = fields.String(required=False, allow_none=True)
     saleLineId = fields.Integer(required=False, allow_none=True)
+    isDownPayment = fields.Boolean(required=False, allow_none=True)
