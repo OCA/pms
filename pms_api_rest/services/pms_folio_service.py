@@ -51,6 +51,7 @@ class PmsFolioService(Component):
                 internalComment=folio.internal_comment
                 if folio.internal_comment
                 else None,
+                invoiceStatus=folio.invoice_status,
             )
         else:
             raise MissingError(_("Folio not found"))
