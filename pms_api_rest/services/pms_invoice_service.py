@@ -52,6 +52,7 @@ class PmsInvoiceService(Component):
             )
             if cmd_invoice_lines:
                 new_vals["invoice_line_ids"] = cmd_invoice_lines
+        new_invoice = False
         if new_vals:
             # Update Invoice
             # When modifying an invoice, depending on the company's configuration,
@@ -60,65 +61,42 @@ class PmsInvoiceService(Component):
             # with the updated data.
             # TODO: to create core pms correct_invoice_policy field
             # if invoice.state != "draft" and company.corrective_invoice_policy == "strict":
-            if invoice.state != "draft":
+            if invoice.state == "posted":
                 # invoice create refund
-                # new invoice with new_vals
-                move_reversal = (
-                    self.env["account.move.reversal"]
-                    .with_context(active_model="account.move", active_ids=invoice.ids)
-                    .create(
-                        {
-                            "date": fields.Date.today(),
-                            "reason": _("Invoice modification"),
-                            "refund_method": "modify",
-                        }
-                    )
-                )
-                move_reversal.reverse_moves()
-                reverse_invoice = move_reversal.new_move_ids
-                invoice = reverse_invoice
-                # If change invoice by reversal, and new_vals has invoice_line_ids
-                # we need to mapp the new invoice lines with the new invoice
-                reverse_lines = []
-                for line in new_vals.get("invoice_line_ids", []):
-                    origin_line = self.env["account.move.line"].browse(line[1])
-                    sale_line_id = origin_line.sale_line_ids.id
-                    reverse_line = reverse_invoice.invoice_line_ids.filtered(
-                        lambda item: item.sale_line_ids.id == sale_line_id
-                        and item.price_unit == origin_line.price_unit
-                        and item.quantity == origin_line.quantity
-                    )
-                    if line[0] == 2:
-                        reverse_lines.append((2, reverse_line[0].id))
-                    elif line[0] == 1:
-                        reverse_lines.append((1, reverse_line[0].id, line))
+                new_invoice = invoice.copy()
+                cmd_new_invoice_lines = []
+                for item in cmd_invoice_lines:
+                    # susbstituted in new_vals reversed invoice line id by new invoice line id
+                    if item[0] == 0:
+                        cmd_new_invoice_lines.append(item)
                     else:
-                        reverse_lines.append(line)
-                if reverse_lines:
-                    new_vals["invoice_line_ids"] = reverse_lines
+                        folio_line_ids = self.env["folio.sale.line"].browse(
+                            self.env["account.move.line"]
+                            .browse(item[1])
+                            .folio_line_ids.ids
+                        )
+                        new_id = new_invoice.invoice_line_ids.filtered(
+                            lambda l: l.folio_line_ids == folio_line_ids
+                        ).id
+                        cmd_new_invoice_lines.append((item[0], new_id, item[2]))
+                if cmd_new_invoice_lines:
+                    new_vals["invoice_line_ids"] = cmd_new_invoice_lines
+                invoice._reverse_moves(cancel=True)
+                # Update Journal by partner if necessary (simplified invoice -> normal invoice)
                 new_vals["journal_id"] = (
                     invoice.pms_property_id._get_folio_default_journal(
                         new_vals.get("partner_id", invoice.partner_id.id)
                     ).id,
                 )
-                reverse_invoice.write(new_vals)
-                invoice = reverse_invoice
-                invoice.sudo().action_post()
+                new_invoice.write(new_vals)
+                new_invoice.sudo().action_post()
             else:
-                invoice = self._direct_move_update(invoice, new_vals)
-            # Update invoice lines name
-            for item in pms_invoice_info.moveLines:
-                if item.saleLineId in invoice.invoice_line_ids.mapped(
-                    "folio_line_ids.id"
-                ):
-                    invoice_line = invoice.invoice_line_ids.filtered(
-                        lambda r: item.saleLineId in r.folio_line_ids.ids
-                    )
-                    invoice_line.write({"name": item.name})
+                new_invoice = self._direct_move_update(invoice, new_vals)
+        invoice_to_update = new_invoice or invoice
         if pms_invoice_info.narration is not None:
-            invoice.write({"narration": pms_invoice_info.narration})
-        if invoice.state == "draft" and pms_invoice_info.state == "confirm":
-            invoice.action_post()
+            invoice_to_update.write({"narration": pms_invoice_info.narration})
+        if invoice_to_update.state == "draft" and pms_invoice_info.state == "confirm":
+            invoice_to_update.action_post()
         return invoice.id
 
     def _direct_move_update(self, invoice, new_vals):
@@ -207,10 +185,10 @@ class PmsInvoiceService(Component):
             else:
                 cmd_invoice_lines.append((2, line.id))
         # Get the new lines to add in invoice
-        new_invoice_lines_info = list(
+        newInvoiceLinesInfo = list(
             filter(lambda item: not item.id, pms_invoice_info.moveLines)
         )
-        if new_invoice_lines_info:
+        if newInvoiceLinesInfo:
             partner = (
                 self.env["res.partner"].browse(pms_invoice_info.partnerId)
                 if pms_invoice_info.partnerId
@@ -229,18 +207,24 @@ class PmsInvoiceService(Component):
                     }
                 )
             )
-            cmd_invoice_lines.extend(
-                [
-                    item["invoice_line_ids"]
-                    for item in folios.get_invoice_vals_list(
-                        lines_to_invoice={
-                            new_invoice_lines_info[i]
-                            .saleLineId: new_invoice_lines_info[i]
-                            .quantity
-                            for i in range(0, len(new_invoice_lines_info))
-                        },
-                        partner_invoice_id=partner.id,
-                    )
+            new_invoice_lines = [
+                item["invoice_line_ids"]
+                for item in folios.get_invoice_vals_list(
+                    lines_to_invoice={
+                        newInvoiceLinesInfo[i]
+                        .saleLineId: newInvoiceLinesInfo[i]
+                        .quantity
+                        for i in range(0, len(newInvoiceLinesInfo))
+                    },
+                    partner_invoice_id=partner.id,
+                )
+            ][0]
+            # Update name of new invoice lines
+            for item in new_invoice_lines:
+                item[2]["name"] = [
+                    line.name
+                    for line in newInvoiceLinesInfo
+                    if line.saleLineId == item[2]["folio_line_ids"][0][2]
                 ][0]
-            )
+            cmd_invoice_lines.extend(new_invoice_lines)
         return cmd_invoice_lines
