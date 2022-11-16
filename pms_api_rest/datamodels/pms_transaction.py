@@ -13,7 +13,6 @@ class PmsTransactionSearchParam(Datamodel):
     dateEnd = fields.String(required=False, allow_none=True)
     transactionMethodId = fields.Integer(required=False, allow_none=True)
     transactionType = fields.String(required=False, allow_none=True)
-    # REVIEW: Fields to avoid?:
 
 
 class PmsTransactionsResults(Datamodel):
@@ -38,6 +37,7 @@ class PmsTransactionInfo(Datamodel):
     pmsPropertyId = fields.Integer(required=False, allow_none=True)
     createUid = fields.Integer(required=False, allow_none=True)
     transactionType = fields.String(required=False, allow_none=True)
+    isReconcilied = fields.Boolean(required=False, allow_none=True)
+    downPaymentInvoiceId = fields.Integer(required=False, allow_none=True)
     # REVIEW: Fields to avoid?:
     partnerName = fields.String(required=False, allow_none=True)
-    isReconcilied = fields.Boolean(required=False, allow_none=True)

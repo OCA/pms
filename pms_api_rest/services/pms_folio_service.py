@@ -214,9 +214,9 @@ class PmsFolioService(Component):
                             if payment.partner_id
                             else None,
                             reference=payment.ref if payment.ref else None,
-                            isReconcilied=(
-                                payment.reconciled_statements_count > 0
-                                or payment.reconciled_invoices_count > 0
+                            isReconcilied=(payment.reconciled_statements_count > 0),
+                            downPaymentInvoiceId=payment.reconciled_invoice_ids.filtered(
+                                lambda inv: inv._is_downpayment()
                             ),
                         )
                     )
@@ -606,6 +606,9 @@ class PmsFolioService(Component):
                             moveLines=move_lines if move_lines else None,
                             portalUrl=portal_url,
                             moveType=move.move_type,
+                            isReverse=move.payment_state == "reversed",
+                            isDownPaymentInvoice=move._is_downpayment(),
+                            isSimpleInvoice=move.journal_id.is_simplified_invoice,
                         )
                     )
         return invoices
