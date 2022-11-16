@@ -224,14 +224,29 @@ class PmsPartnerService(Component):
         PmsTransactiontInfo = self.env.datamodels["pms.transaction.info"]
         payments = []
         for payment in partnerPayments:
+            if payment.is_internal_transfer:
+                destination_journal_id = (
+                    payment.pms_api_counterpart_payment_id.journal_id.id
+                )
             payments.append(
                 PmsTransactiontInfo(
                     id=payment.id,
-                    amount=round(payment.amount, 2),
-                    journalId=payment.journal_id.id,
-                    date=payment.date.strftime("%d/%m/%Y"),
-                    reference=payment.ref,
-                    transactionType=payment.pms_api_transaction_type,
+                    name=payment.name if payment.name else None,
+                    amount=payment.amount,
+                    journalId=payment.journal_id.id if payment.journal_id else None,
+                    destinationJournalId=destination_journal_id or None,
+                    date=datetime.combine(
+                        payment.date, datetime.min.time()
+                    ).isoformat(),
+                    partnerId=payment.partner_id.id if payment.partner_id else None,
+                    partnerName=payment.partner_id.name if payment.partner_id else None,
+                    reference=payment.ref if payment.ref else None,
+                    createUid=payment.create_uid.id if payment.create_uid else None,
+                    transactionType=payment.pms_api_transaction_type or None,
+                    isReconcilied=(payment.reconciled_statements_count > 0),
+                    downPaymentInvoiceId=payment.reconciled_invoice_ids.filtered(
+                        lambda inv: inv._is_downpayment()
+                    ),
                 )
             )
         return payments
