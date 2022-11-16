@@ -573,6 +573,7 @@ class PmsFolioService(Component):
                                 saleLineId=move_line.folio_line_ids
                                 if move_line.folio_line_ids
                                 else None,
+                                isDownPayment=move_line.move_id._is_downpayment(),
                             )
                         )
                     move_url = (
