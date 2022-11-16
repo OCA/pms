@@ -607,9 +607,9 @@ class PmsFolioService(Component):
                             moveLines=move_lines if move_lines else None,
                             portalUrl=portal_url,
                             moveType=move.move_type,
-                            isReverse=move.payment_state == "reversed",
+                            isReversed=move.payment_state == "reversed",
                             isDownPaymentInvoice=move._is_downpayment(),
-                            isSimpleInvoice=move.journal_id.is_simplified_invoice,
+                            isSimplifiedInvoice=move.journal_id.is_simplified_invoice,
                         )
                     )
         return invoices
