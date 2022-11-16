@@ -20,3 +20,7 @@ class PmsAccountInvoiceInfo(Datamodel):
     narration = fields.String(required=False, allow_none=True)
     portalUrl = fields.String(required=False, allow_none=True)
     moveType = fields.String(required=False, allow_none=True)
+    isReversed = fields.Boolean(required=False, allow_none=True)
+    isDownPaymentInvoice = fields.Boolean(required=False, allow_none=True)
+    isSimplifiedInvoice = fields.Boolean(required=False, allow_none=True)
+    reversedEntryId = fields.Integer(required=False, allow_none=True)
