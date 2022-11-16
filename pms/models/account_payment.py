@@ -1,6 +1,6 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-
+from collections import defaultdict
 
 from odoo import api, fields, models
 
@@ -122,7 +122,6 @@ class AccountPayment(models.Model):
                 self._create_downpayment_invoice(
                     payment=payment,
                     partner_id=partner_id,
-                    payment_type=payment.partner_type,
                 )
         return res
 
@@ -141,8 +140,7 @@ class AccountPayment(models.Model):
                 or (
                     self.company_id.pms_invoice_downpayment_policy
                     == "checkout_past_month"
-                    and checkout_ref.month > payment.date.month
-                    and checkout_ref.year >= payment.date.year
+                    and checkout_ref.replace(day=1) > payment.date
                 )
             )
         ):
@@ -161,7 +159,8 @@ class AccountPayment(models.Model):
             return True
         return False
 
-    def _create_downpayment_invoice(self, payment, partner_id, payment_type):
+    @api.model
+    def _create_downpayment_invoice(self, payment, partner_id):
         invoice_wizard = self.env["folio.advance.payment.inv"].create(
             {
                 "partner_invoice_id": partner_id,
@@ -170,18 +169,19 @@ class AccountPayment(models.Model):
             }
         )
         move = invoice_wizard.with_context(
-            active_ids=self.folio_ids.ids,
+            active_ids=payment.folio_ids.ids,
             return_invoices=True,
         ).create_invoices()
-        if payment_type == "outbound":
+        if payment.payment_type == "outbound":
             move.action_switch_invoice_into_refund_credit_note()
         move.action_post()
-        move_lines = move.line_ids.filtered(
-            lambda line: line.account_id.user_type_id.type in ("receivable", "payable")
-        )
-        payment_lines = payment.move_id.line_ids.filtered(
-            lambda line: line.account_id == move_lines.account_id
-        )
-        if not move_lines.reconciled:
-            (payment_lines + move_lines).reconcile()
+        for invoice, payment_move in zip(move, payment.move_id):
+            group = defaultdict(list)
+            for line in (invoice.line_ids + payment_move.line_ids).filtered(
+                lambda l: not l.reconciled
+            ):
+                group[(line.account_id, line.currency_id)].append(line.id)
+            for (account, _dummy), line_ids in group.items():
+                if account.reconcile or account.internal_type == "liquidity":
+                    self.env["account.move.line"].browse(line_ids).reconcile()
         return move

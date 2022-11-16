@@ -24,3 +24,6 @@ class PmsAccountInvoiceInfo(Datamodel):
     isDownPaymentInvoice = fields.Boolean(required=False, allow_none=True)
     isSimplifiedInvoice = fields.Boolean(required=False, allow_none=True)
     reversedEntryId = fields.Integer(required=False, allow_none=True)
+    # REVIEW: originDownPaymentId Only input field to service to
+    # create downpayment invoices from payments
+    originDownPaymentId = fields.Integer(required=False, allow_none=True)
