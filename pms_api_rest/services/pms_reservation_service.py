@@ -1,7 +1,7 @@
 import base64
 from datetime import datetime, timedelta
 
-from odoo import _
+from odoo import _, fields
 from odoo.exceptions import MissingError
 
 from odoo.addons.base_rest import restapi
@@ -776,3 +776,99 @@ class PmsReservationService(Component):
         base64EncodedStr = base64.b64encode(pdf)
         PmsResponse = self.env.datamodels["pms.report"]
         return PmsResponse(binary=base64EncodedStr)
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/kelly-report",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.report.search.param", is_list=False),
+        output_param=Datamodel("pms.report", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def kelly_report(self, pms_report_search_param):
+        # TODO: Implement kelly report
+        pms_property_id = pms_report_search_param.pmsPropertyId
+        date_from = fields.Date.from_string(pms_report_search_param.dateFrom)
+        date_to = fields.Date.from_string(pms_report_search_param.dateTo)
+
+        report_wizard = self.env["cash.daily.report.wizard"].create(
+            {
+                "date_start": date_from,
+                "date_end": date_to,
+                "pms_property_id": pms_property_id,
+            }
+        )
+        result = report_wizard._export()
+        file_name = result["xls_filename"]
+        base64EncodedStr = result["xls_binary"]
+        PmsResponse = self.env.datamodels["pms.report"]
+        return PmsResponse(fileName=file_name, binary=base64EncodedStr)
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/arrivals-report",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.report.search.param", is_list=False),
+        output_param=Datamodel("pms.report", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def arrivals_report(self, pms_report_search_param):
+        # TODO: Implment arrivals report
+        pms_property_id = pms_report_search_param.pmsPropertyId
+        date_from = fields.Date.from_string(pms_report_search_param.dateFrom)
+        date_to = fields.Date.from_string(pms_report_search_param.dateTo)
+
+        report_wizard = self.env["cash.daily.report.wizard"].create(
+            {
+                "date_start": date_from,
+                "date_end": date_to,
+                "pms_property_id": pms_property_id,
+            }
+        )
+        result = report_wizard._export()
+        file_name = result["xls_filename"]
+        base64EncodedStr = result["xls_binary"]
+        PmsResponse = self.env.datamodels["pms.report"]
+        return PmsResponse(fileName=file_name, binary=base64EncodedStr)
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/departures-report",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.report.search.param", is_list=False),
+        output_param=Datamodel("pms.report", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def departures_report(self, pms_report_search_param):
+        # TODO: Implement departures report
+        pms_property_id = pms_report_search_param.pmsPropertyId
+        date_from = fields.Date.from_string(pms_report_search_param.dateFrom)
+        date_to = fields.Date.from_string(pms_report_search_param.dateTo)
+
+        report_wizard = self.env["cash.daily.report.wizard"].create(
+            {
+                "date_start": date_from,
+                "date_end": date_to,
+                "pms_property_id": pms_property_id,
+            }
+        )
+        result = report_wizard._export()
+        file_name = result["xls_filename"]
+        base64EncodedStr = result["xls_binary"]
+        PmsResponse = self.env.datamodels["pms.report"]
+        return PmsResponse(fileName=file_name, binary=base64EncodedStr)
