@@ -172,18 +172,6 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.inherit_pms_l10n_es_portal_my_precheckin_detail
-msgid "Doc. Support Number"
-msgstr ""
-
-#. module: pms_l10n_es
-#: model_terms:ir.ui.view,arch_db:pms_l10n_es.inherit_pms_l10n_es_portal_my_precheckin_end
-msgid ""
-"Doc. Support Number:\n"
-"                <br/>"
-msgstr ""
-
-#. module: pms_l10n_es
-#: model_terms:ir.ui.view,arch_db:pms_l10n_es.inherit_pms_l10n_es_portal_my_precheckin_detail
 msgid "Doc. Type"
 msgstr ""
 
