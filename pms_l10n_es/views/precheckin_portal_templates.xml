@@ -4,7 +4,7 @@
         inherit_id="pms.portal_my_precheckin_detail"
     >
         <xpath expr="//div[@name='document_type_div']" position="replace">
-            <div t-attf-class="form-group col-md-4">
+            <div t-attf-class="form-group col-md-6">
                 <label class="col-form-label" for="document_type">Doc. Type</label>
                 <div class="d-none"><p id="docTypeId"><t
                             t-esc="checkin_partner_id.document_type"
@@ -33,7 +33,7 @@
             </div>
         </xpath>
         <xpath expr="//div[@name='document_number_div']" position="replace">
-            <div t-attf-class="col-12 col-md-4">
+            <div t-attf-class="col-12 col-md-6">
                 <label class="col-form-label" for="document_number">Doc. Number</label>
                 <input
                     type="text"
@@ -47,32 +47,6 @@
                         t-esc="error_message.get('document_number')"
                     />
                 </t>
-            </div>
-            <div t-attf-class="form-group col-md-4">
-                <label
-                    class="col-form-label"
-                    for="support_number"
-                >Doc. Support Number</label>
-                <input
-                    type="text"
-                    name="support_number"
-                    t-attf-class="form-control"
-                    t-att-value="support_number or checkin_partner_id.support_number"
-                />
-            </div>
-        </xpath>
-    </template>
-    <template
-        id="inherit_pms_l10n_es_portal_my_precheckin_end"
-        inherit_id="pms.portal_my_precheckin_end"
-    >
-        <xpath expr="//div[@name='birthdate_div']" position="before">
-            <div t-attf-class="form-group col-12 col-md-6 font-weight-bold">
-                Doc. Support Number:
-                <br />
-                <span class="font-weight-normal ml-3">
-                    <t t-esc="checkin_partner.support_number" />
-                </span>
             </div>
         </xpath>
     </template>
