@@ -1,6 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import time
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
@@ -220,7 +219,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
     def _prepare_line(self, order, analytic_tag_ids, tax_ids, amount):
         context = {"lang": order.partner_id.lang}
         so_values = {
-            "name": _("Down Payment: %s") % (time.strftime("%m %Y"),),
+            "name": self.product_id.name,
             "price_unit": amount,
             "product_uom_qty": 0.0,
             "folio_id": order.id,
