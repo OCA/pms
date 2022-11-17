@@ -78,7 +78,12 @@ class PmsInvoiceService(Component):
                         new_id = new_invoice.invoice_line_ids.filtered(
                             lambda l: l.folio_line_ids == folio_line_ids
                         ).id
-                        cmd_new_invoice_lines.append((item[0], new_id, item[2]))
+                        if item[0] == 2:
+                            # delete
+                            cmd_new_invoice_lines.append((2, new_id))
+                        else:
+                            # update
+                            cmd_new_invoice_lines.append((1, new_id, item[2]))
                 if cmd_new_invoice_lines:
                     new_vals["invoice_line_ids"] = cmd_new_invoice_lines
                 invoice._reverse_moves(cancel=True)
