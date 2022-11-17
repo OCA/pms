@@ -344,6 +344,10 @@ class AccountMove(models.Model):
         if (
             self.pms_property_id
             and self.amount_total > self.pms_property_id.max_amount_simplified_invoice
+            and (
+                not self.pms_property_id.avoid_simplified_max_amount_downpayment
+                or not self._is_downpayment()
+            )
         ):
             mens = _(
                 "The total amount of the simplified invoice is higher than the "
