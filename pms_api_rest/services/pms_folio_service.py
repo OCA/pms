@@ -246,9 +246,7 @@ class PmsFolioService(Component):
             if pms_account_payment_info.reservationIds
             else False
         )
-        # TODO: no_cash_register context to maintain compatibility
-        # with older versions, delete it in the future
-        self.env["pms.folio"].with_context(no_cash_register=True).do_payment(
+        self.env["pms.folio"].do_payment(
             journal_id,
             journal_id.suspense_account_id,
             self.env.user,
@@ -278,9 +276,7 @@ class PmsFolioService(Component):
         journal_id = self.env["account.journal"].browse(
             pms_account_payment_info.journalId
         )
-        # TODO: no_cash_register context to maintain compatibility
-        # with older versions, delete it in the future
-        self.env["pms.folio"].with_context(no_cash_register=True).do_refund(
+        self.env["pms.folio"].do_refund(
             journal_id,
             journal_id.suspense_account_id,
             self.env.user,
@@ -646,12 +642,19 @@ class PmsFolioService(Component):
             partner_invoice_id=invoice_info.partnerId,
             final=True,  # To force take into account down payments
         )
+        # TODO: Proposed improvement with strong refactoring:
+        # modify the folio _create_invoices() method so that it allows specifying any
+        # lines field before creation (right now it only allows quantity),
+        # avoiding having to review the lines to modify them afterwards
         for item in invoice_info.saleLines:
             if item.id in invoices.invoice_line_ids.mapped("folio_line_ids.id"):
                 invoice_line = invoices.invoice_line_ids.filtered(
                     lambda r: item.id in r.folio_line_ids.ids
+                    and not any([r.folio_line_ids.is_downpayment])
+                    # To avoid modifying down payments description
                 )
-                invoice_line.write({"name": item.name})
+                if invoice_line:
+                    invoice_line.write({"name": item.name})
         if invoice_info.narration:
             invoices.write({"narration": invoice_info.narration})
 
