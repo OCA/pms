@@ -36,6 +36,8 @@ class PmsFolioInfo(Datamodel):
     closureReasonId = fields.Integer(required=False, allow_none=True)
     preconfirm = fields.Boolean(required=False, allow_none=True)
     internalComment = fields.String(required=False, allow_none=True)
+    # REVIEW: Mail workflow folio
+    sendConfirmationMail = fields.Boolean(required=False, allow_none=True)
 
 
 class PmsFolioShortInfo(Datamodel):
