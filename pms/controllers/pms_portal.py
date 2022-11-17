@@ -324,7 +324,14 @@ class PortalPrecheckin(CustomerPortal):
             )
         except (AccessError, MissingError):
             return request.redirect("/my")
-        checkin_partner = folio_sudo.checkin_partner_ids[0]
+        available_checkins = folio_sudo.checkin_partner_ids.filtered(
+            lambda c: c.state in ["dummy", "draft"]
+        )
+        checkin_partner = (
+            available_checkins[0]
+            if available_checkins
+            else folio_sudo.checkin_partner_ids[0]
+        )
         values.update(
             {
                 "no_breadcrumbs": True,
@@ -371,7 +378,7 @@ class PortalPrecheckin(CustomerPortal):
         if error:
             checkin_pos = checkin_pos - 1
             values.update({"checkin_pos": checkin_pos})
-        if checkin_pos == len(folio_id.checkin_partner_ids):
+        if checkin_pos == len(folio_id.checkin_partner_ids) or checkin_pos == -2:
             values = {
                 "folio": folio_id,
                 "no_breadcrumbs": True,
@@ -389,21 +396,21 @@ class PortalPrecheckin(CustomerPortal):
             }
         )
         if checkin_pos >= 0:
-            checkin_partner_id = folio_id.checkin_partner_ids[checkin_pos]
-        elif checkin_pos == -2:
-            checkin_partner_id = request.env["pms.checkin.partner"].browse(
-                checkin_partner_id
+            available_checkins = folio_id.checkin_partner_ids.filtered(
+                lambda c: c.state in ["dummy", "draft"]
             )
-        elif checkin_pos == -1:
-            return
-        access_token = checkin_partner_id.access_token
-        if not checkin_partner_id.access_token:
-            access_token = PortalMixin._portal_ensure_token(checkin_partner_id)
+            if available_checkins:
+                checkin_partner = available_checkins[0]
+            else:
+                return request.render("pms.portal_not_checkin", values)
+        access_token = checkin_partner.access_token
+        if not checkin_partner.access_token:
+            access_token = PortalMixin._portal_ensure_token(checkin_partner)
         values.update(
-            self._precheckin_get_page_view_values(checkin_partner_id.id, access_token)
+            self._precheckin_get_page_view_values(checkin_partner.id, access_token)
         )
         values.update({"no_breadcrumbs": True})
-        if checkin_partner_id.state not in ["dummy", "draft"]:
+        if checkin_partner.state not in ["dummy", "draft"]:
             return request.render("pms.portal_not_checkin", values)
         return request.render("pms.portal_my_precheckin_detail", values)
 
@@ -416,7 +423,7 @@ class PortalPrecheckin(CustomerPortal):
     )
     def portal_precheckin_invitation(self, folio_id, access_token=None, **kw):
         try:
-            folio_sudo = self.sudo()._document_check_access(
+            folio_sudo = self._document_check_access(
                 "pms.folio",
                 folio_id,
                 access_token=access_token,
@@ -463,6 +470,35 @@ class PortalPrecheckin(CustomerPortal):
             ):
                 error[firstname] = "error"
                 error_message[firstname] = "Firstname or any lastname are not included"
+            if not data.get("gender"):
+                error["gender"] = "error"
+                error_message["gender"] = "Gender is mandatory"
+            if not data.get("document_number"):
+                error["document_number"] = "error"
+                error_message["document_number"] = "Document number is mandatory"
+            if not data.get("document_type"):
+                error["document_type"] = "error"
+                error_message["document_type"] = "Document type is mandatory"
+            if not data.get("document_expedition_date"):
+                error["document_expedition_date"] = "error"
+                error_message[
+                    "document_expedition_date"
+                ] = "Document expedition date is mandatory"
+            if not data.get("birthdate_date"):
+                error["birthdate_date"] = "error"
+                error_message["birthdate_date"] = "Birth date is mandatory"
+            if not data.get("nationality_id"):
+                error["nationality_id"] = "error"
+                error_message["nationality_id"] = "Nationality is mandatory"
+            if (
+                not data.get("residence_street")
+                or not data.get("residence_city")
+                or not data.get("residence_zip")
+                or data.get("residence_country_id") == "placeholder"
+                or data.get("residence_state_id") == "placeholder"
+            ):
+                error["address"] = "error"
+                error_message["address"] = "Address data is mandatory"
         return error, error_message
 
     def form_document_validate(self, data, counter):
