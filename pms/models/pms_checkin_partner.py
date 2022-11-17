@@ -470,12 +470,16 @@ class PmsCheckinPartner(models.Model):
                     and record.document_number
                     and record.document_type
                 ):
-                    id_number_id = self.env["res.partner.id_number"].search(
-                        [
-                            ("partner_id", "=", record.partner_id.id),
-                            ("name", "=", record.document_number),
-                            ("category_id", "=", record.document_type.id),
-                        ]
+                    id_number_id = (
+                        self.sudo()
+                        .env["res.partner.id_number"]
+                        .search(
+                            [
+                                ("partner_id", "=", record.partner_id.id),
+                                ("name", "=", record.document_number),
+                                ("category_id", "=", record.document_type.id),
+                            ]
+                        )
                     )
                     if not id_number_id:
                         id_number_id = self.env["res.partner.id_number"].create(
@@ -502,14 +506,20 @@ class PmsCheckinPartner(models.Model):
         for record in self:
             if not record.partner_id:
                 if record.document_number and record.document_type:
-                    number = self.env["res.partner.id_number"].search(
-                        [
-                            ("name", "=", record.document_number),
-                            ("category_id", "=", record.document_type.id),
-                        ]
+                    number = (
+                        self.sudo()
+                        .env["res.partner.id_number"]
+                        .search(
+                            [
+                                ("name", "=", record.document_number),
+                                ("category_id", "=", record.document_type.id),
+                            ]
+                        )
                     )
-                    partner = self.env["res.partner"].search(
-                        [("id", "=", number.partner_id.id)]
+                    partner = (
+                        self.sudo()
+                        .env["res.partner"]
+                        .search([("id", "=", number.partner_id.id)])
                     )
                     if not partner:
                         if record.firstname or record.lastname or record.lastname2:
@@ -774,8 +784,10 @@ class PmsCheckinPartner(models.Model):
         for checkin_dict in roomlist_json:
             identifier = checkin_dict["identifier"]
             reservation_id = checkin_dict["reservation_id"]
-            checkin = self.env["pms.checkin.partner"].search(
-                [("identifier", "=", identifier)]
+            checkin = (
+                self.sudo()
+                .env["pms.checkin.partner"]
+                .search([("identifier", "=", identifier)])
             )
             reservation = self.env["pms.reservation"].browse(reservation_id)
             if not checkin:
@@ -878,26 +890,25 @@ class PmsCheckinPartner(models.Model):
         if values.get("first"):
             values.pop("first")
         if values.get("nationality_id"):
-            nationality_id = self.env["res.country"].search(
-                [("id", "=", values.get("nationality_id"))]
-            )
-            values.update({"nationality_id": nationality_id.id})
+            values.update({"nationality_id": int(values.get("nationality_id"))})
         else:
             values.update({"nationality_id": False})
         if not values.get("document_type"):
             values.update({"document_type": False})
         else:
             doc_type_name = values.get("document_type")
-            doc_type = self.env["res.partner.id_category"].search(
-                [("name", "=", doc_type_name)]
+            doc_type = (
+                self.sudo()
+                .env["res.partner.id_category"]
+                .search([("name", "=", doc_type_name)])
             )
-            values.update({"document_type": doc_type})
-        if values.get("state"):
-            residence_state_id = self.env["res.country.state"].search(
-                [("id", "=", values.get("state"))]
+            values.update({"document_type": doc_type.id})
+        if values.get("residence_state_id"):
+            values.update({"residence_state_id": int(values.get("residence_state_id"))})
+        if values.get("residence_country_id"):
+            values.update(
+                {"residence_country_id": int(values.get("residence_country_id"))}
             )
-            values.update({"residence_state_id": residence_state_id})
-            values.pop("state")
         if values.get("document_expedition_date"):
             doc_date = values.get("document_expedition_date")
             birthdate = values.get("birthdate_date")
@@ -911,7 +922,6 @@ class PmsCheckinPartner(models.Model):
                     "document_expedition_date": document_expedition_date,
                 }
             )
-
         checkin_partner.sudo().write(values)
 
     def send_portal_invitation_email(self, invitation_firstname=None, email=None):
