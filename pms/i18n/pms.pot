@@ -137,13 +137,6 @@ msgid ", at"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-".<br/>\n"
-"                            Your check-in has been successful."
-msgstr ""
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid ""
 ".<br/>\n"
@@ -158,13 +151,6 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
 msgid "<b>Rules to apply:</b>"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"<br/>\n"
-"                        You can check if all the data has been saved correctly"
 msgstr ""
 
 #. module: pms
@@ -213,14 +199,6 @@ msgstr ""
 msgid ""
 "<em class=\"font-weight-normal text-muted\">\n"
 "                                        Room Type:\n"
-"                                    </em>"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"<em class=\"font-weight-normal text-muted\">\n"
-"                                        Room:\n"
 "                                    </em>"
 msgstr ""
 
@@ -315,24 +293,10 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid ""
-"<span class=\"fa fa-long-arrow-left\"/>\n"
-"                                            Prev"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-msgid ""
 "<span class=\"fa fa-question-circle fa-lg ml-4\" data-toggle=\"tooltip\" "
 "title=\"If you enter the validity date of the document, the expedition date "
 "will be automatically calculated and entered depending on the document "
 "type.\"/>"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
-msgid ""
-"<span class=\"fa fa-share-square\"/>\n"
-"                                Send Invitations"
 msgstr ""
 
 #. module: pms
@@ -1917,13 +1881,6 @@ msgid "Birthdate"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"Birthdate:\n"
-"                                                        <br/>"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__is_blacklisted
 msgid "Blacklist"
 msgstr ""
@@ -2564,13 +2521,6 @@ msgid "City of the guest's residence"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"City:\n"
-"                                                         <br/>"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type_class__name
 msgid "Class Name"
 msgstr ""
@@ -2879,13 +2829,6 @@ msgid "Country of the guest's residence"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"Country:\n"
-"                                                         <br/>"
-msgstr ""
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_search
 msgid "Create Date"
 msgstr ""
@@ -3181,11 +3124,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_product_product__daily_limit
 #: model:ir.model.fields,field_description:pms.field_product_template__daily_limit
 msgid "Daily limit"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-msgid "Data Saved Successfully"
 msgstr ""
 
 #. module: pms
@@ -3619,34 +3557,13 @@ msgid "Doc. Expedition Date/Doc. Validity Date"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"Doc. Expedition Date:\n"
-"                                                        <br/>"
-msgstr ""
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid "Doc. Number"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"Doc. Number:\n"
-"                                                        <br/>"
-msgstr ""
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid "Doc. Type"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"Doc. Type:\n"
-"                                                        <br/>"
 msgstr ""
 
 #. module: pms
@@ -3835,8 +3752,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_res_partner__email
 #: model:ir.model.fields,field_description:pms.field_res_users__email
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_invitations
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid "Email"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+msgid "Email (Optional)"
 msgstr ""
 
 #. module: pms
@@ -3852,13 +3773,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model,name:pms.model_mail_compose_message
 msgid "Email composition wizard"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"Email:\n"
-"                                                        <br/>"
 msgstr ""
 
 #. module: pms
@@ -4482,13 +4396,6 @@ msgid "Gender"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"Gender:\n"
-"                                                        <br/>"
-msgstr ""
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "General Info"
@@ -4868,13 +4775,6 @@ msgstr ""
 msgid ""
 "If we store your payment information on our server, subscription payments "
 "will be made automatically."
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
-msgid ""
-"If you wish, you can share with the rest of the guests the access to their "
-"check-in so that they can fill it out."
 msgstr ""
 
 #. module: pms
@@ -5847,13 +5747,6 @@ msgid "Lastname"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"Lastname:\n"
-"                                                        <br/>"
-msgstr ""
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Lastnames"
 msgstr ""
@@ -6209,15 +6102,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__mobile
 #: model:ir.model.fields,field_description:pms.field_res_partner__mobile
 #: model:ir.model.fields,field_description:pms.field_res_users__mobile
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid "Mobile"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"Mobile:\n"
-"                                                        <br/>"
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+msgid "Mobile (Optional)"
 msgstr ""
 
 #. module: pms
@@ -6327,26 +6217,12 @@ msgid "Name set manually"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"Name:\n"
-"                                                        <br/>"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__nationality_id
 #: model:ir.model.fields,field_description:pms.field_pms_property__nationality_id
 #: model:ir.model.fields,field_description:pms.field_res_partner__nationality_id
 #: model:ir.model.fields,field_description:pms.field_res_users__nationality_id
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid "Nationality"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"Nationality:\n"
-"                                                        <br/>"
 msgstr ""
 
 #. module: pms
@@ -6394,13 +6270,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_service_id
 msgid "New Service"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-msgid ""
-"Next\n"
-"                                        <span class=\"fa fa-long-arrow-right\"/>"
 msgstr ""
 
 #. module: pms
@@ -7097,18 +6966,6 @@ msgid "Partner Operations"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-msgid "Partner Relationship"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"Partner Relationship:\n"
-"                                                        <br/>"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__partner_requests
 msgid "Partner Requests"
 msgstr ""
@@ -7361,20 +7218,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_property__phone
 #: model:ir.model.fields,field_description:pms.field_res_partner__phone
 #: model:ir.model.fields,field_description:pms.field_res_users__phone
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid "Phone"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+msgid "Phone (Optional)"
 msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__phone_sanitized_blacklisted
 msgid "Phone Blacklisted"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"Phone:\n"
-"                                                        <br/>"
 msgstr ""
 
 #. module: pms
@@ -8507,7 +8361,6 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
 #: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "Residence Address"
 msgstr ""
@@ -9054,7 +8907,9 @@ msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-msgid "Save"
+msgid ""
+"Save and Continue\n"
+"                                        <span class=\"fa fa-long-arrow-right\"/>"
 msgstr ""
 
 #. module: pms
@@ -9069,26 +8924,12 @@ msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-msgid "Second Lastname"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"Second Lastname:\n"
-"                                                        <br/>"
+msgid "Second Lastname (Optional)"
 msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-msgid "Second Street"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"Second Street:\n"
-"                                                         <br/>"
+msgid "Second Street (Optional)"
 msgstr ""
 
 #. module: pms
@@ -9674,13 +9515,6 @@ msgid "State of the reservation line."
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"State:\n"
-"                                                         <br/>"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__statement_line_ids
 msgid "Statement lines"
 msgstr ""
@@ -9753,13 +9587,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_res_partner__street2
 #: model:ir.model.fields,field_description:pms.field_res_users__street2
 msgid "Street2"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"Street:\n"
-"                                                         <br/>"
 msgstr ""
 
 #. module: pms
@@ -10029,7 +9856,9 @@ msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid "Thank you,"
+msgid ""
+"Thank you!\n"
+"                    Your check-in has been successful."
 msgstr ""
 
 #. module: pms
@@ -11520,13 +11349,6 @@ msgid "ZIP"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid ""
-"ZIP:\n"
-"                                                         <br/>"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_zip
 #: model:ir.model.fields,field_description:pms.field_pms_property__zip
 #: model:ir.model.fields,field_description:pms.field_res_partner__zip
@@ -11600,11 +11422,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "email"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
-msgid "here"
 msgstr ""
 
 #. module: pms
