@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from odoo import _, fields
-from odoo.exceptions import MissingError
+from odoo.exceptions import MissingError, ValidationError
 from odoo.osv import expression
 
 from odoo.addons.base_rest import restapi
@@ -443,7 +443,24 @@ class PmsFolioService(Component):
                         ],
                     }
                     self.env["pms.service"].create(vals)
-
+        # REVIEW: analyze how to integrate the sending of mails from the API
+        # with the configuration of the automatic mails pms
+        # &
+        # the sending of mail should be a specific call once the folio has been created?
+        if folio and folio.email and pms_folio_info.sendConfirmationMail:
+            template = folio.pms_property_id.property_confirmed_template
+            if not template:
+                raise ValidationError(
+                    _("There is no confirmation template for this property")
+                )
+            email_values = {
+                "email_to": folio.email,
+                "email_from": folio.pms_property_id.email
+                if folio.pms_property_id.email
+                else False,
+                "auto_delete": False,
+            }
+            template.send_mail(folio.id, force_send=True, email_values=email_values)
         return folio.id
 
     @restapi.method(
