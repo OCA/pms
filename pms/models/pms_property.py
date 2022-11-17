@@ -194,6 +194,11 @@ class PmsProperty(models.Model):
         help="Maximum amount to create the simplified invoice",
         default=400.0,
     )
+    avoid_simplified_max_amount_downpayment = fields.Boolean(
+        string="Downpayment Invoive without limit amount",
+        help="Avoid simplified invoice max amount downpayment",
+        default=True,
+    )
     user_id = fields.Many2one(
         string="Team Leader",
         copy=False,
@@ -821,6 +826,6 @@ class PmsProperty(models.Model):
                 result.append((record.id, record.name))
             else:
                 result.append(
-                    (record.id, record.name + " (" + record.pms_property_code + ")")
+                    (record.id, "[" + record.pms_property_code + "] " + record.name)
                 )
         return result
