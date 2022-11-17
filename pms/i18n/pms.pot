@@ -1840,6 +1840,11 @@ msgid "Avoid comunication mails"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__avoid_simplified_max_amount_downpayment
+msgid "Avoid simplified invoice max amount downpayment"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__bank_account_count
 msgid "Bank"
 msgstr ""
@@ -3717,12 +3722,6 @@ msgid "Down Payment Product"
 msgstr ""
 
 #. module: pms
-#: code:addons/pms/wizards/folio_make_invoice_advance.py:0
-#, python-format
-msgid "Down Payment: %s"
-msgstr ""
-
-#. module: pms
 #: code:addons/pms/models/pms_folio.py:0
 #, python-format
 msgid "Down Payments"
@@ -3754,6 +3753,11 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.folio_portal_template
 msgid "Download"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__avoid_simplified_max_amount_downpayment
+msgid "Downpayment Invoive without limit amount"
 msgstr ""
 
 #. module: pms
