@@ -1565,7 +1565,7 @@ class TestPmsCheckinPartner(TestPms):
             "firstname": "Serafín",
             "lastname": "Rivas",
             "lastname2": "Gonzalez",
-            "document_type": self.id_category.code,
+            "document_type": self.id_category.name,
             "document_number": "18038946T",
             "document_expedition_date": "2010-10-07",
             "birthdate_date": "1983-10-05",
@@ -1573,17 +1573,16 @@ class TestPmsCheckinPartner(TestPms):
             "email": "serafin@example.com",
             "gender": "male",
             "nationality_id": "1",
-            "state": "1",
+            "residence_state_id": "1",
         }
         checkin_partner_id._save_data_from_portal(checkin_partner_vals)
-        nationality_id = self.env["res.country"].browse(
-            checkin_partner_vals["nationality_id"]
-        )
         checkin_partner_vals.update(
             {
                 "birthdate_date": datetime.date(1983, 10, 5),
                 "document_expedition_date": datetime.date(2010, 10, 7),
-                "nationality_id": nationality_id,
+                "nationality_id": self.env["res.country"].search([("id", "=", 1)]),
+                "residence_state_id": self.env["res.country.state"].browse(1),
+                "document_type": self.id_category,
             }
         )
         for key in checkin_partner_vals:
