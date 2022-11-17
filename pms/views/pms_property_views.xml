@@ -117,6 +117,7 @@
                                     ]"
                                 />
                                 <field name="max_amount_simplified_invoice" />
+                                <field name="avoid_simplified_max_amount_downpayment" />
                             </group>
                         </page>
                         <page string="Email Configuration">
