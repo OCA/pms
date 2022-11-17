@@ -518,7 +518,7 @@ class PmsFolioService(Component):
                             defaultInvoiceTo=sale_line.default_invoice_to
                             if sale_line.default_invoice_to
                             else None,
-                            isDownPayment=sale_line.is_down_payment,
+                            isDownPayment=sale_line.is_downpayment,
                         )
                     )
 
