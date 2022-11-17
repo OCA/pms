@@ -996,10 +996,18 @@ class FolioSaleLine(models.Model):
             should be added to the returned invoice line
         """
         self.ensure_one()
+        if self.is_downpayment:
+            downpayment_invoice = self.folio_id.move_ids.filtered(
+                lambda x: x.payment_state != "reversed"
+                and x.line_ids.filtered(lambda l: l.folio_line_ids == self)
+            )
+            name = self.name + " (" + downpayment_invoice.name + ")"
+        else:
+            name = self.name
         res = {
             "display_type": self.display_type,
             "sequence": self.sequence,
-            "name": self.name,
+            "name": name,
             "product_id": self.product_id.id,
             "product_uom_id": self.product_uom.id,
             "quantity": qty if qty else self.qty_to_invoice,
