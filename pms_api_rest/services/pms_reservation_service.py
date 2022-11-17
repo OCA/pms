@@ -227,7 +227,7 @@ class PmsReservationService(Component):
         ):
             line_vals["cancel_discount"] = origin_data.cancelDiscount
         if origin_data.roomId and (
-            not reservation_line or origin_data.roomId != reservation_line.room_id
+            not reservation_line or origin_data.roomId != reservation_line.room_id.id
         ):
             line_vals["room_id"] = origin_data.roomId
         return line_vals
