@@ -76,7 +76,7 @@
                                 <input
                                     type="text"
                                     name="lastname"
-                                    t-attf-class="form-control"
+                                    t-attf-class="form-control #{error.get('firstname') and 'is-invalid' or ''}"
                                     t-att-value="checkin_partner_id.lastname"
                                 />
                             </div>
@@ -84,11 +84,11 @@
                                 <label
                                     class="col-form-label"
                                     for="lastname2"
-                                > Second Lastname</label>
+                                > Second Lastname (Optional)</label>
                                 <input
                                     type="text"
                                     name="lastname2"
-                                    t-attf-class="form-control"
+                                    t-attf-class="form-control #{error.get('firstname') and 'is-invalid' or ''}"
                                     t-att-value="checkin_partner_id.lastname2"
                                 />
                             </div>
@@ -104,6 +104,7 @@
                                     class="form-control"
                                     name="gender"
                                     t-att-value="checkin_partner_id.gender"
+                                    t-attf-class="form-control #{error.get('gender') and 'is-invalid' or ''}"
                                 >
                                     <option value="">Select an option</option>
                                     <option
@@ -125,10 +126,17 @@
                                         Other
                                     </option>
                                 </select>
+                                <t t-if="error_message">
+                                    <span
+                                        class="text-danger"
+                                        t-esc="error_message.get('gender')"
+                                    />
+                                </t>
                             </div>
-                            <div
+
+                                <div
                                 name="document_type_div"
-                                t-attf-class="form-group col-12 col-md-6"
+                                t-attf-class="col-12 col-md-6"
                             >
                                 <label
                                     class="col-form-label"
@@ -159,7 +167,7 @@
                                     />
                                 </t>
                             </div>
-                            <div
+                                <div
                                 name="document_number_div"
                                 t-attf-class="col-12 col-md-6"
                             >
@@ -180,6 +188,8 @@
                                     />
                                 </t>
                             </div>
+
+
                             <div t-attf-class="col-12 col-md-6">
                                 <label
                                     class="col-form-label"
@@ -227,7 +237,7 @@
                                     for="nationality_id"
                                 >Nationality</label>
                                 <select
-                                    class="form-control"
+                                    t-attf-class="form-control #{error.get('nationality_id') and 'is-invalid' or ''}"
                                     id="country"
                                     name='nationality_id'
                                 >
@@ -241,13 +251,19 @@
                                         </option>
                                     </t>
                                 </select>
+                                <t t-if="error_message">
+                                    <span
+                                        class="text-danger"
+                                        t-esc="error_message.get('nationality_id')"
+                                    />
+                                </t>
                             </div>
-                            <div t-attf-class="form-group col-12 col-md-6 pt-5">
+                            <div t-attf-class="form-group col-12 col-md-6">
                                 <label
                                     id="label_mobile"
                                     class="col-form-label"
                                     for="mobile"
-                                >Mobile</label>
+                                >Mobile (Optional)</label>
                                 <input
                                     type="phone"
                                     name="mobile"
@@ -261,16 +277,16 @@
                                     />
                                 </t>
                             </div>
-                            <div t-attf-class="form-group col-12 col-md-6 pt-md-5">
+                            <div t-attf-class="form-group col-12 col-md-6">
                                 <label
                                     id="label_phone"
                                     class="col-form-label"
                                     for="phone"
-                                >Phone</label>
+                                >Phone (Optional)</label>
                                 <input
                                     type="phone"
                                     name="phone"
-                                    t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}"
+                                    t-attf-class="form-control #{error.get('phone') and 'is-invalid' or ''}"
                                     t-att-value="checkin_partner_id.phone"
                                 />
                                 <t t-if="error_message">
@@ -285,7 +301,7 @@
                                     id="label_email"
                                     class="col-form-label"
                                     for="email"
-                                >Email</label>
+                                >Email (Optional)</label>
                                 <input
                                     type="email"
                                     name="email"
@@ -299,19 +315,6 @@
                                     />
                                 </t>
                             </div>
-                            <div t-attf-class="form-group col-12 col-md-6 ">
-                                <label
-                                    id="label_relationship"
-                                    class="col-form-label"
-                                    for="partner_relationship"
-                                >Partner Relationship</label>
-                                <input
-                                    type="text"
-                                    name="partner_relationship"
-                                    t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}"
-                                    t-att-value="checkin_partner_id.partner_relationship"
-                                />
-                            </div>
                             <div t-attf-class="form-group col-md-12 pt-md-5">
                                 <label
                                     class="col-form-label"
@@ -321,14 +324,14 @@
                                     type="text"
                                     placeholder="Street"
                                     name="residence_street"
-                                    t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}"
+                                    t-attf-class="form-control #{error.get('address') and 'is-invalid' or ''}"
                                     t-att-value="checkin_partner_id.residence_street"
                                 />
                             </div>
                              <div t-attf-class="form-group col-md-12">
                                 <input
                                     type="text"
-                                    placeholder="Second Street"
+                                    placeholder="Second Street (Optional)"
                                     name="residence_street2"
                                     t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}"
                                     t-att-value="checkin_partner_id.residence_street2"
@@ -339,7 +342,7 @@
                                     type="text"
                                     placeholder="City"
                                     name="residence_city"
-                                    t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}"
+                                    t-attf-class="form-control #{error.get('address') and 'is-invalid' or ''}"
                                     t-att-value="checkin_partner_id.residence_city"
                                 />
                             </div>
@@ -348,7 +351,7 @@
                                     type="text"
                                     placeholder="Zip"
                                     name="residence_zip"
-                                    t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}"
+                                    t-attf-class="form-control #{error.get('address') and 'is-invalid' or ''}"
                                     t-att-value="checkin_partner_id.residence_zip"
                                 />
                             </div>
@@ -397,37 +400,21 @@
                                     </t>
                                 </select>
                             </div>
-                            <t t-if="checkin_pos >= 0">
-                                <div class="col-4">
-                                    <t t-if="not error">
-                                        <button
-                                            class="btn btn-primary"
-                                            id="btnPrev1"
-                                            type="button"
-                                        >
-                                            <span class="fa fa-long-arrow-left" />
-                                            Prev
-                                        </button>
-                                    </t>
-                                    <t t-else="">
-                                        <button
-                                            class="btn btn-primary"
-                                            id="btnPrev2"
-                                            type="button"
-                                            onclick="history.go(-3)"
-                                        >
-                                            <span class="fa fa-long-arrow-left" />
-                                            Prev
-                                        </button>
-                                    </t>
-                                </div>
-
+                            <t t-if="error_message">
+                                    <span
+                                    class="text-danger"
+                                    t-esc="error_message.get('address')"
+                                />
+                                </t>
+                            <t>
                                 <div id="pager_count" class="col-4 pt-3">
                                     <center>
                                         Page
                                         <span t-esc="int(checkin_pos) + 1" />
                                         of
-                                        <span t-esc="len(folio.checkin_partner_ids)" />
+                                        <span
+                                            t-esc="len(folio.checkin_partner_ids.filtered(lambda c: c.state in ['dummy','draft']))"
+                                        />
                                     </center>
                                 </div>
                                 <t t-set="checkin_pos" t-value="checkin_pos+1" />
@@ -438,35 +425,15 @@
                                     class="d-none"
                                     t-att-value="checkin_pos"
                                 />
-                                <div class="col-4">
+                                <div class="col-6">
                                     <button
                                         type="submit"
                                         class="btn btn-primary float-right"
                                     >
-                                        Next
+                                        Save and Continue
                                         <span class="fa fa-long-arrow-right" />
                                     </button>
                                 </div>
-                            </t>
-                            <t t-else="">
-                                <div class="col-12 mt-4">
-                                    <button
-                                        id="btnSave"
-                                        onclick="launchSnackBar(this)"
-                                        type="submit"
-                                        class="btn btn-primary float-right"
-                                    >
-                                        Save
-                                    </button>
-                                    <input
-                                        type="number"
-                                        name="checkin_pos"
-                                        id="input_checkin_pos"
-                                        class="d-none"
-                                        t-att-value="-1"
-                                    />
-                                </div>
-                                <div id="snackbar">Data Saved Successfully </div>
                             </t>
                         </div>
                     </div>
@@ -819,7 +786,6 @@
                                                     class="' btn btn-secondary"
                                                     t-att-href="'whatsapp://send?text='+web_url+checkin_partner.get_portal_url()"
                                                     style="color:#fff;margin-top:20px;"
-                                                    t-attf-onclick="show_invitation(this)"
                                                 >
                                                         <span class="fa fa-whatsapp" />
                                                         Send Whatsapp Invitation
@@ -970,15 +936,7 @@
             if(name){
             host.innerHTML = name;
 
-            var divId = "invitation_group" + checkin_partner_id;
-            var btnId = "btnResendInvitation" + checkin_partner_id;
-            var div_invitation = document.getElementById(divId);
-            var btn_show_invitation_email = document.getElementById(btnId);
-            div_invitation.classList.add("d-none");
-            btn_show_invitation_email.classList.remove("d-none");
-            var x = document.getElementById("snackbar");
-            x.className = "show";
-            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+
             }
             }
             }
@@ -999,349 +957,13 @@
     </template>
     <template id="portal_my_precheckin_end" name="Precheckin End">
         <t t-call="portal.portal_layout">
-            <table>
-                <thead>
-                    <center>
-                        <h5 style="margin-top:20px;">
-                            Thank you,
-                            <span t-field="folio.sudo().partner_name" />.<br />
-                            Your check-in has been successful.
-                        </h5>
-
-                        <br />
-                        You can check if all the data has been saved correctly
-                        <a
-                            data-toggle="collapse"
-                            href="#collapseExample"
-                            aria-expanded="false"
-                            aria-controls="collapseExample"
-                        >here</a>
-                    </center>
-                </thead>
-
-                <table class="collapse mt-5" id="collapseExample">
-                    <t t-foreach="folio.reservation_ids" t-as="reservation">
-                        <thead style="background-color: #F5F5F5;">
-                            <tr>
-                                <td colspan="4">
-                                    <em class="font-weight-normal text-muted">
-                                        Room:
-                                    </em>
-                                    <a
-                                        t-att-title="reservation.sudo().room_type_id.name"
-                                    >
-                                        <t
-                                            t-esc="reservation.sudo().room_type_id.name"
-                                        />
-                                    </a>
-                                </td>
-                            </tr>
-                        </thead>
-                        <t
-                            t-foreach="reservation.checkin_partner_ids"
-                            t-as="checkin_partner"
-                        >
-                            <tbody style="background-color: white;">
-
-                                <tr>
-                                    <td colspan="4">
-
-                                        <div class="row col-12">
-                                            <div t-attf-class="d-none">
-                                                <input
-                                                    type="text"
-                                                    t-att-name="'checkin_partner_id'"
-                                                    t-attf-class="form-control"
-                                                    t-att-value="id or (checkin_partner.id)"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="row col-12 ml-0 mr-0 pt-2 pb-2"
-                                            style="background-color:#ececec"
-                                        />
-                                        <div class="row o_portal_details">
-                                            <div class="col">
-                                                <div class="row mx-5 px-5">
-                                                    <div
-                                                        t-attf-class="form-group mt-3 col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        Name:
-                                                        <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-esc="checkin_partner.firstname"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        t-attf-class="form-group mt-3 col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        Lastname:
-                                                        <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-esc="checkin_partner.lastname"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        Second Lastname:
-                                                        <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-esc="checkin_partner.lastname2"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        Gender:
-                                                        <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-esc="checkin_partner.gender"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        Doc. Type:
-                                                        <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-esc="checkin_partner.document_type.name"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        Doc. Number:
-                                                        <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-esc="checkin_partner.document_number"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        Doc. Expedition Date:
-                                                        <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-esc="checkin_partner.document_expedition_date"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        name="birthdate_div"
-                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        Birthdate:
-                                                        <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-esc="checkin_partner.birthdate_date"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        Mobile:
-                                                        <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-esc="checkin_partner.mobile"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        Phone:
-                                                        <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-esc="checkin_partner.phone"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        Email:
-                                                        <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-esc="checkin_partner.email"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        Nationality:
-                                                        <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-esc="checkin_partner.nationality_id.name"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        Partner Relationship:
-                                                        <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-esc="checkin_partner.partner_relationship"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        t-attf-class="form-group col-12 mt-3 font-italic font-weight-bold"
-                                                    >
-                                                        Residence Address
-                                                    </div>
-                                                    <div
-                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        Street:
-                                                         <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-esc="checkin_partner.residence_street"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        Second Street:
-                                                         <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-esc="checkin_partner.residence_street2"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        City:
-                                                         <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-esc="checkin_partner.residence_city"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        ZIP:
-                                                         <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-esc="checkin_partner.residence_zip"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        State:
-                                                         <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-set="residence_state_id"
-                                                                t-value="int(checkin_partner.residence_state_id.id)"
-                                                            />
-                                                            <t
-                                                                t-set="residence_state"
-                                                                t-value="folio.env['res.country.state'].browse(residence_state_id)"
-                                                            />
-                                                            <t
-                                                                t-esc="residence_state.name"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        Country:
-                                                         <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-set="residence_country_id"
-                                                                t-value="int(checkin_partner.residence_country_id.id)"
-                                                            />
-                                                            <t
-                                                                t-set="residence_country"
-                                                                t-value="folio.env['res.country'].browse(residence_country_id)"
-                                                            />
-                                                            <t
-                                                                t-esc="residence_country.name"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </t>
-                    </t>
-                </table>
-            </table>
+            <center>
+                <h5 style="margin-top:20px;">
+                    Thank you!
+                    Your check-in has been successful.
+                </h5>
+                <br />
+            </center>
         </t>
         <style />
     </template>
