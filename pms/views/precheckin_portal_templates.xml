@@ -333,7 +333,7 @@
                                     type="text"
                                     placeholder="Second Street (Optional)"
                                     name="residence_street2"
-                                    t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}"
+                                    t-attf-class="form-control #{error.get('address') and 'is-invalid' or ''}"
                                     t-att-value="checkin_partner_id.residence_street2"
                                 />
                             </div>
@@ -357,7 +357,7 @@
                             </div>
                             <div t-attf-class="form-group col-md-4">
                                 <select
-                                    class="form-control"
+                                    class="form-control #{error.get('address') and 'is-invalid' or ''}"
                                     id="residence-country"
                                     name='residence_country_id'
                                     onclick="changeCountryFormClass()"
@@ -654,27 +654,27 @@
                     </button>
                 </form>
             </div>
-            <center>
-                <t t-if="len(folio.checkin_partner_ids) &gt; 1">
-                    <div>
-                        If you wish, you can share with the rest of the guests the access to their check-in so that they can fill it out.
-                        <a
-                            role="button"
-                            t-att-href="folio.get_portal_url(suffix='/invitations')"
-                        >
-                            <button
-                                type="submit"
-                                class="btn btn-primary"
-                                style="margin-top:40px;"
-                            >
-                                <span class="fa fa-share-square" />
-                                Send Invitations
-                            </button>
-                        </a>
-                    </div>
-                </t>
+<!--            <center>-->
+<!--                <t t-if="len(folio.checkin_partner_ids) &gt; 1">-->
+<!--                    <div>-->
+<!--                        If you wish, you can share with the rest of the guests the access to their check-in so that they can fill it out.-->
+<!--                        <a-->
+<!--                            role="button"-->
+<!--                            t-att-href="folio.get_portal_url(suffix='/invitations')"-->
+<!--                        >-->
+<!--                            <button-->
+<!--                                type="submit"-->
+<!--                                class="btn btn-primary"-->
+<!--                                style="margin-top:40px;"-->
+<!--                            >-->
+<!--                                <span class="fa fa-share-square" />-->
+<!--                                Send Invitations-->
+<!--                            </button>-->
+<!--                        </a>-->
+<!--                    </div>-->
+<!--                </t>-->
 
-            </center>
+<!--            </center>-->
         </t>
         <style>
 
