@@ -18,7 +18,7 @@
                     <t t-foreach="doc_type_ids" t-as='doc_type'>
                         <option
                             t-att-value="doc_type.name"
-                            t-att-selected="doc_type.id == checkin_partner_id.document_type.id"
+                            t-att-selected="doc_type.name == document_type"
                         >
                             <t t-esc='doc_type.name' />
                         </option>
@@ -39,7 +39,7 @@
                     type="text"
                     name="document_number"
                     t-attf-class="form-control #{error.get('document_number') and 'is-invalid' or ''}"
-                    t-att-value="doc_number or checkin_partner_id.document_number"
+                    t-att-value="document_number if document_number and error else ''"
                 />
                 <t t-if="error_message">
                     <span
