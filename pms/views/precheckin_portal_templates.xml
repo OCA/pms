@@ -15,7 +15,7 @@
                         <center>
                             <h5
                                 class="font-weight-bold mr-5 mt-2"
-                                t-esc="'Room: '+checkin_partner_id.reservation_id.sudo().room_type_id.name"
+                                t-esc="'Room: '+checkin_partner_id.reservation_id.sudo().room_type_id.name if checkin_partner_id.reservation_id else ''"
                             />
                         </center>
                         <input
@@ -43,23 +43,26 @@
                     <t t-if="checkin_pos >= 0">
                         <div class="col-4 mt-2">
                             <h5 class="float-right font-weight-bold">
-                                Check-in
-                                <span t-esc="int(checkin_pos) + 1" />
+                                Covering <span
+                                    t-esc="int(checkin_pos) + 1"
+                                /> partner <br />
+                                <span
+                                    t-esc="len(folio.checkin_partner_ids.filtered(lambda c: c.state in ['dummy','draft']))-int(checkin_pos)"
+                                />
+                                partner data to remain to be covered
                              </h5>
                         </div>
                     </t>
                     <div class="row justify-content-center">
                         <div class="col-11 col-md-8 row pt-3">
                             <div t-attf-class="form-group col-12 col-md-6">
-                                <label
-                                    class="col-form-label"
-                                    for="firstname"
-                                >Name</label>
+                                <label class="col-form-label" for="firstname">Name<small
+                                    >*</small></label>
                                 <input
                                     type="text"
                                     name="firstname"
                                     t-attf-class="form-control #{error.get('firstname') and 'is-invalid' or ''}"
-                                    t-att-value="checkin_partner_id.firstname"
+                                    t-att-value="firstname if error and firstname else ''"
                                 />
                                 <t t-if="error_message">
                                     <span
@@ -77,7 +80,7 @@
                                     type="text"
                                     name="lastname"
                                     t-attf-class="form-control #{error.get('firstname') and 'is-invalid' or ''}"
-                                    t-att-value="checkin_partner_id.lastname"
+                                    t-att-value="lastname if lastname and error else ''"
                                 />
                             </div>
                             <div t-attf-class="form-group col-12 col-md-6 pb-md-5">
@@ -88,8 +91,8 @@
                                 <input
                                     type="text"
                                     name="lastname2"
-                                    t-attf-class="form-control #{error.get('firstname') and 'is-invalid' or ''}"
-                                    t-att-value="checkin_partner_id.lastname2"
+                                    t-attf-class="form-control"
+                                    t-att-value="lastname2 if error and lastname2 else ''"
                                 />
                             </div>
                             <div t-attf-class="col-12 col-md-6 pb-5">
@@ -98,30 +101,30 @@
                                     for="gender"
                                 >Gender</label>
                                 <div class="d-none"><p id="genderId"><t
-                                            t-esc="checkin_partner_id.gender"
+                                            t-esc="gender"
                                         /></p></div>
                                 <select
                                     class="form-control"
                                     name="gender"
-                                    t-att-value="checkin_partner_id.gender"
+                                    t-att-value="gender if gender and error else ''"
                                     t-attf-class="form-control #{error.get('gender') and 'is-invalid' or ''}"
                                 >
                                     <option value="">Select an option</option>
                                     <option
                                         value="female"
-                                        t-att-selected="'female' == checkin_partner_id.gender"
+                                        t-att-selected="'female' == gender"
                                     >
                                         Female
                                     </option>
                                     <option
                                         value="male"
-                                        t-att-selected="'male' == checkin_partner_id.gender"
+                                        t-att-selected="'male' == gender"
                                     >
                                         Male
                                     </option>
                                     <option
                                         value="other"
-                                        t-att-selected="'other' == checkin_partner_id.gender"
+                                        t-att-selected="'other' == gender"
                                     >
                                         Other
                                     </option>
@@ -143,7 +146,7 @@
                                     for="document_type"
                                 >Doc. Type</label>
                                 <div class="d-none"><p id="docTypeId"><t
-                                            t-esc="checkin_partner_id.document_type"
+                                            t-esc="document_type"
                                         /></p></div>
                                 <select
                                     class="form-control #{error.get('document_type') and 'is-invalid' or ''}"
@@ -154,7 +157,7 @@
                                     <t t-foreach="doc_type_ids" t-as='doc_type'>
                                         <option
                                             t-att-value="doc_type.name"
-                                            t-att-selected="doc_type.id == checkin_partner_id.document_type.id"
+                                            t-att-selected="doc_type.name == document_type"
                                         >
                                             <t t-esc='doc_type.name' />
                                         </option>
@@ -179,7 +182,7 @@
                                     type="text"
                                     name="document_number"
                                     t-attf-class="form-control #{error.get('document_number') and 'is-invalid' or ''}"
-                                    t-att-value="doc_number or checkin_partner_id.document_number"
+                                    t-att-value="document_number if document_number and error else ''"
                                 />
                                 <t t-if="error_message">
                                     <span
@@ -204,7 +207,7 @@
                                     type="date"
                                     name="document_expedition_date"
                                     t-attf-class="form-control #{error.get('document_expedition_date') and 'is-invalid' or ''}"
-                                    t-att-value="doc_exp_date or checkin_partner_id.document_expedition_date"
+                                    t-att-value="document_expedition_date"
                                 />
                                 <t t-if="error_message">
                                     <span
@@ -222,7 +225,7 @@
                                     type="date"
                                     name="birthdate_date"
                                     t-attf-class="form-control #{error.get('birthdate_date') and 'is-invalid' or ''}"
-                                    t-att-value="checkin_partner_id.birthdate_date"
+                                    t-att-value="birthdate_date if birthdate_date and error else ''"
                                 />
                                 <t t-if="error_message">
                                     <span
@@ -240,12 +243,13 @@
                                     t-attf-class="form-control #{error.get('nationality_id') and 'is-invalid' or ''}"
                                     id="country"
                                     name='nationality_id'
+                                    value="nationality_id if nationality_id and error else ''"
                                 >
                                     <option value="">Select an option</option>
                                     <t t-foreach="country_ids" t-as='country_id'>
                                         <option
                                             t-att-value="country_id.id"
-                                            t-att-selected="country_id.id == checkin_partner_id.nationality_id.id"
+                                            t-att-selected="str(country_id.id) == nationality_id"
                                         >
                                             <t t-esc='country_id.name' />
                                         </option>
@@ -268,7 +272,7 @@
                                     type="phone"
                                     name="mobile"
                                     t-attf-class="form-control #{error.get('mobile') and 'is-invalid' or ''}"
-                                    t-att-value="checkin_partner_id.mobile"
+                                    t-att-value="mobile if mobile and error else ''"
                                 />
                                 <t t-if="error_message">
                                     <span
@@ -287,7 +291,7 @@
                                     type="phone"
                                     name="phone"
                                     t-attf-class="form-control #{error.get('phone') and 'is-invalid' or ''}"
-                                    t-att-value="checkin_partner_id.phone"
+                                    t-att-value="phone if phone and error else ''"
                                 />
                                 <t t-if="error_message">
                                     <span
@@ -306,7 +310,7 @@
                                     type="email"
                                     name="email"
                                     t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}"
-                                    t-att-value="checkin_partner_id.email"
+                                    t-att-value="email if email and error else ''"
                                 />
                                 <t t-if="error_message">
                                     <span
@@ -325,7 +329,7 @@
                                     placeholder="Street"
                                     name="residence_street"
                                     t-attf-class="form-control #{error.get('address') and 'is-invalid' or ''}"
-                                    t-att-value="checkin_partner_id.residence_street"
+                                    t-att-value="residence_street if residence_street else ''"
                                 />
                             </div>
                              <div t-attf-class="form-group col-md-12">
@@ -333,8 +337,8 @@
                                     type="text"
                                     placeholder="Second Street (Optional)"
                                     name="residence_street2"
-                                    t-attf-class="form-control #{error.get('address') and 'is-invalid' or ''}"
-                                    t-att-value="checkin_partner_id.residence_street2"
+                                    t-attf-class="form-control"
+                                    t-att-value="residence_street2 if residence_street2 and error else ''"
                                 />
                             </div>
                             <div t-attf-class="form-group col-md-4">
@@ -343,7 +347,7 @@
                                     placeholder="City"
                                     name="residence_city"
                                     t-attf-class="form-control #{error.get('address') and 'is-invalid' or ''}"
-                                    t-att-value="checkin_partner_id.residence_city"
+                                    t-att-value="residence_city if residence_city and error else ''"
                                 />
                             </div>
                             <div t-attf-class="form-group col-md-4">
@@ -352,7 +356,7 @@
                                     placeholder="Zip"
                                     name="residence_zip"
                                     t-attf-class="form-control #{error.get('address') and 'is-invalid' or ''}"
-                                    t-att-value="checkin_partner_id.residence_zip"
+                                    t-att-value="residence_zip if residence_zip and error else ''"
                                 />
                             </div>
                             <div t-attf-class="form-group col-md-4">
@@ -370,7 +374,7 @@
                                     <t t-foreach="country_ids" t-as='country_id'>
                                         <option
                                             t-att-value="country_id.id"
-                                            t-att-selected="country_id.id == checkin_partner_id.residence_country_id.id if checkin_partner_id.residence_country_id.id else placeholder"
+                                            t-att-selected="str(country_id.id) == residence_country_id if residence_country_id and error else placeholder"
                                         >
                                             <t t-esc='country_id.name' />
                                         </option>
@@ -393,7 +397,7 @@
                                         <option
                                             t-att-value="state.id"
                                             t-att-country_id="state.country_id.id"
-                                            t-att-selected="state.id == checkin_partner_id.residence_state_id.id if checkin_partner_id.residence_state_id.id else placeholder"
+                                            t-att-selected="str(state.id) == residence_state_id if residence_state_id and error else placeholder"
                                         >
                                             <t t-esc="state.name" />
                                         </option>
