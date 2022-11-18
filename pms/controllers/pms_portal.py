@@ -378,11 +378,13 @@ class PortalPrecheckin(CustomerPortal):
         if error:
             checkin_pos = checkin_pos - 1
             values.update({"checkin_pos": checkin_pos})
-        if checkin_pos == len(folio_id.checkin_partner_ids) or checkin_pos == -2:
+        if checkin_pos == len(folio_id.checkin_partner_ids):
             values = {
                 "folio": folio_id,
                 "no_breadcrumbs": True,
             }
+            return request.render("pms.portal_my_precheckin_end", values)
+        if checkin_pos == -2:
             return request.render("pms.portal_my_precheckin_end", values)
         values.update(
             {
