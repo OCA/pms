@@ -4,6 +4,7 @@ from odoo import _, fields, http, tools
 from odoo.exceptions import AccessError, MissingError
 from odoo.http import request
 
+from odoo.addons.account.controllers.portal import PortalAccount
 from odoo.addons.payment.controllers.portal import PaymentProcessing
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo.addons.portal.models.portal_mixin import PortalMixin
@@ -31,6 +32,14 @@ class PortalFolio(CustomerPortal):
         payment_inputs = request.env["payment.acquirer"]._get_available_payment_input(
             partner=folio.partner_id, company=folio.company_id
         )
+        acquirers = payment_inputs.get("acquirers")
+        for acquirer in acquirers:
+            if (
+                acquirer.pms_property_ids
+                and folio.pms_property_id.id not in acquirer.pms_property_ids.ids
+            ):
+                payment_inputs["acquirers"] -= acquirer
+        values.update(payment_inputs)
         is_public_user = request.env.user._is_public()
         if is_public_user:
             payment_inputs.pop("pms", None)
@@ -41,6 +50,13 @@ class PortalFolio(CustomerPortal):
                     [
                         ("acquirer_id.company_id", "=", folio.company_id.id),
                         ("partner_id", "=", folio.partner_id.id),
+                        "|",
+                        (
+                            "acquirer_id.pms_property_ids",
+                            "in",
+                            folio.pms_property_id.id,
+                        ),
+                        ("acquirer_id.pms_property_ids", "=", False),
                     ]
                 )
             )
@@ -612,7 +628,7 @@ class PortalPrecheckin(CustomerPortal):
             checkin_partner.send_portal_invitation_email(firstname, email)
 
 
-class PortalAccount(CustomerPortal):
+class PortalAccount(PortalAccount):
     @http.route(
         ["/my/invoices/proforma/<int:invoice_id>"],
         type="http",
@@ -648,3 +664,23 @@ class PortalAccount(CustomerPortal):
                 invoice_sudo.amount_residual, invoice_sudo.currency_id, country_id
             )
         return request.render("pms.pms_proforma_invoice_template", values)
+
+    def _invoice_get_page_view_values(self, invoice, access_token, **kwargs):
+        """
+        Override to add the pms property filter
+        """
+        values = super(PortalAccount, self)._invoice_get_page_view_values(
+            invoice, access_token, **kwargs
+        )
+        acquirers = values.get("acquirers")
+        for acquirer in acquirers:
+            if (
+                acquirer.pms_property_ids
+                and invoice.pms_property_id.id not in acquirer.pms_property_ids.ids
+            ):
+                values["acquirers"] -= acquirer
+        payment_tokens = values.get("payment_tokens")
+        for pms in payment_tokens:
+            if pms.acquirer_id not in values["acquirers"].ids:
+                values["pms"] -= pms
+        return values
