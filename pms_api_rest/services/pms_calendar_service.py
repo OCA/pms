@@ -504,21 +504,21 @@ class PmsCalendarService(Component):
                 reservation_vals.update(
                     {"preferred_room_id": reservation_lines_changes.preferredRoomId}
                 )
-            if reservation_lines_changes.boardServiceId:
+            if reservation_lines_changes.boardServiceId is not None:
                 reservation_vals.update(
                     {"board_service_room_id": reservation_lines_changes.boardServiceId}
                 )
-            if reservation_lines_changes.pricelistId:
+            if reservation_lines_changes.pricelistId is not None:
                 reservation_vals.update(
                     {"pricelist_id": reservation_lines_changes.pricelistId}
                 )
             if reservation_lines_changes.adults:
                 reservation_vals.update({"adults": reservation_lines_changes.adults})
-            if reservation_lines_changes.children:
+            if reservation_lines_changes.children is not None:
                 reservation_vals.update(
                     {"children": reservation_lines_changes.children}
                 )
-            if reservation_lines_changes.segmentationId:
+            if reservation_lines_changes.segmentationId is not None:
                 reservation_vals.update(
                     {
                         "segmentation_ids": [
