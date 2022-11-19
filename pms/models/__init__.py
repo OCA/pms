@@ -49,3 +49,4 @@ from . import payment_transaction
 from . import res_partner_id_category
 from . import pms_team_member
 from . import ir_pms_property
+from . import payment_acquirer
