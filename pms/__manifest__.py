@@ -95,6 +95,7 @@
         "report/proforma_report_templates.xml",
         "report/proforma_report.xml",
         "views/account_portal_templates.xml",
+        "views/payment_acquirer_views.xml",
     ],
     "demo": [
         "demo/pms_master_data.xml",
