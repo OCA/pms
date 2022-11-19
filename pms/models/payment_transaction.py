@@ -1,4 +1,4 @@
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 
 
 class PaymentTransaction(models.Model):
@@ -23,7 +23,6 @@ class PaymentTransaction(models.Model):
         return super(PaymentTransaction, self)._create_payment(add_payment_vals)
 
     def render_folio_button(self, folio, submit_txt=None, render_values=None):
-        self.reference = folio.name
         values = {
             "partner_id": folio.partner_id.id,
             "type": self.type,
@@ -42,3 +41,11 @@ class PaymentTransaction(models.Model):
                 values=values,
             )
         )
+
+    @api.model
+    def _compute_reference_prefix(self, values):
+        res = super(PaymentTransaction, self)._compute_reference_prefix(values)
+        if not res and values and values.get("folio_ids"):
+            folios = self.new({"folio_ids": values["folio_ids"]}).folio_ids
+            return ",".join(folios.mapped("name"))
+        return None
