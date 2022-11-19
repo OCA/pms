@@ -122,15 +122,15 @@ class PmsReservationService(Component):
             reservation_vals.update(
                 {"preferred_room_id": reservation_data.preferredRoomId}
             )
-        if reservation_data.boardServiceId:
+        if reservation_data.boardServiceId is not None:
             reservation_vals.update(
-                {"board_service_room_id": reservation_data.boardServiceId}
+                {"board_service_room_id": reservation_data.boardServiceId or False}
             )
         if reservation_data.pricelistId:
             reservation_vals.update({"pricelist_id": reservation_data.pricelistId})
         if reservation_data.adults:
             reservation_vals.update({"adults": reservation_data.adults})
-        if reservation_data.children:
+        if reservation_data.children is not None:
             reservation_vals.update({"children": reservation_data.children})
         if reservation_data.segmentationId:
             reservation_vals.update(
@@ -554,17 +554,16 @@ class PmsReservationService(Component):
         checkin_partner = self.env["pms.checkin.partner"].search(
             [("id", "=", checkin_partner_id), ("reservation_id", "=", reservation_id)]
         )
+        if not checkin_partner:
+            raise MissingError(_("Checkin partner not found"))
         if (
             pms_checkin_partner_info.actionOnBoard
             and pms_checkin_partner_info.actionOnBoard is not None
-            and pms_checkin_partner_info.actionOnBoard
-            and checkin_partner
         ):
             checkin_partner.action_on_board()
-        if checkin_partner:
-            checkin_partner.write(
-                self.mapping_checkin_partner_values(pms_checkin_partner_info)
-            )
+        checkin_partner.write(
+            self.mapping_checkin_partner_values(pms_checkin_partner_info)
+        )
         return checkin_partner.id
 
     @restapi.method(

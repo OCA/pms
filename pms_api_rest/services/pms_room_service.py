@@ -136,10 +136,15 @@ class PmsRoomService(Component):
     )
     def update_room(self, room_id, pms_room_info_data):
         room = self.env["pms.room"].search([("id", "=", room_id)])
-        if room:
-            room.name = pms_room_info_data.name
-        else:
+        room_vals = {}
+        if not room:
             raise MissingError(_("Room not found"))
+
+        if pms_room_info_data.name:
+            room_vals["name"] = pms_room_info_data.name
+
+        if room_vals:
+            room.write(room_vals)
 
     @restapi.method(
         [
