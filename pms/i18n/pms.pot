@@ -927,6 +927,13 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/res_partner.py:0
+#: code:addons/pms/models/res_partner.py:0
+#, python-format
+msgid "A document identification is required"
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/models/pms_folio.py:0
 #, python-format
 msgid "A journal must be specified for the acquirer %s."
@@ -2270,11 +2277,6 @@ msgid "Check this box if this contact is an Employee."
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-msgid "Check-in"
-msgstr ""
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 msgid "Check-in hours"
 msgstr ""
@@ -2826,6 +2828,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__residence_country_id
 msgid "Country of the guest's residence"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+msgid "Covering"
 msgstr ""
 
 #. module: pms
@@ -3598,6 +3605,11 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Document number:"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_res_company__document_partner_required
+msgid "Document partner required"
 msgstr ""
 
 #. module: pms
@@ -4744,6 +4756,13 @@ msgstr ""
 msgid ""
 "If the sanitized phone number is on the blacklist, the contact won't receive"
 " mass mailing sms anymore, from any list"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_res_company__document_partner_required
+msgid ""
+"If true, the partner document is required\n"
+"        to create a new contact"
 msgstr ""
 
 #. module: pms
@@ -6181,7 +6200,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_invitations
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Name"
 msgstr ""
@@ -6214,6 +6232,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_account_move_line__name_changed_by_user
 msgid "Name set manually"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+msgid "Name<small>*</small>"
 msgstr ""
 
 #. module: pms
@@ -11490,6 +11513,16 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
 #: model_terms:ir.ui.view,arch_db:pms.reservation_wizard
 msgid "or"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+msgid "partner <br/>"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+msgid "partner data to remain to be covered"
 msgstr ""
 
 #. module: pms
