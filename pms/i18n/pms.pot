@@ -210,11 +210,6 @@ msgid ""
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.folio_portal_template
-msgid "<i class=\"fa fa-comment\"/> Send message"
-msgstr ""
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "<i class=\"fa fa-danger\"/> Cancelled Reservation!"
 msgstr ""
@@ -237,6 +232,11 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_folio_page_payment
 msgid "<i class=\"fa fa-fw fa-check-circle\"/> Pending"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.folio_portal_template
+msgid "<i class=\"fa fa-fw fa-comments\"/><b>Send message</b>"
 msgstr ""
 
 #. module: pms
@@ -397,7 +397,10 @@ msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.folio_portal_template
-msgid "<strong class=\"text-muted\">Salesperson</strong>"
+msgid ""
+"<strong class=\"text-muted\">\n"
+"                                        Salesperson\n"
+"                                    </strong>"
 msgstr ""
 
 #. module: pms
@@ -3503,6 +3506,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_ir_http__display_name
 #: model:ir.model.fields,field_description:pms.field_ir_pms_property__display_name
 #: model:ir.model.fields,field_description:pms.field_mail_compose_message__display_name
+#: model:ir.model.fields,field_description:pms.field_payment_acquirer__display_name
 #: model:ir.model.fields,field_description:pms.field_payment_transaction__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__display_name
@@ -4496,6 +4500,11 @@ msgid "Guest requests"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.folio_portal_template
+msgid "Guests to Precheckin"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__checkin_partner_ids
 msgid "Guests who will occupy the room"
 msgstr ""
@@ -4604,6 +4613,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_ir_http__id
 #: model:ir.model.fields,field_description:pms.field_ir_pms_property__id
 #: model:ir.model.fields,field_description:pms.field_mail_compose_message__id
+#: model:ir.model.fields,field_description:pms.field_payment_acquirer__id
 #: model:ir.model.fields,field_description:pms.field_payment_transaction__id
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard__id
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__id
@@ -5604,6 +5614,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_ir_http____last_update
 #: model:ir.model.fields,field_description:pms.field_ir_pms_property____last_update
 #: model:ir.model.fields,field_description:pms.field_mail_compose_message____last_update
+#: model:ir.model.fields,field_description:pms.field_payment_acquirer____last_update
 #: model:ir.model.fields,field_description:pms.field_payment_transaction____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_amenity____last_update
@@ -7072,6 +7083,7 @@ msgstr ""
 #. module: pms
 #: code:addons/pms/models/payment_transaction.py:0
 #: model_terms:ir.ui.view,arch_db:pms.portal_folio_payment
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
 #, python-format
 msgid "Pay Now"
 msgstr ""
@@ -7089,6 +7101,11 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.wizard_payment_folio_view_form
 msgid "Payment"
+msgstr ""
+
+#. module: pms
+#: model:ir.model,name:pms.model_payment_acquirer
+msgid "Payment Acquirer"
 msgstr ""
 
 #. module: pms
@@ -7320,11 +7337,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid "PreCheckin in"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.folio_portal_template
-msgid "Precheckin"
 msgstr ""
 
 #. module: pms
@@ -7696,6 +7708,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:pms.pms_property_action
 #: model:ir.model.fields,field_description:pms.field_account_journal__pms_property_ids
 #: model:ir.model.fields,field_description:pms.field_ir_pms_property__pms_property_id
+#: model:ir.model.fields,field_description:pms.field_payment_acquirer__pms_property_ids
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__pms_property_ids
 #: model:ir.model.fields,field_description:pms.field_pms_amenity_type__pms_property_ids
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan__pms_property_ids
@@ -7738,6 +7751,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_account_journal__pms_property_ids
+#: model:ir.model.fields,help:pms.field_payment_acquirer__pms_property_ids
 #: model:ir.model.fields,help:pms.field_pms_amenity__pms_property_ids
 #: model:ir.model.fields,help:pms.field_pms_amenity_type__pms_property_ids
 #: model:ir.model.fields,help:pms.field_pms_availability_plan__pms_property_ids
@@ -8217,6 +8231,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__reservation_order
 msgid "Reservation Id"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid "Reservation Info"
 msgstr ""
 
 #. module: pms
@@ -10408,6 +10427,11 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.folio_invoice_error
+msgid "There was an error processing this page."
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/wizards/wizard_split_join_swap_reservation.py:0
 #, python-format
 msgid "There's no reservations lines with provided room"
@@ -11439,6 +11463,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_res_partner__residence_city
 #: model:ir.model.fields,field_description:pms.field_res_users__residence_city
 msgid "city of residence"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.folio_invoice_error
+#: model_terms:ir.ui.view,arch_db:pms.portal_folio_success
+msgid "close"
 msgstr ""
 
 #. module: pms
