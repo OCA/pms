@@ -531,7 +531,11 @@ class PmsCheckinPartner(models.Model):
                                 "birthdate_date": record.birthdate_date,
                                 "nationality_id": record.nationality_id.id,
                             }
-                            partner = self.env["res.partner"].create(partner_values)
+                            partner = (
+                                self.env["res.partner"]
+                                .with_context(avoid_document_restriction=True)
+                                .create(partner_values)
+                            )
                     record.partner_id = partner
 
     @api.depends("email", "mobile")
