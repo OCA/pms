@@ -311,17 +311,17 @@ class PmsTransactionService(Component):
         counterpart_transaction = False
         # TODO: Downpayment invoiced (search invoice, reverse it and create a new one)
         # Get generic update vals
-        if pms_transaction_info.amount and round(
+        if pms_transaction_info.amount is not None and round(
             pms_transaction_info.amount, 2
         ) != round(transaction.amount, 2):
             vals["amount"] = pms_transaction_info.amount
         if (
-            pms_transaction_info.partnerId
+            pms_transaction_info.partnerId is not None
             and pms_transaction_info.partnerId != transaction.partner_id.id
         ):
             vals["partner_id"] = pms_transaction_info.partnerId
         if (
-            pms_transaction_info.reference
+            pms_transaction_info.reference is not None
             and pms_transaction_info.reference != transaction.ref
         ):
             vals["ref"] = pms_transaction_info.reference

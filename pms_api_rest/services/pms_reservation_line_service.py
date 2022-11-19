@@ -118,11 +118,11 @@ class PmsReservationLineService(Component):
         )
         vals = dict()
         if reservation_line:
-            if reservation_line_info.price:
+            if reservation_line_info.price is not None:
                 vals["price"] = reservation_line_info.price
-            if reservation_line_info.discount:
+            if reservation_line_info.discount is not None:
                 vals["discount"] = reservation_line_info.discount
-            if reservation_line_info.cancelDiscount:
+            if reservation_line_info.cancelDiscount is not None:
                 vals["cancel_discount"] = reservation_line_info.cancelDiscount
             if reservation_line_info.roomId:
                 vals["room_id"] = reservation_line_info.roomId
