@@ -9,7 +9,6 @@ setuptools.setup(
     version=version,
     install_requires=[
         'odoo14-addon-multi_pms_properties',
-        'odoo14-addon-payment_acquirer_multi_pms_properties',
         'odoo14-addon-pms',
         'odoo14-addon-pms_housekeeping',
         'odoo14-addon-pms_l10n_es',
