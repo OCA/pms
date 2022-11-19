@@ -33,12 +33,12 @@ class PmsInvoiceService(Component):
             raise UserError(_("You can't update a reversed invoice"))
         new_vals = {}
         if (
-            pms_invoice_info.partnerId
+            pms_invoice_info.partnerId is not None
             and pms_invoice_info.partnerId != invoice.partner_id.id
         ):
             new_vals["partner_id"] = pms_invoice_info.partnerId
 
-        if pms_invoice_info.date:
+        if pms_invoice_info.date is not None:
             invoice_date_info = fields.Date.from_string(pms_invoice_info.date)
             if invoice_date_info != invoice.invoice_date:
                 new_vals["invoice_date"] = invoice_date_info
@@ -46,7 +46,7 @@ class PmsInvoiceService(Component):
         # If invoice lines are updated, we expect that all lines will be
         # send to service, the lines that are not sent we assume that
         # they have been eliminated
-        if pms_invoice_info.moveLines and pms_invoice_info.moveLines is not None:
+        if pms_invoice_info.moveLines is not None:
             cmd_invoice_lines = self._get_invoice_lines_commands(
                 invoice, pms_invoice_info
             )
