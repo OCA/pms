@@ -791,19 +791,17 @@ class PmsReservationService(Component):
         auth="jwt_api_pms",
     )
     def kelly_report(self, pms_report_search_param):
-        # TODO: Implement kelly report
         pms_property_id = pms_report_search_param.pmsPropertyId
         date_from = fields.Date.from_string(pms_report_search_param.dateFrom)
-        date_to = fields.Date.from_string(pms_report_search_param.dateTo)
 
-        report_wizard = self.env["cash.daily.report.wizard"].create(
+        report_wizard = self.env["kellysreport"].create(
             {
                 "date_start": date_from,
-                "date_end": date_to,
                 "pms_property_id": pms_property_id,
             }
         )
-        result = report_wizard._export()
+        report_wizard.calculate_report()
+        result = report_wizard._excel_export()
         file_name = result["xls_filename"]
         base64EncodedStr = result["xls_binary"]
         PmsResponse = self.env.datamodels["pms.report"]
@@ -823,21 +821,25 @@ class PmsReservationService(Component):
         auth="jwt_api_pms",
     )
     def arrivals_report(self, pms_report_search_param):
-        # TODO: Implment arrivals report
         pms_property_id = pms_report_search_param.pmsPropertyId
         date_from = fields.Date.from_string(pms_report_search_param.dateFrom)
-        date_to = fields.Date.from_string(pms_report_search_param.dateTo)
 
-        report_wizard = self.env["cash.daily.report.wizard"].create(
-            {
-                "date_start": date_from,
-                "date_end": date_to,
-                "pms_property_id": pms_property_id,
-            }
-        )
-        result = report_wizard._export()
-        file_name = result["xls_filename"]
-        base64EncodedStr = result["xls_binary"]
+        query = self.env.ref("pms_api_rest.sql_export_arrivals")
+        if not query:
+            raise MissingError(_("SQL query not found"))
+        report_wizard = self.env["sql.file.wizard"].create({"sql_export_id": query.id})
+        if not report_wizard._fields.get(
+            "x_date_from"
+        ) or not report_wizard._fields.get("x_pms_property_id"):
+            raise MissingError(
+                _("The Query params was modifieds, please contact the administrator")
+            )
+        report_wizard.x_date_from = date_from
+        report_wizard.x_pms_property_id = pms_property_id
+
+        report_wizard.export_sql()
+        file_name = report_wizard.file_name
+        base64EncodedStr = report_wizard.binary_file
         PmsResponse = self.env.datamodels["pms.report"]
         return PmsResponse(fileName=file_name, binary=base64EncodedStr)
 
@@ -855,20 +857,26 @@ class PmsReservationService(Component):
         auth="jwt_api_pms",
     )
     def departures_report(self, pms_report_search_param):
-        # TODO: Implement departures report
         pms_property_id = pms_report_search_param.pmsPropertyId
         date_from = fields.Date.from_string(pms_report_search_param.dateFrom)
-        date_to = fields.Date.from_string(pms_report_search_param.dateTo)
 
-        report_wizard = self.env["cash.daily.report.wizard"].create(
-            {
-                "date_start": date_from,
-                "date_end": date_to,
-                "pms_property_id": pms_property_id,
-            }
-        )
-        result = report_wizard._export()
-        file_name = result["xls_filename"]
-        base64EncodedStr = result["xls_binary"]
+        query = self.env.ref("pms_api_rest.sql_export_departures")
+        if not query:
+            raise MissingError(_("SQL query not found"))
+        if query.state == "draft":
+            query.button_validate_sql_expression()
+        report_wizard = self.env["sql.file.wizard"].create({"sql_export_id": query.id})
+        if not report_wizard._fields.get(
+            "x_date_from"
+        ) or not report_wizard._fields.get("x_pms_property_id"):
+            raise MissingError(
+                _("The Query params was modifieds, please contact the administrator")
+            )
+        report_wizard.x_date_from = date_from
+        report_wizard.x_pms_property_id = pms_property_id
+
+        report_wizard.export_sql()
+        file_name = report_wizard.file_name
+        base64EncodedStr = report_wizard.binary_file
         PmsResponse = self.env.datamodels["pms.report"]
         return PmsResponse(fileName=file_name, binary=base64EncodedStr)

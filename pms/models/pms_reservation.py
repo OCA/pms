@@ -971,12 +971,12 @@ class PmsReservation(models.Model):
                 ]
             )
             # Avoid recalculating services if the boardservice has not changed
-            if (
-                old_board_lines
-                and reservation.board_service_room_id
-                == reservation._origin.board_service_room_id
-            ):
-                return
+            # if (
+            #     old_board_lines
+            #     and reservation.board_service_room_id
+            #     == reservation._origin.board_service_room_id
+            # ):
+            #     return
             if reservation.board_service_room_id:
                 board = self.env["pms.board.service.room.type"].browse(
                     reservation.board_service_room_id.id
