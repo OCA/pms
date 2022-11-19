@@ -52,6 +52,15 @@
                 user.get_active_property_ids())]
             </field>
         </record>
+        <record id="pms_checkin_property_rule" model="ir.rule">
+            <field name="name">PMS Checkin Property Rule</field>
+            <field name="model_id" ref="model_pms_checkin_partner" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_id','=',False),('pms_property_id', 'in',
+                user.get_active_property_ids())]
+            </field>
+        </record>
         <record id="pms_amenity_property_rule" model="ir.rule">
             <field name="name">PMS Amenity Property Rule</field>
             <field name="model_id" ref="model_pms_amenity" />
