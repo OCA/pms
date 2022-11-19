@@ -15,6 +15,7 @@
                 <field name="url_advert" />
             </xpath>
             <xpath expr="//field[@name='vat']" position="after">
+                <field name="document_partner_required" />
                 <field name="check_min_partner_data_invoice" />
                 <field name="pms_invoice_downpayment_policy" />
             </xpath>
