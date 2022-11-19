@@ -568,6 +568,6 @@ class PmsPartnerService(Component):
             birthdate = birthdate.strftime("%Y-%m-%d")
             vals.update({"birthdate_date": birthdate})
         for k, v in partner_fields.items():
-            if v:
+            if v is not None:
                 vals.update({k: v})
         return vals
