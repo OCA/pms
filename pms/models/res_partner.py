@@ -879,3 +879,49 @@ class ResPartner(models.Model):
                 _("The partner %s cannot be deleted"), various_partner.name
             )
         return super().unlink()
+
+    def create(self, vals):
+        check_missing_document = self._check_document_partner_required(vals)
+        if check_missing_document:
+            raise ValidationError(_("A document identification is required"))
+
+        return super().create(vals)
+
+    def write(self, vals):
+        check_missing_document = self._check_document_partner_required(
+            vals, partners=self
+        )
+        if check_missing_document:
+            raise ValidationError(_("A document identification is required"))
+        return super().write(vals)
+
+    @api.model
+    def _check_document_partner_required(self, vals, partners=False):
+        company_ids = (
+            self.env["res.company"].sudo().search([]).ids
+            if (not partners or any([not partner.company_id for partner in partners]))
+            else partners.mapped("company_id.id")
+        )
+        if not self.env.context.get("avoid_document_restriction") and any(
+            [
+                self.env["res.company"].browse(company_id).document_partner_required
+                for company_id in company_ids
+            ]
+        ):
+            return self._missing_document(vals, partners)
+        return False
+
+    @api.model
+    def _missing_document(self, vals, partners=False):
+        if (
+            vals.get("vat") is False
+            or vals.get("vat") == ""
+            or (
+                "vat" not in vals
+                and (
+                    any([not partner.vat for partner in partners]) if partners else True
+                )
+            )
+        ):
+            return True
+        return False
