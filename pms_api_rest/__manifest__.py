@@ -14,11 +14,13 @@
         "auth_jwt_login",
         "base_location",
         "l10n_es_aeat",
+        "sql_export_excel",
     ],
     "external_dependencies": {
         "python": ["jwt", "simplejson", "marshmallow", "jose"],
     },
     "data": [
+        "data/sql_reports.xml",
         "data/auth_jwt_validator.xml",
         "views/pms_property_views.xml",
         "views/res_users_views.xml",
