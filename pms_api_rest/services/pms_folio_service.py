@@ -477,10 +477,15 @@ class PmsFolioService(Component):
     )
     def update_folio(self, folio_id, pms_folio_info):
         folio = self.env["pms.folio"].browse(folio_id)
+        folio_vals = {}
         if folio:
-            folio.write({"internal_comment": pms_folio_info.internalComment})
-        else:
             raise MissingError(_("Folio not found"))
+
+        if pms_folio_info.internalComment is not None:
+            folio_vals["internal_comment"]: pms_folio_info.internalComment
+
+        if folio_vals:
+            folio.write(folio_vals)
 
     @restapi.method(
         [

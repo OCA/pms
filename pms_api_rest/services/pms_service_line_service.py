@@ -64,11 +64,11 @@ class PmsServiceLineService(Component):
                 vals["date"] = datetime.strptime(
                     pms_service_line_info_data.date, "%Y-%m-%d"
                 ).date()
-            if pms_service_line_info_data.discount:
+            if pms_service_line_info_data.discount is not None:
                 vals["discount"] = pms_service_line_info_data.discount
-            if pms_service_line_info_data.quantity:
+            if pms_service_line_info_data.quantity is not None:
                 vals["day_qty"] = pms_service_line_info_data.quantity
-            if pms_service_line_info_data.priceUnit:
+            if pms_service_line_info_data.priceUnit is not None:
                 vals["price_unit"] = pms_service_line_info_data.priceUnit
             service_line.write(vals)
         else:
