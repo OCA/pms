@@ -57,11 +57,13 @@ class ChannelWubookPmsFolioImporter(Component):
             # when entering a cancellation. If the sale room type category (wubook) does not correspond with the
             # room assigned category, the odoo avail in "Wubook category" will not change when canceled the folio
             # and wubook adds one to avail although in Odoo there is no longer availability
-            if any([
-                res.reservation_line_ids.mapped(
-                    "room_id.room_type_id.id"
-                ) != [res.room_type_id.id] for res in folio.reservation_ids
-            ]):
+            if any(
+                [
+                    res.reservation_line_ids.mapped("room_id.room_type_id.id")
+                    != [res.room_type_id.id]
+                    for res in folio.reservation_ids
+                ]
+            ):
                 self.env["channel.wubook.pms.availability"].export_data(
                     backend_id=binding.backend_id,
                     date_from=folio.first_checkin,
@@ -108,7 +110,9 @@ class ChannelWubookPmsFolioImporter(Component):
                             email_from=self.env.user.partner_id.email_formatted
                             or folio.pms_property_id.email_formatted,
                         )
-                    elif binding.payment_gateway_fee != sum(ota_payments.mapped("amount")) :
+                    elif binding.payment_gateway_fee != sum(
+                        ota_payments.mapped("amount")
+                    ):
                         ota_payments.action_draft()
                         ota_payments[0].amount = binding.payment_gateway_fee
                         ota_payments[0].action_post()
@@ -132,7 +136,11 @@ class ChannelWubookPmsFolioImporter(Component):
             ):
                 return
 
-            payment_amount = binding.payment_gateway_fee if binding.payment_gateway_fee <= folio.amount_total else folio.amount_total
+            payment_amount = (
+                binding.payment_gateway_fee
+                if binding.payment_gateway_fee <= folio.amount_total
+                else folio.amount_total
+            )
             folio.do_payment(
                 journal,
                 journal.suspense_account_id,
@@ -142,18 +150,17 @@ class ChannelWubookPmsFolioImporter(Component):
                 reservations=False,
                 services=False,
                 partner=folio.partner_id,
-                date=folio.last_checkout,
             )
 
     def _create(self, model, values):
-        """ Create the Internal record """
+        """Create the Internal record"""
         return super()._create(
             model.with_context(mail_create_nosubscribe=True, force_overbooking=True),
             values,
         )
 
     def _update(self, binding, values):
-        """ Update an Internal record """
+        """Update an Internal record"""
         return super()._update(
             binding.with_context(mail_create_nosubscribe=True, force_overbooking=True),
             values,
