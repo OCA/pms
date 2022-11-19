@@ -95,6 +95,7 @@ class BookingEngine(models.TransientModel):
         domain=[("channel_type", "=", "direct")],
         ondelete="restrict",
         compute="_compute_channel_type_id",
+        required=True,
     )
     total_price_folio = fields.Float(
         string="Total Price",

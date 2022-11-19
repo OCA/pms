@@ -800,7 +800,11 @@ class PmsFolio(models.Model):
             sale_lines_vals = []
             if folio.reservation_type == "normal":
                 sale_lines_vals_to_drop = []
-                for reservation in folio.reservation_ids:
+                seq = 0
+                for reservation in sorted(
+                    folio.reservation_ids, key=lambda r: r.folio_sequence
+                ):
+                    seq += reservation.folio_sequence
                     # RESERVATION LINES
                     reservation_sale_lines = []
                     reservation_sale_lines_to_drop = []
@@ -809,12 +813,13 @@ class PmsFolio(models.Model):
                             reservation_sale_lines,
                             reservation_sale_lines_to_drop,
                         ) = self._get_reservation_sale_lines(
-                            folio, reservation, sequence=reservation.folio_sequence
+                            folio, reservation, sequence=seq
                         )
                     if reservation_sale_lines:
                         sale_lines_vals.extend(reservation_sale_lines)
                     if reservation_sale_lines_to_drop:
                         sale_lines_vals_to_drop.extend(reservation_sale_lines_to_drop)
+                    seq += len(reservation_sale_lines)
                     # RESERVATION SERVICES
                     service_sale_lines = []
                     service_sale_lines_to_drop = []
@@ -825,13 +830,13 @@ class PmsFolio(models.Model):
                         ) = self._get_service_sale_lines(
                             folio,
                             reservation,
-                            sequence=reservation.folio_sequence
-                            + len(reservation_sale_lines),
+                            sequence=seq,
                         )
                         if service_sale_lines:
                             sale_lines_vals.extend(service_sale_lines)
                         if service_sale_lines_to_drop:
                             sale_lines_vals_to_drop.extend(service_sale_lines_to_drop)
+                    seq += len(service_sale_lines)
                 # FOLIO SERVICES
                 if folio.service_ids.filtered(lambda r: not r.reservation_id):
                     service_sale_lines = False
@@ -839,9 +844,7 @@ class PmsFolio(models.Model):
                     (
                         service_sale_lines,
                         service_sale_lines_to_drop,
-                    ) = self._get_folio_services_sale_lines(
-                        folio, sequence=len(sale_lines_vals)
-                    )
+                    ) = self._get_folio_services_sale_lines(folio, sequence=seq + 1)
                     if service_sale_lines:
                         sale_lines_vals.extend(service_sale_lines)
                     if service_sale_lines_to_drop:
@@ -2346,6 +2349,7 @@ class PmsFolio(models.Model):
                 )
             )
         else:
+            sequence += 1
             sale_reservation_vals.append(
                 (
                     1,
@@ -2380,7 +2384,6 @@ class PmsFolio(models.Model):
             )
             partner_invoice = lines_to.mapped("default_invoice_to")
             if current_sale_line_ids and index <= (len(current_sale_line_ids) - 1):
-
                 current = {
                     "price_unit": item["price"],
                     "discount": final_discount,
