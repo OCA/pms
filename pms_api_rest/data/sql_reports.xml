@@ -1,0 +1,130 @@
+<odoo noupdate="1">
+
+    <record id="date_from_field_variable_sql" model="ir.model.fields">
+        <field name="name">x_date_from</field>
+        <field name="field_description">Date</field>
+        <field name="ttype">date</field>
+        <field name="model_id" ref="sql_export.model_sql_file_wizard" />
+        <field name="model">sql.file.wizard</field>
+        <field name="state">manual</field>
+    </record>
+
+    <record id="pms_property_field_variable_sql" model="ir.model.fields">
+        <field name="name">x_pms_property_id</field>
+        <field name="field_description">Property</field>
+        <field name="ttype">integer</field>
+        <field name="model_id" ref="sql_export.model_sql_file_wizard" />
+        <field name="model">sql.file.wizard</field>
+        <field name="state">manual</field>
+    </record>
+
+    <!-- DEPARTURES REPORT -->
+    <record id="sql_export_departures" model="sql.export">
+        <field name="name">Export Departures</field>
+        <field name="file_format">excel</field>
+        <field name="query">
+            SELECT
+                TO_CHAR(reservation.checkout, 'DD-MM-YYYY') as "Departure",
+                folio.name as "Reservation",
+                room.name as "Room",
+                reservation.partner_name as "Customer",
+                folio.pending_amount as "Pending Amount"
+            FROM pms_reservation reservation
+                LEFT JOIN pms_reservation_line night
+                    ON reservation.id = night.reservation_id AND night.date = reservation.checkout - interval '1' day
+                LEFT JOIN pms_room room
+                    ON room.id = night.room_id
+                LEFT JOIN pms_folio folio
+                    ON folio.id = reservation.folio_id
+            WHERE (reservation.pms_property_id = %(x_pms_property_id)s)
+                AND (reservation.checkout = %(x_date_from)s)
+                AND (night.occupies_availability = True)
+            ORDER BY reservation.name
+        </field>
+        <field
+            eval="[(6, 0, [ref('date_from_field_variable_sql'), ref('pms_property_field_variable_sql')])]"
+            name="field_ids"
+        />
+    </record>
+
+    <function
+        model="sql.export"
+        name="button_validate_sql_expression"
+        eval="([ref('pms_api_rest.sql_export_departures')])"
+    />
+
+    <!-- ARRIVALS REPORT -->
+    <record id="sql_export_arrivals" model="sql.export">
+        <field name="name">Export Arrivals</field>
+        <field name="file_format">excel</field>
+        <field name="query">
+            SELECT
+                TO_CHAR(reservation.checkin, 'DD-MM-YYYY') as "Arrival",
+                folio.name as "Reservation",
+                room.name as "Room",
+                reservation.partner_name as "Customer",
+                folio.pending_amount as "Pending Amount"
+            FROM pms_reservation reservation
+                LEFT JOIN pms_reservation_line night
+                    ON reservation.id = night.reservation_id AND night.date = reservation.checkin
+                LEFT JOIN pms_room room
+                    ON room.id = night.room_id
+                LEFT JOIN pms_folio folio
+                    ON folio.id = reservation.folio_id
+            WHERE (reservation.pms_property_id = %(x_pms_property_id)s)
+                AND (reservation.checkin = %(x_date_from)s)
+                AND (night.occupies_availability = True)
+            ORDER BY reservation.name
+        </field>
+        <field
+            eval="[(6, 0, [ref('date_from_field_variable_sql'), ref('pms_property_field_variable_sql')])]"
+            name="field_ids"
+        />
+    </record>
+
+    <function
+        model="sql.export"
+        name="button_validate_sql_expression"
+        eval="([ref('pms_api_rest.sql_export_arrivals')])"
+    />
+
+    <!-- SERVICES REPORT -->
+    <record id="sql_export_services" model="sql.export">
+        <field name="name">Export Services</field>
+        <field name="file_format">excel</field>
+        <field name="query">
+            SELECT
+                TO_CHAR(line.date, 'DD-MM-YYYY') as "Date",
+                reservation.name as "Reservation",
+                reservation.rooms,
+                product_tmpl.name as "Name",
+                line.day_qty as "Units",
+                reservation.adults as "Room Adults",
+                reservation.children as "Room Childrens",
+                line.is_board_service as "Board Service"
+            FROM pms_service_line line
+                LEFT JOIN product_product product
+                ON line.product_id = product.id
+                LEFT JOIN product_template product_tmpl
+                ON product.product_tmpl_id = product_tmpl.id
+                LEFT JOIN pms_reservation reservation
+                ON line.reservation_id = reservation.id
+                LEFT JOIN pms_checkin_partner room_host
+                ON room_host.reservation_id = reservation.id
+            WHERE (line.date = %(x_date_from)s)
+                AND (line.pms_property_id = %(x_pms_property_id)s)
+            GROUP BY
+                line.id, product_tmpl.name, reservation.name, reservation.rooms, reservation.adults, reservation.children;
+        </field>
+        <field
+            eval="[(6, 0, [ref('date_from_field_variable_sql'), ref('pms_property_field_variable_sql')])]"
+            name="field_ids"
+        />
+    </record>
+
+    <function
+        model="sql.export"
+        name="button_validate_sql_expression"
+        eval="([ref('pms_api_rest.sql_export_services')])"
+    />
+</odoo>
