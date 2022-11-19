@@ -500,6 +500,12 @@ msgid "Test user/password"
 msgstr ""
 
 #. module: pms_l10n_es
+#: code:addons/pms_l10n_es/models/res_partner.py:0
+#, python-format
+msgid "The VAT number %s already exists in other contacts: %s"
+msgstr ""
+
+#. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The company VAT is not established."
