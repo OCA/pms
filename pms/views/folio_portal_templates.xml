@@ -63,10 +63,6 @@
                                 >
                                 <t t-esc="folio.name" />
                             </a>
-                            <a
-                                    t-att-href="folio.get_portal_url(suffix='/precheckin')"
-                                    t-att-title="Precheckin"
-                                >Precheckin</a>
                         </td>
                         <td><span t-field="folio.date_order" /></td>
                         <td class="text-right"><span
@@ -196,7 +192,7 @@
     >
         <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
 
-            <div class="row mt16 o_portal_sale_sidebar">
+            <div class="row mt16 o_portal_folio_sidebar">
                 <!-- Sidebar -->
                 <t t-call="portal.portal_record_sidebar">
                     <t t-set="classes" t-value="'col-lg-auto d-print-none'" />
@@ -213,16 +209,16 @@
                                     <div t-call="pms.portal_folio_page_payment" />
                                 </div>
                                 <div class="o_download_pdf btn-toolbar flex-sm-nowrap">
-                                    <div class="btn-group flex-grow-1 mr-1 mb-1">
+                                    <div class="btn-group flex-grow-1  mr-1 mb-1">
                                         <a
                                             class="btn btn-secondary btn-block o_download_btn"
                                             t-att-href="folio.get_portal_url(report_type='pdf', download=True)"
                                             title="Download"
                                         ><i class="fa fa-download" /> Download</a>
                                     </div>
-                                    <div class="btn-group flex-grow-1 mb-1">
+                                    <div class="btn-group flex-grow-1  mb-1">
                                         <a
-                                            class="btn btn-secondary btn-block o_print_btn o_portal_invoice_print"
+                                            class="btn btn-secondary btn-block o_print_btn o_portal_folio_print"
                                             t-att-href="folio.get_portal_url(report_type='pdf')"
                                             id="print_folio_report"
                                             title="Print"
@@ -230,38 +226,56 @@
                                         ><i class="fa fa-print" /> Print</a>
                                     </div>
                                 </div>
+                                <t
+                                    t-set="rooms_to_checkin"
+                                    t-value="len(folio.checkin_partner_ids.filtered(lambda r: r.state in ['draft','dummy']))"
+                                />
+                                <div t-if="rooms_to_checkin">
+                                    <a
+                                        class="btn btn-primary btn-block "
+                                        t-att-href="folio.get_portal_url(suffix='/precheckin')"
+                                        t-att-title="Precheckin"
+                                    >
+                                        <t
+                                            t-esc="rooms_to_checkin"
+                                        /> Guests to Precheckin
+                                    </a>
+                                </div>
+
                             </li>
 
                             <li
                                 t-if="folio.user_id.name"
                                 class="list-group-item flex-grow-1"
                             >
-                                <div class="small mb-1"><strong
-                                        class="text-muted"
-                                    >Salesperson</strong></div>
-                                <div class="row flex-nowrap">
+                                <div class="small mb-1">
+                                    <strong class="text-muted">
+                                        Salesperson
+                                    </strong>
+                                </div>
+                                <div class="row">
                                     <div class="col flex-grow-0 pr-2">
                                         <img
-                                            class="rounded-circle mr4 float-left o_portal_contact_img"
                                             t-if="folio.user_id.image_1024"
+                                            class="rounded-circle mt-1 o_portal_contact_img"
                                             t-att-src="image_data_uri(folio.user_id.image_1024)"
                                             alt="Contact"
                                         />
                                         <img
-                                            class="rounded-circle mr4 float-left o_portal_contact_img"
-                                            t-if="not folio.user_id.image_1024"
-                                            src="/web/static/src/img/placeholder.png"
+                                            t-else=""
+                                            class="rounded-circle mt-1 o_portal_contact_img"
+                                            src="/web/static/src/img/user_menu_avatar.png"
                                             alt="Contact"
                                         />
                                     </div>
-                                    <div class="col pl-0" style="min-width: 150px">
+                                    <div class="col pl-0">
                                         <span
                                             t-field="folio.user_id"
                                             t-options='{"widget": "contact", "fields": ["name", "phone"], "no_marker": True}'
                                         />
                                         <a href="#discussion" class="small"><i
-                                                class="fa fa-comment"
-                                            /> Send message</a>
+                                                class="fa fa-fw fa-comments"
+                                            /><b>Send message</b></a>
                                     </div>
                                 </div>
                             </li>
@@ -269,7 +283,13 @@
                     </t>
                 </t>
                 <!-- main content-->
-                <div t-attf-class="card col-8 p-3" id="portal_folio_content">
+                <div id="folio_content" class="col-12 col-lg">
+                    <t t-if="error or warning" t-call="pms.folio_invoice_error" />
+                    <t
+                        t-if="success and (not error and not warning)"
+                        t-call="pms.portal_folio_success"
+                    />
+
                     <div class="o_portal_html_view shadow p-3">
                         <div class="o_portal_html_loader text-center">
                             <i
@@ -277,25 +297,61 @@
                             />
                         </div>
                         <iframe
-                            id="report_html"
+                            id="folio_html"
                             class="mt8 mb8"
                             width="100%"
-                            height="1000px"
+                            height="100%"
                             frameborder="0"
-                            scrolling="yes"
+                            scrolling="no"
                             t-att-src="folio.get_portal_url(report_type='html')"
                         />
                     </div>
-                </div>
-                <!-- chatter -->
-                <div class="col-3" />
-                <div id="folio_communication" class="mt-4 col-8">
-                    <h2>History</h2>
-                    <t t-call="portal.message_thread">
-                        <t t-set="object" t-value="folio" />
-                    </t>
+                    <!-- chatter -->
+                    <div id="folio_communication" class="mt-4">
+                        <h2>History</h2>
+                        <t t-call="portal.message_thread">
+                            <t t-set="object" t-value="folio" />
+                        </t>
+                    </div>
                 </div>
             </div>
         </xpath>
+    </template>
+
+    <template id="folio_invoice_error" name="Folio error/warning display">
+        <div class="row mr16">
+            <div
+                t-attf-class="'col-lg-12 mr16 ml16 alert alert-dismissable' #{'alert-danger' if error else 'alert-warning'}"
+                role="alert"
+            >
+                <a
+                    href="#"
+                    class="close"
+                    data-dismiss="alert"
+                    aria-label="close"
+                    title="close"
+                >×</a>
+                <t t-if="error == 'generic'" name="generic">
+                    There was an error processing this page.
+                </t>
+            </div>
+        </div>
+    </template>
+
+    <template id="portal_folio_success" name="Invoice success display">
+        <div class="row mr16">
+            <div
+                class="col-lg-12 mr16 ml16 alert alert-dismissable alert-success"
+                role="status"
+            >
+                <a
+                    href="#"
+                    class="close"
+                    data-dismiss="alert"
+                    aria-label="close"
+                    title="close"
+                >×</a>
+            </div>
+        </div>
     </template>
 </odoo>

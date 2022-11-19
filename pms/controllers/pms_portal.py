@@ -673,14 +673,16 @@ class PortalAccount(PortalAccount):
             invoice, access_token, **kwargs
         )
         acquirers = values.get("acquirers")
-        for acquirer in acquirers:
-            if (
-                acquirer.pms_property_ids
-                and invoice.pms_property_id.id not in acquirer.pms_property_ids.ids
-            ):
-                values["acquirers"] -= acquirer
+        if acquirers:
+            for acquirer in acquirers:
+                if (
+                    acquirer.pms_property_ids
+                    and invoice.pms_property_id.id not in acquirer.pms_property_ids.ids
+                ):
+                    values["acquirers"] -= acquirer
         payment_tokens = values.get("payment_tokens")
-        for pms in payment_tokens:
-            if pms.acquirer_id not in values["acquirers"].ids:
-                values["pms"] -= pms
+        if payment_tokens:
+            for pms in payment_tokens:
+                if pms.acquirer_id not in values["acquirers"].ids:
+                    values["pms"] -= pms
         return values
