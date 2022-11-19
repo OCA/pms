@@ -11,10 +11,10 @@
                                 /></h4>
                         </center>
                     </div>
-                    <div class="form-group col-xl-6">
+                    <div class="form-group col-xl-12">
                         <center>
                             <h5
-                                class="font-weight-bold mr-5 mt-2"
+                                class="font-weight-bold mt-2"
                                 t-esc="'Room: '+checkin_partner_id.reservation_id.sudo().room_type_id.name if checkin_partner_id.reservation_id else ''"
                             />
                         </center>
@@ -41,16 +41,18 @@
                         />
                     </div>
                     <t t-if="checkin_pos >= 0">
-                        <div class="col-4 mt-2">
-                            <h5 class="float-right font-weight-bold">
-                                Covering <span
-                                    t-esc="int(checkin_pos) + 1"
-                                /> partner <br />
-                                <span
-                                    t-esc="len(folio.checkin_partner_ids.filtered(lambda c: c.state in ['dummy','draft']))-int(checkin_pos)"
-                                />
-                                partner data to remain to be covered
-                             </h5>
+                        <div class="form-group col-xl-12">
+                            <center>
+                                <h5 class="font-weight-bold">
+                                    Covering <span
+                                        t-esc="int(checkin_pos) + 1"
+                                    /> partner <br />
+                                    <span
+                                        t-esc="len(folio.checkin_partner_ids.filtered(lambda c: c.state in ['dummy','draft']))-int(checkin_pos)"
+                                    />
+                                    partner data to remain to be covered
+                                </h5>
+                            </center>
                         </div>
                     </t>
                     <div class="row justify-content-center">
@@ -608,21 +610,32 @@
                 > your passage through reception will be much faster</strong>, being able to enjoy the comfort of your room right away.
             </center>
             <div class="col-12" style="margin-top:40px;">
-                <a
-                    role="button"
-                    class="col-6 float-left"
+                <form
+                    class="col-6 float-right"
                     style="margin-bottom:50px"
-                    t-att-href="folio.get_portal_url()"
+                    t-att-action="folio.get_portal_url()"
+                    method="get"
                 >
                     <button
                         type="submit"
                         class="btn btn-primary"
-                        style="margin-left:360px"
+                        style="width:-webkit-fill-available"
                     >
                         <span class="fa fa-info" />
                         Reservation Info
                     </button>
-                </a>
+                    <input
+                        type="text"
+                        name="access_token"
+                        t-attf-class="d-none"
+                        t-att-value="folio.access_token"
+                    />
+                    <input
+                        name="folio_id"
+                        t-attf-class="d-none"
+                        t-att-value="folio.id"
+                    />
+                </form>
                 <form
                     class="col-6 float-right"
                     style="margin-bottom:50px"
@@ -652,7 +665,11 @@
                         t-attf-class="form-control d-none"
                         value="1"
                     />
-                    <button type="submit" class="btn btn-primary">
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        style="width:-webkit-fill-available"
+                    >
                         <span class="fa fa-wpforms" />
                         CHECK IN NOW!
                     </button>
@@ -967,6 +984,38 @@
                     Your check-in has been successful.
                 </h5>
                 <br />
+                <form
+                    style="margin-bottom:50px"
+                    t-att-action="folio.get_portal_url()"
+                    method="get"
+                >
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        style="width:-webkit-fill-available"
+                    >
+                        <span
+                            t-if="folio.payment_state in ['paid','nothing_to_pay','overpayment']"
+                            class="fa fa-info"
+                        >
+                        Reservation Info
+                        </span>
+                        <span t-else="" class="fa fa-money">
+                        Pay Now
+                        </span>
+                    </button>
+                    <input
+                        type="text"
+                        name="access_token"
+                        t-attf-class="d-none"
+                        t-att-value="folio.access_token"
+                    />
+                    <input
+                        name="folio_id"
+                        t-attf-class="d-none"
+                        t-att-value="folio.id"
+                    />
+                </form>
             </center>
         </t>
         <style />
