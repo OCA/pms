@@ -43,3 +43,10 @@ class ResCompany(models.Model):
             """,
         default="no",
     )
+
+    document_partner_required = fields.Boolean(
+        string="Document partner required",
+        help="""If true, the partner document is required
+        to create a new contact""",
+        default=False,
+    )
