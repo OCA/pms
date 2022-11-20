@@ -79,6 +79,7 @@
                                         nolabel="1"
                                         placeholder="Pricelists"
                                         widget="many2many_tags"
+                                        domain="[('is_pms_available', '=', True)]"
                                     />
                                     <field
                                         name="pricelist_room_type_ids"
