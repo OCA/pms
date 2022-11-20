@@ -25,6 +25,7 @@ class PmsSaleChannel(models.Model):
         column1="pms_sale_channel_id",
         column2="product_pricelist_id",
         check_pms_properties=True,
+        domain="[('is_pms_available', '=', True)]",
     )
     pms_property_ids = fields.Many2many(
         string="Properties",

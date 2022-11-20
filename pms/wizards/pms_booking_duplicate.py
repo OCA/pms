@@ -33,6 +33,7 @@ class BookingDuplicate(models.TransientModel):
         comodel_name="product.pricelist",
         compute="_compute_pricelist_id",
         check_pms_properties=True,
+        domain="[('is_pms_available', '=', True)]",
     )
     pms_property_id = fields.Many2one(
         related="reference_folio_id.pms_property_id",
@@ -454,6 +455,7 @@ class PmsReservationDuplicate(models.TransientModel):
         help="Pricelist used for this reservation",
         comodel_name="product.pricelist",
         check_pms_properties=True,
+        domain="[('is_pms_available', '=', True)]",
     )
     price_total = fields.Float(
         string="Total price",

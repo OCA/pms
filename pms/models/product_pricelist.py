@@ -65,6 +65,11 @@ class ProductPricelist(models.Model):
         help="Items for which the pricelist is made up",
         check_pms_properties=True,
     )
+    is_pms_available = fields.Boolean(
+        string="Available in PMS",
+        help="If the pricelist is available in the PMS",
+        default=True,
+    )
 
     def _compute_price_rule_get_items(
         self, products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids

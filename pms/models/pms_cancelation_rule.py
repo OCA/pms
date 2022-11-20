@@ -20,6 +20,7 @@ class PmsCancelationRule(models.Model):
         comodel_name="product.pricelist",
         inverse_name="cancelation_rule_id",
         check_pms_properties=True,
+        domain="[('is_pms_available', '=', True)]",
     )
     pms_property_ids = fields.Many2many(
         string="Properties",

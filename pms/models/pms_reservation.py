@@ -209,6 +209,7 @@ class PmsReservation(models.Model):
         compute="_compute_pricelist_id",
         tracking=True,
         check_pms_properties=True,
+        domain="[('is_pms_available', '=', True)]",
     )
     user_id = fields.Many2one(
         string="Reception Manager",
@@ -1017,6 +1018,7 @@ class PmsReservation(models.Model):
             elif (
                 reservation.partner_id
                 and reservation.partner_id.property_product_pricelist
+                and reservation.partner_id.property_product_pricelist.is_pms_available
                 and (
                     not reservation.pricelist_id
                     or not isinstance(reservation.id, models.NewId)
