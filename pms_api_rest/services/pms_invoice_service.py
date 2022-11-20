@@ -33,12 +33,12 @@ class PmsInvoiceService(Component):
             raise UserError(_("You can't update a reversed invoice"))
         new_vals = {}
         if (
-            pms_invoice_info.partnerId is not None
+            pms_invoice_info.partnerId
             and pms_invoice_info.partnerId != invoice.partner_id.id
         ):
             new_vals["partner_id"] = pms_invoice_info.partnerId
 
-        if pms_invoice_info.date is not None:
+        if pms_invoice_info.date:
             invoice_date_info = fields.Date.from_string(pms_invoice_info.date)
             if invoice_date_info != invoice.invoice_date:
                 new_vals["invoice_date"] = invoice_date_info

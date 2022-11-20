@@ -315,8 +315,10 @@ class PmsTransactionService(Component):
             pms_transaction_info.amount, 2
         ) != round(transaction.amount, 2):
             vals["amount"] = pms_transaction_info.amount
+        # Review: review all input parameters in all services
+        # to determine the handling of values: False or 0, None, and empty string ''
         if (
-            pms_transaction_info.partnerId is not None
+            pms_transaction_info.partnerId
             and pms_transaction_info.partnerId != transaction.partner_id.id
         ):
             vals["partner_id"] = pms_transaction_info.partnerId
