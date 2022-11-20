@@ -28,7 +28,11 @@ class PmsPricelistService(Component):
         auth="jwt_api_pms",
     )
     def get_pricelists(self, pms_search_param, **args):
-        pricelists = self.env["product.pricelist"].search([])
+        pricelists = self.env["product.pricelist"].search(
+            [
+                ("is_pms_available", "=", True),
+            ]
+        )
         if pms_search_param.pmsPropertyIds and pms_search_param.pmsPropertyId:
             raise ValidationError(
                 _(
