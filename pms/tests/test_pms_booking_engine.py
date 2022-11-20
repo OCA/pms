@@ -70,6 +70,14 @@ class TestPmsBookingEngine(TestPms):
             }
         )
 
+        # pms.sale.channel
+        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+            {
+                "name": "Door",
+                "channel_type": "direct",
+            }
+        )
+
     def test_price_wizard_correct(self):
         # TEST CASE
         """
@@ -116,6 +124,7 @@ class TestPmsBookingEngine(TestPms):
                 "partner_id": self.partner_id.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist1.id,
+                "channel_type_id": self.sale_channel_direct1.id,
             }
         )
 
@@ -199,6 +208,7 @@ class TestPmsBookingEngine(TestPms):
                 "partner_id": self.partner_id.id,
                 "pricelist_id": self.pricelist1.id,
                 "pms_property_id": self.pms_property1.id,
+                "channel_type_id": self.sale_channel_direct1.id,
             }
         )
 
@@ -330,6 +340,7 @@ class TestPmsBookingEngine(TestPms):
                 "partner_id": self.partner_id.id,
                 "pricelist_id": self.pricelist1.id,
                 "pms_property_id": self.pms_property1.id,
+                "channel_type_id": self.sale_channel_direct1.id,
             }
         )
 
@@ -382,6 +393,7 @@ class TestPmsBookingEngine(TestPms):
                 "partner_id": self.partner_id.id,
                 "pricelist_id": self.pricelist1.id,
                 "pms_property_id": self.pms_property1.id,
+                "channel_type_id": self.sale_channel_direct1.id,
             }
         )
 
@@ -437,6 +449,7 @@ class TestPmsBookingEngine(TestPms):
                 "partner_id": self.partner_id.id,
                 "pricelist_id": self.pricelist1.id,
                 "pms_property_id": self.pms_property1.id,
+                "channel_type_id": self.sale_channel_direct1.id,
             }
         )
         # availability items belonging to test property
@@ -500,6 +513,7 @@ class TestPmsBookingEngine(TestPms):
                 "partner_id": self.partner_id.id,
                 "pricelist_id": self.pricelist1.id,
                 "pms_property_id": self.pms_property1.id,
+                "channel_type_id": self.sale_channel_direct1.id,
             }
         )
 
@@ -581,6 +595,7 @@ class TestPmsBookingEngine(TestPms):
                 "pricelist_id": self.pricelist1.id,
                 "discount": discount,
                 "pms_property_id": self.pms_property1.id,
+                "channel_type_id": self.sale_channel_direct1.id,
             }
         )
         # availability items belonging to test property
@@ -655,6 +670,7 @@ class TestPmsBookingEngine(TestPms):
                 "partner_id": self.partner_id.id,
                 "pricelist_id": self.pricelist1.id,
                 "pms_property_id": self.pms_property1.id,
+                "channel_type_id": self.sale_channel_direct1.id,
             }
         )
         room_type_plan_avail = booking_engine.availability_results.filtered(
@@ -708,6 +724,7 @@ class TestPmsBookingEngine(TestPms):
                 "partner_id": self.partner_id.id,
                 "pricelist_id": self.pricelist1.id,
                 "pms_property_id": self.pms_property1.id,
+                "channel_type_id": self.sale_channel_direct1.id,
             }
         )
         room_type_plan_avail = booking_engine.availability_results.filtered(
@@ -764,6 +781,7 @@ class TestPmsBookingEngine(TestPms):
                 "partner_id": self.partner_id.id,
                 "pricelist_id": self.pricelist1.id,
                 "pms_property_id": self.pms_property1.id,
+                "channel_type_id": self.sale_channel_direct1.id,
             }
         )
 
@@ -847,6 +865,7 @@ class TestPmsBookingEngine(TestPms):
                 "pricelist_id": self.pricelist1.id,
                 "discount": discount,
                 "pms_property_id": self.pms_property1.id,
+                "channel_type_id": self.sale_channel_direct1.id,
             }
         )
 
@@ -923,6 +942,7 @@ class TestPmsBookingEngine(TestPms):
                 "partner_id": self.partner_id2.id,
                 "pricelist_id": self.pricelist1.id,
                 "pms_property_id": self.pms_property1.id,
+                "channel_type_id": self.sale_channel_direct1.id,
             }
         )
 
