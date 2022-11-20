@@ -164,6 +164,17 @@ class ProductPricelist(models.Model):
                             )
                         )
 
+    @api.constrains("is_pms_available", "availability_plan_id")
+    def _check_is_pms_available(self):
+        for record in self:
+            if record.is_pms_available and not record.availability_plan_id:
+                raise ValidationError(
+                    _(
+                        "If the pricelist is available in the PMS, "
+                        "you must select an availability plan"
+                    )
+                )
+
     # Action methods
     # Constraints and onchanges
     # @api.constrains("pricelist_type", "pms_property_ids")
