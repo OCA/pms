@@ -39,6 +39,7 @@ class PmsAvailabilityPlan(models.Model):
         comodel_name="product.pricelist",
         inverse_name="availability_plan_id",
         check_pms_properties=True,
+        domain="[('is_pms_available', '=', True)]",
     )
 
     rule_ids = fields.One2many(
