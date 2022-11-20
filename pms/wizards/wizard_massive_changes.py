@@ -280,6 +280,7 @@ class AvailabilityWizard(models.TransientModel):
         for record in self:
             record.allowed_pricelist_ids = self.env["product.pricelist"].search(
                 [
+                    ("is_pms_available", "=", True),
                     ("pricelist_type", "=", "daily"),
                 ]
             )

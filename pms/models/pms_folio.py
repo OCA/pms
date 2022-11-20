@@ -872,7 +872,11 @@ class PmsFolio(models.Model):
                 folio.pricelist_id = folio.reservation_ids.pricelist_id
             elif folio.agency_id and folio.agency_id.apply_pricelist:
                 folio.pricelist_id = folio.agency_id.property_product_pricelist
-            elif folio.partner_id and folio.partner_id.property_product_pricelist:
+            elif (
+                folio.partner_id
+                and folio.partner_id.property_product_pricelist
+                and folio.partner_id.property_product_pricelist.is_pms_available
+            ):
                 folio.pricelist_id = folio.partner_id.property_product_pricelist
             elif not folio.pricelist_id:
                 folio.pricelist_id = folio.pms_property_id.default_pricelist_id
