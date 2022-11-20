@@ -26,7 +26,7 @@ class PmsProductService(Component):
         auth="jwt_api_pms",
     )
     def get_products(self, product_search_param):
-        domain = [("sale_ok", "=", True)]
+        domain = [("sale_ok", "=", True), ("is_pms_available", "=", True)]
         if product_search_param.name:
             domain.append(("name", "like", product_search_param.name))
         if product_search_param.pmsPropertyId:
