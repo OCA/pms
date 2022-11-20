@@ -4988,6 +4988,13 @@ msgid "Indicates if that product is a extra bed, add +1 capacity in the room"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room_type__is_pms_available
+#: model:ir.model.fields,help:pms.field_product_product__is_pms_available
+#: model:ir.model.fields,help:pms.field_product_template__is_pms_available
+msgid "Indicates if that product is available in PMS"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__is_agency
 #: model:ir.model.fields,help:pms.field_res_partner__is_agency
 #: model:ir.model.fields,help:pms.field_res_users__is_agency
@@ -5425,6 +5432,13 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__is_downpayment
 msgid "Is a down payment"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__is_pms_available
+#: model:ir.model.fields,field_description:pms.field_product_product__is_pms_available
+#: model:ir.model.fields,field_description:pms.field_product_template__is_pms_available
+msgid "Is available in PMS"
 msgstr ""
 
 #. module: pms
@@ -6923,6 +6937,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_team_member__pms_role
 msgid "PMS Role"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.product_template_view_form
+msgid "PMS Service"
 msgstr ""
 
 #. module: pms
@@ -9167,7 +9186,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__service
 #: model:ir.model.fields,field_description:pms.field_pms_service__product_id
 #: model:ir.model.fields.selection,name:pms.selection__pms_massive_changes_wizard__apply_pricelists_on__service
-#: model_terms:ir.ui.view,arch_db:pms.product_template_view_form
 msgid "Service"
 msgstr ""
 
