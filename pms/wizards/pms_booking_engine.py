@@ -26,6 +26,7 @@ class BookingEngine(models.TransientModel):
         comodel_name="product.pricelist",
         compute="_compute_pricelist_id",
         check_pms_properties=True,
+        domain="[('is_pms_available', '=', True)]",
     )
     pms_property_id = fields.Many2one(
         string="Property",
@@ -132,7 +133,11 @@ class BookingEngine(models.TransientModel):
     @api.depends("partner_id")
     def _compute_pricelist_id(self):
         for record in self:
-            record.pricelist_id = record.partner_id.property_product_pricelist.id
+            record.pricelist_id = (
+                record.partner_id.property_product_pricelist.id
+                if record.partner_id.property_product_pricelist.is_pms_available
+                else self.pms_property_id.default_pricelist_id.id
+            )
 
     @api.depends("agency_id")
     def _compute_channel_type_id(self):

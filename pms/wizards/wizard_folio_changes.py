@@ -140,6 +140,7 @@ class WizardFolioChanges(models.TransientModel):
     new_pricelist_id = fields.Many2one(
         string="Pricelist",
         comodel_name="product.pricelist",
+        domain="[('is_pms_available', '=', True)]",
     )
 
     apply_board_service = fields.Boolean(

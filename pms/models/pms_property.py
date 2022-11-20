@@ -57,6 +57,7 @@ class PmsProperty(models.Model):
         help="The default pricelist used in this property.",
         comodel_name="product.pricelist",
         required=True,
+        domain="[('is_pms_available', '=', True)]",
         default=lambda self: self.env.ref("product.list0").id,
     )
     default_arrival_hour = fields.Char(

@@ -925,3 +925,21 @@ class ResPartner(models.Model):
         ):
             return True
         return False
+
+    @api.constrains("is_agency", "property_product_pricelist")
+    def _check_agency_pricelist(self):
+        if any(
+            record.is_agency and not record.property_product_pricelist.is_pms_available
+            for record in self
+        ):
+            raise models.ValidationError(
+                _(
+                    """
+                    Agency must have a PMS pricelist, please review the
+                    pricelists configuration (%s) to allow it for PMS,
+                    or the pricelist selected for the agencies: %s
+                    """
+                ),
+                ",".join(self.mapped("property_product_pricelis.name")),
+                "".join(self.mapped("name")),
+            )
