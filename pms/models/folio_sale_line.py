@@ -180,6 +180,7 @@ class FolioSaleLine(models.Model):
         store=True,
         comodel_name="product.product",
         domain="[('sale_ok', '=', True),\
+            ('is_pms_available', '=', True),\
             '|', ('company_id', '=', False), \
             ('company_id', '=', company_id)]",
         ondelete="restrict",
