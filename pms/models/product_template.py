@@ -54,6 +54,11 @@ class ProductTemplate(models.Model):
         help="Indicates if that product is a crib",
         default=False,
     )
+    is_pms_available = fields.Boolean(
+        string="Is available in PMS",
+        help="Indicates if that product is available in PMS",
+        default=True,
+    )
 
     @api.depends_context("allowed_pms_property_ids")
     def _compute_daily_limit(self):

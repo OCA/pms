@@ -32,6 +32,7 @@ class PmsBoardServiceRoomTypeLine(models.Model):
         comodel_name="product.product",
         readonly=True,
         check_pms_properties=True,
+        domain="[('is_pms_available', '=', True)]",
     )
     # TODO def default_amount "amount of service"
     amount = fields.Float(
