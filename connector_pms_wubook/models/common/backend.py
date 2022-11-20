@@ -120,6 +120,7 @@ class ChannelWubookBackend(models.Model):
         relation="wubook_backend_pricelist_rel",
         column1="backend_id",
         column2="pricelist_id",
+        domain="[('is_pms_available', '=', True)]",
     )
     # TODO: add logic to control this and filter the rooms by the current property
     pricelist_room_type_ids = fields.Many2many(
@@ -261,7 +262,9 @@ class ChannelWubookBackend(models.Model):
         """
         interval_sec = interval * 60
         now = fields.Datetime.now()
-        for backend in self.env["channel.wubook.backend"].search([("export_disabled","=",False)]):
+        for backend in self.env["channel.wubook.backend"].search(
+            [("export_disabled", "=", False)]
+        ):
             if backend.user_id:
                 backend = backend.with_user(self.user_id)
             for i in range(0, interval_sec, int(interval_sec / count)):
