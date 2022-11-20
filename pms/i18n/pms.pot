@@ -34,6 +34,17 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/res_partner.py:0
+#, python-format
+msgid ""
+"\n"
+"                    Agency must have a PMS pricelist, please review the\n"
+"                    pricelists configuration (%s) to allow it for PMS,\n"
+"                    or the pricelist selected for the agencies: %s\n"
+"                    "
+msgstr ""
+
+#. module: pms
 #: model:room.closure.reason,description:pms.pms_room_closure_reason_vip_privacy
 msgid ""
 "\n"
@@ -1785,6 +1796,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_product_pricelist__pms_sale_channel_ids
 msgid "Available Channels"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_product_pricelist__is_pms_available
+msgid "Available in PMS"
 msgstr ""
 
 #. module: pms
@@ -4759,6 +4775,11 @@ msgstr ""
 msgid ""
 "If the email address is on the blacklist, the contact won't receive mass "
 "mailing anymore, from any list"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_product_pricelist__is_pms_available
+msgid "If the pricelist is available in the PMS"
 msgstr ""
 
 #. module: pms
