@@ -363,7 +363,7 @@
                             </div>
                             <div t-attf-class="form-group col-md-4">
                                 <select
-                                    class="form-control #{error.get('address') and 'is-invalid' or ''}"
+                                    t-attf-class="form-control #{error.get('address') and 'is-invalid' or ''}"
                                     id="residence-country"
                                     name='residence_country_id'
                                     onclick="changeCountryFormClass()"
@@ -385,7 +385,7 @@
                             </div>
                             <div t-attf-class="form-group col-md-12 pb-md-3">
                                 <select
-                                    class="form-control"
+                                    t-attf-class="form-control #{error.get('address') and 'is-invalid' or ''}"
                                     id="residence-state"
                                     name='residence_state_id'
                                     onclick="changeFormClass()"
@@ -556,15 +556,6 @@
             var access_token = document.getElementById("input_access_token").value
             var checkin_pos = document.getElementById("input_checkin_pos").value;
             window.history.pushState(null, '', '/my/precheckin/'+folio_id+'/checkin/'+checkin_partner_id +'?access_token='+ access_token);
-            document.getElementById("btnPrev1").addEventListener("click", myFunction);
-            function myFunction() {
-                 if (checkin_pos >= 0){
-                    checkin_pos = checkin_pos -2
-                    checkin_partner_id = parseInt(checkin_partner_id) - 1
-                     url = document.referrer + '\u0026'+'checkin_pos='+ checkin_pos + '\u0026'+ 'back=1';
-                    window.location = url;
-                }
-            }
             function launchSnackBar(element) {
             var x = document.getElementById("snackbar");
             if (checkin_pos == -1){
@@ -586,116 +577,126 @@
     </template>
     <template id="portal_my_reservation_precheckin" name="Precheckin Reservation">
         <t t-call="portal.portal_layout">
-            <thead style="background-color: white;">
-                <tr class="active">
-                    <center>
-                        <h4>PreCheckin in <span
-                                t-field="folio.pms_property_id.name"
-                            /></h4>
-                    </center>
-                </tr>
-            </thead>
-            <center>
-                <h5 style="margin-top:20px;">
-                    Hi,
-                    <span t-field="folio.sudo().partner_name" />.<br />
-                    Do your check-in now and save time.
-                </h5>
+            <wrap>
+                <div
+                    class="oe_structure"
+                    id="oe_structure_website_form_reservation_precheckin_1"
+                />
+                <thead style="background-color: white;">
+                    <tr class="active">
+                        <center>
+                            <h4>PreCheckin in <span
+                                    t-field="folio.pms_property_id.name"
+                                /></h4>
+                        </center>
+                    </tr>
+                </thead>
+                <center>
+                    <h5 style="margin-top:20px;">
+                        Hi,
+                        <span t-field="folio.sudo().partner_name" />.<br />
+                        Do your check-in now and save time.
+                    </h5>
 
-                <br />
-                This is our<strong
-                > quick registration system</strong>. In a few steps you will be able to register your data in an agile, simple and secure way,<strong
-                > avoiding queues at reception</strong>.
-                If you register your data in our system, <strong
-                > your passage through reception will be much faster</strong>, being able to enjoy the comfort of your room right away.
-            </center>
-            <div class="col-12" style="margin-top:40px;">
-                <form
-                    class="col-6 float-right"
-                    style="margin-bottom:50px"
-                    t-att-action="folio.get_portal_url()"
-                    method="get"
-                >
-                    <button
-                        type="submit"
-                        class="btn btn-primary"
-                        style="width:-webkit-fill-available"
+                    <br />
+                    This is our<strong
+                    > quick registration system</strong>. In a few steps you will be able to register your data in an agile, simple and secure way,<strong
+                    > avoiding queues at reception</strong>.
+                    If you register your data in our system, <strong
+                    > your passage through reception will be much faster</strong>, being able to enjoy the comfort of your room right away.
+                </center>
+                <div class="col-12" style="margin-top:40px;">
+                    <form
+                        class="col-6 float-right"
+                        style="margin-bottom:50px"
+                        t-att-action="folio.get_portal_url()"
+                        method="get"
                     >
-                        <span class="fa fa-info" />
-                        Reservation Info
-                    </button>
-                    <input
-                        type="text"
-                        name="access_token"
-                        t-attf-class="d-none"
-                        t-att-value="folio.access_token"
-                    />
-                    <input
-                        name="folio_id"
-                        t-attf-class="d-none"
-                        t-att-value="folio.id"
-                    />
-                </form>
-                <form
-                    class="col-6 float-right"
-                    style="margin-bottom:50px"
-                    t-att-action="'/my/precheckin/'+str(folio.id)+'/checkin/'+str(checkin_partner_id.id)"
-                    method="post"
-                >
-                    <input
-                        type="text"
-                        name="access_token"
-                        t-attf-class="d-none"
-                        t-att-value="checkin_partner_id.access_token"
-                    />
-                    <input
-                        name="checkin_partner_id"
-                        t-attf-class="d-none"
-                        t-att-value="checkin_partner_id.id"
-                    />
-                    <input
-                        type="text"
-                        name="checkin_pos"
-                        t-attf-class="form-control d-none"
-                        value="0"
-                    />
-                    <input
-                        type="number"
-                        name="first"
-                        t-attf-class="form-control d-none"
-                        value="1"
-                    />
-                    <button
-                        type="submit"
-                        class="btn btn-primary"
-                        style="width:-webkit-fill-available"
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                            style="width:-webkit-fill-available"
+                        >
+                            <span class="fa fa-info" />
+                            Reservation Info
+                        </button>
+                        <input
+                            type="text"
+                            name="access_token"
+                            t-attf-class="d-none"
+                            t-att-value="folio.access_token"
+                        />
+                        <input
+                            name="folio_id"
+                            t-attf-class="d-none"
+                            t-att-value="folio.id"
+                        />
+                    </form>
+                    <form
+                        class="col-6 float-right"
+                        style="margin-bottom:50px"
+                        t-att-action="'/my/precheckin/'+str(folio.id)+'/checkin/'+str(checkin_partner_id.id)"
+                        method="post"
                     >
-                        <span class="fa fa-wpforms" />
-                        CHECK IN NOW!
-                    </button>
-                </form>
-            </div>
-<!--            <center>-->
-<!--                <t t-if="len(folio.checkin_partner_ids) &gt; 1">-->
-<!--                    <div>-->
-<!--                        If you wish, you can share with the rest of the guests the access to their check-in so that they can fill it out.-->
-<!--                        <a-->
-<!--                            role="button"-->
-<!--                            t-att-href="folio.get_portal_url(suffix='/invitations')"-->
-<!--                        >-->
-<!--                            <button-->
-<!--                                type="submit"-->
-<!--                                class="btn btn-primary"-->
-<!--                                style="margin-top:40px;"-->
-<!--                            >-->
-<!--                                <span class="fa fa-share-square" />-->
-<!--                                Send Invitations-->
-<!--                            </button>-->
-<!--                        </a>-->
-<!--                    </div>-->
-<!--                </t>-->
+                        <input
+                            type="text"
+                            name="access_token"
+                            t-attf-class="d-none"
+                            t-att-value="checkin_partner_id.access_token"
+                        />
+                        <input
+                            name="checkin_partner_id"
+                            t-attf-class="d-none"
+                            t-att-value="checkin_partner_id.id"
+                        />
+                        <input
+                            type="text"
+                            name="checkin_pos"
+                            t-attf-class="form-control d-none"
+                            value="0"
+                        />
+                        <input
+                            type="number"
+                            name="first"
+                            t-attf-class="form-control d-none"
+                            value="1"
+                        />
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                            style="width:-webkit-fill-available"
+                        >
+                            <span class="fa fa-wpforms" />
+                            CHECK IN NOW!
+                        </button>
+                    </form>
+                </div>
+    <!--            <center>-->
+    <!--                <t t-if="len(folio.checkin_partner_ids) &gt; 1">-->
+    <!--                    <div>-->
+    <!--                        If you wish, you can share with the rest of the guests the access to their check-in so that they can fill it out.-->
+    <!--                        <a-->
+    <!--                            role="button"-->
+    <!--                            t-att-href="folio.get_portal_url(suffix='/invitations')"-->
+    <!--                        >-->
+    <!--                            <button-->
+    <!--                                type="submit"-->
+    <!--                                class="btn btn-primary"-->
+    <!--                                style="margin-top:40px;"-->
+    <!--                            >-->
+    <!--                                <span class="fa fa-share-square" />-->
+    <!--                                Send Invitations-->
+    <!--                            </button>-->
+    <!--                        </a>-->
+    <!--                    </div>-->
+    <!--                </t>-->
 
-<!--            </center>-->
+    <!--            </center>-->
+                <div
+                    class="oe_structure"
+                    id="oe_structure_website_form_reservation_precheckin_2"
+                />
+            </wrap>
         </t>
         <style>
 
@@ -978,57 +979,73 @@
     </template>
     <template id="portal_my_precheckin_end" name="Precheckin End">
         <t t-call="portal.portal_layout">
-            <center>
-                <h5 style="margin-top:20px;">
-                    Thank you!
-                    Your check-in has been successful.
-                </h5>
-                <br />
-                <form
-                    style="margin-bottom:50px"
-                    t-att-action="folio.get_portal_url()"
-                    method="get"
-                >
-                    <button
-                        type="submit"
-                        class="btn btn-primary"
-                        style="width:-webkit-fill-available"
-                    >
-                        <span
-                            t-if="folio.payment_state in ['paid','nothing_to_pay','overpayment']"
-                            class="fa fa-info"
+            <wrap>
+                <div
+                    class="oe_structure"
+                    id="oe_structure_website_form_precheckin_success_1"
+                />
+                <center>
+                    <h5 style="margin-top:20px;">
+                        Thank you!
+                        Your check-in has been successful.
+                    </h5>
+                    <br />
+                    <span t-if="folio">
+                        <form
+                            style="margin-bottom:50px"
+                            t-att-action="folio.get_portal_url()"
+                            method="get"
                         >
-                        Reservation Info
-                        </span>
-                        <span t-else="" class="fa fa-money">
-                        Pay Now
-                        </span>
-                    </button>
-                    <input
-                        type="text"
-                        name="access_token"
-                        t-attf-class="d-none"
-                        t-att-value="folio.access_token"
-                    />
-                    <input
-                        name="folio_id"
-                        t-attf-class="d-none"
-                        t-att-value="folio.id"
-                    />
-                </form>
-            </center>
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                                style="width:-webkit-fill-available"
+                            >
+                                <span
+                                    t-if="folio.payment_state in ['paid','nothing_to_pay','overpayment']"
+                                    class="fa fa-info"
+                                >
+                                Reservation Info
+                                </span>
+                                <span t-else="" class="fa fa-money">
+                                Pay Now
+                                </span>
+                            </button>
+                            <input
+                                type="text"
+                                name="access_token"
+                                t-attf-class="d-none"
+                                t-att-value="folio.access_token"
+                            />
+                            <input
+                                name="folio_id"
+                                t-attf-class="d-none"
+                                t-att-value="folio.id"
+                            />
+                        </form>
+                    </span>
+                </center>
+                <div
+                    class="oe_structure"
+                    id="oe_structure_website_form_precheckin_success_2"
+                />
+            </wrap>
         </t>
         <style />
     </template>
     <template id="portal_not_checkin" name="Not Checkin">
-        <t t-call="portal.portal_layout">
-            <center>
-                The quick registration system is not available.<br />
-                If you have any questions, you can contact us: <br /><br />Phone: <span
-                ><t t-esc="folio.pms_property_id.phone" /></span> <br /> Email: <span><t
-                        t-esc="folio.pms_property_id.email"
-                    /></span>
-            </center>
-        </t>
+        <wrap>
+            <div class="oe_structure" id="oe_structure_website_form_no_precheckin_1" />
+            <t t-call="portal.portal_layout">
+                <center>
+                    The quick registration system is not available for this reservation.<br
+                    />
+                    If you have any questions, you can contact us: <br /><br
+                    />Phone: <span><t t-esc="folio.pms_property_id.phone" /></span> <br
+                    /> Email: <span><t t-esc="folio.pms_property_id.email" /></span>
+                </center>
+            </t>
+            <div class="oe_structure" id="oe_structure_website_form_no_precheckin_2" />
+        </wrap>
     </template>
 </odoo>
