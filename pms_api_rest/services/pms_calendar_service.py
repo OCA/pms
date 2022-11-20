@@ -508,7 +508,7 @@ class PmsCalendarService(Component):
                 reservation_vals.update(
                     {"board_service_room_id": reservation_lines_changes.boardServiceId}
                 )
-            if reservation_lines_changes.pricelistId is not None:
+            if reservation_lines_changes.pricelistId:
                 reservation_vals.update(
                     {"pricelist_id": reservation_lines_changes.pricelistId}
                 )
@@ -518,7 +518,7 @@ class PmsCalendarService(Component):
                 reservation_vals.update(
                     {"children": reservation_lines_changes.children}
                 )
-            if reservation_lines_changes.segmentationId is not None:
+            if reservation_lines_changes.segmentationId:
                 reservation_vals.update(
                     {
                         "segmentation_ids": [
