@@ -109,7 +109,25 @@ class PmsInvoiceService(Component):
         if previus_state == "posted":
             invoice.button_draft()
         if new_vals:
+            # REVIEW: If invoice lines are updated (lines that already existed),
+            # the _move_autocomplete_invoice_lines_write called accout.move write
+            # method overwrite the move_lines dict and we lost the new name values,
+            # so, we need to save and rewrite it.
+
+            # 1- save send invoice line name values:
+            updated_invoice_lines_name = {
+                line[1]: line[2]["name"]
+                for line in new_vals["invoice_line_ids"]
+                if line[0] == 1 and "name" in line[2]
+            }
+            # 2- update invoice
             invoice.write(new_vals)
+            # 3- rewrite invoice line name values:
+            if updated_invoice_lines_name:
+                for item in updated_invoice_lines_name:
+                    invoice.invoice_line_ids.filtered(lambda l: l.id == item).write(
+                        {"name": updated_invoice_lines_name[item]}
+                    )
         if previus_state == "posted":
             invoice.action_post()
         return invoice
@@ -231,7 +249,7 @@ class PmsInvoiceService(Component):
                 item[2]["name"] = [
                     line.name
                     for line in newInvoiceLinesInfo
-                    if line.saleLineId == item[2]["folio_line_ids"][0][2]
+                    if [line.saleLineId] == item[2]["folio_line_ids"][0][2]
                 ][0]
             cmd_invoice_lines.extend(new_invoice_lines)
         return cmd_invoice_lines
