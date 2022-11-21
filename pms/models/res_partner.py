@@ -892,7 +892,14 @@ class ResPartner(models.Model):
             vals, partners=self
         )
         if check_missing_document:
-            raise ValidationError(_("A document identification is required"))
+            # REVIEW: Deactivate this check for now, because it can generate problems
+            # with other modules that update technical partner fields
+            _logger.warning(
+                _("Partner without document identification, update vals %s"), vals
+            )
+            # We only check if the vat or document_number is updated
+            if "vat" in vals or "document_number" in vals:
+                raise ValidationError(_("A document identification is required"))
         return super().write(vals)
 
     @api.model
