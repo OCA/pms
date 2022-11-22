@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from odoo import _, fields
 from odoo.exceptions import MissingError, ValidationError
 from odoo.osv import expression
+from odoo.tools import get_lang
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
@@ -238,17 +239,27 @@ class PmsFolioService(Component):
     def create_folio_charge(self, folio_id, pms_account_payment_info):
         folio = self.env["pms.folio"].browse(folio_id)
         partner_id = self.env["res.partner"].browse(pms_account_payment_info.partnerId)
-        journal_id = self.env["account.journal"].browse(
-            pms_account_payment_info.journalId
-        )
+        journal = self.env["account.journal"].browse(pms_account_payment_info.journalId)
         reservations = (
             self.env["pms.reservation"].browse(pms_account_payment_info.reservationIds)
             if pms_account_payment_info.reservationIds
             else False
         )
+        if journal.type == "cash":
+            # REVIEW: Temporaly, if not cash session open, create a new one automatically
+            # Review this in pms_folio_service (/charge & /refund)
+            # and in pms_transaction_service (POST)
+            last_session = self._get_last_cash_session(journal_id=journal.id)
+            if last_session.state != "open":
+                self._action_open_cash_session(
+                    pms_property_id=folio.pms_property_id.id,
+                    amount=last_session.balance_end_real,
+                    journal_id=journal.id,
+                    force=False,
+                )
         self.env["pms.folio"].do_payment(
-            journal_id,
-            journal_id.suspense_account_id,
+            journal,
+            journal.suspense_account_id,
             self.env.user,
             pms_account_payment_info.amount,
             folio,
@@ -273,12 +284,22 @@ class PmsFolioService(Component):
     def create_folio_refund(self, folio_id, pms_account_payment_info):
         folio = self.env["pms.folio"].browse(folio_id)
         partner_id = self.env["res.partner"].browse(pms_account_payment_info.partnerId)
-        journal_id = self.env["account.journal"].browse(
-            pms_account_payment_info.journalId
-        )
+        journal = self.env["account.journal"].browse(pms_account_payment_info.journalId)
+        if journal.type == "cash":
+            # REVIEW: Temporaly, if not cash session open, create a new one automatically
+            # Review this in pms_folio_service (/charge & /refund)
+            # and in pms_transaction_service (POST)
+            last_session = self._get_last_cash_session(journal_id=journal.id)
+            if last_session.state != "open":
+                self._action_open_cash_session(
+                    pms_property_id=folio.pms_property_id.id,
+                    amount=last_session.balance_end_real,
+                    journal_id=journal.id,
+                    force=False,
+                )
         self.env["pms.folio"].do_refund(
-            journal_id,
-            journal_id.suspense_account_id,
+            journal,
+            journal.suspense_account_id,
             self.env.user,
             pms_account_payment_info.amount,
             folio,
@@ -519,9 +540,9 @@ class PmsFolioService(Component):
                             priceUnit=sale_line.price_unit
                             if sale_line.price_unit
                             else None,
-                            qtyToInvoice=sale_line.qty_to_invoice
-                            if sale_line.qty_to_invoice
-                            else None,
+                            qtyToInvoice=self._get_section_qty_to_invoice(sale_line)
+                            if sale_line.display_type == "line_section"
+                            else sale_line.qty_to_invoice,
                             qtyInvoiced=sale_line.qty_invoiced
                             if sale_line.qty_invoiced
                             else None,
@@ -686,3 +707,69 @@ class PmsFolioService(Component):
             invoices.write({"narration": invoice_info.narration})
 
         return invoices.ids
+
+    # TODO: Used for the temporary function of auto-open cash session
+    # (View: charge/refund endpoints)
+    def _get_last_cash_session(self, journal_id, pms_property_id=False):
+        domain = [("journal_id", "=", journal_id)]
+        if pms_property_id:
+            domain.append(("pms_property_id", "=", pms_property_id))
+        return (
+            self.env["account.bank.statement"]
+            .sudo()
+            .search(
+                domain,
+                order="date desc, id desc",
+                limit=1,
+            )
+        )
+
+    # TODO: Used for the temporary function of auto-open cash session
+    # (View: charge/refund endpoints))
+    def _action_open_cash_session(self, pms_property_id, amount, journal_id, force):
+        statement = self._get_last_cash_session(
+            journal_id=journal_id,
+            pms_property_id=pms_property_id,
+        )
+        if round(statement.balance_end_real, 2) == round(amount, 2) or force:
+            self.env["account.bank.statement"].sudo().create(
+                {
+                    "name": datetime.today().strftime(get_lang(self.env).date_format)
+                    + " ("
+                    + self.env.user.login
+                    + ")",
+                    "date": datetime.today(),
+                    "balance_start": amount,
+                    "journal_id": journal_id,
+                    "pms_property_id": pms_property_id,
+                }
+            )
+            diff = round(amount - statement.balance_end_real, 2)
+            return {"result": True, "diff": diff}
+        else:
+            diff = round(amount - statement.balance_end_real, 2)
+            return {"result": False, "diff": diff}
+
+    def _get_section_qty_to_invoice(self, sale_line):
+        folio = sale_line.folio_id
+        if sale_line.display_type == "line_section":
+            # Get if the section has a lines to invoice
+            seq = sale_line.sequence
+            next_line_section = folio.sale_line_ids.filtered(
+                lambda l: l.sequence > seq and l.display_type == "line_section"
+            )
+            if next_line_section:
+                return sum(
+                    folio.sale_line_ids.filtered(
+                        lambda l: l.sequence > seq
+                        and l.sequence < next_line_section[0].sequence
+                        and l.display_type != "line_section"
+                    ).mapped("qty_to_invoice")
+                )
+            else:
+                return sum(
+                    folio.sale_line_ids.filtered(
+                        lambda l: l.sequence > seq and l.display_type != "line_section"
+                    ).mapped("qty_to_invoice")
+                )
+        return False
