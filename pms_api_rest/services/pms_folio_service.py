@@ -478,9 +478,13 @@ class PmsFolioService(Component):
     def update_folio(self, folio_id, pms_folio_info):
         folio = self.env["pms.folio"].browse(folio_id)
         folio_vals = {}
-        if folio:
+        if not folio:
             raise MissingError(_("Folio not found"))
-
+        if pms_folio_info.cancelReservations:
+            folio.action_cancel()
+        if pms_folio_info.confirmReservations:
+            for reservation in folio.reservation_ids:
+                reservation.confirm()
         if pms_folio_info.internalComment is not None:
             folio_vals["internal_comment"]: pms_folio_info.internalComment
 
