@@ -38,6 +38,8 @@ class PmsFolioInfo(Datamodel):
     internalComment = fields.String(required=False, allow_none=True)
     # REVIEW: Mail workflow folio
     sendConfirmationMail = fields.Boolean(required=False, allow_none=True)
+    cancelReservations = fields.Boolean(required=False, allow_none=True)
+    confirmReservations = fields.Boolean(required=False, allow_none=True)
     invoiceStatus = fields.String(required=False, allow_none=True)
 
 
