@@ -273,8 +273,36 @@ class PmsTransactionService(Component):
                 .bank_account_id.id
             )
         pay = self.env["account.payment"].create(vals)
+        if journal.type == "cash":
+            # REVIEW: Temporaly, if not cash session open, create a new one automatically
+            # Review this in pms_folio_service (/charge & /refund)
+            # and in pms_transaction_service (POST)
+            last_session = self._get_last_cash_session(journal_id=journal.id)
+            if last_session.state != "open":
+                self._action_open_cash_session(
+                    pms_property_id=journal.pms_property_ids[0].id
+                    if journal.pms_property_ids
+                    else False,
+                    amount=last_session.balance_end_real,
+                    journal_id=journal.id,
+                    force=False,
+                )
         pay.sudo().action_post()
         if is_internal_transfer:
+            if journal.type == "cash":
+                # REVIEW: Temporaly, if not cash session open, create a new one automatically
+                # Review this in pms_folio_service (/charge & /refund)
+                # and in pms_transaction_service (POST)
+                last_session = self._get_last_cash_session(journal_id=journal.id)
+                if last_session.state != "open":
+                    self._action_open_cash_session(
+                        pms_property_id=journal.pms_property_ids[0]
+                        if journal.pms_property_ids
+                        else False,
+                        amount=last_session.balance_end_real,
+                        journal_id=pms_transaction_info.destinationJournalId,
+                        force=False,
+                    )
             counterpart_vals = {
                 "amount": pms_transaction_info.amount,
                 "journal_id": pms_transaction_info.destinationJournalId,
