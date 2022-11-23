@@ -7,6 +7,7 @@ from odoo.addons.datamodel.fields import NestedModel
 class PmsServiceInfo(Datamodel):
     _name = "pms.service.info"
     id = fields.Integer(required=False, allow_none=True)
+    reservationId = fields.Integer(required=False, allow_none=True)
     name = fields.String(required=False, allow_none=True)
     productId = fields.Integer(required=False, allow_none=True)
     quantity = fields.Integer(required=False, allow_none=True)
