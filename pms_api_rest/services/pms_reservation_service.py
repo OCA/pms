@@ -61,7 +61,7 @@ class PmsReservationService(Component):
                 name=reservation.name,
                 folioId=reservation.folio_id.id,
                 folioSequence=reservation.folio_sequence,
-                partnerName=reservation.partner_name,
+                partnerName=reservation.partner_name or None,
                 boardServiceId=reservation.board_service_room_id.id
                 if reservation.board_service_room_id
                 else None,
