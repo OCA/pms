@@ -397,6 +397,7 @@ class PmsReservationService(Component):
             result_services.append(
                 PmsServiceInfo(
                     id=service.id,
+                    reservationId=service.reservation_id,
                     name=service.name,
                     productId=service.product_id.id,
                     quantity=service.product_qty,
