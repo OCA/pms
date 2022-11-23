@@ -39,3 +39,4 @@ from . import pms_transaction_service
 from . import pms_account_payment_terms_service
 from . import pms_account_journal_service
 from . import pms_invoice_service
+from . import pms_notification_service
