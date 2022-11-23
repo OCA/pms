@@ -103,14 +103,15 @@ class PmsFolioService(Component):
 
         domain_filter = list()
         if folio_search_param.filter:
-            for search in folio_search_param.filter.split(" "):
+            target = folio_search_param.filter
+            if "@" in target:
+                domain_filter.append(("email", "ilike", target))
+            else:
                 subdomains = [
-                    [("name", "ilike", search)],
-                    [("folio_id.name", "ilike", search)],
-                    [("partner_name", "ilike", search)],
-                    [("partner_id.firstname", "ilike", search)],
-                    [("partner_id.lastname", "ilike", search)],
-                    [("partner_id.id_numbers.name", "ilike", search)],
+                    [("name", "ilike", target)],
+                    [("partner_name", "ilike", "%".join(target.split(" ")))],
+                    [("mobile", "ilike", target)],
+                    [("external_reference", "ilike", target)],
                 ]
                 domain_filter.append(expression.OR(subdomains))
         domain = []
@@ -126,7 +127,7 @@ class PmsFolioService(Component):
 
         PmsFolioShortInfo = self.env.datamodels["pms.folio.short.info"]
         for folio in self.env["pms.folio"].search(
-            [("id", "in", reservations_result)],
+            [("id", "in", reservations_result)], order="write_date desc"
         ):
             reservations = []
             for reservation in folio.reservation_ids:
