@@ -515,45 +515,45 @@ class PmsFolioService(Component):
             for reservation in folio.reservation_ids:
                 reservation.confirm()
         if pms_folio_info.internalComment is not None:
-            folio_vals["internal_comment"]: pms_folio_info.internalComment
-        for reservation in pms_folio_info.reservations:
-            vals = {
-                "folio_id": folio.id,
-                "room_type_id": reservation.roomTypeId,
-                "checkin": reservation.checkin,
-                "checkout": reservation.checkout,
-                "pms_property_id": pms_folio_info.pmsPropertyId,
-                "pricelist_id": pms_folio_info.pricelistId,
-                "external_reference": pms_folio_info.externalReference,
-                "board_service_room_id": reservation.boardServiceId,
-                "preferred_room_id": reservation.preferredRoomId,
-                "adults": reservation.adults,
-                "reservation_type": pms_folio_info.reservationType,
-                "children": reservation.children,
-            }
-            reservation_record = self.env["pms.reservation"].create(vals)
-            if reservation.services:
-                for service in reservation.services:
-                    vals = {
-                        "product_id": service.productId,
-                        "reservation_id": reservation_record.id,
-                        "is_board_service": False,
-                        "service_line_ids": [
-                            (
-                                0,
-                                False,
-                                {
-                                    "date": line.date,
-                                    "price_unit": line.priceUnit,
-                                    "discount": line.discount or 0,
-                                    "day_qty": line.quantity,
-                                },
-                            )
-                            for line in service.serviceLines
-                        ],
-                    }
-                    self.env["pms.service"].create(vals)
-
+            folio_vals.update({"internal_comment": pms_folio_info.internalComment})
+        if pms_folio_info.reservations:
+            for reservation in pms_folio_info.reservations:
+                vals = {
+                    "folio_id": folio.id,
+                    "room_type_id": reservation.roomTypeId,
+                    "checkin": reservation.checkin,
+                    "checkout": reservation.checkout,
+                    "pms_property_id": pms_folio_info.pmsPropertyId,
+                    "pricelist_id": pms_folio_info.pricelistId,
+                    "external_reference": pms_folio_info.externalReference,
+                    "board_service_room_id": reservation.boardServiceId,
+                    "preferred_room_id": reservation.preferredRoomId,
+                    "adults": reservation.adults,
+                    "reservation_type": pms_folio_info.reservationType,
+                    "children": reservation.children,
+                }
+                reservation_record = self.env["pms.reservation"].create(vals)
+                if reservation.services:
+                    for service in reservation.services:
+                        vals = {
+                            "product_id": service.productId,
+                            "reservation_id": reservation_record.id,
+                            "is_board_service": False,
+                            "service_line_ids": [
+                                (
+                                    0,
+                                    False,
+                                    {
+                                        "date": line.date,
+                                        "price_unit": line.priceUnit,
+                                        "discount": line.discount or 0,
+                                        "day_qty": line.quantity,
+                                    },
+                                )
+                                for line in service.serviceLines
+                            ],
+                        }
+                        self.env["pms.service"].create(vals)
         if folio_vals:
             folio.write(folio_vals)
 
