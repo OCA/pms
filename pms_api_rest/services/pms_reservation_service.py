@@ -217,11 +217,11 @@ class PmsReservationService(Component):
             not reservation_line or origin_data.price != reservation_line.price
         ):
             line_vals["price"] = origin_data.price
-        if origin_data.discount and (
+        if origin_data.discount is not None and (
             not reservation_line or origin_data.discount != reservation_line.discount
         ):
             line_vals["discount"] = origin_data.discount
-        if origin_data.cancelDiscount and (
+        if origin_data.cancelDiscount is not None and (
             not reservation_line
             or origin_data.cancelDiscount != reservation_line.cancelDiscount
         ):
