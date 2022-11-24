@@ -24,13 +24,13 @@ class PmsFolioInfo(Datamodel):
     reservationType = fields.String(required=False, allow_none=True)
     pendingAmount = fields.Float(required=False, allow_none=True)
     lastCheckout = fields.String(required=False, allow_none=True)
-    pmsPropertyId = fields.Integer(required=False, allow_none=False)
-    partnerId = fields.Integer(required=False, allow_none=False)
+    pmsPropertyId = fields.Integer(required=False, allow_none=True)
+    partnerId = fields.Integer(required=False, allow_none=True)
     reservations = fields.List(
-        NestedModel("pms.reservation.info"), required=False, allow_none=False
+        NestedModel("pms.reservation.info"), required=False, allow_none=True
     )
-    pricelistId = fields.Integer(required=False, allow_none=False)
-    saleChannelId = fields.Integer(required=False, allow_none=False)
+    pricelistId = fields.Integer(required=False, allow_none=True)
+    saleChannelId = fields.Integer(required=False, allow_none=True)
     agencyId = fields.Integer(required=False, allow_none=True)
     externalReference = fields.String(required=False, allow_none=True)
     closureReasonId = fields.Integer(required=False, allow_none=True)
