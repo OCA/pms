@@ -22,6 +22,7 @@ class PmsReservationShortInfo(Datamodel):
     isSplitted = fields.Boolean(required=False, allow_none=True)
     priceTotal = fields.Float(required=False, allow_none=True)
     servicesCount = fields.Integer(required=False, allow_none=True)
+    folioSequence = fields.Integer(required=False, allow_none=True)
 
 
 class PmsReservationInfo(Datamodel):

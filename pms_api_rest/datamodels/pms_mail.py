@@ -5,6 +5,7 @@ from odoo.addons.datamodel.core import Datamodel
 
 class PmsMailInfo(Datamodel):
     _name = "pms.mail.info"
+    mailType = fields.String(required=False, allow_none=True)
     subject = fields.String(required=False, allow_none=True)
     bodyMail = fields.String(required=False, allow_none=True)
     partnerIds = fields.List(fields.Integer(), required=False)
