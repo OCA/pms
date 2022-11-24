@@ -420,6 +420,9 @@ class PmsFolioService(Component):
                             allowedCheckout=reservation.allowed_checkout,
                             isSplitted=reservation.splitted,
                             priceTotal=round(reservation.price_room_services_set, 2),
+                            folioSequence=reservation.folio_sequence
+                            if reservation.folio_sequence
+                            else None,
                             servicesCount=sum(
                                 reservation.service_ids.filtered(
                                     lambda x: not x.is_board_service
@@ -678,6 +681,21 @@ class PmsFolioService(Component):
                     )
                 )
         return result_services
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:folio_id>/send-mail",
+                ],
+                "POST",
+            )
+        ],
+        input_param=Datamodel("pms.mail.info"),
+        auth="jwt_api_pms",
+    )
+    def send_folio_mail(self, folio_id, pms_mail_info):
+        return True
 
     @restapi.method(
         [
