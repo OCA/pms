@@ -54,7 +54,7 @@ class PmsNotificationService(Component):
                     partnerName=folio.partner_name,
                     saleChannelName=folio.agency_id.name
                     if folio.agency_id
-                    else folio.sale_channel_origin_id.name,
+                    else folio.sale_channel_origin_id.name or None,
                 )
             )
         return notifications

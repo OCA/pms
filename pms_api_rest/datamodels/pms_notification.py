@@ -15,4 +15,4 @@ class PmsNotificationInfo(Datamodel):
     timeStamp = fields.Integer(required=False)
     folioName = fields.String(required=False)
     partnerName = fields.String(required=False)
-    saleChannelName = fields.String(required=False)
+    saleChannelName = fields.String(required=False, allow_none=True)
