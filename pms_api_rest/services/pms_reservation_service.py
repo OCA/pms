@@ -681,8 +681,9 @@ class PmsReservationService(Component):
         auth="jwt_api_pms",
     )
     def delete_reservation_checkin_partner(self, reservation_id, checkin_partner_id):
-        reservation = self.env["pms.reservation"].browse(reservation_id)
-        reservation.adults = reservation.adults - 1
+        checkin_partner = self.env["pms.checkin.partner"].browse(checkin_partner_id)
+        if checkin_partner:
+            checkin_partner.unlink()
 
     def mapping_checkin_partner_values(self, pms_checkin_partner_info):
         vals = dict()
