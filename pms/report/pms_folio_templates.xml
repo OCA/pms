@@ -83,16 +83,28 @@
                     <tr>
                         <th name="th_description" class="text-left">Description</th>
                         <th name="th_quantity" class="text-right">Quantity</th>
-                        <th name="th_priceunit" class="text-right">Unit Price</th>
                         <th
+                                t-if="doc.reservation_type=='normal'"
+                                name="th_priceunit"
+                                class="text-right"
+                            >Unit Price</th>
+                        <th
+                                t-if="doc.reservation_type=='normal' and display_discount"
                                 name="th_discount"
-                                t-if="display_discount"
                                 class="text-right"
                             >
                             <span>Disc.%</span>
                         </th>
-                        <th name="th_taxes" class="text-right">Taxes</th>
-                        <th name="th_subtotal" class="text-right">
+                        <th
+                                t-if="doc.reservation_type=='normal'"
+                                name="th_taxes"
+                                class="text-right"
+                            >Taxes</th>
+                        <th
+                                t-if="doc.reservation_type=='normal'"
+                                name="th_subtotal"
+                                class="text-right"
+                            >
                             <span
                                     groups="account.group_show_line_subtotals_tax_excluded"
                                 >Amount</span>
@@ -218,10 +230,45 @@
                             </tr>
                         </t>
                     </t>
+                    <t t-if="doc.reservation_type == 'staff'">
+                        <t t-foreach="doc.reservation_ids" t-as="reservation">
+                            <tr t-att-class="'bg-200 font-weight-bold'">
+                                <td name="td_name"><span
+                                            t-field="reservation.name"
+                                        /></td>
+                                <td name="td_quantity" class="text-right">
+                                    <span t-field="reservation.checkin" />
+                                    -<span t-field="reservation.checkout" />
+                                     ( <span t-field="reservation.nights" /> ) Nights
+                                </td>
+                                <t
+                                        t-foreach="reservation.service_ids"
+                                        t-as="res_service"
+                                    >
+                                    <tr>
+                                        <td name="td_service_name"><span
+                                                    t-field="res_service.name"
+                                                /></td>
+                                        <td
+                                                name="td_service_quantity"
+                                                class="text-right"
+                                            >
+                                            <span t-field="res_service.product_qty" />
+                                        </td>
+                                    </tr>
+                                </t>
+
+                            </tr>
+                        </t>
+                    </t>
                 </tbody>
             </table>
 
-            <div class="clearfix" name="so_total_summary">
+            <div
+                    t-if="doc.reservation_type=='normal'"
+                    class="clearfix"
+                    name="so_total_summary"
+                >
                 <div id="total" class="row" name="total">
                     <div
                             t-attf-class="#{'col-4' if report_type != 'html' else 'col-sm-7 col-md-5'} ml-auto"
