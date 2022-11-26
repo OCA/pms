@@ -65,7 +65,7 @@
                             </a>
                         </td>
                         <td><span t-field="folio.date_order" /></td>
-                        <td class="text-right"><span
+                        <td t-if="folio.amount_total > 0" class="text-right"><span
                                     t-field="folio.amount_total"
                                 /></td>
                     </tr>
@@ -199,10 +199,15 @@
                     <t t-set="title">
                         <h2 class="mb-0">
                             <b
-                                t-if="folio.pending_amount > 0"
+                                t-if="folio.reservation_type == 'normal' and folio.pending_amount > 0"
                                 t-field="folio.pending_amount"
                             />
-                            <b t-else="1" t-field="folio.amount_total" />
+                            <b
+                                t-if="folio.reservation_type == 'normal' and folio.pending_amount &lt;= 0"
+                                t-field="folio.amount_total"
+                            />
+                            <b t-if="folio.reservation_type == 'staff'"><span
+                                >Staff</span></b>
                         </h2>
                         <div
                             class="small"
