@@ -19,6 +19,9 @@
         <record id="demo_pms_availability" model="pms.availability.plan">
             <field name="name">Availability Plan Demo</field>
         </record>
+        <record id="product.list0" model="product.pricelist">
+            <field name="availability_plan_id" ref="demo_pms_availability" />
+        </record>
         <!-- Sequence -->
         <record model="ir.sequence" id="seq_pms_folio2">
             <field name="name">PMS Folio 2</field>
