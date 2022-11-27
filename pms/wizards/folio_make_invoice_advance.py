@@ -232,6 +232,8 @@ class FolioAdvancePaymentInv(models.TransientModel):
             "sequence": order.sale_line_ids
             and order.sale_line_ids[-1].sequence + 1
             or 10,
+            "default_invoice_to": self.partner_invoice_id.id
+            or self.env.ref("pms.various_pms_partner").id,
         }
         del context
         return so_values
