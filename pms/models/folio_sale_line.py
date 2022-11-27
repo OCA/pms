@@ -8,6 +8,7 @@ import babel.dates
 from dateutil import relativedelta
 
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 from odoo.osv import expression
 from odoo.tools import float_compare
 from odoo.tools.misc import get_lang
@@ -948,46 +949,67 @@ class FolioSaleLine(models.Model):
             msg += "</ul>"
             order.message_post(body=msg)
 
-    # def write(self, values):
-    #     if 'display_type' in values and self.filtered(
-    #           lambda line: line.display_type != values.get('display_type')):
-    #         raise UserError(_("You cannot change the type of a sale order line.\
-    #           Instead you should delete the current line and create \
-    #           a new line of the proper type."))
+    def write(self, values):
+        # Prevent writing on a locked Folio or folio sale lines invoiced.
+        protected_fields = self._get_protected_fields()
+        protected_fields_modified_list = list(
+            set(protected_fields) & set(values.keys())
+        )
+        fields_modified = self.env["ir.model.fields"].search(
+            [("name", "in", protected_fields_modified_list), ("model", "=", self._name)]
+        )
+        if fields_modified:
+            if self.filtered(
+                lambda l: any(
+                    values.get(field.name) != getattr(l, field.name)
+                    for field in fields_modified
+                )
+            ) and (
+                "done" in self.mapped("folio_id.state")
+                or self.invoice_lines.filtered(
+                    lambda l: l.move_id.state == "posted"
+                    and l.move_id.move_type == "out_invoice"
+                    and l.move_id.payment_state != "reversed"
+                )
+            ):
+                raise UserError(
+                    _(
+                        """It is forbidden to modify the following fields
+                        in a locked folio (fields already invoiced):\n%s"""
+                    )
+                    % "\n".join(fields_modified.mapped("field_description"))
+                )
+            if "draft" in self.mapped("invoice_lines.move_id.state"):
+                if "product_uom_qty" in values:
+                    for line in self:
+                        if line.qty_invoiced > values["product_uom_qty"]:
+                            raise UserError(
+                                _(
+                                    "This quantity was already invoiced."
+                                    " You must reduce the invoiced quantity first."
+                                )
+                            )
+                for line in self.filtered(lambda l: not l.display_type):
+                    if "product_uom_qty" in values:
+                        line._update_line_quantity(values)
+                    mapped_fields = self._get_mapped_move_line_fields()
+                    move_line_vals = [
+                        (
+                            1,
+                            line.invoice_lines[0].id,
+                            {
+                                mapped_fields[field]: values[field]
+                                for field in fields_modified.mapped("name")
+                            },
+                        )
+                    ]
+                    line[0].invoice_lines.move_id.write(
+                        {"invoice_line_ids": move_line_vals}
+                    )
 
-    #     if 'product_uom_qty' in values:
-    #         precision = self.env['decimal.precision'].precision_get(
-    #           'Product Unit of Measure'
-    #         )
-    #         self.filtered(
-    #             lambda r: r.state == 'sale' and \
-    #                 float_compare(
-    #                     r.product_uom_qty,
-    #                     values['product_uom_qty'],
-    #                     precision_digits=precision) != 0)._update_line_quantity(
-    #                         values
-    #                         )
+        result = super(FolioSaleLine, self).write(values)
+        return result
 
-    #     # Prevent writing on a locked SO.
-    #     protected_fields = self._get_protected_fields()
-    #     if 'done' in self.mapped('folio_id.state') and any(
-    #             f in values.keys() for f in protected_fields
-    #             ):
-    #         protected_fields_modified = list(set(protected_fields) & set(
-    #             values.keys()
-    #             ))
-    #         fields = self.env['ir.model.fields'].search([
-    #             ('name', 'in', protected_fields_modified),
-    #             ('model', '=', self._name)
-    #         ])
-    #         raise UserError(
-    #             _('It is forbidden to modify the following \
-    #              fields in a locked order:\n%s')
-    #             % '\n'.join(fields.mapped('field_description'))
-    #         )
-
-    #     result = super(SaleOrderLine, self).write(values)
-    #     return resul   def _prepare_invoice_line(self, qty=False, **optional_values):
     def _prepare_invoice_line(self, qty=False, **optional_values):
         """
         Prepare the dict of values to create the new invoice line for a folio sale line.
@@ -1114,10 +1136,19 @@ class FolioSaleLine(models.Model):
     def _get_protected_fields(self):
         return [
             "product_id",
-            "name",
             "price_unit",
             "product_uom",
-            "product_uom_qty",
             "tax_ids",
             "analytic_tag_ids",
+            "discount",
         ]
+
+    def _get_mapped_move_line_fields(self):
+        return {
+            "product_id": "product_id",
+            "price_unit": "price_unit",
+            "product_uom": "product_uom_id",
+            "tax_ids": "tax_ids",
+            "analytic_tag_ids": "analytic_tag_ids",
+            "discount": "discount",
+        }
