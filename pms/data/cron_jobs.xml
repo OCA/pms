@@ -98,9 +98,25 @@
             <field name="model_id" ref="model_pms_property" />
             <field
                 name="nextcall"
-                eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 04:30:00')"
+                eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 23:30:00')"
             />
             <field name="code">model.autoinvoicing()</field>
+        </record>
+        <record model="ir.cron" id="autoinvoicing_downpayments">
+            <field name="name">Auto Invoicing DownPayments</field>
+            <field name="interval_number">5</field>
+            <field name="user_id" ref="base.user_root" />
+            <field name="active" eval="False" />
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False" />
+            <field name="state">code</field>
+            <field name="model_id" ref="model_account_payment" />
+            <field
+                name="nextcall"
+                eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 04:30:00')"
+            />
+            <field name="code">model.auto_invoice_downpayments(offset=1)</field>
         </record>
     </data>
 </odoo>

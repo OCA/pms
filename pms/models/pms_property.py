@@ -6,6 +6,7 @@ import datetime
 import time
 
 import pytz
+from dateutil.relativedelta import relativedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -646,14 +647,15 @@ class PmsProperty(models.Model):
         return True
 
     @api.model
-    def autoinvoicing(self):
+    def autoinvoicing(self, offset=0):
         """
         This method is used to invoicing automatically the folios
         and validate the draft invoices created by the folios
         """
+        date_reference = fields.Date.today() - relativedelta(days=offset)
         folios = self.env["pms.folio"].search(
             [
-                ("sale_line_ids.autoinvoice_date", "=", fields.date.today()),
+                ("sale_line_ids.autoinvoice_date", "=", date_reference),
                 ("invoice_status", "=", "to_invoice"),
             ]
         )
@@ -679,7 +681,7 @@ class PmsProperty(models.Model):
         draft_invoices_to_post = self.env["account.move"].search(
             [
                 ("state", "=", "draft"),
-                ("invoice_date", "=", fields.date.today()),
+                ("invoice_date", "=", date_reference),
                 ("folio_ids", "!=", False),
             ]
         )
