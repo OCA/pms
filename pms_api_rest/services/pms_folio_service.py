@@ -339,7 +339,9 @@ class PmsFolioService(Component):
             pass
         else:
             if folio.reservation_ids:
-                for reservation in folio.reservation_ids:
+                for reservation in sorted(
+                    folio.reservation_ids, key=lambda r: r.folio_sequence
+                ):
                     reservations.append(
                         PmsReservationShortInfo(
                             id=reservation.id,
