@@ -4,9 +4,13 @@ from odoo.tests import common
 class TestPms(common.SavepointCase):
     def setUp(self):
         super().setUp()
+        self.availability_plan1 = self.env["pms.availability.plan"].create(
+            {"name": "Availability Plan 1"}
+        )
         self.pricelist1 = self.env["product.pricelist"].create(
             {
                 "name": "Pricelist 1",
+                "availability_plan_id": self.availability_plan1.id,
             }
         )
         self.company1 = self.env["res.company"].create(
