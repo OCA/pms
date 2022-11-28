@@ -41,6 +41,7 @@ class TestPmsMultiproperty(TestPms):
                     (4, self.pms_property1.id),
                     (4, self.pms_property2.id),
                 ],
+                "availability_plan_id": self.availability_plan1.id,
             }
         )
         self.availability_plan1 = self.env["pms.availability.plan"].create(
@@ -200,6 +201,7 @@ class TestPmsMultiproperty(TestPms):
                     (4, self.pms_property1.id),
                     (4, self.pms_property2.id),
                 ],
+                "availability_plan_id": self.availability_plan1.id,
             }
         )
         # create new room_type
@@ -732,6 +734,7 @@ class TestPmsMultiproperty(TestPms):
                     (4, self.pms_property1.id),
                     (4, self.pms_property2.id),
                 ],
+                "availability_plan_id": self.availability_plan1.id,
             }
         )
         self.room_type1 = self.env["pms.room.type"].create(
@@ -872,6 +875,7 @@ class TestPmsMultiproperty(TestPms):
                     (4, self.pms_property2.id),
                     (4, self.pms_property3.id),
                 ],
+                "availability_plan_id": self.availability_plan1.id,
             }
         )
 
