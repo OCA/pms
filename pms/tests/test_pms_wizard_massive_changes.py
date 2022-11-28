@@ -681,6 +681,7 @@ class TestPmsWizardMassiveChanges(TestPms):
         pricelist2 = self.env["product.pricelist"].create(
             {
                 "name": "test pricelist 2",
+                "availability_plan_id": self.availability_plan1.id,
             }
         )
         expected_pricelists = [self.pricelist1.id, pricelist2.id]
