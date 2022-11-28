@@ -206,8 +206,11 @@ class PmsReservationService(Component):
         reservation_vals = self._create_vals_from_params(
             reservation_vals, reservation_data
         )
+        if reservation_data.boardServiceId == 0:
+            reservation.service_ids.filtered(lambda x: x.is_board_service).unlink()
         if reservation_vals:
             reservation.write(reservation_vals)
+
 
     def _get_reservation_lines_mapped(self, origin_data, reservation_line=False):
         # Return dict witch reservation.lines values (only modified if line exist,
