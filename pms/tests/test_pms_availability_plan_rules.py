@@ -23,6 +23,7 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                     (4, self.pms_property1.id),
                     (4, self.pms_property2.id),
                 ],
+                "availability_plan_id": self.availability_plan1.id,
             }
         )
         # pms.sale.channel
