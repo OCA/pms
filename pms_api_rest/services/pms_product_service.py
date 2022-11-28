@@ -53,6 +53,7 @@ class PmsProductService(Component):
                     perDay=product.per_day,
                     perPerson=product.per_person,
                     consumedOn=product.consumed_on,
+                    taxesPercentage=product.taxes_id.amount if product.taxes_id.amount_type == 'percent' else None,
                 )
             )
         return result_products
