@@ -682,6 +682,7 @@ class TestPmsWizardMassiveChanges(TestPms):
             {
                 "name": "test pricelist 2",
                 "availability_plan_id": self.availability_plan1.id,
+                "is_pms_available": True,
             }
         )
         expected_pricelists = [self.pricelist1.id, pricelist2.id]

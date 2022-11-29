@@ -2261,6 +2261,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_ids": [self.pms_property1.id],
                 "cancelation_rule_id": self.cancelation_rule.id,
                 "availability_plan_id": self.availability_plan1.id,
+                "is_pms_available": True,
             }
         )
         self.host1 = self.env["res.partner"].create(
@@ -2316,6 +2317,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_ids": [self.pms_property1.id],
                 "cancelation_rule_id": self.cancelation_rule.id,
                 "availability_plan_id": self.availability_plan1.id,
+                "is_pms_available": True,
             }
         )
         self.host1 = self.env["res.partner"].create(
@@ -2369,6 +2371,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_ids": [self.pms_property1.id],
                 "cancelation_rule_id": self.cancelation_rule.id,
                 "availability_plan_id": self.availability_plan1.id,
+                "is_pms_available": True,
             }
         )
         self.host1 = self.env["res.partner"].create(

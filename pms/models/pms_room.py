@@ -230,8 +230,8 @@ class PmsRoom(models.Model):
         max_number = max(numbers_name) + 1
         if max_number < 10:
             max_number = str(max_number).zfill(2)
-        short_name += max_number
-        return short_name
+        short_name += str(max_number)
+        return str(short_name)
 
     # Business methods
 
