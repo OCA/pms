@@ -82,3 +82,9 @@ class PmsProperty(models.Model):
         help="Color for pending payment reservations in the planning.",
         default="rgba(162,70,137)",
     )
+
+    overpayment_reservation_color = fields.Char(
+        string="Overpayment",
+        help="Color for pending payment reservations in the planning.",
+        default="rgba(4, 95, 118)",
+    )
