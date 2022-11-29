@@ -212,7 +212,6 @@ class PmsReservationService(Component):
         if reservation_vals:
             reservation.write(reservation_vals)
 
-
     def _get_reservation_lines_mapped(self, origin_data, reservation_line=False):
         # Return dict witch reservation.lines values (only modified if line exist,
         # or all pass values if line not exist)
