@@ -24,6 +24,7 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                     (4, self.pms_property2.id),
                 ],
                 "availability_plan_id": self.availability_plan1.id,
+                "is_pms_available": True,
             }
         )
         # pms.sale.channel
@@ -46,6 +47,13 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "name": "MY PMS TEST",
                 "company_id": self.company1.id,
                 "default_pricelist_id": self.pricelist2.id,
+            }
+        )
+        self.pricelist2.write(
+            {
+                "pms_property_ids": [
+                    (4, self.pms_property3.id),
+                ],
             }
         )
 

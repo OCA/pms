@@ -31,3 +31,7 @@ class TestPms(common.SavepointCase):
                 "default_code": "RTC1",
             }
         )
+        for pricelist in self.env["product.pricelist"].search([]):
+            if not pricelist.availability_plan_id:
+                pricelist.availability_plan_id = self.availability_plan1.id
+                pricelist.is_pms_available = True

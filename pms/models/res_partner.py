@@ -192,14 +192,6 @@ class ResPartner(models.Model):
         string="Days from Checkout",
         help="Days from Checkout to generate the invoice",
     )
-    vat_document_type = fields.Selection(
-        string="Document Type",
-        help="""The vat document type of the partner,
-        set if is a fiscal document, passport, etc...""",
-        selection=lambda self: self._selection_vat_document_type(),
-        compute="_compute_vat_document_type",
-        store=True,
-    )
     residence_street = fields.Char(
         string="Street of residence",
         help="Street of the guest's residence",
@@ -245,20 +237,6 @@ class ResPartner(models.Model):
         compute="_compute_residence_state_id",
         comodel_name="res.country.state",
     )
-
-    @api.model
-    def _selection_vat_document_type(self):
-        vat_document_types = [
-            ("vat", _("VAT")),
-        ]
-        document_categories = self.env["res.partner.id_category"].search(
-            [
-                ("is_vat_equivalent", "=", False),
-            ]
-        )
-        for doc_type in document_categories:
-            vat_document_types.append((doc_type.name, doc_type.name))
-        return vat_document_types
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.gender")
     def _compute_gender(self):
@@ -678,27 +656,6 @@ class ResPartner(models.Model):
                 ]
             )
 
-    @api.depends(
-        "vat", "id_numbers", "id_numbers.category_id", "id_numbers.vat_syncronized"
-    )
-    def _compute_vat_document_type(self):
-        self.vat_document_type = False
-        for record in self.filtered("vat"):
-            document = record.id_numbers.filtered("vat_syncronized")
-            if document:
-                if len(document) > 1:
-                    raise ValidationError(
-                        _("There is more than one document with vat syncronized")
-                    )
-                if record.vat:
-                    record.vat_document_type = (
-                        document.category_id.name
-                        if not document.category_id.is_vat_equivalent
-                        else "vat"
-                    )
-            else:
-                record.vat_document_type = "vat"
-
     def action_partner_reservations(self):
         self.ensure_one()
         checkin_reservation_ids = (
@@ -857,18 +814,6 @@ class ResPartner(models.Model):
             return True
         return False
 
-    @api.constrains("vat_document_type")
-    def check_vat(self):
-        """
-        Inherit constrain to allow set vat in
-        document ids like passport, etc...
-        """
-        for partner in self:
-            if not partner.vat_document_type or partner.vat_document_type != "vat":
-                continue
-            elif hasattr(super(), "check_vat"):
-                super(ResPartner, partner).check_vat()
-
     def unlink(self):
         dummy, various_partner_id = self.env["ir.model.data"].get_object_reference(
             "pms", "various_pms_partner"
@@ -946,7 +891,9 @@ class ResPartner(models.Model):
                     pricelists configuration (%s) to allow it for PMS,
                     or the pricelist selected for the agencies: %s
                     """
-                ),
-                ",".join(self.mapped("property_product_pricelis.name")),
-                "".join(self.mapped("name")),
+                )
+                % (
+                    ",".join(self.mapped("property_product_pricelist.name")),
+                    "".join(self.mapped("name")),
+                )
             )

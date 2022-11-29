@@ -54,6 +54,7 @@ class TestPmsPricelist(TestPms):
                 "name": "pricelist_2",
                 "pms_property_ids": [self.pms_property1.id, self.pms_property2.id],
                 "availability_plan_id": self.availability_plan1.id,
+                "is_pms_available": True,
             }
         )
         # product.product 1
@@ -742,6 +743,7 @@ class TestPmsPricelist(TestPms):
                             "pms_property_ids": tc["pms_property_ids"],
                             "item_ids": [item.id],
                             "availability_plan_id": self.availability_plan1.id,
+                            "is_pms_available": True,
                         }
                     )
 
@@ -770,6 +772,7 @@ class TestPmsPricelist(TestPms):
                 "pms_property_ids": [self.pms_property1.id],
                 "item_ids": [item.id],
                 "availability_plan_id": self.availability_plan1.id,
+                "is_pms_available": True,
             }
         )
         self.assertTrue(self.pricelist_test, "Pricelist not created.")
