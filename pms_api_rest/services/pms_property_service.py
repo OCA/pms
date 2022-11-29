@@ -43,6 +43,7 @@ class PmsPropertyService(Component):
                     staffReservationColor=prop.staff_reservation_color,
                     toAssignReservationColor=prop.to_assign_reservation_color,
                     pendingPaymentReservationColor=prop.pending_payment_reservation_color,
+                    overPaymentColor=prop.overpayment_reservation_color,
                     simpleOutColor=prop.simple_out_color,
                     simpleInColor=prop.simple_in_color,
                     simpleFutureColor=prop.simple_future_color,
