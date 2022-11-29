@@ -70,6 +70,11 @@
                             widget="color"
                             attrs="{'invisible': [('color_option_config', '!=', 'advanced')]}"
                         />
+                        <field
+                            name="overpayment_reservation_color"
+                            widget="color"
+                            attrs="{'invisible': [('color_option_config', '!=', 'advanced')]}"
+                        />
                     </group>
                 </group>
             </xpath>
