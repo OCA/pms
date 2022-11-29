@@ -206,7 +206,8 @@ class PmsReservationService(Component):
         reservation_vals = self._create_vals_from_params(
             reservation_vals, reservation_data
         )
-        if reservation_data.boardServiceId == 0:
+        # TODO: this should be @ pms core
+        if reservation_data.boardServiceId != reservation.board_service_room_id:
             reservation.service_ids.filtered(lambda x: x.is_board_service).unlink()
         if reservation_vals:
             reservation.write(reservation_vals)

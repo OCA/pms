@@ -16,4 +16,3 @@ class PmProductInfo(Datamodel):
     perDay = fields.Boolean(required=False, allow_none=True)
     perPerson = fields.Boolean(required=False, allow_none=True)
     consumedOn = fields.String(required=False, allow_none=True)
-    taxesPercentage = fields.Float(required=False, allow_none=True)
