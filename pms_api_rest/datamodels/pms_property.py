@@ -23,6 +23,7 @@ class PmsPropertyInfo(Datamodel):
     outReservationColor = fields.String(required=False, allow_none=True)
     staffReservationColor = fields.String(required=False, allow_none=True)
     toAssignReservationColor = fields.String(required=False, allow_none=True)
+    overPaymentColor = fields.String(required=False, allow_none=True)
     pendingPaymentReservationColor = fields.String(required=False, allow_none=True)
     simpleOutColor = fields.String(required=False, allow_none=True)
     simpleInColor = fields.String(required=False, allow_none=True)
