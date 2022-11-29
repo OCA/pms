@@ -13,6 +13,7 @@ class TestPms(common.SavepointCase):
             {
                 "name": "Pricelist 1",
                 "availability_plan_id": self.availability_plan1.id,
+                "is_pms_available": True,
             }
         )
         self.company1 = self.env["res.company"].create(
