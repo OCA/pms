@@ -65,12 +65,6 @@
                     <field name="is_agency" />
                 </group>
             </xpath>
-            <xpath expr="//field[@name='vat']" position="after">
-                <field
-                    name="vat_document_type"
-                    attrs="{'invisible':[('vat','=',False)]}"
-                />
-            </xpath>
             <xpath
                 expr="//notebook/page[@name='sales_purchases']/group/group/field[@name='company_id']"
                 position="after"

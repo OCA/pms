@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data noupdate="1">
+        <!--Availability Plan -->
+        <record id="demo_pms_availability" model="pms.availability.plan">
+            <field name="name">Availability Plan Demo</field>
+        </record>
+        <record id="demo_pms_availability_2" model="pms.availability.plan">
+            <field name="name">Availability Plan Demo</field>
+        </record>
+        <record id="product.list0" model="product.pricelist">
+            <field name="availability_plan_id" ref="demo_pms_availability_2" />
+            <field name="is_pms_available" eval="True" />
+        </record>
         <!-- Company -->
         <record id="pms_company1" model="res.company">
             <field name="name">Alda Company</field>
@@ -14,13 +25,6 @@
         <!-- Avoid constrain error with demo base data -->
         <record id="base.main_company" model="res.company">
             <field name="check_min_partner_data_invoice">False</field>
-        </record>
-        <!--Availability Plan -->
-        <record id="demo_pms_availability" model="pms.availability.plan">
-            <field name="name">Availability Plan Demo</field>
-        </record>
-        <record id="product.list0" model="product.pricelist">
-            <field name="availability_plan_id" ref="demo_pms_availability" />
         </record>
         <!-- Sequence -->
         <record model="ir.sequence" id="seq_pms_folio2">
@@ -3758,6 +3762,7 @@
             <field name="name">Public Pricelist Discount 10%</field>
             <field name="pricelist_type" />
             <field name="availability_plan_id" ref="demo_pms_availability" />
+            <field name="is_pms_available" eval="True" />
         </record>
 
         <record id="pms_pricelist_item_discount_10%" model="product.pricelist.item">
