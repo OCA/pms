@@ -19,6 +19,7 @@
         "base_iso3166",
         "queue_job",
         "base_vat",
+        "l10n_es_aeat",
         "l10n_es_aeat_partner_identification",
     ],
     "external_dependencies": {
