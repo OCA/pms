@@ -18,6 +18,7 @@
         "partner_contact_nationality",
         "base_iso3166",
         "queue_job",
+        "base_vat",
     ],
     "external_dependencies": {
         "python": [
@@ -42,7 +43,6 @@
         "views/precheckin_portal_templates.xml",
         "wizards/traveller_report.xml",
         "wizards/wizard_ine.xml",
-        "reports/invoice.xml",
     ],
     "installable": True,
 }
