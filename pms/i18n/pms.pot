@@ -143,6 +143,11 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_folio_document
+msgid ") Nights"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid ", at"
 msgstr ""
@@ -151,7 +156,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid ""
 ".<br/>\n"
-"                    Do your check-in now and save time."
+"                        Do your check-in now and save time."
 msgstr ""
 
 #. module: pms
@@ -168,8 +173,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid ""
 "<br/>\n"
-"                This is our<strong> quick registration system</strong>. In a few steps you will be able to register your data in an agile, simple and secure way,<strong> avoiding queues at reception</strong>.\n"
-"                If you register your data in our system, <strong> your passage through reception will be much faster</strong>, being able to enjoy the comfort of your room right away."
+"                    This is our<strong> quick registration system</strong>. In a few steps you will be able to register your data in an agile, simple and secure way,<strong> avoiding queues at reception</strong>.\n"
+"                    If you register your data in our system, <strong> your passage through reception will be much faster</strong>, being able to enjoy the comfort of your room right away."
 msgstr ""
 
 #. module: pms
@@ -298,7 +303,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid ""
 "<span class=\"fa fa-info\"/>\n"
-"                        Reservation Info"
+"                            Reservation Info"
 msgstr ""
 
 #. module: pms
@@ -321,7 +326,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid ""
 "<span class=\"fa fa-wpforms\"/>\n"
-"                        CHECK IN NOW!"
+"                            CHECK IN NOW!"
 msgstr ""
 
 #. module: pms
@@ -399,6 +404,11 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.report_invoice_document
 msgid "<span>Pro-Forma Invoice # </span>"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.folio_portal_template
+msgid "<span>Staff</span>"
 msgstr ""
 
 #. module: pms
@@ -1662,6 +1672,13 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_res_company__privacy_policy
 msgid "Authorization by the user for themanage of their personal data"
+msgstr ""
+
+#. module: pms
+#: model:ir.actions.server,name:pms.autoinvoicing_downpayments_ir_actions_server
+#: model:ir.cron,cron_name:pms.autoinvoicing_downpayments
+#: model:ir.cron,name:pms.autoinvoicing_downpayments
+msgid "Auto Invoicing DownPayments"
 msgstr ""
 
 #. module: pms
@@ -3369,12 +3386,6 @@ msgid "Departure delayed"
 msgstr ""
 
 #. module: pms
-#: code:addons/pms/models/account_payment.py:0
-#, python-format
-msgid "Deposit return"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__name
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__description
 #: model:ir.model.fields,field_description:pms.field_room_closure_reason__description
@@ -3564,7 +3575,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_product_template__display_name
 #: model:ir.model.fields,field_description:pms.field_res_company__display_name
 #: model:ir.model.fields,field_description:pms.field_res_partner__display_name
-#: model:ir.model.fields,field_description:pms.field_res_partner_id_category__display_name
 #: model:ir.model.fields,field_description:pms.field_res_partner_id_number__display_name
 #: model:ir.model.fields,field_description:pms.field_res_users__display_name
 #: model:ir.model.fields,field_description:pms.field_room_closure_reason__display_name
@@ -3605,6 +3615,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_folio__document_number
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__document_number
 msgid "Document Number"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_type
+#: model:ir.model.fields,field_description:pms.field_pms_folio__document_type
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__document_type
+msgid "Document Type"
 msgstr ""
 
 #. module: pms
@@ -4661,7 +4678,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_product_template__id
 #: model:ir.model.fields,field_description:pms.field_res_company__id
 #: model:ir.model.fields,field_description:pms.field_res_partner__id
-#: model:ir.model.fields,field_description:pms.field_res_partner_id_category__id
 #: model:ir.model.fields,field_description:pms.field_res_partner_id_number__id
 #: model:ir.model.fields,field_description:pms.field_res_users__id
 #: model:ir.model.fields,field_description:pms.field_room_closure_reason__id
@@ -4773,6 +4789,14 @@ msgid "If the pricelist is available in the PMS"
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/product_pricelist.py:0
+#, python-format
+msgid ""
+"If the pricelist is available in the PMS, you must select an availability "
+"plan"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__phone_sanitized_blacklisted
 msgid ""
 "If the sanitized phone number is on the blacklist, the contact won't receive"
@@ -4784,11 +4808,6 @@ msgstr ""
 msgid ""
 "If true, the partner document is required\n"
 "        to create a new contact"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_res_partner_id_category__is_vat_equivalent
-msgid "If true, this document type is check by vat number"
 msgstr ""
 
 #. module: pms
@@ -5393,11 +5412,6 @@ msgid "Is Product Variant"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_res_partner_id_category__is_vat_equivalent
-msgid "Is VAT Equivalent"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__is_company
 msgid "Is a Company"
 msgstr ""
@@ -5480,6 +5494,15 @@ msgstr ""
 msgid ""
 "It is True if the room of the reservation has been assigned automatically, "
 "False if it was confirmed by a person in charge"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/folio_sale_line.py:0
+#, python-format
+msgid ""
+"It is forbidden to modify the following fields\n"
+"                        in a locked folio (fields already invoiced):\n"
+"%s"
 msgstr ""
 
 #. module: pms
@@ -5681,7 +5704,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_product_template____last_update
 #: model:ir.model.fields,field_description:pms.field_res_company____last_update
 #: model:ir.model.fields,field_description:pms.field_res_partner____last_update
-#: model:ir.model.fields,field_description:pms.field_res_partner_id_category____last_update
 #: model:ir.model.fields,field_description:pms.field_res_partner_id_number____last_update
 #: model:ir.model.fields,field_description:pms.field_res_users____last_update
 #: model:ir.model.fields,field_description:pms.field_room_closure_reason____last_update
@@ -7015,11 +7037,6 @@ msgid "Partner Contracts"
 msgstr ""
 
 #. module: pms
-#: model:ir.model,name:pms.model_res_partner_id_category
-msgid "Partner ID Category"
-msgstr ""
-
-#. module: pms
 #: model:ir.model,name:pms.model_res_partner_id_number
 msgid "Partner ID Number"
 msgstr ""
@@ -7092,6 +7109,12 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__same_vat_partner_id
 msgid "Partner with same Tax ID"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/res_partner.py:0
+#, python-format
+msgid "Partner without document identification, update vals %s"
 msgstr ""
 
 #. module: pms
@@ -9746,8 +9769,6 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__vat
-#: model:ir.model.fields,field_description:pms.field_res_partner__vat
-#: model:ir.model.fields,field_description:pms.field_res_users__vat
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "Tax ID"
 msgstr ""
@@ -9929,7 +9950,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
 msgid ""
 "Thank you!\n"
-"                    Your check-in has been successful."
+"                        Your check-in has been successful."
 msgstr ""
 
 #. module: pms
@@ -9940,8 +9961,6 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__vat
-#: model:ir.model.fields,help:pms.field_res_partner__vat
-#: model:ir.model.fields,help:pms.field_res_users__vat
 msgid ""
 "The Tax Identification Number. Complete it if the contact is subjected to "
 "government taxes. Used in some legal statements."
@@ -10271,8 +10290,8 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_not_checkin
 msgid ""
-"The quick registration system is not available.<br/>\n"
-"                If you have any questions, you can contact us: <br/><br/>Phone:"
+"The quick registration system is not available for this reservation.<br/>\n"
+"                    If you have any questions, you can contact us: <br/><br/>Phone:"
 msgstr ""
 
 #. module: pms
@@ -10426,12 +10445,6 @@ msgid "There are no checkins to print"
 msgstr ""
 
 #. module: pms
-#: code:addons/pms/models/res_partner.py:0
-#, python-format
-msgid "There is more than one document with vat syncronized"
-msgstr ""
-
-#. module: pms
 #: code:addons/pms/models/pms_folio.py:0
 #, python-format
 msgid ""
@@ -10447,7 +10460,7 @@ msgid ""
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.folio_invoice_error
+#: model_terms:ir.ui.view,arch_db:pms.portal_folio_error
 msgid "There was an error processing this page."
 msgstr ""
 
@@ -10555,6 +10568,14 @@ msgstr ""
 msgid ""
 "This pricelist will be used, instead of the default one, for sales to the "
 "current partner"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/folio_sale_line.py:0
+#, python-format
+msgid ""
+"This quantity was already invoiced. You must reduce the invoiced quantity "
+"first."
 msgstr ""
 
 #. module: pms
@@ -11130,12 +11151,6 @@ msgid "Utility field to express amount currency"
 msgstr ""
 
 #. module: pms
-#: code:addons/pms/models/res_partner.py:0
-#, python-format
-msgid "VAT"
-msgstr ""
-
-#. module: pms
 #: model:room.closure.reason,name:pms.pms_room_closure_reason_vip_privacy
 msgid "VIP Privacy"
 msgstr ""
@@ -11486,7 +11501,7 @@ msgid "city of residence"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.folio_invoice_error
+#: model_terms:ir.ui.view,arch_db:pms.portal_folio_error
 #: model_terms:ir.ui.view,arch_db:pms.portal_folio_success
 msgid "close"
 msgstr ""
