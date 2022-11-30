@@ -124,11 +124,6 @@ class ResPartner(models.Model):
         store=True,
         compute="_compute_lastname2",
     )
-    vat = fields.Char(
-        readonly=False,
-        store=True,
-        compute="_compute_vat",
-    )
     country_id = fields.Many2one(
         readonly=False,
         store=True,
@@ -556,17 +551,6 @@ class ResPartner(models.Model):
             elif not record.lastname2:
                 record.lastname2 = False
 
-    @api.depends("id_numbers", "id_numbers.name")
-    def _compute_vat(self):
-        if hasattr(super(), "_compute_vat"):
-            super()._compute_vat()
-        for record in self:
-            if not record.vat and record.id_numbers:
-                vat = list(filter(None, set(record.id_numbers.mapped("name"))))
-                record.vat = vat[0]
-            elif not record.vat:
-                record.vat = False
-
     @api.depends("residence_country_id")
     def _compute_country_id(self):
         if hasattr(super(), "_compute_country_id"):
@@ -810,9 +794,8 @@ class ResPartner(models.Model):
 
     def _check_enought_invoice_data(self):
         self.ensure_one()
-        if self.vat and self.country_id and self.city and self.street:
-            return True
-        return False
+        # Template to be inherited by localization modules
+        return True
 
     def unlink(self):
         dummy, various_partner_id = self.env["ir.model.data"].get_object_reference(

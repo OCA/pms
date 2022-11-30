@@ -76,7 +76,7 @@ class TestPmsFolioInvoice(TestPms):
         self.partner_id = self.env["res.partner"].create(
             {
                 "name": "Miguel",
-                "vat": "ES123456789",
+                "vat": "45224522J",
                 "country_id": self.env.ref("base.es").id,
                 "city": "Madrid",
                 "zip": "28013",
@@ -719,7 +719,7 @@ class TestPmsFolioInvoice(TestPms):
         self.partner_id2 = self.env["res.partner"].create(
             {
                 "name": "Sara",
-                "vat": "ES123456787",
+                "vat": "54235544A",
                 "country_id": self.env.ref("base.es").id,
                 "city": "Madrid",
                 "zip": "28013",
