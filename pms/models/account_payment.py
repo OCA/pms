@@ -1,11 +1,8 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from collections import defaultdict
-<<<<<<< HEAD
 
 from dateutil.relativedelta import relativedelta
-=======
->>>>>>> [IMP]pms: improvement create downpayment invoice and reconcile
 
 from odoo import api, fields, models
 
