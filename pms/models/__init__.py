@@ -46,7 +46,6 @@ from . import pms_availability
 from . import res_partner_id_number
 from . import pms_automated_mails
 from . import payment_transaction
-from . import res_partner_id_category
 from . import pms_team_member
 from . import ir_pms_property
 from . import payment_acquirer
