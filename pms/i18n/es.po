@@ -10714,7 +10714,6 @@ msgstr "Usuario que creo la ficha"
 msgid "The value of the down payment amount must be positive."
 msgstr "El valor del pago inicial debe ser positivo."
 
-
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_folio
 msgid "There are currently no folios for your account."
