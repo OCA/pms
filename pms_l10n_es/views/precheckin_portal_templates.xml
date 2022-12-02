@@ -7,13 +7,9 @@
             <div t-attf-class="form-group col-md-6">
                 <label class="col-form-label" for="document_type">Doc. Type</label>
                 <div class="d-none"><p id="docTypeId"><t
-                            t-esc="checkin_partner_id.document_type"
+                            t-esc="checkin_partner.document_type"
                         /></p></div>
-                <select
-                    class="form-control #{error.get('document_type') and 'is-invalid' or ''}"
-                    name='document_type'
-                    id="doc_type"
-                >
+                <select class="form-control" name='document_type' id="doc_type">
                     <option value="">Select an option</option>
                     <t t-foreach="doc_type_ids" t-as='doc_type'>
                         <option
@@ -24,29 +20,24 @@
                         </option>
                     </t>
                 </select>
-                <t t-if="error_message">
+                <!--<t t-if="error_message">
                     <span
                         class="text-danger"
                         t-esc="error_message.get('document_type')"
                     />
-                </t>
+                </t>-->
             </div>
         </xpath>
         <xpath expr="//div[@name='document_number_div']" position="replace">
             <div t-attf-class="col-12 col-md-6">
                 <label class="col-form-label" for="document_number">Doc. Number</label>
-                <input
-                    type="text"
-                    name="document_number"
-                    t-attf-class="form-control #{error.get('document_number') and 'is-invalid' or ''}"
-                    t-att-value="document_number if document_number and error else ''"
-                />
-                <t t-if="error_message">
+                <input type="text" name="document_number" t-attf-class="form-control" />
+                <!--<t t-if="error_message">
                     <span
                         class="text-danger"
                         t-esc="error_message.get('document_number')"
                     />
-                </t>
+                </t>-->
             </div>
         </xpath>
     </template>
