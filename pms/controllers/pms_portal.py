@@ -369,6 +369,55 @@ class PortalPrecheckin(CustomerPortal):
         return request.render("pms.portal_my_reservation_precheckin", values)
 
     @http.route(
+        ["/my/folios/<int:folio_id>/reservations"],
+        type="http",
+        auth="public",
+        website=True,
+        csrf=False,
+    )
+    def portal_precheckin_folio(self, folio_id, **kw):
+        folio = request.env["pms.folio"].sudo().browse(folio_id)
+        values = {}
+        values.update({"folio": folio})
+        return request.render("pms.portal_my_prechekin_folio", values)
+
+    @http.route(
+        ["/my/folios/<int:folio_id>/reservations/<int:reservation_id>/checkins"],
+        type="http",
+        auth="public",
+        website=True,
+        csrf=False,
+    )
+    def portal_precheckin_reservation(self, folio_id, reservation_id, **kw):
+        folio = request.env["pms.folio"].sudo().browse(folio_id)
+        reservation = request.env["pms.reservation"].sudo().browse(reservation_id)
+        values = {}
+        values.update({"folio": folio})
+        values.update({"reservation": reservation})
+        return request.render("pms.portal_my_prechekin_reservation", values)
+
+    @http.route(
+        [
+            "/my/folios/<int:folio_id>/reservations/<int:reservation_id>/checkins/<int:checkin_partner_id>"
+        ],
+        type="http",
+        auth="public",
+        website=True,
+        csrf=False,
+    )
+    def portal_precheckin(self, folio_id, reservation_id, checkin_partner_id, **kw):
+        folio = request.env["pms.folio"].sudo().browse(folio_id)
+        reservation = request.env["pms.reservation"].sudo().browse(reservation_id)
+        checkin_partner = (
+            request.env["pms.checkin.partner"].sudo().browse(checkin_partner_id)
+        )
+        values = {}
+        values.update({"folio": folio})
+        values.update({"reservation": reservation})
+        values.update({"checkin_partner": checkin_partner})
+        return request.render("pms.portal_my_precheckin_detail", values)
+
+    @http.route(
         ["/my/precheckin/<int:folio_id>/checkin/<int:checkin_partner_id>"],
         type="http",
         auth="public",
@@ -494,7 +543,7 @@ class PortalPrecheckin(CustomerPortal):
                 error_message[firstname] = "Firstname or any lastname are not included"
             if not data.get("gender"):
                 error["gender"] = "error"
-                error_message["gender"] = "Gender is mandatory"
+                error_message["gender"] = _("Gender is mandatory")
             if not data.get("document_number"):
                 error["document_number"] = "error"
                 error_message["document_number"] = "Document number is mandatory"
