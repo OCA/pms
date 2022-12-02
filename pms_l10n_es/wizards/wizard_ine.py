@@ -666,44 +666,55 @@ class WizardIne(models.TransientModel):
                 self.end_date,
             )
         )
-
+        basic_domain = [
+            ("pms_property_id", "=", self.pms_property_id.id),
+            ("occupies_availability", "=", True),
+            ("reservation_id.reservation_type", "=", "normal"),
+        ]
         total_groups_domains = {
-            "tour_operator_offline": [
+            "tour_operator_offline": basic_domain
+            + [
                 ("reservation_id.agency_id.sale_channel_id.name", "ilike", "Operator"),
                 ("reservation_id.agency_id.sale_channel_id.is_on_line", "=", True),
             ],
-            "tour_operator_online": [
+            "tour_operator_online": basic_domain
+            + [
                 ("reservation_id.agency_id.sale_channel_id.name", "ilike", "Operator"),
                 ("reservation_id.agency_id.sale_channel_id.is_on_line", "=", False),
             ],
-            "companies": [
+            "companies": basic_domain
+            + [
                 ("reservation_id.partner_id", "!=", False),
                 ("reservation_id.partner_id.is_company", "=", True),
+                ("reservation_id.partner_id.is_agency", "=", False),
             ],
-            "agencies": [
+            "agencies": basic_domain
+            + [
                 ("reservation_id.agency_id", "!=", False),
                 ("reservation_id.agency_id.sale_channel_id.is_on_line", "=", False),
             ],
-            "otas": [
+            "otas": basic_domain
+            + [
                 ("reservation_id.agency_id", "!=", False),
                 ("reservation_id.agency_id.sale_channel_id.is_on_line", "=", True),
             ],
-            "persons": [
+            "persons": basic_domain
+            + [
                 "|",
                 ("reservation_id.partner_id", "=", False),
                 ("reservation_id.partner_id.is_company", "=", False),
             ],
-            "groups": [("reservation_id.folio_id.number_of_rooms", ">=", 4)],
-            "internet": [
-                ("reservation_id.sale_channel_origin_id.is_on_line", "=", True)
-            ],
-            "others": [
+            "groups": basic_domain
+            + [("reservation_id.folio_id.number_of_rooms", ">=", 4)],
+            "internet": basic_domain
+            + [("reservation_id.sale_channel_origin_id.is_on_line", "=", True)],
+            "others": basic_domain
+            + [
                 "|",
                 ("reservation_id.sale_channel_origin_id.is_on_line", "!=", True),
                 ("reservation_id.sale_channel_origin_id", "=", False),
             ],
         }
-
         percents = {}
         adrs = {}
         for group, domain in total_groups_domains.items():
