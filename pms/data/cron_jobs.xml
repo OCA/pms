@@ -88,7 +88,7 @@
         </record> -->
         <record model="ir.cron" id="autoinvoicing_folios">
             <field name="name">Auto Invoicing Folios</field>
-            <field name="interval_number">5</field>
+            <field name="interval_number">1</field>
             <field name="user_id" ref="base.user_root" />
             <field name="active" eval="False" />
             <field name="interval_type">days</field>
@@ -104,7 +104,7 @@
         </record>
         <record model="ir.cron" id="autoinvoicing_downpayments">
             <field name="name">Auto Invoicing DownPayments</field>
-            <field name="interval_number">5</field>
+            <field name="interval_number">1</field>
             <field name="user_id" ref="base.user_root" />
             <field name="active" eval="False" />
             <field name="interval_type">days</field>
