@@ -80,13 +80,13 @@ class ResPartner(models.Model):
                 vat_country = _eu_country_vat.get(vat_country, vat_country).upper()
             vat_with_code = (
                 partner.vat
-                if partner_country_code.lower() == vat_country
+                if partner_country_code.upper() == vat_country.upper()
                 else partner_country_code.upper() + partner.vat
             )
             vat_without_code = (
                 partner.vat
-                if partner_country_code.lower() != vat_country
-                else vat_country
+                if partner_country_code.upper() != vat_country.upper()
+                else vat_number
             )
             domain = [
                 ("company_id", "in", [False, partner.company_id.id]),
