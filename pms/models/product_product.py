@@ -23,6 +23,10 @@ class ProductProduct(models.Model):
         super(ProductProduct, self)._compute_product_price()
 
     def _compute_board_price(self):
+        pms_property_id = (
+            self.env.context.get("property")
+            or self.env.user.get_active_property_ids()[0]
+        )
         for record in self:
             if self._context.get("board_service"):
                 record.board_price = (
@@ -35,6 +39,7 @@ class ProductProduct(models.Model):
                                 self._context.get("board_service"),
                             ),
                             ("product_id", "=", record.id),
+                            ("pms_property_id", "=", pms_property_id),
                         ]
                     )
                     .amount

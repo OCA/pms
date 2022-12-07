@@ -353,7 +353,12 @@ class AvailabilityWizard(models.TransientModel):
         string="Board Service",
         help="Board Service included in the room",
         comodel_name="pms.board.service.room.type",
-        domain="[('pms_room_type_id','=',room_type_id)]",
+        domain="""
+            [
+                ('pms_room_type_id','=',room_type_id),
+                ('pms_property_id','=',pms_property_id)
+            ]
+        """,
         check_pms_properties=True,
     )
 

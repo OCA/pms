@@ -102,7 +102,7 @@
             <field name="model_id" ref="model_pms_board_service_room_type" />
             <field name="global" eval="True" />
             <field name="domain_force">
-                ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
+                ['|',('pms_property_id','=',False),('pms_property_id', 'in',
                 user.get_active_property_ids())]
             </field>
         </record>
