@@ -90,3 +90,6 @@ class ChannelWubookPmsRoomTypeBoardServiceChildMapperExport(Component):
         for item in items_values:
             values.update(item)
         return values
+
+    def skip_item(self, map_record):
+        return map_record.source.pms_property_id != self.backend_record.pms_property_id

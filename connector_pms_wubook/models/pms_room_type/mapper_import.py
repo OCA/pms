@@ -50,13 +50,8 @@ class ChannelWubookPmsRoomTypeMapperImport(Component):
         }
 
     @mapping
-    def property_ids(self, record):
-        binding = self.options.get("binding")
-        has_pms_properties = binding and bool(binding.pms_property_ids)
-        if self.options.for_create or has_pms_properties:
-            return {
-                "pms_property_ids": [(4, self.backend_record.pms_property_id.id, 0)]
-            }
+    def property_id(self, record):
+        return {"pms_property_id": self.backend_record.pms_property_id.id}
 
 
 # TODO: import room type with board service changes
