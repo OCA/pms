@@ -770,6 +770,7 @@ class TestPmsBookingEngine(TestPms):
             {
                 "pms_room_type_id": self.test_room_type_double.id,
                 "pms_board_service_id": self.board_service_test.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         # self.board_service_room_type.flush()
@@ -853,6 +854,7 @@ class TestPmsBookingEngine(TestPms):
             {
                 "pms_room_type_id": self.test_room_type_double.id,
                 "pms_board_service_id": self.board_service_test.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         discount = 15

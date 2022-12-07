@@ -21,18 +21,14 @@ class PmsBoardServiceRoomType(models.Model):
         ondelete="cascade",
         check_pms_properties=True,
     )
-    pms_property_ids = fields.Many2many(
-        string="Properties",
-        help="Properties with access to the element;"
-        " if not set, all properties can access",
+    pms_property_id = fields.Many2one(
+        string="Property",
+        help="Property with access to the element;"
+        " if not set, all property can access",
         required=False,
         ondelete="restrict",
         comodel_name="pms.property",
-        relation="pms_board_service_room_type_pms_property_rel",
-        column1="pms_board_service_room_type_id",
-        column2="pms_property_id",
         check_pms_properties=True,
-        compute="_compute_pms_property_ids",
         store=True,
     )
     pms_room_type_id = fields.Many2one(
@@ -64,43 +60,6 @@ class PmsBoardServiceRoomType(models.Model):
         help="Indicates if this board service is applied by default in the room type",
     )
 
-    @api.depends(
-        "pms_room_type_id",
-        "pms_room_type_id.pms_property_ids",
-        "pms_board_service_id",
-        "pms_board_service_id.pms_property_ids",
-    )
-    def _compute_pms_property_ids(self):
-        for record in self:
-            if (
-                record.pms_room_type_id.pms_property_ids
-                and record.pms_board_service_id.pms_property_ids
-            ):
-                record.pms_property_ids = self.env["pms.property"].search(
-                    [
-                        (
-                            "id",
-                            "in",
-                            list(
-                                set(record.pms_room_type_id.pms_property_ids.ids)
-                                & set(record.pms_board_service_id.pms_property_ids.ids)
-                            ),
-                        )
-                    ]
-                )
-            elif (
-                record.pms_room_type_id.pms_property_ids
-                and not record.pms_board_service_id.pms_property_ids
-            ):
-                record.pms_property_ids = record.pms_room_type_id.pms_property_ids
-            elif (
-                not record.pms_room_type_id.pms_property_ids
-                and record.pms_board_service_id.pms_property_ids
-            ):
-                record.pms_property_ids = record.pms_board_service_id.pms_property_ids
-            else:
-                record.pms_property_ids = False
-
     @api.depends("board_service_line_ids.amount")
     def _compute_board_amount(self):
         for record in self:
@@ -119,7 +78,7 @@ class PmsBoardServiceRoomType(models.Model):
         return res
 
     @api.constrains("by_default")
-    def constrains_duplicated_board_defaul(self):
+    def constrains_duplicated_board_default(self):
         for record in self:
             default_boards = (
                 record.pms_room_type_id.board_service_room_type_ids.filtered(
@@ -127,7 +86,12 @@ class PmsBoardServiceRoomType(models.Model):
                 )
             )
             # TODO Check properties (with different propertys is allowed)
-            if any(default_boards.filtered(lambda l: l.id != record.id)):
+            if any(
+                default_boards.filtered(
+                    lambda l: l.id != record.id
+                    and l.pms_property_id == record.pms_property_id
+                )
+            ):
                 raise UserError(_("""Only can set one default board service"""))
 
     def open_board_lines_form(self):
@@ -156,14 +120,14 @@ class PmsBoardServiceRoomType(models.Model):
     @api.model
     def create(self, vals):
         # properties = False
-        if "pms_board_service_id" in vals:
+        if "pms_board_service_id" in vals and "board_service_line_ids" not in vals:
             vals.update(
                 self.prepare_board_service_reservation_ids(vals["pms_board_service_id"])
             )
         return super(PmsBoardServiceRoomType, self).create(vals)
 
     def write(self, vals):
-        if "pms_board_service_id" in vals:
+        if "pms_board_service_id" in vals and "board_service_line_ids" not in vals:
             vals.update(
                 self.prepare_board_service_reservation_ids(vals["pms_board_service_id"])
             )

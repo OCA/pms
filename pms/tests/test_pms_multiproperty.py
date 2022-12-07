@@ -389,6 +389,7 @@ class TestPmsMultiproperty(TestPms):
             {
                 "pms_room_type_id": room_type_double.id,
                 "pms_board_service_id": board_service_test.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         # ASSERT

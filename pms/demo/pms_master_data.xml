@@ -808,6 +808,7 @@
         >
             <field name="pms_board_service_id" ref="pms_board_service_breakfast" />
             <field name="pms_room_type_id" ref="pms_room_type_economic" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
         </record>
         <record
             id="pms_board_service_room_eco_half_board"
@@ -815,6 +816,7 @@
         >
             <field name="pms_board_service_id" ref="pms_board_service_half_board" />
             <field name="pms_room_type_id" ref="pms_room_type_economic" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
         </record>
         <record
             id="pms_board_service_room_eco_full_board"
@@ -822,6 +824,7 @@
         >
             <field name="pms_board_service_id" ref="pms_board_service_full_board" />
             <field name="pms_room_type_id" ref="pms_room_type_economic" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
         </record>
         <!-- Room Single -->
         <record
@@ -830,6 +833,7 @@
         >
             <field name="pms_board_service_id" ref="pms_board_service_breakfast" />
             <field name="pms_room_type_id" ref="pms_room_type_single" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
         </record>
         <record
             id="pms_board_service_room_single_half_board"
@@ -837,6 +841,7 @@
         >
             <field name="pms_board_service_id" ref="pms_board_service_half_board" />
             <field name="pms_room_type_id" ref="pms_room_type_single" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
         </record>
         <record
             id="pms_board_service_room_single_full_board"
@@ -844,6 +849,7 @@
         >
             <field name="pms_board_service_id" ref="pms_board_service_full_board" />
             <field name="pms_room_type_id" ref="pms_room_type_single" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
         </record>
         <!-- Room Double -->
         <record
@@ -852,6 +858,7 @@
         >
             <field name="pms_board_service_id" ref="pms_board_service_breakfast" />
             <field name="pms_room_type_id" ref="pms_room_type_double" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
         </record>
         <record
             id="pms_board_service_room_double_half_board"
@@ -859,6 +866,7 @@
         >
             <field name="pms_board_service_id" ref="pms_board_service_half_board" />
             <field name="pms_room_type_id" ref="pms_room_type_double" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
         </record>
         <record
             id="pms_board_service_room_full_board"
@@ -866,6 +874,7 @@
         >
             <field name="pms_board_service_id" ref="pms_board_service_full_board" />
             <field name="pms_room_type_id" ref="pms_room_type_double" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
         </record>
         <!-- Room Triple -->
         <record
@@ -874,6 +883,7 @@
         >
             <field name="pms_board_service_id" ref="pms_board_service_breakfast" />
             <field name="pms_room_type_id" ref="pms_room_type_triple" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
         </record>
         <record
             id="pms_board_service_room_triple_full_board"
@@ -881,6 +891,7 @@
         >
             <field name="pms_board_service_id" ref="pms_board_service_full_board" />
             <field name="pms_room_type_id" ref="pms_room_type_triple" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
         </record>
         <!-- Room Quadruple -->
         <record
@@ -889,6 +900,7 @@
         >
             <field name="pms_board_service_id" ref="pms_board_service_breakfast" />
             <field name="pms_room_type_id" ref="pms_room_type_quadruple" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
         </record>
         <!-- Room Grand suite -->
         <record
@@ -897,6 +909,7 @@
         >
             <field name="pms_board_service_id" ref="pms_board_service_breakfast" />
             <field name="pms_room_type_id" ref="demo_pms_room_type_grand_suite" />
+            <field name="pms_property_id" ref="san_carlos_property" />
         </record>
         <record
             id="pms_board_service_room_grand_suite_half_board"
@@ -904,6 +917,7 @@
         >
             <field name="pms_board_service_id" ref="pms_board_service_half_board" />
             <field name="pms_room_type_id" ref="demo_pms_room_type_grand_suite" />
+            <field name="pms_property_id" ref="san_carlos_property" />
         </record>
         <record
             id="pms_board_service_room_grand_suite_full_board"
@@ -911,6 +925,7 @@
         >
             <field name="pms_board_service_id" ref="pms_board_service_full_board" />
             <field name="pms_room_type_id" ref="demo_pms_room_type_grand_suite" />
+            <field name="pms_property_id" ref="san_carlos_property" />
         </record>
         <!-- Room Junior suite -->
         <record
@@ -919,6 +934,7 @@
         >
             <field name="pms_board_service_id" ref="pms_board_service_breakfast" />
             <field name="pms_room_type_id" ref="demo_pms_room_type_junior_suite" />
+            <field name="pms_property_id" ref="san_carlos_property" />
         </record>
         <record
             id="pms_board_service_room_junior_suite_half_board"
@@ -926,6 +942,7 @@
         >
             <field name="pms_board_service_id" ref="pms_board_service_half_board" />
             <field name="pms_room_type_id" ref="demo_pms_room_type_junior_suite" />
+            <field name="pms_property_id" ref="san_carlos_property" />
         </record>
         <record
             id="pms_board_service_room_junior_suite_full_board"
@@ -933,6 +950,7 @@
         >
             <field name="pms_board_service_id" ref="pms_board_service_full_board" />
             <field name="pms_room_type_id" ref="demo_pms_room_type_junior_suite" />
+            <field name="pms_property_id" ref="san_carlos_property" />
         </record>
         <!-- room.closure.reason -->
         <record id="pms_room_closure_reason_maintenance" model="room.closure.reason">
