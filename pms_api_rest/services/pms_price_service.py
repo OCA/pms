@@ -151,7 +151,8 @@ class PmsAgencyService(Component):
                 pms_property_id=pms_property_id,
                 pricelist_id=pricelist_id,
                 partner_id=partner_id,
-                product_qty=product_qty,
+                product_qty=product_qty or 1,
                 date_consumption=date_consumption,
+                board_service_id=board_service.id,
             )
         return price

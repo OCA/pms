@@ -36,13 +36,7 @@ class PmsBoardServiceService(Component):
         if board_services_search_param.pmsPropertyId:
             domain.extend(
                 [
-                    "|",
-                    (
-                        "pms_property_ids",
-                        "in",
-                        board_services_search_param.pmsPropertyId,
-                    ),
-                    ("pms_property_ids", "=", False),
+                    ("pms_property_id", "=", board_services_search_param.pmsPropertyId),
                 ]
             )
 
@@ -107,13 +101,7 @@ class PmsBoardServiceService(Component):
         if pms_search_param.pmsPropertyId:
             domain.extend(
                 [
-                    "|",
-                    (
-                        "pms_property_ids",
-                        "in",
-                        pms_search_param.pmsPropertyId,
-                    ),
-                    ("pms_property_ids", "=", False),
+                    ("pms_property_id", "=", pms_search_param.pmsPropertyId),
                 ]
             )
         result_board_service_lines = []
