@@ -84,6 +84,7 @@
                                     decoration-primary="value_num_rooms_selected &gt; 0"
                                     decoration-bf="value_num_rooms_selected &gt; 0"
                                 >
+                                    <field name="pms_property_id" invisible="1" />
                                      <field
                                         name="room_type_id"
                                         readonly="1"

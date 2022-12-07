@@ -827,6 +827,7 @@ class PmsReservation(models.Model):
                     [
                         ("pms_room_type_id", "=", reservation.room_type_id.id),
                         ("by_default", "=", True),
+                        ("pms_property_id", "=", reservation.pms_property_id.id),
                     ]
                 )
                 if (

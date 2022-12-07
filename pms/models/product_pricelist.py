@@ -144,25 +144,6 @@ class ProductPricelist(models.Model):
             )
         return items
 
-    @api.constrains("pricelist_type", "item_ids", "pms_property_ids")
-    def _check_pricelist_type(self):
-        for record in self:
-            if record.item_ids:
-                for item in record.item_ids:
-                    if record.pricelist_type == "daily" and (
-                        item.compute_price != "fixed"
-                        or len(item.pms_property_ids) != 1
-                        or not item.date_end_consumption
-                        or not item.date_start_consumption
-                        or item.date_end_consumption != item.date_start_consumption
-                    ):
-                        raise ValidationError(
-                            _(
-                                "Daily Plan must have fixed price, "
-                                "only one property and its items must be daily"
-                            )
-                        )
-
     @api.constrains("is_pms_available", "availability_plan_id")
     def _check_is_pms_available(self):
         for record in self:
