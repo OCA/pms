@@ -30,6 +30,7 @@ def get_board_service_room_type(mapper, room_type, board):
     )
     board_service_room_type_id = room_type.board_service_room_type_ids.filtered(
         lambda x: x.pms_board_service_id == board_service
+        and x.pms_property_id == mapper.backend_record.pms_property_id
     )
     if not board_service_room_type_id:
         raise ValidationError(
