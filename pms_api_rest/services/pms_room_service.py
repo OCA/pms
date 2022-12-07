@@ -77,14 +77,20 @@ class PmsRoomService(Component):
             )
             .sorted("sequence")
         ):
-
+            # TODO: avoid, change short_name,
+            # set code amenities like a tag in room calendar name?
+            short_name = room.short_name
+            if room.room_amenity_ids:
+                for amenity in room.room_amenity_ids:
+                    if amenity.is_add_code_room_name:
+                        short_name += "%s" % amenity.default_code
             result_rooms.append(
                 PmsRoomInfo(
                     id=room.id,
-                    name=room.name,
+                    name=room.display_name,
                     roomTypeId=room.room_type_id,
                     capacity=room.capacity,
-                    shortName=room.short_name,
+                    shortName=short_name,
                     roomTypeClassId=room.room_type_id.class_id,
                     ubicationId=room.ubication_id,
                     extraBedsAllowed=room.extra_beds_allowed,
