@@ -493,6 +493,7 @@ class TestPmsFolioInvoice(TestPms):
             {
                 "pms_room_type_id": self.room_type_double.id,
                 "pms_board_service_id": self.board_service1.id,
+                "pms_property_id": self.property.id,
             }
         )
         self.reservation1 = self.env["pms.reservation"].create(
@@ -549,6 +550,7 @@ class TestPmsFolioInvoice(TestPms):
             {
                 "pms_room_type_id": self.room_type_double.id,
                 "pms_board_service_id": self.board_service1.id,
+                "pms_property_id": self.property.id,
             }
         )
         self.reservation1 = self.env["pms.reservation"].create(
@@ -606,6 +608,7 @@ class TestPmsFolioInvoice(TestPms):
             {
                 "pms_room_type_id": self.room_type_double.id,
                 "pms_board_service_id": self.board_service1.id,
+                "pms_property_id": self.property.id,
             }
         )
         self.reservation1 = self.env["pms.reservation"].create(
@@ -761,6 +764,7 @@ class TestPmsFolioInvoice(TestPms):
             {
                 "pms_room_type_id": self.demo_room_type_double.id,
                 "pms_board_service_id": self.board_service1.id,
+                "pms_property_id": self.pms_property_demo.id,
             }
         )
         # ACT
@@ -863,6 +867,7 @@ class TestPmsFolioInvoice(TestPms):
             {
                 "pms_room_type_id": self.room_type_double.id,
                 "pms_board_service_id": self.board_service1.id,
+                "pms_property_id": self.property.id,
             }
         )
         # ACT

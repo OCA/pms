@@ -72,6 +72,7 @@ class TestPmsFolioSaleLine(TestPms):
             {
                 "pms_room_type_id": self.room_type_double.id,
                 "pms_board_service_id": self.board_service_test.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         self.extra_service = self.env["pms.service"].create(

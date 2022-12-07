@@ -386,8 +386,7 @@ class WizardFolioChanges(models.TransientModel):
                         lambda x: x.pms_board_service_id.id == new_board_service_id
                         and (
                             reservation.folio_id.pms_property_id.id
-                            in x.pms_property_ids.ids
-                            or not x.pms_property_ids
+                            == x.pms_property_id.ids
                         )
                     )
                 )
