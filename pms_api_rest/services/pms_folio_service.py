@@ -560,6 +560,63 @@ class PmsFolioService(Component):
         if folio_vals:
             folio.write(folio_vals)
 
+    # ------------------------------------------------------------------------------------
+    # FOLIO SERVICES----------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:folio_id>/services",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.service.info", is_list=True),
+        auth="jwt_api_pms",
+    )
+    def get_folio_services(self, folio_id):
+        folio = self.env["pms.folio"].search([("id", "=", folio_id)])
+        if not folio:
+            raise MissingError(_("Folio not found"))
+
+        result_services = []
+        PmsServiceInfo = self.env.datamodels["pms.service.info"]
+        for reservation in folio.reservation_ids:
+            for service in reservation.service_ids:
+                PmsServiceLineInfo = self.env.datamodels["pms.service.line.info"]
+                service_lines = []
+                for line in service.service_line_ids:
+                    service_lines.append(
+                        PmsServiceLineInfo(
+                            id=line.id,
+                            date=datetime.combine(
+                                line.date, datetime.min.time()
+                            ).isoformat(),
+                            priceUnit=line.price_unit,
+                            discount=line.discount,
+                            quantity=line.day_qty,
+                        )
+                    )
+
+                result_services.append(
+                    PmsServiceInfo(
+                        id=service.id,
+                        reservationId=service.reservation_id,
+                        name=service.name,
+                        productId=service.product_id.id,
+                        quantity=service.product_qty,
+                        priceTotal=round(service.price_total, 2),
+                        priceSubtotal=round(service.price_subtotal, 2),
+                        priceTaxes=round(service.price_tax, 2),
+                        discount=round(service.discount, 2),
+                        isBoardService=service.is_board_service,
+                        serviceLines=service_lines,
+                    )
+                )
+        return result_services
+
     @restapi.method(
         [
             (
