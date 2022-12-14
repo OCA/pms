@@ -112,7 +112,9 @@ class PmsPropertyService(Component):
                 ResUsersInfo(
                     id=user.id,
                     name=user.name,
-                    userImageBase64=user.partner_id.image_1024 or None,
+                    # TODO: Disabled by performance issues
+                    #  userImageBase64=user.partner_id.image_1024 or None,
+                    userImageBase64=None,
                 )
             )
         return result_users
