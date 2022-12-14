@@ -2,6 +2,7 @@ import base64
 import datetime
 import io
 import json
+import re
 import time
 
 import PyPDF2
@@ -71,6 +72,7 @@ class TravellerReport(models.TransientModel):
             }
 
     def generate_checkin_list(self, property_id, date_target=False):
+        regex = re.compile("[^a-zA-Z0-9]")
         if not date_target:
             date_target = fields.date.today()
         # check if there's guests info pending to send
@@ -101,7 +103,7 @@ class TravellerReport(models.TransientModel):
                 "1|"
                 + pms_property.institution_property_id.upper()
                 + "|"
-                + pms_property.name.upper()
+                + regex.sub(" ", pms_property.name.upper())
                 + "|"
                 + datetime.datetime.now().strftime("%Y%m%d|%H%M")
                 + "|"
@@ -115,16 +117,16 @@ class TravellerReport(models.TransientModel):
             for line in lines:
                 content += "2"
                 # [P|N|..]
-                if line.document_type.code != "D":
-                    content += "||" + line.document_number.upper() + "|"
+                if line.document_type.code not in ["D", "C"]:
+                    content += "||" + regex.sub("", line.document_number.upper()) + "|"
                 else:
-                    content += "|" + line.document_number.upper() + "||"
+                    content += "|" + regex.sub("", line.document_number.upper()) + "||"
                 content += line.document_type.code + "|"
                 content += line.document_expedition_date.strftime("%Y%m%d") + "|"
-                content += line.lastname.upper() + "|"
+                content += regex.sub(" ", line.lastname.upper()) + "|"
                 if line.lastname2:
-                    content += line.lastname2.upper()
-                content += "|" + line.firstname.upper() + "|"
+                    content += regex.sub(" ", line.lastname2.upper())
+                content += "|" + regex.sub(" ", line.firstname.upper()) + "|"
                 if line.gender == "female":
                     content += "F|"
                 else:
@@ -140,7 +142,7 @@ class TravellerReport(models.TransientModel):
         login_route = "/hospederias/login.do"
         upload_file_route = "/hospederias/cargaFichero.do"
         logout_route = "/hospederias/logout.do"
-
+        target_date = self.date_target or fields.date.today()
         if file_content:
             headers = {
                 "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 "
@@ -204,6 +206,8 @@ class TravellerReport(models.TransientModel):
                     {
                         "error_sending_data": True,
                         "txt_incidencies_from_institution": msg,
+                        "pms_property_id": pms_property.id,
+                        "target_date": target_date,
                     }
                 )
                 raise ValidationError(msg)
@@ -223,6 +227,8 @@ class TravellerReport(models.TransientModel):
                             "message": _("Successful file sending"),
                             "sticky": False,
                         },
+                        "pms_property_id": pms_property.id,
+                        "target_date": target_date,
                     }
                     return message
 
@@ -243,7 +249,7 @@ class TravellerReport(models.TransientModel):
         files_sent_list_route = "/e-hotel/hospederia/listar/ficherosHospederia"
         last_file_errors_route = "/e-hotel/hospederia/report/erroresFicheroHospederia"
         logout_route = "/e-hotel/execute_logout"
-
+        target_date = self.date_target or fields.date.today()
         session = requests.session()
 
         # retrieve token
@@ -434,6 +440,8 @@ class TravellerReport(models.TransientModel):
                         response_last_file_errors_route.content
                     ),
                     "txt_filename": file_name + ".pdf",
+                    "pms_property_id": pms_property.id,
+                    "target_date": target_date,
                 }
             )
 
@@ -463,7 +471,7 @@ class TravellerReport(models.TransientModel):
         if not pms_property:
             called_from_user = True
             pms_property = self.env["pms.property"].search(
-                [("id", "=", self.env.user.get_active_property_ids()[0])]
+                [("id", "=", self.pms_property_id.id)]
             )
         if (
             not pms_property
