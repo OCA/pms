@@ -109,17 +109,19 @@ class PmsInvoiceService(Component):
         if previus_state == "posted":
             invoice.button_draft()
         if new_vals:
+            updated_invoice_lines_name = False
             # REVIEW: If invoice lines are updated (lines that already existed),
             # the _move_autocomplete_invoice_lines_write called accout.move write
             # method overwrite the move_lines dict and we lost the new name values,
-            # so, we need to save and rewrite it.
+            # so, we need to save and rewrite it. (core odoo methods)
 
             # 1- save send invoice line name values:
-            updated_invoice_lines_name = {
-                line[1]: line[2]["name"]
-                for line in new_vals["invoice_line_ids"]
-                if line[0] == 1 and "name" in line[2]
-            }
+            if new_vals.get("invoice_line_ids"):
+                updated_invoice_lines_name = {
+                    line[1]: line[2]["name"]
+                    for line in new_vals["invoice_line_ids"]
+                    if line[0] == 1 and "name" in line[2]
+                }
             # 2- update invoice
             invoice.write(new_vals)
             # 3- rewrite invoice line name values:
