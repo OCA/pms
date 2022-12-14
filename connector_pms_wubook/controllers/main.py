@@ -57,9 +57,9 @@ class WubookPushURL(http.Controller):
             user = backend.user_id
             backend = backend.with_user(user)
 
-        request.env["channel.wubook.pms.folio"].with_user(
-            user
-        ).with_delay().import_record(backend, reservation_code)
+        request.env["channel.wubook.pms.folio"].with_user(user).with_delay(
+            priority=1
+        ).import_record(backend, reservation_code)
 
         return request.make_response("200 OK", [("Content-Type", "text/plain")])
 
