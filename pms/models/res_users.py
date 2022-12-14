@@ -40,6 +40,14 @@ class ResUsers(models.Model):
             return self.env["pms.property"].browse(active_property_ids).ids
         return user_property_ids
 
+    def _is_property_member(self, pms_property_id):
+        self.ensure_one()
+        # TODO: Use pms_teams and roles to check if user is member of property
+        # and analice the management of external users like a Call Center
+        return self.env.user.has_group(
+            "pms.group_pms_user"
+        ) and not self.env.user.has_group("pms.group_pms_call")
+
     @api.constrains("pms_property_id", "pms_property_ids")
     def _check_property_in_allowed_properties(self):
         if any(user.pms_property_id not in user.pms_property_ids for user in self):
