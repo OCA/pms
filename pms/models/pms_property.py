@@ -429,6 +429,7 @@ class PmsProperty(models.Model):
         room_type_id=False,
         current_lines=False,
         pricelist=False,
+        real_avail=False,
     ):
         if isinstance(checkin, str):
             checkin = datetime.datetime.strptime(
@@ -449,6 +450,7 @@ class PmsProperty(models.Model):
                 room_type_id=room_type_id,
                 current_lines=current_lines,
                 pricelist_id=pricelist.id,
+                real_avail=real_avail,
             )
 
             if len(pms_property.free_room_ids) < 1:
