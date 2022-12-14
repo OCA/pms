@@ -208,7 +208,7 @@ class PmsReservationLine(models.Model):
                     else False,
                     current_lines=reservation.reservation_line_ids.ids,
                     pricelist_id=reservation.pricelist_id.id,
-                    real_avail=free_room_select,
+                    real_avail=False,
                 )
                 rooms_available = pms_property.free_room_ids
 
@@ -219,6 +219,7 @@ class PmsReservationLine(models.Model):
                     free_room_select
                     and reservation.preferred_room_id.id
                     not in reservation.reservation_line_ids.room_id.ids
+                    and self.env.user._is_property_member(pms_property.id)
                 ):
                     # This case is a preferred_room_id manually assigned
                     manual_assigned = True
@@ -264,6 +265,7 @@ class PmsReservationLine(models.Model):
                     current_lines=line._origin.reservation_id.reservation_line_ids.ids,
                     pricelist=reservation.pricelist_id,
                     pms_property_id=line.pms_property_id.id,
+                    real_avail=False,
                 ):
                     if self.env.context.get("force_overbooking"):
                         reservation.overbooking = True
