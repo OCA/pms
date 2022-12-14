@@ -2,18 +2,27 @@
 # Copyright 2019  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import base64
 import datetime
 import time
 
 import pytz
 from dateutil.relativedelta import relativedelta
 
-from odoo import _, api, fields, models
+from odoo import _, api, fields, models, modules
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
 from odoo.addons.base.models.res_partner import _tz_get
+
+
+def get_default_logo():
+    with open(modules.get_module_resource('pms',
+                                          'static/img',
+                                          'property_logo.png'),
+              'rb') as f:
+        return base64.b64encode(f.read())
 
 
 class PmsProperty(models.Model):
@@ -212,6 +221,10 @@ class PmsProperty(models.Model):
         comodel_name="pms.team.member",
         inverse_name="pms_property_id",
         copy=False,
+    )
+    logo = fields.Binary(
+        string="Image in checkin",
+        default=get_default_logo(),
     )
 
     @api.depends_context(
