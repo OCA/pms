@@ -208,7 +208,7 @@ class PmsReservationLine(models.Model):
                     else False,
                     current_lines=reservation.reservation_line_ids.ids,
                     pricelist_id=reservation.pricelist_id.id,
-                    real_avail=False,
+                    real_avail=True,
                 )
                 rooms_available = pms_property.free_room_ids
 
@@ -265,7 +265,7 @@ class PmsReservationLine(models.Model):
                     current_lines=line._origin.reservation_id.reservation_line_ids.ids,
                     pricelist=reservation.pricelist_id,
                     pms_property_id=line.pms_property_id.id,
-                    real_avail=False,
+                    real_avail=True,
                 ):
                     if self.env.context.get("force_overbooking"):
                         reservation.overbooking = True
