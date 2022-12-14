@@ -6,7 +6,7 @@ class PmsLogInstitutionTravellerReport(models.Model):
     _description = "Report of daily sending files of travellers to institutions."
 
     date = fields.Datetime(
-        string="Date and time",
+        string="Send Date",
         default=fields.Datetime.now,
     )
     error_sending_data = fields.Boolean(
@@ -21,3 +21,10 @@ class PmsLogInstitutionTravellerReport(models.Model):
     )
     txt_filename = fields.Text()
     txt_message = fields.Char(string="Log Message")
+    pms_property_id = fields.Many2one(
+        comodel_name="pms.property",
+        string="Property",
+    )
+    target_date = fields.Date(
+        string="Checkins Date",
+    )

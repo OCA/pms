@@ -16,6 +16,8 @@
                             filename="txt_filename"
                             readonly="1"
                         />
+                        <field name="target_date" />
+                        <field name="pms_property_id" />
                     </group>
                 </sheet>
             </form>
@@ -40,9 +42,24 @@
                     readonly="1"
                     string="Size"
                 />
+                <field name="target_date" />
+                <field name="pms_property_id" />
             </tree>
         </field>
     </record>
+
+    <record model="ir.ui.view" id="pms_log_institution_traveller_report_view_search">
+        <field name="name">pms.log.institution.traveller.report.search</field>
+        <field name="model">pms.log.institution.traveller.report</field>
+        <field name="arch" type="xml">
+            <search string="Log institution traveller report">
+                <field name="date" />
+                <field name="target_date" />
+                <field name="pms_property_id" />
+            </search>
+        </field>
+    </record>
+
     <record
         model="ir.actions.act_window"
         id="open_pms_log_institution_traveller_report_form_tree"
