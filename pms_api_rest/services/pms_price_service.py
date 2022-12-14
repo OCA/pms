@@ -8,7 +8,7 @@ from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
 
-class PmsAgencyService(Component):
+class PmsPriceService(Component):
     _inherit = "base.rest.service"
     _name = "pms.price.service"
     _usage = "prices"
