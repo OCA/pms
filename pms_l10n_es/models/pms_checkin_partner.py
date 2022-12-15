@@ -7,7 +7,7 @@ CODE_SPAIN = "ES"
 _logger = logging.getLogger(__name__)
 
 
-class PmsCheckinParnert(models.Model):
+class PmsCheckinPartner(models.Model):
     _inherit = "pms.checkin.partner"
 
     support_number = fields.Char(
@@ -35,7 +35,7 @@ class PmsCheckinParnert(models.Model):
 
     @api.model
     def _checkin_mandatory_fields(self, country=False, depends=False):
-        mandatory_fields = super(PmsCheckinParnert, self)._checkin_mandatory_fields(
+        mandatory_fields = super(PmsCheckinPartner, self)._checkin_mandatory_fields(
             depends
         )
         mandatory_fields.extend(
@@ -60,6 +60,6 @@ class PmsCheckinParnert(models.Model):
 
     @api.model
     def _checkin_manual_fields(self, country=False, depends=False):
-        manual_fields = super(PmsCheckinParnert, self)._checkin_manual_fields(depends)
+        manual_fields = super(PmsCheckinPartner, self)._checkin_manual_fields(depends)
         manual_fields.extend(["support_number"])
         return manual_fields
