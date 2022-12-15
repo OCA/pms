@@ -712,9 +712,6 @@ class PmsCheckinPartner(models.Model):
             lambda c: c.state == "dummy"
         )
         if len(reservation.checkin_partner_ids) < reservation.adults:
-            if vals.get("identifier", _("New")) == _("New") or "identifier" not in vals:
-                pms_property = reservation.pms_property_id
-                vals["identifier"] = pms_property.checkin_sequence_id._next_do()
             return super(PmsCheckinPartner, self).create(vals)
         if len(dummy_checkins) > 0:
             dummy_checkins[0].write(vals)
@@ -844,6 +841,7 @@ class PmsCheckinPartner(models.Model):
             }
             record.update(vals)
             record.reservation_id.state = "onboard"
+            record.identifier = record.pms_property_id.checkin_sequence_id._next_do()
 
     def action_done(self):
         for record in self.filtered(lambda c: c.state == "onboard"):
