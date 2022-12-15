@@ -29,8 +29,12 @@ class PortalFolio(CustomerPortal):
 
     def _folio_get_page_view_values(self, folio, access_token, **kwargs):
         values = {"folio": folio, "token": access_token}
-        payment_inputs = request.env["payment.acquirer"]._get_available_payment_input(
-            partner=folio.partner_id, company=folio.company_id
+        payment_inputs = (
+            request.env["payment.acquirer"]
+            .sudo()
+            ._get_available_payment_input(
+                partner=folio.partner_id, company=folio.company_id
+            )
         )
         acquirers = payment_inputs.get("acquirers")
         for acquirer in acquirers:
