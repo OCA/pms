@@ -71,25 +71,18 @@ class TravellerReport(models.TransientModel):
             "view_mode": "form",
         }
 
-    def generate_checkin_list(
-        self, pms_property_id, date_target=False, checkin_ids=False
-    ):
+    def generate_checkin_list(self, pms_property_id, date_target=False):
         regex = re.compile("[^a-zA-Z0-9]")
 
         # check if there's guests info pending to send
-        if not checkin_ids:
-            if not date_target:
-                date_target = fields.date.today()
-            domain = [
-                ("state", "in", ["onboard", "done"]),
-                ("arrival", ">=", str(date_target) + " 0:00:00"),
-                ("arrival", "<=", str(date_target) + " 23:59:59"),
-                ("pms_property_id", "=", pms_property_id),
-            ]
-        else:
-            domain = [
-                ("id", "in", checkin_ids),
-            ]
+        if not date_target:
+            date_target = fields.date.today()
+        domain = [
+            ("state", "in", ["onboard", "done"]),
+            ("arrival", ">=", str(date_target) + " 0:00:00"),
+            ("arrival", "<=", str(date_target) + " 23:59:59"),
+            ("pms_property_id", "=", pms_property_id),
+        ]
         pms_property = (
             self.env["pms.property"]
             .with_context(lang="es_ES")
@@ -479,9 +472,7 @@ class TravellerReport(models.TransientModel):
                 }
             )
 
-    def send_file_institution(
-        self, pms_property=False, checkin_ids=False, offset=0, date_target=False
-    ):
+    def send_file_institution(self, pms_property=False, offset=0, date_target=False):
         try:
             called_from_user = False
             if not pms_property:
@@ -498,13 +489,13 @@ class TravellerReport(models.TransientModel):
                 raise ValidationError(
                     _("The guest information sending settings is not complete.")
                 )
+            date_target = self.date_target or False
             if not date_target:
                 date_target = fields.Date.today()
             date_target = date_target - relativedelta(days=offset)
             file_content = self.generate_checkin_list(
                 pms_property_id=pms_property.id,
                 date_target=date_target,
-                checkin_ids=checkin_ids,
             )
             if pms_property.institution == "policia_nacional":
                 log = self.send_file_pn(file_content, called_from_user, pms_property)
@@ -576,5 +567,5 @@ class TravellerReport(models.TransientModel):
     def send_file_institution_async(self, offset=0):
         for prop in self.env["pms.property"].search([]):
             if prop.institution:
-                self.send_file_institution(prop, offset)
+                self.send_file_institution(pms_property=prop, offset=offset)
                 time.sleep(0.5)
