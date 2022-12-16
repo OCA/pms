@@ -104,7 +104,7 @@
         <field name="view_mode">tree,kanban,form</field>
         <field name="view_id" ref="account.view_out_invoice_tree" />
         <field name="search_view_id" ref="view_account_invoice_filter" />
-        <field name="domain">[('move_type', 'in', ('out_invoice','out_refund')]</field>
+        <field name="domain">[('move_type', 'in', ('out_invoice','out_refund'))]</field>
         <field name="context">{'default_move_type': 'out_invoice'}</field>
         <field name="help" type="html">
           <p class="o_view_nocontent_smiling_face">
