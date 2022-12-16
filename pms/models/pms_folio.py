@@ -1903,6 +1903,8 @@ class PmsFolio(models.Model):
                 .search([("sale_line_ids", "in", list(lines_to_invoice.keys()))])
                 .mapped("checkout")
             ) + datetime.timedelta(days=margin_days_autoinvoice)
+            if invoice_date < datetime.date.today():
+                invoice_date = datetime.date.today()
         if partner_invoice_policy == "month_day":
             month_day = (
                 self.pms_property_id.invoicing_month_day
