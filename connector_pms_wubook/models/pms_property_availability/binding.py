@@ -1,5 +1,6 @@
 # Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models
 
@@ -29,23 +30,56 @@ class ChannelWubookPmsPropertyAvailabilityBinding(models.Model):
         synced = super()._is_synced_export()
         if not synced:
             return False
-        newrules = self.availability_ids.filtered(
-            lambda x: x.wubook_date_valid()
-            and self.backend_id not in x.channel_wubook_bind_ids.backend_id
+        wubook_date_valid = fields.Date.today() - relativedelta(days=2)
+        room_types_ids = (
+            self.env["pms.room.type"]
+            .search(
+                [
+                    ("channel_wubook_bind_ids.backend_id", "=", self.backend_id.id),
+                ]
+            )
+            .ids
         )
-        if newrules:
+        self.env.cr.execute(
+            """
+            SELECT avail.id
+            FROM pms_availability AS avail
+                LEFT JOIN channel_wubook_pms_availability AS binding
+                    ON binding.odoo_id = avail.id
+            WHERE avail.date >= %s
+            AND avail.pms_property_id = %s
+            AND avail.room_type_id IN %s
+            AND (
+                    (
+                        binding.backend_id IS NULL
+                        OR binding.backend_id != %s
+                    )
+                OR
+                    (
+                        binding.backend_id = %s
+                        AND (
+                            binding.sync_date_export IS NULL
+                            OR binding.sync_date_export < binding.actual_write_date
+                        )
+                    )
+                )
+            """,
+            (
+                wubook_date_valid,
+                self.backend_id.pms_property_id.id,
+                tuple(room_types_ids) if room_types_ids else (0,),
+                self.backend_id.id,
+                self.backend_id.id,
+            ),
+        )
+        avails_to_export = self.env.cr.fetchone()
+        if avails_to_export:
             return False
-
-        return all(
-            self.channel_wubook_availability_ids.filtered(
-                lambda x: x.odoo_id.wubook_date_valid()
-                and self.backend_id in x.channel_wubook_bind_ids.backend_id
-            ).mapped("synced_export")
-        )
+        return True
 
     @api.model
     def export_data(self, backend_record=None):
-        """ Prepare the export of Availability to Channel """
+        """Prepare the export of Availability to Channel"""
         return (
             self.env["channel.wubook.pms.property.availability"]
             .with_delay()

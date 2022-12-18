@@ -1,5 +1,6 @@
 # Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from dateutil.relativedelta import relativedelta
 
 from odoo import _, api, fields, models
 
@@ -28,19 +29,55 @@ class ChannelWubookPmsAvailabilityPlanBinding(models.Model):
         synced = super()._is_synced_export()
         if not synced:
             return False
-        newrules = self.rule_ids.filtered(
-            lambda x: x.wubook_date_valid()
-            and self.backend_id not in x.channel_wubook_bind_ids.backend_id
+        wubook_date_valid = fields.Date.today() - relativedelta(days=2)
+        room_types_ids = (
+            self.env["pms.room.type"]
+            .search(
+                [
+                    ("channel_wubook_bind_ids.backend_id", "=", self.backend_id.id),
+                ]
+            )
+            .ids
         )
-        if newrules:
+        self.env.cr.execute(
+            """
+            SELECT 1
+            FROM pms_availability_plan_rule AS rule
+                LEFT JOIN channel_wubook_pms_availability_plan_rule AS binding
+                    ON binding.odoo_id = rule.id
+            WHERE rule.availability_plan_id = %s
+            AND rule.date >= %s
+            AND rule.pms_property_id = %s
+            AND rule.room_type_id IN %s
+            AND (
+                    (
+                        binding.backend_id IS NULL
+                        OR binding.backend_id != %s
+                    )
+                OR
+                    (
+                        binding.backend_id = %s
+                        AND (
+                            binding.sync_date_export IS NULL
+                            OR binding.sync_date_export < binding.actual_write_date
+                        )
+                    )
+                )
+            LIMIT 1
+            """,
+            (
+                self.odoo_id.id,
+                wubook_date_valid,
+                self.backend_id.pms_property_id.id,
+                tuple(room_types_ids) if room_types_ids else (0,),
+                self.backend_id.id,
+                self.backend_id.id,
+            ),
+        )
+        rules_to_export = self.env.cr.fetchone()
+        if rules_to_export:
             return False
-        import wdb; wdb.set_trace()
-        return all(
-            self.channel_wubook_rule_ids.filtered(
-                lambda x: x.odoo_id.wubook_date_valid()
-                and self.backend_id in x.channel_wubook_bind_ids.backend_id
-            ).mapped("synced_export")
-        )
+        return True
 
     @api.model
     def import_data(
@@ -52,7 +89,7 @@ class ChannelWubookPmsAvailabilityPlanBinding(models.Model):
         plan_ids=None,
         delayed=True,
     ):
-        """ Prepare the batch import of Availability Plans from Channel """
+        """Prepare the batch import of Availability Plans from Channel"""
         domain = []
         if date_from and date_to:
             domain += [
@@ -98,7 +135,7 @@ class ChannelWubookPmsAvailabilityPlanBinding(models.Model):
 
     @api.model
     def export_data(self, backend_record=None):
-        """ Prepare the batch export of Availability Plan to Channel """
+        """Prepare the batch export of Availability Plan to Channel"""
         domain = [
             ("channel_wubook_bind_ids.backend_id", "in", backend_record.ids),
             "|",

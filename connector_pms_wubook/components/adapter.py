@@ -99,7 +99,6 @@ class ChannelWubookAdapter(AbstractComponent):
                 f"Request to Wubook: {self.model._name}.{funcname}({', '.join(map(repr, args))})"
             )
             try:
-                import wdb; wdb.set_trace()
                 data = func(token, *args)
                 if funcname == "get_channels_info":
                     res = 0

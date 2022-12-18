@@ -1,7 +1,22 @@
 # Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import logging
+
+from psycopg2.extensions import AsIs
 
 from odoo import api, fields, models
+
+_logger = logging.getLogger(__name__)
+
+AUTO_EXPORT_FIELDS = [
+    "min_stay",
+    "max_stay",
+    "closed",
+    "min_stay_arrival",
+    "max_stay_arrival",
+    "closed_arrival",
+    "closed_departure",
+]
 
 
 class PmsRoomTypeAvailabilityRule(models.Model):
@@ -68,3 +83,15 @@ class PmsRoomTypeAvailabilityRule(models.Model):
             else:
                 rec.inconsistent_rules = False
                 rec.inconsistent_rule_count = 0
+
+    def _write(self, vals):
+        cr = self._cr
+        if any([field in vals for field in AUTO_EXPORT_FIELDS]):
+            query = (
+                'UPDATE "channel_wubook_pms_availability_plan_rule" SET "actual_write_date"=%s WHERE odoo_id IN %%s'
+                % (AsIs("(now() at time zone 'UTC')"))
+            )
+            for sub_ids in cr.split_for_in_conditions(set(self.ids)):
+                cr.execute(query, [sub_ids])
+        res = super()._write(vals)
+        return res
