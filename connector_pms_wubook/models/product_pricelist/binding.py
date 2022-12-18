@@ -1,5 +1,6 @@
 # Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from dateutil.relativedelta import relativedelta
 
 from odoo import _, api, fields, models
 
@@ -28,21 +29,59 @@ class ChannelWubookProductPriceBinding(models.Model):
         synced = super()._is_synced_export()
         if not synced:
             return False
-        newrules = self.item_ids.filtered(
-            lambda x: x.wubook_item_type == "standard"
-            and x.wubook_date_valid()
-            and self.backend_id not in x.channel_wubook_bind_ids.backend_id
+        wubook_date_valid = fields.Date.today() - relativedelta(days=2)
+        room_product_ids = (
+            self.env["pms.room.type"]
+            .search(
+                [
+                    ("channel_wubook_bind_ids.backend_id", "=", self.backend_id.id),
+                ]
+            )
+            .mapped("product_id.id")
         )
-        if newrules:
+        self.env.cr.execute(
+            """
+            SELECT price.id
+            FROM product_pricelist_item AS price
+                LEFT JOIN channel_wubook_product_pricelist_item AS binding
+                    ON binding.odoo_id = price.id
+            WHERE price.pricelist_id = %s
+            AND price.date_start_consumption >= %s
+            AND price.product_id IN %s
+            AND EXISTS (
+                SELECT 1
+                FROM product_pricelist_item_pms_property_rel AS rel
+                WHERE rel.product_pricelist_item_id = price.id
+                AND rel.pms_property_id = %s
+            )
+            AND (
+                    (
+                        binding.backend_id IS NULL
+                        OR binding.backend_id != %s
+                    )
+                OR
+                    (
+                        binding.backend_id = %s
+                        AND (
+                            binding.sync_date_export IS NULL
+                            OR binding.sync_date_export < binding.actual_write_date
+                        )
+                    )
+                )
+            """,
+            (
+                self.odoo_id.id,
+                wubook_date_valid,
+                tuple(room_product_ids) if room_product_ids else (0,),
+                self.backend_id.pms_property_id.id,
+                self.backend_id.id,
+                self.backend_id.id,
+            ),
+        )
+        rules_to_export = self.env.cr.fetchone()
+        if rules_to_export:
             return False
-
-        return all(
-            self.channel_wubook_item_ids.filtered(
-                lambda x: x.wubook_item_type == "standard"
-                and x.odoo_id.wubook_date_valid()
-                and self.backend_id in x.channel_wubook_bind_ids.backend_id
-            ).mapped("synced_export")
-        )
+        return True
 
     @api.model
     def import_data(
@@ -54,7 +93,7 @@ class ChannelWubookProductPriceBinding(models.Model):
         room_type_ids,
         delayed=True,
     ):
-        """ Prepare the batch import of Pricelists from Channel """
+        """Prepare the batch import of Pricelists from Channel"""
         domain = []
         if date_from and date_to:
             domain += [
@@ -100,7 +139,7 @@ class ChannelWubookProductPriceBinding(models.Model):
 
     @api.model
     def export_data(self, backend_record=None):
-        """ Prepare the batch export of Pricelist to Channel """
+        """Prepare the batch export of Pricelist to Channel"""
         return self.export_batch(
             backend_record=backend_record,
             domain=[

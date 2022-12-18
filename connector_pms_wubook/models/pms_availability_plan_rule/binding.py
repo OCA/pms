@@ -2,7 +2,12 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import MissingError, ValidationError
+
+AUTO_EXPORT_FIELDS = [
+    "no_ota",
+    "odoo_id",
+]
 
 
 class ChannelWubookPmsAvailabilityPlanRuleBinding(models.Model):
@@ -87,3 +92,25 @@ class ChannelWubookPmsAvailabilityPlanRuleBinding(models.Model):
             vals["channel_wubook_availability_plan_id"] = plan_binding.id
         binding = super().create(vals)
         return binding
+
+    def _write(self, vals):
+        cr = self._cr
+        if any([field in vals for field in AUTO_EXPORT_FIELDS]):
+            query = (
+                'UPDATE "%s" SET "fields_auto_export_to_sync"=True WHERE id IN %%s'
+                % (self._table)
+            )
+            for sub_ids in cr.split_for_in_conditions(set(self.ids)):
+                cr.execute(query, [sub_ids])
+                if cr.rowcount != len(sub_ids):
+                    raise MissingError(
+                        _(
+                            "One of the records you are trying to modify has already been deleted (Document type: %s).",
+                            self._description,
+                        )
+                        + "\n\n({} {}, {} {})".format(
+                            _("Records:"), sub_ids[:6], _("User:"), self._uid
+                        )
+                    )
+        res = super()._write(vals)
+        return res
