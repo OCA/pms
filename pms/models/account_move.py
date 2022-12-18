@@ -63,9 +63,13 @@ class AccountMove(models.Model):
     @api.depends("journal_id", "folio_ids")
     def _compute_pms_property_id(self):
         for move in self:
-            if move.folio_ids:
+            if self.env.context.get("force_pms_property"):
+                move.pms_property_id = self.env.context["force_pms_property"]
+            elif move.folio_ids:
                 move.pms_property_id = move.folio_ids.mapped("pms_property_id")
-            elif len(move.journal_id.mapped("pms_property_ids")) == 1:
+            elif len(
+                move.journal_id.mapped("pms_property_ids")
+            ) == 1 and not self.env.context.get("no_recompute_move_pms_property"):
                 move.pms_property_id = move.journal_id.mapped("pms_property_ids")[0]
             elif not move.journal_id.pms_property_ids:
                 move.pms_property_id = False

@@ -109,3 +109,20 @@ class AccountMoveLine(models.Model):
             agencies = line.mapped("folio_line_ids.origin_agency_id")
             if agencies:
                 line.origin_agency_id = agencies[0]
+
+    def _prepare_analytic_distribution_line(self, distribution):
+        vals = super()._prepare_analytic_distribution_line(distribution)
+        if distribution.pms_property_id:
+            vals["pms_property_id"] = distribution.pms_property_id.id
+        return vals
+
+    def _prepare_analytic_line(self):
+        result = super()._prepare_analytic_line()
+        for move_line in result:
+            move = self.browse(move_line["move_id"])
+            if move.pms_property_id or move.move_id.pms_property_id:
+                move_line["pms_property_id"] = (
+                    move.pms_property_id.id
+                    or move.move_id.pms_property_id.pms_property_id.id
+                )
+        return result

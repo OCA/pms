@@ -26,6 +26,7 @@
         "partner_contact_gender",
         "partner_contact_birthdate",
         "partner_contact_nationality",
+        "account_reconciliation_widget",
         # "partner_identification_unique_by_category",
     ],
     "data": [
@@ -95,6 +96,8 @@
         "report/proforma_report.xml",
         "views/account_portal_templates.xml",
         "views/payment_acquirer_views.xml",
+        "views/account_analytic_distribution_view.xml",
+        "views/account_analytic_line_view.xml",
     ],
     "demo": [
         "demo/pms_master_data.xml",
@@ -104,6 +107,7 @@
     "qweb": [
         "static/src/xml/pms_base_templates.xml",
         "static/src/xml/reservation_group_button_views.xml",
+        "static/src/xml/account_reconciliation.xml",
     ],
     "pre_init_hook": "pre_init_hook",
 }
