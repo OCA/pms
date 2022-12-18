@@ -22,16 +22,10 @@ class ChannelBinding(models.AbstractModel):
     actual_write_date = fields.Datetime(
         string="Last Updated on (actual)",
         help="Max write date between binding and actual record",
-        compute="_compute_actual_write_date",
+        default=fields.Datetime.now(),
         readonly=True,
+        store=True,
     )
-
-    @api.depends("write_date", "odoo_id.write_date")
-    def _compute_actual_write_date(self):
-        for rec in self:
-            rec.actual_write_date = max(rec.write_date, rec.odoo_id.write_date).replace(
-                microsecond=0
-            )
 
     # We don't need synced attribute for import since we'd need to know the
     # remote modification date not the local one
@@ -41,6 +35,8 @@ class ChannelBinding(models.AbstractModel):
 
     def _is_synced_export(self):
         self.ensure_one()
+        if not self.actual_write_date:
+            return True
         return self.sync_date_export and self.sync_date_export >= self.actual_write_date
 
     @api.depends("sync_date_export", "actual_write_date")
@@ -64,18 +60,18 @@ class ChannelBinding(models.AbstractModel):
     # default methods
     @api.model
     def import_data(self, backend_record=None):
-        """ Prepare the batch import of records from Channel """
+        """Prepare the batch import of records from Channel"""
         return self.import_batch(backend_record=backend_record)
 
     @api.model
     def export_data(self, backend_record=None):
-        """ Prepare the batch export records to Channel """
+        """Prepare the batch export records to Channel"""
         return self.export_batch(backend_record=backend_record)
 
     # syncronizer import
     @api.model
     def import_batch(self, backend_record, domain=None, delayed=True):
-        """ Prepare the batch import of records modified on Channel """
+        """Prepare the batch import of records modified on Channel"""
         if not domain:
             domain = []
         with backend_record.work_on(self._name) as work:
@@ -86,7 +82,7 @@ class ChannelBinding(models.AbstractModel):
 
     @api.model
     def import_record(self, backend_record, external_id, external_data=None):
-        """ Import Channel record """
+        """Import Channel record"""
         if not external_data:
             external_data = {}
         with backend_record.work_on(self._name) as work:
@@ -96,7 +92,7 @@ class ChannelBinding(models.AbstractModel):
     # syncronizer export
     @api.model
     def export_batch(self, backend_record, domain=None, delayed=True):
-        """ Prepare the batch export of records modified on Odoo """
+        """Prepare the batch export of records modified on Odoo"""
         if not domain:
             domain = []
         with backend_record.work_on(self._name) as work:
@@ -107,7 +103,7 @@ class ChannelBinding(models.AbstractModel):
 
     @api.model
     def export_record(self, backend_record, relation):
-        """ Export Odoo record """
+        """Export Odoo record"""
         with backend_record.work_on(self._name) as work:
             exporter = work.component(usage="direct.record.exporter")
             return exporter.run(relation)

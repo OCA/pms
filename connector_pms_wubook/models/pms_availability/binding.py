@@ -1,8 +1,14 @@
 # Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from psycopg2.extensions import AsIs
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+
+AUTO_EXPORT_FIELDS = [
+    "sale_avail",
+]
 
 
 class ChannelWubookPmsAvailabilityBinding(models.Model):
@@ -116,7 +122,7 @@ class ChannelWubookPmsAvailabilityBinding(models.Model):
 
     @api.model
     def export_data(self, backend_id, date_from, date_to, room_type_ids):
-        """ Prepare the batch export records to Backend """
+        """Prepare the batch export records to Backend"""
         domain = [("pms_property_id", "=", backend_id.pms_property_id.id)]
         if date_from and date_to:
             domain += [("date", ">=", date_from), ("date", "<=", date_to)]
@@ -157,3 +163,17 @@ class ChannelWubookPmsAvailabilityBinding(models.Model):
         #     vals["channel_wubook_availability_id"] = binding.id
         #     binding = super().create(vals)
         return binding
+
+    def _write(self, vals):
+        cr = self._cr
+        if any([field in vals for field in AUTO_EXPORT_FIELDS]):
+            query = 'UPDATE "%s" SET "actual_write_date"=%s WHERE id IN %%s' % (
+                self._table,
+                AsIs("(now() at time zone 'UTC')"),
+            )
+            for sub_ids in cr.split_for_in_conditions(
+                set(self.filtered(lambda i: i.date >= fields.Date.today()).ids)
+            ):
+                cr.execute(query, [sub_ids])
+        res = super()._write(vals)
+        return res

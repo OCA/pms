@@ -3,6 +3,10 @@
 
 from odoo import api, fields, models
 
+AUTO_EXPORT_FIELDS = [
+    "fixed_price",
+]
+
 
 class ProductPricelistItem(models.Model):
     _inherit = "product.pricelist.item"
@@ -40,3 +44,13 @@ class ProductPricelistItem(models.Model):
             return False
         # Wubook does not allow to update records older than 2 days ago
         return (fields.Date.today() - self.date_start_consumption).days <= 2
+
+    def _write(self, vals):
+        cr = self._cr
+        if any([field in vals for field in AUTO_EXPORT_FIELDS]):
+            bind_ids = self.mapped("channel_wubook_bind_ids.id")
+            query = 'UPDATE "channel_wubook_pms_availability_plan_rule" SET "fields_auto_export_to_sync"=True WHERE odoo_id IN %s'
+            for sub_ids in cr.split_for_in_conditions(set(bind_ids)):
+                cr.execute(query, [sub_ids])
+        res = super()._write(vals)
+        return res

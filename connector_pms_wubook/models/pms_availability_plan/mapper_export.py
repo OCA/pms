@@ -51,6 +51,7 @@ class ChannelWubookPmsAvailabilityPlanChildBinderMapperExport(Component):
         bindings = items.filtered(lambda x: x.backend_id == self.backend_record)
         new_bindings = parent.source["rule_ids"].filtered(
             lambda x: self.backend_record not in x.channel_wubook_bind_ids.backend_id
+            and self.backend_record.pms_property_id == x.pms_property_id
         )
         items = (
             items.browse(

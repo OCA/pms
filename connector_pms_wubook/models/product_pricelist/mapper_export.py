@@ -76,6 +76,10 @@ class ChannelWubookProductPricelistChildBinderMapperExport(Component):
         bindings = items.filtered(lambda x: x.backend_id == self.backend_record)
         new_bindings = parent.source["item_ids"].filtered(
             lambda x: self.backend_record not in x.channel_wubook_bind_ids.backend_id
+            and (
+                not x.pms_property_ids
+                or self.backend_record.pms_property_id in x.pms_property_ids
+            )
         )
         items = (
             items.browse(

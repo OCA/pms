@@ -14,7 +14,7 @@ _logger = logging.getLogger(__name__)
 
 
 class GenericExporterCustom(AbstractComponent):
-    """ Generic Synchronizer for exporting data from Odoo to a backend """
+    """Generic Synchronizer for exporting data from Odoo to a backend"""
 
     _name = "generic.exporter.custom"
     _inherit = "base.exporter"
@@ -92,7 +92,7 @@ class GenericExporterCustom(AbstractComponent):
         return result
 
     def _run(self, internal_fields=None):
-        """ Flow of the synchronization, implemented in inherited classes"""
+        """Flow of the synchronization, implemented in inherited classes"""
         assert self.binding
 
         if not self.external_id:
@@ -127,7 +127,7 @@ class GenericExporterCustom(AbstractComponent):
         return _("Record exported with ID %s on Backend.") % self.external_id
 
     def _after_export(self):
-        """ Can do several actions after exporting a record on the backend """
+        """Can do several actions after exporting a record on the backend"""
 
     def _lock(self):
         """Lock the binding record.
@@ -162,7 +162,7 @@ class GenericExporterCustom(AbstractComponent):
             )
 
     def _has_to_skip(self):
-        """ Return True if the export can be skipped """
+        """Return True if the export can be skipped"""
         return False
 
     @contextmanager
@@ -256,7 +256,7 @@ class GenericExporterCustom(AbstractComponent):
             exporter.run(relation)
 
     def _export_dependencies(self):
-        """ Export the dependencies for the record"""
+        """Export the dependencies for the record"""
         return
 
     def _map_data(self):
@@ -287,32 +287,38 @@ class GenericExporterCustom(AbstractComponent):
         return
 
     def _create_data(self, map_record, fields=None, **kwargs):
-        """ Get the data to pass to :py:meth:`_create` """
+        """Get the data to pass to :py:meth:`_create`"""
         return map_record.values(for_create=True, fields=fields, **kwargs)
 
     def _create(self, data):
-        """ Create the External record """
+        """Create the External record"""
         # special check on data before export
         self._validate_create_data(data)
         if self.backend_record.export_disabled:
             _logger.info(
-                _("The backend record creation is not allowed. Export is disabled")
+                _(
+                    "The backend record creation is not allowed. Export is disabled, data: %s"
+                )
+                % data
             )
             return None
         return self.backend_adapter.create(data)
 
     def _update_data(self, map_record, fields=None, **kwargs):
-        """ Get the data to pass to :py:meth:`_update` """
+        """Get the data to pass to :py:meth:`_update`"""
         return map_record.values(fields=fields, **kwargs)
 
     def _update(self, data):
-        """ Update an External record """
+        """Update an External record"""
         assert self.external_id
         # special check on data before export
         self._validate_update_data(data)
         if self.backend_record.export_disabled:
             _logger.info(
-                _("The backend record update is not allowed. Export is disabled")
+                _(
+                    "The backend record update is not allowed. Export is disabled, data: %s"
+                )
+                % data
             )
             return
         self.backend_adapter.write(self.external_id, data)

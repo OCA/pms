@@ -249,14 +249,59 @@ class ChannelWubookBackend(models.Model):
 
     # scheduler
     @api.model
-    def _scheduler_export(self, interval=1, count=1):
+    def _scheduler_export_avail(self):
+        for binding in (
+            self.env["channel.wubook.pms.property.availability"]
+            .search([])
+            .filtered(
+                lambda x: not x.backend_id.export_disabled and not x._is_synced_export()
+            )
+        ):
+            backend = binding.backend_id
+            if backend.user_id:
+                backend = backend.with_user(self.user_id)
+            with backend.work_on(binding._name) as work:
+                exporter_delay = work.component(usage="delayed.batch.exporter")
+                exporter_delay._export_record(binding.odoo_id)
+
+    @api.model
+    def _scheduler_export_rules(self):
+        for binding in (
+            self.env["channel.wubook.pms.availability.plan"]
+            .search([])
+            .filtered(
+                lambda x: not x.backend_id.export_disabled and not x._is_synced_export()
+            )
+        ):
+            backend = binding.backend_id
+            if backend.user_id:
+                backend = backend.with_user(self.user_id)
+            with backend.work_on(binding._name) as work:
+                exporter_delay = work.component(usage="delayed.batch.exporter")
+                exporter_delay._export_record(binding.odoo_id)
+
+    @api.model
+    def _scheduler_export_pricelist_items(self):
+        for binding in (
+            self.env["channel.wubook.product.pricelist"]
+            .search([])
+            .filtered(
+                lambda x: not x.backend_id.export_disabled and not x._is_synced_export()
+            )
+        ):
+            backend = binding.backend_id
+            if backend.user_id:
+                backend = backend.with_user(self.user_id)
+            with backend.work_on(binding._name) as work:
+                exporter_delay = work.component(usage="delayed.batch.exporter")
+                exporter_delay._export_record(binding.odoo_id)
+
+    def generic_export(self, interval=1, count=1):
         """
         :param interval: minutes
         :param count: number of executions for every interval
-
         Examples: interval=1 and num=12 -> execute 12 times every minute
                   interval=60 and num=6 -> execute 6 times every hour
-
         IF this is called using Odoo Cron job, the interval must be
         the same as the interval execution defined in job
         """
@@ -264,58 +309,6 @@ class ChannelWubookBackend(models.Model):
         now = fields.Datetime.now()
         for i in range(0, interval_sec, int(interval_sec / count)):
             eta = fields.Datetime.add(now, seconds=i)
-            self.with_delay(
-                eta=eta,
-            ).generic_export()
-
-    def generic_export(self):
-        models_to_export = self._get_models_to_export()
-        backends = self.env["channel.wubook.backend"].search([])
-        #     [("export_disabled", "=", False)]
-        # )
-        for backend in backends:
-            i = 0
-            for model in models_to_export:
-                self = self.with_company(backend.pms_property_id.company_id)
-                if backend.user_id:
-                    self = self.with_user(backend.user_id)
-                for record in self.env[model].search(
-                    self._get_domain_for_export(backend, model)
-                ):
-                    binding = record.channel_wubook_bind_ids.filtered(
-                        lambda r: r.backend_id == backend
-                    )
-                    if binding and not binding._is_synced_export():
-                        with backend.work_on(binding._name) as work:
-                            exporter_delay = work.component(
-                                usage="delayed.batch.exporter"
-                            )
-
-                            now = fields.Datetime.now()
-                            # Avoid concurrent export to the same backend
-                            eta = fields.Datetime.add(now, seconds=i)
-
-                            exporter_delay._export_record(
-                                record,
-                                job_options={
-                                    "eta": eta,
-                                },
-                            )
-                            i += 1
-
-    def _get_models_to_export(self):
-        return [
-            "pms.property",
-            "pms.availability.plan",
-            "product.pricelist",
-        ]
-
-    def _get_domain_for_export(self, backend, model):
-        if model == "channel.wubook.pms.property.availability":
-            return [("channel_wubook_bind_ids.backend_id", "in", backend.ids)]
-        return [
-            ("channel_wubook_bind_ids.backend_id", "in", backend.ids),
-            "|",
-            ("pms_property_ids", "=", False),
-            ("pms_property_ids", "in", backend.pms_property_id.ids),
-        ]
+            self.with_delay(eta=eta)._scheduler_export_avail()
+        self._scheduler_export_rules()
+        self._scheduler_export_pricelist_items()
