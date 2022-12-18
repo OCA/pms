@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+        <record
+        id="account_analytic_tag_form_view_add_distribution_tags"
+        model="ir.ui.view"
+    >
+            <field name="name">account.analytic.tag.form.add_distribution_tags</field>
+            <field name="model">account.analytic.tag</field>
+            <field name="inherit_id" ref="analytic.account_analytic_tag_form_view" />
+            <field name="arch" type="xml">
+                <xpath
+                expr="//field[@name='analytic_distribution_ids']/tree/field[@name='account_id']"
+                position="after"
+            >
+                    <field name="pms_property_id" />
+                </xpath>
+            </field>
+        </record>
+
+</odoo>
