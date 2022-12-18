@@ -78,3 +78,17 @@ class AccountBankStatementLine(models.Model):
         for record in to_reconcile_move_lines:
             payment_move_line = record if record.balance == self.amount else False
         return payment_move_line
+
+    def _create_counterpart_and_new_aml(
+        self, counterpart_moves, counterpart_aml_dicts, new_aml_dicts
+    ):
+        for aml_dict in new_aml_dicts:
+            if aml_dict.get("pms_property_id"):
+                self.move_id.pms_property_id = False
+                break
+        return super(
+            AccountBankStatementLine,
+            self.with_context(no_recompute_move_pms_property=True),
+        )._create_counterpart_and_new_aml(
+            counterpart_moves, counterpart_aml_dicts, new_aml_dicts
+        )
