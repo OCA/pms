@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="mis_report_instance_view_tree">
+        <field name="name">mis.report.instance.view.tree</field>
+        <field name="model">mis.report.instance</field>
+        <field name="inherit_id" ref="mis_builder.mis_report_instance_view_tree" />
+        <field name="arch" type="xml">
+            <field name="target_move" position="after">
+                <field name="pms_property_ids" widget="many2many_tags" />
+            </field>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="mis_report_instance_view_form">
+        <field name="name">mis.report.instance.view.form</field>
+        <field name="model">mis.report.instance</field>
+        <field name="inherit_id" ref="mis_builder.mis_report_instance_view_form" />
+        <field name="priority" eval="16" />
+        <field name="arch" type="xml">
+            <field name="target_move" position="after">
+                <field name="pms_property_ids" widget="many2many_tags" />
+            </field>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="mis_report_instance_period_view_form">
+        <field name="name">mis.report.instance.period.view.form</field>
+        <field name="model">mis.report.instance.period</field>
+        <field
+            name="inherit_id"
+            ref="mis_builder.mis_report_instance_period_view_form"
+        />
+        <field name="priority" eval="16" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='source_data']" position="inside">
+                <field
+                    name="pms_property_ids"
+                    widget="many2many_tags"
+                    attrs="{'invisible': [('source', 'not in', ('actuals', 'actuals_alt'))]}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <template id="assets_backend" name="mis_builder" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <script
+                type="text/javascript"
+                src="/mis_builder_pms/static/src/js/mis_report_widget.js"
+            />
+        </xpath>
+    </template>
+</odoo>
