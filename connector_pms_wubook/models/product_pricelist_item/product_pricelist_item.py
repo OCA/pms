@@ -1,12 +1,13 @@
 # Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from psycopg2.extensions import AsIs
 
 from odoo import api, fields, models
+from odoo.exceptions import MissingError
 
 AUTO_EXPORT_FIELDS = [
     "fixed_price",
 ]
-
 
 class ProductPricelistItem(models.Model):
     _inherit = "product.pricelist.item"
@@ -48,9 +49,11 @@ class ProductPricelistItem(models.Model):
     def _write(self, vals):
         cr = self._cr
         if any([field in vals for field in AUTO_EXPORT_FIELDS]):
-            bind_ids = self.mapped("channel_wubook_bind_ids.id")
-            query = 'UPDATE "channel_wubook_pms_availability_plan_rule" SET "fields_auto_export_to_sync"=True WHERE odoo_id IN %s'
-            for sub_ids in cr.split_for_in_conditions(set(bind_ids)):
+            query = (
+                'UPDATE "channel_wubook_product_pricelist_item" SET "actual_write_date"=%s WHERE odoo_id IN %%s'
+                % (AsIs("(now() at time zone 'UTC')"))
+            )
+            for sub_ids in cr.split_for_in_conditions(set(self.ids)):
                 cr.execute(query, [sub_ids])
         res = super()._write(vals)
         return res
