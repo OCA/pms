@@ -320,7 +320,7 @@ class ChannelWubookBackend(models.Model):
                 exporter_delay = work.component(usage="delayed.batch.exporter")
                 exporter_delay._export_record(binding.odoo_id)
 
-    def generic_export(self, interval=1, count=1):
+    def _generic_export(self, interval=1, count=1):
         """
         :param interval: minutes
         :param count: number of executions for every interval
