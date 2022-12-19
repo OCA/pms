@@ -33,6 +33,7 @@
         "data/pms_data.xml",
         "data/queue_data.xml",
         "data/queue_job_function_data.xml",
+        "data/pms_traveler_report_notification_email_template.xml",
         "security/ir.model.access.csv",
         "views/pms_property_views.xml",
         "views/pms_room_views.xml",
