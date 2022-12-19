@@ -15,7 +15,7 @@
                 name="nextcall"
                 eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 09:00:00')"
             />
-            <field name="code">model._scheduler_export(interval=1, count=10)</field>
+            <field name="code">model._generic_export(interval=1, count=6)</field>
         </record>
     </data>
 </odoo>
