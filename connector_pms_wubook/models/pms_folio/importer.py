@@ -1,7 +1,8 @@
 # Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from psycopg2.extensions import AsIs
 
-from odoo import _
+from odoo import _, fields
 
 from odoo.addons.component.core import Component
 
@@ -53,23 +54,6 @@ class ChannelWubookPmsFolioImporter(Component):
         # If Wubook status is 7 (Wubook modification) the folio state is not changed
         if binding.wubook_status in ("3", "5", "6") and binding.state != "cancel":
             folio.action_cancel()
-            # REVIEW: Force update wubook availability becouse Wubook adds one automatically
-            # when entering a cancellation. If the sale room type category (wubook) does not correspond with the
-            # room assigned category, the odoo avail in "Wubook category" will not change when canceled the folio
-            # and wubook adds one to avail although in Odoo there is no longer availability
-            if any(
-                [
-                    res.reservation_line_ids.mapped("room_id.room_type_id.id")
-                    != [res.room_type_id.id]
-                    for res in folio.reservation_ids
-                ]
-            ):
-                self.env["channel.wubook.pms.availability"].export_data(
-                    backend_id=binding.backend_id,
-                    date_from=folio.first_checkin,
-                    date_to=folio.last_checkout,
-                    room_type_ids=folio.mapped("reservation_ids.room_type_id"),
-                )
         elif binding.wubook_status in ("1", "2", "4") and binding.state == "cancel":
             folio.with_context(confirm_all_reservations=True).action_confirm()
 
@@ -130,27 +114,44 @@ class ChannelWubookPmsFolioImporter(Component):
             # We omit those payments from agencies that that have already been registered in previous imports,
             # that the total of the folio is zero, or that do not have a journal configured
             if (
-                folio.payment_ids.filtered(lambda p: p.state == "posted")
-                or folio.amount_total == 0
-                or not journal
+                not folio.payment_ids.filtered(lambda p: p.state == "posted")
+                and folio.amount_total == 0
+                and journal
             ):
-                return
+                payment_amount = (
+                    binding.payment_gateway_fee
+                    if binding.payment_gateway_fee <= folio.amount_total
+                    else folio.amount_total
+                )
+                folio.do_payment(
+                    journal,
+                    journal.suspense_account_id,
+                    self.env.user,
+                    payment_amount,
+                    folio,
+                    reservations=False,
+                    services=False,
+                    partner=folio.partner_id,
+                )
 
-            payment_amount = (
-                binding.payment_gateway_fee
-                if binding.payment_gateway_fee <= folio.amount_total
-                else folio.amount_total
-            )
-            folio.do_payment(
-                journal,
-                journal.suspense_account_id,
-                self.env.user,
-                payment_amount,
-                folio,
-                reservations=False,
-                services=False,
-                partner=folio.partner_id,
-            )
+        # REVIEW: mark actual_write_date to now
+        # in availability and force to update Wubook avail changes
+        # (Wubook add/delete avail by itself)
+        dates = folio.mapped("reservation_ids.reservation_line_ids.date")
+        avails = self.env["channel.wubook.pms.availability"].search([
+            ("backend_id", "=", binding.backend_id.id),
+            ("date", ">=", min(dates)),
+            ("date", "<=", max(dates)),
+            ("room_type_id", "in", folio.mapped("reservation_ids.room_type_id.id")),
+        ])
+        query = 'UPDATE "channel_wubook_pms_availability" SET "actual_write_date"=%s WHERE id IN %%s' % (
+            AsIs("(now() at time zone 'UTC')"),
+        )
+        cr = self.env.cr
+        for sub_ids in cr.split_for_in_conditions(
+            set(avails.filtered(lambda i: i.date >= fields.Date.today()).ids)
+        ):
+            cr.execute(query, [sub_ids])
 
     def _create(self, model, values):
         """Create the Internal record"""
