@@ -329,6 +329,10 @@ class PmsFolio(models.Model):
         comodel_name="room.closure.reason",
         check_pms_properties=True,
     )
+    out_service_description = fields.Text(
+        string="Cause of out of service",
+        help="Indicates the cause of out of service",
+    )
     segmentation_ids = fields.Many2many(
         string="Segmentation",
         help="Segmentation tags to classify folios",

@@ -159,6 +159,12 @@ class PmsReservation(models.Model):
         check_pms_properties=True,
         readonly=False,
     )
+    out_service_description = fields.Text(
+        string="Cause of out of service",
+        help="Indicates the cause of out of service",
+        related="folio_id.out_service_description",
+        readonly=False,
+    )
     company_id = fields.Many2one(
         string="Company",
         help="Company to which the reservation belongs",
@@ -411,10 +417,7 @@ class PmsReservation(models.Model):
         selection=[("late", "Late"), ("intime", "In time"), ("noshow", "No Show")],
         tracking=True,
     )
-    out_service_description = fields.Text(
-        string="Cause of out of service",
-        help="Indicates the cause of out of service",
-    )
+
     checkin = fields.Date(
         string="Check In",
         help="It is the checkin date of the reservation, ",
