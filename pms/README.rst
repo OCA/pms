@@ -85,6 +85,7 @@ Contributors
   * Sara Lago
   * Brais Abeijon
   * Miguel Padin
+* Omar Castiñeira <omar@comunitea.com>
 
 Maintainers
 ~~~~~~~~~~~
