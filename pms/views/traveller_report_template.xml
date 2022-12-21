@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <template id="traveller_report">
         <t t-call="web.basic_layout">
@@ -75,9 +75,7 @@
                             date</td>
                         <td>
                             <strong>
-                                <span
-                                    t-field="docs.document_expedition_date"
-                                />
+                                <span t-field="docs.document_expedition_date" />
                             </strong>
                         </td>
                     </tr>
@@ -98,9 +96,7 @@
                         <td>
                             <strong>
                                 <span t-field="docs.lastname" />
-                                <span
-                                    t-field="docs.lastname2"
-                                />
+                                <span t-field="docs.lastname2" />
                             </strong>
                         </td>
                     </tr>
@@ -232,9 +228,7 @@
                             date</td>
                         <td>
                             <strong>
-                                <span
-                                    t-field="docs.document_expedition_date"
-                                />
+                                <span t-field="docs.document_expedition_date" />
                             </strong>
                         </td>
                     </tr>
@@ -255,9 +249,7 @@
                         <td>
                             <strong>
                                 <span t-field="docs.lastname" />
-                                <span
-                                    t-field="docs.lastname2"
-                                />
+                                <span t-field="docs.lastname2" />
                             </strong>
                         </td>
                     </tr>

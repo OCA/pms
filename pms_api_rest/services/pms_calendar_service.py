@@ -58,6 +58,7 @@ class PmsCalendarService(Component):
             "folio_pending_amount": "folio.pending_amount",
             "adults": "reservation.adults",
             "price_day_total": "night.price_day_total",
+            "closure_reason_id": "folio.closure_reason_id",
             # "price_day_total_services": subselect_sum_services_price,
         }
         selected_fields_sql = list(selected_fields_mapper.values())
@@ -149,10 +150,7 @@ class PmsCalendarService(Component):
                     adults=line["adults"],
                     nextLineSplitted=next_line_splitted,
                     previousLineSplitted=previous_line_splitted,
-                    hasNextLine=not is_last_night,  # REVIEW: redundant with isLastNight?
-                    closureReason=line[
-                        "partner_name"
-                    ],  # REVIEW: is necesary closure_reason_id?
+                    closureReasonId=line["closure_reason_id"],
                 )
             )
         return result_lines

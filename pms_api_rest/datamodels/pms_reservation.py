@@ -19,7 +19,7 @@ class PmsReservationShortInfo(Datamodel):
     paymentState = fields.String(required=False, allow_none=True)
     readyForCheckin = fields.Boolean(required=False, allow_none=True)
     allowedCheckout = fields.Boolean(required=False, allow_none=True)
-    splitted = fields.Boolean(required=False, allow_none=True)
+    isSplitted = fields.Boolean(required=False, allow_none=True)
     priceTotal = fields.Float(required=False, allow_none=True)
     servicesCount = fields.Integer(required=False, allow_none=True)
 
