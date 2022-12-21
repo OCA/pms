@@ -115,7 +115,7 @@ class ChannelWubookPmsFolioImporter(Component):
             # that the total of the folio is zero, or that do not have a journal configured
             if (
                 not folio.payment_ids.filtered(lambda p: p.state == "posted")
-                and folio.amount_total == 0
+                and folio.amount_total > 0
                 and journal
             ):
                 payment_amount = (
