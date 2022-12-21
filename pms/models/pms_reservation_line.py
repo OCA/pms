@@ -23,6 +23,7 @@ class PmsReservationLine(models.Model):
         copy=False,
         comodel_name="pms.reservation",
         ondelete="cascade",
+        index=True,
         check_pms_properties=True,
     )
     room_id = fields.Many2one(
