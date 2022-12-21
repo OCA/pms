@@ -409,7 +409,9 @@ class PmsCalendarService(Component):
         PmsCalendarAlertsPerDay = self.env.datamodels["pms.calendar.alerts.per.day"]
         result = []
         for day in target_dates:
-            overbooking_lines = next((item for item in result_sql if item[0] == day), 0)
+            overbooking_lines = next(
+                (item[1] for item in result_sql if item[0] == day), 0
+            )
             result.append(
                 PmsCalendarAlertsPerDay(
                     date=str(datetime.combine(day, datetime.min.time()).isoformat()),
