@@ -109,7 +109,7 @@ class PmsFolioService(Component):
         if folio_search_param.filter:
             target = folio_search_param.filter
             if "@" in target:
-                domain_filter.append(("email", "ilike", target))
+                domain_filter.append([("email", "ilike", target)])
             else:
                 subdomains = [
                     [("name", "ilike", target)],
@@ -118,9 +118,39 @@ class PmsFolioService(Component):
                     [("external_reference", "ilike", target)],
                 ]
                 domain_filter.append(expression.OR(subdomains))
-        domain = []
+        if folio_search_param.filterByState:
+            if folio_search_param.filterByState == "byCheckin":
+                subdomains = [
+                    [("state", "in", ("confirm", "arrival_delayed"))],
+                    [("checkin", "<=", fields.Date.today())],
+                ]
+                domain_filter.append(expression.AND(subdomains))
+            elif folio_search_param.filterByState == "byCheckout":
+                subdomains = [
+                    [("state", "in", ("onboard", "departure_delayed"))],
+                    [("checkout", "=", fields.Date.today())],
+                ]
+                domain_filter.append(expression.AND(subdomains))
+            else:
+                subdomain_checkin = [
+                    [("state", "in", ("confirm", "arrival_delayed"))],
+                    [("checkin", "<=", fields.Date.today())],
+                ]
+                subdomain_checkin = expression.AND(subdomain_checkin)
+                subdomain_checkout = [
+                    [("state", "in", ("onboard", "departure_delayed"))],
+                    [("checkout", "=", fields.Date.today())],
+                ]
+                subdomain_checkout = expression.AND(subdomain_checkout)
+                domain_filter.append(
+                    expression.OR([subdomain_checkin, subdomain_checkout])
+                )
         if domain_filter:
             domain = expression.AND([domain_fields, domain_filter[0]])
+            if folio_search_param.filter and folio_search_param.filterByState:
+                domain = expression.AND(
+                    [domain_fields, domain_filter[0], domain_filter[1]]
+                )
         else:
             domain = domain_fields
         result_folios = []
