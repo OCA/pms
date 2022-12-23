@@ -10,6 +10,7 @@ class PmsFolioSearchParam(Datamodel):
     dateFrom = fields.String(required=False, allow_none=True)
     dateTo = fields.String(required=False, allow_none=True)
     filter = fields.String(required=False, allow_none=True)
+    filterByState = fields.String(required=False, allow_none=True)
 
 
 class PmsFolioInfo(Datamodel):
