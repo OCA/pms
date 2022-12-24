@@ -695,6 +695,32 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def send_folio_mail(self, folio_id, pms_mail_info):
+        folio = self.env["pms.folio"].browse(folio_id)
+        recipients = pms_mail_info.emailAddresses
+
+        email_values = {
+            "email_to": ",".join(recipients) if recipients else False,
+            "partner_ids": pms_mail_info.partnerIds
+            if pms_mail_info.partnerIds
+            else False,
+            "recipient_ids": pms_mail_info.partnerIds
+            if pms_mail_info.partnerIds
+            else False,
+            "auto_delete": False,
+        }
+        if pms_mail_info.mailType == "confirm":
+            template = folio.pms_property_id.property_confirmed_template
+            res_id = folio.id
+            template.send_mail(res_id, force_send=True, email_values=email_values)
+        elif pms_mail_info.mailType == "done":
+            template = folio.pms_property_id.property_exit_template
+            res_id = folio.id
+            template.send_mail(res_id, force_send=True, email_values=email_values)
+        if pms_mail_info.mailType == "cancel":
+            template = folio.pms_property_id.property_canceled_template
+            res = folio.reservation_ids.filtered(lambda r: r.state == "cancel")
+            res_id = res[0].id
+            template.send_mail(res_id, force_send=True, email_values=email_values)
         return True
 
     @restapi.method(
