@@ -446,6 +446,10 @@ class PmsTransactionService(Component):
         timezone = pytz.timezone(self.env.context.get("tz") or "UTC")
         create_date_utc = pytz.UTC.localize(statement.create_date)
         create_date = create_date_utc.astimezone(timezone)
+        date_done = False
+        if statement.date_done:
+            date_done_utc = pytz.UTC.localize(statement.date_done)
+            date_done = date_done_utc.astimezone(timezone)
 
         return CashRegister(
             state="open" if isOpen else "close",
@@ -453,8 +457,8 @@ class PmsTransactionService(Component):
             balance=statement.balance_start if isOpen else statement.balance_end_real,
             dateTime=create_date.isoformat()
             if isOpen
-            else statement.date_done.isoformat()
-            if statement.date_done
+            else date_done.isoformat()
+            if date_done
             else None,
         )
 
