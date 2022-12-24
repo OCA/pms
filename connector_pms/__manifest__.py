@@ -32,5 +32,6 @@
         "views/product_pricelist_item_views.xml",
         "views/pms_availability_plan_views.xml",
         "views/pms_availability_plan_rule_views.xml",
+        "views/queue_job_views.xml",
     ],
 }
