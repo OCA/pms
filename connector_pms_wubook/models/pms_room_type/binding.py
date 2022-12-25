@@ -52,7 +52,6 @@ class ChannelWubookPmsRoomTypeBinding(models.Model):
         "Use `-1` for using maximum simultaneous availability.",
     )
 
-    @api.depends("total_rooms_count")
     def _compute_default_max_avail(self):
         for rec in self:
             if rec.default_max_avail > rec.total_rooms_count:
@@ -71,7 +70,7 @@ class ChannelWubookPmsRoomTypeBinding(models.Model):
         "the total room count for the given room type.",
     )
 
-    @api.depends("default_quota", "default_max_avail", "total_rooms_count")
+    @api.depends("default_quota", "default_max_avail")
     def _compute_default_availability(self):
         for rec in self:
 
