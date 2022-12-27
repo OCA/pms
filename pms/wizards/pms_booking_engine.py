@@ -250,24 +250,33 @@ class BookingEngine(models.TransientModel):
                 )
             else:
                 folio = record.folio_id
+            reservation_values = []
             for line in record.availability_results:
                 for _reservations_to_create in range(0, line.value_num_rooms_selected):
-                    res = self.env["pms.reservation"].create(
-                        {
-                            "folio_id": folio.id,
-                            "checkin": line.checkin,
-                            "checkout": line.checkout,
-                            "room_type_id": line.room_type_id.id,
-                            "partner_id": record.partner_id.id
-                            if record.partner_id
-                            else False,
-                            "partner_name": record.partner_name,
-                            "pricelist_id": record.pricelist_id.id,
-                            "pms_property_id": folio.pms_property_id.id,
-                            "board_service_room_id": line.board_service_room_id.id,
-                        }
-                    )
-                    res.reservation_line_ids.discount = record.discount * 100
+                    res_dict = {
+                        "folio_id": folio.id,
+                        "checkin": line.checkin,
+                        "checkout": line.checkout,
+                        "room_type_id": line.room_type_id.id,
+                        "partner_id": record.partner_id.id
+                        if record.partner_id
+                        else False,
+                        "partner_name": record.partner_name,
+                        "pricelist_id": record.pricelist_id.id,
+                        "pms_property_id": folio.pms_property_id.id,
+                        "board_service_room_id": line.board_service_room_id.id,
+                    }
+                    reservation_values.append((0, 0, res_dict))
+            folio.write(
+                {
+                    "reservation_ids": reservation_values,
+                }
+            )
+            if record.discount:
+                # TODO: Refact compute discount in reservation and service lines
+                folio.reservation_ids.reservation_line_ids.discount = (
+                    record.discount * 100
+                )
             action = self.env.ref("pms.open_pms_folio1_form_tree_all").read()[0]
             action["views"] = [(self.env.ref("pms.pms_folio_view_form").id, "form")]
             action["res_id"] = folio.id

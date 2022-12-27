@@ -329,6 +329,10 @@ class PmsFolio(models.Model):
         comodel_name="room.closure.reason",
         check_pms_properties=True,
     )
+    out_service_description = fields.Text(
+        string="Cause of out of service",
+        help="Indicates the cause of out of service",
+    )
     segmentation_ids = fields.Many2many(
         string="Segmentation",
         help="Segmentation tags to classify folios",
@@ -796,13 +800,14 @@ class PmsFolio(models.Model):
         "reservation_ids.tax_ids",
     )
     def _compute_sale_line_ids(self):
-        for folio in self:
+        for folio in self.filtered(lambda f: isinstance(f.id, int)):
             sale_lines_vals = []
             if folio.reservation_type == "normal":
                 sale_lines_vals_to_drop = []
                 seq = 0
                 for reservation in sorted(
-                    folio.reservation_ids, key=lambda r: r.folio_sequence
+                    folio.reservation_ids.filtered(lambda r: isinstance(r.id, int)),
+                    key=lambda r: r.folio_sequence,
                 ):
                     seq += reservation.folio_sequence
                     # RESERVATION LINES

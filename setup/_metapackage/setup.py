@@ -8,6 +8,8 @@ setuptools.setup(
     description="Meta package for oca-pms Odoo addons",
     version=version,
     install_requires=[
+        'odoo14-addon-account_asset_pms',
+        'odoo14-addon-mis_builder_pms',
         'odoo14-addon-multi_pms_properties',
         'odoo14-addon-pms',
         'odoo14-addon-pms_housekeeping',
