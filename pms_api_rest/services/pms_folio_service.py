@@ -39,6 +39,7 @@ class PmsFolioService(Component):
             return PmsFolioInfo(
                 id=folio.id,
                 name=folio.name,
+                partnerId=folio.partner_id if folio.partner_id else None,
                 partnerName=folio.partner_name if folio.partner_name else None,
                 partnerPhone=folio.mobile if folio.mobile else None,
                 partnerEmail=folio.email if folio.email else None,
@@ -558,6 +559,17 @@ class PmsFolioService(Component):
                 reservation.confirm()
         if pms_folio_info.internalComment is not None:
             folio_vals.update({"internal_comment": pms_folio_info.internalComment})
+        if pms_folio_info.partnerId:
+            folio_vals.update({"partner_id": pms_folio_info.partnerId})
+        else:
+            if folio.partner_id:
+                folio.partner_id = False
+        if pms_folio_info.partnerName is not None:
+            folio_vals.update({"partner_name": pms_folio_info.partnerName})
+        if pms_folio_info.partnerEmail is not None:
+            folio_vals.update({"email": pms_folio_info.partnerEmail})
+        if pms_folio_info.partnerPhone is not None:
+            folio_vals.update({"mobile": pms_folio_info.partnerPhone})
         if pms_folio_info.reservations:
             for reservation in pms_folio_info.reservations:
                 vals = {
