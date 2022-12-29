@@ -45,7 +45,7 @@ class PmsCheckinPartner(models.Model):
         help="Folio to which reservation of checkin partner belongs",
         store=True,
         comodel_name="pms.folio",
-        compute="_compute_folio_id",
+        related="reservation_id.folio_id",
     )
     pms_property_id = fields.Many2one(
         string="Property",
@@ -53,7 +53,7 @@ class PmsCheckinPartner(models.Model):
         readonly=True,
         store=True,
         comodel_name="pms.property",
-        related="folio_id.pms_property_id",
+        related="reservation_id.pms_property_id",
     )
     name = fields.Char(
         string="Name", help="Checkin partner name", related="partner_id.name"
@@ -397,11 +397,6 @@ class PmsCheckinPartner(models.Model):
                 record.residence_state_id = record.partner_id.residence_state_id
             elif not record.residence_state_id:
                 record.residence_state_id = False
-
-    @api.depends("reservation_id", "reservation_id.folio_id")
-    def _compute_folio_id(self):
-        for record in self.filtered("reservation_id"):
-            record.folio_id = record.reservation_id.folio_id
 
     @api.depends(lambda self: self._checkin_manual_fields(depends=True))
     def _compute_state(self):
