@@ -59,7 +59,7 @@ class ResPartner(models.Model):
         records = super(ResPartner, self).create(vals)
         # REVIEW: Force Contrain vat
         # https://github.com/odoo/odoo/issues/23242
-        if vals.get("vat") or vals.get("country_id"):
+        if vals.get("vat") and vals.get("country_id"):
             records.check_vat()
             records._pms_check_unique_vat()
         return records
@@ -123,3 +123,17 @@ class ResPartner(models.Model):
         ):
             return True
         return False
+
+    @api.constrains("country_id", "vat")
+    def update_vat_code_country(self):
+        if self.env.context.get("ignore_vat_update"):
+            return
+        for record in self:
+            country_id = record.country_id.id
+            vat = record.vat
+            if vat and country_id:
+                vat_with_code = record.fix_eu_vat_number(country_id, vat)
+                if country_id and vat != vat_with_code:
+                    record.with_context({"ignore_vat_update": True}).write(
+                        {"vat": vat_with_code}
+                    )
