@@ -85,8 +85,8 @@ class PmsFolioService(Component):
     )
     def get_folios(self, folio_search_param):
         domain_fields = list()
-
-        domain_fields.append(("pms_property_id", "=", folio_search_param.pmsPropertyId))
+        pms_property_id = int(folio_search_param.pmsPropertyId)
+        domain_fields.append(("pms_property_id", "=", pms_property_id))
 
         if folio_search_param.dateTo and folio_search_param.dateFrom:
             date_from = fields.Date.from_string(folio_search_param.dateFrom)
@@ -95,16 +95,25 @@ class PmsFolioService(Component):
                 date_from + timedelta(days=x)
                 for x in range(0, (date_to - date_from).days + 1)
             ]
-            reservation_lines = list(
-                set(
-                    self.env["pms.reservation.line"]
-                    .search([("date", "in", dates)])
-                    .mapped("reservation_id")
-                    .mapped("folio_id")
-                    .ids
-                )
+            self.env.cr.execute(
+                """
+                SELECT folio.id
+                FROM    pms_reservation_line  night
+                        LEFT JOIN pms_reservation reservation
+                            ON reservation.id = night.reservation_id
+                        LEFT JOIN pms_folio folio
+                            ON folio.id = reservation.folio_id
+                WHERE   (night.pms_property_id = %s)
+                    AND (night.date in %s)
+                GROUP BY folio.id
+                """,
+                (
+                    pms_property_id,
+                    tuple(dates),
+                ),
             )
-            domain_fields.append(("folio_id", "in", reservation_lines))
+            folio_ids = [x[0] for x in self.env.cr.fetchall()]
+            domain_fields.append(("folio_id", "in", folio_ids))
 
         domain_filter = list()
         if folio_search_param.filter:
@@ -124,12 +133,14 @@ class PmsFolioService(Component):
                 subdomains = [
                     [("state", "in", ("confirm", "arrival_delayed"))],
                     [("checkin", "<=", fields.Date.today())],
+                    [("reservation_type", "!=", "out")],
                 ]
                 domain_filter.append(expression.AND(subdomains))
             elif folio_search_param.filterByState == "byCheckout":
                 subdomains = [
                     [("state", "in", ("onboard", "departure_delayed"))],
                     [("checkout", "=", fields.Date.today())],
+                    [("reservation_type", "!=", "out")],
                 ]
                 domain_filter.append(expression.AND(subdomains))
             else:
