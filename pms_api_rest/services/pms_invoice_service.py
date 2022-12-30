@@ -56,7 +56,7 @@ class PmsInvoiceService(Component):
         if new_vals:
             # Update Invoice
             # When modifying an invoice, depending on the company's configuration,
-            # and the invoice stateit will be modified directly or a reverse
+            # and the invoice state it will be modified directly or a reverse
             # of the current invoice will be created to later create a new one
             # with the updated data.
             # TODO: to create core pms correct_invoice_policy field
@@ -98,11 +98,31 @@ class PmsInvoiceService(Component):
             else:
                 new_invoice = self._direct_move_update(invoice, new_vals)
         invoice_to_update = new_invoice or invoice
+        # Clean sections without lines
+        folio_lines_invoiced = invoice_to_update.invoice_line_ids.folio_line_ids
+        for folio_line in folio_lines_invoiced.filtered(
+            lambda l: l.display_type == "line_section"
+        ):
+            if (
+                not folio_line.id
+                in folio_lines_invoiced.filtered(
+                    lambda l: l.display_type != "line_section"
+                ).section_id.ids
+            ):
+                folio_line.invoice_lines.filtered(
+                    lambda l: l.move_id == invoice_to_update
+                ).unlink()
+
         if pms_invoice_info.narration is not None:
             invoice_to_update.write({"narration": pms_invoice_info.narration})
         if invoice_to_update.state == "draft" and pms_invoice_info.state == "confirm":
             invoice_to_update.action_post()
-        return invoice.id
+        if (
+            invoice_to_update.state == "draft"
+            and not invoice_to_update.invoice_line_ids
+        ):
+            invoice_to_update.unlink()
+        return invoice_to_update.id or None
 
     def _direct_move_update(self, invoice, new_vals):
         previus_state = invoice.state
@@ -122,6 +142,16 @@ class PmsInvoiceService(Component):
                     for line in new_vals["invoice_line_ids"]
                     if line[0] == 1 and "name" in line[2]
                 }
+            # _move_autocomplete_invoice_lines_write overwrite invoice line name values
+            # so, we need to save and rewrite it. in all line that are not updated or deleted
+            for line in invoice.invoice_line_ids.filtered(
+                lambda l: l.id not in updated_invoice_lines_name
+                and l.id
+                not in [
+                    line[1] for line in new_vals["invoice_line_ids"] if line[0] == 2
+                ]
+            ):
+                updated_invoice_lines_name[line.id] = line.name
             # 2- update invoice
             invoice.write(new_vals)
             # 3- rewrite invoice line name values:
@@ -209,7 +239,7 @@ class PmsInvoiceService(Component):
                     line_values["quantity"] = line_info.quantity
                 if line_values:
                     cmd_invoice_lines.append((1, line.id, line_values))
-            else:
+            elif not line.display_type:
                 cmd_invoice_lines.append((2, line.id))
         # Get the new lines to add in invoice
         newInvoiceLinesInfo = list(
@@ -234,20 +264,33 @@ class PmsInvoiceService(Component):
                     }
                 )
             )
+            lines_to_invoice = {
+                newInvoiceLinesInfo[i].saleLineId: newInvoiceLinesInfo[i].quantity
+                for i in range(0, len(newInvoiceLinesInfo))
+            }
+            # Add sections to invoice lines
+            new_section_ids = (
+                self.env["folio.sale.line"]
+                .browse([line.saleLineId for line in newInvoiceLinesInfo])
+                .filtered(
+                    lambda l: l.section_id.id
+                    not in invoice.invoice_line_ids.mapped("folio_line_ids.id")
+                )
+                .mapped("section_id.id")
+            )
+            if new_section_ids:
+                lines_to_invoice.update(
+                    {section_id: 0 for section_id in new_section_ids}
+                )
             new_invoice_lines = [
                 item["invoice_line_ids"]
                 for item in folios.get_invoice_vals_list(
-                    lines_to_invoice={
-                        newInvoiceLinesInfo[i]
-                        .saleLineId: newInvoiceLinesInfo[i]
-                        .quantity
-                        for i in range(0, len(newInvoiceLinesInfo))
-                    },
+                    lines_to_invoice=lines_to_invoice,
                     partner_invoice_id=partner.id,
                 )
             ][0]
             # Update name of new invoice lines
-            for item in new_invoice_lines:
+            for item in filter(lambda l: not l[2]["display_type"], new_invoice_lines):
                 item[2]["name"] = [
                     line.name
                     for line in newInvoiceLinesInfo
