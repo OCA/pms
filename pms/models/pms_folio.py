@@ -474,13 +474,14 @@ class PmsFolio(models.Model):
     )
     invoice_status = fields.Selection(
         string="Invoice Status",
-        help="Invoice Status; it can be: upselling, invoiced, to invoice, no",
+        help="Invoice Status; it can be: invoiced, to invoice, to confirm, no",
         readonly=True,
         default="no",
         store=True,
         selection=[
             ("invoiced", "Fully Invoiced"),
             ("to_invoice", "To Invoice"),
+            ("to_confirm", "To Confirm"),
             ("no", "Nothing to Invoice"),
         ],
         compute="_compute_get_invoice_status",
@@ -644,7 +645,8 @@ class PmsFolio(models.Model):
                 for line in group["lines"]:
                     if line.display_type == "line_section":
                         current_section_vals = line._prepare_invoice_line(
-                            sequence=invoice_item_sequence + 1
+                            sequence=invoice_item_sequence
+                            + folio.sale_line_ids.ids.index(line.id)
                         )
                         continue
                     if line.display_type != "line_note" and float_is_zero(
@@ -660,19 +662,17 @@ class PmsFolio(models.Model):
                             down_payments += line
                             continue
                         if current_section_vals:
-                            invoice_item_sequence += 1
                             invoice_lines_vals.append(current_section_vals)
                             current_section_vals = None
-                        invoice_item_sequence += 1
                         prepared_line = line._prepare_invoice_line(
-                            sequence=invoice_item_sequence,
+                            sequence=invoice_item_sequence
+                            + folio.sale_line_ids.ids.index(line.id),
                             qty=lines_to_invoice[line.id],
                         )
                         invoice_lines_vals.append(prepared_line)
 
                 # If down payments are present in SO, group them under common section
                 if down_payments:
-                    invoice_item_sequence += 1
                     down_payments_section = folio._prepare_down_payment_section_line(
                         sequence=invoice_item_sequence
                     )
@@ -681,6 +681,7 @@ class PmsFolio(models.Model):
                         invoice_item_sequence += 1
                         invoice_down_payment_vals = down_payment._prepare_invoice_line(
                             sequence=invoice_item_sequence
+                            + folio.sale_line_ids.ids.index(down_payment.id)
                         )
                         invoice_lines_vals.append(invoice_down_payment_vals)
 
@@ -693,6 +694,7 @@ class PmsFolio(models.Model):
                 ]
 
                 invoice_vals_list.append(invoice_vals)
+            invoice_item_sequence += 1000
         return invoice_vals_list
 
     def _get_groups_invoice_lines(self, lines_to_invoice, partner_invoice_id=False):
@@ -1080,21 +1082,18 @@ class PmsFolio(models.Model):
             line_invoice_status = [
                 d[1] for d in line_invoice_status_all if d[0] == order.id
             ]
-            if order.state in ("draft") or order.force_nothing_to_invoice:
+            if order.force_nothing_to_invoice:
                 order.invoice_status = "no"
             elif any(
                 invoice_status == "to_invoice" for invoice_status in line_invoice_status
             ):
                 order.invoice_status = "to_invoice"
+            elif any(inv.state == "draft" for inv in order.move_ids):
+                order.invoice_status = "to_confirm"
             elif line_invoice_status and all(
                 invoice_status == "invoiced" for invoice_status in line_invoice_status
             ):
                 order.invoice_status = "invoiced"
-            elif line_invoice_status and all(
-                invoice_status in ("invoiced", "upselling")
-                for invoice_status in line_invoice_status
-            ):
-                order.invoice_status = "upselling"
             else:
                 order.invoice_status = "no"
 
