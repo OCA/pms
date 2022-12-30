@@ -57,3 +57,4 @@ from . import pms_folio_sale_line
 from . import pms_invoice_line
 from . import pms_mail
 from . import pms_notification
+from . import pms_avail
