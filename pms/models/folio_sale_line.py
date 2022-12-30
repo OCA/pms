@@ -426,7 +426,7 @@ class FolioSaleLine(models.Model):
     )
     def _compute_autoinvoice_date(self):
         self.autoinvoice_date = False
-        for record in self.filtered(lambda r: r.invoice_status == "to_invoice"):
+        for record in self:
             record.autoinvoice_date = record._get_to_invoice_date()
 
     def _get_to_invoice_date(self):
@@ -438,6 +438,8 @@ class FolioSaleLine(models.Model):
             last_checkout = self.service_id.reservation_id.checkout
         else:
             last_checkout = self.folio_id.last_checkout
+        if not last_checkout:
+            return False
         invoicing_policy = (
             self.pms_property_id.default_invoicing_policy
             if not partner or partner.invoicing_policy == "property"
@@ -459,11 +461,11 @@ class FolioSaleLine(models.Model):
                 else partner.invoicing_month_day
             )
             if last_checkout.day <= month_day:
-                self.autoinvoice_date = last_checkout.replace(day=month_day)
+                return last_checkout.replace(day=month_day)
             else:
-                self.autoinvoice_date = (
-                    last_checkout + relativedelta.relativedelta(months=1)
-                ).replace(day=month_day)
+                return (last_checkout + relativedelta.relativedelta(months=1)).replace(
+                    day=month_day
+                )
 
     @api.depends("date_order")
     def _compute_reservation_order(self):

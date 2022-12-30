@@ -1927,8 +1927,13 @@ class PmsFolio(models.Model):
                     month_day,
                 )
         if invoice_date:
+            key_field = (
+                "invoice_date"
+                if invoice_date == fields.Date.today()
+                else "invoice_date_due"
+            )
             for vals in invoice_vals_list:
-                vals["invoice_date"] = invoice_date
+                vals[key_field] = invoice_date
 
         # 3) Create invoices.
 
