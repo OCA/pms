@@ -94,11 +94,10 @@ class FolioSaleLine(models.Model):
     )
     invoice_status = fields.Selection(
         string="Invoice Status",
-        help="Invoice Status; it can be: upselling, invoiced, to invoice, no",
+        help="Invoice Status; it can be: invoiced, to invoice, no",
         readonly=True,
         store=True,
         selection=[
-            ("upselling", "Upselling Opportunity"),
             ("invoiced", "Fully Invoiced"),
             ("to_invoice", "To Invoice"),
             ("no", "Nothing to Invoice"),
@@ -312,6 +311,13 @@ class FolioSaleLine(models.Model):
         default=False,
     )
 
+    section_id = fields.Many2one(
+        string="Section",
+        help="The section of the folio sale line",
+        comodel_name="folio.sale.line",
+        compute="_compute_section_id",
+    )
+
     service_order = fields.Integer(
         string="Service Id",
         help="Field to order by service id",
@@ -378,6 +384,18 @@ class FolioSaleLine(models.Model):
                 if record.display_type
                 else 0
             )
+
+    def _compute_section_id(self):
+        for record in self:
+            if record.display_type == "line_section":
+                record.section_id = record.id
+            elif record.reservation_id:
+                record.section_id = record.folio_id.sale_line_ids.filtered(
+                    lambda r: r.reservation_id == record.reservation_id
+                    and r.display_type == "line_section"
+                )
+            else:
+                record.section_id = False
 
     @api.depends("service_order")
     def _compute_date_order(self):
