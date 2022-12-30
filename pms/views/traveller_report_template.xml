@@ -9,53 +9,52 @@
                         t-att-alt="docs.pms_property_id.company_id.name"
                     />
                 </div>
-                <p class="title">PART OF TRAVELERS ENTRY</p>
-                <p class="checknumber">
-                    Document number:
-                    <strong>
-                        <span t-field="docs.id" />
-                    </strong>
-                    /
-                    <span t-field="docs.reservation_id" />
-                </p>
-                <p class="amount">
-                    Total amount (Reservation Card):
-                    <strong>
-                        <span
-                            t-field="docs.reservation_id.folio_id.amount_total"
-                        />
-                    </strong>
-                </p>
-                <div class="property amount">
-                    <strong>
-                        <span t-field="docs.pms_property_id.name" />
-                    </strong>
-                    <br />
-                    <strong>
-                        CIF:
-                        <span t-field="docs.pms_property_id.company_id.vat" />
-                    </strong>
-                    <br />
-                    <span t-field="docs.pms_property_id.company_id.name" />
-                    <br />
-                    <strong>
-                        <span t-field="docs.pms_property_id.company_id.street" />
-                        <span
-                            t-field="docs.pms_property_id.company_id.street2"
-                        />
-                    </strong>
-                    <br />
-                    <strong>
-                        <span t-field="docs.pms_property_id.company_id.zip" />
-                        <span t-field="docs.pms_property_id.company_id.city" />
-                    </strong>
-                    <b />
+                <div class="top">
+                    <p class="title">PART
+                        OF TRAVELERS ENTRY</p>
+                    <p class="checknumber"> Document number: <strong>
+                            <span t-field="docs.id" />
+                        </strong> / <span
+                            t-field="docs.reservation_id" />
+                    </p>
+                    <p class="amount"> Total amount
+                        (Reservation Card): <strong>
+                            <span
+                                t-field="docs.reservation_id.folio_id.amount_total"
+                            />
+                        </strong>
+                    </p>
+                    <div class="property amount">
+                        <strong>
+                            <span t-field="docs.pms_property_id.name" />
+                        </strong>
+                        <br />
+                        <strong> CIF: <span t-field="docs.pms_property_id.company_id.vat" />
+                        </strong>
+                        <br />
+                        <span t-field="docs.pms_property_id.company_id.name" />
+                        <br />
+                        <strong>
+                            <span t-field="docs.pms_property_id.street" />
+                            <span
+                                t-field="docs.pms_property_id.street2"
+                            />
+                        </strong>
+                        <br />
+                        <strong>
+                            <span t-field="docs.pms_property_id.zip" />
+                            <span t-field="docs.pms_property_id.city" />
+                        </strong>
+                        <b />
+                        <br />
+                        Categoría: <span t-field="docs.pms_property_id.ine_category_id" />
+                    </div>
+                    <p class="title2">TRAVELER'S DOCUMENT</p>
                 </div>
-                <p class="title2">TRAVELER'S DOCUMENT</p>
-
                 <table>
                     <tr>
-                        <td>Document number</td>
+                        <td>Document
+                            number</td>
                         <td>
                             <strong>
                                 <span t-field="docs.document_number" />
@@ -63,7 +62,8 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>Type</td>
+                        <td>
+                            Type</td>
                         <td>
                             <strong>
                                 <span t-field="docs.document_type" />
@@ -71,7 +71,8 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>Expedition date</td>
+                        <td>Expedition
+                            date</td>
                         <td>
                             <strong>
                                 <span
@@ -83,7 +84,8 @@
                 </table>
                 <table>
                     <tr>
-                        <td>Name</td>
+                        <td>
+                            Name</td>
                         <td>
                             <strong>
                                 <span t-field="docs.firstname" />
@@ -91,7 +93,8 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>Lastnames</td>
+                        <td>
+                            Lastnames</td>
                         <td>
                             <strong>
                                 <span t-field="docs.lastname" />
@@ -105,7 +108,7 @@
                 <table>
                     <tr>
                         <td>
-                        Gender</td>
+                            Gender</td>
                         <td>
                             <strong>
                                 <span t-field="docs.gender" />
@@ -114,7 +117,7 @@
                     </tr>
                     <tr>
                         <td>
-                        Birthdate</td>
+                            Birthdate</td>
                         <td>
                             <strong>
                                 <span t-field="docs.birthdate_date" />
@@ -125,7 +128,7 @@
                 <table>
                     <tr>
                         <td>
-                        Entry date</td>
+                            Entry date</td>
                         <td>
                             <strong>
                                 <span t-field="docs.checkin" />
@@ -134,7 +137,7 @@
                     </tr>
                     <tr>
                         <td>
-                        Exit date</td>
+                            Exit date</td>
                         <td>
                             <strong>
                                 <span t-field="docs.checkout" />
@@ -144,9 +147,7 @@
                 </table>
                 <div>
                     <p class="date">
-                        <span t-field="docs.pms_property_id.partner_id.city" />
-                        , at
-                        <span
+                        <span t-field="docs.pms_property_id.partner_id.city" /> , at <span
                             t-esc="time.strftime('%Y-%m-%d')"
                             t-options="{&quot;widget&quot;: &quot;date&quot;}"
                         />
@@ -157,7 +158,7 @@
                     <p>
                         <span t-field="docs.pms_property_id.cardex_warning" />
                     </p>
-                    <p>
+                    <p class="privacy_policy">
                         <span t-field="docs.pms_property_id.company_id.privacy_policy" />
                     </p>
                 </div>
@@ -168,50 +169,46 @@
                         t-att-alt="docs.pms_property_id.company_id.name"
                     />
                 </div>
-                <p class="title">PART OF TRAVELERS ENTRY</p>
-                <p class="checknumber">
-                    Document number:
-                    <strong>
-                        <span t-field="docs.id" />
-                    </strong>
-                    /
-                    <span t-field="docs.reservation_id" />
-                </p>
-                <p class="amount">
-                    Total amount (Reservation Card):
-                    <strong>
-                        <span
-                            t-field="docs.reservation_id.folio_id.amount_total"
-                        />
-                    </strong>
-                </p>
-                <div class="property amount">
-                    <strong>
-                        <span t-field="docs.pms_property_id.name" />
-                    </strong>
-                    <br />
-                    <strong>
-                        CIF:
-                        <span t-field="docs.pms_property_id.company_id.vat" />
-                    </strong>
-                    <br />
-                    <span t-field="docs.pms_property_id.company_id.name" />
-                    <br />
-                    <strong>
-                        <span t-field="docs.pms_property_id.company_id.street" />
-                        <span
-                            t-field="docs.pms_property_id.company_id.street2"
-                        />
-                    </strong>
-                    <br />
-                    <strong>
-                        <span t-field="docs.pms_property_id.company_id.zip" />
-                        <span t-field="docs.pms_property_id.company_id.city" />
-                    </strong>
-                    <b />
+                <div class="top">
+                    <p class="title">PART OF TRAVELERS ENTRY</p>
+                    <p class="checknumber"> Document number: <strong>
+                            <span t-field="docs.id" />
+                        </strong> / <span
+                            t-field="docs.reservation_id" />
+                    </p>
+                    <p class="amount"> Total amount (Reservation Card): <strong>
+                            <span
+                                t-field="docs.reservation_id.folio_id.amount_total"
+                            />
+                        </strong>
+                    </p>
+                    <div class="property amount">
+                        <strong>
+                            <span t-field="docs.pms_property_id.name" />
+                        </strong>
+                        <br />
+                        <strong> CIF: <span t-field="docs.pms_property_id.company_id.vat" />
+                        </strong>
+                        <br />
+                        <span t-field="docs.pms_property_id.company_id.name" />
+                        <br />
+                        <strong>
+                            <span t-field="docs.pms_property_id.street" />
+                            <span
+                                t-field="docs.pms_property_id.street2"
+                            />
+                        </strong>
+                        <br />
+                        <strong>
+                            <span t-field="docs.pms_property_id.zip" />
+                            <span t-field="docs.pms_property_id.city" />
+                        </strong>
+                        <b />
+                        <br />
+                        Categoría: <span t-field="docs.pms_property_id.ine_category_id" />
+                    </div>
+                    <p class="title2">TRAVELER'S DOCUMENT</p>
                 </div>
-                <p class="title2">TRAVELER'S DOCUMENT</p>
-
                 <table>
                     <tr>
                         <td>Document number</td>
@@ -222,7 +219,8 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>Type</td>
+                        <td>
+                            Type</td>
                         <td>
                             <strong>
                                 <span t-field="docs.document_type" />
@@ -230,7 +228,8 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>Expedition date</td>
+                        <td>Expedition
+                            date</td>
                         <td>
                             <strong>
                                 <span
@@ -242,7 +241,8 @@
                 </table>
                 <table>
                     <tr>
-                        <td>Name</td>
+                        <td>
+                            Name</td>
                         <td>
                             <strong>
                                 <span t-field="docs.firstname" />
@@ -250,7 +250,8 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>Lastnames</td>
+                        <td>
+                            Lastnames</td>
                         <td>
                             <strong>
                                 <span t-field="docs.lastname" />
@@ -264,7 +265,7 @@
                 <table>
                     <tr>
                         <td>
-                        Gender</td>
+                            Gender</td>
                         <td>
                             <strong>
                                 <span t-field="docs.gender" />
@@ -273,7 +274,7 @@
                     </tr>
                     <tr>
                         <td>
-                        Birthdate</td>
+                            Birthdate</td>
                         <td>
                             <strong>
                                 <span t-field="docs.birthdate_date" />
@@ -284,7 +285,7 @@
                 <table>
                     <tr>
                         <td>
-                        Entry date</td>
+                            Entry date</td>
                         <td>
                             <strong>
                                 <span t-field="docs.checkin" />
@@ -293,7 +294,7 @@
                     </tr>
                     <tr>
                         <td>
-                        Exit date</td>
+                            Exit date</td>
                         <td>
                             <strong>
                                 <span t-field="docs.checkout" />
@@ -304,8 +305,7 @@
                 <div>
                     <p class="date">
                         <span t-field="docs.pms_property_id.partner_id.city" />
-                        , at
-                        <span
+                        , at <span
                             t-esc="time.strftime('%Y-%m-%d')"
                             t-options="{&quot;widget&quot;: &quot;date&quot;}"
                         />
@@ -316,76 +316,84 @@
                     <p>
                         <span t-field="docs.pms_property_id.cardex_warning" />
                     </p>
-                    <p>
+                    <p class="privacy_policy">
                         <span t-field="docs.pms_property_id.company_id.privacy_policy" />
                     </p>
                 </div>
                 <div class="final" />
                 <p style="page-break-after:always;" />
                 <style>
-                table{
+                    table{
                     width: 100%;
                     border: 1;
                     border-style: double;
                     margin-top:12px;
-                }
-                td:first-child{
+                    }
+                    td:first-child{
                     width:40%;
                     padding-left:3px;
                     border:double;
                     border-width:1px;
-                }
-                td:last-child{
+                    }
+                    td:last-child{
                     width:100%;
                     padding-left:3px;
                     border:double;
                     border-width:1px;
-                }
-                .firma{
+                    }
+                    .firma{
                     width: 85%;
                     border:dotted 1px;
                     height: 80px;
                     margin:0 auto;
-                }
-                p,.property{
+                    }
+                    p,.property{
                     text-align: center;
                     font-family: kiro, Verdana, Geneva, sans-serif;
-                }
-                .date{
+                    }
+                    .date{
                     margin-top:8px;
-                }
-               .title{
+                    }
+                    .title{
                     font-size:1.9em;
-               }
-               .title2{
-                   font-size:1.32em;
-               }
-               .amount{
-                  font-size:1.8em;
-               }
-               .checknumber{
-                  font-size:1.81em;
-               }
-               td{
-                 font-size:180%;
-               }
-                p, span{
+                    }
+                    .title2{
+                    font-size:1.32em;
+                    }
+                    .amount{
                     font-size:1.2em;
-                }
-                .signature, .date{
+                    }
+                    .checknumber{
+                    font-size:1.4em;
+                    }
+                    td{
+                    font-size:180%;
+                    }
+                    p, span{
+                    font-size:1.2em;
+                    }
+                    .signature, .date{
                     font-size: 1.2em;
-                }
-                .logo {
+                    }
+                    .privacy_policy{
+                    text-align: justify;
+                    font-size: 0.9em;
+                    }
+                    .logo {
                     width: 75%;
                     height: 100px;
                     margin:0 auto 2em;
                     text-align: center;
-                }
-                img{
+                    }
+                    img{
                     max-width: 100%;
                     max-height: 100px;
-                }
-            </style>
+                    }
+                    .top p {
+                    margin: 0 0 0 0;
+                    padding: 0 0 0 0;
+                    }
+                </style>
             </t>
         </t>
     </template>
