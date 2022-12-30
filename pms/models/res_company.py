@@ -14,11 +14,13 @@ class ResCompany(models.Model):
         inverse_name="company_id",
     )
 
-    url_advert = fields.Char(string="Url Advert", help="Url to identify the ad")
+    url_advert = fields.Char(string="Url Advert",
+                             help="Url to identify the ad")
 
-    privacy_policy = fields.Text(
+    privacy_policy = fields.Html(
         string="Privacy Policy",
-        help="Authorization by the user for the" "manage of their personal data",
+        help="Authorization by the user for the"
+        "manage of their personal data",
     )
 
     check_min_partner_data_invoice = fields.Boolean(
