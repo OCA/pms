@@ -796,6 +796,13 @@ class PmsFolioService(Component):
                         self.env["ir.config_parameter"].sudo().get_param("web.base.url")
                         + move_url
                     )
+                    invoice_date = (
+                        move.invoice_date.strftime("%d/%m/%Y")
+                        if move.invoice_date
+                        else move.invoice_date_due.strftime("%d/%m/%Y")
+                        if move.invoice_date_due
+                        else None
+                    )
                     invoices.append(
                         PmsFolioInvoiceInfo(
                             id=move.id if move.id else None,
@@ -803,9 +810,7 @@ class PmsFolioService(Component):
                             amount=round(move.amount_total, 2)
                             if move.amount_total
                             else None,
-                            date=move.invoice_date.strftime("%d/%m/%Y")
-                            if move.invoice_date
-                            else None,
+                            date=invoice_date,
                             state=move.state if move.state else None,
                             paymentState=move.payment_state
                             if move.payment_state
