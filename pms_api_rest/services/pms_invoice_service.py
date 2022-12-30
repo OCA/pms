@@ -146,6 +146,8 @@ class PmsInvoiceService(Component):
             # so, we need to save and rewrite it. in all line that are not updated or deleted
             for line in invoice.invoice_line_ids.filtered(
                 lambda l: l.id not in updated_invoice_lines_name
+                if updated_invoice_lines_name
+                else []
                 and l.id
                 not in [
                     line[1] for line in new_vals["invoice_line_ids"] if line[0] == 2
