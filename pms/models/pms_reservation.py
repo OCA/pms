@@ -561,7 +561,6 @@ class PmsReservation(models.Model):
         store=True,
         readonly=True,
         selection=[
-            ("upselling", "Upselling Opportunity"),
             ("invoiced", "Fully Invoiced"),
             ("to_invoice", "To Invoice"),
             ("no", "Nothing to Invoice"),
