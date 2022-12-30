@@ -739,7 +739,7 @@ class WizardIne(models.TransientModel):
 
         total_percent = sum([val for val in percents.values()])
         for group in total_groups_domains.keys():
-            percents[group] = round(percents[group] * 100 / total_percent, 2)
+            percents[group] = round(percents[group] * 100 / (total_percent or 1), 2)
 
         ET.SubElement(prices_tag, "ADR_TOUROPERADOR_TRADICIONAL").text = str(
             adrs["tour_operator_offline"]
