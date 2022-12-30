@@ -18,10 +18,9 @@ from odoo.addons.base.models.res_partner import _tz_get
 
 
 def get_default_logo():
-    with open(modules.get_module_resource('pms',
-                                          'static/img',
-                                          'property_logo.png'),
-              'rb') as f:
+    with open(
+        modules.get_module_resource("pms", "static/img", "property_logo.png"), "rb"
+    ) as f:
         return base64.b64encode(f.read())
 
 
@@ -683,7 +682,11 @@ class PmsProperty(models.Model):
             if any([res.state != "cancel" for res in folio.reservation_ids]):
                 folios_to_invoice += folio
             else:
-                folio.message_post(body=_("Not invoiced due to pending amounts"))
+                folio.message_post(
+                    body=_(
+                        "Not invoiced due to pending amounts and cancelled reservations"
+                    )
+                )
         for folio in folios_to_invoice:
             try:
                 invoice = folio.with_context(autoinvoice=True)._create_invoices(
@@ -696,7 +699,7 @@ class PmsProperty(models.Model):
         draft_invoices_to_post = self.env["account.move"].search(
             [
                 ("state", "=", "draft"),
-                ("invoice_date", "=", date_reference),
+                ("invoice_date_due", "=", date_reference),
                 ("folio_ids", "!=", False),
             ]
         )
@@ -704,9 +707,7 @@ class PmsProperty(models.Model):
             try:
                 invoice.action_post()
             except Exception as e:
-                invoice.message_post(
-                    body=_("Error in autoinvoicing invoice: " + str(e))
-                )
+                invoice.message_post(body=_("Error in autovalidate invoice: " + str(e)))
         return True
 
     @api.constrains("journal_normal_invoice_id")
