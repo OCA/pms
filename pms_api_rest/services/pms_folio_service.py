@@ -842,8 +842,9 @@ class PmsFolioService(Component):
         # TODO: Missing payload data:
         # - date format is in invoice_info but dont save
         # - invoice comment is in invoice_info but dont save
-
         lines_to_invoice_dict = dict()
+        if not invoice_info.partnerId:
+            raise MissingError(_("For manual invoice, partner is required"))
         for item in invoice_info.saleLines:
             if item.qtyToInvoice:
                 lines_to_invoice_dict[item.id] = item.qtyToInvoice
@@ -851,6 +852,10 @@ class PmsFolioService(Component):
         sale_lines_to_invoice = self.env["folio.sale.line"].browse(
             lines_to_invoice_dict.keys()
         )
+        for line in sale_lines_to_invoice:
+            if line.section_id.id not in sale_lines_to_invoice.ids:
+                sale_lines_to_invoice |= line.section_id
+                lines_to_invoice_dict[line.section_id.id] = 0
         folios_to_invoice = sale_lines_to_invoice.folio_id
         invoices = folios_to_invoice._create_invoices(
             lines_to_invoice=lines_to_invoice_dict,
