@@ -529,8 +529,8 @@ class PmsReservationService(Component):
                         residenceCity=checkin_partner.residence_city
                         if checkin_partner.residence_city
                         else None,
-                        nationality=checkin_partner.residence_country_id.id
-                        if checkin_partner.residence_country_id
+                        nationality=checkin_partner.nationality_id.id
+                        if checkin_partner.nationality_id
                         else None,
                         countryState=checkin_partner.residence_state_id.id
                         if checkin_partner.residence_state_id
@@ -796,7 +796,7 @@ class PmsReservationService(Component):
             "support_number": pms_checkin_partner_info.documentSupportNumber,
             "gender": pms_checkin_partner_info.gender,
             "residence_street": pms_checkin_partner_info.residenceStreet,
-            "nationality_id": pms_checkin_partner_info.countryId,
+            "nationality_id": pms_checkin_partner_info.nationality,
             "residence_zip": pms_checkin_partner_info.zip,
             "residence_city": pms_checkin_partner_info.residenceCity,
             "residence_state_id": pms_checkin_partner_info.countryState,
