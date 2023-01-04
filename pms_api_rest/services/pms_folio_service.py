@@ -180,6 +180,11 @@ class PmsFolioService(Component):
                 reservations.append(
                     {
                         "id": reservation.id,
+                        "folioId": folio.id,
+                        "name": reservation.name,
+                        "partnerName": reservation.partner_name
+                        if reservation.partner_name
+                        else None,
                         "checkin": datetime.combine(
                             reservation.checkin, datetime.min.time()
                         ).isoformat(),
@@ -203,6 +208,7 @@ class PmsFolioService(Component):
                         if reservation.agency_id
                         else None,
                         "isSplitted": reservation.splitted,
+                        "toAssign": reservation.to_assign,
                     }
                 )
             result_folios.append(
