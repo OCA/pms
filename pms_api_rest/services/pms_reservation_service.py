@@ -577,6 +577,98 @@ class PmsReservationService(Component):
         [
             (
                 [
+                    "/",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.search.param", is_list=False),
+        output_param=Datamodel("pms.reservation.info", is_list=True),
+        auth="jwt_api_pms",
+    )
+    def get_reservations(self, pms_search_param):
+        domain = list()
+        res_reservations = []
+        if pms_search_param.pmsPropertyId:
+            domain.append(("pms_property_id", "=", pms_search_param.pmsPropertyId))
+        if pms_search_param.toAssign:
+            domain.append(("to_assign", "=", True))
+            domain.append(("checkin", ">=", fields.Date.today()))
+        reservations = self.env["pms.reservation"].search(domain)
+        PmsReservationInfo = self.env.datamodels["pms.reservation.info"]
+        if not reservations:
+            pass
+        else:
+            for reservation in reservations:
+                res_reservations.append(
+                    PmsReservationInfo(
+                        id=reservation.id,
+                        name=reservation.name,
+                        folioId=reservation.folio_id.id,
+                        folioSequence=reservation.folio_sequence,
+                        partnerName=reservation.partner_name or None,
+                        boardServiceId=reservation.board_service_room_id.id
+                        if reservation.board_service_room_id
+                        else None,
+                        saleChannelId=reservation.sale_channel_origin_id.id
+                        if reservation.sale_channel_origin_id
+                        else None,
+                        agencyId=reservation.agency_id.id
+                        if reservation.agency_id
+                        else None,
+                        userId=reservation.user_id.id if reservation.user_id else None,
+                        checkin=datetime.combine(
+                            reservation.checkin, datetime.min.time()
+                        ).isoformat(),
+                        checkout=datetime.combine(
+                            reservation.checkout, datetime.min.time()
+                        ).isoformat(),
+                        arrivalHour=reservation.arrival_hour,
+                        departureHour=reservation.departure_hour,
+                        roomTypeId=reservation.room_type_id.id
+                        if reservation.room_type_id
+                        else None,
+                        preferredRoomId=reservation.preferred_room_id.id
+                        if reservation.preferred_room_id
+                        else None,
+                        pricelistId=reservation.pricelist_id.id
+                        if reservation.pricelist_id
+                        else None,
+                        adults=reservation.adults if reservation.adults else None,
+                        overbooking=reservation.overbooking,
+                        externalReference=reservation.external_reference
+                        if reservation.external_reference
+                        else None,
+                        stateCode=reservation.state,
+                        stateDescription=dict(
+                            reservation.fields_get(["state"])["state"]["selection"]
+                        )[reservation.state],
+                        children=reservation.children if reservation.children else None,
+                        readyForCheckin=reservation.ready_for_checkin,
+                        allowedCheckout=reservation.allowed_checkout,
+                        isSplitted=reservation.splitted,
+                        pendingCheckinData=reservation.pending_checkin_data,
+                        createDate=reservation.create_date.isoformat(),
+                        segmentationId=reservation.segmentation_ids[0].id
+                        if reservation.segmentation_ids
+                        else None,
+                        toAssign=reservation.to_assign,
+                        reservationType=reservation.reservation_type,
+                        priceTotal=round(reservation.price_room_services_set, 2),
+                        discount=round(reservation.discount, 2),
+                        commissionAmount=round(reservation.commission_amount, 2)
+                        if reservation.commission_amount
+                        else None,
+                        priceOnlyServices=round(reservation.price_services, 2),
+                        priceOnlyRoom=round(reservation.price_total, 2),
+                    )
+                )
+        return res_reservations
+
+    @restapi.method(
+        [
+            (
+                [
                     "/partner-as-host",
                 ],
                 "GET",
