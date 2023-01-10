@@ -689,10 +689,41 @@ class PmsProperty(models.Model):
                 )
         for folio in folios_to_invoice:
             try:
+                # REVIEW: folio sale line "_compute_auotinvoice_date" sometimes
+                # dont work in services (probably cache issue¿?), we ensure that the date is
+                # set or recompute this
+                for line in folio.sale_line_ids.filtered(
+                    lambda l: not l.autoinvoice_date
+                ):
+                    line._compute_autoinvoice_date()
                 invoice = folio.with_context(autoinvoice=True)._create_invoices(
                     grouped=True,
                 )
                 if invoice:
+                    if (
+                        invoice.amount_total
+                        > invoice.pms_property_id.max_amount_simplified_invoice
+                        and invoice.journal_id.is_simplified_invoice
+                    ):
+                        hosts_to_invoice = (
+                            invoice.folio_ids.partner_invoice_ids.filtered(
+                                lambda p: p._check_enought_invoice_data()
+                            ).mapped("id")
+                        )
+                        if hosts_to_invoice:
+                            invoice.partner_id = hosts_to_invoice[0]
+                            invoice.journal_id = (
+                                invoice.pms_property_id.journal_normal_invoice_id
+                            )
+                        else:
+                            mens = _(
+                                "The total amount of the simplified invoice is higher than the "
+                                "maximum amount allowed for simplified invoices, and dont have "
+                                "enought data in hosts to create a normal invoice."
+                            )
+                            if self.folio_ids:
+                                self.folio_ids.message_post(body=mens)
+                            raise ValidationError(mens)
                     invoice.action_post()
             except Exception as e:
                 folio.message_post(body=_("Error in autoinvoicing folio: " + str(e)))

@@ -425,7 +425,6 @@ class FolioSaleLine(models.Model):
         "service_id.reservation_id.checkout",
     )
     def _compute_autoinvoice_date(self):
-        self.autoinvoice_date = False
         for record in self:
             record.autoinvoice_date = record._get_to_invoice_date()
 
@@ -441,7 +440,7 @@ class FolioSaleLine(models.Model):
         if not last_checkout:
             return False
         invoicing_policy = (
-            self.pms_property_id.default_invoicing_policy
+            self.folio_id.pms_property_id.default_invoicing_policy
             if not partner or partner.invoicing_policy == "property"
             else partner.invoicing_policy
         )
@@ -449,14 +448,14 @@ class FolioSaleLine(models.Model):
             return False
         if invoicing_policy == "checkout":
             margin_days = (
-                self.pms_property_id.margin_days_autoinvoice
+                self.folio_id.pms_property_id.margin_days_autoinvoice
                 if not partner or partner.invoicing_policy == "property"
                 else partner.margin_days_autoinvoice
             )
             return last_checkout + timedelta(days=margin_days)
         if invoicing_policy == "month_day":
             month_day = (
-                self.pms_property_id.invoicing_month_day
+                self.folio_id.pms_property_id.invoicing_month_day
                 if not partner or partner.invoicing_policy == "property"
                 else partner.invoicing_month_day
             )
