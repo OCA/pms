@@ -50,7 +50,9 @@ class ResPartner(models.Model):
         # REVIEW: Force Contrain vat
         # https://github.com/odoo/odoo/issues/23242
         if vals.get("vat") or vals.get("country_id"):
-            self.check_vat()
+            country = self.env["res.country"].browse(vals.get("country_id"))
+            if country.code == "ES":
+                self.check_vat()
             self._pms_check_unique_vat()
         return res
 
@@ -60,7 +62,9 @@ class ResPartner(models.Model):
         # REVIEW: Force Contrain vat
         # https://github.com/odoo/odoo/issues/23242
         if vals.get("vat") and vals.get("country_id"):
-            records.check_vat()
+            country = self.env["res.country"].browse(vals.get("country_id"))
+            if country.code == "ES":
+                self.check_vat()
             records._pms_check_unique_vat()
         return records
 
