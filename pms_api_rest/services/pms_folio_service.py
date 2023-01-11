@@ -427,7 +427,7 @@ class PmsFolioService(Component):
                             )[reservation.state],
                             children=reservation.children
                             if reservation.children
-                            else None,
+                            else 0,
                             readyForCheckin=reservation.ready_for_checkin,
                             allowedCheckout=reservation.allowed_checkout,
                             isSplitted=reservation.splitted,
