@@ -16,3 +16,4 @@ class PmsBoardServiceInfo(Datamodel):
     name = fields.String(required=True, allow_none=False)
     roomTypeId = fields.Integer(required=True, allow_none=False)
     amount = fields.Float(required=False, allow_none=False)
+    boardServiceId = fields.Integer(required=False, allow_none=False)
