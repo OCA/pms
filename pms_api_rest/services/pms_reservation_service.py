@@ -96,7 +96,7 @@ class PmsReservationService(Component):
                 stateDescription=dict(
                     reservation.fields_get(["state"])["state"]["selection"]
                 )[reservation.state],
-                children=reservation.children if reservation.children else None,
+                children=reservation.children if reservation.children else 0,
                 readyForCheckin=reservation.ready_for_checkin,
                 allowedCheckout=reservation.allowed_checkout,
                 isSplitted=reservation.splitted,
