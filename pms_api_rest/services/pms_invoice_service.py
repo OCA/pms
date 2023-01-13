@@ -194,6 +194,25 @@ class PmsInvoiceService(Component):
         [
             (
                 [
+                    "/<int:invoice_id>/mail",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.mail.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def get_invoice_mail(self, invoice_id):
+        PmsMailInfo = self.env.datamodels["pms.mail.info"]
+
+        return PmsMailInfo(
+            bodyMail="Jaskdjh kaksjdh",
+            subject="Aasdadsasd",
+        )
+    @restapi.method(
+        [
+            (
+                [
                     "/<int:invoice_id>/send-mail",
                 ],
                 "POST",
