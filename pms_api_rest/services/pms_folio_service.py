@@ -686,6 +686,26 @@ class PmsFolioService(Component):
         [
             (
                 [
+                    "/<int:folio_id>/mail",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.mail.info"),
+        output_param=Datamodel("pms.mail.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def get_folio_mail(self, folio_id):
+        PmsMailInfo = self.env.datamodels["pms.mail.info"]
+
+        return PmsMailInfo(
+            bodyMail="Oaosiaosi ",
+            subject="Aasdadsasd"
+        )
+    @restapi.method(
+        [
+            (
+                [
                     "/<int:folio_id>/send-mail",
                 ],
                 "POST",
