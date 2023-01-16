@@ -94,11 +94,10 @@ class FolioSaleLine(models.Model):
     )
     invoice_status = fields.Selection(
         string="Invoice Status",
-        help="Invoice Status; it can be: upselling, invoiced, to invoice, no",
+        help="Invoice Status; it can be: invoiced, to invoice, no",
         readonly=True,
         store=True,
         selection=[
-            ("upselling", "Upselling Opportunity"),
             ("invoiced", "Fully Invoiced"),
             ("to_invoice", "To Invoice"),
             ("no", "Nothing to Invoice"),
@@ -312,6 +311,13 @@ class FolioSaleLine(models.Model):
         default=False,
     )
 
+    section_id = fields.Many2one(
+        string="Section",
+        help="The section of the folio sale line",
+        comodel_name="folio.sale.line",
+        compute="_compute_section_id",
+    )
+
     service_order = fields.Integer(
         string="Service Id",
         help="Field to order by service id",
@@ -379,6 +385,18 @@ class FolioSaleLine(models.Model):
                 else 0
             )
 
+    def _compute_section_id(self):
+        for record in self:
+            if record.display_type == "line_section":
+                record.section_id = record.id
+            elif record.reservation_id:
+                record.section_id = record.folio_id.sale_line_ids.filtered(
+                    lambda r: r.reservation_id == record.reservation_id
+                    and r.display_type == "line_section"
+                )
+            else:
+                record.section_id = False
+
     @api.depends("service_order")
     def _compute_date_order(self):
         for record in self:
@@ -407,8 +425,7 @@ class FolioSaleLine(models.Model):
         "service_id.reservation_id.checkout",
     )
     def _compute_autoinvoice_date(self):
-        self.autoinvoice_date = False
-        for record in self.filtered(lambda r: r.invoice_status == "to_invoice"):
+        for record in self:
             record.autoinvoice_date = record._get_to_invoice_date()
 
     def _get_to_invoice_date(self):
@@ -420,8 +437,10 @@ class FolioSaleLine(models.Model):
             last_checkout = self.service_id.reservation_id.checkout
         else:
             last_checkout = self.folio_id.last_checkout
+        if not last_checkout:
+            return False
         invoicing_policy = (
-            self.pms_property_id.default_invoicing_policy
+            self.folio_id.pms_property_id.default_invoicing_policy
             if not partner or partner.invoicing_policy == "property"
             else partner.invoicing_policy
         )
@@ -429,23 +448,23 @@ class FolioSaleLine(models.Model):
             return False
         if invoicing_policy == "checkout":
             margin_days = (
-                self.pms_property_id.margin_days_autoinvoice
+                self.folio_id.pms_property_id.margin_days_autoinvoice
                 if not partner or partner.invoicing_policy == "property"
                 else partner.margin_days_autoinvoice
             )
             return last_checkout + timedelta(days=margin_days)
         if invoicing_policy == "month_day":
             month_day = (
-                self.pms_property_id.invoicing_month_day
+                self.folio_id.pms_property_id.invoicing_month_day
                 if not partner or partner.invoicing_policy == "property"
                 else partner.invoicing_month_day
             )
             if last_checkout.day <= month_day:
-                self.autoinvoice_date = last_checkout.replace(day=month_day)
+                return last_checkout.replace(day=month_day)
             else:
-                self.autoinvoice_date = (
-                    last_checkout + relativedelta.relativedelta(months=1)
-                ).replace(day=month_day)
+                return (last_checkout + relativedelta.relativedelta(months=1)).replace(
+                    day=month_day
+                )
 
     @api.depends("date_order")
     def _compute_reservation_order(self):
