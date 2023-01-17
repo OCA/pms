@@ -695,13 +695,41 @@ class PmsFolioService(Component):
         output_param=Datamodel("pms.mail.info", is_list=False),
         auth="jwt_api_pms",
     )
-    def get_folio_mail(self, folio_id):
-        PmsMailInfo = self.env.datamodels["pms.mail.info"]
-
-        return PmsMailInfo(
-            bodyMail="Oaosiaosi ",
-            subject="Aasdadsasd"
+    def get_folio_mail(self, folio_id, pms_mail_info):
+        folio = self.env["pms.folio"].browse(folio_id)
+        if pms_mail_info.mailType == "confirm":
+            compose_vals = {
+                "template_id": folio.pms_property_id.property_confirmed_template.id,
+                "model": "pms.folio",
+                "res_ids": folio.id,
+            }
+        elif pms_mail_info.mailType == "done":
+            compose_vals = {
+                "template_id": folio.pms_property_id.property_exit_template.id,
+                "model": "pms.folio",
+                "res_ids": folio.id,
+            }
+        elif pms_mail_info.mailType == "cancel":
+            # TODO: only send first cancel reservation, not all
+            # the template is not ready for multiple reservations
+            compose_vals = {
+                "template_id": folio.pms_property_id.property_canceled_template.id,
+                "model": "pms.reservation",
+                "res_ids": folio.reservation_ids.filtered(
+                    lambda r: r.state == "cancel"
+                )[0].id,
+            }
+        values = self.env["mail.compose.message"].generate_email_for_composer(
+            template_id=compose_vals["template_id"],
+            res_ids=compose_vals["res_ids"],
+            fields=["subject", "body_html"],
         )
+        PmsMailInfo = self.env.datamodels["pms.mail.info"]
+        return PmsMailInfo(
+            bodyMail=values["body"],
+            subject=values["subject"],
+        )
+
     @restapi.method(
         [
             (
