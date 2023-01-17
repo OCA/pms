@@ -43,6 +43,7 @@ class PmsFolioInfo(Datamodel):
     cancelReservations = fields.Boolean(required=False, allow_none=True)
     confirmReservations = fields.Boolean(required=False, allow_none=True)
     invoiceStatus = fields.String(required=False, allow_none=True)
+    portalUrl = fields.String(required=False, allow_none=True)
 
 
 class PmsFolioShortInfo(Datamodel):
