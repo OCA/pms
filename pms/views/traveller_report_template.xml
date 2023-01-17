@@ -13,7 +13,7 @@
                     <p class="title">PART
                         OF TRAVELERS ENTRY</p>
                     <p class="checknumber"> Document number: <strong>
-                            <span t-field="docs.id" />
+                            <span t-field="docs.identifier" />
                         </strong> / <span
                             t-field="docs.reservation_id" />
                     </p>
@@ -172,7 +172,7 @@
                 <div class="top">
                     <p class="title">PART OF TRAVELERS ENTRY</p>
                     <p class="checknumber"> Document number: <strong>
-                            <span t-field="docs.id" />
+                            <span t-field="docs.identifier" />
                         </strong> / <span
                             t-field="docs.reservation_id" />
                     </p>
