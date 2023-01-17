@@ -203,12 +203,23 @@ class PmsInvoiceService(Component):
         auth="jwt_api_pms",
     )
     def get_invoice_mail(self, invoice_id):
-        PmsMailInfo = self.env.datamodels["pms.mail.info"]
-
-        return PmsMailInfo(
-            bodyMail="Jaskdjh kaksjdh",
-            subject="Aasdadsasd",
+        invoice = self.env["account.move"].browse(invoice_id)
+        compose_vals = {
+            "template_id": self.env.ref("account.email_template_edi_invoice").id,
+            "model": "account.move",
+            "res_ids": invoice.id,
+        }
+        values = self.env["mail.compose.message"].generate_email_for_composer(
+            template_id=compose_vals["template_id"],
+            res_ids=compose_vals["res_ids"],
+            fields=["subject", "body_html"],
         )
+        PmsMailInfo = self.env.datamodels["pms.mail.info"]
+        return PmsMailInfo(
+            bodyMail=values["body"],
+            subject=values["subject"],
+        )
+
     @restapi.method(
         [
             (
