@@ -35,6 +35,10 @@ class PmsFolioService(Component):
             ]
         )
         if folio:
+            portal_url = (
+                self.env["ir.config_parameter"].sudo().get_param("web.base.url")
+                + folio.get_portal_url()
+            )
             PmsFolioInfo = self.env.datamodels["pms.folio.info"]
             return PmsFolioInfo(
                 id=folio.id,
@@ -66,6 +70,7 @@ class PmsFolioService(Component):
                 outOfServiceDescription=folio.out_service_description
                 if folio.out_service_description
                 else None,
+                portalUrl=portal_url,
             )
         else:
             raise MissingError(_("Folio not found"))
