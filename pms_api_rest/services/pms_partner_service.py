@@ -61,8 +61,11 @@ class PmsPartnerService(Component):
                     )
                 ],
                 [("display_name", "ilike", pms_partner_search_params.filter)],
-                [("email", "ilike", pms_partner_search_params.filter)],
             ]
+            if "@" in pms_partner_search_params.filter:
+                subdomains.append(
+                    [("email", "ilike", pms_partner_search_params.filter)]
+                )
             domain_partner_search_field = expression.OR(subdomains)
             domain = expression.AND([domain, domain_partner_search_field])
         PmsPartnerResults = self.env.datamodels["pms.partner.results"]
