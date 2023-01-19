@@ -139,10 +139,6 @@ class PmsReservationService(Component):
             reservation_vals.update(
                 {"segmentation_ids": [(6, 0, [reservation_data.segmentationId])]}
             )
-        if reservation_data.partnerRequests is not None:
-            reservation_vals.update(
-                {"partner_requests": reservation_data.partnerRequests}
-            )
         return reservation_vals
 
     @restapi.method(
@@ -214,7 +210,7 @@ class PmsReservationService(Component):
             reservation.room_type_id = reservation_data.roomTypeId
 
         reservation_vals = self._create_vals_from_params(
-            reservation_vals, reservation_data
+            reservation_vals, reservation_data, reservation_id,
         )
         # TODO: this should be @ pms core
         if (
@@ -607,7 +603,6 @@ class PmsReservationService(Component):
         if pms_search_param.toAssign:
             domain.append(("to_assign", "=", True))
             domain.append(("checkin", ">=", fields.Date.today()))
-            domain.append(("state", "!=", "cancel"))
         reservations = self.env["pms.reservation"].search(domain)
         PmsReservationInfo = self.env.datamodels["pms.reservation.info"]
         if not reservations:
