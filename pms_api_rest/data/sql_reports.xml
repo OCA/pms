@@ -9,6 +9,15 @@
         <field name="state">manual</field>
     </record>
 
+    <record id="date_to_field_variable_sql" model="ir.model.fields">
+        <field name="name">x_date_to</field>
+        <field name="field_description">Date</field>
+        <field name="ttype">date</field>
+        <field name="model_id" ref="sql_export.model_sql_file_wizard" />
+        <field name="model">sql.file.wizard</field>
+        <field name="state">manual</field>
+    </record>
+
     <record id="pms_property_field_variable_sql" model="ir.model.fields">
         <field name="name">x_pms_property_id</field>
         <field name="field_description">Property</field>
@@ -77,7 +86,7 @@
             ORDER BY reservation.name
         </field>
         <field
-            eval="[(6, 0, [ref('date_from_field_variable_sql'), ref('pms_property_field_variable_sql')])]"
+            eval="[(6, 0, [ref('date_from_field_variable_sql'), ref('date_to_field_variable_sql'), ref('pms_property_field_variable_sql')])]"
             name="field_ids"
         />
     </record>
@@ -111,7 +120,8 @@
                 ON line.reservation_id = reservation.id
                 LEFT JOIN pms_checkin_partner room_host
                 ON room_host.reservation_id = reservation.id
-            WHERE (line.date = %(x_date_from)s)
+            WHERE (line.date >= %(x_date_from)s)
+                AND (line.date <= %(x_date_to)s)
                 AND (line.pms_property_id = %(x_pms_property_id)s)
             GROUP BY
                 line.id, product_tmpl.name, reservation.name, reservation.rooms, reservation.adults, reservation.children;
