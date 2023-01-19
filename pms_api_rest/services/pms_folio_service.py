@@ -955,7 +955,7 @@ class PmsFolioService(Component):
             lines_to_invoice_dict.keys()
         )
         for line in sale_lines_to_invoice:
-            if line.section_id.id not in sale_lines_to_invoice.ids:
+            if line.section_id and line.section_id.id not in sale_lines_to_invoice.ids:
                 sale_lines_to_invoice |= line.section_id
                 lines_to_invoice_dict[line.section_id.id] = 0
         folios_to_invoice = sale_lines_to_invoice.folio_id
