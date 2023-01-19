@@ -1862,7 +1862,11 @@ class PmsFolio(models.Model):
         if not lines_to_invoice:
             self = self.with_context(lines_auto_add=True)
             lines_to_invoice = dict()
-            for line in self.sale_line_ids:
+            for line in self.sale_line_ids.filtered(
+                lambda l: l.qty_to_invoice > 0
+                or (l.qty_to_invoice < 0 and final)
+                or l.display_type == "line_note"
+            ):
                 if not self._context.get("autoinvoice"):
                     lines_to_invoice[line.id] = (
                         0 if line.display_type else line.qty_to_invoice
@@ -1904,7 +1908,7 @@ class PmsFolio(models.Model):
             )
             invoice_date = max(
                 self.env["pms.reservation"]
-                .search([("sale_line_ids", "in", list(lines_to_invoice.keys()))])
+                .search([("sale_line_ids", "in", lines_to_invoice.keys())])
                 .mapped("checkout")
             ) + datetime.timedelta(days=margin_days_autoinvoice)
             if invoice_date < datetime.date.today():

@@ -671,6 +671,7 @@ class PmsProperty(models.Model):
             [
                 ("sale_line_ids.autoinvoice_date", "=", date_reference),
                 ("invoice_status", "=", "to_invoice"),
+                ("amount_total", ">", 0),
             ]
         )
         paid_folios = folios.filtered(lambda f: f.pending_amount <= 0)
@@ -696,10 +697,23 @@ class PmsProperty(models.Model):
                     lambda l: not l.autoinvoice_date
                 ):
                     line._compute_autoinvoice_date()
-                invoice = folio.with_context(autoinvoice=True)._create_invoices(
-                    grouped=True,
+                # REVIEW: Reverse downpayment invoices if the downpayment is not included
+                # in the service invoice (qty_to_invoice < 0)
+                downpayment_invoices = (
+                    folio.sale_line_ids.filtered(
+                        lambda l: l.is_downpayment and l.qty_to_invoice < 0
+                    )
+                    .mapped("invoice_lines")
+                    .mapped("move_id")
+                    .filtered(lambda i: i.is_simplified_invoice)
                 )
-                if invoice:
+                if downpayment_invoices:
+                    downpayment_invoices._reverse_moves(cancel=True)
+                invoices = folio.with_context(autoinvoice=True)._create_invoices(
+                    grouped=True,
+                    final=True,
+                )
+                for invoice in invoices:
                     if (
                         invoice.amount_total
                         > invoice.pms_property_id.max_amount_simplified_invoice
