@@ -238,146 +238,106 @@ class ResPartner(models.Model):
         if hasattr(super(), "_compute_gender"):
             super()._compute_gender()
         for record in self:
-            if not record.gender and record.pms_checkin_partner_ids:
-                gender = list(
-                    filter(None, set(record.pms_checkin_partner_ids.mapped("gender")))
-                )
-                if len(gender) == 1:
-                    record.gender = gender[0]
-                else:
-                    record.gender = False
-            elif not record.gender:
-                record.gender = False
+            if record.pms_checkin_partner_ids:
+                last_update_gender = record.pms_checkin_partner_ids.filtered(
+                    lambda x: x.write_date
+                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                ).gender
+                if last_update_gender:
+                    record.gender = last_update_gender
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.birthdate_date")
     def _compute_birthdate_date(self):
         if hasattr(super(), "_compute_birthdate_date"):
             super()._compute_birthdate_date()
         for record in self:
-            if not record.birthdate_date and record.pms_checkin_partner_ids:
-                birthdate = list(
-                    filter(
-                        None,
-                        set(record.pms_checkin_partner_ids.mapped("birthdate_date")),
-                    )
-                )
-                if len(birthdate) == 1:
-                    record.birthdate_date = birthdate[0]
-                else:
-                    record.birthdate_date = False
-            elif not record.birthdate_date:
-                record.birthdate_date = False
+            if record.pms_checkin_partner_ids:
+                last_update_birthdate = record.pms_checkin_partner_ids.filtered(
+                    lambda x: x.write_date
+                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                ).birthdate_date
+                if last_update_birthdate:
+                    record.birthdate_date = last_update_birthdate
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.nationality_id")
     def _compute_nationality_id(self):
         if hasattr(super(), "_compute_nationality_id"):
             super()._compute_nationality_id()
         for record in self:
-            if not record.nationality_id and record.pms_checkin_partner_ids:
-                nationality_id = list(
-                    filter(
-                        None,
-                        set(record.pms_checkin_partner_ids.mapped("nationality_id")),
-                    )
-                )
-                if len(nationality_id) == 1:
-                    record.nationality_id = nationality_id[0]
-                else:
-                    record.nationality_id = False
-            elif not record.nationality_id:
-                record.nationality_id = False
+            if record.pms_checkin_partner_ids:
+                last_update_nationality = record.pms_checkin_partner_ids.filtered(
+                    lambda x: x.write_date
+                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                ).nationality_id
+                if last_update_nationality:
+                    record.nationality_id = last_update_nationality
+                if not record.nationality_id and record.country_id:
+                    record.nationality_id = record.country_id
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.phone")
     def _compute_phone(self):
         if hasattr(super(), "_compute_phone"):
             super()._compute_phone()
         for record in self:
-            if not record.phone and record.pms_checkin_partner_ids:
-                phone = list(
-                    filter(None, set(record.pms_checkin_partner_ids.mapped("phone")))
-                )
-                if len(phone) == 1:
-                    record.phone = phone[0]
-                else:
-                    record.phone = False
-            elif not record.phone:
-                record.phone = False
+            if record.pms_checkin_partner_ids:
+                last_update_phone = record.pms_checkin_partner_ids.filtered(
+                    lambda x: x.write_date
+                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                ).phone
+                if last_update_phone:
+                    record.phone = last_update_phone
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_street")
     def _compute_residence_street(self):
         if hasattr(super(), "_compute_residence_street"):
             super()._compute_residence_street()
         for record in self:
-            if not record.residence_street and record.pms_checkin_partner_ids:
-                residence_street = list(
-                    filter(
-                        None,
-                        set(record.pms_checkin_partner_ids.mapped("residence_street")),
-                    )
-                )
-                if len(residence_street) == 1:
-                    record.residence_street = residence_street[0]
-                else:
-                    record.residence_street = False
-            elif not record.residence_street:
-                record.residence_street = False
+            if record.pms_checkin_partner_ids:
+                last_update_street = record.pms_checkin_partner_ids.filtered(
+                    lambda x: x.write_date
+                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                ).residence_street
+                if last_update_street:
+                    record.residence_street = last_update_street
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_street2")
     def _compute_residence_street2(self):
         if hasattr(super(), "_compute_residence_street2"):
             super()._compute_residence_street2()
         for record in self:
-            if not record.residence_street2 and record.pms_checkin_partner_ids:
-                residence_street2 = list(
-                    filter(
-                        None,
-                        set(record.pms_checkin_partner_ids.mapped("residence_street2")),
-                    )
-                )
-                if len(residence_street2) == 1:
-                    record.residence_street2 = residence_street2[0]
-                else:
-                    record.residence_street2 = False
-            elif not record.residence_street2:
-                record.residence_street2 = False
+            if record.pms_checkin_partner_ids:
+                last_update_street2 = record.pms_checkin_partner_ids.filtered(
+                    lambda x: x.write_date
+                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                ).residence_street2
+                if last_update_street2:
+                    record.residence_street2 = last_update_street2
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_zip")
     def _compute_residence_zip(self):
         if hasattr(super(), "_compute_residence_zip"):
             super()._compute_residence_zip()
         for record in self:
-            if not record.residence_zip and record.pms_checkin_partner_ids:
-                residence_zip = list(
-                    filter(
-                        None,
-                        set(record.pms_checkin_partner_ids.mapped("residence_zip")),
-                    )
-                )
-                if len(residence_zip) == 1:
-                    record.residence_zip = residence_zip[0]
-                else:
-                    record.residence_zip = False
-            elif not record.residence_zip:
-                record.residence_zip = False
+            if record.pms_checkin_partner_ids:
+                last_update_zip = record.pms_checkin_partner_ids.filtered(
+                    lambda x: x.write_date
+                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                ).residence_zip
+                if last_update_zip:
+                    record.residence_zip = last_update_zip
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_city")
     def _compute_residence_city(self):
         if hasattr(super(), "_compute_residence_city"):
             super()._compute_residence_city()
         for record in self:
-            if not record.residence_city and record.pms_checkin_partner_ids:
-                residence_city = list(
-                    filter(
-                        None,
-                        set(record.pms_checkin_partner_ids.mapped("residence_city")),
-                    )
-                )
-                if len(residence_city) == 1:
-                    record.residence_city = residence_city[0]
-                else:
-                    record.residence_city = False
-            elif not record.residence_city:
-                record.residence_city = False
+            if record.pms_checkin_partner_ids:
+                last_update_city = record.pms_checkin_partner_ids.filtered(
+                    lambda x: x.write_date
+                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                ).residence_city
+                if last_update_city:
+                    record.residence_city = last_update_city
 
     @api.depends(
         "pms_checkin_partner_ids",
@@ -388,25 +348,13 @@ class ResPartner(models.Model):
         if hasattr(super(), "_compute_residence_country_id"):
             super()._compute_residence_country_id()
         for record in self:
-            if not record.residence_country_id and record.pms_checkin_partner_ids:
-                residence_country_id = list(
-                    filter(
-                        None,
-                        set(
-                            record.pms_checkin_partner_ids.mapped(
-                                "residence_country_id"
-                            )
-                        ),
-                    )
-                )
-                if len(residence_country_id) == 1:
-                    record.residence_country_id = residence_country_id[0]
-                else:
-                    record.residence_country_id = False
-            elif not record.residence_country_id and record.nationality_id:
-                record.residence_country_id = record.nationality_id
-            elif not record.residence_country_id:
-                record.residence_country_id = False
+            if record.pms_checkin_partner_ids:
+                last_update_country = record.pms_checkin_partner_ids.filtered(
+                    lambda x: x.write_date
+                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                ).residence_country_id
+                if last_update_country:
+                    record.residence_country_id = last_update_country
 
     @api.depends(
         "pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_state_id"
@@ -415,21 +363,13 @@ class ResPartner(models.Model):
         if hasattr(super(), "_compute_residence_state_id"):
             super()._compute_residence_state_id()
         for record in self:
-            if not record.residence_state_id and record.pms_checkin_partner_ids:
-                residence_state_id = list(
-                    filter(
-                        None,
-                        set(
-                            record.pms_checkin_partner_ids.mapped("residence_state_id")
-                        ),
-                    )
-                )
-                if len(residence_state_id) == 1:
-                    record.residence_state_id = residence_state_id[0]
-                else:
-                    record.residence_state_id = False
-            elif not record.residence_state_id:
-                record.residence_state_id = False
+            if record.pms_checkin_partner_ids:
+                last_update_state = record.pms_checkin_partner_ids.filtered(
+                    lambda x: x.write_date
+                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                ).residence_state_id
+                if last_update_state:
+                    record.residence_state_id = last_update_state
 
     @api.depends(
         "pms_checkin_partner_ids",
@@ -443,27 +383,13 @@ class ResPartner(models.Model):
         if hasattr(super(), "_compute_email"):
             super()._compute_email()
         for record in self:
-            if not record.email and (
-                record.pms_checkin_partner_ids
-                or record.pms_reservation_ids
-                or record.pms_folio_ids
-            ):
-                email = list(
-                    filter(
-                        None,
-                        set(
-                            record.pms_checkin_partner_ids.mapped("email")
-                            + record.pms_reservation_ids.mapped("email")
-                            + record.pms_folio_ids.mapped("email"),
-                        ),
-                    )
-                )
-                if len(email) == 1:
-                    record.email = email[0]
-                else:
-                    record.email = False
-            elif not record.email:
-                record.email = False
+            if record.pms_checkin_partner_ids:
+                last_update_checkin_mail = record.pms_checkin_partner_ids.filtered(
+                    lambda x: x.write_date
+                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                ).email
+                if last_update_checkin_mail:
+                    record.email = last_update_checkin_mail
 
     @api.depends(
         "pms_checkin_partner_ids",
@@ -477,79 +403,52 @@ class ResPartner(models.Model):
         if hasattr(super(), "_compute_mobile"):
             super()._compute_mobile()
         for record in self:
-            if not record.mobile and (
-                record.pms_checkin_partner_ids
-                or record.pms_reservation_ids
-                or record.pms_folio_ids
-            ):
-                mobile = list(
-                    filter(
-                        None,
-                        set(
-                            record.pms_checkin_partner_ids.mapped("mobile")
-                            + record.pms_reservation_ids.mapped("mobile")
-                            + record.pms_folio_ids.mapped("mobile"),
-                        ),
-                    )
-                )
-                if len(mobile) == 1:
-                    record.mobile = mobile[0]
-                else:
-                    record.mobile = False
-            elif not record.mobile:
-                record.mobile = False
+            if record.pms_checkin_partner_ids:
+                last_update_mobile = record.pms_checkin_partner_ids.filtered(
+                    lambda x: x.write_date
+                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                ).mobile
+                if last_update_mobile:
+                    record.mobile = last_update_mobile
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.firstname")
     def _compute_firstname(self):
         if hasattr(super(), "_compute_firstname"):
             super()._compute_firstname()
         for record in self:
-            if not record.firstname and record.pms_checkin_partner_ids:
-                firstname = list(
-                    filter(
-                        None, set(record.pms_checkin_partner_ids.mapped("firstname"))
-                    )
-                )
-                if len(firstname) == 1:
-                    record.firstname = firstname[0]
-                else:
-                    record.firstname = False
-            elif not record.firstname:
-                record.firstname = False
+            if record.pms_checkin_partner_ids:
+                last_update_firstname = record.pms_checkin_partner_ids.filtered(
+                    lambda x: x.write_date
+                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                ).firstname
+                if last_update_firstname:
+                    record.firstname = last_update_firstname
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.lastname")
     def _compute_lastname(self):
         if hasattr(super(), "_compute_lastname"):
             super()._compute_lastname()
         for record in self:
-            if not record.lastname and record.pms_checkin_partner_ids:
-                lastname = list(
-                    filter(None, set(record.pms_checkin_partner_ids.mapped("lastname")))
-                )
-                if len(lastname) == 1:
-                    record.lastname = lastname[0]
-                else:
-                    record.lastname = False
-            elif not record.lastname:
-                record.lastname = False
+            if record.pms_checkin_partner_ids:
+                last_update_lastname = record.pms_checkin_partner_ids.filtered(
+                    lambda x: x.write_date
+                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                ).lastname
+                if last_update_lastname:
+                    record.lastname = last_update_lastname
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.lastname2")
     def _compute_lastname2(self):
         if hasattr(super(), "_compute_lastname2"):
             super()._compute_lastname2()
         for record in self:
-            if not record.lastname2 and record.pms_checkin_partner_ids:
-                lastname2 = list(
-                    filter(
-                        None, set(record.pms_checkin_partner_ids.mapped("lastname2"))
-                    )
-                )
-                if len(lastname2) == 1:
-                    record.lastname2 = lastname2[0]
-                else:
-                    record.lastname2 = False
-            elif not record.lastname2:
-                record.lastname2 = False
+            if record.pms_checkin_partner_ids:
+                last_update_lastname2 = record.pms_checkin_partner_ids.filtered(
+                    lambda x: x.write_date
+                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                ).lastname2
+                if last_update_lastname2:
+                    record.lastname2 = last_update_lastname2
 
     @api.depends("residence_country_id")
     def _compute_country_id(self):
@@ -562,8 +461,6 @@ class ResPartner(models.Model):
                 and record.residence_country_id
             ):
                 record.country_id = record.residence_country_id
-            elif not record.country_id:
-                record.country_id = False
 
     @api.depends("residence_state_id")
     def _compute_state_id(self):
@@ -576,8 +473,6 @@ class ResPartner(models.Model):
                 and record.residence_state_id
             ):
                 record.state_id = record.residence_state_id
-            elif not record.state_id:
-                record.state_id = False
 
     @api.depends("residence_city")
     def _compute_city(self):
@@ -586,8 +481,6 @@ class ResPartner(models.Model):
         for record in self:
             if not record.parent_id and not record.city and record.residence_city:
                 record.city = record.residence_city
-            elif not record.city:
-                record.city = False
 
     @api.depends("residence_street")
     def _compute_street(self):
@@ -596,8 +489,6 @@ class ResPartner(models.Model):
         for record in self:
             if not record.parent_id and not record.street and record.residence_street:
                 record.street = record.residence_street
-            elif not record.street:
-                record.street = False
 
     @api.depends("residence_street2")
     def _compute_street2(self):
@@ -606,8 +497,6 @@ class ResPartner(models.Model):
         for record in self:
             if not record.parent_id and not record.street2 and record.residence_street2:
                 record.street2 = record.residence_street2
-            elif not record.street2:
-                record.street2 = False
 
     @api.depends("residence_zip")
     def _compute_zip(self):
@@ -616,8 +505,6 @@ class ResPartner(models.Model):
         for record in self:
             if not record.parent_id and not record.zip and record.residence_zip:
                 record.zip = record.residence_zip
-            elif not record.zip:
-                record.zip = False
 
     def _compute_reservations_count(self):
         # Return reservation with partner included in reservation and/or checkin
