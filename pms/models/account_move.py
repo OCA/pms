@@ -277,6 +277,8 @@ class AccountMove(models.Model):
                         and (
                             line.move_id.partner_id == move.partner_id
                             or not line.move_id.partner_id
+                            or move.partner_id
+                            == self.env.ref("pms.various_pms_partner")
                         )
                     )
                 )
@@ -318,6 +320,8 @@ class AccountMove(models.Model):
                     return payments.filtered(
                         lambda p: p.id in [item.id for item in combi]
                     )
+                if sum(invoice.folio_ids.mapped("pending_amount")) == 0:
+                    return payments
         return []
 
     @api.model
