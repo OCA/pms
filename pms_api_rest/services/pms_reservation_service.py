@@ -210,7 +210,9 @@ class PmsReservationService(Component):
             reservation.room_type_id = reservation_data.roomTypeId
 
         reservation_vals = self._create_vals_from_params(
-            reservation_vals, reservation_data, reservation_id,
+            reservation_vals,
+            reservation_data,
+            reservation_id,
         )
         # TODO: this should be @ pms core
         if (
