@@ -188,12 +188,13 @@ class PmsServiceService(Component):
     def services_report(self, pms_report_search_param):
         pms_property_id = pms_report_search_param.pmsPropertyId
         date_from = fields.Date.from_string(pms_report_search_param.dateFrom)
-
+        date_to = fields.Date.from_string(pms_report_search_param.dateTo)
         query = self.env.ref("pms_api_rest.sql_export_services")
         if not query:
             raise MissingError(_("SQL query not found"))
         report_wizard = self.env["sql.file.wizard"].create({"sql_export_id": query.id})
         report_wizard.x_date_from = date_from
+        report_wizard.x_date_to = date_to
         report_wizard.x_pms_property_id = pms_property_id
         if not report_wizard._fields.get(
             "x_date_from"
