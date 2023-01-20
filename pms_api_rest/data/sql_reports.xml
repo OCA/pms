@@ -121,7 +121,6 @@
                 LEFT JOIN pms_checkin_partner room_host
                 ON room_host.reservation_id = reservation.id
             WHERE (line.date >= %(x_date_from)s)
-                AND (line.date <= %(x_date_to)s)
                 AND (line.pms_property_id = %(x_pms_property_id)s)
             GROUP BY
                 line.id, product_tmpl.name, reservation.name, reservation.rooms, reservation.adults, reservation.children;
