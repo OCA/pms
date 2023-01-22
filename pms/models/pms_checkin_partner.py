@@ -501,20 +501,8 @@ class PmsCheckinPartner(models.Model):
         for record in self:
             if not record.partner_id:
                 if record.document_number and record.document_type:
-                    number = (
-                        self.sudo()
-                        .env["res.partner.id_number"]
-                        .search(
-                            [
-                                ("name", "=", record.document_number),
-                                ("category_id", "=", record.document_type.id),
-                            ]
-                        )
-                    )
-                    partner = (
-                        self.sudo()
-                        .env["res.partner"]
-                        .search([("id", "=", number.partner_id.id)])
+                    partner = self._get_partner_by_document(
+                        record.document_number, record.document_type
                     )
                     if not partner:
                         if record.firstname or record.lastname or record.lastname2:
@@ -532,6 +520,22 @@ class PmsCheckinPartner(models.Model):
                                 .create(partner_values)
                             )
                     record.partner_id = partner
+
+    @api.model
+    def _get_partner_by_document(self, document_number, document_type):
+        number = (
+            self.sudo()
+            .env["res.partner.id_number"]
+            .search(
+                [
+                    ("name", "=", self.document_number),
+                    ("category_id", "=", self.document_type.id),
+                ]
+            )
+        )
+        return (
+            self.sudo().env["res.partner"].search([("id", "=", number.partner_id.id)])
+        )
 
     @api.depends("email", "mobile")
     def _compute_possible_existing_customer_ids(self):
