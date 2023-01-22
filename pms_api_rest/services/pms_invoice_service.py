@@ -265,7 +265,7 @@ class PmsInvoiceService(Component):
             if line_info:
                 line_info = line_info[0]
                 line_values = {}
-                if line_info.name and line_info.name != line.name:
+                if line_info.name:
                     line_values["name"] = line_info.name
                 if line_info.quantity and line_info.quantity != line.quantity:
                     line_values["quantity"] = line_info.quantity
