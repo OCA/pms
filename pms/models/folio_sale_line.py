@@ -11,6 +11,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.osv import expression
 from odoo.tools import float_compare
+from odoo.tools.float_utils import float_round
 from odoo.tools.misc import get_lang
 
 
@@ -947,7 +948,7 @@ class FolioSaleLine(models.Model):
         """
         return new or old
 
-    def _update_line_quantity(self, values):
+    def _mens_update_line_quantity(self, values):
         folios = self.mapped("folio_id")
         for order in folios:
             order_lines = self.filtered(lambda x: x.folio_id == order)
@@ -977,27 +978,46 @@ class FolioSaleLine(models.Model):
         fields_modified = self.env["ir.model.fields"].search(
             [("name", "in", protected_fields_modified_list), ("model", "=", self._name)]
         )
-        if fields_modified:
-            if self.filtered(
-                lambda l: any(
-                    values.get(field.name) != getattr(l, field.name)
-                    for field in fields_modified
-                )
-            ) and (
-                "done" in self.mapped("folio_id.state")
-                or self.invoice_lines.filtered(
-                    lambda l: l.move_id.state == "posted"
-                    and l.move_id.move_type == "out_invoice"
-                    and l.move_id.payment_state != "reversed"
-                )
-            ):
-                raise UserError(
-                    _(
-                        """It is forbidden to modify the following fields
-                        in a locked folio (fields already invoiced):\n%s"""
+        if fields_modified or "product_uom_qty" in values:
+            # If value is float, we need to round it to compare with the original value
+            for field in fields_modified:
+                if field.ttype in ["float", "monetary"] and field.name in values:
+                    values[field.name] = float_round(
+                        values[field.name], precision_digits=2
                     )
-                    % "\n".join(fields_modified.mapped("field_description"))
-                )
+            has_locked_folio = "done" in self.mapped(
+                "folio_id.state"
+            ) or self.invoice_lines.filtered(
+                lambda l: l.move_id.state == "posted"
+                and l.move_id.move_type == "out_invoice"
+                and l.move_id.payment_state != "reversed"
+            )
+            if has_locked_folio:
+                # We check that dont reduced the invoiced quantity in locked folios
+                if "product_uom_qty" in values and any(
+                    line.qty_invoiced > values["product_uom_qty"] for line in self
+                ):
+                    raise UserError(
+                        _(
+                            """You cannot reduce the invoiced quantity below
+                            the quantity already invoiced."""
+                        )
+                    )
+                # We check that dont modified the protected fields in locked folios
+                if self.filtered(
+                    lambda l: any(
+                        values.get(field.name) != getattr(l, field.name)
+                        for field in fields_modified
+                    )
+                ):
+                    raise UserError(
+                        _(
+                            """It is forbidden to modify the following fields
+                            in a locked folio (fields already invoiced):\n%s"""
+                        )
+                        % "\n".join(fields_modified.mapped("field_description"))
+                    )
+            # If has draft invoices, we need to update the invoice lines
             if "draft" in self.mapped("invoice_lines.move_id.state"):
                 if "product_uom_qty" in values:
                     for line in self:
@@ -1009,8 +1029,6 @@ class FolioSaleLine(models.Model):
                                 )
                             )
                 for line in self.filtered(lambda l: not l.display_type):
-                    if "product_uom_qty" in values:
-                        line._update_line_quantity(values)
                     mapped_fields = self._get_mapped_move_line_fields()
                     move_line_vals = [
                         (
@@ -1022,9 +1040,15 @@ class FolioSaleLine(models.Model):
                             },
                         )
                     ]
+                    # Add invoice line name in values to avoid
+                    # overwriting the name by _move_autocomplete_invoice_lines_values
+                    if not move_line_vals[0][2].get("name"):
+                        move_line_vals[0][2]["name"] = line.name
                     line[0].invoice_lines.move_id.write(
                         {"invoice_line_ids": move_line_vals}
                     )
+                    if "product_uom_qty" in values:
+                        line._mens_update_line_quantity(values)
 
         result = super(FolioSaleLine, self).write(values)
         return result
@@ -1067,28 +1091,15 @@ class FolioSaleLine(models.Model):
             res["account_id"] = False
         return res
 
-    def _check_line_unlink(self):
-        """
-        Check wether a line can be deleted or not.
-
-        Lines cannot be deleted if the folio is confirmed; downpayment
-        lines who have not yet been invoiced bypass that exception.
-        :rtype: recordset folio.sale.line
-        :returns: set of lines that cannot be deleted
-        """
-        return self.filtered(
-            lambda line: line.state not in ("draft")
-            and (line.invoice_lines or not line.is_downpayment)
-        )
-
-    # def unlink(self):
-    #     if self._check_line_unlink():
-    #         raise UserError(
-    #             _("""You can not remove an sale line once the sales
-    #               folio is confirmed.\n
-    #               You should rather set the quantity to 0.""")
-    #         )
-    #     return super(FolioSaleLine, self).unlink()
+    def unlink(self):
+        if self.invoice_lines:
+            raise UserError(
+                _(
+                    "You cannot delete a sale order line once a "
+                    "invoice has been created from it."
+                )
+            )
+        return super(FolioSaleLine, self).unlink()
 
     def _get_real_price_currency(self, product, rule_id, qty, uom, pricelist_id):
         """Retrieve the price before applying the pricelist
