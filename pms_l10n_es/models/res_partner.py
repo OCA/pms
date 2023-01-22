@@ -49,11 +49,15 @@ class ResPartner(models.Model):
         res = super(ResPartner, self).write(vals)
         # REVIEW: Force Contrain vat
         # https://github.com/odoo/odoo/issues/23242
-        if vals.get("vat") or vals.get("country_id"):
-            country = self.env["res.country"].browse(vals.get("country_id"))
-            if country.code == "ES":
-                self.check_vat()
-            self._pms_check_unique_vat()
+        for partner in self:
+            if vals.get("vat") or vals.get("country_id"):
+                country = (
+                    self.env["res.country"].browse(vals.get("country_id"))
+                    or partner.country_id
+                )
+                if country.code == "ES":
+                    self.check_vat()
+                self._pms_check_unique_vat()
         return res
 
     @api.model
@@ -71,43 +75,45 @@ class ResPartner(models.Model):
     # This function is a candidate to be moved to the module
     # partner_vat_unique
     def _pms_check_unique_vat(self):
-        Partner = self.with_context(active_test=False).sudo()
+        for partner in self.filtered(lambda p: p.vat and p.country_id):
+            repeat_partner = self._get_repeat_partner(partner)
+            if bool(partner.vat) and not partner.parent_id and repeat_partner:
+                raise UserError(
+                    _("The VAT number %s already exists in other contacts: %s")
+                    % (
+                        repeat_partner.vat,
+                        repeat_partner.name,
+                    )
+                )
+
+    def _get_repeat_partner(self, partner):
         europe = self.env.ref("base.europe")
         if not europe:
             europe = self.env["res.country.group"].search(
                 [("name", "=", "Europe")], limit=1
             )
-        for partner in self.filtered(lambda p: p.vat and p.country_id):
-            partner_country_code = partner.commercial_partner_id.country_id.code
-            vat_country, vat_number = self._split_vat(partner.vat)
-            if europe and partner.country_id.id in europe.country_ids.ids:
-                vat_country = _eu_country_vat.get(vat_country, vat_country).upper()
-            vat_with_code = (
-                partner.vat
-                if partner_country_code.upper() == vat_country.upper()
-                else partner_country_code.upper() + partner.vat
-            )
-            vat_without_code = (
-                partner.vat
-                if partner_country_code.upper() != vat_country.upper()
-                else vat_number
-            )
-            domain = [
-                ("company_id", "in", [False, partner.company_id.id]),
-                "|",
-                ("vat", "=", vat_with_code),
-                ("vat", "=", vat_without_code),
-            ]
-            domain += [("id", "!=", partner.id), "!", ("id", "child_of", partner.id)]
-            repeat_partner = Partner.search(domain, limit=1)
-            if bool(partner.vat) and not partner.parent_id and repeat_partner:
-                raise UserError(
-                    _("The VAT number %s already exists in other contacts: %s")
-                    % (
-                        vat_without_code,
-                        repeat_partner.name,
-                    )
-                )
+        partner_country_code = partner.commercial_partner_id.country_id.code
+        vat_country, vat_number = self._split_vat(partner.vat)
+        if europe and partner.country_id.id in europe.country_ids.ids:
+            vat_country = _eu_country_vat.get(vat_country, vat_country).upper()
+        vat_with_code = (
+            partner.vat
+            if partner_country_code.upper() == vat_country.upper()
+            else partner_country_code.upper() + partner.vat
+        )
+        vat_without_code = (
+            partner.vat
+            if partner_country_code.upper() != vat_country.upper()
+            else vat_number
+        )
+        domain = [
+            ("company_id", "in", [False, partner.company_id.id]),
+            "|",
+            ("vat", "=", vat_with_code),
+            ("vat", "=", vat_without_code),
+        ]
+        domain += [("id", "!=", partner.id), "!", ("id", "child_of", partner.id)]
+        return self.with_context(active_test=False).search(domain, limit=1)
 
     def _missing_document(self, vals, partners=False):
         res = super(ResPartner, self)._missing_document(vals)
