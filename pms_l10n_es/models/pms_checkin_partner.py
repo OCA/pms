@@ -63,3 +63,22 @@ class PmsCheckinPartner(models.Model):
         manual_fields = super(PmsCheckinPartner, self)._checkin_manual_fields(depends)
         manual_fields.extend(["support_number"])
         return manual_fields
+
+    def _get_partner_by_document(self, document_number, document_type):
+        # if not find partner by documents (super method) then search by
+        # partner fields, VAT, or aeat_identification equivalent
+        partner = super(PmsCheckinPartner, self)._get_partner_by_document(
+            document_number, document_type
+        )
+        if not partner and document_number and document_type:
+            if document_type.aeat_identification_type in ["03", "05", "06"]:
+                search_field_name = "aeat_identification"
+                search_comparison = "="
+            elif document_type.aeat_identification_type in ["02", "04"]:
+                search_field_name = "vat"
+                search_comparison = "ilike"
+            if search_field_name:
+                partner = self.env["res.partner"].search(
+                    [(search_field_name, search_comparison, document_number)], limit=1
+                )
+        return partner
