@@ -412,78 +412,91 @@ class PortalPrecheckin(CustomerPortal):
             request.env["pms.checkin.partner"].sudo().browse(checkin_partner_id)
         )
         values = {}
-        values.update({"folio": folio})
-        values.update({"reservation": reservation})
-        values.update({"checkin_partner": checkin_partner})
-        return request.render("pms.portal_my_precheckin_detail", values)
-
-    @http.route(
-        ["/my/precheckin/<int:folio_id>/checkin/<int:checkin_partner_id>"],
-        type="http",
-        auth="public",
-        website=True,
-        csrf=False,
-    )
-    def portal_precheckin_submit(self, folio_id, checkin_partner_id, **kw):
-        error, error_message = {}, {}
-        if kw.get("checkin_pos"):
-            checkin_pos = int(kw.get("checkin_pos"))
-        else:
-            checkin_pos = -2
-        folio_id = request.env["pms.folio"].sudo().browse(folio_id)
+        zip_ids = request.env["res.city.zip"].search([])
         country_ids = request.env["res.country"].search([])
         state_ids = request.env["res.country.state"].search([])
+        city_ids = request.env["res.city"].search([])
         doc_type_ids = request.env["res.partner.id_category"].sudo().search([])
-        values = kw
-        if not kw.get("first") and kw.get("checkin_pos") and not kw.get("back"):
-            error, error_message = self.form_validate(kw, None)
-        if not kw.get("first") and not kw.get("back") and not error:
-            kw.update({"checkin_partner_id": checkin_partner_id})
-            if kw.get("residence_state_id") == "placeholder":
-                kw["residence_state_id"] = False
-            if kw.get("residence_country_id") == "placeholder":
-                kw["residence_country_id"] = False
-            request.env["pms.checkin.partner"]._save_data_from_portal(kw)
-        if error:
-            checkin_pos = checkin_pos - 1
-            values.update({"checkin_pos": checkin_pos})
-        if checkin_pos == len(folio_id.checkin_partner_ids):
-            values = {
-                "folio": folio_id,
-                "no_breadcrumbs": True,
-            }
-            return request.render("pms.portal_my_precheckin_end", values)
-        if checkin_pos == -2:
-            return request.render("pms.portal_my_precheckin_end", values)
-        values.update(
-            {
-                "folio": folio_id,
-                "error": error,
-                "error_message": error_message,
-                "country_ids": country_ids,
-                "state_ids": state_ids,
-                "doc_type_ids": doc_type_ids,
-                "checkin_pos": checkin_pos,
-            }
-        )
-        if checkin_pos >= 0:
-            available_checkins = folio_id.checkin_partner_ids.filtered(
-                lambda c: c.state in ["dummy", "draft"]
-            )
-            if available_checkins:
-                checkin_partner = available_checkins[0]
-            else:
-                return request.render("pms.portal_not_checkin", values)
         access_token = checkin_partner.access_token
         if not checkin_partner.access_token:
             access_token = PortalMixin._portal_ensure_token(checkin_partner)
         values.update(
             self._precheckin_get_page_view_values(checkin_partner.id, access_token)
         )
-        values.update({"no_breadcrumbs": True})
-        if checkin_partner.state not in ["dummy", "draft"]:
-            return request.render("pms.portal_not_checkin", values)
+        values.update(
+           {
+                "folio": folio,
+                "reservation": reservation,
+                "checkin_partner": checkin_partner,
+                "zip_ids": zip_ids,
+                "country_ids": country_ids,
+                "state_ids": state_ids,
+                "city_ids": city_ids,
+                "doc_type_ids": doc_type_ids,
+            }
+        )
         return request.render("pms.portal_my_precheckin_detail", values)
+
+    @http.route(
+        ["/my/precheckin/<int:folio_id>/<int:reservation_id>/checkin/<int:checkin_partner_id>"],
+        type="http",
+        auth="public",
+        website=True,
+        csrf=False,
+    )
+    def portal_precheckin_submit(self, folio_id,reservation_id, checkin_partner_id, **kw):
+        checkin_partner = (
+            request.env["pms.checkin.partner"].sudo().browse(checkin_partner_id)
+        )
+        values = kw
+        values.update(
+            {
+                "checkin_partner": checkin_partner,
+            }
+        )
+        print(kw)
+        print(values)
+        # if not kw.get("first") and kw.get("checkin_pos") and not kw.get("back"):
+        #     error, error_message = self.form_validate(kw, None)
+        # if not kw.get("first") and not kw.get("back") and not error:
+        #     kw.update({"checkin_partner_id": checkin_partner_id})
+        if values.get("residence_state_id") == "placeholder":
+            values["residence_state_id"] = False
+        if values.get("residence_country_id") == "placeholder":
+            values["residence_country_id"] = False
+
+
+
+        # if checkin_pos == len(folio_id.checkin_partner_ids):
+        #     values = {
+        #         "folio": folio_id,
+        #         "no_breadcrumbs": True,
+        #     }
+        #     return request.render("pms.portal_my_precheckin_end", values)
+
+
+        # if checkin_pos >= 0:
+        #     available_checkins = folio_id.checkin_partner_ids.filtered(
+        #         lambda c: c.state in ["dummy", "draft"]
+        #     )
+        #     if available_checkins:
+        #         checkin_partner = available_checkins[0]
+        #     else:
+        #         return request.render("pms.portal_not_checkin", values)
+
+        #request.env["pms.checkin.partner"]._save_data_from_portal(kw)
+        folio = request.env["pms.folio"].sudo().browse(folio_id)
+        reservation = request.env["pms.reservation"].sudo().browse(reservation_id)
+
+        values.update(
+        {
+            "folio": folio,
+            "reservation": reservation,
+        })
+        # values.update({"no_breadcrumbs": True})
+        # if checkin_partner.state not in ["dummy", "draft"]:
+        #     return request.render("pms.portal_not_checkin", values)
+        return request.render("pms.portal_my_prechekin_reservation", values)
 
     @http.route(
         ["/my/folios/<int:folio_id>/invitations"],
@@ -523,27 +536,10 @@ class PortalPrecheckin(CustomerPortal):
                 ):
                     error[mobile] = "error"
                     error_message[mobile] = "Invalid phone"
-            birthdate_date = "birthdate_date"
-            if data.get("birthdate_date") and data.get("birthdate_date") > str(
-                fields.Datetime.today()
-            ):
-                error[birthdate_date] = "error"
-                error_message[birthdate_date] = "Birthdate must be less than today"
             email = "email"
             if data.get("email") and not tools.single_email_re.match(data.get("email")):
                 error[email] = "error"
                 error_message[email] = "Email format is wrong"
-            firstname = "firstname"
-            if (
-                not data.get("firstname")
-                and not data.get("lastname")
-                and not data.get("lastname2")
-            ):
-                error[firstname] = "error"
-                error_message[firstname] = "Firstname or any lastname are not included"
-            if not data.get("gender"):
-                error["gender"] = "error"
-                error_message["gender"] = _("Gender is mandatory")
             if not data.get("document_number"):
                 error["document_number"] = "error"
                 error_message["document_number"] = "Document number is mandatory"
