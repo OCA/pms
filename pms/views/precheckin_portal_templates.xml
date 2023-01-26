@@ -303,7 +303,7 @@
                             >Nationality *</label><br/>
                             <div class="dropdown">
                               <input type="text"  t-attf-class="form-control" placeholder="Search.." id="myInput" onclick="showCountries(true)" oninput="filterFunction()"/>
-                              <div id="myDropdown" class="dropdown-content">
+                              <div id="myDropdown" class="dropdown-content d-none">
 
                                     <t t-foreach="country_ids" t-as='country_id'>
                                         <a t-attf-onclick="selectNationality(this)">
@@ -387,7 +387,7 @@
                                     oninput="filterZips()"
                                     autocomplete="off"
                                     />
-                              <div id="myZipDropdown" class="dropdown-content">
+                              <div id="myZipDropdown" class="dropdown-content d-none">
 
                                     <t t-foreach="zip_ids" t-as='zip_id'>
                                         <a  t-attf-onclick="completeAddressData(this)">
@@ -571,7 +571,6 @@
 }
 
 .dropdown-content {
-  display: none;
   position: absolute;
   background-color: #f6f6f6;
   min-width: 230px;
@@ -634,12 +633,12 @@
             };
             this.changeFormClass()
 
-            let select_residence_country = document.getElementById('residence-country')
+            var select_residence_country = document.getElementById('residence-country')
 
             select_residence_country.addEventListener("change", () => {
                 this.filterStates();
             });
-            let select_residence_state = document.getElementById('residence-state')
+
 
             function filterStates(){
                 let country_value = select_residence_country.value
@@ -671,9 +670,9 @@
 
             function showCountries(show){
                 if(show){
-                    document.getElementById("myDropdown").classList.toggle("show");
+                    document.getElementById("myDropdown").classList.remove("d-none");
                 }else{
-                    document.getElementById("myDropdown").classList.toggle("show");
+                    document.getElementById("myDropdown").classList.add("d-none");
                 }
 
             }
@@ -685,9 +684,9 @@
             }
             function showZips(showZips){
                 if(showZips){
-                    document.getElementById("myZipDropdown").classList.toggle("show");
+                    document.getElementById("myZipDropdown").classList.remove("d-none");
                 }else{
-                    document.getElementById("myZipDropdown").classList.toggle("show");
+                    document.getElementById("myZipDropdown").classList.add("d-none");
                 }
             }
 
