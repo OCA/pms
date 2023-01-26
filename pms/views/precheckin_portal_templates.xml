@@ -217,7 +217,7 @@
                                 <label
                                 class="col-form-label"
                                 for="document_type"
-                            >Doc. Type</label>
+                            >Doc. Type *</label>
                                 <select
                                 class="form-control"
                                 name='document_type'
@@ -242,7 +242,7 @@
                                 <label
                                 class="col-form-label"
                                 for="document_number"
-                            >Doc. Number</label>
+                            >Doc. Number *</label>
                                 <input
                                 type="text"
                                 name="document_number"
@@ -252,29 +252,33 @@
 
                             </div>
 
-
-                            <div t-attf-class="form-group col-12 col-md-6">
+                        <div t-attf-class="form-group col-12 col-md-6">
                                 <label
                                 class="col-form-label"
                                 for="document_expedition_date"
-                            >Doc. Expedition Date/Doc. Validity Date</label>
-                                <span
+                            >Doc. Expedition Date/Doc. Validity Date *</label>
+                            <span
                                 class="fa fa-question-circle fa-lg ml-4"
                                 data-toggle="tooltip"
                                 title="If you enter the validity date of the document, the expedition date will be automatically calculated and entered depending on the document type."
                             />
                                 <input
-                                type="date"
+                                type="text"
                                 name="document_expedition_date"
+                                id="docExpDate"
                                 t-attf-class="form-control"
+                                data-date-format="dd/mm/yyyy"
+                                value="01/01/2020"
+                                t-attf-onclick="changeDatepickerArrow(this)"
                             />
+                            <span id="docExpDate-error" class="d-none text-danger">Doc. Expedition or Validate date is a required field</span>
 
                             </div>
                             <div t-attf-class="form-group col-12 col-md-6">
                                 <label
                                 class="col-form-label"
                                 for="datepicker"
-                            > Birth Date</label>
+                            > Birth Date *</label>
                                 <input
                                 type="text"
                                 name="birthdate"
@@ -282,7 +286,7 @@
                                 t-attf-class="form-control"
                                 data-date-format="dd/mm/yyyy"
                                 value="01/01/1980"
-                                t-attf-onclick="removeErrorClass(this)"
+                                t-attf-onclick="changeDatepickerArrow(this)"
                             />
                             <span id="birthdate-error" class="d-none text-danger">Birthdate cannot be older than today</span>
 
@@ -296,9 +300,9 @@
                                 <label
                                 class="col-form-label"
                                 for="nationality_id"
-                            >Nationality</label><br/>
+                            >Nationality *</label><br/>
                             <div class="dropdown">
-                              <input type="text" placeholder="Search.." id="myInput" onclick="showCountries(true)" oninput="filterFunction()" t-attf-class="form-control"/>
+                              <input type="text"  t-attf-class="form-control" placeholder="Search.." id="myInput" onclick="showCountries(true)" oninput="filterFunction()"/>
                               <div id="myDropdown" class="dropdown-content">
 
                                     <t t-foreach="country_ids" t-as='country_id'>
@@ -355,7 +359,7 @@
                                 <label
                                 class="col-form-label"
                                 for="residence_street"
-                            >Residence Address</label>
+                            >Residence Address *</label>
                                 <input
                                 type="text"
                                 placeholder="Street"
@@ -371,14 +375,18 @@
                                 t-attf-class="form-control"
                             />
                             </div>
-                            <div t-attf-class="form-group col-md-4">
-                                <label
-                                class="col-form-label"
-                                for="zip_id"
-                                >Zip</label>
+                            <div t-attf-class="form-group col-12 col-md-6">
                                 <div class="dropdown">
 
-                                <input name="residence_city_zip" type="text" placeholder="Search.." id="myZipInput" onclick="showZips(true)" oninput="filterZips()"/>
+                                <input
+                                    name="residence_city_zip"
+                                    t-attf-class="form-control"
+                                    type="text"
+                                    placeholder="Type your zip code here" id="myZipInput"
+                                    onclick="showZips(true)"
+                                    oninput="filterZips()"
+                                    autocomplete="off"
+                                    />
                               <div id="myZipDropdown" class="dropdown-content">
 
                                     <t t-foreach="zip_ids" t-as='zip_id'>
@@ -398,7 +406,7 @@
                             </div>
                             </div>
 
-                            <div t-attf-class="form-group col-md-4">
+                            <div t-attf-class="form-group col-12 col-md-6">
                                 <input
                                     type="text"
                                     placeholder="City"
@@ -407,8 +415,7 @@
                                     t-attf-class="form-control"
                                 />
                             </div>
-
-                            <div t-attf-class="form-group col-md-4">
+                         <div t-attf-class="form-group col-12 col-md-6">
                                 <select
                                 t-attf-class="form-control"
                                 id="residence-country"
@@ -430,7 +437,7 @@
                                     </t>
                                 </select>
                             </div>
-                            <div t-attf-class="form-group col-md-12 pb-md-3">
+                            <div t-attf-class="form-group col-12 col-md-6 pb-md-3">
                                 <select
                                 t-attf-class="form-control"
                                 id="residence-state"
@@ -453,6 +460,8 @@
                                     </t>
                                 </select>
                             </div>
+
+
                             <div t-attf-class="form-group col-md-12">
                                 <button
                                         type="button"
@@ -529,6 +538,7 @@
 
 
         #myInput {
+
           box-sizing: border-box;
           background-position: 14px 12px;
           background-repeat: no-repeat;
@@ -540,7 +550,7 @@
           transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
         }
 
-        #myInput:focus {outline: 3px solid #ddd;}
+        #myInput:focus {outline: 3px solid #93dbd9;}
             #myZipInput {
           box-sizing: border-box;
           background-position: 14px 12px;
@@ -552,11 +562,12 @@
           border-bottom: 1px solid #ddd;
           transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
         }
-            #myZipInput:focus {outline: 3px solid #ddd;}
+            #myZipInput:focus {outline: 3px solid #93dbd9;}
 
 .dropdown {
   position: relative;
   display: inline-block;
+            width: 100%;
 }
 
 .dropdown-content {
@@ -567,7 +578,7 @@
   overflow: auto;
   border: 1px solid #ddd;
   z-index: 1;
-            height: 100px;
+  max-height: 150px;
 }
 
 .dropdown-content a {
@@ -594,6 +605,9 @@
         <link rel="stylesheet" href="/pms/static/src/js/widgets/datepicker/datepicker.css"/>
         <script>
             $('#birthdateId').datepicker({
+                startView: 'decade',
+            });
+            $('#docExpDate').datepicker({
                 startView: 'decade',
             });
             var placeholder_country = document.getElementById("country_placeholder")
@@ -623,15 +637,20 @@
             let select_residence_country = document.getElementById('residence-country')
 
             select_residence_country.addEventListener("change", () => {
-            let country_value = select_residence_country.value
-            Array.from(document.getElementById('residence-state').options).forEach(element => {
-            if (element.getAttribute('country_id') == country_value) {
-            element.style="";
-            } else {
-            element.style="display:none";
+                this.filterStates();
+            });
+            let select_residence_state = document.getElementById('residence-state')
+
+            function filterStates(){
+                let country_value = select_residence_country.value
+                Array.from(document.getElementById('residence-state').options).forEach(element => {
+                if (element.getAttribute('country_id') == country_value) {
+                element.style="";
+                } else {
+                element.style="display:none";
+                }
+                });
             }
-            });
-            });
 
             var select_doc_type = document.getElementById("doc_type")
             var document_type_value = document.getElementById("docTypeId").textContent
@@ -645,15 +664,9 @@
             var checkin_partner_id = document.getElementById("checkin").value
             var access_token = document.getElementById("input_access_token").value
             var checkin_pos = document.getElementById("input_checkin_pos").value;
-            var todo = "anhadir reservation_id en la issiguiente linea";
+<!--            TODO: add reservation_id in url -->
             window.history.pushState(null, '', '/my/precheckin/'+folio_id+'/checkin/'+checkin_partner_id +'?access_token='+ access_token);
-            function launchSnackBar(element) {
-            var x = document.getElementById("snackbar");
-            if (checkin_pos == -1){
-            x.className = "show";
-            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
-            }
-            }
+
 
 
             function showCountries(show){
@@ -664,6 +677,7 @@
                 }
 
             }
+
             function selectNationality(element){
                 var nationality = element.innerText;
                 document.getElementById("myInput").value = nationality;
@@ -721,18 +735,36 @@
 
                 if (element.value == country_id) {
                     element.selected = true
+                    element.style.color = "black";
+                    this.filterStates();
                 }
                 });
                 Array.from(document.getElementById('residence-state').options).forEach(element => {
 
                     if (element.value == state_id) {
+                        element.style.color = "black";
                         element.selected = true
                     }
                 });
                 document.getElementById('residence-city').value = city_name;
                 this.showZips(false);
             }
+            function changeDatepickerArrow(element){
 
+                    var arrowLeftDatepicker = document.getElementsByClassName("icon-arrow-left");
+
+                    for(let item of arrowLeftDatepicker){
+                       item.classList.remove("icon-arrow-left");
+                       item.classList.add("fa","fa-arrow-left");
+                    }
+                     var arrowRightDatepicker = document.getElementsByClassName("icon-arrow-right");
+
+                    for(let item of arrowRightDatepicker){
+                       item.classList.remove("icon-arrow-right");
+                       item.classList.add("fa","fa-arrow-right");
+                    }
+
+            }
             function removeErrorClass(element){
                 element.classList.remove("error");
                 element.nextElementSibling.classList.add("d-none");
