@@ -378,7 +378,7 @@ class PortalPrecheckin(CustomerPortal):
     def portal_precheckin_folio(self, folio_id, **kw):
         folio = request.env["pms.folio"].sudo().browse(folio_id)
         values = {}
-        values.update({"folio": folio})
+        values.update({"no_breadcrumbs": True,"folio": folio})
         return request.render("pms.portal_my_prechekin_folio", values)
 
     @http.route(
@@ -393,7 +393,7 @@ class PortalPrecheckin(CustomerPortal):
         reservation = request.env["pms.reservation"].sudo().browse(reservation_id)
         values = {}
         values.update({"folio": folio})
-        values.update({"reservation": reservation})
+        values.update({"no_breadcrumbs": True,"reservation": reservation})
         return request.render("pms.portal_my_prechekin_reservation", values)
 
     @http.route(
@@ -425,6 +425,7 @@ class PortalPrecheckin(CustomerPortal):
         )
         values.update(
            {
+               "no_breadcrumbs": True,
                 "folio": folio,
                 "reservation": reservation,
                 "checkin_partner": checkin_partner,
