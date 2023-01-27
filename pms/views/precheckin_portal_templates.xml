@@ -435,27 +435,28 @@
                              </div>
                             </div>
                             <div t-attf-class="form-group col-12 col-md-6 pb-md-3">
-                                <select
-                                t-attf-class="form-control"
-                                id="residence-state"
-                                name='residence_state_id'
-                                onclick="changeFormClass()"
-                            >
-                                    <option
-                                    id="placeholder"
-                                    hidden="1"
-                                    value="placeholder"
-                                >State</option>
+                                <div class="dropdown">
+                                 <input
+                                    name="residence_state_id"
+                                    class="dropdown-input"
+                                    t-attf-class="form-control"
+                                    type="text"
+                                    placeholder="Type your state here"
+                                    id="myStateInput"
+                                    onclick="showStates(true)"
+                                    oninput="filterStates()"
+                                    autocomplete="off"
+                                    />
+                                 <div id="myStateDropdown" class="dropdown-content d-none">
+
                                     <t t-foreach="state_ids" t-as='state'>
-                                        <option
-                                        t-att-value="state.id"
-                                        t-att-country_id="state.country_id.id"
-                                        t-att-selected="str(state.id) == residence_state_id if residence_state_id and error else placeholder"
-                                    >
-                                            <t t-esc="state.name" />
-                                        </option>
+                                          <a t-att-id="state.id" t-attf-onclick="selectState(this)" t-att-country-id="state.country_id.id">
+                                            <t t-esc='state.name' />
+                                        </a>
                                     </t>
-                                </select>
+
+                              </div>
+                             </div>
                             </div>
 
 
@@ -476,46 +477,6 @@
             #checkinForm {
                 padding: 10px;
             }
-
-
-            @-webkit-keyframes fadein {
-            from {top: 0; opacity: 0;}
-            to {top: 100px; opacity: 1;}
-            }
-
-            @keyframes fadein {
-            from {top: 0; opacity: 0;}
-            to {top: 100px; opacity: 1;}
-            }
-
-            @-webkit-keyframes fadeout {
-            from {top: 100px; opacity: 1;}
-            to {top: 0; opacity: 0;}
-            }
-
-            @keyframes fadeout {
-            from {top: 100px; opacity: 1;}
-            to {top: 0; opacity: 0;}
-            }
-
-            .placeholder-class{
-            display: block;
-            width: 100%;
-            height: calc(1.5em + 0.75rem + 2px);
-            padding: 0.375rem 0.75rem;
-            font-size: 0.875rem;
-            font-weight: 400;
-            line-height: 1.5;
-            color: grey;
-            background-color: #FFFFFF;
-            background-clip: padding-box;
-            border: 1px solid #CED4DA;
-            border-radius: 0.25rem;
-            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-            }
-
-
-
 
         .dropdown-input {
 
@@ -583,38 +544,6 @@
                 startView: 'decade',
             });
 
-
-            var placeholder = document.getElementById("placeholder")
-            function changeFormClass() {
-                let select_value = placeholder.parentNode.value
-                if (placeholder.parentNode.value == 'placeholder'){
-                    placeholder.parentNode.classList.remove('form-control')
-                    placeholder.parentNode.classList.add('placeholder-class')
-                }else{
-                    placeholder.parentNode.classList.remove('placeholder-class')
-                    placeholder.parentNode.classList.add('form-control')
-                }
-            };
-            this.changeFormClass()
-
-<!--            var select_residence_country = document.getElementById('myCountryInput')-->
-
-<!--            select_residence_country.addEventListener("change", () => {-->
-<!--                this.filterStatesByCountry();-->
-<!--            });-->
-
-
-            function filterStatesByCountry(country_id){
-
-                Array.from(document.getElementById('residence-state').options).forEach(element => {
-                if (element.getAttribute('country_id') == country_id) {
-                element.style="";
-                } else {
-                element.style="display:none";
-                }
-                });
-            }
-
             var select_doc_type = document.getElementById("doc_type")
             var document_type_value = document.getElementById("docTypeId").textContent
             for (let i=0;i&lt;select_doc_type.length;i++){
@@ -641,11 +570,7 @@
 
             }
 
-            function selectNationality(element){
-                var nationality = element.innerText;
-                document.getElementById("myInput").value = nationality;
-                this.showNationCountries(false);
-            }
+
 
             function showCountries(show){
                 if(show){
@@ -655,14 +580,16 @@
                 }
 
             }
+            function showStates(show){
+                if(show){
+                    document.getElementById("myStateDropdown").classList.remove("d-none");
+                }else{
+                    document.getElementById("myStateDropdown").classList.add("d-none");
+                }
 
-            function selectCountry(element){
-                console.log(element);
-                var country = element.innerText;
-                document.getElementById("myCountryInput").value = country;
-                this.showCountries(false);
-                this.filterStatesByCountry(element.id);
             }
+
+
             function showZips(showZips){
                 if(showZips){
                     document.getElementById("myZipDropdown").classList.remove("d-none");
@@ -719,23 +646,66 @@
                 }
               }
             }
+            function filterStatesByCountry(country_id){
+                Array.from(document.getElementById("myStateDropdown").getElementsByTagName("a")).forEach(element => {
+                if (element.getAttribute('country-id') == country_id) {
+                element.style.display = "";
+                } else {
+                element.style.display = "none";
+                }
+                });
+            }
+            function filterStates() {
+              var input, filter, a, i;
+              input = document.getElementById("myStateInput");
+              filter = input.value.toUpperCase();
+              div = document.getElementById("myStateDropdown");
+              a = div.getElementsByTagName("a");
+              for (i = 0; i&lt;a.length; i++) {
+                txtValue = a[i].textContent || a[i].innerText;
+                if (txtValue.trim().toUpperCase().startsWith(filter)) {
+                  a[i].style.display = "";
+                } else {
+                  a[i].style.display = "none";
+                }
+              }
+            }
 
+            function selectNationality(element){
+                var nationality = element.innerText;
+                document.getElementById("myInput").value = nationality;
+                this.showNationCountries(false);
+            }
+
+            function selectCountry(element){
+                var country = element.innerText;
+                document.getElementById("myCountryInput").value = country.trim();
+                this.showCountries(false);
+                this.filterStatesByCountry(element.id);
+            }
+            function selectState(element){
+                var state = element.innerText;
+                document.getElementById("myStateInput").value = state.trim();
+                this.showStates(false);
+            }
             function completeAddressData(element){
                 var zip_name = element.firstChild.nextSibling.getAttribute("zip_name");
                 var country_id = element.firstChild.nextSibling.getAttribute("country_id");
                 var state_id = element.firstChild.nextSibling.getAttribute("state_id");
                 var city_name = element.firstChild.nextSibling.getAttribute("city_name");
                 document.getElementById("myZipInput").value = zip_name;
-                console.log(document.getElementById(country_id));
-                var optionCountry = document.getElementById(country_id);
-                optionCountry.click(optionCountry);
 
-                Array.from(document.getElementById('residence-state').options).forEach(element => {
+                Array.from(document.getElementById("myCountryDropdown").getElementsByTagName("a")).forEach(element => {
+                if (element.id == country_id) {
+                element.click(element);
+                }
+                });
 
-                    if (element.value == state_id) {
-                        element.style.color = "black";
-                        element.selected = true
-                    }
+
+                Array.from(document.getElementById("myStateDropdown").getElementsByTagName("a")).forEach(element => {
+                if (element.id == state_id) {
+                element.click(element);
+                }
                 });
                 document.getElementById('residence-city').value = city_name;
                 this.showZips(false);
