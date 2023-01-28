@@ -840,7 +840,9 @@ class PmsCheckinPartner(models.Model):
             }
             record.update(vals)
             record.reservation_id.state = "onboard"
-            record.identifier = record.pms_property_id.checkin_sequence_id._next_do()
+            record.identifier = (
+                record.reservation_id.pms_property_id.checkin_sequence_id._next_do()
+            )
 
     def action_done(self):
         for record in self.filtered(lambda c: c.state == "onboard"):
