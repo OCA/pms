@@ -184,7 +184,9 @@ class ChannelWubookPmsFolioChildMapperImport(Component):
         # outside the main loop in another one and create wubook_status on
         # reservation
         if reservations and map_record.parent.source["was_modified"] == 0:
-            reservations.filtered(lambda x: x.allowed_cancel).action_cancel()
+            reservations.filtered(
+                lambda x: x.allowed_cancel
+            ).with_context(modified=True, force_write_blocked=True).action_cancel()
 
         return mapped
 
