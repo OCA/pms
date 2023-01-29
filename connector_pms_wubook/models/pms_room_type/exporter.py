@@ -30,7 +30,9 @@ class ChannelWubookPmsRoomTypeExporter(Component):
             self.binding.class_id, "channel.wubook.pms.room.type.class"
         )
         for board_service in self.binding.board_service_room_type_ids.filtered(
-            lambda b: b.pms_property_id == self.binding.backend_id.pms_property_id
+            lambda b: b.pms_board_service_id.channel_wubook_bind_ids.filtered(
+                lambda c: c.backend_id == self.binding.backend_id
+            )
         ).mapped("pms_board_service_id"):
             self._export_dependency(board_service, "channel.wubook.pms.board.service")
 
