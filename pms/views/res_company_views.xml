@@ -18,6 +18,7 @@
                 <field name="document_partner_required" />
                 <field name="check_min_partner_data_invoice" />
                 <field name="pms_invoice_downpayment_policy" />
+                <field name="cancel_penalty_product_id" />
             </xpath>
         </field>
     </record>

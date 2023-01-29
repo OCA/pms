@@ -499,10 +499,7 @@
                                     <field name="price" />
                                     <field name="discount" />
                                     <field name="price_day_total" />
-                                    <field
-                                        name="cancel_discount"
-                                        attrs="{'column_invisible': [('parent.state','!=','cancel')]}"
-                                    />
+                                    <field name="cancel_discount" invisible="1" />
                                     <field name="sale_channel_id" />
                                     <field name="default_invoice_to" />
                                     <field name="pms_property_id" invisible="1" />
