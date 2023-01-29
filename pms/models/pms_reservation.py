@@ -381,6 +381,12 @@ class PmsReservation(models.Model):
         ],
         tracking=True,
     )
+    cancel_datetime = fields.Datetime(
+        string="Cancel Date",
+        help="Date when the reservation was cancelled",
+        readonly=True,
+        copy=False,
+    )
     reservation_type = fields.Selection(
         string="Reservation Type",
         help="Type of reservations. It can be 'normal', 'staff' or 'out of service",
@@ -411,10 +417,13 @@ class PmsReservation(models.Model):
         help="Field indicating type of cancellation. "
         "It can be 'late', 'intime' or 'noshow'",
         copy=False,
-        compute="_compute_cancelled_reason",
-        readonly=False,
         store=True,
-        selection=[("late", "Late"), ("intime", "In time"), ("noshow", "No Show")],
+        selection=[
+            ("late", "Late"),
+            ("intime", "In time"),
+            ("noshow", "No Show"),
+            ("modified", "Modified"),
+        ],
         tracking=True,
     )
 
@@ -722,6 +731,11 @@ class PmsReservation(models.Model):
     )
     lang = fields.Many2one(
         string="Language", comodel_name="res.lang", compute="_compute_lang"
+    )
+    blocked = fields.Boolean(
+        string="Blocked",
+        help="Indicates if the reservation is blocked",
+        default=False,
     )
 
     @api.depends("folio_id", "folio_id.external_reference")
@@ -2098,6 +2112,17 @@ class PmsReservation(models.Model):
         return record
 
     def write(self, vals):
+        if (
+            any([record.blocked for record in self])
+            and not self.env.context.get("force_write_blocked")
+            and (
+                "checkin" in vals
+                or "checkout" in vals
+                or "room_type_id" in vals
+                or "reservation_line_ids" in vals
+            )
+        ):
+            raise ValidationError(_("Blocked reservations can't be modified"))
         folios_to_update_channel = self.env["pms.folio"]
         lines_to_update_channel = self.env["pms.reservation.line"]
         services_to_update_channel = self.env["pms.service"]
@@ -2248,6 +2273,8 @@ class PmsReservation(models.Model):
                 vals.update({"state": "confirm"})
             record.write(vals)
             record.reservation_line_ids.update({"cancel_discount": 0})
+            # Unlink penalty service if exist
+            record.service_ids.filtered(lambda s: s.is_cancel_penalty).unlink()
             if record.folio_id.state != "confirm":
                 record.folio_id.action_confirm()
         return True
@@ -2259,22 +2286,25 @@ class PmsReservation(models.Model):
                 raise UserError(_("This reservation cannot be cancelled"))
             else:
                 record.state = "cancel"
+                record._check_cancel_penalty()
+                record.cancel_datetime = fields.Datetime.now()
                 record.folio_id._compute_amount()
 
     def action_assign(self):
         for record in self:
             record.to_assign = False
 
-    @api.depends("state")
-    def _compute_cancelled_reason(self):
+    def _check_cancel_penalty(self):
         for record in self:
             # self.ensure_one()
             if record.state == "cancel":
                 pricelist = record.pricelist_id
-                if record._context.get("no_penalty", False):
-                    record.cancelled_reason = "intime"
+                if record._context.get("modified", False):
+                    record.cancelled_reason = "modified"
                     _logger.info("Modified Reservation - No Penalty")
+                    continue
                 elif pricelist and pricelist.cancelation_rule_id:
+                    rule = pricelist.cancelation_rule_id
                     tz_property = record.pms_property_id.tz
                     today = fields.Date.context_today(
                         record.with_context(tz=tz_property)
@@ -2285,10 +2315,80 @@ class PmsReservation(models.Model):
                     ).days
                     if days_diff < 0:
                         record.cancelled_reason = "noshow"
+                        penalty_percent = rule.penalty_noshow
+                        if rule.apply_on_noshow == "first":
+                            days = 1
+                        elif rule.apply_on_noshow == "days":
+                            days = rule.days_late - 1
                     elif days_diff < pricelist.cancelation_rule_id.days_intime:
                         record.cancelled_reason = "late"
+                        penalty_percent = rule.penalty_late
+                        if rule.apply_on_late == "first":
+                            days = 1
+                        elif rule.apply_on_late == "days":
+                            days = rule.days_late
                     else:
                         record.cancelled_reason = "intime"
+                        penalty_percent = 0
+                        days = 0
+                    # Generate a penalty service in the reservation
+                    if penalty_percent:
+                        dates = []
+                        for i in range(0, days):
+                            dates.append(
+                                fields.Date.from_string(
+                                    fields.Date.from_string(record.checkin)
+                                    + datetime.timedelta(days=i)
+                                )
+                            )
+                        amount_penalty = (
+                            sum(
+                                record.reservation_line_ids.filtered(
+                                    lambda l: fields.Date.from_string(l.date) in dates
+                                ).mapped("price")
+                            )
+                            * penalty_percent
+                            / 100
+                        )
+                        if not amount_penalty:
+                            return
+                        if not record.company_id.cancel_penalty_product_id:
+                            # Create a penalty product
+                            record.company_id.cancel_penalty_product_id = self.env[
+                                "product.product"
+                            ].create(
+                                {
+                                    "name": _("Cancel Penalty"),
+                                    "type": "service",
+                                }
+                            )
+                        penalty_product = record.company_id.cancel_penalty_product_id
+                        default_channel_id = (
+                            self.env["pms.sale.channel"]
+                            .search([("channel_type", "=", "direct")], limit=1)
+                            .id,
+                        )
+                        self.env["pms.service"].create(
+                            {
+                                "product_id": penalty_product.id,
+                                "folio_id": record.folio_id.id,
+                                "reservation_id": record.id,
+                                "name": penalty_product.name,
+                                "sale_channel_origin_id": default_channel_id,
+                                "service_line_ids": [
+                                    (
+                                        0,
+                                        0,
+                                        {
+                                            "product_id": penalty_product.id,
+                                            "day_qty": 1,
+                                            "price_unit": amount_penalty,
+                                            "date": fields.Date.today(),
+                                        },
+                                    )
+                                ],
+                            }
+                        )
                 else:
                     record.cancelled_reason = False
 
