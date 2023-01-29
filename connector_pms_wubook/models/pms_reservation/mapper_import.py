@@ -62,6 +62,11 @@ class ChannelWubookPmsReservationMapperImport(Component):
 
     @only_create
     @mapping
+    def blocked(self, record):
+        return {"blocked": True}
+
+    @only_create
+    @mapping
     def pms_property_id(self, record):
         return {"pms_property_id": self.backend_record.pms_property_id.id}
 
