@@ -219,7 +219,7 @@ class PmsServiceLine(models.Model):
                                 lambda l: l.date == consumed_date
                             ).cancel_discount
                         )
-                    else:
+                    elif not line.service_id.is_cancel_penalty:
                         line.cancel_discount = 100
                 else:
                     line.cancel_discount = 0

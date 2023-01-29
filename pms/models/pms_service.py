@@ -203,6 +203,12 @@ class PmsService(models.Model):
         comodel_name="res.partner",
         ondelete="restrict",
     )
+    is_cancel_penalty = fields.Boolean(
+        string="Is Cancel Penalty",
+        help="Indicates if the service is a cancel penalty",
+        readonly=True,
+        compute="_compute_is_cancel_penalty",
+    )
 
     # Compute and Search methods
     @api.depends("product_id")
@@ -443,6 +449,13 @@ class PmsService(models.Model):
                 record.default_invoice_to = agency
             elif not record.default_invoice_to:
                 record.default_invoice_to = False
+
+    def _compute_is_cancel_penalty(self):
+        for record in self:
+            if record.product_id == record.company_id.cancel_penalty_product_id:
+                record.is_cancel_penalty = True
+            else:
+                record.is_cancel_penalty = False
 
     def name_get(self):
         result = []
