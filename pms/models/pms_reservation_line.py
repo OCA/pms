@@ -74,7 +74,7 @@ class PmsReservationLine(models.Model):
     cancel_discount = fields.Float(
         string="Cancelation Discount (%)",
         help="",
-        readonly=False,
+        readonly=True,
         default=0.0,
         store=True,
         digits=("Discount"),
@@ -409,53 +409,10 @@ class PmsReservationLine(models.Model):
     @api.depends("reservation_id.cancelled_reason")
     def _compute_cancel_discount(self):
         for line in self:
-            line.cancel_discount = 0
-            reservation = line.reservation_id
-            pricelist = reservation.pricelist_id
-            if reservation.state == "cancel":
-                if (
-                    reservation.cancelled_reason
-                    and pricelist
-                    and pricelist.cancelation_rule_id
-                ):
-                    checkin = fields.Date.from_string(reservation.checkin)
-                    checkout = fields.Date.from_string(reservation.checkout)
-                    days = abs((checkin - checkout).days)
-                    rule = pricelist.cancelation_rule_id
-                    discount = 0
-                    if reservation.cancelled_reason == "late":
-                        discount = 100 - rule.penalty_late
-                        if rule.apply_on_late == "first":
-                            days = 1
-                        elif rule.apply_on_late == "days":
-                            days = rule.days_late
-                    elif reservation.cancelled_reason == "noshow":
-                        discount = 100 - rule.penalty_noshow
-                        if rule.apply_on_noshow == "first":
-                            days = 1
-                        elif rule.apply_on_noshow == "days":
-                            days = rule.days_late - 1
-                    elif reservation.cancelled_reason == "intime":
-                        discount = 100
-
-                    dates = []
-                    for i in range(0, days):
-                        dates.append(
-                            fields.Date.from_string(
-                                fields.Date.from_string(checkin)
-                                + datetime.timedelta(days=i)
-                            )
-                        )
-                    reservation.reservation_line_ids.filtered(
-                        lambda r: r.date in dates
-                    ).update({"cancel_discount": discount})
-                    reservation.reservation_line_ids.filtered(
-                        lambda r: r.date not in dates
-                    ).update({"cancel_discount": 100})
-                else:
-                    reservation.reservation_line_ids.update({"cancel_discount": 0})
+            if line.state == "cancel":
+                line.cancel_discount = 100
             else:
-                reservation.reservation_line_ids.update({"cancel_discount": 0})
+                line.cancel_discount = 0
 
     @api.depends("room_id", "pms_property_id", "date", "occupies_availability")
     def _compute_avail_id(self):
@@ -547,6 +504,16 @@ class PmsReservationLine(models.Model):
                 record.default_invoice_to = agency
             elif not record.default_invoice_to:
                 record.default_invoice_to = False
+
+    def write(self, vals):
+        if (
+            any([record.reservation_id.blocked for record in self])
+            and not self.env.context.get("force_write_blocked")
+            and ("date" in vals or "price" in vals)
+        ):
+            raise ValidationError(_("Blocked reservations can't be modified"))
+        res = super().write(vals)
+        return res
 
     # Constraints and onchanges
     @api.constrains("date")
