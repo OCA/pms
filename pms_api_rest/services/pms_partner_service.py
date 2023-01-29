@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 
 from odoo.osv import expression
@@ -306,8 +307,17 @@ class PmsPartnerService(Component):
         doc_type = self.env["res.partner.id_category"].search(
             [("id", "=", document_type)]
         )
+        # Clean Document number
+        document_number = re.sub(r"[^a-zA-Z0-9]", "", document_number).upper()
+        partner = self.env["pms.checkin.partner"]._get_partner_by_document(
+            document_number, doc_type
+        )
+        if partner.id_numbers:
+            doc_number = partner.id_numbers[0]
+
         doc_number = self.env["res.partner.id_number"].search(
-            [("name", "=", document_number), ("category_id", "=", doc_type.id)]
+            [("name", "ilike", document_number), ("category_id", "=", doc_type.id)],
+            limit=1,
         )
         partners = []
         PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
