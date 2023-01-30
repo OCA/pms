@@ -2119,7 +2119,15 @@ class PmsReservation(models.Model):
                 "checkin" in vals
                 or "checkout" in vals
                 or "room_type_id" in vals
-                or "reservation_line_ids" in vals
+                or (
+                    vals.get("reservation_line_ids")
+                    and any(
+                        [
+                            ("date" in line.get(2) or "price" in line.get(2))
+                            for line in vals.get("reservation_line_ids")
+                        ]
+                    )
+                )
             )
         ):
             raise ValidationError(_("Blocked reservations can't be modified"))
@@ -2313,6 +2321,7 @@ class PmsReservation(models.Model):
                         fields.Date.from_string(record.checkin)
                         - fields.Date.from_string(today)
                     ).days
+                    days = record.nights
                     if days_diff < 0:
                         record.cancelled_reason = "noshow"
                         penalty_percent = rule.penalty_noshow
