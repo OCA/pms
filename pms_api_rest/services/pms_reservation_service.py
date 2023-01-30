@@ -200,7 +200,10 @@ class PmsReservationService(Component):
             reservation.confirm()
         if reservation_data.toCheckout is not None and reservation_data.toCheckout:
             reservation.action_reservation_checkout()
-        if reservation_data.roomTypeId:
+        if (
+            reservation_data.roomTypeId
+            and reservation.room_type_id.id != reservation_data.roomTypeId
+        ):
             reservation.room_type_id = reservation_data.roomTypeId
 
         reservation_vals = self._create_vals_from_params(
