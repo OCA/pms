@@ -16,7 +16,7 @@ _logger = logging.getLogger(__name__)
 
 
 class GenericImporterCustom(AbstractComponent):
-    """ Generic Synchronizer for importing data from backend to Odoo """
+    """Generic Synchronizer for importing data from backend to Odoo"""
 
     _name = "generic.importer.custom"
     _inherit = "base.importer"
@@ -143,13 +143,16 @@ class GenericImporterCustom(AbstractComponent):
         return {"binding": binding}
 
     def _create(self, model, values):
-        """ Create the Internal record """
+        """Create the Internal record"""
         # return model.create(values)
         return model.with_context(connector_no_export=True).create(values)
 
     def _update(self, binding, values):
-        """ Update an Internal record """
-        binding.with_context(connector_no_export=True).write(values)
+        """Update an Internal record"""
+        binding.with_context(
+            connector_no_export=True,
+            force_write_blocked=True,
+        ).write(values)
 
     def run(self, external_id, external_data=None, external_fields=None):
         if not external_data:
@@ -175,8 +178,8 @@ class GenericImporterCustom(AbstractComponent):
                 )
 
         # REVIEW: Avoid import modified folios
-        # if external_data.get("was_modified"):
-        #     return True
+        if external_data.get("was_modified"):
+            return True
 
         # import the missing linked resources
         self._import_dependencies(external_data, external_fields)
