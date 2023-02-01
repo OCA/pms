@@ -72,6 +72,7 @@ class PmsReservationInfo(Datamodel):
     services = fields.List(
         NestedModel("pms.service.info"), required=False, allow_none=True
     )
+    partnerRequests = fields.String(required=False, allow_none=True)
 
     # TODO: Refact
     # messages = fields.List(fields.Dict(required=False, allow_none=True))
