@@ -449,22 +449,19 @@ class PortalPrecheckin(CustomerPortal):
         checkin_partner = (
             request.env["pms.checkin.partner"].sudo().browse(checkin_partner_id)
         )
+        print(kw)
+
         values = kw
         values.update(
             {
                 "checkin_partner": checkin_partner,
             }
         )
-        print(kw)
-        print(values)
-        # if not kw.get("first") and kw.get("checkin_pos") and not kw.get("back"):
-        #     error, error_message = self.form_validate(kw, None)
+
+
         # if not kw.get("first") and not kw.get("back") and not error:
         #     kw.update({"checkin_partner_id": checkin_partner_id})
-        if values.get("residence_state_id") == "placeholder":
-            values["residence_state_id"] = False
-        if values.get("residence_country_id") == "placeholder":
-            values["residence_country_id"] = False
+
 
 
 
@@ -485,7 +482,7 @@ class PortalPrecheckin(CustomerPortal):
         #     else:
         #         return request.render("pms.portal_not_checkin", values)
 
-        #request.env["pms.checkin.partner"]._save_data_from_portal(kw)
+        request.env["pms.checkin.partner"]._save_data_from_portal(kw)
         folio = request.env["pms.folio"].sudo().browse(folio_id)
         reservation = request.env["pms.reservation"].sudo().browse(reservation_id)
 
@@ -523,137 +520,6 @@ class PortalPrecheckin(CustomerPortal):
         values = self._folio_get_page_view_values(folio_sudo, access_token, **kw)
         values.update({"no_breadcrumbs": True, "error": {}, "web_url": web_url.value})
         return request.render("pms.portal_my_folio_invitations", values)
-
-    def form_validate(self, data, counter):
-        error, error_message = {}, {}
-        if data.get("checkin_pos") != "-1":
-            error, error_message = self.form_document_validate(data, counter)
-            mobile = "mobile"
-            if data.get("mobile"):
-                if not re.match(
-                    r"^(\d{3}[\-\s]?\d{2}[\-\s]?\d{2}[\-\s]?\d{2}[\-\s]?|"
-                    r"\d{3}[\-\s]?\d{3}[\-\s]?\d{3})$",
-                    data[mobile],
-                ):
-                    error[mobile] = "error"
-                    error_message[mobile] = "Invalid phone"
-            email = "email"
-            if data.get("email") and not tools.single_email_re.match(data.get("email")):
-                error[email] = "error"
-                error_message[email] = "Email format is wrong"
-            if not data.get("document_number"):
-                error["document_number"] = "error"
-                error_message["document_number"] = "Document number is mandatory"
-            if not data.get("document_type"):
-                error["document_type"] = "error"
-                error_message["document_type"] = "Document type is mandatory"
-            if not data.get("document_expedition_date"):
-                error["document_expedition_date"] = "error"
-                error_message[
-                    "document_expedition_date"
-                ] = "Document expedition date is mandatory"
-            if not data.get("birthdate_date"):
-                error["birthdate_date"] = "error"
-                error_message["birthdate_date"] = "Birth date is mandatory"
-            if not data.get("nationality_id"):
-                error["nationality_id"] = "error"
-                error_message["nationality_id"] = "Nationality is mandatory"
-            if (
-                not data.get("residence_street")
-                or not data.get("residence_city")
-                or not data.get("residence_zip")
-                or data.get("residence_country_id") == "placeholder"
-                or data.get("residence_state_id") == "placeholder"
-            ):
-                error["address"] = "error"
-                error_message["address"] = "Address data is mandatory"
-        return error, error_message
-
-    def form_document_validate(self, data, counter):
-        error = dict()
-        error_message = {}
-        data.keys()
-        document_number = "document_number"
-        document_type = "document_type"
-        document_expedition_date = "document_expedition_date"
-        if data.get("document_expedition_date") and not data.get("document_number"):
-            error[document_expedition_date] = "error"
-            error_message[
-                document_expedition_date
-            ] = "Document Number not entered and Document Type is not selected"
-        if data.get("document_number"):
-            if not data[document_type]:
-                error[document_type] = "error"
-                error_message[document_type] = "Document Type is not selected"
-            if data[document_type] == "D":
-                if (
-                    len(data.get("document_number")) == 9
-                    or len(data.get("document_number")) == 10
-                ):
-                    if not re.match(
-                        r"^\d{8}[ -]?[a-zA-Z]$", data.get("document_number")
-                    ):
-                        error[document_number] = "error"
-                        error_message[document_number] = "The DNI format is wrong"
-                    letters = {
-                        0: "T",
-                        1: "R",
-                        2: "W",
-                        3: "A",
-                        4: "G",
-                        5: "M",
-                        6: "Y",
-                        7: "F",
-                        8: "P",
-                        9: "D",
-                        10: "X",
-                        11: "B",
-                        12: "N",
-                        13: "J",
-                        14: "Z",
-                        15: "S",
-                        16: "Q",
-                        17: "V",
-                        18: "H",
-                        19: "L",
-                        20: "C",
-                        21: "K",
-                        22: "E",
-                    }
-                    dni_number = data.get("document_number")[0:8]
-                    dni_letter = data.get("document_number")[
-                        len(data.get("document_number"))
-                        - 1 : len(data.get("document_number"))
-                    ]
-                    if letters.get(int(dni_number) % 23) != dni_letter.upper():
-                        error[document_number] = "error"
-                        error_message[document_number] = "DNI format is invalid"
-                else:
-                    error[document_number] = "error"
-                    error_message[document_number] = "DNI is invalid"
-            if data[document_type] == "C" and not re.match(
-                r"^\d{8}[ -]?[a-zA-Z]$", data.get("document_number")
-            ):
-                error[document_number] = "error"
-                error_message[document_number] = "The Driving License format is wrong"
-            if data[document_type] == "N" and not re.match(
-                r"^[X|Y]{1}[ -]?\d{7,8}[ -]?[a-zA-Z]$", data.get("document_number")
-            ):
-                error[document_number] = "error"
-                error_message[
-                    document_number
-                ] = "The Spanish Residence Permit format is wrong"
-            if data[document_type] == "X" and not re.match(
-                r"^[X|Y]{1}[ -]?\d{7,8}[ -]?[a-zA-Z]$", data.get("document_number")
-            ):
-                error[document_number] = "error"
-                error_message[
-                    document_number
-                ] = "The European Residence Permit format is wrong"
-        elif data.get("document_type"):
-            error[document_number] = "error"
-            error_message[document_number] = "Document Number not entered"
-        return error, error_message
 
     @http.route(
         ["/my/precheckin/send_invitation"],
