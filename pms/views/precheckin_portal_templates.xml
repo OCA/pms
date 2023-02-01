@@ -222,18 +222,18 @@
                                 class="form-control"
                                 name='document_type'
                                 id="doc_type"
+                                t-attf-onchange="removeErrorClass(this)"
                             >
                                     <option value="">Select an option</option>
                                     <t t-foreach="doc_type_ids" t-as='doc_type'>
                                         <option
-                                        t-att-value="doc_type.name"
-                                        t-att-selected="doc_type.name == document_type"
+                                        t-att-value="doc_type.id"
                                     >
                                             <t t-esc='doc_type.name' />
                                         </option>
                                     </t>
                                 </select>
-
+                                <span id="document_type_error" class="d-none text-danger">Doc. Type is a required field</span>
                             </div>
                             <div
                             name="document_number_div"
@@ -246,10 +246,13 @@
                                 <input
                                 type="text"
                                 name="document_number"
+                                id="document_number"
                                 t-attf-class="form-control"
                                 maxlength="14"
+                                t-attf-oninput="removeErrorClass(this)"
                             />
-
+                            <span id="docNumber-error" class="d-none text-danger">Doc. Number is a required field</span>
+                            <span id="docNumberFormat-error" class="d-none text-danger">Doc. Number Format is wrong</span>
                             </div>
 
                         <div t-attf-class="form-group col-12 col-md-6">
@@ -281,7 +284,7 @@
                             > Birth Date *</label>
                                 <input
                                 type="text"
-                                name="birthdate"
+                                name="birthdate_date"
                                 id="birthdateId"
                                 t-attf-class="form-control"
                                 data-date-format="dd/mm/yyyy"
@@ -291,6 +294,12 @@
                             <span id="birthdate-error" class="d-none text-danger">Birthdate cannot be older than today</span>
 
                             </div>
+                        <div class="d-none" id="countryDiv">
+                            <t t-foreach="country_ids" t-as='country_id'>
+                            <span t-att-id="country_id.name" t-att-country_name="country_id.name" t-att-country_id="country_id.id"/>
+                            </t>
+                        </div>
+                        <input class="d-none" id="nationality_id" name="nationality_id"/>
                             <div t-attf-class="form-group col-12 col-md-6">
                                 <label
                                 class="col-form-label"
@@ -319,6 +328,7 @@
                                 <input
                                 type="phone"
                                 name="mobile"
+                                id="mobileInput"
                                 t-attf-class="form-control"
                             />
 
@@ -332,6 +342,7 @@
                                 <input
                                 type="phone"
                                 name="phone"
+                                id="phoneInput"
                                 t-attf-class="form-control"
                             />
 
@@ -345,8 +356,11 @@
                                 <input
                                 type="email"
                                 name="email"
+                                id="emailInput"
                                 t-attf-class="form-control"
+                                t-attf-oninput="removeErrorClass(this)"
                             />
+                            <span id="email-error" class="d-none text-danger">Email format is incorrect</span>
 
                             </div>
                             <div t-attf-class="form-group col-md-12 pt-md-5">
@@ -358,8 +372,11 @@
                                 type="text"
                                 placeholder="Street"
                                 name="residence_street"
+                                id="residence_street"
                                 t-attf-class="form-control"
+                                t-attf-oninput="removeErrorClass(this)"
                             />
+                                <span id="street-error" class="d-none text-danger">Residence Address is a required field</span>
                             </div>
                             <div t-attf-class="form-group col-md-12">
                                 <input
@@ -373,15 +390,17 @@
                                 <div class="dropdown">
 
                                 <input
-                                    name="residence_city_zip"
+                                    name="residence_zip"
                                     class="dropdown-input"
+                                    id="myZipInput"
                                     t-attf-class="form-control"
                                     type="text"
-                                    placeholder="Type your zip code here" id="myZipInput"
+                                    placeholder="Type your zip code here"
                                     onclick="showZips(true)"
                                     oninput="filterZips()"
                                     autocomplete="off"
                                     />
+                                    <span id="zip-error" class="d-none text-danger">Zip is a required field</span>
                               <div id="myZipDropdown" class="dropdown-content d-none">
 
                                     <t t-foreach="zip_ids" t-as='zip_id'>
@@ -406,14 +425,16 @@
                                     type="text"
                                     placeholder="City"
                                     name="residence_city"
-                                    id="residence-city"
+                                    id="residence_city"
                                     t-attf-class="form-control"
+                                    t-attf-oninput="removeErrorClass(this)"
                                 />
+                                <span id="city-error" class="d-none text-danger">Residence City is a required field</span>
                             </div>
+                        <input class="d-none" id="residence_country_id" name="residence_country_id"/>
                          <div t-attf-class="form-group col-12 col-md-6">
                              <div class="dropdown">
                                  <input
-                                    name="residence_country_id"
                                     class="dropdown-input"
                                     t-attf-class="form-control"
                                     type="text"
@@ -434,10 +455,10 @@
                               </div>
                              </div>
                             </div>
+                        <input class="d-none" id="residence_state_id" name="residence_state_id"/>
                             <div t-attf-class="form-group col-12 col-md-6 pb-md-3">
                                 <div class="dropdown">
                                  <input
-                                    name="residence_state_id"
                                     class="dropdown-input"
                                     t-attf-class="form-control"
                                     type="text"
@@ -555,11 +576,6 @@
             var folio_id = document.getElementById("folio").value
             var checkin_partner_id = document.getElementById("checkin").value
             var access_token = document.getElementById("input_access_token").value
-            var checkin_pos = document.getElementById("input_checkin_pos").value;
-<!--            TODO: add reservation_id in url -->
-            window.history.pushState(null, '', '/my/precheckin/'+folio_id+'/checkin/'+checkin_partner_id +'?access_token='+ access_token);
-
-
 
             function showNationCountries(show){
                 if(show){
@@ -569,8 +585,6 @@
                 }
 
             }
-
-
 
             function showCountries(show){
                 if(show){
@@ -674,18 +688,27 @@
             function selectNationality(element){
                 var nationality = element.innerText;
                 document.getElementById("myInput").value = nationality;
+
+                var nationalityId = document.getElementById(nationality).getAttribute("country_id");
+                var nationalityInput = document.getElementById("nationality_id");
+
+                nationalityInput.value = nationalityId;
                 this.showNationCountries(false);
             }
 
             function selectCountry(element){
                 var country = element.innerText;
                 document.getElementById("myCountryInput").value = country.trim();
+                var countryInput = document.getElementById("residence_country_id");
+                countryInput.value = element.id;
                 this.showCountries(false);
                 this.filterStatesByCountry(element.id);
             }
             function selectState(element){
                 var state = element.innerText;
                 document.getElementById("myStateInput").value = state.trim();
+                var stateInput = document.getElementById("residence_state_id");
+                stateInput.value = element.id;
                 this.showStates(false);
             }
             function completeAddressData(element){
@@ -698,16 +721,21 @@
                 Array.from(document.getElementById("myCountryDropdown").getElementsByTagName("a")).forEach(element => {
                 if (element.id == country_id) {
                 element.click(element);
+                var countryInput = document.getElementById("residence_country_id");
+                countryInput.value = country_id;
+
                 }
                 });
 
 
                 Array.from(document.getElementById("myStateDropdown").getElementsByTagName("a")).forEach(element => {
                 if (element.id == state_id) {
-                element.click(element);
+                    element.click(element);
+                    var stateInput = document.getElementById("residence_state_id");
+                    stateInput.value = state_id;
                 }
                 });
-                document.getElementById('residence-city').value = city_name;
+                document.getElementById('residence_city').value = city_name;
                 this.showZips(false);
             }
             function changeDatepickerArrow(element){
@@ -731,16 +759,20 @@
                 element.nextElementSibling.classList.add("d-none");
             }
             function validateAndSend(event){
+                var send = true;
+
                 var firstname = document.getElementById("firstname");
                 var lastname = document.getElementById("lastname");
 
                 if(!firstname.value){
                     firstname.classList.add("error");
                     document.getElementById("name-error").classList.remove("d-none");
+                    send = false;
                 }
                 if( !lastname.value){
                     lastname.classList.add("error");
                     document.getElementById("lastname-error").classList.remove("d-none");
+                    send = false;
                 }
 
 
@@ -748,10 +780,21 @@
                 if(!gender.value){
                     gender.classList.add("error");
                     document.getElementById("name-error").classList.remove("d-none");
+                    send = false;
                 }
-<!--                var document_type = document.getElementById("document_type").value;-->
-<!--                var document_number = document.getElementById("document_number").value;-->
-<!--                var document_expedition_date = document.getElementById("document_expedition_date").value;-->
+
+                var document_type = document.getElementById("doc_type");
+                var document_number = document.getElementById("document_number");
+                if(!document_type.value){
+                    document.getElementById("doc_type").classList.add("error");
+                    document.getElementById("document_type_error").classList.remove("d-none");
+                    send = false;
+                }
+                if(!document_number.value){
+                    document.getElementById("document_number").classList.add("error");
+                    document.getElementById("docNumber-error").classList.remove("d-none");
+                    send = false;
+                }
                 var birthdate = document.getElementById("birthdateId").value;
                 var birthdateParts = birthdate.split("/");
                 var birthdateDate = new Date(birthdateParts[2], birthdateParts[1]-1, birthdateParts[0]);
@@ -759,37 +802,58 @@
                 if (todayDate.getTime() &lt;= birthdateDate.getTime()){
                     document.getElementById("birthdateId").classList.add("error");
                     document.getElementById("birthdate-error").classList.remove("d-none");
+                    send = false;
                 }
 
                 var nationality = document.getElementById("myInput").value;
                 var lastname2 = document.getElementById("lastname2").value;
+                var nationalityId = document.getElementById(nationality)
 
-                var nationalityId = document.getElementById(nationality).getAttribute("country_id");
+                if(nationalityId){
+                    nationalityId = nationalityId.getAttribute("country_id");
+                }
                 if(!nationalityId){
                     document.getElementById("myInput").classList.add("error");
                     document.getElementById("nationalityError").classList.remove("d-none");
+                    send = false;
                 }else{
                     if(nationalityId == 68){
-                            if(!lastname2){
-                                document.getElementById("myInput").classList.add("error");
-                                document.getElementById("lastname2").classList.add("error");
-                                document.getElementById("nationalitySpainError").classList.remove("d-none");
-                                document.getElementById("sndlastnameError").classList.remove("d-none");
+                        if(!lastname2){
+                            document.getElementById("myInput").classList.add("error");
+                            document.getElementById("lastname2").classList.add("error");
+                            document.getElementById("nationalitySpainError").classList.remove("d-none");
+                            document.getElementById("sndlastnameError").classList.remove("d-none");
+                            send = false;
                         }
                     }
                 }
-            <!--                var mobile = document.getElementById("mobile").value;-->
-<!--                var phone = document.getElementById("phone").value;-->
-<!--                var email = document.getElementById("email").value;-->
-<!--                var residence_street = document.getElementById("residence_street").value;-->
-<!--                var residence_street2 = document.getElementById("residence_street2").value;-->
-<!--                var residence_city_zip = document.getElementById("residence_city_zip").value;-->
-<!--                var residence_city = document.getElementById("residence_city").value;-->
-<!--                var residence_country_id = document.getElementById("residence_country_id").value;-->
-<!--                var residence_state_id = document.getElementById("residence_state_id").value;-->
+                var mobile = document.getElementById("mobileInput").value;
+                var phone = document.getElementById("phoneInput").value;
+                var email = document.getElementById("emailInput").value;
+                let regex = /^[a-zA-Z0-9.!#$%&amp;’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+                if(email){
+                    if(!regex.test(email)){
+                        document.getElementById("emailInput").classList.add("error");
+                        document.getElementById("email-error").classList.remove("d-none");
+                        send = false;
+                    }
+                }
+                var residence_street = document.getElementById("residence_street");
+                if(!residence_street.value){
+                    document.getElementById("residence_street").classList.add("error");
+                    document.getElementById("street-error").classList.remove("d-none");
+                    send = false;
+                }
 
-
-<!--                document.getElementById("checkinForm").submit();-->
+                var residence_city = document.getElementById("residence_city");
+                if(!residence_city.value){
+                    document.getElementById("residence_city").classList.add("error");
+                    document.getElementById("city-error").classList.remove("d-none");
+                    send = false;
+                }
+                if(send){
+                    document.getElementById("checkinForm").submit();
+                }
             }
         </script>
     </template>
