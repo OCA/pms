@@ -42,7 +42,6 @@
         "views/pms_ine_tourism_type_category.xml",
         "views/res_partner_id_number_view.xml",
         "views/pms_checkin_partner_views.xml",
-        "views/precheckin_portal_templates.xml",
         "wizards/traveller_report.xml",
         "wizards/wizard_ine.xml",
     ],
