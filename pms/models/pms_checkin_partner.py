@@ -799,7 +799,6 @@ class PmsCheckinPartner(models.Model):
     ):
         today = fields.datetime.today()
         datetime_doc_date = datetime.strptime(doc_date, DEFAULT_SERVER_DATE_FORMAT)
-        print(datetime_doc_date)
         if datetime_doc_date < today:
             return datetime_doc_date
         datetime_birthdate = datetime.strptime(birthdate, DEFAULT_SERVER_DATE_FORMAT)
@@ -898,11 +897,12 @@ class PmsCheckinPartner(models.Model):
         if values.get("document_expedition_date"):
             values.update(
                 {
-                    "document_expedition_date":
-                        datetime.strptime(values.get("document_expedition_date"), "%d/%m/%Y").strftime("%Y-%m-%d"),
-                    "birthdate_date":
-                        datetime.strptime(values.get("birthdate_date"), "%d/%m/%Y").strftime("%Y-%m-%d"),
-
+                    "document_expedition_date": datetime.strptime(
+                        values.get("document_expedition_date"), "%d/%m/%Y"
+                    ).strftime("%Y-%m-%d"),
+                    "birthdate_date": datetime.strptime(
+                        values.get("birthdate_date"), "%d/%m/%Y"
+                    ).strftime("%Y-%m-%d"),
                 }
             )
             doc_date = values.get("document_expedition_date")
