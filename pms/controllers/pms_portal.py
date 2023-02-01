@@ -1,6 +1,4 @@
-import re
-
-from odoo import _, fields, http, tools
+from odoo import _, http
 from odoo.exceptions import AccessError, MissingError
 from odoo.http import request
 
@@ -378,7 +376,7 @@ class PortalPrecheckin(CustomerPortal):
     def portal_precheckin_folio(self, folio_id, **kw):
         folio = request.env["pms.folio"].sudo().browse(folio_id)
         values = {}
-        values.update({"no_breadcrumbs": True,"folio": folio})
+        values.update({"no_breadcrumbs": True, "folio": folio})
         return request.render("pms.portal_my_prechekin_folio", values)
 
     @http.route(
@@ -393,7 +391,7 @@ class PortalPrecheckin(CustomerPortal):
         reservation = request.env["pms.reservation"].sudo().browse(reservation_id)
         values = {}
         values.update({"folio": folio})
-        values.update({"no_breadcrumbs": True,"reservation": reservation})
+        values.update({"reservation": reservation})
         return request.render("pms.portal_my_prechekin_reservation", values)
 
     @http.route(
@@ -424,8 +422,7 @@ class PortalPrecheckin(CustomerPortal):
             self._precheckin_get_page_view_values(checkin_partner.id, access_token)
         )
         values.update(
-           {
-               "no_breadcrumbs": True,
+            {
                 "folio": folio,
                 "reservation": reservation,
                 "checkin_partner": checkin_partner,
@@ -439,17 +436,20 @@ class PortalPrecheckin(CustomerPortal):
         return request.render("pms.portal_my_precheckin_detail", values)
 
     @http.route(
-        ["/my/precheckin/<int:folio_id>/<int:reservation_id>/checkin/<int:checkin_partner_id>"],
+        [
+            "/my/precheckin/<int:folio_id>/<int:reservation_id>/checkin/<int:checkin_partner_id>"
+        ],
         type="http",
         auth="public",
         website=True,
         csrf=False,
     )
-    def portal_precheckin_submit(self, folio_id,reservation_id, checkin_partner_id, **kw):
+    def portal_precheckin_submit(
+        self, folio_id, reservation_id, checkin_partner_id, **kw
+    ):
         checkin_partner = (
             request.env["pms.checkin.partner"].sudo().browse(checkin_partner_id)
         )
-        print(kw)
 
         values = kw
         values.update(
@@ -458,12 +458,8 @@ class PortalPrecheckin(CustomerPortal):
             }
         )
 
-
         # if not kw.get("first") and not kw.get("back") and not error:
         #     kw.update({"checkin_partner_id": checkin_partner_id})
-
-
-
 
         # if checkin_pos == len(folio_id.checkin_partner_ids):
         #     values = {
@@ -471,7 +467,6 @@ class PortalPrecheckin(CustomerPortal):
         #         "no_breadcrumbs": True,
         #     }
         #     return request.render("pms.portal_my_precheckin_end", values)
-
 
         # if checkin_pos >= 0:
         #     available_checkins = folio_id.checkin_partner_ids.filtered(
@@ -487,10 +482,11 @@ class PortalPrecheckin(CustomerPortal):
         reservation = request.env["pms.reservation"].sudo().browse(reservation_id)
 
         values.update(
-        {
-            "folio": folio,
-            "reservation": reservation,
-        })
+            {
+                "folio": folio,
+                "reservation": reservation,
+            }
+        )
         # values.update({"no_breadcrumbs": True})
         # if checkin_partner.state not in ["dummy", "draft"]:
         #     return request.render("pms.portal_not_checkin", values)
