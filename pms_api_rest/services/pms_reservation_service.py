@@ -114,6 +114,9 @@ class PmsReservationService(Component):
                 else None,
                 priceOnlyServices=round(reservation.price_services, 2),
                 priceOnlyRoom=round(reservation.price_total, 2),
+                partnerRequests=reservation.partner_requests
+                if reservation.partner_requests
+                else None,
             )
         return res
 
@@ -135,6 +138,10 @@ class PmsReservationService(Component):
         if reservation_data.segmentationId:
             reservation_vals.update(
                 {"segmentation_ids": [(6, 0, [reservation_data.segmentationId])]}
+            )
+        if reservation_data.partnerRequests is not None:
+            reservation_vals.update(
+                {"partner_requests": reservation_data.partnerRequests}
             )
         return reservation_vals
 
