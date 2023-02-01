@@ -12,17 +12,21 @@
                   <div class="reservation-card">
                       <button id="btn-room" type="submit" class="btn-room">
                           <div style="margin-left:6px;">
-                              <span t-field="reservation.folio_sequence"/>
+                              <span t-field="reservation.folio_sequence" />
                                 <span t-field="reservation.room_type_id.name" />
 
                           </div>
                          <div style="margin-right:6px;">
-                             <span class="fa fa-user-o"/>
-                             <t t-esc="reservation.adults - reservation.pending_checkin_data"/> /
+                             <span class="fa fa-user-o" />
+                             <t
+                                    t-esc="reservation.adults - reservation.pending_checkin_data"
+                                /> /
                              <span t-field="reservation.adults" /> completed
                          </div>
 
-                        <span id="pending-data" class="d-none"><t t-esc="reservation.pending_checkin_data"/></span>
+                        <span id="pending-data" class="d-none"><t
+                                    t-esc="reservation.pending_checkin_data"
+                                /></span>
 
                       </button>
                 </div>
@@ -63,23 +67,33 @@
     <!-- reservation template -->
     <template id="portal_my_prechekin_reservation" name="My precheckin in folio">
          <t t-call="portal.portal_layout">
-             <t t-set="checkins_count" t-value="1"/>
+             <t t-set="checkins_count" t-value="1" />
             <t t-foreach="reservation.checkin_partner_ids" t-as="checkin_partner">
                <form
                     t-att-action="'/my/folios/'+str(folio.id)+'/reservations/'+str(reservation.id)+'/checkins/'+str(checkin_partner.id)"
                     method="post"
                 >
                   <div class="checkin-card">
+
                       <t t-if="checkin_partner.state not in ['dummy','draft']">
-                          <t t-esc="checkin_partner.name"/>
-                          <span> -- Complete data</span>
+                          <button disabled="disabled" class="btn-host-complete">
+                              <span style="margin-left: 6px"><t
+                                        t-esc="checkin_partner.name"
+                                    /></span>
+
+                              <span style="margin-right: 6px"> Complete data</span>
+                          </button>
+                          <t t-set="checkins_count" t-value="checkins_count + 1" />
                       </t>
+
                       <t t-else="">
                           <button type="submit" class="btn-host">
-                             <span style="margin-left: 6px">Host <t t-esc="checkins_count" /></span>
+                             <span style="margin-left: 6px">Host <t
+                                        t-esc="checkins_count"
+                                    /></span>
                                  <span style="margin-right: 6px"> Incomplete data</span>
                           </button>
-                          <t t-set="checkins_count" t-value="checkins_count + 1"/>
+                          <t t-set="checkins_count" t-value="checkins_count + 1" />
                       </t>
 
 
@@ -110,22 +124,43 @@
                 border-radius: 5px;
                 text-align: left;
             }
+            .btn-host-complete{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background-color: #CED4DA;
+                border: none;
+                color: #000000;
+                width: 100%;
+                height:36px;
+                border-radius: 5px;
+                text-align: left;
+            }
         </style>
     </template>
-    <!-- checkin form without error handling-->
+    <!-- checkin form -->
     <template id="portal_my_precheckin_detail" name="My Precheckin">
         <t t-call="portal.portal_layout">
-            <form id="checkinForm" t-att-action="checkin_partner.get_portal_url()" method="post" >
+            <form
+                id="checkinForm"
+                t-att-action="checkin_partner.get_portal_url()"
+                method="post"
+            >
                 <div class="row o_portal_details">
-                    <div id="title" class="form-group col-xl-12" style="margin-top:6px;">
+                    <div
+                        id="title"
+                        class="form-group col-xl-12"
+                        style="margin-top:6px;"
+                    >
                         <center>
                                 <h4 class="font-weight-bold">PreCheckin in <span
                                     t-field="folio.pms_property_id.name"
                                 /></h4>
-                            <h5
-                                class="font-weight-bold mt-2"
-
-                            >Room: <span t-field="reservation.folio_sequence"/>  <span t-field="reservation.room_type_id.name"/></h5>
+                            <h5 class="font-weight-bold mt-2">Room: <span
+                                    t-field="reservation.folio_sequence"
+                                />  <span
+                                    t-field="reservation.room_type_id.name"
+                                /></h5>
                         </center>
                     </div>
 
@@ -141,7 +176,10 @@
                                 maxlength="30"
                                 t-attf-oninput="removeErrorClass(this)"
                             />
-                                <span id="name-error" class="d-none text-danger">Firstname is a required field</span>
+                                <span
+                                id="name-error"
+                                class="d-none text-danger"
+                            >Firstname is a required field</span>
                             </div>
                             <div t-attf-class="form-group col-12 col-md-6">
                                 <label
@@ -156,7 +194,10 @@
                                 maxlength="30"
                                 t-attf-oninput="removeErrorClass(this)"
                             />
-                                <span id="lastname-error" class="d-none text-danger">Lastname is a required field</span>
+                                <span
+                                id="lastname-error"
+                                class="d-none text-danger"
+                            >Lastname is a required field</span>
                             </div>
                             <div t-attf-class="form-group col-12 col-md-6 pb-md-5">
                                 <label
@@ -170,9 +211,11 @@
                                 t-attf-class="form-control"
                                 maxlength="30"
                                 t-attf-oninput="removeErrorClass(this)"
-
                             />
-                            <span id="sndlastnameError" class="d-none text-danger">If the nationality is Spanish, a second lastname must be provided</span>                            </div>
+                            <span
+                                id="sndlastnameError"
+                                class="d-none text-danger"
+                            >If the nationality is Spanish, a second lastname must be provided</span>                            </div>
                             <div t-attf-class="form-group col-12 col-md-6 pb-5">
                                 <label
                                 class="col-form-label"
@@ -208,7 +251,10 @@
                                         Other
                                     </option>
                                 </select>
-                                <span id="gender-error" class="d-none text-danger">Gender is a required field</span>
+                                <span
+                                id="gender-error"
+                                class="d-none text-danger"
+                            >Gender is a required field</span>
                             </div>
                             <div
                             name="document_type_div"
@@ -226,14 +272,15 @@
                             >
                                     <option value="">Select an option</option>
                                     <t t-foreach="doc_type_ids" t-as='doc_type'>
-                                        <option
-                                        t-att-value="doc_type.id"
-                                    >
+                                        <option t-att-value="doc_type.id">
                                             <t t-esc='doc_type.name' />
                                         </option>
                                     </t>
                                 </select>
-                                <span id="document_type_error" class="d-none text-danger">Doc. Type is a required field</span>
+                                <span
+                                id="document_type_error"
+                                class="d-none text-danger"
+                            >Doc. Type is a required field</span>
                             </div>
                             <div
                             name="document_number_div"
@@ -251,8 +298,14 @@
                                 maxlength="14"
                                 t-attf-oninput="removeErrorClass(this)"
                             />
-                            <span id="docNumber-error" class="d-none text-danger">Doc. Number is a required field</span>
-                            <span id="docNumberFormat-error" class="d-none text-danger">Doc. Number Format is wrong</span>
+                            <span
+                                id="docNumber-error"
+                                class="d-none text-danger"
+                            >Doc. Number is a required field</span>
+                            <span
+                                id="docNumberFormat-error"
+                                class="d-none text-danger"
+                            >Doc. Number Format is wrong</span>
                             </div>
 
                         <div t-attf-class="form-group col-12 col-md-6">
@@ -274,7 +327,10 @@
                                 value="01/01/2020"
                                 t-attf-onclick="changeDatepickerArrow(this)"
                             />
-                            <span id="docExpDate-error" class="d-none text-danger">Doc. Expedition or Validate date is a required field</span>
+                            <span
+                                id="docExpDate-error"
+                                class="d-none text-danger"
+                            >Doc. Expedition or Validate date is a required field</span>
 
                             </div>
                             <div t-attf-class="form-group col-12 col-md-6">
@@ -291,31 +347,59 @@
                                 value="01/01/1980"
                                 t-attf-onclick="changeDatepickerArrow(this)"
                             />
-                            <span id="birthdate-error" class="d-none text-danger">Birthdate cannot be older than today</span>
+                            <span
+                                id="birthdate-error"
+                                class="d-none text-danger"
+                            >Birthdate cannot be older than today</span>
 
                             </div>
                         <div class="d-none" id="countryDiv">
                             <t t-foreach="country_ids" t-as='country_id'>
-                            <span t-att-id="country_id.name" t-att-country_name="country_id.name" t-att-country_id="country_id.id"/>
+                            <span
+                                    t-att-id="country_id.name"
+                                    t-att-country_name="country_id.name"
+                                    t-att-country_id="country_id.id"
+                                />
                             </t>
                         </div>
-                        <input class="d-none" id="nationality_id" name="nationality_id"/>
+                        <input
+                            class="d-none"
+                            id="nationality_id"
+                            name="nationality_id"
+                        />
                             <div t-attf-class="form-group col-12 col-md-6">
                                 <label
                                 class="col-form-label"
                                 for="nationality_id"
-                            >Nationality *</label><br/>
+                            >Nationality *</label><br />
                             <div class="dropdown">
-                              <input type="text" class="dropdown-input" t-attf-class="form-control" placeholder="Type your nationality here" id="myInput" onclick="showNationCountries(true)" oninput="filterNationalities()"/>
-                              <div id="nationalityDropdown" class="dropdown-content d-none">
+                              <input
+                                    type="text"
+                                    class="dropdown-input"
+                                    t-attf-class="form-control"
+                                    placeholder="Type your nationality here"
+                                    id="myInput"
+                                    onclick="showNationCountries(true)"
+                                    oninput="filterNationalities()"
+                                />
+                              <div
+                                    id="nationalityDropdown"
+                                    class="dropdown-content d-none"
+                                >
                                     <t t-foreach="country_ids" t-as='country_id'>
                                         <a t-attf-onclick="selectNationality(this)">
                                             <t t-esc='country_id.name' />
                                         </a>
                                     </t>
                               </div>
-                                <span id="nationalitySpainError" class="d-none text-danger">If the nationality is Spanish, a second lastname must be provided</span>
-                                <span id="nationalityError" class="d-none text-danger">Nationality is a required field</span>
+                                <span
+                                    id="nationalitySpainError"
+                                    class="d-none text-danger"
+                                >If the nationality is Spanish, a second lastname must be provided</span>
+                                <span
+                                    id="nationalityError"
+                                    class="d-none text-danger"
+                                >Nationality is a required field</span>
 
                             </div>
                             </div>
@@ -360,7 +444,10 @@
                                 t-attf-class="form-control"
                                 t-attf-oninput="removeErrorClass(this)"
                             />
-                            <span id="email-error" class="d-none text-danger">Email format is incorrect</span>
+                            <span
+                                id="email-error"
+                                class="d-none text-danger"
+                            >Email format is incorrect</span>
 
                             </div>
                             <div t-attf-class="form-group col-md-12 pt-md-5">
@@ -376,7 +463,10 @@
                                 t-attf-class="form-control"
                                 t-attf-oninput="removeErrorClass(this)"
                             />
-                                <span id="street-error" class="d-none text-danger">Residence Address is a required field</span>
+                                <span
+                                id="street-error"
+                                class="d-none text-danger"
+                            >Residence Address is a required field</span>
                             </div>
                             <div t-attf-class="form-group col-md-12">
                                 <input
@@ -399,19 +489,26 @@
                                     onclick="showZips(true)"
                                     oninput="filterZips()"
                                     autocomplete="off"
-                                    />
-                                    <span id="zip-error" class="d-none text-danger">Zip is a required field</span>
+                                />
+                                    <span
+                                    id="zip-error"
+                                    class="d-none text-danger"
+                                >Zip is a required field</span>
                               <div id="myZipDropdown" class="dropdown-content d-none">
 
                                     <t t-foreach="zip_ids" t-as='zip_id'>
-                                        <a  t-attf-onclick="completeAddressData(this)">
+                                        <a t-attf-onclick="completeAddressData(this)">
                                             <span
                                                 t-att-zip_name="zip_id.name"
                                                 t-att-country_id="zip_id.country_id.id"
                                                 t-att-state_id="zip_id.state_id.id"
                                                 t-att-city_name="zip_id.city_id.name"
                                             >
-                                                <t t-esc='zip_id.name' /> <t t-esc='zip_id.city_id.name' /> <t t-esc='zip_id.state_id.name' /> <t t-esc='zip_id.country_id.name' />
+                                                <t t-esc='zip_id.name' /> <t
+                                                    t-esc='zip_id.city_id.name'
+                                                /> <t t-esc='zip_id.state_id.name' /> <t
+                                                    t-esc='zip_id.country_id.name'
+                                                />
                                             </span>
                                         </a>
                                     </t>
@@ -422,16 +519,23 @@
 
                             <div t-attf-class="form-group col-12 col-md-6">
                                 <input
-                                    type="text"
-                                    placeholder="City"
-                                    name="residence_city"
-                                    id="residence_city"
-                                    t-attf-class="form-control"
-                                    t-attf-oninput="removeErrorClass(this)"
-                                />
-                                <span id="city-error" class="d-none text-danger">Residence City is a required field</span>
+                                type="text"
+                                placeholder="City"
+                                name="residence_city"
+                                id="residence_city"
+                                t-attf-class="form-control"
+                                t-attf-oninput="removeErrorClass(this)"
+                            />
+                                <span
+                                id="city-error"
+                                class="d-none text-danger"
+                            >Residence City is a required field</span>
                             </div>
-                        <input class="d-none" id="residence_country_id" name="residence_country_id"/>
+                        <input
+                            class="d-none"
+                            id="residence_country_id"
+                            name="residence_country_id"
+                        />
                          <div t-attf-class="form-group col-12 col-md-6">
                              <div class="dropdown">
                                  <input
@@ -443,11 +547,17 @@
                                     onclick="showCountries(true)"
                                     oninput="filterCountries()"
                                     autocomplete="off"
-                                    />
-                                 <div id="myCountryDropdown" class="dropdown-content d-none">
+                                />
+                                 <div
+                                    id="myCountryDropdown"
+                                    class="dropdown-content d-none"
+                                >
 
                                     <t t-foreach="country_ids" t-as='country'>
-                                          <a t-att-id="country.id" t-attf-onclick="selectCountry(this)">
+                                          <a
+                                            t-att-id="country.id"
+                                            t-attf-onclick="selectCountry(this)"
+                                        >
                                             <t t-esc='country.name' />
                                         </a>
                                     </t>
@@ -455,7 +565,11 @@
                               </div>
                              </div>
                             </div>
-                        <input class="d-none" id="residence_state_id" name="residence_state_id"/>
+                        <input
+                            class="d-none"
+                            id="residence_state_id"
+                            name="residence_state_id"
+                        />
                             <div t-attf-class="form-group col-12 col-md-6 pb-md-3">
                                 <div class="dropdown">
                                  <input
@@ -467,11 +581,18 @@
                                     onclick="showStates(true)"
                                     oninput="filterStates()"
                                     autocomplete="off"
-                                    />
-                                 <div id="myStateDropdown" class="dropdown-content d-none">
+                                />
+                                 <div
+                                    id="myStateDropdown"
+                                    class="dropdown-content d-none"
+                                >
 
                                     <t t-foreach="state_ids" t-as='state'>
-                                          <a t-att-id="state.id" t-attf-onclick="selectState(this)" t-att-country-id="state.country_id.id">
+                                          <a
+                                            t-att-id="state.id"
+                                            t-attf-onclick="selectState(this)"
+                                            t-att-country-id="state.country_id.id"
+                                        >
                                             <t t-esc='state.name' />
                                         </a>
                                     </t>
@@ -483,10 +604,10 @@
 
                             <div t-attf-class="form-group col-md-12">
                                 <button
-                                        type="button"
-                                        class="btn btn-primary float-right"
-                                        onclick="validateAndSend()"
-                                    >
+                                type="button"
+                                class="btn btn-primary float-right"
+                                onclick="validateAndSend()"
+                            >
                                         Save
                                     </button>
                             </div>
@@ -554,9 +675,20 @@
                 border: 1px solid red;
             }
         </style>
-        <script class="origin" type="text/javascript" src="/web/static/lib/jquery/jquery.js"></script>
-        <script type="text/javascript" src="/pms/static/src/js/widgets/datepicker/bootstrap-datepicker.js" charset="UTF-8"></script>
-        <link rel="stylesheet" href="/pms/static/src/js/widgets/datepicker/datepicker.css"/>
+        <script
+            class="origin"
+            type="text/javascript"
+            src="/web/static/lib/jquery/jquery.js"
+        />
+        <script
+            type="text/javascript"
+            src="/pms/static/src/js/widgets/datepicker/bootstrap-datepicker.js"
+            charset="UTF-8"
+        />
+        <link
+            rel="stylesheet"
+            href="/pms/static/src/js/widgets/datepicker/datepicker.css"
+        />
         <script>
             $('#birthdateId').datepicker({
                 startView: 'decade',
@@ -1533,7 +1665,8 @@
                 <center>
                     <t t-if="len(folio.checkin_partner_ids) &gt; 1">
                         <div>
-                            If you wish, you can share with the rest of the guests the access to their check-in so that they can fill it out.<br/>
+                            If you wish, you can share with the rest of the guests the access to their check-in so that they can fill it out.<br
+                            />
                             <a
                                 role="button"
                                 t-att-href="folio.get_portal_url(suffix='/invitations')"
