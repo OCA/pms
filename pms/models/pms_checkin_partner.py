@@ -575,7 +575,7 @@ class PmsCheckinPartner(models.Model):
     def _compute_access_url(self):
         super(PmsCheckinPartner, self)._compute_access_url()
         for checkin in self:
-            checkin.access_url = "/my/precheckin/%s/%s/checkin/%s" % (
+            checkin.access_url = "/my/folios/%s/reservations/%s/checkins/%s" % (
                 checkin.folio_id.id,
                 checkin.reservation_id.id,
                 checkin.id,
@@ -877,6 +877,7 @@ class PmsCheckinPartner(models.Model):
     def _save_data_from_portal(self, values):
         checkin_partner = values.get("checkin_partner")
         values.pop("checkin_partner")
+        values.pop("folio_access_token")
         if values.get("nationality"):
             values.update({"nationality_id": int(values.get("nationality_id"))})
 
