@@ -6,7 +6,7 @@
             <t t-foreach="folio.reservation_ids" t-as="reservation">
                 <t t-set="reservation" t-value="reservation" />
                  <form
-                    t-att-action="'/my/folios/'+str(folio.id)+'/reservations/'+str(reservation.id)+'/checkins'"
+                    t-att-action="folio.get_portal_url(suffix='/reservations/'+str(reservation.id)+'/checkins')"
                     method="post"
                 >
                   <div class="reservation-card">
@@ -70,11 +70,16 @@
              <t t-set="checkins_count" t-value="1" />
             <t t-foreach="reservation.checkin_partner_ids" t-as="checkin_partner">
                <form
-                    t-att-action="'/my/folios/'+str(folio.id)+'/reservations/'+str(reservation.id)+'/checkins/'+str(checkin_partner.id)"
+                    t-att-action="checkin_partner.get_portal_url()"
                     method="post"
                 >
                   <div class="checkin-card">
-
+                         <input
+                            class="d-none"
+                            id="folio_access_token"
+                            name="folio_access_token"
+                            t-att-value="folio_access_token"
+                        />
                       <t t-if="checkin_partner.state not in ['dummy','draft']">
                           <button disabled="disabled" class="btn-host-complete">
                               <span style="margin-left: 6px"><t
@@ -143,7 +148,7 @@
         <t t-call="portal.portal_layout">
             <form
                 id="checkinForm"
-                t-att-action="checkin_partner.get_portal_url()"
+                t-att-action="checkin_partner.get_portal_url(suffix='/submit')"
                 method="post"
             >
                 <div class="row o_portal_details">
@@ -366,6 +371,12 @@
                             class="d-none"
                             id="nationality_id"
                             name="nationality_id"
+                        />
+                        <input
+                            class="d-none"
+                            id="folio_access_token"
+                            name="folio_access_token"
+                            t-att-value="folio_access_token"
                         />
                             <div t-attf-class="form-group col-12 col-md-6">
                                 <label
@@ -989,582 +1000,6 @@
             }
         </script>
     </template>
-    <!-- checkin form-->
-<!--    <template id="portal_my_precheckin_detail2" name="My Precheckin">-->
-<!--        <t t-call="portal.portal_layout">-->
-<!--            <form t-att-action="checkin_partner_id.get_portal_url()" method="post">-->
-<!--                <div class="row o_portal_details">-->
-<!--                    <div id="title" class="form-group col-xl-12">-->
-<!--                        <center>-->
-<!--                                <h4 class="font-weight-bold">PreCheckin in <span-->
-<!--                                    t-field="folio.pms_property_id.name"-->
-<!--                                /></h4>-->
-<!--                        </center>-->
-<!--                    </div>-->
-<!--                    <div class="form-group col-xl-12">-->
-<!--                        <center>-->
-<!--                            <h5-->
-<!--                                class="font-weight-bold mt-2"-->
-<!--                                t-esc="'Room: '+checkin_partner_id.reservation_id.sudo().room_type_id.name if checkin_partner_id.reservation_id else ''"-->
-<!--                            />-->
-<!--                        </center>-->
-<!--                        <input-->
-<!--                            type="text"-->
-<!--                            name="access_token"-->
-<!--                            id="input_access_token"-->
-<!--                            class="d-none"-->
-<!--                            t-att-value="access_token or checkin_partner_id.access_token"-->
-<!--                        />-->
-<!--                        <input-->
-<!--                            type="text"-->
-<!--                            name="checkin_partner_id"-->
-<!--                            id="checkin"-->
-<!--                            class="d-none"-->
-<!--                            t-att-value="checkin_partner_id.id"-->
-<!--                        />-->
-<!--                        <input-->
-<!--                            type="text"-->
-<!--                            name="folio_id"-->
-<!--                            id="folio"-->
-<!--                            class="d-none"-->
-<!--                            t-att-value="folio.id"-->
-<!--                        />-->
-<!--                    </div>-->
-<!--                    <t t-if="checkin_pos >= 0">-->
-<!--                        <div class="form-group col-xl-12">-->
-<!--                            <center>-->
-<!--                                <h5 class="font-weight-bold">-->
-<!--                                    Covering <span-->
-<!--                                        t-esc="int(checkin_pos) + 1"-->
-<!--                                    /> partner <br />-->
-<!--                                    <span-->
-<!--                                        t-esc="len(folio.checkin_partner_ids.filtered(lambda c: c.state in ['dummy','draft']))-int(checkin_pos)"-->
-<!--                                    />-->
-<!--                                    partner data to remain to be covered-->
-<!--                                </h5>-->
-<!--                            </center>-->
-<!--                        </div>-->
-<!--                    </t>-->
-<!--                    <div class="row justify-content-center">-->
-<!--                        <div class="col-11 col-md-8 row pt-3">-->
-<!--                            <div t-attf-class="form-group col-12 col-md-6">-->
-<!--                                <label class="col-form-label" for="firstname">Name<small-->
-<!--                                    >*</small></label>-->
-<!--                                <input-->
-<!--                                    type="text"-->
-<!--                                    name="firstname"-->
-<!--                                    t-attf-class="form-control #{error.get('firstname') and 'is-invalid' or ''}"-->
-<!--                                    t-att-value="firstname if error and firstname else ''"-->
-<!--                                />-->
-<!--                                <t t-if="error_message">-->
-<!--                                    <span-->
-<!--                                        class="text-danger"-->
-<!--                                        t-esc="error_message.get('firstname')"-->
-<!--                                    />-->
-<!--                                </t>-->
-<!--                            </div>-->
-<!--                            <div t-attf-class="col-12 col-md-6">-->
-<!--                                <label-->
-<!--                                    class="col-form-label"-->
-<!--                                    for="lastname"-->
-<!--                                >Lastname</label>-->
-<!--                                <input-->
-<!--                                    type="text"-->
-<!--                                    name="lastname"-->
-<!--                                    t-attf-class="form-control #{error.get('firstname') and 'is-invalid' or ''}"-->
-<!--                                    t-att-value="lastname if lastname and error else ''"-->
-<!--                                />-->
-<!--                            </div>-->
-<!--                            <div t-attf-class="form-group col-12 col-md-6 pb-md-5">-->
-<!--                                <label-->
-<!--                                    class="col-form-label"-->
-<!--                                    for="lastname2"-->
-<!--                                > Second Lastname (Optional)</label>-->
-<!--                                <input-->
-<!--                                    type="text"-->
-<!--                                    name="lastname2"-->
-<!--                                    t-attf-class="form-control"-->
-<!--                                    t-att-value="lastname2 if error and lastname2 else ''"-->
-<!--                                />-->
-<!--                            </div>-->
-<!--                            <div t-attf-class="col-12 col-md-6 pb-5">-->
-<!--                                <label-->
-<!--                                    class="col-form-label"-->
-<!--                                    for="gender"-->
-<!--                                >Gender</label>-->
-<!--                                <div class="d-none"><p id="genderId"><t-->
-<!--                                            t-esc="gender"-->
-<!--                                        /></p></div>-->
-<!--                                <select-->
-<!--                                    class="form-control"-->
-<!--                                    name="gender"-->
-<!--                                    t-att-value="gender if gender and error else ''"-->
-<!--                                    t-attf-class="form-control #{error.get('gender') and 'is-invalid' or ''}"-->
-<!--                                >-->
-<!--                                    <option value="">Select an option</option>-->
-<!--                                    <option-->
-<!--                                        value="female"-->
-<!--                                        t-att-selected="'female' == gender"-->
-<!--                                    >-->
-<!--                                        Female-->
-<!--                                    </option>-->
-<!--                                    <option-->
-<!--                                        value="male"-->
-<!--                                        t-att-selected="'male' == gender"-->
-<!--                                    >-->
-<!--                                        Male-->
-<!--                                    </option>-->
-<!--                                    <option-->
-<!--                                        value="other"-->
-<!--                                        t-att-selected="'other' == gender"-->
-<!--                                    >-->
-<!--                                        Other-->
-<!--                                    </option>-->
-<!--                                </select>-->
-<!--                                <t t-if="error_message">-->
-<!--                                    <span-->
-<!--                                        class="text-danger"-->
-<!--                                        t-esc="error_message.get('gender')"-->
-<!--                                    />-->
-<!--                                </t>-->
-<!--                            </div>-->
-
-<!--                                <div-->
-<!--                                name="document_type_div"-->
-<!--                                t-attf-class="col-12 col-md-6"-->
-<!--                            >-->
-<!--                                <label-->
-<!--                                    class="col-form-label"-->
-<!--                                    for="document_type"-->
-<!--                                >Doc. Type</label>-->
-<!--                                <div class="d-none"><p id="docTypeId"><t-->
-<!--                                            t-esc="document_type"-->
-<!--                                        /></p></div>-->
-<!--                                <select-->
-<!--                                    class="form-control #{error.get('document_type') and 'is-invalid' or ''}"-->
-<!--                                    name='document_type'-->
-<!--                                    id="doc_type"-->
-<!--                                >-->
-<!--                                    <option value="">Select an option</option>-->
-<!--                                    <t t-foreach="doc_type_ids" t-as='doc_type'>-->
-<!--                                        <option-->
-<!--                                            t-att-value="doc_type.name"-->
-<!--                                            t-att-selected="doc_type.name == document_type"-->
-<!--                                        >-->
-<!--                                            <t t-esc='doc_type.name' />-->
-<!--                                        </option>-->
-<!--                                    </t>-->
-<!--                                </select>-->
-<!--                                <t t-if="error_message">-->
-<!--                                    <span-->
-<!--                                        class="text-danger"-->
-<!--                                        t-esc="error_message.get('document_type')"-->
-<!--                                    />-->
-<!--                                </t>-->
-<!--                            </div>-->
-<!--                                <div-->
-<!--                                name="document_number_div"-->
-<!--                                t-attf-class="col-12 col-md-6"-->
-<!--                            >-->
-<!--                                <label-->
-<!--                                    class="col-form-label"-->
-<!--                                    for="document_number"-->
-<!--                                >Doc. Number</label>-->
-<!--                                <input-->
-<!--                                    type="text"-->
-<!--                                    name="document_number"-->
-<!--                                    t-attf-class="form-control #{error.get('document_number') and 'is-invalid' or ''}"-->
-<!--                                    t-att-value="document_number if document_number and error else ''"-->
-<!--                                />-->
-<!--                                <t t-if="error_message">-->
-<!--                                    <span-->
-<!--                                        class="text-danger"-->
-<!--                                        t-esc="error_message.get('document_number')"-->
-<!--                                    />-->
-<!--                                </t>-->
-<!--                            </div>-->
-
-
-<!--                            <div t-attf-class="col-12 col-md-6">-->
-<!--                                <label-->
-<!--                                    class="col-form-label"-->
-<!--                                    for="document_expedition_date"-->
-<!--                                >Doc. Expedition Date/Doc. Validity Date</label>-->
-<!--                                <span-->
-<!--                                    class="fa fa-question-circle fa-lg ml-4"-->
-<!--                                    data-toggle="tooltip"-->
-<!--                                    title="If you enter the validity date of the document, the expedition date will be automatically calculated and entered depending on the document type."-->
-<!--                                />-->
-<!--                                <input-->
-<!--                                    type="date"-->
-<!--                                    name="document_expedition_date"-->
-<!--                                    t-attf-class="form-control #{error.get('document_expedition_date') and 'is-invalid' or ''}"-->
-<!--                                    t-att-value="document_expedition_date"-->
-<!--                                />-->
-<!--                                <t t-if="error_message">-->
-<!--                                    <span-->
-<!--                                        class="text-danger"-->
-<!--                                        t-esc="error_message.get('document_expedition_date')"-->
-<!--                                    />-->
-<!--                                </t>-->
-<!--                            </div>-->
-<!--                            <div t-attf-class="form-group col-12 col-md-6">-->
-<!--                                <label-->
-<!--                                    class="col-form-label"-->
-<!--                                    for="birthdate_date"-->
-<!--                                > Birth Date</label>-->
-<!--                                <input-->
-<!--                                    type="date"-->
-<!--                                    name="birthdate_date"-->
-<!--                                    t-attf-class="form-control #{error.get('birthdate_date') and 'is-invalid' or ''}"-->
-<!--                                    t-att-value="birthdate_date if birthdate_date and error else ''"-->
-<!--                                />-->
-<!--                                <t t-if="error_message">-->
-<!--                                    <span-->
-<!--                                        class="text-danger"-->
-<!--                                        t-esc="error_message.get('birthdate_date')"-->
-<!--                                    />-->
-<!--                                </t>-->
-<!--                            </div>-->
-<!--                            <div t-attf-class="col-12 col-md-6">-->
-<!--                                <label-->
-<!--                                    class="col-form-label"-->
-<!--                                    for="nationality_id"-->
-<!--                                >Nationality</label>-->
-<!--                                <select-->
-<!--                                    t-attf-class="form-control #{error.get('nationality_id') and 'is-invalid' or ''}"-->
-<!--                                    id="country"-->
-<!--                                    name='nationality_id'-->
-<!--                                    value="nationality_id if nationality_id and error else ''"-->
-<!--                                >-->
-<!--                                    <option value="">Select an option</option>-->
-<!--                                    <t t-foreach="country_ids" t-as='country_id'>-->
-<!--                                        <option-->
-<!--                                            t-att-value="country_id.id"-->
-<!--                                            t-att-selected="str(country_id.id) == nationality_id"-->
-<!--                                        >-->
-<!--                                            <t t-esc='country_id.name' />-->
-<!--                                        </option>-->
-<!--                                    </t>-->
-<!--                                </select>-->
-<!--                                <t t-if="error_message">-->
-<!--                                    <span-->
-<!--                                        class="text-danger"-->
-<!--                                        t-esc="error_message.get('nationality_id')"-->
-<!--                                    />-->
-<!--                                </t>-->
-<!--                            </div>-->
-<!--                            <div t-attf-class="form-group col-12 col-md-6">-->
-<!--                                <label-->
-<!--                                    id="label_mobile"-->
-<!--                                    class="col-form-label"-->
-<!--                                    for="mobile"-->
-<!--                                >Mobile (Optional)</label>-->
-<!--                                <input-->
-<!--                                    type="phone"-->
-<!--                                    name="mobile"-->
-<!--                                    t-attf-class="form-control #{error.get('mobile') and 'is-invalid' or ''}"-->
-<!--                                    t-att-value="mobile if mobile and error else ''"-->
-<!--                                />-->
-<!--                                <t t-if="error_message">-->
-<!--                                    <span-->
-<!--                                        class="text-danger"-->
-<!--                                        t-esc="error_message.get('mobile')"-->
-<!--                                    />-->
-<!--                                </t>-->
-<!--                            </div>-->
-<!--                            <div t-attf-class="form-group col-12 col-md-6">-->
-<!--                                <label-->
-<!--                                    id="label_phone"-->
-<!--                                    class="col-form-label"-->
-<!--                                    for="phone"-->
-<!--                                >Phone (Optional)</label>-->
-<!--                                <input-->
-<!--                                    type="phone"-->
-<!--                                    name="phone"-->
-<!--                                    t-attf-class="form-control #{error.get('phone') and 'is-invalid' or ''}"-->
-<!--                                    t-att-value="phone if phone and error else ''"-->
-<!--                                />-->
-<!--                                <t t-if="error_message">-->
-<!--                                    <span-->
-<!--                                        class="text-danger"-->
-<!--                                        t-esc="error_message.get('phone')"-->
-<!--                                    />-->
-<!--                                </t>-->
-<!--                            </div>-->
-<!--                            <div t-attf-class="form-group col-12 col-md-6">-->
-<!--                                <label-->
-<!--                                    id="label_email"-->
-<!--                                    class="col-form-label"-->
-<!--                                    for="email"-->
-<!--                                >Email (Optional)</label>-->
-<!--                                <input-->
-<!--                                    type="email"-->
-<!--                                    name="email"-->
-<!--                                    t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}"-->
-<!--                                    t-att-value="email if email and error else ''"-->
-<!--                                />-->
-<!--                                <t t-if="error_message">-->
-<!--                                    <span-->
-<!--                                        class="text-danger"-->
-<!--                                        t-esc="error_message.get('email')"-->
-<!--                                    />-->
-<!--                                </t>-->
-<!--                            </div>-->
-<!--                            <div t-attf-class="form-group col-md-12 pt-md-5">-->
-<!--                                <label-->
-<!--                                    class="col-form-label"-->
-<!--                                    for="residence_street"-->
-<!--                                >Residence Address</label>-->
-<!--                                <input-->
-<!--                                    type="text"-->
-<!--                                    placeholder="Street"-->
-<!--                                    name="residence_street"-->
-<!--                                    t-attf-class="form-control #{error.get('address') and 'is-invalid' or ''}"-->
-<!--                                    t-att-value="residence_street if residence_street else ''"-->
-<!--                                />-->
-<!--                            </div>-->
-<!--                             <div t-attf-class="form-group col-md-12">-->
-<!--                                <input-->
-<!--                                    type="text"-->
-<!--                                    placeholder="Second Street (Optional)"-->
-<!--                                    name="residence_street2"-->
-<!--                                    t-attf-class="form-control"-->
-<!--                                    t-att-value="residence_street2 if residence_street2 and error else ''"-->
-<!--                                />-->
-<!--                            </div>-->
-<!--                            <div t-attf-class="form-group col-md-4">-->
-<!--                                <input-->
-<!--                                    type="text"-->
-<!--                                    placeholder="City"-->
-<!--                                    name="residence_city"-->
-<!--                                    t-attf-class="form-control #{error.get('address') and 'is-invalid' or ''}"-->
-<!--                                    t-att-value="residence_city if residence_city and error else ''"-->
-<!--                                />-->
-<!--                            </div>-->
-<!--                            <div t-attf-class="form-group col-md-4">-->
-<!--                                <input-->
-<!--                                    type="text"-->
-<!--                                    placeholder="Zip"-->
-<!--                                    name="residence_zip"-->
-<!--                                    t-attf-class="form-control #{error.get('address') and 'is-invalid' or ''}"-->
-<!--                                    t-att-value="residence_zip if residence_zip and error else ''"-->
-<!--                                />-->
-<!--                            </div>-->
-<!--                            <div t-attf-class="form-group col-md-4">-->
-<!--                                <select-->
-<!--                                    t-attf-class="form-control #{error.get('address') and 'is-invalid' or ''}"-->
-<!--                                    id="residence-country"-->
-<!--                                    name='residence_country_id'-->
-<!--                                    onclick="changeCountryFormClass()"-->
-<!--                                >-->
-<!--                                    <option-->
-<!--                                        id="country_placeholder"-->
-<!--                                        hidden="1"-->
-<!--                                        value="placeholder"-->
-<!--                                    >Country</option>-->
-<!--                                    <t t-foreach="country_ids" t-as='country_id'>-->
-<!--                                        <option-->
-<!--                                            t-att-value="country_id.id"-->
-<!--                                            t-att-selected="str(country_id.id) == residence_country_id if residence_country_id and error else placeholder"-->
-<!--                                        >-->
-<!--                                            <t t-esc='country_id.name' />-->
-<!--                                        </option>-->
-<!--                                    </t>-->
-<!--                                </select>-->
-<!--                            </div>-->
-<!--                            <div t-attf-class="form-group col-md-12 pb-md-3">-->
-<!--                                <select-->
-<!--                                    t-attf-class="form-control #{error.get('address') and 'is-invalid' or ''}"-->
-<!--                                    id="residence-state"-->
-<!--                                    name='residence_state_id'-->
-<!--                                    onclick="changeFormClass()"-->
-<!--                                >-->
-<!--                                    <option-->
-<!--                                        id="placeholder"-->
-<!--                                        hidden="1"-->
-<!--                                        value="placeholder"-->
-<!--                                    >State</option>-->
-<!--                                    <t t-foreach="state_ids" t-as='state'>-->
-<!--                                        <option-->
-<!--                                            t-att-value="state.id"-->
-<!--                                            t-att-country_id="state.country_id.id"-->
-<!--                                            t-att-selected="str(state.id) == residence_state_id if residence_state_id and error else placeholder"-->
-<!--                                        >-->
-<!--                                            <t t-esc="state.name" />-->
-<!--                                        </option>-->
-<!--                                    </t>-->
-<!--                                </select>-->
-<!--                            </div>-->
-<!--                            <t t-if="error_message">-->
-<!--                                    <span-->
-<!--                                    class="text-danger"-->
-<!--                                    t-esc="error_message.get('address')"-->
-<!--                                />-->
-<!--                                </t>-->
-<!--                            <t>-->
-<!--                                <div id="pager_count" class="col-4 pt-3">-->
-<!--                                    <center>-->
-<!--                                        Page-->
-<!--                                        <span t-esc="int(checkin_pos) + 1" />-->
-<!--                                        of-->
-<!--                                        <span-->
-<!--                                            t-esc="len(folio.checkin_partner_ids.filtered(lambda c: c.state in ['dummy','draft']))"-->
-<!--                                        />-->
-<!--                                    </center>-->
-<!--                                </div>-->
-<!--                                <t t-set="checkin_pos" t-value="checkin_pos+1" />-->
-<!--                                <input-->
-<!--                                    type="number"-->
-<!--                                    name="checkin_pos"-->
-<!--                                    id="input_checkin_pos"-->
-<!--                                    class="d-none"-->
-<!--                                    t-att-value="checkin_pos"-->
-<!--                                />-->
-<!--                                <div class="col-6">-->
-<!--                                    <button-->
-<!--                                        type="submit"-->
-<!--                                        class="btn btn-primary float-right"-->
-<!--                                    >-->
-<!--                                        Save and Continue-->
-<!--                                        <span class="fa fa-long-arrow-right" />-->
-<!--                                    </button>-->
-<!--                                </div>-->
-<!--                            </t>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </form>-->
-<!--        </t>-->
-<!--        <style>-->
-<!--        #snackbar {-->
-<!--            visibility: hidden;-->
-<!--            min-width: 250px;-->
-<!--            margin-left: -125px;-->
-<!--            background-color: #6c757d;-->
-<!--            color: #fff;-->
-<!--            text-align: center;-->
-<!--            border-radius: 2px;-->
-<!--            padding: 16px;-->
-<!--            position: fixed;-->
-<!--            z-index: 1;-->
-<!--            left: 50%;-->
-<!--            top: 100px;-->
-<!--            font-size: 17px;-->
-<!--            }-->
-
-<!--            #snackbar.show {-->
-<!--            visibility: visible;-->
-<!--            -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;-->
-<!--            animation: fadein 0.5s, fadeout 0.5s 2.5s;-->
-<!--            }-->
-
-<!--            @-webkit-keyframes fadein {-->
-<!--            from {top: 0; opacity: 0;}-->
-<!--            to {top: 100px; opacity: 1;}-->
-<!--            }-->
-
-<!--            @keyframes fadein {-->
-<!--            from {top: 0; opacity: 0;}-->
-<!--            to {top: 100px; opacity: 1;}-->
-<!--            }-->
-
-<!--            @-webkit-keyframes fadeout {-->
-<!--            from {top: 100px; opacity: 1;}-->
-<!--            to {top: 0; opacity: 0;}-->
-<!--            }-->
-
-<!--            @keyframes fadeout {-->
-<!--            from {top: 100px; opacity: 1;}-->
-<!--            to {top: 0; opacity: 0;}-->
-<!--            }-->
-
-<!--            .placeholder-class{-->
-<!--            display: block;-->
-<!--            width: 100%;-->
-<!--            height: calc(1.5em + 0.75rem + 2px);-->
-<!--            padding: 0.375rem 0.75rem;-->
-<!--            font-size: 0.875rem;-->
-<!--            font-weight: 400;-->
-<!--            line-height: 1.5;-->
-<!--            color: grey;-->
-<!--            background-color: #FFFFFF;-->
-<!--            background-clip: padding-box;-->
-<!--            border: 1px solid #CED4DA;-->
-<!--            border-radius: 0.25rem;-->
-<!--            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;-->
-<!--            }-->
-<!--        </style>-->
-<!--        <script>-->
-<!--            var placeholder_country = document.getElementById("country_placeholder")-->
-<!--            function changeCountryFormClass() {-->
-<!--                let select_value = placeholder_country.parentNode.value-->
-<!--                if (placeholder_country.parentNode.value == 'placeholder'){-->
-<!--                    placeholder_country.parentNode.classList.add('placeholder-class')-->
-<!--                }else{-->
-<!--                    placeholder_country.parentNode.classList.remove('placeholder-class')-->
-<!--                }-->
-<!--            };-->
-<!--            this.changeCountryFormClass()-->
-
-<!--            var placeholder = document.getElementById("placeholder")-->
-<!--            function changeFormClass() {-->
-<!--                let select_value = placeholder.parentNode.value-->
-<!--                if (placeholder.parentNode.value == 'placeholder'){-->
-<!--                    placeholder.parentNode.classList.remove('form-control')-->
-<!--                    placeholder.parentNode.classList.add('placeholder-class')-->
-<!--                }else{-->
-<!--                    placeholder.parentNode.classList.remove('placeholder-class')-->
-<!--                    placeholder.parentNode.classList.add('form-control')-->
-<!--                }-->
-<!--            };-->
-<!--            this.changeFormClass()-->
-
-<!--            let select_residence_country = document.getElementById('residence-country')-->
-
-<!--            select_residence_country.addEventListener("change", () => {-->
-<!--            let country_value = select_residence_country.value-->
-<!--            Array.from(document.getElementById('residence-state').options).forEach(element => {-->
-<!--            if (element.getAttribute('country_id') == country_value) {-->
-<!--            element.style="";-->
-<!--            } else {-->
-<!--            element.style="display:none";-->
-<!--            }-->
-<!--            });-->
-<!--            });-->
-
-<!--            var select_doc_type = document.getElementById("doc_type")-->
-<!--            var document_type_value = document.getElementById("docTypeId").textContent-->
-<!--            for (let i=0;i&lt;select_doc_type.length;i++){-->
-<!--            if (select_doc_type[i].value == document_type_value){-->
-<!--            select_doc_type[i].setAttribute("selected","True")-->
-<!--            }-->
-<!--            }-->
-
-<!--            var folio_id = document.getElementById("folio").value-->
-<!--            var checkin_partner_id = document.getElementById("checkin").value-->
-<!--            var access_token = document.getElementById("input_access_token").value-->
-<!--            var checkin_pos = document.getElementById("input_checkin_pos").value;-->
-<!--            window.history.pushState(null, '', '/my/precheckin/'+folio_id+'/checkin/'+checkin_partner_id +'?access_token='+ access_token);-->
-<!--            function launchSnackBar(element) {-->
-<!--            var x = document.getElementById("snackbar");-->
-<!--            if (checkin_pos == -1){-->
-<!--            x.className = "show";-->
-<!--            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);-->
-<!--            }-->
-<!--            }-->
-
-
-<!--            var select_doc_type = document.getElementById("doc_type")-->
-<!--            var document_type_value = document.getElementById("docTypeId").textContent-->
-<!--            for (let i=0;i&lt;select_doc_type.length;i++){-->
-<!--            if (select_doc_type[i].value == document_type_value){-->
-<!--            select_doc_type[i].setAttribute("selected","True")-->
-<!--            }-->
-<!--            }-->
-
-<!--        </script>-->
-<!--    </template>-->
     <!-- precheckin buttons and send invitations -->
     <template id="portal_my_reservation_precheckin" name="Precheckin Reservation">
         <t t-call="portal.portal_layout">
@@ -1626,9 +1061,9 @@
                     <form
                         class="col-6"
                         style="margin-bottom:50px"
-                        t-att-action="'/my/folios/'+str(folio.id)+'/reservations'"
+                        t-att-action="folio.get_portal_url(suffix='/reservations')"
                         method="post"
-                    > <!--t-att-action="'/my/precheckin/'+str(folio.id)+'/checkin/'+str(checkin_partner_id.id)"-->
+                    >
                         <input
                             type="text"
                             name="access_token"
@@ -1663,7 +1098,7 @@
                     </form>
                 </div>
                 <center>
-                    <t t-if="len(folio.checkin_partner_ids) &gt; 1">
+                    <t t-if="len(folio.checkin_partner_ids.filtered(lambda c: c.state in ['dummy','draft'])) &gt;= 1">
                         <div>
                             If you wish, you can share with the rest of the guests the access to their check-in so that they can fill it out.<br
                             />
@@ -1726,12 +1161,12 @@
                             </tr>
 
                             <t
-                                t-foreach="reservation.checkin_partner_ids"
+                                t-foreach="reservation.checkin_partner_ids.filtered(lambda c: c.state in ['dummy','draft'])"
                                 t-as="checkin_partner"
                             >
                                 <t
                                     t-set="url"
-                                    t-value="'/my/precheckin/'+str(folio.id)+'/checkin/'+str(checkin_partner.id)"
+                                    t-value="'/my/folios/'+str(folio.id)+'/reservations/'+str(reservation.id)+'/checkin/'+str(checkin_partner.id)"
                                 />
                                 <t
                                     t-set="count_reservation"
@@ -1954,6 +1389,9 @@
 
             }
             }
+            var checkin_partner_id = element.firstChild.nextSibling.innerText
+            var divId = "invitation_group" + checkin_partner_id;
+            document.getElementById(divId).classList.add("d-none");
             }
 
             function show_invitation(element) {
