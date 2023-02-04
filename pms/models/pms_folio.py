@@ -1937,6 +1937,7 @@ class PmsFolio(models.Model):
                 else "invoice_date_due"
             )
             for vals in invoice_vals_list:
+                vals["date"] = invoice_date
                 vals[key_field] = invoice_date
 
         # 3) Create invoices.
@@ -2076,6 +2077,7 @@ class PmsFolio(models.Model):
         if self.external_reference:
             ref += " - " + self.external_reference
         invoice_vals = {
+            "name": "/",
             "ref": ref,
             "move_type": "out_invoice",
             "narration": self.note,
