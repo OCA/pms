@@ -1896,7 +1896,6 @@ class PmsFolio(models.Model):
             if partner_invoice.invoicing_policy == "property"
             else partner_invoice.invoicing_policy
         )
-
         invoice_date = False
         if date:
             invoice_date = date
@@ -1911,8 +1910,6 @@ class PmsFolio(models.Model):
                 .search([("sale_line_ids", "in", lines_to_invoice.keys())])
                 .mapped("checkout")
             ) + datetime.timedelta(days=margin_days_autoinvoice)
-            if invoice_date < datetime.date.today():
-                invoice_date = datetime.date.today()
         if partner_invoice_policy == "month_day":
             month_day = (
                 self.pms_property_id.invoicing_month_day
@@ -1931,6 +1928,19 @@ class PmsFolio(models.Model):
                     month_day,
                 )
         if invoice_date:
+            if (
+                self.company_id.period_lock_date
+                and invoice_date < self.company_id.period_lock_date
+                and not self.user_has_groups("account.group_account_manager")
+            ):
+                raise UserError(
+                    _(
+                        "The period to create this invoice is locked. "
+                        "Please contact your administrator to unlock it."
+                    )
+                )
+            if invoice_date < datetime.date.today():
+                invoice_date = datetime.date.today()
             key_field = (
                 "invoice_date"
                 if invoice_date == fields.Date.today()
