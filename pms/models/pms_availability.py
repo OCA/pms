@@ -119,9 +119,12 @@ class PmsAvailability(models.Model):
     @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
     def _compute_parent_avail_id(self):
         for record in self:
-            parent_rooms = record.room_type_id.mapped("room_ids.parent_id.id")
+            parent_rooms = record.room_type_id.mapped("room_ids.parent_id")
             if parent_rooms:
-                for room_id in parent_rooms:
+                parent_room_ids = parent_rooms.filtered(
+                    lambda r: r.pms_property_id == record.pms_property_id
+                ).ids
+                for room_id in parent_room_ids:
                     room = self.env["pms.room"].browse(room_id)
                     parent_avail = self.env["pms.availability"].search(
                         [
@@ -140,15 +143,16 @@ class PmsAvailability(models.Model):
                                 "pms_property_id": record.pms_property_id.id,
                             }
                         )
-            else:
-                record.parent_avail_id = False
 
     @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
     def _compute_child_avail_ids(self):
         for record in self:
-            child_rooms = record.room_type_id.mapped("room_ids.child_ids.id")
+            child_rooms = record.room_type_id.mapped("room_ids.child_ids")
             if child_rooms:
-                for room_id in child_rooms:
+                child_room_ids = child_rooms.filtered(
+                    lambda r: r.pms_property_id == record.pms_property_id
+                ).ids
+                for room_id in child_room_ids:
                     room = self.env["pms.room"].browse(room_id)
                     child_avail = self.env["pms.availability"].search(
                         [
@@ -171,8 +175,6 @@ class PmsAvailability(models.Model):
                                 },
                             )
                         ]
-            else:
-                record.child_avail_ids = False
 
     @api.model
     def get_rooms_not_avail(
