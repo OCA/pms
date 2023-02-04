@@ -87,6 +87,8 @@ class ChannelWubookPmsReservationMapperImport(Component):
     @mapping
     def dates(self, record):
         if record["arrival_hour"]:
+            if record["arrival_hour"] == "24:00":
+                record["arrival_hour"] = "23:59"
             return {
                 "arrival_hour": record["arrival_hour"],
             }
