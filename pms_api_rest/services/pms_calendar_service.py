@@ -77,6 +77,7 @@ class PmsCalendarService(Component):
             WHERE   (night.pms_property_id = %s)
                 AND (night.date in %s)
                 AND (night.state != 'cancel')
+                AND (night.occupies_availability = True)
             """,
             (
                 pms_property_id,
