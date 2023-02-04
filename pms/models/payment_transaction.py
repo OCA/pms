@@ -47,5 +47,5 @@ class PaymentTransaction(models.Model):
         res = super(PaymentTransaction, self)._compute_reference_prefix(values)
         if not res and values and values.get("folio_ids"):
             folios = self.new({"folio_ids": values["folio_ids"]}).folio_ids
-            return ",".join(folios.mapped("name"))
+            return "".join(folios.mapped("name"))[-9:]
         return None
