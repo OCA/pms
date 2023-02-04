@@ -119,7 +119,7 @@ class ChannelWubookPmsRoomTypeBinding(models.Model):
     )
     max_price = fields.Float(
         "Max. Price",
-        default=200.0,
+        default=1000.0,
         digits="Product Price",
         help="Setup the max price to prevent incidents while editing your prices.",
     )
