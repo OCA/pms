@@ -11,7 +11,6 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.osv import expression
 from odoo.tools import float_compare
-from odoo.tools.float_utils import float_round
 from odoo.tools.misc import get_lang
 
 
@@ -982,9 +981,7 @@ class FolioSaleLine(models.Model):
             # If value is float, we need to round it to compare with the original value
             for field in fields_modified:
                 if field.ttype in ["float", "monetary"] and field.name in values:
-                    values[field.name] = float_round(
-                        values[field.name], precision_digits=2
-                    )
+                    values[field.name] = round(values[field.name], 2)
             has_locked_folio = "done" in self.mapped(
                 "folio_id.state"
             ) or self.invoice_lines.filtered(
