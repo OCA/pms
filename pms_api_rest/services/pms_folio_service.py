@@ -330,11 +330,8 @@ class PmsFolioService(Component):
             partner=partner_id,
             date=datetime.strptime(pms_account_payment_info.date, "%m/%d/%Y"),
         )
-        folio_transactions = self.env["account.payment"].search(
-            [
-                ("folio_ids", "in", folio_id),
-                ("pms_api_transaction_type", "=", "customer_inbound"),
-            ]
+        folio_transactions = folio.payment_ids.filtered(
+            lambda p: p.folio_transactions == "customer_inbound"
         )
         return folio_transactions.ids
 
