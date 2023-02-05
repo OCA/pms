@@ -659,29 +659,6 @@ class PmsReservation(models.Model):
         store=True,
     )
 
-    document_number = fields.Char(
-        string="Document Number",
-        readonly=False,
-        store=True,
-        compute="_compute_document_number",
-    )
-    document_type = fields.Many2one(
-        string="Document Type",
-        readonly=False,
-        store=True,
-        comodel_name="res.partner.id_category",
-        compute="_compute_document_type",
-    )
-
-    document_id = fields.Many2one(
-        string="Document",
-        readonly=False,
-        store=True,
-        comodel_name="res.partner.id_number",
-        compute="_compute_document_id",
-        ondelete="restrict",
-    )
-
     possible_existing_customer_ids = fields.One2many(
         string="Possible existing customer",
         compute="_compute_possible_existing_customer_ids",
@@ -936,8 +913,6 @@ class PmsReservation(models.Model):
         "reservation_type",
         "folio_id",
         "folio_id.agency_id",
-        "document_number",
-        "document_type",
         "partner_name",
         "email",
         "mobile",
@@ -949,8 +924,6 @@ class PmsReservation(models.Model):
                     reservation.partner_id = False
                 elif reservation.folio_id and reservation.folio_id.partner_id:
                     reservation.partner_id = reservation.folio_id.partner_id
-                elif reservation.document_number and reservation.document_type:
-                    self.env["pms.folio"]._create_partner(reservation)
                 elif not reservation.partner_id:
                     reservation.partner_id = False
 
@@ -1570,21 +1543,6 @@ class PmsReservation(models.Model):
             else:
                 record.reservation_type = "normal"
 
-    @api.depends("partner_id")
-    def _compute_document_number(self):
-        for record in self:
-            self.env["pms.folio"]._apply_document_number(record)
-
-    @api.depends("partner_id")
-    def _compute_document_type(self):
-        for record in self:
-            self.env["pms.folio"]._apply_document_type(record)
-
-    @api.depends("partner_id")
-    def _compute_document_id(self):
-        for record in self:
-            self.env["pms.folio"]._apply_document_id(record)
-
     @api.depends("email", "mobile", "partner_name")
     def _compute_possible_existing_customer_ids(self):
         for record in self:
@@ -2123,7 +2081,7 @@ class PmsReservation(models.Model):
                     vals.get("reservation_line_ids")
                     and any(
                         [
-                            ("date" in line.get(2) or "price" in line.get(2))
+                            ("date" in line[2] or "price" in line[2])
                             for line in vals.get("reservation_line_ids")
                         ]
                     )

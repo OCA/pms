@@ -522,28 +522,7 @@ class PmsFolio(models.Model):
         help="The payment communication of this sale order.",
         copy=False,
     )
-    document_number = fields.Char(
-        string="Document Number",
-        readonly=False,
-        store=True,
-        compute="_compute_document_number",
-    )
-    document_type = fields.Many2one(
-        string="Document Type",
-        readonly=False,
-        store=True,
-        comodel_name="res.partner.id_category",
-        compute="_compute_document_type",
-    )
 
-    document_id = fields.Many2one(
-        string="Document",
-        readonly=False,
-        store=True,
-        comodel_name="res.partner.id_number",
-        compute="_compute_document_id",
-        ondelete="restrict",
-    )
     possible_existing_customer_ids = fields.One2many(
         string="Possible existing customer",
         compute="_compute_possible_existing_customer_ids",
@@ -891,8 +870,6 @@ class PmsFolio(models.Model):
     @api.depends(
         "agency_id",
         "reservation_type",
-        "document_number",
-        "document_type",
         "partner_name",
         "email",
         "mobile",
@@ -902,9 +879,7 @@ class PmsFolio(models.Model):
             if folio.reservation_type == "out":
                 folio.partner_id = False
             elif folio.agency_id and folio.invoice_to_agency:
-                folio.partner_id = folio.agency_id.id
-            elif folio.document_number and folio.document_type:
-                self._create_partner(folio)
+                folio.partner_id = folio.agency_id
             elif not folio.partner_id:
                 folio.partner_id = False
 
@@ -1355,21 +1330,6 @@ class PmsFolio(models.Model):
                     lambda x: (x.adults + x.children) - len(x.checkin_partner_ids)
                 )
                 record.checkin_partner_pending_count = sum(mapped_checkin_partner_count)
-
-    @api.depends("partner_id")
-    def _compute_document_number(self):
-        for record in self:
-            self._apply_document_number(record)
-
-    @api.depends("partner_id")
-    def _compute_document_type(self):
-        for record in self:
-            self._apply_document_type(record)
-
-    @api.depends("partner_id")
-    def _compute_document_id(self):
-        for record in self:
-            self._apply_document_id(record)
 
     @api.depends("email", "mobile", "partner_name")
     def _compute_possible_existing_customer_ids(self):
@@ -2672,73 +2632,6 @@ class PmsFolio(models.Model):
                 [("mobile", "=", mobile)]
             )
         return possible_customer
-
-    @api.model
-    def _apply_document_id(self, record):
-        if record.partner_id:
-            if (
-                not record.document_id
-                and record.document_number
-                and record.document_type
-            ):
-                id_number_id = self.env["res.partner.id_number"].search(
-                    [
-                        ("partner_id", "=", record.partner_id.id),
-                        ("name", "=", record.document_number),
-                        ("category_id", "=", record.document_type.id),
-                    ]
-                )
-                if not id_number_id:
-                    id_number_id = self.env["res.partner.id_number"].create(
-                        {
-                            "partner_id": record.partner_id.id,
-                            "name": record.document_number,
-                            "category_id": record.document_type.id,
-                        }
-                    )
-
-                record.document_id = id_number_id
-        else:
-            record.document_id = False
-
-    @api.model
-    def _apply_document_number(self, record):
-        if record.partner_id and record.partner_id.id_numbers:
-            if not record.document_number:
-                if record.partner_id.id_numbers:
-                    record.document_number = record.partner_id.id_numbers[0].name
-
-    @api.model
-    def _apply_document_type(self, record):
-        if record.partner_id and record.partner_id.id_numbers:
-            if not record.document_type:
-                if record.partner_id.id_numbers:
-                    record.document_type = record.partner_id.id_numbers[0].category_id
-
-    @api.model
-    def _create_partner(self, record):
-        number = self.env["res.partner.id_number"].search(
-            [
-                ("name", "=", record.document_number),
-                ("category_id", "=", record.document_type.id),
-            ]
-        )
-        partner = self.env["res.partner"].search([("id", "=", number.partner_id.id)])
-        if not partner:
-            if record.partner_name and record.document_number and record.document_type:
-                partner_values = {
-                    "name": record.partner_name,
-                    "email": record.email,
-                    "mobile": record.mobile,
-                }
-                partner = self.env["res.partner"].create(partner_values)
-                number_values = {
-                    "partner_id": partner.id,
-                    "name": record.document_number,
-                    "category_id": record.document_type.id,
-                }
-                self.env["res.partner.id_number"].create(number_values)
-        record.partner_id = partner
 
     def _create_payment_transaction(self, vals):
         # Ensure the currencies are the same.

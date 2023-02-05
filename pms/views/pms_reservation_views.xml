@@ -365,14 +365,6 @@
                                 attrs="{'invisible':[('reservation_type','in',('out'))]}"
                             />
                             <field
-                                name="document_type"
-                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
-                            />
-                            <field
-                                name="document_number"
-                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
-                            />
-                            <field
                                 name="partner_name"
                                 placeholder="Guest"
                                 attrs="{'invisible':[('reservation_type','in',('out'))]}"
@@ -903,7 +895,6 @@
                         '|', '|', '|', '|',
                         ('name', 'ilike', self),
                         ('partner_name', 'ilike', self),
-                        ('document_number', 'ilike', self),
                         ('partner_id.vat', 'ilike', self),
                         ('mobile', 'ilike', self),
                     ]"
