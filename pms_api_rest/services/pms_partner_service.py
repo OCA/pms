@@ -308,6 +308,7 @@ class PmsPartnerService(Component):
             [("id", "=", document_type)]
         )
         # Clean Document number
+        doc_number = False
         document_number = re.sub(r"[^a-zA-Z0-9]", "", document_number).upper()
         partner = self.env["pms.checkin.partner"]._get_partner_by_document(
             document_number, doc_type
@@ -315,10 +316,6 @@ class PmsPartnerService(Component):
         if partner.id_numbers:
             doc_number = partner.id_numbers[0]
 
-        doc_number = self.env["res.partner.id_number"].search(
-            [("name", "ilike", document_number), ("category_id", "=", doc_type.id)],
-            limit=1,
-        )
         partners = []
         PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
         if not doc_number:
@@ -354,10 +351,10 @@ class PmsPartnerService(Component):
                     documentType=doc_type.id,
                     documentNumber=doc_number.name,
                     documentExpeditionDate=document_expedition_date
-                    if doc_number.valid_from
+                    if doc_number.valid_from and doc_number.category_id == doc_type
                     else None,
                     documentSupportNumber=doc_number.support_number
-                    if doc_number.support_number
+                    if doc_number.support_number and doc_number.category_id == doc_type
                     else None,
                     gender=doc_number.partner_id.gender
                     if doc_number.partner_id.gender
