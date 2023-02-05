@@ -112,3 +112,36 @@ class ProductPricelistItem(models.Model):
                 if domain
                 else False
             )
+
+    def write(self, vals):
+        # Check that the price in product room types are not
+        # minor that min price in room type defined
+        # REVIEW: By the momment only check fixed prices
+        if "fixed_price" in vals:
+            if any(
+                [
+                    item.product_id.room_type_id
+                    and item.product_id.room_type_id.min_price
+                    and vals["fixed_price"] < item.product_id.room_type_id.min_price
+                    for item in self
+                ]
+            ):
+                raise ValueError(
+                    """The price in product room types can't be minor
+                    that min price in room type defined"""
+                )
+        return super().write(vals)
+
+    def create(self, vals):
+        # Check that the price in product room types are not
+        # minor that min price in room type defined
+        # REVIEW: By the momment only check fixed prices
+        if "fixed_price" in vals:
+            product_id = self.env["product.product"].browse(vals["product_id"])
+            if product_id.room_type_id and product_id.room_type_id.min_price:
+                if vals["fixed_price"] < product_id.room_type_id.min_price:
+                    raise ValueError(
+                        """The price in product room types can't be minor
+                        that min price in room type defined"""
+                    )
+        return super().create(vals)
