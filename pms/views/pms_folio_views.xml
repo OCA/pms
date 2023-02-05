@@ -281,16 +281,9 @@
                     </group>
                     <group>
                         <group string="General Info" name="contact_details">
-                            <field name="days_to_checkin" />
-                            <field name="days_to_checkout" />
-                            <field
-                                name="document_type"
-                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
-                            />
-                            <field
-                                name="document_number"
-                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
-                            />
+                            <field name="days_to_checkin" invisible="1" />
+                            <field name="days_to_checkout" invisible="1" />
+                            <field name="partner_id" />
                             <field
                                 name="partner_name"
                                 placeholder="Guest"
@@ -363,7 +356,6 @@
 
                     </group>
                     <group invisible="1">
-                        <field name="partner_id" invisible="1" />
                         <field name="payment_state" invisible="1" force_save="1" />
                         <field name="move_ids" invisible="1" />
                         <field name="invoice_status" invisible="1" />
@@ -757,7 +749,6 @@
                         '|', '|', '|', '|',
                         ('name', 'ilike', self),
                         ('partner_name', 'ilike', self),
-                        ('document_number', 'ilike', self),
                         ('partner_id.vat', 'ilike', self),
                         ('mobile', 'ilike', self),
                     ]"
