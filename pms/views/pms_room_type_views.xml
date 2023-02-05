@@ -41,6 +41,7 @@
                             <field name="total_rooms_count" />
                             <field name="default_max_avail" />
                             <field name="default_quota" />
+                            <field name="min_price" />
                         </group>
                         <group name="accounting_group">
                             <field

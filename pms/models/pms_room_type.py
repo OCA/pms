@@ -90,6 +90,11 @@ class PmsRoomType(models.Model):
         related="class_id.overnight",
         store=True,
     )
+    min_price = fields.Float(
+        string="Min. Price",
+        help="Minimum price for a room type",
+        default=5.0,
+    )
 
     def name_get(self):
         result = []
