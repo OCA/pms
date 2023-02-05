@@ -75,8 +75,10 @@ class PmsCheckinPartner(models.Model):
                 search_field_name = "aeat_identification"
                 search_comparison = "="
             elif document_type.aeat_identification_type in ["02", "04"]:
+                # If we have a NIF, we search by VAT (with or without country code)
                 search_field_name = "vat"
-                search_comparison = "ilike"
+                search_comparison = "=like"
+                document_number = "%" + document_number
             if search_field_name:
                 partner = self.env["res.partner"].search(
                     [
@@ -86,4 +88,9 @@ class PmsCheckinPartner(models.Model):
                     ],
                     limit=1,
                 )
+                if partner and len(partner.vat) - len(document_number) > 2:
+                    # The country code length is 2, so if the difference is greater than 2
+                    # the partner is not the same
+                    # TODO: this method need pass country code to search
+                    partner = False
         return partner
