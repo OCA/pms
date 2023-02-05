@@ -276,7 +276,7 @@ class ChannelWubookPmsFolioAdapter(Component):
                             )
                     lines.append(
                         {
-                            "ancillary": days["ancillary"],
+                            "ancillary": days.get("ancillary"),
                             "price": days["price"],
                             "day": days["day"],
                             "room_id": room_id,
