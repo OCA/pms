@@ -171,6 +171,9 @@ class FolioAdvancePaymentInv(models.TransientModel):
             "payment_reference": order.reference,
             "invoice_payment_term_id": order.payment_term_id.id,
             "partner_bank_id": order.company_id.partner_id.bank_ids[:1].id,
+            "fiscal_position_id": self.env["res.partner"]
+            .browse(partner_id)
+            .property_account_position_id.id,
             # 'campaign_id': order.campaign_id.id,
             # 'medium_id': order.medium_id.id,
             # 'source_id': order.source_id.id,
