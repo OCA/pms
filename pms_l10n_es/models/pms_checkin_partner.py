@@ -79,6 +79,11 @@ class PmsCheckinPartner(models.Model):
                 search_comparison = "ilike"
             if search_field_name:
                 partner = self.env["res.partner"].search(
-                    [(search_field_name, search_comparison, document_number)], limit=1
+                    [
+                        ("is_company", "=", False),
+                        ("is_agency", "=", False),
+                        (search_field_name, search_comparison, document_number),
+                    ],
+                    limit=1,
                 )
         return partner
