@@ -285,6 +285,13 @@ class PmsFolio(models.Model):
         compute="_compute_get_invoiced",
         search="_search_invoice_ids",
     )
+    untaxed_amount_to_invoice = fields.Monetary(
+        string="Amount to invoice",
+        help="The amount to invoice",
+        readonly=True,
+        store=True,
+        compute="_compute_untaxed_amount_to_invoice",
+    )
     payment_state = fields.Selection(
         string="Payment Status",
         help="The state of the payment",
@@ -493,6 +500,9 @@ class PmsFolio(models.Model):
         "nothin to invoice, even when there may be ordered "
         "quantities pending to invoice.",
         copy=False,
+        compute="_compute_force_nothing_to_invoice",
+        readonly=False,
+        store=True,
     )
     internal_comment = fields.Text(
         string="Internal Folio Notes",
@@ -554,11 +564,6 @@ class PmsFolio(models.Model):
             filtering by dates related to checkout""",
         compute="_compute_days_to_checkout",
         search="_search_days_to_checkout",
-    )
-    autoinvoice_date = fields.Date(
-        string="Autoinvoice Date",
-        compute="_compute_autoinvoice_date",
-        store=True,
     )
     invoice_to_agency = fields.Boolean(
         string="Invoice Agency",
@@ -1024,7 +1029,7 @@ class PmsFolio(models.Model):
         for folio in self:
             folio.access_url = "/my/folios/%s" % (folio.id)
 
-    @api.depends("state", "sale_line_ids.invoice_status")
+    @api.depends("state", "sale_line_ids.invoice_status", "force_nothing_to_invoice")
     def _compute_get_invoice_status(self):
         """
         Compute the invoice status of a Folio. Possible statuses:
@@ -1057,20 +1062,40 @@ class PmsFolio(models.Model):
             line_invoice_status = [
                 d[1] for d in line_invoice_status_all if d[0] == order.id
             ]
-            if order.force_nothing_to_invoice:
-                order.invoice_status = "no"
-            elif any(
+            if not order.force_nothing_to_invoice and any(
                 invoice_status == "to_invoice" for invoice_status in line_invoice_status
             ):
                 order.invoice_status = "to_invoice"
             elif any(inv.state == "draft" for inv in order.move_ids):
                 order.invoice_status = "to_confirm"
-            elif line_invoice_status and all(
+            elif line_invoice_status and any(
                 invoice_status == "invoiced" for invoice_status in line_invoice_status
             ):
-                order.invoice_status = "invoiced"
+                if (
+                    all(
+                        invoice_status == "invoiced"
+                        for invoice_status in line_invoice_status
+                    )
+                    or order.force_nothing_to_invoice
+                ):
+                    order.invoice_status = "invoiced"
+                else:
+                    order.invoice_status = "no"
             else:
                 order.invoice_status = "no"
+
+    @api.depends("untaxed_amount_to_invoice", "amount_total")
+    def _compute_force_nothing_to_invoice(self):
+        # If the invoice amount and amount total are the same,
+        # and the qty to invoice is not 0, we force nothing to invoice
+        for order in self:
+            if (
+                order.untaxed_amount_to_invoice <= 0
+                and sum(order.sale_line_ids.mapped("qty_to_invoice")) != 0
+            ):
+                order.force_nothing_to_invoice = True
+            else:
+                order.force_nothing_to_invoice = False
 
     @api.depends("partner_id", "partner_id.name", "agency_id", "reservation_type")
     def _compute_partner_name(self):
@@ -1173,6 +1198,12 @@ class PmsFolio(models.Model):
                     * 100
                     / sum(folio.reservation_ids.mapped("adults"))
                 )
+
+    def _compute_untaxed_amount_to_invoice(self):
+        for folio in self:
+            folio.untaxed_amount_to_invoice = sum(
+                folio.mapped("sale_line_ids.untaxed_amount_to_invoice")
+            )
 
     # TODO: Add return_ids to depends
     @api.depends(
@@ -1851,11 +1882,9 @@ class PmsFolio(models.Model):
             invoice_vals_list = self._get_group_vals_list(invoice_vals_list)
 
         partner_invoice = self.env["res.partner"].browse(partner_invoice_id)
-        partner_invoice_policy = (
-            self.pms_property_id.default_invoicing_policy
-            if partner_invoice.invoicing_policy == "property"
-            else partner_invoice.invoicing_policy
-        )
+        partner_invoice_policy = self.pms_property_id.default_invoicing_policy
+        if partner_invoice and partner_invoice.invoicing_policy != "property":
+            partner_invoice_policy = partner_invoice.invoicing_policy
         invoice_date = False
         if date:
             invoice_date = date
@@ -1899,11 +1928,13 @@ class PmsFolio(models.Model):
                         "Please contact your administrator to unlock it."
                     )
                 )
-            if invoice_date < datetime.date.today():
+            if invoice_date < datetime.date.today() and not self._context.get(
+                "autoinvoice"
+            ):
                 invoice_date = datetime.date.today()
             key_field = (
                 "invoice_date"
-                if invoice_date == fields.Date.today()
+                if invoice_date <= fields.Date.today()
                 else "invoice_date_due"
             )
             for vals in invoice_vals_list:

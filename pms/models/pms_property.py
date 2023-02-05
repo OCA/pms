@@ -661,7 +661,7 @@ class PmsProperty(models.Model):
         return True
 
     @api.model
-    def autoinvoicing(self, offset=0):
+    def autoinvoicing(self, offset=0, with_delay=False):
         """
         This method is used to invoicing automatically the folios
         and validate the draft invoices created by the folios
@@ -689,58 +689,11 @@ class PmsProperty(models.Model):
                     )
                 )
         for folio in folios_to_invoice:
-            try:
-                # REVIEW: folio sale line "_compute_auotinvoice_date" sometimes
-                # dont work in services (probably cache issue¿?), we ensure that the date is
-                # set or recompute this
-                for line in folio.sale_line_ids.filtered(
-                    lambda l: not l.autoinvoice_date
-                ):
-                    line._compute_autoinvoice_date()
-                # REVIEW: Reverse downpayment invoices if the downpayment is not included
-                # in the service invoice (qty_to_invoice < 0)
-                downpayment_invoices = (
-                    folio.sale_line_ids.filtered(
-                        lambda l: l.is_downpayment and l.qty_to_invoice < 0
-                    )
-                    .mapped("invoice_lines")
-                    .mapped("move_id")
-                    .filtered(lambda i: i.is_simplified_invoice)
-                )
-                if downpayment_invoices:
-                    downpayment_invoices._reverse_moves(cancel=True)
-                invoices = folio.with_context(autoinvoice=True)._create_invoices(
-                    grouped=True,
-                    final=True,
-                )
-                for invoice in invoices:
-                    if (
-                        invoice.amount_total
-                        > invoice.pms_property_id.max_amount_simplified_invoice
-                        and invoice.journal_id.is_simplified_invoice
-                    ):
-                        hosts_to_invoice = (
-                            invoice.folio_ids.partner_invoice_ids.filtered(
-                                lambda p: p._check_enought_invoice_data()
-                            ).mapped("id")
-                        )
-                        if hosts_to_invoice:
-                            invoice.partner_id = hosts_to_invoice[0]
-                            invoice.journal_id = (
-                                invoice.pms_property_id.journal_normal_invoice_id
-                            )
-                        else:
-                            mens = _(
-                                "The total amount of the simplified invoice is higher than the "
-                                "maximum amount allowed for simplified invoices, and dont have "
-                                "enought data in hosts to create a normal invoice."
-                            )
-                            if self.folio_ids:
-                                self.folio_ids.message_post(body=mens)
-                            raise ValidationError(mens)
-                    invoice.action_post()
-            except Exception as e:
-                folio.message_post(body=_("Error in autoinvoicing folio: " + str(e)))
+            if with_delay:
+                self.with_delay().autoinvoice_folio(folio)
+            else:
+                self.autoinvoice_folio(folio)
+
         draft_invoices_to_post = self.env["account.move"].search(
             [
                 ("state", "=", "draft"),
@@ -749,11 +702,66 @@ class PmsProperty(models.Model):
             ]
         )
         for invoice in draft_invoices_to_post:
-            try:
-                invoice.action_post()
-            except Exception as e:
-                invoice.message_post(body=_("Error in autovalidate invoice: " + str(e)))
+            if with_delay:
+                self.with_delay().autovalidate_folio_invoice(invoice)
+            else:
+                self.autovalidate_folio_invoice(invoice)
         return True
+
+    def autovalidate_folio_invoice(self, invoice):
+        try:
+            invoice.action_post()
+        except Exception as e:
+            invoice.message_post(body=_("Error in autovalidate invoice: " + str(e)))
+
+    def autoinvoice_folio(self, folio):
+        try:
+            # REVIEW: folio sale line "_compute_auotinvoice_date" sometimes
+            # dont work in services (probably cache issue¿?), we ensure that the date is
+            # set or recompute this
+            for line in folio.sale_line_ids.filtered(lambda l: not l.autoinvoice_date):
+                line._compute_autoinvoice_date()
+            # REVIEW: Reverse downpayment invoices if the downpayment is not included
+            # in the service invoice (qty_to_invoice < 0)
+            downpayment_invoices = (
+                folio.sale_line_ids.filtered(
+                    lambda l: l.is_downpayment and l.qty_to_invoice < 0
+                )
+                .mapped("invoice_lines")
+                .mapped("move_id")
+                .filtered(lambda i: i.is_simplified_invoice)
+            )
+            if downpayment_invoices:
+                downpayment_invoices._reverse_moves(cancel=True)
+            invoices = folio.with_context(autoinvoice=True)._create_invoices(
+                grouped=True,
+                final=True,
+            )
+            for invoice in invoices:
+                if (
+                    invoice.amount_total
+                    > invoice.pms_property_id.max_amount_simplified_invoice
+                    and invoice.journal_id.is_simplified_invoice
+                ):
+                    hosts_to_invoice = invoice.folio_ids.partner_invoice_ids.filtered(
+                        lambda p: p._check_enought_invoice_data()
+                    ).mapped("id")
+                    if hosts_to_invoice:
+                        invoice.partner_id = hosts_to_invoice[0]
+                        invoice.journal_id = (
+                            invoice.pms_property_id.journal_normal_invoice_id
+                        )
+                    else:
+                        mens = _(
+                            "The total amount of the simplified invoice is higher than the "
+                            "maximum amount allowed for simplified invoices, and dont have "
+                            "enought data in hosts to create a normal invoice."
+                        )
+                        folio.message_post(body=mens)
+                        raise ValidationError(mens)
+                invoice.action_post()
+        except Exception as e:
+            folio.message_post(body=_("Error in autoinvoicing folio: " + str(e)))
 
     @api.constrains("journal_normal_invoice_id")
     def _check_journal_normal_invoice(self):

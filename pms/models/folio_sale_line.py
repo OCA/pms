@@ -539,9 +539,9 @@ class FolioSaleLine(models.Model):
         where Total_sol depends on the invoice policy of the product.
 
         Note: Draft invoice are ignored on purpose, the 'to invoice' amount should
-        come only from the SO lines.
+        come only from the folio lines.
         """
-        for line in self:
+        for line in self.filtered("invoice_lines"):
             amount_to_invoice = 0.0
             if line.state != "draft":
                 # Note: do not use price_subtotal field as it returns

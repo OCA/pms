@@ -46,6 +46,8 @@
         "report/invoice.xml",
         # "templates/pms_email_template.xml",
         "data/menus.xml",
+        "data/queue_data.xml",
+        "data/queue_job_function_data.xml",
         "wizards/wizard_payment_folio.xml",
         "wizards/folio_make_invoice_advance_views.xml",
         "wizards/pms_booking_engine_views.xml",
