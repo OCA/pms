@@ -283,9 +283,7 @@ class PmsCheckinPartner(models.Model):
                             0
                         ].category_id
 
-    @api.depends(
-        "partner_id",
-    )
+    @api.depends("partner_id")
     def _compute_document_expedition_date(self):
         for record in self:
             if not record.document_expedition_date:
@@ -327,9 +325,7 @@ class PmsCheckinPartner(models.Model):
             elif not record.birthdate_date:
                 record.birthdate_date = False
 
-    @api.depends(
-        "partner_id",
-    )
+    @api.depends("partner_id")
     def _compute_gender(self):
         for record in self:
             if not record.gender and record.partner_id.gender:
@@ -421,12 +417,7 @@ class PmsCheckinPartner(models.Model):
                 else:
                     record.state = "precheckin"
 
-    @api.depends(
-        "partner_id",
-        "partner_id.name",
-        "reservation_id",
-        "reservation_id.preferred_room_id",
-    )
+    @api.depends("partner_id")
     def _compute_name(self):
         for record in self:
             if not record.name or record.partner_id.name:
