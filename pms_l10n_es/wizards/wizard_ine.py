@@ -336,7 +336,7 @@ class WizardIne(models.TransientModel):
                     ("checkin", "<=", p_date),
                     ("checkout", ">=", p_date),
                     ("reservation_id.reservation_type", "=", "normal"),
-                    ("state", "not in", ["dummy", "draft", "cancel"]),
+                    ("state", "not in", ["dummy", "draft", "cancel", "precheckin"]),
                 ]
             )
             hosts = hosts.filtered(
