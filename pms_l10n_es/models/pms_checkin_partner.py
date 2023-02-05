@@ -1,4 +1,5 @@
 import logging
+import re
 
 from odoo import api, fields, models
 
@@ -70,6 +71,7 @@ class PmsCheckinPartner(models.Model):
         partner = super(PmsCheckinPartner, self)._get_partner_by_document(
             document_number, document_type
         )
+        document_number = re.sub(r"[^a-zA-Z0-9]", "", document_number).upper()
         if not partner and document_number and document_type:
             if document_type.aeat_identification_type in ["03", "05", "06"]:
                 search_field_name = "aeat_identification"
