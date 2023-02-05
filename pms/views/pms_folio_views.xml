@@ -746,7 +746,7 @@
                     name="name"
                     string="Name"
                     filter_domain="[
-                        '|', '|', '|', '|',
+                        '|', '|', '|',
                         ('name', 'ilike', self),
                         ('partner_name', 'ilike', self),
                         ('partner_id.vat', 'ilike', self),
