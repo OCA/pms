@@ -506,10 +506,27 @@ class PmsReservationLine(models.Model):
                 record.default_invoice_to = False
 
     def write(self, vals):
-        if (
-            any([record.reservation_id.blocked for record in self])
-            and not self.env.context.get("force_write_blocked")
-            and ("date" in vals or "price" in vals)
+        if not self.env.context.get("force_write_blocked") and (
+            (
+                "price" in vals
+                and any(
+                    [
+                        vals["date"] != record.date
+                        for record in self
+                        if record.reservation_id.blocked
+                    ]
+                )
+            )
+            or (
+                "price" in vals
+                and any(
+                    [
+                        round(vals["price"], 2) != round(record.price, 2)
+                        for record in self
+                        if record.reservation_id.blocked
+                    ]
+                )
+            )
         ):
             raise ValidationError(_("Blocked reservations can't be modified"))
         res = super().write(vals)
