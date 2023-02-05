@@ -2426,7 +2426,7 @@ class PmsReservation(models.Model):
             if reservation.checkout > fields.Datetime.today().date():
                 reservation.state = "arrival_delayed"
             else:
-                reservation.state = "departure_delayed"
+                reservation.state = "cancel"
                 reservation.message_post(
                     body=_(
                         """No entry has been recorded in this reservation""",
