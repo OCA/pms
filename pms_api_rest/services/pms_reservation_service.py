@@ -230,16 +230,19 @@ class PmsReservationService(Component):
         # or all pass values if line not exist)
         line_vals = {}
         if origin_data.price and (
-            not reservation_line or origin_data.price != reservation_line.price
+            not reservation_line
+            or round(origin_data.price, 2) != round(reservation_line.price, 2)
         ):
             line_vals["price"] = origin_data.price
         if origin_data.discount is not None and (
-            not reservation_line or origin_data.discount != reservation_line.discount
+            not reservation_line
+            or round(origin_data.discount, 2) != round(reservation_line.discount, 2)
         ):
             line_vals["discount"] = origin_data.discount
         if origin_data.cancelDiscount is not None and (
             not reservation_line
-            or origin_data.cancelDiscount != reservation_line.cancelDiscount
+            or round(origin_data.cancelDiscount, 2)
+            != round(reservation_line.cancelDiscount, 2)
         ):
             line_vals["cancel_discount"] = origin_data.cancelDiscount
         if origin_data.roomId and (
