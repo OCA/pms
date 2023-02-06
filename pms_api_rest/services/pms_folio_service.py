@@ -331,7 +331,7 @@ class PmsFolioService(Component):
             date=datetime.strptime(pms_account_payment_info.date, "%m/%d/%Y"),
         )
         folio_transactions = folio.payment_ids.filtered(
-            lambda p: p.folio_transactions == "customer_inbound"
+            lambda p: p.pms_api_transaction_type == "customer_inbound"
         )
         return folio_transactions.ids
 
