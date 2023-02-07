@@ -2417,21 +2417,18 @@ class PmsReservation(models.Model):
         # No show when pass 1 day from checkin day
         reservations = self.env["pms.reservation"].search(
             [
-                ("state", "in", ("draft", "confirm", "arrival_delayed")),
+                ("state", "in", ("draft", "confirm")),
                 ("checkin", "<", fields.Date.today()),
                 ("overnight_room", "=", True),
             ]
         )
         for reservation in reservations:
-            if reservation.checkout > fields.Datetime.today().date():
-                reservation.state = "arrival_delayed"
-            else:
-                reservation.state = "cancel"
-                reservation.message_post(
-                    body=_(
-                        """No entry has been recorded in this reservation""",
-                    )
+            reservation.state = "arrival_delayed"
+            reservation.message_post(
+                body=_(
+                    """No entry has been recorded in this reservation""",
                 )
+            )
 
     @api.model
     def auto_departure_delayed(self):
