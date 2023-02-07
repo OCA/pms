@@ -91,7 +91,11 @@ class PmsCheckinPartner(models.Model):
                     ],
                     limit=1,
                 )
-                if partner and len(partner.vat) - len(document_number) > 2:
+                if (
+                    partner
+                    and partner.vat
+                    and len(partner.vat) - len(document_number) > 2
+                ):
                     # The country code length is 2, so if the difference is greater than 2
                     # the partner is not the same
                     # TODO: this method need pass country code to search
