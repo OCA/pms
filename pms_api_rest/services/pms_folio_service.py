@@ -976,7 +976,7 @@ class PmsFolioService(Component):
             if item.id in invoices.invoice_line_ids.mapped("folio_line_ids.id"):
                 invoice_line = invoices.invoice_line_ids.filtered(
                     lambda r: item.id in r.folio_line_ids.ids
-                    and not any([r.folio_line_ids.is_downpayment])
+                              and not any([r.folio_line_ids.is_downpayment])
                     # To avoid modifying down payments description
                 )
                 if invoice_line:
@@ -1013,9 +1013,9 @@ class PmsFolioService(Component):
             self.env["account.bank.statement"].sudo().create(
                 {
                     "name": datetime.today().strftime(get_lang(self.env).date_format)
-                    + " ("
-                    + self.env.user.login
-                    + ")",
+                            + " ("
+                            + self.env.user.login
+                            + ")",
                     "date": datetime.today(),
                     "balance_start": amount,
                     "journal_id": journal_id,
@@ -1051,3 +1051,56 @@ class PmsFolioService(Component):
                     ).mapped("qty_to_invoice")
                 )
         return False
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:folio_id>/messages",
+                ],
+                "GET",
+            )
+        ],
+        auth="jwt_api_pms",
+        output_param=Datamodel("pms.folio.message.info", is_list=False),
+    )
+    def get_reservation_messages(self, folio_id):
+        reservation_messages = []
+        if folio_id:
+            folio = self.env["pms.folio"].browse(folio_id)
+            reservations = self.env['pms.reservation'].browse(folio.reservation_ids.ids)
+            PmsFolioMessageInfo = self.env.datamodels["pms.folio.message.info"]
+
+            for messages in reservations.message_ids:
+                PmsReservationMessageInfo = self.env.datamodels["pms.reservation.message.info"]
+                for message in messages:
+                    message_body = self.parse_message_body(message)
+                    if message.message_type == "email":
+                        subject = "Email enviado: " + message.subject
+                    else:
+                        subject = message.subject if message.subject else None
+                    reservation_messages.append(PmsReservationMessageInfo(
+                        reservationId=message.res_id,
+                        author=message.email_from if message.email_from else message.author_id[1],
+                        message=message_body,
+                        subject=subject,
+                        date=message.date.strftime("%d/%m/%y %H:%M:%S"),
+                        messageType=message.message_type,
+                    ))
+
+            return PmsFolioMessageInfo(
+                folioId=folio_id,
+                reservationMessages=reservation_messages,
+            )
+
+    def parse_message_body(self, message):
+        message_body = ''
+        if message.body:
+            message_body = message.body
+        elif message.tracking_value_ids:
+            for tracking_value in message.tracking_value_ids:
+                # changed_field = str(tracking_value.changed_field) or ""
+                # old_value = str(tracking_value.old_value) or ""
+                # new_value = str(tracking_value.new_value) or ""
+                message_body += str(tracking_value)+'   falta changed_field, old_value e new_value'
+        return message_body
