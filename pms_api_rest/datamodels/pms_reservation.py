@@ -12,6 +12,7 @@ class PmsReservationShortInfo(Datamodel):
     checkout = fields.String(required=False, allow_none=True)
     roomTypeId = fields.Integer(required=False, allow_none=True)
     preferredRoomId = fields.Integer(required=False, allow_none=True)
+    name = fields.String(required=False, allow_none=True)
     adults = fields.Integer(required=False, allow_none=True)
     stateCode = fields.String(required=False, allow_none=True)
     stateDescription = fields.String(required=False, allow_none=True)
