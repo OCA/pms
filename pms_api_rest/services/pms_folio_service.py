@@ -1,3 +1,4 @@
+import base64
 from datetime import datetime, timedelta
 
 from odoo import _, fields
@@ -417,6 +418,7 @@ class PmsFolioService(Component):
                             preferredRoomId=reservation.preferred_room_id.id
                             if reservation.preferred_room_id
                             else None,
+                            name=reservation.name,
                             adults=reservation.adults,
                             stateCode=reservation.state,
                             stateDescription=dict(
@@ -976,7 +978,7 @@ class PmsFolioService(Component):
             if item.id in invoices.invoice_line_ids.mapped("folio_line_ids.id"):
                 invoice_line = invoices.invoice_line_ids.filtered(
                     lambda r: item.id in r.folio_line_ids.ids
-                              and not any([r.folio_line_ids.is_downpayment])
+                    and not any([r.folio_line_ids.is_downpayment])
                     # To avoid modifying down payments description
                 )
                 if invoice_line:
@@ -1013,9 +1015,9 @@ class PmsFolioService(Component):
             self.env["account.bank.statement"].sudo().create(
                 {
                     "name": datetime.today().strftime(get_lang(self.env).date_format)
-                            + " ("
-                            + self.env.user.login
-                            + ")",
+                    + " ("
+                    + self.env.user.login
+                    + ")",
                     "date": datetime.today(),
                     "balance_start": amount,
                     "journal_id": journal_id,
@@ -1062,45 +1064,106 @@ class PmsFolioService(Component):
             )
         ],
         auth="jwt_api_pms",
-        output_param=Datamodel("pms.folio.message.info", is_list=False),
+        output_param=Datamodel("pms.message.info", is_list=False),
     )
-    def get_reservation_messages(self, folio_id):
+    def get_folio_reservation_messages(self, folio_id):
         reservation_messages = []
+        folio_messages = []
         if folio_id:
             folio = self.env["pms.folio"].browse(folio_id)
-            reservations = self.env['pms.reservation'].browse(folio.reservation_ids.ids)
-            PmsFolioMessageInfo = self.env.datamodels["pms.folio.message.info"]
-
+            reservations = self.env["pms.reservation"].browse(folio.reservation_ids.ids)
             for messages in reservations.message_ids:
-                PmsReservationMessageInfo = self.env.datamodels["pms.reservation.message.info"]
+                PmsReservationMessageInfo = self.env.datamodels[
+                    "pms.reservation.message.info"
+                ]
                 for message in messages:
                     message_body = self.parse_message_body(message)
                     if message.message_type == "email":
                         subject = "Email enviado: " + message.subject
                     else:
                         subject = message.subject if message.subject else None
-                    reservation_messages.append(PmsReservationMessageInfo(
-                        reservationId=message.res_id,
-                        author=message.email_from if message.email_from else message.author_id[1],
+                    reservation_messages.append(
+                        PmsReservationMessageInfo(
+                            reservationId=message.res_id,
+                            author=message.email_from
+                            if message.email_from
+                            else message.author_id[0],
+                            message=message_body,
+                            subject=subject,
+                            date=message.date.strftime("%d/%m/%y %H:%M:%S"),
+                            messageType=message.message_type,
+                            authorImageBase64=base64.b64encode(
+                                message.author_id.image_1024
+                            ).decode("utf-8")
+                            if message.author_id.image_1024
+                            else None,
+                        )
+                    )
+            PmsFolioMessageInfo = self.env.datamodels["pms.folio.message.info"]
+            for folio_message in folio.message_ids:
+                message_body = self.parse_message_body(folio_message)
+                if folio_message.message_type == "email":
+                    subject = "Email enviado: " + folio_message.subject
+                else:
+                    subject = folio_message.subject if folio_message.subject else None
+                folio_messages.append(
+                    PmsFolioMessageInfo(
+                        author=folio_message.email_from
+                        if folio_message.email_from
+                        else folio_message.author_id[1],
                         message=message_body,
                         subject=subject,
-                        date=message.date.strftime("%d/%m/%y %H:%M:%S"),
-                        messageType=message.message_type,
-                    ))
-
-            return PmsFolioMessageInfo(
-                folioId=folio_id,
+                        date=folio_message.date.strftime("%d/%m/%y %H:%M:%S"),
+                        messageType=folio_message.message_type,
+                        authorImageBase64=base64.b64encode(
+                            folio_message.author_id.image_1024
+                        ).decode("utf-8")
+                        if folio_message.author_id.image_1024
+                        else None,
+                    )
+                )
+            PmsMessageInfo = self.env.datamodels["pms.message.info"]
+            return PmsMessageInfo(
+                folioMessages=folio_messages,
                 reservationMessages=reservation_messages,
             )
 
     def parse_message_body(self, message):
-        message_body = ''
+        message_body = ""
         if message.body:
             message_body = message.body
         elif message.tracking_value_ids:
+            old_value = False
+            new_value = False
             for tracking_value in message.tracking_value_ids:
-                # changed_field = str(tracking_value.changed_field) or ""
-                # old_value = str(tracking_value.old_value) or ""
-                # new_value = str(tracking_value.new_value) or ""
-                message_body += str(tracking_value)+'   falta changed_field, old_value e new_value'
+                if tracking_value.field_type == "float":
+                    old_value = tracking_value.old_value_float
+                    new_value = tracking_value.new_value_float
+                elif (
+                    tracking_value.field_type == "char"
+                    or tracking_value.field_type == "selection"
+                    or tracking_value.field_type == "many2one"
+                ):
+                    old_value = tracking_value.old_value_char
+                    new_value = tracking_value.new_value_char
+                elif tracking_value.field_type == "datetime":
+                    old_value = tracking_value.old_value_datetime
+                    new_value = tracking_value.new_value_datetime
+                elif tracking_value.field_type == "integer":
+                    old_value = tracking_value.old_value_integer
+                    new_value = tracking_value.new_value_integer
+                elif tracking_value.field_type == "monetary":
+                    old_value = tracking_value.old_value_monetary
+                    new_value = tracking_value.new_value_monetary
+                elif tracking_value.field_type == "text":
+                    old_value = tracking_value.old_value_text
+                    new_value = tracking_value.new_value_text
+                message_body += (
+                    "-"
+                    + tracking_value.field.field_description
+                    + ": "
+                    + str(old_value)
+                    + " => "
+                    + str(new_value)
+                )
         return message_body
