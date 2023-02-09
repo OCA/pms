@@ -92,6 +92,9 @@ class ChannelWubookPmsRoomTypeBoardServiceChildMapperExport(Component):
         return values
 
     def skip_item(self, map_record):
-        return not map_record.source.pms_board_service_id.channel_wubook_bind_ids.filtered(
-            lambda x: x.backend_id == self.backend_record
+        return (
+            not map_record.source.pms_board_service_id.channel_wubook_bind_ids.filtered(
+                lambda x: x.backend_id == self.backend_record
+            )
+            or map_record.source.pms_property_id != self.backend_record.pms_property_id
         )
