@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from odoo import _, fields
 from odoo.exceptions import UserError
 
@@ -11,6 +13,120 @@ class PmsInvoiceService(Component):
     _name = "pms.invoice.service"
     _usage = "invoices"
     _collection = "pms.services"
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.invoice.search.param"),
+        output_param=Datamodel("pms.invoice.info"),
+        auth="jwt_api_pms",
+    )
+    def get_invoices(self, pms_invoice_search_param):
+        result_invoices = []
+
+        domain = []
+        if pms_invoice_search_param.name:
+            domain.append(("name", "ilike", pms_invoice_search_param.name))
+
+
+        PmsInvoiceResults = self.env.datamodels["pms.invoice.results"]
+        PmsInvoiceInfo = self.env.datamodels["pms.invoice.info"]
+        PmsInvoiceLineInfo = self.env.datamodels["pms.invoice.line.info"]
+        total_invoices = self.env["account.move"].search_count([])
+        amount_total = 100
+        for invoice in self.env["account.move"].search(
+            domain,
+            order=pms_invoice_search_param.orderBy,
+            limit=pms_invoice_search_param.limit,
+            offset=pms_invoice_search_param.offset,
+        ):
+
+            move_lines = []
+
+            for move_line in invoice.invoice_line_ids:
+                move_lines.append(
+                    PmsInvoiceLineInfo(
+                        id=move_line.id,
+                        name=move_line.name if move_line.name else None,
+                        quantity=move_line.quantity
+                        if move_line.quantity
+                        else None,
+                        priceUnit=move_line.price_unit
+                        if move_line.price_unit
+                        else None,
+                        total=move_line.price_total
+                        if move_line.price_total
+                        else None,
+                        discount=move_line.discount
+                        if move_line.discount
+                        else None,
+                        displayType=move_line.display_type
+                        if move_line.display_type
+                        else None,
+                        saleLineId=move_line.folio_line_ids[0]
+                        if move_line.folio_line_ids
+                        else None,
+                        isDownPayment=move_line.move_id._is_downpayment(),
+                    )
+                )
+            invoice_date = (
+                    datetime.combine(
+                        invoice.invoice_date, datetime.min.time()
+                    ).isoformat()
+                    if invoice.invoice_date
+                    else datetime.combine(
+                        invoice.invoice_date_due, datetime.min.time()
+                    ).isoformat()
+                    if invoice.invoice_date_due
+                    else None
+                )
+            invoice_url = (
+                invoice.get_proforma_portal_url()
+                if invoice.state == "draft"
+                else invoice.get_portal_url()
+            )
+            portal_url = (
+                self.env["ir.config_parameter"].sudo().get_param("web.base.url")
+                + invoice_url
+            )
+            result_invoices.append(
+                PmsInvoiceInfo(
+                    id=invoice.id if invoice.id else None,
+                    name=invoice.name if invoice.name else None,
+                    amount=round(invoice.amount_total, 2)
+                    if invoice.amount_total
+                    else None,
+                    date=invoice_date,
+                    state=invoice.state if invoice.state else None,
+                    paymentState=invoice.payment_state
+                    if invoice.payment_state
+                    else None,
+                    partnerName=invoice.partner_id.name
+                    if invoice.partner_id.name
+                    else None,
+                    partnerId=invoice.partner_id.id
+                    if invoice.partner_id.id
+                    else None,
+                    moveLines=move_lines if len(move_lines)>0 else None,
+                    folioId=invoice.folio_ids,
+                    portalUrl=portal_url,
+                    moveType=invoice.move_type,
+                    isReversed=invoice.payment_state == "reversed",
+                    isDownPaymentInvoice=invoice._is_downpayment(),
+                    isSimplifiedInvoice=invoice.journal_id.is_simplified_invoice,
+                )
+            )
+        return PmsInvoiceResults(
+            invoices=result_invoices,
+            total=round(amount_total, 2),
+            totalInvoices=total_invoices
+        )
 
     @restapi.method(
         [
