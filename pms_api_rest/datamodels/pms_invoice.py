@@ -7,7 +7,11 @@ class PmsInvoiceSearchParam(Datamodel):
     _name = "pms.invoice.search.param"
     _inherit = "pms.rest.metadata"
     id = fields.Integer(required=False, allow_none=True)
-    name = fields.String(required=False, allow_none=True)
+    filter = fields.String(required=False, allow_none=True)
+    originAgencyId = fields.Integer(required=False, allow_none=True)
+    paymentState = fields.String(required=False, allow_none=True)
+    dateStart = fields.String(required=False, allow_none=True)
+    dateEnd = fields.String(required=False, allow_none=True)
 
 class PmsAccountInvoiceInfo(Datamodel):
     _name = "pms.invoice.info"
@@ -33,6 +37,7 @@ class PmsAccountInvoiceInfo(Datamodel):
     # REVIEW: originDownPaymentId Only input field to service to
     # create downpayment invoices from payments
     originDownPaymentId = fields.Integer(required=False, allow_none=True)
+    originAgencyId = fields.Integer(required=False, allow_none=True)
 
 class PmsInvoiceResults(Datamodel):
     _name = "pms.invoice.results"
