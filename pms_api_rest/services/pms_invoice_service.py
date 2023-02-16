@@ -6,6 +6,7 @@ from odoo.exceptions import UserError
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
+from odoo.odoo.osv import expression
 
 
 class PmsInvoiceService(Component):
@@ -31,14 +32,55 @@ class PmsInvoiceService(Component):
         result_invoices = []
 
         domain = []
-        if pms_invoice_search_param.name:
-            domain.append(("name", "ilike", pms_invoice_search_param.name))
+        domain_fields = [
+            ("state", "in", ("draft", "posted"))
+        ]
+        domain_filter = list()
 
+        if pms_invoice_search_param.originAgencyId:
+            domain_fields.append(
+                ("origin_agency_id","=", pms_invoice_search_param.originAgencyId),
+            )
+        if pms_invoice_search_param.paymentState:
+            domain_fields.append(
+                ("payment_state", "=", pms_invoice_search_param.paymentState)
+            )
+        if (
+            pms_invoice_search_param.dateStart and pms_invoice_search_param.dateEnd):
+            date_from = fields.Date.from_string(pms_invoice_search_param.dateStart)
+            date_to = fields.Date.from_string(pms_invoice_search_param.dateEnd)
+            domain_fields.extend(
+                [
+                    ("invoice_date",">=", date_from),
+                    ("invoice_date","<=",date_to),
+                ]
+            )
+        if pms_invoice_search_param.filter:
+            for search in pms_invoice_search_param.filter.split(" "):
+                subdomains = [
+                    [("name", "ilike", search)],
+                    [("partner_id.display_name", "ilike", search)],
+                    [("partner_id.vat", "ilike", search)],
+                    [
+                        (
+                            "partner_id.aeat_identification",
+                            "ilike",
+                            search,
+                        )
+                    ],
+                    [("folio_ids.name", "ilike", search)],
+                ]
+                domain_filter.append(expression.OR(subdomains))
+
+        if domain_filter:
+            domain = expression.AND([domain_fields, domain_filter[0]])
+        else:
+            domain = domain_fields
 
         PmsInvoiceResults = self.env.datamodels["pms.invoice.results"]
         PmsInvoiceInfo = self.env.datamodels["pms.invoice.info"]
         PmsInvoiceLineInfo = self.env.datamodels["pms.invoice.line.info"]
-        total_invoices = self.env["account.move"].search_count([])
+        total_invoices = self.env["account.move"].search_count(domain)
         amount_total = 100
         for invoice in self.env["account.move"].search(
             domain,
@@ -120,6 +162,9 @@ class PmsInvoiceService(Component):
                     isReversed=invoice.payment_state == "reversed",
                     isDownPaymentInvoice=invoice._is_downpayment(),
                     isSimplifiedInvoice=invoice.journal_id.is_simplified_invoice,
+                    originAgencyId=invoice.origin_agency_id.id
+                    if invoice.origin_agency_id
+                    else None,
                 )
             )
         return PmsInvoiceResults(
