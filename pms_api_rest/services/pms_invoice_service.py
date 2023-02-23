@@ -33,7 +33,8 @@ class PmsInvoiceService(Component):
 
         domain = []
         domain_fields = [
-            ("state", "in", ("draft", "posted"))
+            ("state", "in", ("draft", "posted")),
+            ("move_type","=","out_invoice")
         ]
         domain_filter = list()
 
@@ -81,7 +82,12 @@ class PmsInvoiceService(Component):
         PmsInvoiceInfo = self.env.datamodels["pms.invoice.info"]
         PmsInvoiceLineInfo = self.env.datamodels["pms.invoice.line.info"]
         total_invoices = self.env["account.move"].search_count(domain)
-        amount_total = 100
+        amount_total = sum(self.env["account.move"].search(
+            domain,
+            order=pms_invoice_search_param.orderBy,
+            limit=pms_invoice_search_param.limit,
+            offset=pms_invoice_search_param.offset,
+        ).mapped("amount_total"))
         for invoice in self.env["account.move"].search(
             domain,
             order=pms_invoice_search_param.orderBy,
