@@ -277,8 +277,7 @@ odoo.define('pos_pms_link.models', function (require) {
         model:  'pms.reservation',
         fields: ['name', 'id', 'state', 'service_ids', 'partner_name', 'adults', 'children'],
         domain: function(self){
-            /* return [['state', '=', 'onboard']]; */
-            return [];
+            return [['state', '=', 'onboard']];
         },
         loaded: function(self, reservations) {
             self.reservations = reservations;
