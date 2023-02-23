@@ -519,8 +519,8 @@ class PmsCheckinPartner(models.Model):
             .env["res.partner.id_number"]
             .search(
                 [
-                    ("name", "=", self.document_number),
-                    ("category_id", "=", self.document_type.id),
+                    ("name", "=", document_number),
+                    ("category_id", "=", document_type.id),
                 ]
             )
         )
