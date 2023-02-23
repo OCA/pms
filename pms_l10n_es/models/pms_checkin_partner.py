@@ -73,6 +73,7 @@ class PmsCheckinPartner(models.Model):
         )
         document_number = re.sub(r"[^a-zA-Z0-9]", "", document_number).upper()
         if not partner and document_number and document_type:
+            search_field_name = False
             if document_type.aeat_identification_type in ["03", "05", "06"]:
                 search_field_name = "aeat_identification"
                 search_comparison = "="
