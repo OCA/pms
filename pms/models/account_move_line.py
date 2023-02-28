@@ -57,8 +57,9 @@ class AccountMoveLine(models.Model):
     )
     move_id = fields.Many2one(check_pms_properties=True)
 
-    @api.depends("quantity")
+    @api.depends('move_id.payment_reference', "quantity")
     def _compute_name(self):
+        res = super()._compute_name()
         for record in self:
             if record.folio_line_ids and not record.name_changed_by_user:
                 record.name_changed_by_user = False
@@ -70,6 +71,7 @@ class AccountMoveLine(models.Model):
                     record.folio_line_ids.service_line_ids,
                     qty=record.quantity,
                 )
+        return res
 
     @api.depends("move_id")
     def _compute_pms_property_id(self):
