@@ -32,10 +32,10 @@ odoo.define("account_reconciliation_widget_inherit", function (require) {
 
         makeRecord: function (model, fields, fieldInfo) {
             if (model === "account.bank.statement.line") {
-                var new_fields = fields.concat(this.extra_fields);
+                var fields = fields.concat(this.extra_fields);
                 _.extend(fieldInfo, this.extra_fieldInfo);
             }
-            return this._super(model, new_fields, fieldInfo);
+            return this._super(model, fields, fieldInfo);
         },
 
         _formatToProcessReconciliation: function (line, prop) {
