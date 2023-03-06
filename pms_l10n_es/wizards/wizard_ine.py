@@ -84,7 +84,8 @@ class WizardIne(models.TransientModel):
                 .filtered(
                     lambda l: len(
                         l.reservation_id.checkin_partner_ids.filtered(
-                            lambda c: c.state not in ["draft", "cancel"]
+                            lambda c: c.state
+                            not in ["dummy", "draft", "cancel", "precheckin"]
                         )
                     )
                     == 1
@@ -113,7 +114,8 @@ class WizardIne(models.TransientModel):
                 .filtered(
                     lambda l: len(
                         l.reservation_id.checkin_partner_ids.filtered(
-                            lambda c: c.state not in ["draft", "cancel"]
+                            lambda c: c.state
+                            not in ["dummy", "draft", "cancel", "precheckin"]
                         )
                     )
                     == 2
@@ -168,7 +170,8 @@ class WizardIne(models.TransientModel):
                 .filtered(
                     lambda l: len(
                         l.reservation_id.checkin_partner_ids.filtered(
-                            lambda c: c.state not in ["draft", "cancel"]
+                            lambda c: c.state
+                            not in ["dummy", "draft", "cancel", "precheckin"]
                         )
                     )
                     > 0
@@ -332,9 +335,9 @@ class WizardIne(models.TransientModel):
             # search for checkin partners
             hosts = self.env["pms.checkin.partner"].search(
                 [
-                    ("pms_property_id", "=", pms_property_id),
-                    ("checkin", "<=", p_date),
-                    ("checkout", ">=", p_date),
+                    ("reservation_id.pms_property_id", "=", pms_property_id),
+                    ("reservation_id.checkin", "<=", p_date),
+                    ("reservation_id.checkout", ">=", p_date),
                     ("reservation_id.reservation_type", "=", "normal"),
                     ("state", "not in", ["dummy", "draft", "cancel", "precheckin"]),
                 ]
@@ -346,7 +349,7 @@ class WizardIne(models.TransientModel):
             )
 
             # arrivals
-            arrivals = hosts.filtered(lambda x: x.checkin == p_date)
+            arrivals = hosts.filtered(lambda x: x.reservation_id.checkin == p_date)
 
             # arrivals grouped by nationality_id
             read_by_arrivals = self.env["pms.checkin.partner"].read_group(
@@ -358,7 +361,7 @@ class WizardIne(models.TransientModel):
             )
 
             # departures
-            departures = hosts.filtered(lambda x: x.checkout == p_date)
+            departures = hosts.filtered(lambda x: x.reservation_id.checkout == p_date)
 
             # departures grouped by nationality_id
             read_by_departures = self.env["pms.checkin.partner"].read_group(
