@@ -15,6 +15,7 @@ setuptools.setup(
         'odoo14-addon-pms_housekeeping',
         'odoo14-addon-pms_l10n_es',
         'odoo14-addon-pms_rooming_xls',
+        'odoo14-addon-pos_pms_link',
     ],
     classifiers=[
         'Programming Language :: Python',
