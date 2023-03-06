@@ -2,11 +2,11 @@ from datetime import datetime
 
 from odoo import _, fields
 from odoo.exceptions import UserError
+from odoo.osv import expression
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
-from odoo.odoo.osv import expression
 
 
 class PmsInvoiceService(Component):
@@ -35,28 +35,25 @@ class PmsInvoiceService(Component):
         domain_fields = [
             ("state", "in", ("draft", "posted")),
             ("move_type", "in", ("out_invoice", "out_refund")),
-            ("folio_ids", "!=", False)
+            ("folio_ids", "!=", False),
         ]
         domain_filter = list()
 
         if pms_invoice_search_param.originAgencyId:
             domain_fields.append(
-                ("origin_agency_id","=", pms_invoice_search_param.originAgencyId),
+                ("origin_agency_id", "=", pms_invoice_search_param.originAgencyId),
             )
         if pms_invoice_search_param.paymentState == "paid":
             domain_fields.append(
                 ("payment_state", "in", ("paid", "reversed", "invoicing_legacy"))
             )
         elif pms_invoice_search_param.paymentState == "not_paid":
-            domain_fields.append(
-                ("payment_state", "in", ("not_paid", "in_payment"))
-            )
+            domain_fields.append(("payment_state", "in", ("not_paid", "in_payment")))
         elif pms_invoice_search_param.paymentState == "partial":
             domain_fields.append(
                 ("payment_state", "=", pms_invoice_search_param.paymentState)
             )
-        if (
-            pms_invoice_search_param.dateStart and pms_invoice_search_param.dateEnd):
+        if pms_invoice_search_param.dateStart and pms_invoice_search_param.dateEnd:
             date_from = fields.Date.from_string(pms_invoice_search_param.dateStart)
             date_to = fields.Date.from_string(pms_invoice_search_param.dateEnd)
             domain_fields.extend(
@@ -91,12 +88,16 @@ class PmsInvoiceService(Component):
         PmsInvoiceInfo = self.env.datamodels["pms.invoice.info"]
         PmsInvoiceLineInfo = self.env.datamodels["pms.invoice.line.info"]
         total_invoices = self.env["account.move"].search_count(domain)
-        amount_total = sum(self.env["account.move"].search(
-            domain,
-            order=pms_invoice_search_param.orderBy,
-            limit=pms_invoice_search_param.limit,
-            offset=pms_invoice_search_param.offset,
-        ).mapped("amount_total"))
+        amount_total = sum(
+            self.env["account.move"]
+            .search(
+                domain,
+                order=pms_invoice_search_param.orderBy,
+                limit=pms_invoice_search_param.limit,
+                offset=pms_invoice_search_param.offset,
+            )
+            .mapped("amount_total")
+        )
         for invoice in self.env["account.move"].search(
             domain,
             order=pms_invoice_search_param.orderBy,
@@ -111,18 +112,12 @@ class PmsInvoiceService(Component):
                     PmsInvoiceLineInfo(
                         id=move_line.id,
                         name=move_line.name if move_line.name else None,
-                        quantity=move_line.quantity
-                        if move_line.quantity
-                        else None,
+                        quantity=move_line.quantity if move_line.quantity else None,
                         priceUnit=move_line.price_unit
                         if move_line.price_unit
                         else None,
-                        total=move_line.price_total
-                        if move_line.price_total
-                        else None,
-                        discount=move_line.discount
-                        if move_line.discount
-                        else None,
+                        total=move_line.price_total if move_line.price_total else None,
+                        discount=move_line.discount if move_line.discount else None,
                         displayType=move_line.display_type
                         if move_line.display_type
                         else None,
@@ -133,16 +128,14 @@ class PmsInvoiceService(Component):
                     )
                 )
             invoice_date = (
-                    datetime.combine(
-                        invoice.invoice_date, datetime.min.time()
-                    ).isoformat()
-                    if invoice.invoice_date
-                    else datetime.combine(
-                        invoice.invoice_date_due, datetime.min.time()
-                    ).isoformat()
-                    if invoice.invoice_date_due
-                    else None
-                )
+                datetime.combine(invoice.invoice_date, datetime.min.time()).isoformat()
+                if invoice.invoice_date
+                else datetime.combine(
+                    invoice.invoice_date_due, datetime.min.time()
+                ).isoformat()
+                if invoice.invoice_date_due
+                else None
+            )
             invoice_url = (
                 invoice.get_proforma_portal_url()
                 if invoice.state == "draft"
@@ -167,10 +160,8 @@ class PmsInvoiceService(Component):
                     partnerName=invoice.partner_id.name
                     if invoice.partner_id.name
                     else None,
-                    partnerId=invoice.partner_id.id
-                    if invoice.partner_id.id
-                    else None,
-                    moveLines=move_lines if len(move_lines)>0 else None,
+                    partnerId=invoice.partner_id.id if invoice.partner_id.id else None,
+                    moveLines=move_lines if len(move_lines) > 0 else None,
                     folioId=invoice.folio_ids,
                     portalUrl=portal_url,
                     moveType=invoice.move_type,
@@ -186,7 +177,7 @@ class PmsInvoiceService(Component):
         return PmsInvoiceResults(
             invoices=result_invoices,
             total=round(amount_total, 2),
-            totalInvoices=total_invoices
+            totalInvoices=total_invoices,
         )
 
     @restapi.method(
