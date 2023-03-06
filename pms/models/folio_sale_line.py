@@ -541,7 +541,7 @@ class FolioSaleLine(models.Model):
         Note: Draft invoice are ignored on purpose, the 'to invoice' amount should
         come only from the folio lines.
         """
-        for line in self.filtered("invoice_lines"):
+        for line in self:
             amount_to_invoice = 0.0
             if line.state != "draft":
                 # Note: do not use price_subtotal field as it returns
