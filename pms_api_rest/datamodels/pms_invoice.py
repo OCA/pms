@@ -38,6 +38,7 @@ class PmsAccountInvoiceInfo(Datamodel):
     # create downpayment invoices from payments
     originDownPaymentId = fields.Integer(required=False, allow_none=True)
     originAgencyId = fields.Integer(required=False, allow_none=True)
+    ref = fields.String(required=False, allow_none=True)
 
 class PmsInvoiceResults(Datamodel):
     _name = "pms.invoice.results"

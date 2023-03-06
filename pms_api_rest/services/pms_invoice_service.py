@@ -34,7 +34,8 @@ class PmsInvoiceService(Component):
         domain = []
         domain_fields = [
             ("state", "in", ("draft", "posted")),
-            ("move_type","=","out_invoice")
+            ("move_type", "in", ("out_invoice", "out_refund")),
+            ("folio_ids", "!=", False)
         ]
         domain_filter = list()
 
@@ -42,7 +43,15 @@ class PmsInvoiceService(Component):
             domain_fields.append(
                 ("origin_agency_id","=", pms_invoice_search_param.originAgencyId),
             )
-        if pms_invoice_search_param.paymentState:
+        if pms_invoice_search_param.paymentState == "paid":
+            domain_fields.append(
+                ("payment_state", "in", ("paid", "reversed", "invoicing_legacy"))
+            )
+        elif pms_invoice_search_param.paymentState == "not_paid":
+            domain_fields.append(
+                ("payment_state", "in", ("not_paid", "in_payment"))
+            )
+        elif pms_invoice_search_param.paymentState == "partial":
             domain_fields.append(
                 ("payment_state", "=", pms_invoice_search_param.paymentState)
             )
@@ -52,8 +61,8 @@ class PmsInvoiceService(Component):
             date_to = fields.Date.from_string(pms_invoice_search_param.dateEnd)
             domain_fields.extend(
                 [
-                    ("invoice_date",">=", date_from),
-                    ("invoice_date","<=",date_to),
+                    ("invoice_date", ">=", date_from),
+                    ("invoice_date", "<=", date_to),
                 ]
             )
         if pms_invoice_search_param.filter:
@@ -171,6 +180,7 @@ class PmsInvoiceService(Component):
                     originAgencyId=invoice.origin_agency_id.id
                     if invoice.origin_agency_id
                     else None,
+                    ref=invoice.ref,
                 )
             )
         return PmsInvoiceResults(
