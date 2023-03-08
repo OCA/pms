@@ -12,6 +12,7 @@ class PmsInvoiceSearchParam(Datamodel):
     paymentState = fields.String(required=False, allow_none=True)
     dateStart = fields.String(required=False, allow_none=True)
     dateEnd = fields.String(required=False, allow_none=True)
+    pmsPropertyId = fields.Integer(required=False, allow_none=True)
 
 class PmsAccountInvoiceInfo(Datamodel):
     _name = "pms.invoice.info"
@@ -39,6 +40,7 @@ class PmsAccountInvoiceInfo(Datamodel):
     originDownPaymentId = fields.Integer(required=False, allow_none=True)
     originAgencyId = fields.Integer(required=False, allow_none=True)
     ref = fields.String(required=False, allow_none=True)
+    pmsPropertyId = fields.Integer(required=False, allow_none=True)
 
 class PmsInvoiceResults(Datamodel):
     _name = "pms.invoice.results"

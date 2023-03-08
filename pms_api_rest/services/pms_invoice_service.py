@@ -43,6 +43,8 @@ class PmsInvoiceService(Component):
             domain_fields.append(
                 ("origin_agency_id", "=", pms_invoice_search_param.originAgencyId),
             )
+        if pms_invoice_search_param.pmsPropertyId:
+            domain_fields.append(("pms_property_id", "=", pms_invoice_search_param.pmsPropertyId))
         if pms_invoice_search_param.paymentState == "paid":
             domain_fields.append(
                 ("payment_state", "in", ("paid", "reversed", "invoicing_legacy"))
@@ -83,7 +85,6 @@ class PmsInvoiceService(Component):
             domain = expression.AND([domain_fields, domain_filter[0]])
         else:
             domain = domain_fields
-
         PmsInvoiceResults = self.env.datamodels["pms.invoice.results"]
         PmsInvoiceInfo = self.env.datamodels["pms.invoice.info"]
         PmsInvoiceLineInfo = self.env.datamodels["pms.invoice.line.info"]
@@ -171,7 +172,8 @@ class PmsInvoiceService(Component):
                     originAgencyId=invoice.origin_agency_id.id
                     if invoice.origin_agency_id
                     else None,
-                    ref=invoice.ref,
+                    ref=invoice.ref if invoice.ref else None,
+                    pmsPropertyId=invoice.pms_property_id if invoice.pms_property_id else None,
                 )
             )
         return PmsInvoiceResults(
