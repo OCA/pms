@@ -358,7 +358,6 @@ class PortalPrecheckin(CustomerPortal):
                 "doc_type_ids": doc_type_ids,
                 "folio": folio_sudo,
                 "checkin_partner_id": checkin_partner,
-                "checkin_pos": 0,
             }
         )
         if checkin_partner.state not in ["dummy", "draft"]:
