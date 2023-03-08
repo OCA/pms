@@ -1068,24 +1068,7 @@
                             type="text"
                             name="access_token"
                             t-attf-class="d-none"
-                            t-att-value="checkin_partner_id.access_token"
-                        />
-                        <input
-                            name="checkin_partner_id"
-                            t-attf-class="d-none"
-                            t-att-value="checkin_partner_id.id"
-                        />
-                        <input
-                            type="text"
-                            name="checkin_pos"
-                            t-attf-class="form-control d-none"
-                            value="0"
-                        />
-                        <input
-                            type="number"
-                            name="first"
-                            t-attf-class="form-control d-none"
-                            value="1"
+                            t-att-value="folio.access_token"
                         />
                         <button
                             type="submit"
