@@ -1089,13 +1089,14 @@ class FolioSaleLine(models.Model):
         return res
 
     def unlink(self):
-        if self.qty_invoiced > 0:
-            raise UserError(
-                _(
-                    "You cannot delete a sale order line once a "
-                    "invoice has been created from it."
+        for record in self:
+            if record.qty_invoiced > 0:
+                raise UserError(
+                    _(
+                        "You cannot delete a sale order line once a "
+                        "invoice has been created from it."
+                    )
                 )
-            )
         return super(FolioSaleLine, self).unlink()
 
     def _get_real_price_currency(self, product, rule_id, qty, uom, pricelist_id):
