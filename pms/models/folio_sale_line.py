@@ -1089,7 +1089,7 @@ class FolioSaleLine(models.Model):
         return res
 
     def unlink(self):
-        if self.invoice_lines:
+        if self.qty_invoiced > 0:
             raise UserError(
                 _(
                     "You cannot delete a sale order line once a "
