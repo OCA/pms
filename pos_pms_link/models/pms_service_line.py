@@ -17,14 +17,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import fields, models, api, _
-from odoo.osv.expression import AND
-import pytz
-from datetime import timedelta
-from odoo.addons.point_of_sale.wizard.pos_box import PosBox
+from odoo import fields, models
+
 
 class PMSServiceLine(models.Model):
-    _inherit = 'pms.service.line'
+    _inherit = "pms.service.line"
 
     pos_order_line_ids = fields.One2many(
         string="POS lines",
