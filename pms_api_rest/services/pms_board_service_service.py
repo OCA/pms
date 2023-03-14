@@ -52,6 +52,7 @@ class PmsBoardServiceService(Component):
                     roomTypeId=board_service.pms_room_type_id.id,
                     amount=round(board_service.amount, 2),
                     boardServiceId=board_service.pms_board_service_id,
+                    productIds=board_service.board_service_line_ids.mapped("product_id.id"),
                 )
             )
         return result_board_services
@@ -79,6 +80,7 @@ class PmsBoardServiceService(Component):
                 name=board_service.pms_board_service_id.display_name,
                 roomTypeId=board_service.pms_room_type_id.id,
                 amount=round(board_service.amount),
+                productIds=board_service.board_service_line_ids.mapped("product_id.id"),
             )
         else:
             raise MissingError(_("Board Service not found"))

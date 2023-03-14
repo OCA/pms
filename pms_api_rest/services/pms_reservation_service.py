@@ -120,7 +120,7 @@ class PmsReservationService(Component):
             )
         return res
 
-    def _create_vals_from_params(self, reservation_vals, reservation_data):
+    def _create_vals_from_params(self, reservation_vals, reservation_data, reservation_id):
         if reservation_data.preferredRoomId:
             reservation_vals.update(
                 {"preferred_room_id": reservation_data.preferredRoomId}
@@ -139,6 +139,12 @@ class PmsReservationService(Component):
             reservation_vals.update(
                 {"segmentation_ids": [(6, 0, [reservation_data.segmentationId])]}
             )
+        if reservation_data.checkin:
+            reservation_vals.update({"checkin": reservation_data.checkin})
+        if reservation_data.checkout:
+            reservation_vals.update({"checkout": reservation_data.checkout})
+
+
         return reservation_vals
 
     @restapi.method(
@@ -203,25 +209,56 @@ class PmsReservationService(Component):
             reservation.confirm()
         if reservation_data.toCheckout is not None and reservation_data.toCheckout:
             reservation.action_reservation_checkout()
-        if (
-            reservation_data.roomTypeId
-            and reservation.room_type_id.id != reservation_data.roomTypeId
-        ):
-            reservation.room_type_id = reservation_data.roomTypeId
 
         reservation_vals = self._create_vals_from_params(
             reservation_vals,
             reservation_data,
             reservation_id,
         )
-        # TODO: this should be @ pms core
-        if (
-            reservation_data.boardServiceId is not None
-            and reservation_data.boardServiceId != reservation.board_service_room_id
-        ):
-            reservation.service_ids.filtered(lambda x: x.is_board_service).unlink()
+
+        service_cmds = []
+        if reservation_data.boardServiceId is not None or reservation_data.boardServices is not None:
+            for service in reservation.service_ids.filtered(lambda x: x.is_board_service):
+                service_cmds.append((2, service.id))
+
+        if reservation_data.boardServices is not None:
+            for bs in reservation_data.boardServices:
+                service_line_cmds = []
+                for line in bs.serviceLines:
+                    service_line_cmds.append(
+                        (
+                            0,
+                            False,
+                            {
+                                "price_unit": line.priceUnit,
+                                "date": line.date,
+                                "discount": line.discount,
+                                "day_qty": line.quantity,
+                                "auto_qty": True,
+                            },
+                        )
+                    )
+                service_cmds.append(
+                    (
+                        0,
+                        False,
+                        {
+                            "product_id": bs.productId,
+                            "is_board_service": True,
+                            "reservation_id": reservation_id,
+                            "service_line_ids": service_line_cmds,
+                        }
+                    )
+                )
+        if service_cmds:
+            reservation_vals.update({"service_ids": service_cmds})
         if reservation_vals:
-            reservation.write(reservation_vals)
+            if reservation_data.boardServices:
+                reservation.with_context(skip_compute_service_ids=True).write(reservation_vals)
+            else:
+                reservation.write(reservation_vals)
+                print(reservation.service_ids.mapped("name"))
+
 
     def _get_reservation_lines_mapped(self, origin_data, reservation_line=False):
         # Return dict witch reservation.lines values (only modified if line exist,
