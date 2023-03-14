@@ -33,19 +33,25 @@ class PmsPriceService(Component):
             room_type = self.env["pms.room.type"].search(
                 [("id", "=", prices_search_param.roomTypeId)]
             )
-        if prices_search_param.productId:
+        elif prices_search_param.productId and prices_search_param.boardServiceId:
             product = self.env["product.product"].search(
                 [("id", "=", prices_search_param.productId)]
             )
-        if prices_search_param.boardServiceId:
             board_service = self.env["pms.board.service.room.type"].search(
                 [("id", "=", prices_search_param.boardServiceId)]
             )
-        if sum([var is not False for var in [product, room_type, board_service]]) != 1:
+        elif prices_search_param.productId:
+            product = self.env["product.product"].search(
+                [("id", "=", prices_search_param.productId)]
+            )
+        elif prices_search_param.boardServiceId:
+            board_service = self.env["pms.board.service.room.type"].search(
+                [("id", "=", prices_search_param.boardServiceId)]
+            )
+        else:
             raise MissingError(
                 _(
-                    "It is necessary to indicate one and only one product,"
-                    " board service or room type"
+                    "Wrong input param"
                 )
             )
 
@@ -72,6 +78,7 @@ class PmsPriceService(Component):
                                 partner_id=prices_search_param.partnerId,
                                 product_qty=prices_search_param.productQty,
                                 date_consumption=price_date,
+                                product_id=product.id if product else False,
                             ),
                             2,
                         ),
@@ -143,9 +150,14 @@ class PmsPriceService(Component):
         partner_id=False,
         product_qty=False,
         date_consumption=False,
+        product_id=False,
     ):
         price = 0
-        for product in board_service.board_service_line_ids.mapped("product_id"):
+        if product_id:
+            products = self.env['product.product'].browse(product_id)
+        else:
+            products = board_service.board_service_line_ids.mapped("product_id")
+        for product in products:
             price += self._get_product_price(
                 product=product,
                 pms_property_id=pms_property_id,
