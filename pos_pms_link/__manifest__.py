@@ -19,30 +19,30 @@
 ##############################################################################
 
 {
-    'name': 'POS PMS link',
-    'summary': 'Allows to use PMS reservations on the POS interface',
-    'version': "14.0.1.0.0",
-    'author': 'Comunitea Servicios Tecnológicos S.L.',
-    'website': "http://www.comunitea.com",
-    'license': 'AGPL-3',
+    "name": "POS PMS link",
+    "summary": "Allows to use PMS reservations on the POS interface",
+    "version": "14.0.1.0.0",
+    "author": "Comunitea Servicios Tecnológicos S.L., Odoo Community Association (OCA)",
+    "website": "https://github.com/OCA/pms",
+    "license": "AGPL-3",
     "category": "Point of Sale",
-    'depends': [
-        'point_of_sale',
-        'pms',
+    "depends": [
+        "point_of_sale",
+        "pms",
     ],
-    'data': [
-        'views/assets_common.xml',
-        'views/pms_service_line.xml',
-        'views/pos_order.xml',
-        'views/pos_config.xml',
+    "data": [
+        "views/assets_common.xml",
+        "views/pms_service_line.xml",
+        "views/pos_order.xml",
+        "views/pos_config.xml",
     ],
-    'demo': [],
-    'qweb': [
-        'static/src/xml/ReservationSelectionButton.xml',
-        'static/src/xml/Screens/ReservationListScreen/ReservationDetailsEdit.xml',
-        'static/src/xml/Screens/ReservationListScreen/ReservationLine.xml',
-        'static/src/xml/Screens/ReservationListScreen/ReservationListScreen.xml',
-        'static/src/xml/Screens/PaymentScreen/PaymentScreen.xml',
+    "demo": [],
+    "qweb": [
+        "static/src/xml/ReservationSelectionButton.xml",
+        "static/src/xml/Screens/ReservationListScreen/ReservationDetailsEdit.xml",
+        "static/src/xml/Screens/ReservationListScreen/ReservationLine.xml",
+        "static/src/xml/Screens/ReservationListScreen/ReservationListScreen.xml",
+        "static/src/xml/Screens/PaymentScreen/PaymentScreen.xml",
     ],
-    'installable': True,
+    "installable": True,
 }
