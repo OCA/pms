@@ -1062,6 +1062,7 @@ class FolioSaleLine(models.Model):
         if self.is_downpayment:
             downpayment_invoice = self.folio_id.move_ids.filtered(
                 lambda x: x.payment_state != "reversed"
+                and x.move_type == "out_invoice"
                 and x.line_ids.filtered(lambda l: l.folio_line_ids == self)
             )
             name = self.name + " (" + downpayment_invoice.name + ")"
