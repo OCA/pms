@@ -136,15 +136,6 @@ class PmsReservationLine(models.Model):
         ondelete="restrict",
     )
 
-    _sql_constraints = [
-        (
-            "rule_availability",
-            "EXCLUDE (room_id WITH =, date WITH =) \
-            WHERE (occupies_availability = True)",
-            "Room Occupied",
-        ),
-    ]
-
     def name_get(self):
         result = []
         for res in self:
@@ -242,7 +233,7 @@ class PmsReservationLine(models.Model):
                         # if the preferred room is NOT available
                         else:
                             if self.env.context.get("force_overbooking"):
-                                reservation.overbooking = True
+                                line.overbooking = True
                                 line.room_id = reservation.preferred_room_id
                             else:
                                 raise ValidationError(
@@ -426,6 +417,11 @@ class PmsReservationLine(models.Model):
                     ]
                 )
                 if avail:
+                    if not avail.real_avail and record.occupies_availability:
+                        raise ValidationError(
+                            _("There is no availability for the room type %s on %s")
+                            % (record.room_id.room_type_id.name, record.date)
+                        )
                     record.avail_id = avail.id
                 else:
                     record.avail_id = self.env["pms.availability"].create(
