@@ -105,7 +105,9 @@ class PmsAvailability(models.Model):
                     ("pms_property_id", "=", record.pms_property_id.id),
                 ]
             )
-            room_ids = record.room_type_id.mapped("room_ids.id")
+            room_ids = record.room_type_id.room_ids.filtered(
+                lambda r: r.pms_property_id == record.pms_property_id
+            ).ids
             count_rooms_not_avail = len(
                 record.get_rooms_not_avail(
                     checkin=record.date,
