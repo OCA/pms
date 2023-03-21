@@ -671,6 +671,9 @@ class PmsProperty(models.Model):
         and validate the draft invoices created by the folios
         """
         date_reference = fields.Date.today() - relativedelta(days=offset)
+        # REVIEW: We clean the autoinvoice_date of the past draft invoices
+        # to avoid blocking the autoinvoicing
+        self.clean_date_on_past_draft_invoices(date_reference)
         folios = self.env["pms.folio"].search(
             [
                 ("sale_line_ids.autoinvoice_date", "=", date_reference),
@@ -710,6 +713,32 @@ class PmsProperty(models.Model):
                 self.with_delay().autovalidate_folio_invoice(invoice)
             else:
                 self.autovalidate_folio_invoice(invoice)
+        return True
+
+    @api.model
+    def clean_date_on_past_draft_invoices(self, date_reference):
+        """
+        This method is used to clean the date on past draft invoices
+        """
+        journal_ids = (
+            self.env["account.journal"]
+            .search(
+                [
+                    ("type", "=", "sale"),
+                    ("pms_property_ids", "!=", False),
+                ]
+            )
+            .ids
+        )
+        draft_invoices = self.env["account.move"].search(
+            [
+                ("state", "=", "draft"),
+                ("invoice_date", "<", date_reference),
+                ("journal_id", "in", journal_ids),
+            ]
+        )
+        if draft_invoices:
+            draft_invoices.write({"invoice_date": date_reference})
         return True
 
     def autovalidate_folio_invoice(self, invoice):
