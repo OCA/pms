@@ -411,6 +411,7 @@
             <search string="Checkin Detail">
                 <field name="partner_id" />
                 <field name="reservation_id" />
+                <field name="pms_property_id" />
                 <filter
                     string="On Board"
                     name="on_board"

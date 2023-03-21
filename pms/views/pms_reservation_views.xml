@@ -944,6 +944,7 @@
                     string="Reservations to 7 days"
                     name="next_res_week"
                     domain="[('checkin', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d')),
+                    ('checkin', '&gt;', (context_today()).strftime('%Y-%m-%d')),
                         ('state', 'in', ['confirm','onboard'])]"
                     help="Show all reservations for which date enter is before than 7 days"
                 />
@@ -951,6 +952,7 @@
                     string="Reservations to 14 days"
                     name="next_res_2week"
                     domain="[('checkin', '&lt;', (context_today()+datetime.timedelta(days=14)).strftime('%Y-%m-%d')),
+                        ('checkin', '&gt;', (context_today()).strftime('%Y-%m-%d')),
                         ('state', 'in', ['confirm','onboard'])]"
                     help="Show all reservations for which date enter is before than 14 days"
                 />
@@ -958,6 +960,7 @@
                     string="Reservations to 1 month"
                     name="next_res_week"
                     domain="[('checkin', '&lt;', (context_today()+datetime.timedelta(days=30)).strftime('%Y-%m-%d')),
+                        ('checkin', '&gt;', (context_today()).strftime('%Y-%m-%d')),
                         ('state', 'in', ['confirm','onboard'])]"
                     help="Show all reservations for which date enter is before than aprox. 1 month"
                 />
