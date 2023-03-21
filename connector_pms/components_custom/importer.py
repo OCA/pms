@@ -145,7 +145,10 @@ class GenericImporterCustom(AbstractComponent):
     def _create(self, model, values):
         """Create the Internal record"""
         # return model.create(values)
-        return model.with_context(connector_no_export=True).create(values)
+        return model.with_context(
+            connector_no_export=True,
+            force_write_blocked=True,
+        ).create(values)
 
     def _update(self, binding, values):
         """Update an Internal record"""
