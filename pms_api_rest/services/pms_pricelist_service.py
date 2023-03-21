@@ -109,8 +109,12 @@ class PmsPricelistService(Component):
         )
         if not record_pricelist:
             raise MissingError
-        rooms = self.env["pms.room"].search(
-            [("pms_property_id", "=", pricelist_item_search_param.pmsPropertyId)]
+        rooms = (
+            self.env["pms.room"]
+            .with_context(active_test=True)
+            .search(
+                [("pms_property_id", "=", pricelist_item_search_param.pmsPropertyId)]
+            )
         )
         room_types = rooms.mapped("room_type_id")
         result = []

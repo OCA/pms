@@ -95,14 +95,18 @@ class PmsAvailabilityPlanService(Component):
         if not record_availability_plan_id:
             raise MissingError
 
-        rooms = self.env["pms.room"].search(
-            [
-                (
-                    "pms_property_id",
-                    "=",
-                    availability_plan_rule_search_param.pmsPropertyId,
-                )
-            ]
+        rooms = (
+            self.env["pms.room"]
+            .with_context(active_test=True)
+            .search(
+                [
+                    (
+                        "pms_property_id",
+                        "=",
+                        availability_plan_rule_search_param.pmsPropertyId,
+                    )
+                ]
+            )
         )
         room_type_ids = rooms.mapped("room_type_id").ids
         selected_fields = [
