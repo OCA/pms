@@ -74,7 +74,7 @@
         <field name="model">pms.service.line</field>
         <field name="arch" type="xml">
             <search string="Services By Day">
-                <field name="service_id" />
+                <field name="product_id" />
                 <separator />
                 <field name="pms_property_id" />
                 <separator />
