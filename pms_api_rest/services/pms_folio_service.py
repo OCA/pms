@@ -1085,9 +1085,9 @@ class PmsFolioService(Component):
                     reservation_messages.append(
                         PmsReservationMessageInfo(
                             reservationId=message.res_id,
-                            author=message.email_from
-                            if message.email_from
-                            else message.author_id[0],
+                            author=message.author_id.name
+                            if message.author_id
+                            else message.email_from,
                             message=message_body,
                             subject=subject,
                             date=message.date.strftime("%d/%m/%y %H:%M:%S"),
@@ -1108,9 +1108,9 @@ class PmsFolioService(Component):
                     subject = folio_message.subject if folio_message.subject else None
                 folio_messages.append(
                     PmsFolioMessageInfo(
-                        author=folio_message.email_from
-                        if folio_message.email_from
-                        else folio_message.author_id[1],
+                        author=message.author_id.name
+                        if message.author_id
+                        else message.email_from,
                         message=message_body,
                         subject=subject,
                         date=folio_message.date.strftime("%d/%m/%y %H:%M:%S"),
