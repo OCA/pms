@@ -1071,20 +1071,11 @@ class PmsFolio(models.Model):
             elif line_invoice_status and any(
                 invoice_status == "invoiced" for invoice_status in line_invoice_status
             ):
-                if (
-                    all(
-                        invoice_status == "invoiced"
-                        for invoice_status in line_invoice_status
-                    )
-                    or order.force_nothing_to_invoice
-                ):
-                    order.invoice_status = "invoiced"
-                else:
-                    order.invoice_status = "no"
+                order.invoice_status = "invoiced"
             else:
                 order.invoice_status = "no"
 
-    @api.depends("untaxed_amount_to_invoice", "amount_total")
+    @api.depends("untaxed_amount_to_invoice")
     def _compute_force_nothing_to_invoice(self):
         # If the invoice amount and amount total are the same,
         # and the qty to invoice is not 0, we force nothing to invoice
@@ -1199,6 +1190,7 @@ class PmsFolio(models.Model):
                     / sum(folio.reservation_ids.mapped("adults"))
                 )
 
+    @api.depends("sale_line_ids.untaxed_amount_to_invoice")
     def _compute_untaxed_amount_to_invoice(self):
         for folio in self:
             folio.untaxed_amount_to_invoice = sum(
