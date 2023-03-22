@@ -28,6 +28,7 @@
         "partner_contact_nationality",
         "account_reconciliation_widget",
         # "partner_identification_unique_by_category",
+        "queue_job",
     ],
     "data": [
         "security/pms_security.xml",
