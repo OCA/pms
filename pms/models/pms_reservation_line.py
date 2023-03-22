@@ -417,12 +417,13 @@ class PmsReservationLine(models.Model):
                     ]
                 )
                 if avail:
-                    if not avail.real_avail and record.occupies_availability:
-                        raise ValidationError(
-                            _("There is no availability for the room type %s on %s")
-                            % (record.room_id.room_type_id.name, record.date)
-                        )
                     record.avail_id = avail.id
+                    if record.occupies_availability:
+                        if avail.real_avail < 0:
+                            raise ValidationError(
+                                _("There is no availability for the room type %s on %s")
+                                % (record.room_id.room_type_id.name, record.date)
+                            )
                 else:
                     record.avail_id = self.env["pms.availability"].create(
                         {
