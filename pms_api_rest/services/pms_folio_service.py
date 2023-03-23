@@ -72,6 +72,7 @@ class PmsFolioService(Component):
                 if folio.out_service_description
                 else None,
                 portalUrl=portal_url,
+                language=folio.lang if folio.lang else None,
             )
         else:
             raise MissingError(_("Folio not found"))
@@ -465,6 +466,7 @@ class PmsFolioService(Component):
                 "out_service_description": pms_folio_info.outOfServiceDescription
                 if pms_folio_info.outOfServiceDescription
                 else None,
+                "lang": pms_folio_info.language,
             }
         else:
             vals = {
@@ -475,6 +477,7 @@ class PmsFolioService(Component):
                 else False,
                 "reservation_type": pms_folio_info.reservationType,
                 "internal_comment": pms_folio_info.internalComment,
+                "lang": pms_folio_info.language,
             }
             if pms_folio_info.partnerId:
                 vals.update(
