@@ -706,6 +706,7 @@ class PmsReservation(models.Model):
         related="room_type_id.overnight_room",
         store=True,
     )
+    # TODO: This field is deprecated
     lang = fields.Many2one(
         string="Language", comodel_name="res.lang", compute="_compute_lang"
     )

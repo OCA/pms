@@ -573,6 +573,7 @@ class PmsFolio(models.Model):
         store=True,
         readonly=False,
     )
+    lang = fields.Selection(selection='_get_languages', string='Language', validate=False)
 
     def name_get(self):
         result = []
@@ -1480,6 +1481,9 @@ class PmsFolio(models.Model):
 
         return res
 
+    @api.model
+    def _get_languages(self):
+        return self.env['res.lang'].get_installed()
     def get_reservations_to_update_channel(self, vals):
         reservations_to_update = self.env["pms.reservation"]
         for record in self:
