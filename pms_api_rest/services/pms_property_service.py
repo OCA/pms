@@ -47,6 +47,7 @@ class PmsPropertyService(Component):
                     simpleOutColor=prop.simple_out_color,
                     simpleInColor=prop.simple_in_color,
                     simpleFutureColor=prop.simple_future_color,
+                    language=prop.lang,
                 )
             )
         return result_properties
@@ -85,6 +86,7 @@ class PmsPropertyService(Component):
                 staffReservationColor=pms_property.staff_reservation_color,
                 toAssignReservationColor=pms_property.to_assign_reservation_color,
                 pendingPaymentReservationColor=pms_property.pending_payment_reservation_color,
+                language=pms_property.lang,
             )
 
         return res
