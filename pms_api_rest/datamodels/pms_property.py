@@ -28,3 +28,4 @@ class PmsPropertyInfo(Datamodel):
     simpleOutColor = fields.String(required=False, allow_none=True)
     simpleInColor = fields.String(required=False, allow_none=True)
     simpleFutureColor = fields.String(required=False, allow_none=True)
+    language = fields.String(required=True, allow_none=False)
