@@ -2083,6 +2083,7 @@ class PmsReservation(models.Model):
                         [
                             ("date" in line[2] or "price" in line[2])
                             for line in vals.get("reservation_line_ids")
+                            if line[0] == 1
                         ]
                     )
                 )
