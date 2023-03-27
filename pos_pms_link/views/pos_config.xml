@@ -13,13 +13,21 @@
                     <div class="o_setting_left_pane">
                         <field name="pay_on_reservation"/>
                     </div>
-                    <div class="o_setting_right_pane">
+                    <div class="o_setting_right_pane" attrs="{'invisible': [('pay_on_reservation', '=', False)]}">
                         <label for="pay_on_reservation"/>
                         <div class="text-muted">
                             Allow pay on reservations
                         </div>
-                        <div class="content-group mt16" attrs="{'invisible': [('pay_on_reservation', '=', False)]}">
+                        <div class="content-group mt16">
                             <field name="pay_on_reservation_method_id"/>
+                        </div>
+
+                        <label for="pay_on_reservation"/>
+                        <div class="text-muted">
+                            Allowed properties
+                        </div>
+                        <div class="content-group mt16">
+                            <field name="reservation_allowed_propertie_ids" widget="many2many_tags"/>
                         </div>
                     </div>
                 </div>

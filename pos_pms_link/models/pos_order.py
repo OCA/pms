@@ -59,17 +59,19 @@ class PosOrder(models.Model):
     def _process_order(self, pos_order, draft, existing_order):
         data = pos_order.get('data', False)
         if data and data.get("paid_on_reservation", False) and data.get("pms_reservation_id", False):
-            res = super()._process_order(pos_order, draft, existing_order)
+            pms_reservation_id = data.pop('pms_reservation_id')
+            res = super(PosOrder, self)._process_order(pos_order, draft, existing_order)
             order_id = self.env['pos.order'].browse(res)
-            order_id.add_order_lines_to_reservation(data.get("pms_reservation_id"))
+            pms_reservation_id = self.sudo().env['pms.reservation'].browse(pms_reservation_id)
+            if not pms_reservation_id:
+                raise UserError(_("Reservation does not exists."))
+            order_id.pms_reservation_id = pms_reservation_id.id
+            order_id.add_order_lines_to_reservation(pms_reservation_id)
             return res
         else:
             return super()._process_order(pos_order, draft, existing_order)
 
-    def add_order_lines_to_reservation(self, reservation_id):
-        pms_reservation_id = self.env['pms.reservation'].browse(reservation_id)
-        if not pms_reservation_id:
-            raise UserError(_("Reservation does not exists."))
+    def add_order_lines_to_reservation(self, pms_reservation_id):
         self.lines.filtered(lambda x: not x.pms_service_line_id)._generate_pms_service(pms_reservation_id)
 
 class PosOrderLine(models.Model):
@@ -96,7 +98,7 @@ class PosOrderLine(models.Model):
                     )
                 ],
             }
-            service = self.env["pms.service"].create(vals)
+            service = self.sudo().env["pms.service"].create(vals)
 
             line.write({
                 'pms_service_line_id': service.service_line_ids.id
