@@ -173,6 +173,7 @@ class PmsReservationLine(models.Model):
         # negative discounts (= surcharge) are included in the display price
         return max(base_price, final_price)
 
+    # flake8: noqa=C901
     @api.depends("reservation_id.room_type_id", "reservation_id.preferred_room_id")
     def _compute_room_id(self):
         for line in self.filtered("reservation_id.room_type_id").sorted(
@@ -234,6 +235,8 @@ class PmsReservationLine(models.Model):
                         else:
                             if self.env.context.get("force_overbooking"):
                                 line.overbooking = True
+                                line.room_id = reservation.preferred_room_id
+                            elif not line.occupies_availability:
                                 line.room_id = reservation.preferred_room_id
                             else:
                                 raise ValidationError(
@@ -417,13 +420,25 @@ class PmsReservationLine(models.Model):
                     ]
                 )
                 if avail:
+                    room_ids = record.room_id.room_type_id.room_ids.filtered(
+                        lambda r: r.pms_property_id == record.pms_property_id
+                    ).ids
+                    if (
+                        record.occupies_availability
+                        and record.room_id.id
+                        in avail.get_rooms_not_avail(
+                            checkin=record.date,
+                            checkout=record.date + datetime.timedelta(1),
+                            room_ids=room_ids,
+                            pms_property_id=record.pms_property_id.id,
+                            current_lines=record.ids,
+                        )
+                    ):
+                        raise ValidationError(
+                            _("There is no availability for the room type %s on %s")
+                            % (record.room_id.room_type_id.name, record.date)
+                        )
                     record.avail_id = avail.id
-                    if record.occupies_availability:
-                        if avail.real_avail < 0:
-                            raise ValidationError(
-                                _("There is no availability for the room type %s on %s")
-                                % (record.room_id.room_type_id.name, record.date)
-                            )
                 else:
                     record.avail_id = self.env["pms.availability"].create(
                         {
