@@ -63,3 +63,15 @@ class ResUsers(models.Model):
                     raise ValidationError(
                         _("Some properties do not belong to the allowed companies")
                     )
+
+    # Inherit Create and Write method to set context avoid_document_restriction
+    @api.model
+    def create(self, vals):
+        return super(
+            ResUsers, self.with_context(avoid_document_restriction=True)
+        ).create(vals)
+
+    def write(self, vals):
+        return super(
+            ResUsers, self.with_context(avoid_document_restriction=True)
+        ).write(vals)
