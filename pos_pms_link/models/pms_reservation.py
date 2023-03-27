@@ -17,11 +17,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from odoo import models, api
 
-from . import pos_order
-from . import pms_service_line
-from . import pos_config
-from . import pos_payment
-from . import pms_reservation
-from . import pms_service
-from . import product_pricelist
+
+class PMSReservation(models.Model):
+    _inherit = 'pms.reservation'
+
+    @api.model
+    def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
+        if self.env.context.get("pos_user_force", False):
+            return super().sudo().with_context(pos_user_force=False).search_read(domain, fields, offset, limit, order)
+        else:
+            return super(PMSReservation, self).search_read(domain, fields, offset, limit, order)
