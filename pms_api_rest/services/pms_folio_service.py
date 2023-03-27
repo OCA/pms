@@ -598,6 +598,8 @@ class PmsFolioService(Component):
             folio_vals.update({"email": pms_folio_info.partnerEmail})
         if pms_folio_info.partnerPhone is not None:
             folio_vals.update({"mobile": pms_folio_info.partnerPhone})
+        if pms_folio_info.language:
+            folio_vals.update({"lang": pms_folio_info.language})
         if pms_folio_info.reservations:
             for reservation in pms_folio_info.reservations:
                 vals = {
