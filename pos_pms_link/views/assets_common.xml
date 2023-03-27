@@ -10,6 +10,7 @@
         <script type="text/javascript" src="/pos_pms_link/static/src/js/Screens/ReservationListScreen/ReservationLine.js"></script>
         <script type="text/javascript" src="/pos_pms_link/static/src/js/Screens/ReservationListScreen/ReservationListScreen.js"></script>
         <script type="text/javascript" src="/pos_pms_link/static/src/js/Screens/PaymentScreen/PaymentScreen.js"></script>
+        <script type="text/javascript" src="/pos_pms_link/static/src/js/Screens/ReceiptScreen/OrderReceipt.js"></script>
     </xpath>
     
 </template>
