@@ -43,6 +43,7 @@
         "static/src/xml/Screens/ReservationListScreen/ReservationLine.xml",
         "static/src/xml/Screens/ReservationListScreen/ReservationListScreen.xml",
         "static/src/xml/Screens/PaymentScreen/PaymentScreen.xml",
+        "static/src/xml/Screens/ReceiptScreen/OrderReceipt.xml",
     ],
     "installable": True,
 }

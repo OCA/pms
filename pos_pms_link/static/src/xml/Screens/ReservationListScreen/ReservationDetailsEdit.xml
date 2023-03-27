@@ -5,13 +5,17 @@
         <section class="client-details edit">
             <h3 class="detail client-name" t-esc="props.reservation.name"/>
             <div class="client-details-box clearfix">
-                <div class="client-details-left">
-                    <span class="detail client-partner-name" t-esc="props.reservation.partner_name"/><br/>
-                    <span class="detail client-aduls" t-esc="props.reservation.adults"/><br/>
-                    <span class="detail client-children" t-esc="props.reservation.children"/><br/>
+                <div class="client-details-row">
+                    Name: <span class="detail client-partner-name" t-esc="props.reservation.partner_name"/><br/>
+                    Checkin: <span class="detail client-aduls" t-esc="props.reservation.checkin"/><br/>
+                    Checkout: <span class="detail client-aduls" t-esc="props.reservation.checkout"/><br/>
+                    Adults: <span class="detail client-aduls" t-esc="props.reservation.adults"/><br/>
+                    Children: <span class="detail client-children" t-esc="props.reservation.children"/><br/>
+                    Internal comment: <span class="detail client-aduls" t-esc="props.reservation.folio_internal_comment"/><br/>
                 </div>
-                <div class="client-details-right">
-                    <table>
+                <h3 class="detail client-name">Services:</h3>
+                <div class="client-details-row">
+                    <table class="content-row">
                         <thead>
                             <tr>
                                 <th>Service</th>
@@ -19,8 +23,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <t t-foreach="props.reservation.service_ids" t-as="service" t-key="service.id">
+                            <t t-foreach="props.reservation.service_ids" t-as="service" t-key="service.id">
+                                <tr>
                                     <td t-esc="service_value['name']"/>
                                     <td>
                                         <ul>
@@ -31,8 +35,8 @@
                                             </t>
                                         </ul>
                                     </td>
-                                </t>
-                            </tr>
+                                </tr>
+                            </t>
                         </tbody>
                     </table>
                 </div>
