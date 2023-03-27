@@ -156,6 +156,13 @@ odoo.define('pos_pms_link.models', function (require) {
                 this.selected_orderline.set_pms_service_line_id(options.pms_service_line_id);
             }
         },
+
+        export_for_printing: function () {
+            let result = _super_order.export_for_printing.apply(this, arguments);
+            result.paid_on_reservation = this.paid_on_reservation;
+            result.pms_reservation_id = this.pms_reservation_id;
+            return result;
+        },
         
     })
 
@@ -276,7 +283,7 @@ odoo.define('pos_pms_link.models', function (require) {
 
     models.load_models({
         model:  'pms.reservation',
-        fields: ['name', 'id', 'state', 'service_ids', 'partner_name', 'adults', 'children'],
+        fields: ['name', 'id', 'state', 'service_ids', 'partner_name', 'adults', 'children', 'checkin', 'checkout', 'folio_internal_comment'],
         context: function(self){
             var ctx_copy = session.user_context
             ctx_copy['pos_user_force'] = true;
@@ -284,7 +291,7 @@ odoo.define('pos_pms_link.models', function (require) {
         },
         domain: function(self){
             var domain = [
-                ['state', '!=', 'cancel']
+                ['state', '=', 'onboard']
             ];
             if (self.config_id && self.config.reservation_allowed_propertie_ids) domain.push(['pms_property_id', 'in', self.config.reservation_allowed_propertie_ids]);
             return domain;

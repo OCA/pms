@@ -43,6 +43,8 @@
                                             <tr>
                                                 <th>Name</th>
                                                 <th>Partner name</th>
+                                                <th>Checkin</th>
+                                                <th>Checkout</th>
                                                 <th>Adults</th>
                                                 <th>Children</th>
                                             </tr>
