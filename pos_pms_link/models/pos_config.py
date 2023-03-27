@@ -31,3 +31,11 @@ class PosConfig(models.Model):
 
     pay_on_reservation = fields.Boolean('Pay on reservation', default=False)
     pay_on_reservation_method_id = fields.Many2one('pos.payment.method', string='Pay on reservation method')
+    reservation_allowed_propertie_ids = fields.Many2many('pms.property', string='Reservation allowed properties')
+
+    @api.model
+    def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
+        if self.env.context.get("pos_user_force", False):
+            return super().sudo().with_context(pos_user_force=False).search_read(domain, fields, offset, limit, order)
+        else:
+            return super(PosConfig, self).search_read(domain, fields, offset, limit, order)

@@ -29,6 +29,7 @@ odoo.define('pos_pms_link.models', function (require) {
     var core = require('web.core');
     const { Gui } = require('point_of_sale.Gui');
     var QWeb = core.qweb;
+    const session = require('web.session');
 
     var _t   = core._t;
 
@@ -276,18 +277,32 @@ odoo.define('pos_pms_link.models', function (require) {
     models.load_models({
         model:  'pms.reservation',
         fields: ['name', 'id', 'state', 'service_ids', 'partner_name', 'adults', 'children'],
+        context: function(self){
+            var ctx_copy = session.user_context
+            ctx_copy['pos_user_force'] = true;
+            return ctx_copy;
+        },
         domain: function(self){
-            return [['state', '=', 'onboard']];
+            var domain = [
+                ['state', '!=', 'cancel']
+            ];
+            if (self.config_id && self.config.reservation_allowed_propertie_ids) domain.push(['pms_property_id', 'in', self.config.reservation_allowed_propertie_ids]);
+            return domain;
         },
         loaded: function(self, reservations) {
             self.reservations = reservations;
             self.db.add_reservations(reservations);
-        }
+        },
     });
 
     models.load_models({
         model:  'pms.service',
         fields: ['name', 'id', 'service_line_ids', 'product_id', 'reservation_id'],
+        context: function(self){
+            var ctx_copy = session.user_context
+            ctx_copy['pos_user_force'] = true;
+            return ctx_copy;
+        },
         domain: function(self){
             return [['reservation_id', 'in', self.reservations.map(x => x.id)]];
         },
@@ -307,6 +322,11 @@ odoo.define('pos_pms_link.models', function (require) {
     models.load_models({
         model:  'pms.service.line',
         fields: ['date', 'service_id', 'id', 'product_id', 'day_qty', 'pos_order_line_ids'],
+        context: function(self){
+            var ctx_copy = session.user_context
+            ctx_copy['pos_user_force'] = true;
+            return ctx_copy;
+        },
         domain: function(self){
             return [['service_id', 'in', self.services.map(x => x.id)]];
         },
@@ -350,5 +370,37 @@ odoo.define('pos_pms_link.models', function (require) {
             });
         },
     });
+
+
+    var existing_models = models.PosModel.prototype.models;    
+    var pos_index = _.findIndex(existing_models, function (model) {
+        return model.model === "pos.config";
+    });
+    var pos_model = existing_models[pos_index];
+    var ctx_copy = session.user_context
+    ctx_copy['pos_user_force'] = true;
+    
+    models.load_models([{
+        model:  pos_model.model,
+        fields: pos_model.fields,
+        condition:  pos_model.condition,
+        domain: pos_model.domain,
+        context: ctx_copy,
+        loaded: pos_model.loaded,
+    }]);
+
+    var pli_index = _.findIndex(existing_models, function (model) {
+        return model.model === "product.pricelist.item";
+    });
+    var pli_model = existing_models[pli_index];
+    
+    models.load_models([{
+        model:  pli_model.model,
+        fields: pli_model.fields,
+        condition:  pli_model.condition,
+        domain: pli_model.domain,
+        context: ctx_copy,
+        loaded: pli_model.loaded,
+    }]);
 
 });
