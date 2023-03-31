@@ -378,36 +378,20 @@ odoo.define('pos_pms_link.models', function (require) {
         },
     });
 
-
-    var existing_models = models.PosModel.prototype.models;    
-    var pos_index = _.findIndex(existing_models, function (model) {
-        return model.model === "pos.config";
+    models.PosModel.prototype.models.some(function (model) {
+        if (model.model !== "pos.config" && model.model !== "product.pricelist.item") {
+            return false;
+        }
+        const superContext = model.context;
+        model.context = function () {
+            const context = {};
+            if (superContext) {
+                context = superContext.apply(this, arguments);
+            }          
+            context.pos_user_force = true;
+            return context;
+        };
+        return true;
     });
-    var pos_model = existing_models[pos_index];
-    var ctx_copy = session.user_context
-    ctx_copy['pos_user_force'] = true;
-    
-    models.load_models([{
-        model:  pos_model.model,
-        fields: pos_model.fields,
-        condition:  pos_model.condition,
-        domain: pos_model.domain,
-        context: ctx_copy,
-        loaded: pos_model.loaded,
-    }]);
-
-    var pli_index = _.findIndex(existing_models, function (model) {
-        return model.model === "product.pricelist.item";
-    });
-    var pli_model = existing_models[pli_index];
-    
-    models.load_models([{
-        model:  pli_model.model,
-        fields: pli_model.fields,
-        condition:  pli_model.condition,
-        domain: pli_model.domain,
-        context: ctx_copy,
-        loaded: pli_model.loaded,
-    }]);
 
 });
