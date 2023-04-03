@@ -522,13 +522,13 @@ class PmsFolioService(Component):
                 "children": reservation.children,
                 "preconfirm": pms_folio_info.preconfirm,
             }
-            reservation_record = self.env["pms.reservation"].create(vals)
+            reservation_record = self.env["pms.reservation"].with_context(skip_compute_service_ids=True).create(vals)
             if reservation.services:
                 for service in reservation.services:
                     vals = {
                         "product_id": service.productId,
                         "reservation_id": reservation_record.id,
-                        "is_board_service": False,
+                        "is_board_service": service.isBoardService,
                         "service_line_ids": [
                             (
                                 0,
