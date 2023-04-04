@@ -963,6 +963,8 @@ class PmsReservation(models.Model):
 
     @api.depends("board_service_room_id")
     def _compute_service_ids(self):
+        if self.env.context.get('skip_compute_service_ids', False):
+            return
         for reservation in self:
             board_services = []
             old_board_lines = reservation.service_ids.filtered_domain(
