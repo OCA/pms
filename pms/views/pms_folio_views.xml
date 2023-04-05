@@ -301,6 +301,11 @@
                                 attrs="{'invisible':[('reservation_type','in',('out'))]}"
                             />
                             <field
+                                name="lang"
+                                placeholder="Language"
+                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                            />
+                            <field
                                 name="partner_internal_comment"
                                 placeholder="Comments about the customer"
                                 attrs="{'invisible':[('reservation_type','in',('out'))]}"
