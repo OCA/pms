@@ -32,7 +32,6 @@ class PmsLoginService(Component):
         cors="*",
     )
     def login(self, user):
-
         user_record = (
             self.env["res.users"].sudo().search([("login", "=", user.username)])
         )
@@ -47,6 +46,11 @@ class PmsLoginService(Component):
         except AccessDenied:
             raise werkzeug.exceptions.Unauthorized(_("wrong user/pass"))
 
+        validator = (
+            self.env["auth.jwt.validator"].sudo()._get_validator_by_name("api_pms")
+        )
+        assert len(validator) == 1
+
         PmsApiRestUserOutput = self.env.datamodels["pms.api.rest.user.output"]
 
         token = jwt.encode(
@@ -57,8 +61,8 @@ class PmsLoginService(Component):
                 "username": user.username,
                 "password": user.password,
             },
-            key="pms_secret_key_example",
-            algorithm=jwt.ALGORITHMS.HS256,
+            key=validator.secret_key,
+            algorithm=validator.secret_algorithm,
         )
         avail_rule_names = []
         for avail_field in user_record.availability_rule_field_ids:
