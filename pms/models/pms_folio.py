@@ -573,7 +573,20 @@ class PmsFolio(models.Model):
         store=True,
         readonly=False,
     )
-    lang = fields.Selection(selection='_get_languages', string='Language', validate=False)
+    lang = fields.Selection(
+        selection=lambda self: self._get_lang_selection_options(),
+        string="Language",
+        help="Language used for the folio",
+        compute="_compute_lang",
+        store=True,
+        readonly=False,
+    )
+
+    @api.model
+    def _get_lang_selection_options(self):
+        """Gets the available languages for the selection."""
+        langs = self.env["res.lang"].search([])
+        return [(lang.code, lang.name) for lang in langs]
 
     def name_get(self):
         result = []
@@ -1415,6 +1428,11 @@ class PmsFolio(models.Model):
             elif not record.invoice_to_agency:
                 record.invoice_to_agency = False
 
+    @api.depends("partner_id")
+    def _compute_lang(self):
+        for record in self.filtered("partner_id"):
+            record.lang = record.partner_id.lang
+
     def _search_invoice_ids(self, operator, value):
         if operator == "in" and value:
             self.env.cr.execute(
@@ -1483,7 +1501,8 @@ class PmsFolio(models.Model):
 
     @api.model
     def _get_languages(self):
-        return self.env['res.lang'].get_installed()
+        return self.env["res.lang"].get_installed()
+
     def get_reservations_to_update_channel(self, vals):
         reservations_to_update = self.env["pms.reservation"]
         for record in self:
