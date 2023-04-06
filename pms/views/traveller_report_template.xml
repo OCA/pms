@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <template id="traveller_report">
         <t t-call="web.basic_layout">
@@ -14,14 +14,11 @@
                         OF TRAVELERS ENTRY</p>
                     <p class="checknumber"> Document number: <strong>
                             <span t-field="docs.identifier" />
-                        </strong> / <span
-                            t-field="docs.reservation_id" />
+                        </strong> / <span t-field="docs.reservation_id" />
                     </p>
                     <p class="amount"> Total amount
                         (Reservation Card): <strong>
-                            <span
-                                t-field="docs.reservation_id.folio_id.amount_total"
-                            />
+                            <span t-field="docs.reservation_id.folio_id.amount_total" />
                         </strong>
                     </p>
                     <div class="property amount">
@@ -29,16 +26,16 @@
                             <span t-field="docs.pms_property_id.name" />
                         </strong>
                         <br />
-                        <strong> CIF: <span t-field="docs.pms_property_id.company_id.vat" />
+                        <strong> CIF: <span
+                                t-field="docs.pms_property_id.company_id.vat"
+                            />
                         </strong>
                         <br />
                         <span t-field="docs.pms_property_id.company_id.name" />
                         <br />
                         <strong>
                             <span t-field="docs.pms_property_id.street" />
-                            <span
-                                t-field="docs.pms_property_id.street2"
-                            />
+                            <span t-field="docs.pms_property_id.street2" />
                         </strong>
                         <br />
                         <strong>
@@ -47,7 +44,9 @@
                         </strong>
                         <b />
                         <br />
-                        Categoría: <span t-field="docs.pms_property_id.ine_category_id" />
+                        Categoría: <span
+                            t-field="docs.pms_property_id.ine_category_id"
+                        />
                     </div>
                     <p class="title2">TRAVELER'S DOCUMENT</p>
                 </div>
@@ -75,9 +74,7 @@
                             date</td>
                         <td>
                             <strong>
-                                <span
-                                    t-field="docs.document_expedition_date"
-                                />
+                                <span t-field="docs.document_expedition_date" />
                             </strong>
                         </td>
                     </tr>
@@ -98,9 +95,7 @@
                         <td>
                             <strong>
                                 <span t-field="docs.lastname" />
-                                <span
-                                    t-field="docs.lastname2"
-                                />
+                                <span t-field="docs.lastname2" />
                             </strong>
                         </td>
                     </tr>
@@ -147,7 +142,9 @@
                 </table>
                 <div>
                     <p class="date">
-                        <span t-field="docs.pms_property_id.partner_id.city" /> , at <span
+                        <span
+                            t-field="docs.pms_property_id.partner_id.city"
+                        /> , at <span
                             t-esc="time.strftime('%Y-%m-%d')"
                             t-options="{&quot;widget&quot;: &quot;date&quot;}"
                         />
@@ -159,7 +156,9 @@
                         <span t-field="docs.pms_property_id.cardex_warning" />
                     </p>
                     <p class="privacy_policy">
-                        <span t-field="docs.pms_property_id.company_id.privacy_policy" />
+                        <span
+                            t-field="docs.pms_property_id.company_id.privacy_policy"
+                        />
                     </p>
                 </div>
                 <p style="page-break-after:always;" />
@@ -173,13 +172,10 @@
                     <p class="title">PART OF TRAVELERS ENTRY</p>
                     <p class="checknumber"> Document number: <strong>
                             <span t-field="docs.identifier" />
-                        </strong> / <span
-                            t-field="docs.reservation_id" />
+                        </strong> / <span t-field="docs.reservation_id" />
                     </p>
                     <p class="amount"> Total amount (Reservation Card): <strong>
-                            <span
-                                t-field="docs.reservation_id.folio_id.amount_total"
-                            />
+                            <span t-field="docs.reservation_id.folio_id.amount_total" />
                         </strong>
                     </p>
                     <div class="property amount">
@@ -187,16 +183,16 @@
                             <span t-field="docs.pms_property_id.name" />
                         </strong>
                         <br />
-                        <strong> CIF: <span t-field="docs.pms_property_id.company_id.vat" />
+                        <strong> CIF: <span
+                                t-field="docs.pms_property_id.company_id.vat"
+                            />
                         </strong>
                         <br />
                         <span t-field="docs.pms_property_id.company_id.name" />
                         <br />
                         <strong>
                             <span t-field="docs.pms_property_id.street" />
-                            <span
-                                t-field="docs.pms_property_id.street2"
-                            />
+                            <span t-field="docs.pms_property_id.street2" />
                         </strong>
                         <br />
                         <strong>
@@ -205,7 +201,9 @@
                         </strong>
                         <b />
                         <br />
-                        Categoría: <span t-field="docs.pms_property_id.ine_category_id" />
+                        Categoría: <span
+                            t-field="docs.pms_property_id.ine_category_id"
+                        />
                     </div>
                     <p class="title2">TRAVELER'S DOCUMENT</p>
                 </div>
@@ -232,9 +230,7 @@
                             date</td>
                         <td>
                             <strong>
-                                <span
-                                    t-field="docs.document_expedition_date"
-                                />
+                                <span t-field="docs.document_expedition_date" />
                             </strong>
                         </td>
                     </tr>
@@ -255,9 +251,7 @@
                         <td>
                             <strong>
                                 <span t-field="docs.lastname" />
-                                <span
-                                    t-field="docs.lastname2"
-                                />
+                                <span t-field="docs.lastname2" />
                             </strong>
                         </td>
                     </tr>
@@ -317,7 +311,9 @@
                         <span t-field="docs.pms_property_id.cardex_warning" />
                     </p>
                     <p class="privacy_policy">
-                        <span t-field="docs.pms_property_id.company_id.privacy_policy" />
+                        <span
+                            t-field="docs.pms_property_id.company_id.privacy_policy"
+                        />
                     </p>
                 </div>
                 <div class="final" />
