@@ -61,6 +61,10 @@ class PmsFolioService(Component):
                 externalReference=folio.external_reference
                 if folio.external_reference
                 else None,
+                closureReasonId=folio.closure_reason_id,
+                outOfServiceDescription=folio.out_service_description
+                if folio.out_service_description
+                else None,
             )
         else:
             raise MissingError(_("Folio not found"))
@@ -156,7 +160,7 @@ class PmsFolioService(Component):
                         "agencyId": reservation.agency_id.id
                         if reservation.agency_id
                         else None,
-                        "splitted": reservation.splitted,
+                        "isSplitted": reservation.splitted,
                     }
                 )
             result_folios.append(
@@ -173,6 +177,8 @@ class PmsFolioService(Component):
                             "selection"
                         ]
                     )[folio.payment_state],
+                    reservationType=folio.reservation_type,
+                    closureReasonId=folio.closure_reason_id,
                 )
             )
         return result_folios
@@ -370,7 +376,7 @@ class PmsFolioService(Component):
                             else None,
                             readyForCheckin=reservation.ready_for_checkin,
                             allowedCheckout=reservation.allowed_checkout,
-                            splitted=reservation.splitted,
+                            isSplitted=reservation.splitted,
                             priceTotal=round(reservation.price_room_services_set, 2),
                             servicesCount=sum(
                                 reservation.service_ids.filtered(
@@ -400,6 +406,9 @@ class PmsFolioService(Component):
                 "pms_property_id": pms_folio_info.pmsPropertyId,
                 "reservation_type": pms_folio_info.reservationType,
                 "closure_reason_id": pms_folio_info.closureReasonId,
+                "out_service_description": pms_folio_info.outOfServiceDescription
+                if pms_folio_info.outOfServiceDescription
+                else None,
             }
         else:
             vals = {
