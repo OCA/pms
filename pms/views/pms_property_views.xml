@@ -12,11 +12,7 @@
                     </h1>
                     <label for="company_id" />
                     <field name="company_id" class="oe_inline" />
-                    <field
-                        name="logo"
-                        widget="image"
-                        class="oe_avatar"
-                    />
+                    <field name="logo" widget="image" class="oe_avatar" />
                     <div class="col-6">
                         <label for="ref" />
                         <field name="ref" />
