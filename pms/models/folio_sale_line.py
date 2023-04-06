@@ -751,16 +751,6 @@ class FolioSaleLine(models.Model):
         "untaxed_amount_to_invoice",
     )
     def _compute_get_invoice_qty(self):
-        """
-        Compute the quantity invoiced. If case of a refund,
-        the quantity invoiced is decreased. Note
-        that this is the case only if the refund is
-        generated from the Folio and that is intentional: if
-        a refund made would automatically decrease the invoiced quantity,
-        then there is a risk of reinvoicing
-        it automatically, which may not be wanted at all.
-        That's why the refund has to be created from the Folio
-        """
         for line in self:
             qty_invoiced = 0.0
             for invoice_line in line.invoice_lines:
@@ -770,15 +760,9 @@ class FolioSaleLine(models.Model):
                             invoice_line.quantity, line.product_uom
                         )
                     elif invoice_line.move_id.move_type == "out_refund":
-                        if (
-                            not line.is_downpayment
-                            or line.untaxed_amount_to_invoice == 0
-                        ):
-                            qty_invoiced -= (
-                                invoice_line.product_uom_id._compute_quantity(
-                                    invoice_line.quantity, line.product_uom
-                                )
-                            )
+                        qty_invoiced -= invoice_line.product_uom_id._compute_quantity(
+                            invoice_line.quantity, line.product_uom
+                        )
             line.qty_invoiced = qty_invoiced
 
     @api.depends("price_unit", "discount")
