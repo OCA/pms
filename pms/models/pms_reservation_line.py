@@ -425,6 +425,7 @@ class PmsReservationLine(models.Model):
                     ).ids
                     if (
                         record.occupies_availability
+                        and not self.env.context.get("avoid_availability_check", False)
                         and record.room_id.id
                         in avail.get_rooms_not_avail(
                             checkin=record.date,

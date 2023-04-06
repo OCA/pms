@@ -110,7 +110,14 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
                     record.checkin + datetime.timedelta(days=x)
                     for x in range(0, (record.checkout - record.checkin).days)
                 ]:
-                    domain_lines = []
+                    domain_lines = [
+                        ("occupies_availability", "=", True),
+                        (
+                            "pms_property_id",
+                            "=",
+                            record.reservation_id.pms_property_id.id,
+                        ),
+                    ]
                     if record.room_source and record.room_target:
                         domain_lines.extend(
                             [
@@ -129,7 +136,7 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
                         [
                             ("id", "in", reservation_ids),
                             ("rooms", "!=", False),
-                        ]
+                        ],
                     )
                     .sorted("rooms")
                 )
@@ -279,19 +286,12 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
                 [("date", "=", date_iterator), ("room_id", "=", target)]
             )
             if line_room_source and line_room_target:
-
-                # this causes an unique error constraint
-                line_room_target.occupies_availability = False
-                line_room_source.occupies_availability = False
-
-                line_room_target.room_id = source
-                line_room_source.room_id = target
-
-                self.flush()
-
-                line_room_target._compute_occupies_availability()
-                line_room_source._compute_occupies_availability()
-
+                line_room_target.with_context(
+                    avoid_availability_check=True
+                ).room_id = source
+                line_room_source.with_context(
+                    avoid_availability_check=True
+                ).room_id = target
             elif line_room_source:
                 line_room_source.room_id = target
             elif line_room_target:
