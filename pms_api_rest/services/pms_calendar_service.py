@@ -189,8 +189,12 @@ class PmsCalendarService(Component):
             reservation_line.flush()
             affected_line.flush()
 
-            reservation_line.room_id = swap_info.roomId
-            affected_line.room_id = old_room_id
+            reservation_line.with_context(
+                avoid_availability_check=True
+            ).room_id = swap_info.roomId
+            affected_line.with_context(
+                avoid_availability_check=True
+            ).room_id = old_room_id
 
             reservation_line.occupies_availability = True
             affected_line.occupies_availability = True
