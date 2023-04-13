@@ -25,3 +25,4 @@ from . import pos_payment
 from . import pms_reservation
 from . import pms_service
 from . import product_pricelist
+from . import pos_session
