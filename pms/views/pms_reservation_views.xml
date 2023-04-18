@@ -302,6 +302,14 @@
                             <i class="fa fa-warning" /> OverBooking
                         </div>
                     </div>
+                    <div
+                        class="card bg-info mb8"
+                        attrs="{'invisible': [('is_reselling', '=', False)]}"
+                    >
+                        <div class="card-body bg-info">
+                            <i class="fa fa-warning" /> Reselling
+                        </div>
+                    </div>
                     <h3 class="oe_right">
                         <field
                             name="pms_property_id"
@@ -458,6 +466,7 @@
                             />
                             <field placeholder="Arrival Hour" name="arrival_hour" />
                             <field placeholder="Departure Hour" name="departure_hour" />
+                            <field name="is_reselling" invisible="1" />
                         </group>
                         <div class="oe_clear" />
                     </group>
@@ -494,6 +503,10 @@
                                     <field name="cancel_discount" invisible="1" />
                                     <field name="sale_channel_id" />
                                     <field name="default_invoice_to" />
+                                    <field
+                                        name="is_reselling"
+                                        attrs="{'column_invisible': [('parent.is_reselling','=', False)]}"
+                                    />
                                     <field name="pms_property_id" invisible="1" />
                                 </tree>
                             </field>
@@ -765,6 +778,7 @@
                 sample="1"
                 class="o_sale_order"
                 decoration-warning="splitted"
+                decoration-muted="is_reselling"
                 js_class="pms_booking_engine_request_tree"
             >
                 <field name="reservation_type" invisible="1" />
@@ -776,6 +790,7 @@
                     decoration-bf="reservation_type == 'out'"
                 />
                 <field name="splitted" invisible="1" />
+                <field name="is_reselling" invisible="1" />
                 <field name="pricelist_id" invisible="1" />
                 <field name="rooms" />
                 <field name="checkin" />
