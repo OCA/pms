@@ -716,6 +716,14 @@ class PmsReservation(models.Model):
         default=False,
     )
 
+    is_reselling = fields.Boolean(
+        string="Reselling",
+        help="Indicate if exists reselling in any reservation line",
+        compute="_compute_is_reselling",
+        store=True,
+        readonly=False,
+    )
+
     @api.depends("folio_id", "folio_id.external_reference")
     def _compute_external_reference(self):
         for reservation in self:
@@ -964,7 +972,7 @@ class PmsReservation(models.Model):
 
     @api.depends("board_service_room_id")
     def _compute_service_ids(self):
-        if self.env.context.get('skip_compute_service_ids', False):
+        if self.env.context.get("skip_compute_service_ids", False):
             return
         for reservation in self:
             board_services = []
@@ -1661,6 +1669,14 @@ class PmsReservation(models.Model):
     def _compute_force_update_origin(self):
         for record in self:
             record.force_update_origin = True
+
+    @api.depends("is_reselling")
+    def _compute_is_reselling(self):
+        for record in self:
+            if any(record.reservation_line_ids.mapped("is_reselling")):
+                record.is_reselling = True
+            else:
+                record.is_reselling = False
 
     def _search_allowed_checkin(self, operator, value):
         if operator not in ("=",):

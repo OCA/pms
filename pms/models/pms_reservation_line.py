@@ -136,6 +136,13 @@ class PmsReservationLine(models.Model):
         ondelete="restrict",
     )
 
+    is_reselling = fields.Boolean(
+        string="Reselling",
+        help="Indicates if the reservation line is reselling",
+        readonly=False,
+        store=True,
+    )
+
     def name_get(self):
         result = []
         for res in self:
@@ -391,10 +398,14 @@ class PmsReservationLine(models.Model):
                 )
                 # TODO: Out of service 0 amount
 
-    @api.depends("reservation_id.state", "reservation_id.overbooking")
+    @api.depends("reservation_id.state", "reservation_id.overbooking", "is_reselling")
     def _compute_occupies_availability(self):
         for line in self:
-            if line.reservation_id.state == "cancel" or line.reservation_id.overbooking:
+            if (
+                line.reservation_id.state == "cancel"
+                or line.reservation_id.overbooking
+                or line.is_reselling
+            ):
                 line.occupies_availability = False
             else:
                 line.occupies_availability = True
