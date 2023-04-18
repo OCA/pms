@@ -6,6 +6,7 @@ from odoo.addons.datamodel.core import Datamodel
 class PmsNotificationSearch(Datamodel):
     _name = "pms.notification.search"
     fromTimestamp = fields.String(required=False)
+    pmsPropertyId = fields.Integer(required=False)
 
 
 class PmsNotificationInfo(Datamodel):
@@ -16,3 +17,4 @@ class PmsNotificationInfo(Datamodel):
     folioName = fields.String(required=False)
     partnerName = fields.String(required=False)
     saleChannelName = fields.String(required=False, allow_none=True)
+    numReservationsToAssign = fields.Integer(required=False)
