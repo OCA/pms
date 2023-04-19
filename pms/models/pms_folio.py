@@ -1312,9 +1312,9 @@ class PmsFolio(models.Model):
 
         # REVIEW: Must We ignored services in cancelled folios
         # pending amount?
-        for folio in folios:
-            if folio.state == "cancel":
-                total = total - sum(folio.service_ids.mapped("price_total"))
+        # for folio in folios:
+        #     if folio.state == "cancel":
+        #         total = total - sum(folio.service_ids.mapped("price_total"))
         payment_state = "not_paid"
         if (
             mls
