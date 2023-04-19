@@ -22,3 +22,4 @@ class PmsReservationLineInfo(Datamodel):
     roomId = fields.Integer(required=False, allow_none=False)
     reservationId = fields.Integer(required=False, allow_none=False)
     pmsPropertyId = fields.Integer(required=False, allow_none=False)
+    isReselling = fields.Boolean(required=False, allow_none=True)
