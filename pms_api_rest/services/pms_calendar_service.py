@@ -183,24 +183,12 @@ class PmsCalendarService(Component):
                     ("room_id", "=", swap_info.roomId),
                 ]
             )
-            reservation_line.occupies_availability = False
-            affected_line.occupies_availability = False
-
-            reservation_line.flush()
-            affected_line.flush()
-
             reservation_line.with_context(
                 avoid_availability_check=True
             ).room_id = swap_info.roomId
             affected_line.with_context(
                 avoid_availability_check=True
             ).room_id = old_room_id
-
-            reservation_line.occupies_availability = True
-            affected_line.occupies_availability = True
-
-            reservation_line._compute_occupies_availability()
-            affected_line._compute_occupies_availability()
 
     @restapi.method(
         [
