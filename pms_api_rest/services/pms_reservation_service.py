@@ -321,6 +321,7 @@ class PmsReservationService(Component):
                     roomId=reservation_line.room_id.id,
                     reservationId=reservation_line.reservation_id.id,
                     pmsPropertyId=reservation_line.pms_property_id.id,
+                    isReselling=reservation_line.is_reselling,
                 )
             )
         return result_lines
