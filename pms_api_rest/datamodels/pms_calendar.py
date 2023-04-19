@@ -69,6 +69,7 @@ class PmsCalendarInfo(Datamodel):
     closureReasonId = fields.Number(required=False, allow_none=True)
     priceDayTotal = fields.Number(required=False, allow_none=True)
     priceDayTotalServices = fields.Number(required=False, allow_none=True)
+    isReselling = fields.Boolean(required=False, allow_none=False)
 
 
 class PmsCalendarAlertsPerDay(Datamodel):

@@ -59,6 +59,7 @@ class PmsCalendarService(Component):
             "adults": "reservation.adults",
             "price_day_total": "night.price_day_total",
             "closure_reason_id": "folio.closure_reason_id",
+            "is_reselling": "reservation.is_reselling",
             # "price_day_total_services": subselect_sum_services_price,
         }
         selected_fields_sql = list(selected_fields_mapper.values())
@@ -152,6 +153,7 @@ class PmsCalendarService(Component):
                     nextLineSplitted=next_line_splitted,
                     previousLineSplitted=previous_line_splitted,
                     closureReasonId=line["closure_reason_id"],
+                    isReselling=line["is_reselling"],
                 )
             )
         return result_lines

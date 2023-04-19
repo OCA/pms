@@ -43,6 +43,7 @@ class PmsReservationLineService(Component):
                 roomId=reservation_line.room_id.id,
                 reservationId=reservation_line.reservation_id.id,
                 pmsPropertyId=reservation_line.pms_property_id.id,
+                isReselling=reservation_line.is_reselling,
             )
         else:
             raise MissingError(_("Reservation Line not found"))
@@ -126,6 +127,8 @@ class PmsReservationLineService(Component):
                 vals["cancel_discount"] = reservation_line_info.cancelDiscount
             if reservation_line_info.roomId:
                 vals["room_id"] = reservation_line_info.roomId
+            if reservation_line_info.isReselling is not None:
+                vals["is_reselling"] = reservation_line_info.isReselling
             reservation_line.write(vals)
         else:
             raise MissingError(_("Reservation Line not found"))
