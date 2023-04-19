@@ -209,6 +209,6 @@ class PmsRoomType(models.Model):
     def get_room_type_capacity(self, pms_property_id):
         self.ensure_one()
         capacities = self.room_ids.filtered(
-            lambda r: r.pms_property_id.id == pms_property_id
+            lambda r: r.pms_property_id.id == pms_property_id.id
         ).mapped("capacity")
         return min(capacities) if any(capacities) else 0
