@@ -36,6 +36,7 @@ class ChannelWubookPmsRoomTypeMapperExport(Component):
     def default_board_service(self, record):
         default_board_service = record.board_service_room_type_ids.filtered(
             lambda x: x.by_default
+            and x.pms_property_id == self.backend_record.pms_property_id
         ).mapped("pms_board_service_id")
         if not default_board_service:
             return {"board": "nb"}
