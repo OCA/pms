@@ -66,6 +66,24 @@ class ChannelWubookProductPricelistItemMapperExport(Component):
                 raise ValidationError(
                     _("Unexpected number of Room Types found %s") % len(room_type)
                 )
+            # If board service default is defined, we need sum the price of the board service
+            # to the price of the room type (wubook does not separate the price of the room
+            # type from the price of the board service in this case)
+            board_service_default = self.env["pms.board.service.room.type"].search(
+                [
+                    ("pms_room_type_id", "=", room_type.id),
+                    ("by_default", "=", True),
+                    ("pms_property_id", "=", record.backend_id.pms_property_id.id),
+                ]
+            )
+            if board_service_default:
+                # TODO: get board service price with date context
+                # (view _get_price_unit_line method in pms_service.py)
+                values[
+                    "price"
+                ] += board_service_default.amount * room_type.get_room_type_capacity(
+                    pms_property_id=record.backend_id.pms_property_id
+                )
             binder = self.binder_for("channel.wubook.pms.room.type")
             external_id = binder.to_external(room_type, wrap=True)
             if not external_id:
