@@ -101,12 +101,13 @@ class PmsAvailability(models.Model):
             Rooms = self.env["pms.room"]
             total_rooms = Rooms.search_count(
                 [
+                    ("active", "=", True),
                     ("room_type_id", "=", record.room_type_id.id),
                     ("pms_property_id", "=", record.pms_property_id.id),
                 ]
             )
             room_ids = record.room_type_id.room_ids.filtered(
-                lambda r: r.pms_property_id == record.pms_property_id
+                lambda r: r.pms_property_id == record.pms_property_id and r.active
             ).ids
             count_rooms_not_avail = len(
                 record.get_rooms_not_avail(
