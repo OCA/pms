@@ -57,7 +57,9 @@ class PmsFolioService(Component):
                 amountTotal=round(folio.amount_total, 2),
                 reservationType=folio.reservation_type,
                 pendingAmount=folio.pending_amount,
+                firstCheckin=str(folio.first_checkin),
                 lastCheckout=str(folio.last_checkout),
+                createDate=folio.create_date.isoformat(),
                 internalComment=folio.internal_comment
                 if folio.internal_comment
                 else None,
