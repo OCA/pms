@@ -198,13 +198,19 @@ class PmsFolioService(Component):
                         "checkout": datetime.combine(
                             reservation.checkout, datetime.min.time()
                         ).isoformat(),
+                        "stateCode": reservation.state,
                         "preferredRoomId": reservation.preferred_room_id.id
                         if reservation.preferred_room_id
                         else None,
                         "roomTypeId": reservation.room_type_id.id
                         if reservation.room_type_id
                         else None,
+                        "roomTypeClassId": reservation.room_type_id.class_id.id
+                        if reservation.room_type_id
+                        else None,
+                        "folioSequence": reservation.folio_sequence,
                         "adults": reservation.adults,
+                        "priceTotal": reservation.price_total,
                         "pricelistId": reservation.pricelist_id.id
                         if reservation.pricelist_id
                         else None,
@@ -215,15 +221,22 @@ class PmsFolioService(Component):
                         if reservation.agency_id
                         else None,
                         "isSplitted": reservation.splitted,
+                        "toAssign": reservation.to_assign,
+                        "reservationType": reservation.reservation_type,
                     }
                 )
             result_folios.append(
                 PmsFolioShortInfo(
                     id=folio.id,
+                    name=folio.name,
+                    state=dict(folio.fields_get(["state"])["state"]["selection"])[
+                        folio.state
+                    ],
                     partnerName=folio.partner_name if folio.partner_name else None,
                     partnerPhone=folio.mobile if folio.mobile else None,
                     partnerEmail=folio.email if folio.email else None,
                     amountTotal=round(folio.amount_total, 2),
+                    pendingAmount=round(folio.pending_amount, 2),
                     reservations=[] if not reservations else reservations,
                     paymentStateCode=folio.payment_state,
                     paymentStateDescription=dict(
@@ -233,6 +246,11 @@ class PmsFolioService(Component):
                     )[folio.payment_state],
                     reservationType=folio.reservation_type,
                     closureReasonId=folio.closure_reason_id,
+                    agencyId=folio.agency_id.id if folio.agency_id else None,
+                    pricelistId=folio.pricelist_id.id if folio.pricelist_id else None,
+                    saleChannelId=folio.sale_channel_origin_id.id if folio.sale_channel_origin_id else None,
+                    firstCheckin=str(folio.first_checkin),
+                    lastCheckout=str(folio.last_checkout),
                 )
             )
         return result_folios
