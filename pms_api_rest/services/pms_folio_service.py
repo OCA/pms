@@ -91,7 +91,7 @@ class PmsFolioService(Component):
                 "GET",
             )
         ],
-        input_param=Datamodel("pms.folio.search.param"),
+        input_param=Datamodel("pms.folio.search.param", is_list=False),
         output_param=Datamodel("pms.folio.short.info", is_list=True),
         auth="jwt_api_pms",
     )
@@ -155,20 +155,23 @@ class PmsFolioService(Component):
                     [("reservation_type", "!=", "out")],
                 ]
                 domain_filter.append(expression.AND(subdomains))
-            else:
-                subdomain_checkin = [
-                    [("state", "in", ("confirm", "arrival_delayed"))],
-                    [("checkin", "<=", fields.Date.today())],
-                ]
-                subdomain_checkin = expression.AND(subdomain_checkin)
-                subdomain_checkout = [
+            elif folio_search_param.filterByState == 'onBoard':
+                subdomains = [
                     [("state", "in", ("onboard", "departure_delayed"))],
-                    [("checkout", "=", fields.Date.today())],
+                    [("reservation_type", "!=", "out")],
                 ]
-                subdomain_checkout = expression.AND(subdomain_checkout)
-                domain_filter.append(
-                    expression.OR([subdomain_checkin, subdomain_checkout])
-                )
+                domain_filter.append(expression.AND(subdomains))
+            elif folio_search_param.filterByState == 'toAssign':
+                subdomains = [
+                    [("to_assign", "=", True)],
+                    [("reservation_type", "!=", "out")],
+                ]
+                domain_filter.append(expression.AND(subdomains))
+            elif folio_search_param.filterByState == 'cancelled':
+                subdomains = [
+                    [("state", "=", "cancel")],
+                ]
+                domain_filter.append(expression.AND(subdomains))
         if domain_filter:
             domain = expression.AND([domain_fields, domain_filter[0]])
             if folio_search_param.filter and folio_search_param.filterByState:
@@ -185,7 +188,10 @@ class PmsFolioService(Component):
 
         PmsFolioShortInfo = self.env.datamodels["pms.folio.short.info"]
         for folio in self.env["pms.folio"].search(
-            [("id", "in", reservations_result)], order="write_date desc"
+            [("id", "in", reservations_result)],
+            order="write_date desc",
+            limit=folio_search_param.limit,
+            offset=folio_search_param.offset,
         ):
             reservations = []
             for reservation in folio.reservation_ids:

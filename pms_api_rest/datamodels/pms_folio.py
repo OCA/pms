@@ -6,6 +6,7 @@ from odoo.addons.datamodel.fields import NestedModel
 
 class PmsFolioSearchParam(Datamodel):
     _name = "pms.folio.search.param"
+    _inherit = "pms.rest.metadata"
     pmsPropertyId = fields.Integer(required=True, allow_none=True)
     dateFrom = fields.String(required=False, allow_none=True)
     dateTo = fields.String(required=False, allow_none=True)
