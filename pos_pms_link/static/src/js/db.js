@@ -67,7 +67,9 @@ odoo.define("pos_pms_link.db", function (require) {
         },
         _reservation_search_string: function(reservation){
             var str =  reservation.name || '';
-            str = '' + reservation.id + ':' + str.replace(':', '').replace(/\n/g, ' ') + '\n';
+            var room_str = reservation.rooms || '';
+            var partner_str = reservation.partner_name || '';
+            str = '' + reservation.id + ':' + str.replace(':', '').replace(/\n/g, ' ') + ':' + room_str.replace(':', '').replace(/\n/g, ' ') + ':' + partner_str.replace(':', '').replace(/\n/g, ' ') + '\n';
             return str;
         },
         add_reservations: function(reservations){
