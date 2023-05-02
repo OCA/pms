@@ -117,6 +117,8 @@ odoo.define('pos_pms_link.models', function (require) {
                         };
                         var service_product = self.pos.db.get_product_by_id(service_line_id.product_id[0]);
                         self.pos.get_order().add_product(service_product, options);
+                        var last_line = self.pos.get_order().get_last_orderline();
+                        last_line.set_note("RESERVATION: " + reservation.name + " ROOMS: " + reservation.rooms);
                         var r_service_line_id = reservation.service_ids.map(x => x.service_line_ids)[0].find(x=>x.id==service_line_id.id);
                         if (r_service_line_id.pos_order_line_ids.length == 0) {
                             r_service_line_id.pos_order_line_ids.push({
@@ -283,15 +285,27 @@ odoo.define('pos_pms_link.models', function (require) {
 
     models.load_models({
         model:  'pms.reservation',
-        fields: ['name', 'id', 'state', 'service_ids', 'partner_name', 'adults', 'children', 'checkin', 'checkout', 'folio_internal_comment'],
+        fields: ['name', 'id', 'state', 'service_ids', 'partner_name', 'adults', 'children', 'checkin', 'checkout', 'folio_internal_comment', 'rooms'],
         context: function(self){
             var ctx_copy = session.user_context
             ctx_copy['pos_user_force'] = true;
             return ctx_copy;
         },
         domain: function(self){
+            var d = new Date();
+            var month = d.getMonth()+1;
+            var day = d.getDate();
+
+            var current_date = d.getFullYear() + '-' +
+                (month<10 ? '0' : '') + month + '-' +
+                (day<10 ? '0' : '') + day;
+            
             var domain = [
-                ['state', '=', 'onboard']
+                '|',
+                '&',
+                ['state', '=', 'onboard'],
+                ['checkout', '=', current_date],
+                ['state', '!=', 'cancel']
             ];
             if (self.config_id && self.config.reservation_allowed_propertie_ids) domain.push(['pms_property_id', 'in', self.config.reservation_allowed_propertie_ids]);
             return domain;
