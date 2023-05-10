@@ -49,6 +49,7 @@ class PmsRoomTypeClassService(Component):
                 PmsRoomTypeClassInfo(
                     id=room.id,
                     name=room.name,
+                    defaultCode=room.default_code if room.default_code else None,
                     pmsPropertyIds=room.pms_property_ids.mapped("id"),
                 )
             )
