@@ -14,6 +14,14 @@ class ResUsers(models.Model):
         column2="res_users",
     )
 
+    is_new_interface_app_user = fields.Boolean(
+        string="Is New Interface App User",
+        help="Is New Interface App User",
+        default=False,
+        store=True,
+        readonly=False,
+    )
+
     def _get_default_avail_rule_fields(self):
         default_avail_rule_fields = self.env["ir.model.fields"].search(
             [
