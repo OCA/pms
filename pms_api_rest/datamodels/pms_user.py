@@ -7,17 +7,21 @@ class PmsApiRestUserInput(Datamodel):
     _name = "pms.api.rest.user.input"
     username = fields.String(required=False, allow_none=True)
     password = fields.String(required=False, allow_none=True)
+    userId = fields.Integer(required=False, allow_none=True)
 
 
 class PmsApiRestUserOutput(Datamodel):
     _name = "pms.api.rest.user.output"
     token = fields.String(required=False, allow_none=True)
-    expirationDate = fields.Integer(required=True, allow_none=False)
+    expirationDate = fields.Integer(required=False, allow_none=True)
     userId = fields.Integer(required=True, allow_none=False)
     userName = fields.String(required=True, allow_none=False)
+    userEmail = fields.String(required=False, allow_none=True)
+    userPhone = fields.String(required=False, allow_none=True)
     userImageBase64 = fields.String(required=False, allow_none=True)
-    defaultPropertyId = fields.Integer(required=True, allow_none=False)
-    defaultPropertyName = fields.String(required=True, allow_none=False)
+    defaultPropertyId = fields.Integer(required=False, allow_none=True)
+    defaultPropertyName = fields.String(required=False, allow_none=True)
+    isNewInterfaceUser = fields.Boolean(required=False, allow_none=True)
     availabilityRuleFields = fields.List(
         fields.String(), required=False, allow_none=True
     )
