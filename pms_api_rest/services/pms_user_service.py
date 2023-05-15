@@ -60,15 +60,20 @@ class PmsRoomTypeClassService(Component):
     def write_user(self, user_id, input_data):
         user = self.env["res.users"].sudo().search([("id", "=", user_id)])
         if user:
+            if input_data.isNewInterfaceUser is not None:
+                user.write(
+                    {
+                        "is_new_interface_app_user": input_data.isNewInterfaceUser,
+                    }
+                )
             user.write(
                 {
                     "name": input_data.userName,
                     "email": input_data.userEmail,
-                    "phone": str(input_data.userPhone),
-                    "is_new_interface_app_user": input_data.isNewInterfaceUser,
+                    "phone": input_data.userPhone,
                 }
             )
-            if input_data.userImageBase64:
+            if input_data.userImageBase64 is not None:
                 with tempfile.NamedTemporaryFile(delete=False) as f:
                     f.write(base64.b64decode(input_data.userImageBase64))
                     temp_path = f.name
@@ -80,20 +85,12 @@ class PmsRoomTypeClassService(Component):
                 user.write(
                     {
                         "image_1024": base64.b64encode(user_image),
-                        "image_128": base64.b64encode(user_image),
-                        "image_256": base64.b64encode(user_image),
-                        "image_1920": base64.b64encode(user_image),
-                        "image_512": base64.b64encode(user_image),
                     }
                 )
             else:
                 user.write(
                     {
                         "image_1024": '',
-                        "image_128": '',
-                        "image_256": '',
-                        "image_1920": '',
-                        "image_512": '',
                     }
                 )
             return True
