@@ -95,3 +95,32 @@ class PmsRoomTypeClassService(Component):
                 )
             return True
 
+    @restapi.method(
+        [
+            (
+                [
+                    "/p/<int:user_id>/change-password",
+                ],
+                "PATCH",
+            )
+        ],
+        output_param=Datamodel("pms.api.rest.user.login.output", is_list=False),
+        input_param=Datamodel("pms.api.rest.user.input", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def change_password(self, user_id, input_data):
+        user = self.env["res.users"].sudo().search([("id", "=", user_id)])
+        if user:
+            try:
+                user.with_user(user)._check_credentials(input_data.password, None)
+            except:
+                raise MissingError(_("Wrong password"))
+
+
+            user.change_password(input_data.password, input_data.newPassword)
+
+            PmsUserInfo = self.env.datamodels["pms.api.rest.user.login.output"]
+            return PmsUserInfo(
+                login=user.login,
+            )
+
