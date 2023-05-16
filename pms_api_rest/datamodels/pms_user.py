@@ -7,6 +7,7 @@ class PmsApiRestUserInput(Datamodel):
     _name = "pms.api.rest.user.input"
     username = fields.String(required=False, allow_none=True)
     password = fields.String(required=False, allow_none=True)
+    newPassword = fields.String(required=False, allow_none=True)
     userId = fields.Integer(required=False, allow_none=True)
 
 
@@ -25,3 +26,7 @@ class PmsApiRestUserOutput(Datamodel):
     availabilityRuleFields = fields.List(
         fields.String(), required=False, allow_none=True
     )
+
+class PmsApiRestUserLoginOutput(Datamodel):
+    _name = "pms.api.rest.user.login.output"
+    login = fields.String(required=True, allow_none=False)
