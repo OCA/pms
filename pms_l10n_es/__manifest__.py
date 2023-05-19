@@ -45,6 +45,7 @@
         "views/pms_checkin_partner_views.xml",
         "wizards/traveller_report.xml",
         "wizards/wizard_ine.xml",
+        "reports/invoice.xml",
     ],
     "installable": True,
 }
