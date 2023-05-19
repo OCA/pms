@@ -522,7 +522,11 @@ class PmsFolioService(Component):
                 "children": reservation.children,
                 "preconfirm": pms_folio_info.preconfirm,
             }
-            reservation_record = self.env["pms.reservation"].with_context(skip_compute_service_ids=True).create(vals)
+            reservation_record = (
+                self.env["pms.reservation"]
+                .with_context(skip_compute_service_ids=True)
+                .create(vals)
+            )
             if reservation.services:
                 for service in reservation.services:
                     vals = {
@@ -544,6 +548,10 @@ class PmsFolioService(Component):
                         ],
                     }
                     self.env["pms.service"].create(vals)
+            # Force compute board service default if not board service is set
+            # REVIEW: Precharge the board service in the app form?
+            if not reservation_record.board_service_room_id:
+                reservation_record._compute_board_service_room_id()
         # REVIEW: analyze how to integrate the sending of mails from the API
         # with the configuration of the automatic mails pms
         # &
