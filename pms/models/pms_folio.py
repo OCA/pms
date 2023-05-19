@@ -2111,9 +2111,9 @@ class PmsFolio(models.Model):
             "invoice_line_ids": [],
             "company_id": self.company_id.id,
             "payment_reference": self.name,
-            "fiscal_position_id": self.env["res.partner"]
-            .browse(partner_invoice_id)
-            .property_account_position_id.id,
+            "fiscal_position_id": self.env["account.fiscal.position"]
+            .with_company(self.company_id.id)
+            .get_fiscal_position(partner_invoice_id),
         }
         return invoice_vals
 
