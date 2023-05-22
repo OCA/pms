@@ -1,9 +1,14 @@
 import base64
 import tempfile
 import os
+import werkzeug.exceptions
+
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
+from odoo.exceptions import AccessDenied
+from datetime import datetime, timedelta
+
 
 
 from odoo import _
@@ -113,8 +118,8 @@ class PmsRoomTypeClassService(Component):
         if user:
             try:
                 user.with_user(user)._check_credentials(input_data.password, None)
-            except:
-                raise MissingError(_("Wrong password"))
+            except AccessDenied:
+                raise werkzeug.exceptions.Unauthorized(_("Wrong password"))
 
 
             user.change_password(input_data.password, input_data.newPassword)
@@ -124,3 +129,71 @@ class PmsRoomTypeClassService(Component):
                 login=user.login,
             )
 
+    @restapi.method(
+        [
+            (
+                [
+                    "/p/reset-password",
+                ],
+                "PATCH",
+            )
+        ],
+        input_param=Datamodel("pms.api.rest.user.input", is_list=False),
+        auth="public",
+        cors="*",
+    )
+    def reset_password(self, input_data):
+        values = {
+            "password": input_data.password,
+        }
+        self.env["res.users"].sudo().signup(values, input_data.resetToken)
+        return True
+
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/send-mail-reset-password",
+                ],
+                "POST",
+            )
+        ],
+        input_param=Datamodel("pms.api.rest.user.input", is_list=False),
+        auth="public",
+        cors="*",
+    )
+    def send_mail_to_reset_password(self, input_data):
+        user = self.env["res.users"].sudo().search([("email", "=", input_data.userEmail)])
+        if user:
+            template_id = self.env.ref("pms.pms_reset_password_email").id
+            template = self.env['mail.template'].sudo().browse(template_id)
+            if not template:
+                return False
+            expiration_datetime = datetime.now() + timedelta(minutes=15)
+            user.partner_id.sudo().signup_prepare(expiration=expiration_datetime)
+            template.send_mail(user.id, force_send=True)
+            return True
+        return False
+
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/check-reset-password-token/<string:reset_token>",
+                ],
+                "GET",
+            )
+        ],
+        auth="public",
+        cors="*",
+    )
+    def check_reset_password_token(self, reset_token):
+        user = self.env["res.partner"].sudo().search([("signup_token", "=", reset_token)])
+        is_token_expired = False
+        if not user:
+            return True
+        if user.sudo().signup_expiration < datetime.now():
+            is_token_expired = True
+        return is_token_expired
