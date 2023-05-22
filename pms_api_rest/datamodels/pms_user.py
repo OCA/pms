@@ -9,6 +9,8 @@ class PmsApiRestUserInput(Datamodel):
     password = fields.String(required=False, allow_none=True)
     newPassword = fields.String(required=False, allow_none=True)
     userId = fields.Integer(required=False, allow_none=True)
+    userEmail = fields.String(required=False, allow_none=True)
+    resetToken = fields.String(required=False, allow_none=True)
 
 
 class PmsApiRestUserOutput(Datamodel):
