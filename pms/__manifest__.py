@@ -41,6 +41,7 @@
         "data/pms_precheckin_invitation_email_template.xml",
         "data/pms_data.xml",
         "data/traveller_report_paperformat.xml",
+        "data/pms_reset_password_email.xml",
         "report/pms_folio.xml",
         "report/pms_folio_templates.xml",
         "report/traveller_report_action.xml",
