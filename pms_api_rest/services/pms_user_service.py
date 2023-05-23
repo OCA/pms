@@ -172,7 +172,7 @@ class PmsRoomTypeClassService(Component):
                 return False
             expiration_datetime = datetime.now() + timedelta(minutes=15)
             user.partner_id.sudo().signup_prepare(expiration=expiration_datetime)
-            template.send_mail(user.id, force_send=True)
+            template.with_context({'app_url': input_data.url}).send_mail(user.id, force_send=True)
             return True
         return False
 
