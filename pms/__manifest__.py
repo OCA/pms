@@ -40,6 +40,7 @@
         "data/pms_cancelled_reservation_email_template.xml",
         "data/pms_precheckin_invitation_email_template.xml",
         "data/pms_data.xml",
+        "data/pms_app_reset_password_template.xml",
         "data/traveller_report_paperformat.xml",
         "report/pms_folio.xml",
         "report/pms_folio_templates.xml",
