@@ -205,9 +205,11 @@ class PmsFolioService(Component):
                             reservation.checkout, datetime.min.time()
                         ).isoformat(),
                         "stateCode": reservation.state,
+                        "cancelledReason": reservation.cancelled_reason if reservation.cancelled_reason else None,
                         "preferredRoomId": reservation.preferred_room_id.id
                         if reservation.preferred_room_id
                         else None,
+
                         "roomTypeId": reservation.room_type_id.id
                         if reservation.room_type_id
                         else None,
@@ -229,6 +231,10 @@ class PmsFolioService(Component):
                         "isSplitted": reservation.splitted,
                         "toAssign": reservation.to_assign,
                         "reservationType": reservation.reservation_type,
+                        "nights": reservation.nights,
+                        "numServices": len(reservation.service_ids)
+                        if reservation.service_ids
+                        else 0,
                     }
                 )
             result_folios.append(
