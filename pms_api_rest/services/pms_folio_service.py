@@ -188,7 +188,7 @@ class PmsFolioService(Component):
 
         PmsFolioShortInfo = self.env.datamodels["pms.folio.short.info"]
         for folio in self.env["pms.folio"].search(
-            [("id", "in", reservations_result)],
+            [("id", "in", reservations_result),("reservation_type", "!=", "out")],
             order="write_date desc",
             limit=folio_search_param.limit,
             offset=folio_search_param.offset,
