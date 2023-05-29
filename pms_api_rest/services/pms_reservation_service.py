@@ -117,7 +117,11 @@ class PmsReservationService(Component):
                 partnerRequests=reservation.partner_requests
                 if reservation.partner_requests
                 else None,
-            )
+                nights=reservation.nights,
+                numServices=len(reservation.service_ids)
+                if reservation.service_ids
+                else 0,
+                )
         return res
 
     def _create_vals_from_params(self, reservation_vals, reservation_data, reservation_id):
