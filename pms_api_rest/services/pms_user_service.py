@@ -166,7 +166,7 @@ class PmsRoomTypeClassService(Component):
     def send_mail_to_reset_password(self, input_data):
         user = self.env["res.users"].sudo().search([("email", "=", input_data.userEmail)])
         if user:
-            template_id = self.env.ref("pms.pms_reset_password_email").id
+            template_id = self.env.ref("pms_api_rest.pms_reset_password_email").id
             template = self.env['mail.template'].sudo().browse(template_id)
             if not template:
                 return False
