@@ -29,6 +29,7 @@ class PmsReservationShortInfo(Datamodel):
     nights = fields.Integer(required=False, allow_none=True)
     numServices = fields.Integer(required=False, allow_none=True)
     toAssign = fields.Boolean(required=False, allow_none=True)
+    overbooking = fields.Boolean(required=False, allow_none=True)
 
 
 class PmsReservationInfo(Datamodel):
@@ -76,6 +77,8 @@ class PmsReservationInfo(Datamodel):
     commissionAmount = fields.Float(required=False, allow_none=True)
     priceOnlyServices = fields.Float(required=False, allow_none=True)
     priceOnlyRoom = fields.Float(required=False, allow_none=True)
+    nights = fields.Integer(required=False, allow_none=True)
+    numServices = fields.Integer(required=False, allow_none=True)
 
     reservationLines = fields.List(NestedModel("pms.reservation.line.info"))
     services = fields.List(
