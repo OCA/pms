@@ -451,6 +451,9 @@ class PmsFolioService(Component):
                             roomTypeId=reservation.room_type_id.id
                             if reservation.room_type_id
                             else None,
+                            roomTypeClassId=reservation.room_type_id.class_id.id
+                            if reservation.room_type_id
+                            else None,
                             preferredRoomId=reservation.preferred_room_id.id
                             if reservation.preferred_room_id
                             else None,
@@ -476,6 +479,10 @@ class PmsFolioService(Component):
                                     lambda x: not x.is_board_service
                                 ).mapped("product_qty")
                             ),
+                            nights= reservation.nights,
+                            numServices= len(reservation.service_ids)
+                            if reservation.service_ids
+                            else 0,
                         )
                     )
 
