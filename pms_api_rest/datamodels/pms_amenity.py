@@ -15,3 +15,4 @@ class PmsAmenityInfo(Datamodel):
     name = fields.String(required=True, allow_none=False)
     defaultCode = fields.String(required=False, allow_none=True)
     amenityTypeId = fields.Integer(required=False, allow_none=True)
+    addInRoomName = fields.Boolean(required=False, allow_none=True)
