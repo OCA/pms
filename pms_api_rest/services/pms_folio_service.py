@@ -235,6 +235,7 @@ class PmsFolioService(Component):
                         "numServices": len(reservation.service_ids)
                         if reservation.service_ids
                         else 0,
+                        "overbooking": reservation.overbooking,
                     }
                 )
             result_folios.append(
@@ -484,6 +485,7 @@ class PmsFolioService(Component):
                             if reservation.service_ids
                             else 0,
                             toAssign=reservation.to_assign,
+                            overbooking=reservation.overbooking,
                         )
                     )
 
