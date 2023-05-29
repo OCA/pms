@@ -28,6 +28,7 @@ class PmsReservationShortInfo(Datamodel):
     pricelistId = fields.Integer(required=False, allow_none=True)
     nights = fields.Integer(required=False, allow_none=True)
     numServices = fields.Integer(required=False, allow_none=True)
+    toAssign = fields.Boolean(required=False, allow_none=True)
 
 
 class PmsReservationInfo(Datamodel):
