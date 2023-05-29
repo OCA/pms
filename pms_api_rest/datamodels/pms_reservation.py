@@ -11,6 +11,7 @@ class PmsReservationShortInfo(Datamodel):
     checkin = fields.String(required=False, allow_none=True)
     checkout = fields.String(required=False, allow_none=True)
     roomTypeId = fields.Integer(required=False, allow_none=True)
+    roomTypeClassId = fields.Integer(required=False, allow_none=True)
     preferredRoomId = fields.Integer(required=False, allow_none=True)
     name = fields.String(required=False, allow_none=True)
     adults = fields.Integer(required=False, allow_none=True)
@@ -25,6 +26,8 @@ class PmsReservationShortInfo(Datamodel):
     servicesCount = fields.Integer(required=False, allow_none=True)
     folioSequence = fields.Integer(required=False, allow_none=True)
     pricelistId = fields.Integer(required=False, allow_none=True)
+    nights = fields.Integer(required=False, allow_none=True)
+    numServices = fields.Integer(required=False, allow_none=True)
 
 
 class PmsReservationInfo(Datamodel):
