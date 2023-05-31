@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 
 
 from odoo import _
-from odoo.odoo.exceptions import MissingError
+from odoo.exceptions import MissingError
 
 
 class PmsRoomTypeClassService(Component):
