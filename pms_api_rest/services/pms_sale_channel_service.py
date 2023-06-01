@@ -62,6 +62,9 @@ class PmsSaleChannelService(Component):
                     channelType=sale_channel.channel_type
                     if sale_channel.channel_type
                     else None,
+                    icon=sale_channel.icon
+                    if sale_channel.icon
+                    else None,
                 )
             )
         return result_sale_channels
