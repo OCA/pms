@@ -39,3 +39,4 @@ class PmsSaleChannel(models.Model):
         column2="pms_property_id",
         check_pms_properties=True,
     )
+    icon = fields.Image(string="Logo", max_width=1024, max_height=1024, store=True)
