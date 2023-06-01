@@ -13,3 +13,4 @@ class PmsSaleChannelInfo(Datamodel):
     id = fields.Integer(required=True, allow_none=False)
     name = fields.String(required=True, allow_none=False)
     channelType = fields.String(required=True, allow_none=True)
+    icon = fields.String(required=False, allow_none=True)
