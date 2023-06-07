@@ -51,9 +51,7 @@ class PmsFolioService(Component):
                 partnerName=folio.partner_name if folio.partner_name else None,
                 partnerPhone=folio.mobile if folio.mobile else None,
                 partnerEmail=folio.email if folio.email else None,
-                state=dict(folio.fields_get(["state"])["state"]["selection"])[
-                    folio.state
-                ],
+                state=folio.state,
                 amountTotal=round(folio.amount_total, 2),
                 reservationType=folio.reservation_type,
                 pendingAmount=folio.pending_amount,
@@ -164,6 +162,7 @@ class PmsFolioService(Component):
             elif folio_search_param.filterByState == 'toAssign':
                 subdomains = [
                     [("to_assign", "=", True)],
+                    [("state", "in", ("draft", "confirm", "arrival_delayed"))],
                     [("reservation_type", "!=", "out")],
                 ]
                 domain_filter.append(expression.AND(subdomains))
@@ -242,9 +241,7 @@ class PmsFolioService(Component):
                 PmsFolioShortInfo(
                     id=folio.id,
                     name=folio.name,
-                    state=dict(folio.fields_get(["state"])["state"]["selection"])[
-                        folio.state
-                    ],
+                    state=folio.state,
                     partnerName=folio.partner_name if folio.partner_name else None,
                     partnerPhone=folio.mobile if folio.mobile else None,
                     partnerEmail=folio.email if folio.email else None,
