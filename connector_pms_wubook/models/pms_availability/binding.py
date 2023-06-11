@@ -65,11 +65,8 @@ class ChannelWubookPmsAvailabilityBinding(models.Model):
                     if not inconsistence:
                         sale_avail = rules[0].plan_avail
                     else:
-                        # context to ensure that the user is notified
-                        rule_id = self._context.get("force_rule_id")
-                        force_rule = self.env["pms.availability.plan.rule"].browse(
-                            rule_id
-                        )
+                        # use the last modified rule
+                        force_rule = rules.sorted(key=lambda r: r.write_date)[-1]
                         if force_rule:
                             # TODO: move this logic to plan rule
                             rules[field] = force_rule[field]
