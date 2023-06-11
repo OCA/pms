@@ -72,6 +72,13 @@ class PmsCalendarInfo(Datamodel):
     isReselling = fields.Boolean(required=False, allow_none=False)
 
 
+class PmsCalendarRenderInfo(Datamodel):
+    _name = "pms.calendar.render.info"
+    roomId = fields.Integer(required=True, allow_none=False)
+    roomTypeId = fields.String(required=True, allow_none=False)
+    dates = fields.List(fields.Dict(required=True, allow_none=False))
+
+
 class PmsCalendarAlertsPerDay(Datamodel):
     _name = "pms.calendar.alerts.per.day"
     date = fields.String(required=True, allow_none=False)
