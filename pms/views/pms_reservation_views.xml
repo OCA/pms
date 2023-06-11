@@ -781,7 +781,6 @@
                 <field name="checkin" />
                 <field name="checkout" />
                 <field name="nights" />
-                <field name="allowed_room_ids" invisible="1" />
                 <field name="partner_id" invisible="1" />
                 <field name="partner_name" />
                 <field name="room_type_id" optional="show" />
