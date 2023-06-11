@@ -728,7 +728,10 @@ class ResPartner(models.Model):
         )
         if not self.env.context.get("avoid_document_restriction") and any(
             [
-                self.env["res.company"].browse(company_id).document_partner_required
+                self.env["res.company"]
+                .sudo()
+                .browse(company_id)
+                .document_partner_required
                 for company_id in company_ids
             ]
         ):
