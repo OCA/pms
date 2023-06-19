@@ -98,6 +98,7 @@ class PmsReservationService(Component):
                 )[reservation.state],
                 children=reservation.children if reservation.children else 0,
                 readyForCheckin=reservation.ready_for_checkin,
+                checkinPartnerCount=reservation.checkin_partner_count,
                 allowedCheckout=reservation.allowed_checkout,
                 isSplitted=reservation.splitted,
                 pendingCheckinData=reservation.pending_checkin_data,
@@ -537,9 +538,10 @@ class PmsReservationService(Component):
             pass
         else:
             # TODO Review state draft
-            for checkin_partner in reservation.checkin_partner_ids.filtered(
-                lambda ch: ch.state != "dummy"
-            ):
+            #.filtered(
+            #     lambda ch: ch.state != "dummy"
+            # )
+            for checkin_partner in reservation.checkin_partner_ids:
                 if checkin_partner.document_expedition_date:
                     document_expedition_date = (
                         checkin_partner.document_expedition_date.strftime("%d/%m/%Y")
@@ -599,6 +601,7 @@ class PmsReservationService(Component):
                         checkinPartnerState=checkin_partner.state,
                     )
                 )
+        print(checkin_partners)
         return checkin_partners
 
     @restapi.method(
