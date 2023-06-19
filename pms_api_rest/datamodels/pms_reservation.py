@@ -73,8 +73,11 @@ class PmsReservationInfo(Datamodel):
     reservationType = fields.String(required=False, allow_none=True)
 
     priceTotal = fields.Float(required=False, allow_none=True)
+    priceTax = fields.Float(required=False, allow_none=True)
     discount = fields.Float(required=False, allow_none=True)
+    servicesDiscount = fields.Float(required=False, allow_none=True)
     commissionAmount = fields.Float(required=False, allow_none=True)
+    commissionPercent = fields.Float(required=False, allow_none=True)
     priceOnlyServices = fields.Float(required=False, allow_none=True)
     priceOnlyRoom = fields.Float(required=False, allow_none=True)
     nights = fields.Integer(required=False, allow_none=True)
