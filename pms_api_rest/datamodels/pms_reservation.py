@@ -62,6 +62,7 @@ class PmsReservationInfo(Datamodel):
     stateDescription = fields.String(required=False, allow_none=True)
     children = fields.Integer(required=False, allow_none=True)
     readyForCheckin = fields.Boolean(required=False, allow_none=True)
+    checkinPartnerCount = fields.Integer(required=False, allow_none=True)
     allowedCheckout = fields.Boolean(required=False, allow_none=True)
     isSplitted = fields.Boolean(required=False, allow_none=True)
     pendingCheckinData = fields.Integer(required=False, allow_none=True)
