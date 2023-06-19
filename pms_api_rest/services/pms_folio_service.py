@@ -459,6 +459,7 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def create_folio(self, pms_folio_info):
+        call_type = self.get_api_client_type()
         if pms_folio_info.reservationType == "out":
             vals = {
                 "pms_property_id": pms_folio_info.pmsPropertyId,
@@ -467,19 +468,21 @@ class PmsFolioService(Component):
                 "out_service_description": pms_folio_info.outOfServiceDescription
                 if pms_folio_info.outOfServiceDescription
                 else None,
-                "lang": pms_folio_info.language,
             }
         else:
             vals = {
                 "pms_property_id": pms_folio_info.pmsPropertyId,
-                "sale_channel_origin_id": pms_folio_info.saleChannelId,
                 "agency_id": pms_folio_info.agencyId
                 if pms_folio_info.agencyId
                 else False,
+                "sale_channel_origin_id": self.get_channel_origin_id(
+                    pms_folio_info.saleChannelId, pms_folio_info.agencyId
+                ),
                 "reservation_type": pms_folio_info.reservationType,
                 "internal_comment": pms_folio_info.internalComment,
-                "lang": pms_folio_info.language,
+                "lang": self.get_language(pms_folio_info.language),
             }
+
             if pms_folio_info.partnerId:
                 vals.update(
                     {
@@ -515,7 +518,10 @@ class PmsFolioService(Component):
                 "pms_property_id": pms_folio_info.pmsPropertyId,
                 "pricelist_id": pms_folio_info.pricelistId,
                 "external_reference": pms_folio_info.externalReference,
-                "board_service_room_id": reservation.boardServiceId,
+                "board_service_room_id": self.get_board_service_room_type_id(
+                    reservation.boardServiceId,
+                    reservation.roomTypeId,
+                ),
                 "preferred_room_id": reservation.preferredRoomId,
                 "adults": reservation.adults,
                 "reservation_type": pms_folio_info.reservationType,
@@ -524,7 +530,10 @@ class PmsFolioService(Component):
             }
             reservation_record = (
                 self.env["pms.reservation"]
-                .with_context(skip_compute_service_ids=True)
+                .with_context(
+                    skip_compute_service_ids=True,
+                    force_overbooking=True if call_type == "external_app" else False,
+                )
                 .create(vals)
             )
             if reservation.services:
@@ -1181,3 +1190,72 @@ class PmsFolioService(Component):
                     + str(new_value)
                 )
         return message_body
+
+    def get_api_client_type(self):
+        """
+        Returns the type of the call:
+            - Internal APP: The call is made from the internal vue app
+            - External APP: The call is made from an external app
+        """
+        # TODO: Set the new roles in API Key users:
+        #    - Channel Manager
+        #    - Booking Engine
+        #    - ...
+        if "neobookings" in self.env.user.login:
+            return "external_app"
+        return "internal_app"
+
+    def get_channel_origin_id(self, sale_channel_id, agency_id):
+        """
+        Returns the channel origin id for the given agency
+        or website channel if not agency is given
+        (TODO change by configuration user api in the future)
+        """
+        if sale_channel_id:
+            return sale_channel_id
+        if not agency_id and self.get_api_client_type() == "external_app":
+            # TODO change by configuration user api in the future
+            return (
+                self.env["pms.sale.channel"]
+                .search(
+                    [("channel_type", "=", "direct"), ("is_on_line", "=", True)],
+                    limit=1,
+                )
+                .id
+            )
+        agency = self.env["pms.agency"].browse(agency_id)
+        if agency:
+            return agency.sale_channel_id.id
+        return False
+
+    def get_language(self, lang_code):
+        """
+        Returns the language for the given language code
+        """
+        if self.get_api_client_type() == "internal_app":
+            return lang_code
+        return self.env["res.lang"].search([("iso_code", "=", lang_code)], limit=1).code
+
+    def get_board_service_room_type_id(self, board_service_id, room_type_id):
+        """
+        The internal app uses the board service room type id to create the reservation,
+        but the external app uses the board service id and the room type id.
+        Returns the board service room type id for the given board service and room type
+        """
+        if self.get_api_client_type() == "internal_app":
+            return board_service_id
+        board_service = self.env["pms.board.service"].browse(board_service_id)
+        room_type = self.env["pms.room.type"].browse(room_type_id)
+        if board_service and room_type:
+            return (
+                self.env["pms.board.service.room.type"]
+                .search(
+                    [
+                        ("board_service_id", "=", board_service.id),
+                        ("pms_room_type_id", "=", room_type.id),
+                    ],
+                    limit=1,
+                )
+                .id
+            )
+        return False
