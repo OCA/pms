@@ -75,6 +75,8 @@ class PmsCalendarInfo(Datamodel):
 class PmsCalendarRenderInfo(Datamodel):
     _name = "pms.calendar.render.info"
     roomId = fields.Integer(required=True, allow_none=False)
+    capacity = fields.Integer(required=True, allow_none=False)
+    roomTypeClassId = fields.Integer(required=True, allow_none=False)
     roomTypeId = fields.Integer(required=True, allow_none=False)
     dates = fields.List(fields.Dict(required=True, allow_none=False))
 
