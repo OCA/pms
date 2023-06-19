@@ -167,26 +167,28 @@ class PmsCalendarService(Component):
         date_from = datetime.strptime(calendar_search_param.dateFrom, "%Y-%m-%d").date()
         date_to = datetime.strptime(calendar_search_param.dateTo, "%Y-%m-%d").date()
         selected_fields_mapper = {
-            "date": "date_room.date date",
-            "room_id": "date_room.room_id room_id",
-            "room_type_id": "date_room.room_type_id room_type_id",
-            "id": "line.id id",
-            "state": "line.state state",
-            "price_day_total": "line.price_day_total price_day_total",
-            "to_assign": "reservation.to_assign to_assign",
-            "splitted": "reservation.splitted splitted",
-            "partner_id": "reservation.partner_id partner_id",
-            "partner_name": "reservation.partner_name partner_name",
-            "folio_id": "reservation.folio_id folio_id",
-            "reservation_id": "reservation.id reservation_id",
-            "reservation_name": "reservation.name reservation_name",
-            "reservation_type": "reservation.reservation_type reservation_type",
-            "checkin": "reservation.checkin checkin",
-            "checkout": "reservation.checkout checkout",
-            "price_total": "reservation.price_total price_total",
-            "adults": "reservation.adults adults",
-            "folio_pending_amount": "folio.pending_amount folio_pending_amount",
-            "closure_reason_id": "folio.closure_reason_id closure_reason_id",
+            "date": "dr.date date",
+            "room_id": "dr.room_id room_id",
+            "capacity": "dr.capacity capacity",
+            "room_type_id": "dr.room_type_id room_type_id",
+            "room_type_class_id": "dr.room_type_class_id room_type_class_id",
+            "id": "l.id id",
+            "state": "l.state state",
+            "price_day_total": "l.price_day_total price_day_total",
+            "to_assign": "r.to_assign to_assign",
+            "splitted": "r.splitted splitted",
+            "partner_id": "r.partner_id partner_id",
+            "partner_name": "r.partner_name partner_name",
+            "folio_id": "r.folio_id folio_id",
+            "reservation_id": "r.id reservation_id",
+            "reservation_name": "r.name reservation_name",
+            "reservation_type": "r.reservation_type reservation_type",
+            "checkin": "r.checkin checkin",
+            "checkout": "r.checkout checkout",
+            "price_total": "r.price_total price_total",
+            "adults": "r.adults adults",
+            "folio_pending_amount": "f.pending_amount folio_pending_amount",
+            "closure_reason_id": "f.closure_reason_id closure_reason_id",
         }
         selected_fields_sql = list(selected_fields_mapper.values())
         sql_select = "SELECT %s" % ", ".join(selected_fields_sql)
@@ -195,21 +197,27 @@ class PmsCalendarService(Component):
                 {sql_select}
                 FROM
                     (SELECT dates.date,
-                            rooms.id room_id,
-                            rooms.room_type_id room_type_id
+                            r_rt_rtc.room_id,
+                            r_rt_rtc.capacity,
+                            r_rt_rtc.room_type_id,
+                            r_rt_rtc.room_type_class_id
                      FROM (SELECT (CURRENT_DATE + date ) date
                            FROM generate_series(date %s- CURRENT_DATE, date %s - CURRENT_DATE) date
                      ) dates,
-                    (SELECT id, room_type_id FROM pms_room rooms WHERE pms_property_id = %s) rooms
-                    ) date_room
+                    (SELECT r.id room_id, r.capacity, rt.id room_type_id, rtc.id room_type_class_id
+                    FROM pms_room r
+                    INNER JOIN pms_room_type rt ON rt.id = r.room_type_id
+                    INNER JOIN pms_room_type_class rtc ON rtc.id = rt.class_id
+                    WHERE pms_property_id = %s) r_rt_rtc
+                    ) dr
                     LEFT OUTER JOIN (	SELECT id, state, price_day_total, room_id, date, reservation_id
                                         FROM pms_reservation_line
                                         WHERE pms_property_id = %s AND state != 'cancel'
                                         AND occupies_availability = true AND date < %s
-                    ) line ON line.room_id = date_room.room_id AND line.date = date_room.date
-                    LEFT OUTER JOIN pms_reservation reservation ON line.reservation_id = reservation.id
-                    LEFT OUTER JOIN pms_folio folio ON reservation.folio_id = folio.id
-                    ORDER BY date_room.room_id, date_room.date
+                    ) l ON l.room_id = dr.room_id AND l.date = dr.date
+                    LEFT OUTER JOIN pms_reservation r ON l.reservation_id = r.id
+                    LEFT OUTER JOIN pms_folio f ON r.folio_id = f.id
+                    ORDER BY dr.room_id, dr.date
                     """,
             (
                 calendar_search_param.dateFrom,
@@ -231,6 +239,8 @@ class PmsCalendarService(Component):
                 response.append(
                     CalendarRenderInfo(
                         roomId=item["room_id"],
+                        capacity=item["capacity"],
+                        roomTypeClassId=item["room_type_class_id"],
                         roomTypeId=item["room_type_id"],
                         dates=[
                             {
