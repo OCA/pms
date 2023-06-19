@@ -21,72 +21,25 @@ class PmsCalendarService(Component):
             )
         ],
         input_param=Datamodel("pms.calendar.search.param"),
-        output_param=Datamodel("pms.calendar.render.info", is_list=True),
+        output_param=Datamodel("pms.calendar.info", is_list=True),
         auth="jwt_api_pms",
     )
-    def get_calendar(self, calendar_search_param):
-        """
-        Optimized query to get calendar, with the next schema:
-        [
-        {
-            "roomId":INT,
-            "roomTypeId":INT,
-            "dates":[
-                {
-                    "date":"2023-06-25T00:00:00",
-                    "reservationLines":[
-                    {
-                        "folioId":INT,
-                        "id":INT,
-                        "reservationName":"203/23/000105/1",
-                        "isFirstNight":false,
-                        "pendingPayment":0,
-                        "partnerId":null,
-                        "numNotifications":0,
-                        "priceDayTotalServices":0,
-                        "partnerName":null,
-                        "isLastNight":false,
-                        "splitted":false,
-                        "date":"2023-06-25T00:00:00",
-                        "adults":0,
-                        "nextLineSplitted":false,
-                        "toAssign":false,
-                        "totalPrice":0,
-                        "state":"arrival_delayed",
-                        "previous_itemSplitted":false,
-                        "reservationId":466936,
-                        "priceDayTotal":0,
-                        "roomTypeName":"EST",
-                        "roomId":1913,
-                        "closureReasonId":1,
-                        "reservationType":"out"
-                    },
-                    ...
-                    ]
-                },
-                ...
-            ]
-        },
-        ...
-        ]
-        """
+    def get_old_calendar(self, calendar_search_param):
         date_from = datetime.strptime(calendar_search_param.dateFrom, "%Y-%m-%d").date()
         date_to = datetime.strptime(calendar_search_param.dateTo, "%Y-%m-%d").date()
         count_nights = (date_to - date_from).days + 1
         target_dates = [date_from + timedelta(days=x) for x in range(count_nights)]
         pms_property_id = calendar_search_param.pmsPropertyId
-        # group by room_id, date and take account the first line for
-        # reservation to build de reservationLines
-        # array only in the first line
+
         selected_fields_mapper = {
-            "id": "night.id as id",
-            "state": "night.state as state",
-            "date": "DATE(night.date) as date",
-            "room_id": "night.room_id as room_id",
-            "room_type_name": "pms_room_type.default_code as room_type_name",
-            "to_assign": "reservation.to_assign as to_assign",
-            "splitted": "reservation.splitted as splitted",
-            "partner_id": "reservation.partner_id as partner_id",
+            "id": "night.id",
+            "state": "night.state",
+            "date": "DATE(night.date)",
+            "room_id": "night.room_id",
+            "room_type_name": "pms_room_type.default_code",
+            "to_assign": "reservation.to_assign",
+            "splitted": "reservation.splitted",
+            "partner_id": "reservation.partner_id",
             "partner_name": "reservation.partner_name",
             "folio_id": "folio.id",
             "reservation_id": "reservation.id",
@@ -103,193 +56,104 @@ class PmsCalendarService(Component):
             # "price_day_total_services": subselect_sum_services_price,
         }
         selected_fields_sql = list(selected_fields_mapper.values())
+        selected_fields = list(selected_fields_mapper.keys())
         sql_select = "SELECT %s" % ", ".join(selected_fields_sql)
         self.env.cr.execute(
             f"""
-            {sql_select}
-            FROM    pms_reservation_line  night
-                    LEFT JOIN pms_reservation reservation
-                        ON reservation.id = night.reservation_id
-                    LEFT JOIN pms_room_type
-                        ON pms_room_type.id = reservation.room_type_id
-                    LEFT JOIN pms_folio folio
-                        ON folio.id = reservation.folio_id
-            WHERE   (night.pms_property_id = %s)
-                AND (night.date in %s)
-                AND (night.state != 'cancel')
-                AND (night.occupies_availability = True)
-            ORDER BY night.room_id, night.date
-            """,
+                {sql_select}
+                FROM    pms_reservation_line  night
+                        LEFT JOIN pms_reservation reservation
+                            ON reservation.id = night.reservation_id
+                        LEFT JOIN pms_room_type
+                            ON pms_room_type.id = reservation.room_type_id
+                        LEFT JOIN pms_folio folio
+                            ON folio.id = reservation.folio_id
+                WHERE   (night.pms_property_id = %s)
+                    AND (night.date in %s)
+                    AND (night.state != 'cancel')
+                    AND (night.occupies_availability = True)
+                """,
             (
                 pms_property_id,
                 tuple(target_dates),
             ),
         )
-        result = self.env.cr.dictfetchall()
-        response = []
-        CalendarRenderInfo = self.env.datamodels["pms.calendar.render.info"]
-        last_date = date_from - timedelta(days=1)
-
-        for index, item in enumerate(result):
-            last_reservation_id = (
-                result[index - 1]["reservation_id"] if index > 0 else False
+        result_sql = self.env.cr.fetchall()
+        lines = []
+        for res in result_sql:
+            lines.append(
+                {field: res[selected_fields.index(field)] for field in selected_fields}
             )
-            last_room_id = result[index - 1]["room_id"] if index > 0 else False
-            # If the room_id is different from the previous one, we create a new
-            # room object
-            if item["room_id"] != last_room_id:
-                response.append(
-                    CalendarRenderInfo(
-                        roomId=item["room_id"],
-                        roomTypeId=item["room_type_name"],
-                        dates=[],
-                    )
-                )
-                # We use index_date to know the index of the
-                # last date added with reservationLines
-                # the index is avoid to use because we need
-                # to add dates without reservationLines
-                index_date = 0
-            # If the date is the next one, and is the same reservation, we add
-            # the reservation line to the last date and add avoid date in main array
-            if (
-                item["date"] == last_date + timedelta(days=1)
-                and item["reservation_id"] == last_reservation_id
-            ):
-                response[-1].dates[index_date]["reservationLines"].append(
-                    self._build_reservation_line(item)
-                )
-                response[-1].dates.append(
-                    {
-                        "date": datetime.combine(
-                            item["date"], datetime.min.time()
-                        ).isoformat(),
-                        "reservationLines": [],
-                    }
-                )
-                last_date = item["date"]
-            # If the date not is the next one, we create a new date object
-            # withouth reservation lines
-            elif item["date"] != last_date + timedelta(days=1):
-                response[-1].dates.extend(
-                    self._build_dates_without_reservation_lines(
-                        date_from=last_date + timedelta(days=1),
-                        date_to=item["date"] - timedelta(days=1),
-                    )
-                )
-                response[-1].dates.append(
-                    {
-                        "date": datetime.combine(
-                            item["date"], datetime.min.time()
-                        ).isoformat(),
-                        "reservationLines": [
-                            self._build_reservation_line(
-                                item=item,
-                                next_item=False
-                                if not item["splitted"]
-                                else result[index + 1],
-                                previous_item=False
-                                if not item["splitted"]
-                                else result[index - 1],
-                            )
-                        ],
-                    }
-                )
-                last_date = item["date"]
-                index_date = len(response[-1].dates) - 1
-            # else, the date is the next one, but the reservation is different
-            # so we create a new date object with the reservation line
-            else:
-                response[-1].dates.append(
-                    {
-                        "date": datetime.combine(
-                            item["date"], datetime.min.time()
-                        ).isoformat(),
-                        "reservationLines": [
-                            self._build_reservation_line(
-                                item=item,
-                                next_item=False
-                                if (not item["splitted"] or item["date"] == date_to)
-                                else result[index + 1],
-                                previous_item=False
-                                if (not item["splitted"] or item["date"] == date_from)
-                                else result[index - 1],
-                            )
-                        ],
-                    }
-                )
-                last_date = item["date"]
-                index_date = len(response[-1].dates) - 1
-        return response
 
-    def _build_dates_without_reservation_lines(self, date_from, date_to):
-        count_nights = (date_to - date_from).days + 1
-        target_dates = [date_from + timedelta(days=x) for x in range(count_nights)]
-        return [
-            {
-                "date": datetime.combine(date, datetime.min.time()).isoformat(),
-                "reservationLines": [],
-            }
-            for date in target_dates
-        ]
+        PmsCalendarInfo = self.env.datamodels["pms.calendar.info"]
+        result_lines = []
+        for line in lines:
+            next_line_splitted = False
+            previous_line_splitted = False
+            is_first_night = line["checkin"] == line["date"]
+            is_last_night = line["checkout"] + timedelta(days=-1) == line["date"]
+            if line.get("splitted"):
+                next_line = next(
+                    (
+                        item
+                        for item in lines
+                        if item["reservation_id"] == line["reservation_id"]
+                           and item["date"] == line["date"] + timedelta(days=1)
+                    ),
+                    False,
+                )
+                if next_line:
+                    next_line_splitted = next_line["room_id"] != line["room_id"]
 
-    def _build_reservation_line(self, item, next_item=False, previous_item=False):
-        # next_item is sent if the current item is splitted
-        # and the date not is the last in the range
-        # (because in the last date, the reservation line no is
-        # show with the next date splitted)
-        # the same for previous_item
-        next_itemSplitted = (
-            item["splitted"]
-            and next_item
-            and item["date"] < item["checkout"] - timedelta(days=1)
-            and (
-                next_item["room_id"] != item["room_id"]
-                or next_item["reservation_id"] != item["reservation_id"]
+                previous_line = next(
+                    (
+                        item
+                        for item in lines
+                        if item["reservation_id"] == line["reservation_id"]
+                           and item["date"] == line["date"] + timedelta(days=-1)
+                    ),
+                    False,
+                )
+                if previous_line:
+                    previous_line_splitted = previous_line["room_id"] != line["room_id"]
+            result_lines.append(
+                PmsCalendarInfo(
+                    id=line["id"],
+                    state=line["state"],
+                    date=datetime.combine(
+                        line["date"], datetime.min.time()
+                    ).isoformat(),
+                    roomId=line["room_id"],
+                    roomTypeName=str(line["room_type_name"]),
+                    toAssign=line["to_assign"],
+                    splitted=line["splitted"],
+                    partnerId=line["partner_id"] or None,
+                    partnerName=line["partner_name"] or None,
+                    folioId=line["folio_id"],
+                    reservationId=line["reservation_id"],
+                    reservationName=line["reservation_name"],
+                    reservationType=line["reservation_type"],
+                    isFirstNight=is_first_night,
+                    isLastNight=is_last_night,
+                    totalPrice=round(line["price_total"], 2),
+                    pendingPayment=round(line["folio_pending_amount"], 2),
+                    priceDayTotal=round(line["price_day_total"], 0),
+                    priceDayTotalServices=0,
+                    numNotifications=0,
+                    adults=line["adults"],
+                    nextLineSplitted=next_line_splitted,
+                    previousLineSplitted=previous_line_splitted,
+                    closureReasonId=line["closure_reason_id"],
+                    isReselling=line["is_reselling"],
+                )
             )
-        )
-        previous_itemSplitted = (
-            item["splitted"]
-            and previous_item
-            and item["date"] > item["checkin"] + timedelta(days=1)
-            and (
-                previous_item["room_id"] != item["room_id"]
-                or previous_item["reservation_id"] != item["reservation_id"]
-            )
-        )
-        return {
-            "id": item["id"],
-            "state": item["state"],
-            "date": datetime.combine(item["date"], datetime.min.time()).isoformat(),
-            "roomId": item["room_id"],
-            "roomTypeName": item["room_type_name"],
-            "toAssign": item["to_assign"],
-            "splitted": item["splitted"],
-            "partnerId": item["partner_id"],
-            "partnerName": item["partner_name"],
-            "folioId": item["folio_id"],
-            "reservationId": item["reservation_id"],
-            "reservationName": item["reservation_name"],
-            "reservationType": item["reservation_type"],
-            "adults": item["adults"],
-            "priceDayTotal": item["price_day_total"],
-            "closureReasonId": item["closure_reason_id"],
-            "isFirstNight": item["date"] == item["checkin"],
-            "isLastNight": item["date"] == item["checkout"] - timedelta(days=1),
-            "totalPrice": item["price_total"],
-            "pendingPayment": item["folio_pending_amount"],
-            "numNotifications": 0,
-            "nextLineSplitted": next_itemSplitted,
-            "previous_itemSplitted": previous_itemSplitted,
-            "priceDayTotalServices": 0,
-            "isReselling": item["is_reselling"],
-        }
+        return result_lines
 
     @restapi.method(
         [
             (
                 [
-                    "/",
+                    "/temp-calendar",
                 ],
                 "GET",
             )
@@ -340,7 +204,8 @@ class PmsCalendarService(Component):
                     ) date_room
                     LEFT OUTER JOIN (	SELECT id, state, price_day_total, room_id, date, reservation_id
                                         FROM pms_reservation_line
-                                        WHERE pms_property_id = %s AND state != 'cancel' AND occupies_availability = true
+                                        WHERE pms_property_id = %s AND state != 'cancel'
+                                        AND occupies_availability = true AND date < %s
                     ) line ON line.room_id = date_room.room_id AND line.date = date_room.date
                     LEFT OUTER JOIN pms_reservation reservation ON line.reservation_id = reservation.id
                     LEFT OUTER JOIN pms_folio folio ON reservation.folio_id = folio.id
@@ -351,6 +216,7 @@ class PmsCalendarService(Component):
                 calendar_search_param.dateTo,
                 calendar_search_param.pmsPropertyId,
                 calendar_search_param.pmsPropertyId,
+                calendar_search_param.dateTo,
             ),
         )
         result = self.env.cr.dictfetchall()
@@ -361,6 +227,7 @@ class PmsCalendarService(Component):
         for index, item in enumerate(result):
             if last_room_id != item['room_id']:
                 last_room_id = item['room_id']
+                last_reservation_id = False
                 response.append(
                     CalendarRenderInfo(
                         roomId=item["room_id"],
@@ -407,6 +274,8 @@ class PmsCalendarService(Component):
                     )
                 )
                 last_reservation_id = item['reservation_id']
+            else:
+                last_reservation_id = False
         return response
 
     def build_reservation_line_info(self, calendar_item, previous_item=False, next_item=False):
