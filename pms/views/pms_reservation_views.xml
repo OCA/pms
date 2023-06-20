@@ -3,8 +3,9 @@
     <record model="ir.actions.act_window" id="open_pms_reservation_form_tree_all">
         <field name="name">Reservation</field>
         <field name="res_model">pms.reservation</field>
-        <field name="view_mode">tree,form,graph,pivot</field>
+        <field name="view_mode">tree,form,graph,pivot,calendar</field>
     </record>
+
     <record model="ir.ui.view" id="pms_reservation_view_form">
         <field name="name">pms.reservation.form</field>
         <field name="model">pms.reservation</field>
@@ -748,18 +749,18 @@
     </record>
 
     <!-- Calendar -->
-    <!-- <record id="pms_reservation_view_calendar" model="ir.ui.view">
+     <record id="pms_reservation_view_calendar" model="ir.ui.view">
         <field name="name">pms.reservation.view.calendar</field>
         <field name="model">pms.reservation</field>
         <field name="arch" type="xml">
             <calendar
-                date_start="checkin_datetime"
-                date_stop="checkout_datetime"
+                date_start="checkin"
+                date_stop="checkout"
                 string="Reservations"
                 quick_add="False"
                 mode="month"
                 color="room_type_id"
-                scales="month,year"
+                scales="week,month,year"
             >
                 <field name="room_type_id" filters="1" />
                 <field name="preferred_room_id" filters="1" />
@@ -767,7 +768,8 @@
                 <field name="rooms" />
             </calendar>
         </field>
-    </record> -->
+    </record>
+
     <record model="ir.ui.view" id="pms_reservation_view_tree">
         <field name="name">pms.reservation.tree</field>
         <field name="model">pms.reservation</field>
