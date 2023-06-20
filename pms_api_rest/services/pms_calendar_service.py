@@ -326,7 +326,7 @@ class PmsCalendarService(Component):
             "checkout": datetime.combine(calendar_item['checkout'], datetime.min.time()).isoformat(),
             "priceTotal": calendar_item['price_total'],
             "adults": calendar_item['adults'],
-            "folioPendingAmount": calendar_item['folio_pending_amount'],
+            "pendingPayment": calendar_item['folio_pending_amount'],
             "closureReasonId": calendar_item['closure_reason_id'],
             "isFirstNight": calendar_item['date'] == calendar_item['checkin'] if calendar_item['checkin'] else None,
             "isLastNight": calendar_item['date'] == calendar_item['checkout'] + timedelta(days=-1)
