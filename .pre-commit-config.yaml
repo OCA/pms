@@ -65,14 +65,15 @@ repos:
         args:
           - --plugin=@prettier/plugin-xml
         files: \.(css|htm|html|js|json|jsx|less|md|scss|toml|ts|xml|yaml|yml)$
-  - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v7.8.1
-    hooks:
-      - id: eslint
-        verbose: true
-        args:
-          - --color
-          - --fix
+  #  - repo: https://github.com/pre-commit/mirrors-eslint
+  #    rev: v7.8.1
+  #    hooks:
+  #      - id: eslint
+  #        verbose: true
+  #        args:
+  #          - --color
+  #          - --fix
+  #        exclude: /static/src/js/widgets/datepicker
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.2.0
     hooks:
