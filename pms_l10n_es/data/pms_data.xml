@@ -43,8 +43,8 @@ else:
 <!--            <field name="has_unique_numbers">True</field>-->
         </record>
 
-         <!-- aeat document type mapped -->
-
+        <!-- aeat document type mapped -->
+        <!-- pylint: disable=redundant-modulename-xml -->
         <record id="pms_l10n_es.document_type_dni" model="res.partner.id_category">
             <field name="aeat_identification_type">02</field>
         </record>
