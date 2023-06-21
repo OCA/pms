@@ -914,6 +914,8 @@
                         ('mobile', 'ilike', self),
                     ]"
                 />
+                <field name="preferred_room_id" />
+                <field name="room_type_id" />
                 <field name="partner_id" />
                 <field name="folio_id" />
                 <field name="agency_id" />
