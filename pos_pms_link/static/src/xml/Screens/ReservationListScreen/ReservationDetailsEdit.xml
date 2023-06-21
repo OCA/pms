@@ -1,17 +1,35 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <templates id="template" xml:space="preserve">
 
     <t t-name="ReservationDetailsEdit" owl="1">
         <section class="client-details edit">
-            <h3 class="detail client-name" t-esc="props.reservation.name"/>
+            <h3 class="detail client-name" t-esc="props.reservation.name" />
             <div class="client-details-box clearfix">
                 <div class="client-details-row">
-                    Name: <span class="detail client-partner-name" t-esc="props.reservation.partner_name"/><br/>
-                    Checkin: <span class="detail client-aduls" t-esc="props.reservation.checkin"/><br/>
-                    Checkout: <span class="detail client-aduls" t-esc="props.reservation.checkout"/><br/>
-                    Adults: <span class="detail client-aduls" t-esc="props.reservation.adults"/><br/>
-                    Children: <span class="detail client-children" t-esc="props.reservation.children"/><br/>
-                    Internal comment: <span class="detail client-aduls" t-esc="props.reservation.folio_internal_comment"/><br/>
+                    Name: <span
+                        class="detail client-partner-name"
+                        t-esc="props.reservation.partner_name"
+                    /><br />
+                    Checkin: <span
+                        class="detail client-aduls"
+                        t-esc="props.reservation.checkin"
+                    /><br />
+                    Checkout: <span
+                        class="detail client-aduls"
+                        t-esc="props.reservation.checkout"
+                    /><br />
+                    Adults: <span
+                        class="detail client-aduls"
+                        t-esc="props.reservation.adults"
+                    /><br />
+                    Children: <span
+                        class="detail client-children"
+                        t-esc="props.reservation.children"
+                    /><br />
+                    Internal comment: <span
+                        class="detail client-aduls"
+                        t-esc="props.reservation.folio_internal_comment"
+                    /><br />
                 </div>
                 <h3 class="detail client-name">Services:</h3>
                 <div class="client-details-row">
@@ -23,14 +41,28 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <t t-foreach="props.reservation.service_ids" t-as="service" t-key="service.id">
+                            <t
+                                t-foreach="props.reservation.service_ids"
+                                t-as="service"
+                                t-key="service.id"
+                            >
                                 <tr>
-                                    <td t-esc="service_value['name']"/>
+                                    <td t-esc="service_value['name']" />
                                     <td>
                                         <ul>
-                                            <t t-foreach="service_value['service_line_ids']" t-as="line_service" t-key="line_service.id">
+                                            <t
+                                                t-foreach="service_value['service_line_ids']"
+                                                t-as="line_service"
+                                                t-key="line_service.id"
+                                            >
                                                 <li>
-                                                    <span t-esc="line_service_value['date']"/> - <span t-esc="line_service_value['product_id'][1]"/> - <span t-esc="line_service_value['day_qty']"/>
+                                                    <span
+                                                        t-esc="line_service_value['date']"
+                                                    /> - <span
+                                                        t-esc="line_service_value['product_id'][1]"
+                                                    /> - <span
+                                                        t-esc="line_service_value['day_qty']"
+                                                    />
                                                 </li>
                                             </t>
                                         </ul>

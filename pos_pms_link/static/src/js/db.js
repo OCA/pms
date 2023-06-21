@@ -34,72 +34,89 @@ odoo.define("pos_pms_link.db", function (require) {
             this.reservation_search_string = "";
             this.reservation_id = null;
         },
-        get_reservation_by_id: function(id){
+        get_reservation_by_id: function (id) {
             return this.reservation_by_id[id];
         },
-        get_reservations_sorted: function(max_count){
-            max_count = max_count ? Math.min(this.reservation_sorted.length, max_count) : this.reservation_sorted.length;
+        get_reservations_sorted: function (max_count) {
+            max_count = max_count
+                ? Math.min(this.reservation_sorted.length, max_count)
+                : this.reservation_sorted.length;
             var reservations = [];
             for (var i = 0; i < max_count; i++) {
                 reservations.push(this.reservation_by_id[this.reservation_sorted[i]]);
             }
             return reservations;
         },
-        search_reservation: function(query){
+        search_reservation: function (query) {
             try {
-                query = query.replace(/[\[\]\(\)\+\*\?\.\-\!\&\^\$\|\~\_\{\}\:\,\\\/]/g,'.');
-                query = query.replace(/ /g,'.+');
-                var re = RegExp("([0-9]+):.*?"+utils.unaccent(query),"gi");
-            }catch(e){
+                query = query.replace(
+                    /[\[\]\(\)\+\*\?\.\-\!\&\^\$\|\~\_\{\}\:\,\\\/]/g,
+                    "."
+                );
+                query = query.replace(/ /g, ".+");
+                var re = RegExp("([0-9]+):.*?" + utils.unaccent(query), "gi");
+            } catch (e) {
                 return [];
             }
             var results = [];
-            for(var i = 0; i < this.limit; i++){
+            for (var i = 0; i < this.limit; i++) {
                 var r = re.exec(this.reservation_search_string);
-                if(r){
+                if (r) {
                     var id = Number(r[1]);
                     results.push(this.get_reservation_by_id(id));
-                }else{
+                } else {
                     break;
                 }
             }
             return results;
         },
-        _reservation_search_string: function(reservation){
-            var str =  reservation.name || '';
-            var room_str = reservation.rooms || '';
-            var partner_str = reservation.partner_name || '';
-            str = '' + reservation.id + ':' + str.replace(':', '').replace(/\n/g, ' ') + ':' + room_str.replace(':', '').replace(/\n/g, ' ') + ':' + partner_str.replace(':', '').replace(/\n/g, ' ') + '\n';
+        _reservation_search_string: function (reservation) {
+            var str = reservation.name || "";
+            var room_str = reservation.rooms || "";
+            var partner_str = reservation.partner_name || "";
+            str =
+                String(reservation.id) +
+                ":" +
+                str.replace(":", "").replace(/\n/g, " ") +
+                ":" +
+                room_str.replace(":", "").replace(/\n/g, " ") +
+                ":" +
+                partner_str.replace(":", "").replace(/\n/g, " ") +
+                "\n";
             return str;
         },
-        add_reservations: function(reservations){
+        add_reservations: function (reservations) {
             var updated_count = 0;
             var reservation;
-            for(var i = 0, len = reservations.length; i < len; i++){
+            for (var i = 0, len = reservations.length; i < len; i++) {
                 reservation = reservations[i];
 
                 if (!this.reservation_by_id[reservation.id]) {
                     this.reservation_sorted.push(reservation.id);
                 }
                 this.reservation_by_id[reservation.id] = reservation;
-    
+
                 updated_count += 1;
             }
-    
-            if (updated_count) {    
+
+            if (updated_count) {
                 this.reservation_search_string = "";
                 this.reservation_by_barcode = {};
-    
+
                 for (var id in this.reservation_by_id) {
                     reservation = this.reservation_by_id[id];
-    
-                    if(reservation.barcode){
+
+                    if (reservation.barcode) {
                         this.reservation_by_barcode[reservation.barcode] = reservation;
                     }
-                    this.reservation_search_string += this._reservation_search_string(reservation);
+                    this.reservation_search_string += this._reservation_search_string(
+                        reservation
+                    );
                 }
-    
-                this.reservation_search_string = utils.unaccent(this.reservation_search_string);
+
+                this.reservation_search_string = utils.unaccent(
+                    this.reservation_search_string
+                );
             }
             return updated_count;
         },

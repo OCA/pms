@@ -17,16 +17,20 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import api, fields, models, _
+from odoo import api, models
 
 
 class PosPayment(models.Model):
     _inherit = "pos.payment"
 
-    @api.constrains('payment_method_id')
+    @api.constrains("payment_method_id")
     def _check_payment_method_id(self):
         for payment in self:
-            if payment.session_id.config_id.pay_on_reservation and payment.session_id.config_id.pay_on_reservation_method_id == payment.payment_method_id:
+            if (
+                payment.session_id.config_id.pay_on_reservation
+                and payment.session_id.config_id.pay_on_reservation_method_id
+                == payment.payment_method_id
+            ):
                 continue
             else:
                 super(PosPayment, payment)._check_payment_method_id()

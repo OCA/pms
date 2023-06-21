@@ -18,24 +18,34 @@
 #
 ##############################################################################
 
-import json
-from odoo import api, fields, models, _
-from odoo.exceptions import Warning, UserError
-
 import logging
+
+from odoo import api, fields, models
+
 _logger = logging.getLogger(__name__)
 
 
 class PosConfig(models.Model):
-    _inherit = 'pos.config'
+    _inherit = "pos.config"
 
-    pay_on_reservation = fields.Boolean('Pay on reservation', default=False)
-    pay_on_reservation_method_id = fields.Many2one('pos.payment.method', string='Pay on reservation method')
-    reservation_allowed_propertie_ids = fields.Many2many('pms.property', string='Reservation allowed properties')
+    pay_on_reservation = fields.Boolean("Pay on reservation", default=False)
+    pay_on_reservation_method_id = fields.Many2one(
+        "pos.payment.method", string="Pay on reservation method"
+    )
+    reservation_allowed_propertie_ids = fields.Many2many(
+        "pms.property", string="Reservation allowed properties"
+    )
 
     @api.model
     def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
         if self.env.context.get("pos_user_force", False):
-            return super().sudo().with_context(pos_user_force=False).search_read(domain, fields, offset, limit, order)
+            return (
+                super()
+                .sudo()
+                .with_context(pos_user_force=False)
+                .search_read(domain, fields, offset, limit, order)
+            )
         else:
-            return super(PosConfig, self).search_read(domain, fields, offset, limit, order)
+            return super(PosConfig, self).search_read(
+                domain, fields, offset, limit, order
+            )

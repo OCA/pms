@@ -18,51 +18,70 @@
 #
 ##############################################################################
 
-from collections import defaultdict
-import json
-from odoo import api, fields, models, _
-from odoo.exceptions import Warning, UserError
-
 import logging
+from collections import defaultdict
+
+from odoo import models
+
 _logger = logging.getLogger(__name__)
 
 
 class PosSession(models.Model):
-    _inherit = 'pos.session'
+    _inherit = "pos.session"
 
-    def _accumulate_amounts(self, data):
+    def _accumulate_amounts(self, data):  # noqa: C901  # too-complex
         res = super(PosSession, self)._accumulate_amounts(data)
-        if self.config_id.pay_on_reservation and self.config_id.pay_on_reservation_method_id:
-            amounts = lambda: {'amount': 0.0, 'amount_converted': 0.0}
-            tax_amounts = lambda: {'amount': 0.0, 'amount_converted': 0.0, 'base_amount': 0.0, 'base_amount_converted': 0.0}
+        if (
+            self.config_id.pay_on_reservation
+            and self.config_id.pay_on_reservation_method_id
+        ):
+            amounts = lambda: {"amount": 0.0, "amount_converted": 0.0}  # noqa E731
+            tax_amounts = lambda: {  # noqa: E731
+                "amount": 0.0,
+                "amount_converted": 0.0,
+                "base_amount": 0.0,
+                "base_amount_converted": 0.0,
+            }
             sales = defaultdict(amounts)
             taxes = defaultdict(tax_amounts)
-            rounded_globally = self.company_id.tax_calculation_rounding_method == 'round_globally'
+            rounded_globally = (
+                self.company_id.tax_calculation_rounding_method == "round_globally"
+            )
 
             reservation_orders = self.order_ids.filtered(lambda x: x.pms_reservation_id)
-            
+
             order_taxes = defaultdict(tax_amounts)
             for order_line in reservation_orders.lines:
                 line = self._prepare_line(order_line)
                 # Combine sales/refund lines
                 sale_key = (
                     # account
-                    line['income_account_id'],
+                    line["income_account_id"],
                     # sign
-                    -1 if line['amount'] < 0 else 1,
+                    -1 if line["amount"] < 0 else 1,
                     # for taxes
-                    tuple((tax['id'], tax['account_id'], tax['tax_repartition_line_id']) for tax in line['taxes']),
-                    line['base_tags'],
+                    tuple(
+                        (tax["id"], tax["account_id"], tax["tax_repartition_line_id"])
+                        for tax in line["taxes"]
+                    ),
+                    line["base_tags"],
                 )
-                sales[sale_key] = self._update_amounts(sales[sale_key], {'amount': line['amount']}, line['date_order'])
+                sales[sale_key] = self._update_amounts(
+                    sales[sale_key], {"amount": line["amount"]}, line["date_order"]
+                )
                 # Combine tax lines
-                for tax in line['taxes']:
-                    tax_key = (tax['account_id'] or line['income_account_id'], tax['tax_repartition_line_id'], tax['id'], tuple(tax['tag_ids']))
+                for tax in line["taxes"]:
+                    tax_key = (
+                        tax["account_id"] or line["income_account_id"],
+                        tax["tax_repartition_line_id"],
+                        tax["id"],
+                        tuple(tax["tag_ids"]),
+                    )
                     order_taxes[tax_key] = self._update_amounts(
                         order_taxes[tax_key],
-                        {'amount': tax['amount'], 'base_amount': tax['base']},
-                        tax['date_order'],
-                        round=not rounded_globally
+                        {"amount": tax["amount"], "base_amount": tax["base"]},
+                        tax["date_order"],
+                        round=not rounded_globally,
                     )
             for tax_key, amounts in order_taxes.items():
                 if rounded_globally:
@@ -72,25 +91,37 @@ class PosSession(models.Model):
 
             for element, value in dict(res["taxes"]).items():
                 if element in taxes:
-                    value['amount'] = value['amount'] - taxes[element]['amount']
-                    value['amount_converted'] = value['amount_converted'] - taxes[element]['amount_converted']
-                    value['base_amount'] = value['base_amount'] - taxes[element]['base_amount']
-                    value['base_amount_converted'] = value['base_amount_converted'] - taxes[element]['base_amount_converted']
-            
+                    value["amount"] = value["amount"] - taxes[element]["amount"]
+                    value["amount_converted"] = (
+                        value["amount_converted"] - taxes[element]["amount_converted"]
+                    )
+                    value["base_amount"] = (
+                        value["base_amount"] - taxes[element]["base_amount"]
+                    )
+                    value["base_amount_converted"] = (
+                        value["base_amount_converted"]
+                        - taxes[element]["base_amount_converted"]
+                    )
+
             for element, value in dict(res["sales"]).items():
                 if element in sales:
-                    value['amount'] = value['amount'] - sales[element]['amount']
-                    value['amount_converted'] = value['amount_converted'] - sales[element]['amount_converted']
-            
+                    value["amount"] = value["amount"] - sales[element]["amount"]
+                    value["amount_converted"] = (
+                        value["amount_converted"] - sales[element]["amount_converted"]
+                    )
+
             if self.config_id.pay_on_reservation_method_id.split_transactions:
                 for element, value in dict(res["split_receivables"]).items():
-                    if element.payment_method_id == self.config_id.pay_on_reservation_method_id:
-                        value['amount'] = 0.0
-                        value['amount_converted'] = 0.0
-            
+                    if (
+                        element.payment_method_id
+                        == self.config_id.pay_on_reservation_method_id
+                    ):
+                        value["amount"] = 0.0
+                        value["amount_converted"] = 0.0
+
             else:
                 for element, value in dict(res["combine_receivables"]).items():
                     if element == self.config_id.pay_on_reservation_method_id:
-                        value['amount'] = 0.0
-                        value['amount_converted'] = 0.0
+                        value["amount"] = 0.0
+                        value["amount_converted"] = 0.0
         return res
