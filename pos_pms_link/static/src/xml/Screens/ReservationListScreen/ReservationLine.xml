@@ -1,13 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <templates id="template" xml:space="preserve">
 
     <t t-name="ReservationLine" owl="1">
-        <tr t-attf-class="client-line {{highlight}}" t-att-data-id="props.reservation.id"
-            t-on-click="trigger('click-reservation', {reservation: props.reservation})">
+        <tr
+            t-attf-class="client-line {{highlight}}"
+            t-att-data-id="props.reservation.id"
+            t-on-click="trigger('click-reservation', {reservation: props.reservation})"
+        >
             <td>
                 <t t-esc="props.reservation.name" />
                 <span t-if="highlight">
-                    <br/><button class="edit-client-button" t-on-click.stop="trigger('click-edit')">VIEW</button>
+                    <br /><button
+                        class="edit-client-button"
+                        t-on-click.stop="trigger('click-edit')"
+                    >VIEW</button>
                 </span>
             </td>
             <td>

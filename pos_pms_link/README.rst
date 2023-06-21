@@ -6,9 +6,6 @@ POS PMS LINK
 .. contents::
    :local:
 
-POS PMS LINK
------------------------
-
 Settings
 --------
 

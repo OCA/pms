@@ -1,9 +1,9 @@
-odoo.define('pos_pms_link.OrderReceipt', function (require) {
-    'use strict';
+odoo.define("pos_pms_link.OrderReceipt", function (require) {
+    "use strict";
 
-    const OrderReceipt = require('point_of_sale.OrderReceipt');
-    const Registries = require('point_of_sale.Registries');
-    const session = require('web.session');
+    const OrderReceipt = require("point_of_sale.OrderReceipt");
+    const Registries = require("point_of_sale.Registries");
+    const session = require("web.session");
 
     const PosPMSLinkOrderReceipt = (OrderReceipt) =>
         class extends OrderReceipt {
@@ -11,7 +11,11 @@ odoo.define('pos_pms_link.OrderReceipt', function (require) {
                 return this.receiptEnv.receipt.paid_on_reservation;
             }
             get reservation_name() {
-                return this.env.pos.db.get_reservation_by_id(this.receiptEnv.receipt.pms_reservation_id).partner_name || "";
+                return (
+                    this.env.pos.db.get_reservation_by_id(
+                        this.receiptEnv.receipt.pms_reservation_id
+                    ).partner_name || ""
+                );
             }
         };
 
