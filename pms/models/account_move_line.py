@@ -57,7 +57,7 @@ class AccountMoveLine(models.Model):
     )
     move_id = fields.Many2one(check_pms_properties=True)
 
-    @api.depends('move_id.payment_reference', "quantity")
+    @api.depends("move_id.payment_reference", "quantity")
     def _compute_name(self):
         res = super()._compute_name()
         for record in self:

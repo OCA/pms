@@ -17,24 +17,40 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import models, api
+from odoo import api, models
+
 
 class ProductPricelist(models.Model):
-    _inherit = 'product.pricelist'
+    _inherit = "product.pricelist"
 
     @api.model
     def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
         if self.env.context.get("pos_user_force", False):
-            return super().sudo().with_context(pos_user_force=False).search_read(domain, fields, offset, limit, order)
+            return (
+                super()
+                .sudo()
+                .with_context(pos_user_force=False)
+                .search_read(domain, fields, offset, limit, order)
+            )
         else:
-            return super(ProductPricelist, self).search_read(domain, fields, offset, limit, order)
+            return super(ProductPricelist, self).search_read(
+                domain, fields, offset, limit, order
+            )
+
 
 class ProductPricelistItem(models.Model):
-    _inherit = 'product.pricelist.item'
+    _inherit = "product.pricelist.item"
 
     @api.model
     def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
         if self.env.context.get("pos_user_force", False):
-            return super().sudo().with_context(pos_user_force=False).search_read(domain, fields, offset, limit, order)
+            return (
+                super()
+                .sudo()
+                .with_context(pos_user_force=False)
+                .search_read(domain, fields, offset, limit, order)
+            )
         else:
-            return super(ProductPricelistItem, self).search_read(domain, fields, offset, limit, order)
+            return super(ProductPricelistItem, self).search_read(
+                domain, fields, offset, limit, order
+            )
