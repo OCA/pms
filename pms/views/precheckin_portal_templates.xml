@@ -69,10 +69,7 @@
          <t t-call="portal.portal_layout">
              <t t-set="checkins_count" t-value="1" />
             <t t-foreach="reservation.checkin_partner_ids" t-as="checkin_partner">
-               <form
-                    t-att-action="checkin_partner.get_portal_url()"
-                    method="post"
-                >
+               <form t-att-action="checkin_partner.get_portal_url()" method="post">
                   <div class="checkin-card">
                          <input
                             class="d-none"
@@ -1081,7 +1078,9 @@
                     </form>
                 </div>
                 <center>
-                    <t t-if="len(folio.checkin_partner_ids.filtered(lambda c: c.state in ['dummy','draft'])) &gt;= 1">
+                    <t
+                        t-if="len(folio.checkin_partner_ids.filtered(lambda c: c.state in ['dummy','draft'])) &gt;= 1"
+                    >
                         <div>
                             If you wish, you can share with the rest of the guests the access to their check-in so that they can fill it out.<br
                             />
