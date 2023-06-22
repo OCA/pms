@@ -6,54 +6,55 @@ from .common import TestPms
 
 
 class TestPmsFolioSaleLine(TestPms):
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         """
         - common + room_type_avalability_plan
         """
-        super().setUp()
+        super().setUpClass()
 
         # create room type
-        self.room_type_double = self.env["pms.room.type"].create(
+        cls.room_type_double = cls.env["pms.room.type"].create(
             {
-                "pms_property_ids": [self.pms_property1.id],
+                "pms_property_ids": [cls.pms_property1.id],
                 "name": "Double Test",
                 "default_code": "DBL_Test",
-                "class_id": self.room_type_class1.id,
+                "class_id": cls.room_type_class1.id,
                 "price": 25,
             }
         )
         # create room
-        self.room1 = self.env["pms.room"].create(
+        cls.room1 = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "Double 101",
-                "room_type_id": self.room_type_double.id,
+                "room_type_id": cls.room_type_double.id,
                 "capacity": 2,
             }
         )
-        self.room2 = self.env["pms.room"].create(
+        cls.room2 = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "Double 102",
-                "room_type_id": self.room_type_double.id,
+                "room_type_id": cls.room_type_double.id,
                 "capacity": 2,
             }
         )
 
-        self.product_test1 = self.env["product.product"].create(
+        cls.product_test1 = cls.env["product.product"].create(
             {
                 "name": "Test Product 1",
                 "per_day": True,
             }
         )
-        self.product_test2 = self.env["product.product"].create(
+        cls.product_test2 = cls.env["product.product"].create(
             {
                 "name": "Test Product 1",
                 "per_day": True,
                 "consumed_on": "after",
             }
         )
-        self.board_service_test = self.board_service = self.env[
+        cls.board_service_test = cls.board_service = cls.env[
             "pms.board.service"
         ].create(
             {
@@ -61,28 +62,28 @@ class TestPmsFolioSaleLine(TestPms):
                 "default_code": "TPS",
             }
         )
-        self.env["pms.board.service.line"].create(
+        cls.env["pms.board.service.line"].create(
             {
-                "pms_board_service_id": self.board_service_test.id,
-                "product_id": self.product_test1.id,
+                "pms_board_service_id": cls.board_service_test.id,
+                "product_id": cls.product_test1.id,
                 "amount": 8,
             }
         )
-        self.board_service_room_type = self.env["pms.board.service.room.type"].create(
+        cls.board_service_room_type = cls.env["pms.board.service.room.type"].create(
             {
-                "pms_room_type_id": self.room_type_double.id,
-                "pms_board_service_id": self.board_service_test.id,
-                "pms_property_id": self.pms_property1.id,
+                "pms_room_type_id": cls.room_type_double.id,
+                "pms_board_service_id": cls.board_service_test.id,
+                "pms_property_id": cls.pms_property1.id,
             }
         )
-        self.extra_service = self.env["pms.service"].create(
+        cls.extra_service = cls.env["pms.service"].create(
             {
                 "is_board_service": False,
-                "product_id": self.product_test2.id,
+                "product_id": cls.product_test2.id,
             }
         )
 
-        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+        cls.sale_channel_direct1 = cls.env["pms.sale.channel"].create(
             {
                 "name": "Door",
                 "channel_type": "direct",
