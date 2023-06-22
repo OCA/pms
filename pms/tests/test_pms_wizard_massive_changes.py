@@ -8,12 +8,13 @@ from .common import TestPms
 
 
 class TestPmsWizardMassiveChanges(TestPms):
-    def setUp(self):
-        super().setUp()
-        self.availability_plan1 = self.env["pms.availability.plan"].create(
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.availability_plan1 = cls.env["pms.availability.plan"].create(
             {
                 "name": "Availability plan for TEST",
-                "pms_pricelist_ids": [(6, 0, [self.pricelist1.id])],
+                "pms_pricelist_ids": [(6, 0, [cls.pricelist1.id])],
             }
         )
 

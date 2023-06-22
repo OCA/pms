@@ -6,5 +6,6 @@ freeze_time("2000-02-02")
 
 
 class TestPmsInvoiceSimpleInvoice(SavepointCase):
-    def setUp(self):
-        super(TestPmsInvoiceSimpleInvoice, self).setUp()
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()

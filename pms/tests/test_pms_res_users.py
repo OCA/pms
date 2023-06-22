@@ -4,38 +4,39 @@ from .common import TestPms
 
 
 class TestPmsResUser(TestPms):
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
         # create a company and properties
-        self.company_A = self.env["res.company"].create(
+        cls.company_A = cls.env["res.company"].create(
             {
                 "name": "Pms_Company1",
             }
         )
-        self.company_B = self.env["res.company"].create(
+        cls.company_B = cls.env["res.company"].create(
             {
                 "name": "Pms_Company2",
             }
         )
-        self.property_A1 = self.env["pms.property"].create(
+        cls.property_A1 = cls.env["pms.property"].create(
             {
                 "name": "Pms_property",
-                "company_id": self.company_A.id,
-                "default_pricelist_id": self.pricelist1.id,
+                "company_id": cls.company_A.id,
+                "default_pricelist_id": cls.pricelist1.id,
             }
         )
-        self.property_A2 = self.env["pms.property"].create(
+        cls.property_A2 = cls.env["pms.property"].create(
             {
                 "name": "Pms_property2",
-                "company_id": self.company_A.id,
-                "default_pricelist_id": self.pricelist1.id,
+                "company_id": cls.company_A.id,
+                "default_pricelist_id": cls.pricelist1.id,
             }
         )
-        self.property_B1 = self.env["pms.property"].create(
+        cls.property_B1 = cls.env["pms.property"].create(
             {
                 "name": "Pms_propertyB1",
-                "company_id": self.company_B.id,
-                "default_pricelist_id": self.pricelist1.id,
+                "company_id": cls.company_B.id,
+                "default_pricelist_id": cls.pricelist1.id,
             }
         )
 

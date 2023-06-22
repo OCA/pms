@@ -6,8 +6,9 @@ freeze_time("2000-02-02")
 
 
 class TestPmsPayment(SavepointCase):
-    def setUp(self):
-        super(TestPmsPayment, self).setUp()
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
     # TODO: Test allowed manual payment
     # create a journal with allowed_pms_payments = True and

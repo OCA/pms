@@ -12,43 +12,44 @@ class TestPmsFolio(TestPms):
 
     # SetUp and Common Scenarios methods
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         """
         - common + room_type_double with 2 rooms (double1 and double2) in pms_property1
         """
-        super().setUp()
+        super().setUpClass()
 
         # create room type
-        self.room_type_double = self.env["pms.room.type"].create(
+        cls.room_type_double = cls.env["pms.room.type"].create(
             {
-                "pms_property_ids": [self.pms_property1.id],
+                "pms_property_ids": [cls.pms_property1.id],
                 "name": "Double Test",
                 "default_code": "DBL_Test",
-                "class_id": self.room_type_class1.id,
+                "class_id": cls.room_type_class1.id,
                 "price": 25,
             }
         )
         # create room
-        self.double1 = self.env["pms.room"].create(
+        cls.double1 = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "Double 101",
-                "room_type_id": self.room_type_double.id,
+                "room_type_id": cls.room_type_double.id,
                 "capacity": 2,
             }
         )
 
         # create room
-        self.double2 = self.env["pms.room"].create(
+        cls.double2 = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "Double 102",
-                "room_type_id": self.room_type_double.id,
+                "room_type_id": cls.room_type_double.id,
                 "capacity": 2,
             }
         )
         # make current journals payable
-        journals = self.env["account.journal"].search(
+        journals = cls.env["account.journal"].search(
             [
                 ("type", "in", ["bank", "cash"]),
             ]
@@ -56,7 +57,7 @@ class TestPmsFolio(TestPms):
         journals.allowed_pms_payments = True
 
         # create sale channel direct
-        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+        cls.sale_channel_direct1 = cls.env["pms.sale.channel"].create(
             {
                 "name": "Door",
                 "channel_type": "direct",

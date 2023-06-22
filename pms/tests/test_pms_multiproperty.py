@@ -7,21 +7,22 @@ from .common import TestPms
 
 
 class TestPmsMultiproperty(TestPms):
-    def setUp(self):
-        super().setUp()
-        self.pms_property2 = self.env["pms.property"].create(
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.pms_property2 = cls.env["pms.property"].create(
             {
                 "name": "Pms_property_test2",
-                "company_id": self.company1.id,
-                "default_pricelist_id": self.pricelist1.id,
+                "company_id": cls.company1.id,
+                "default_pricelist_id": cls.pricelist1.id,
             }
         )
 
-        self.pms_property3 = self.env["pms.property"].create(
+        cls.pms_property3 = cls.env["pms.property"].create(
             {
                 "name": "Pms_property_test3",
-                "company_id": self.company1.id,
-                "default_pricelist_id": self.pricelist1.id,
+                "company_id": cls.company1.id,
+                "default_pricelist_id": cls.pricelist1.id,
             }
         )
 
