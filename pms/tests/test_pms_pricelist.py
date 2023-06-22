@@ -11,82 +11,83 @@ from .common import TestPms
 
 @tagged("standard", "nice")
 class TestPmsPricelist(TestPms):
-    def setUp(self):
-        super().setUp()
-        self.pms_property2 = self.env["pms.property"].create(
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.pms_property2 = cls.env["pms.property"].create(
             {
                 "name": "Property_2",
-                "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.env.ref("product.list0").id,
+                "company_id": cls.env.ref("base.main_company").id,
+                "default_pricelist_id": cls.env.ref("product.list0").id,
             }
         )
 
-        self.pms_property3 = self.env["pms.property"].create(
+        cls.pms_property3 = cls.env["pms.property"].create(
             {
                 "name": "Property_3",
-                "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.env.ref("product.list0").id,
+                "company_id": cls.env.ref("base.main_company").id,
+                "default_pricelist_id": cls.env.ref("product.list0").id,
             }
         )
 
-        self.room_type1 = self.env["pms.room.type"].create(
+        cls.room_type1 = cls.env["pms.room.type"].create(
             {
-                "pms_property_ids": [self.pms_property1.id, self.pms_property2.id],
+                "pms_property_ids": [cls.pms_property1.id, cls.pms_property2.id],
                 "name": "Single",
                 "default_code": "SIN",
-                "class_id": self.room_type_class1.id,
+                "class_id": cls.room_type_class1.id,
                 "list_price": 30,
             }
         )
 
         # pms.room
-        self.room1 = self.env["pms.room"].create(
+        cls.room1 = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "Single 101",
-                "room_type_id": self.room_type1.id,
+                "room_type_id": cls.room_type1.id,
                 "capacity": 2,
             }
         )
 
-        self.pricelist2 = self.env["product.pricelist"].create(
+        cls.pricelist2 = cls.env["product.pricelist"].create(
             {
                 "name": "pricelist_2",
-                "pms_property_ids": [self.pms_property1.id, self.pms_property2.id],
-                "availability_plan_id": self.availability_plan1.id,
+                "pms_property_ids": [cls.pms_property1.id, cls.pms_property2.id],
+                "availability_plan_id": cls.availability_plan1.id,
                 "is_pms_available": True,
             }
         )
         # product.product 1
-        self.product1 = self.env["product.product"].create({"name": "Test Breakfast"})
+        cls.product1 = cls.env["product.product"].create({"name": "Test Breakfast"})
 
         # pms.board.service
-        self.board_service1 = self.env["pms.board.service"].create(
+        cls.board_service1 = cls.env["pms.board.service"].create(
             {
                 "name": "Test Only Breakfast",
                 "default_code": "CB1",
             }
         )
         # pms.board.service.line
-        self.board_service_line1 = self.env["pms.board.service.line"].create(
+        cls.board_service_line1 = cls.env["pms.board.service.line"].create(
             {
-                "product_id": self.product1.id,
-                "pms_board_service_id": self.board_service1.id,
+                "product_id": cls.product1.id,
+                "pms_board_service_id": cls.board_service1.id,
             }
         )
 
         # pms.board.service.room.type
-        self.board_service_room_type1 = self.env["pms.board.service.room.type"].create(
+        cls.board_service_room_type1 = cls.env["pms.board.service.room.type"].create(
             {
-                "pms_room_type_id": self.room_type1.id,
-                "pms_board_service_id": self.board_service1.id,
+                "pms_room_type_id": cls.room_type1.id,
+                "pms_board_service_id": cls.board_service1.id,
             }
         )
 
-        self.partner1 = self.env["res.partner"].create({"name": "Carles"})
+        cls.partner1 = cls.env["res.partner"].create({"name": "Carles"})
 
         # create a sale channel
-        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+        cls.sale_channel_direct1 = cls.env["pms.sale.channel"].create(
             {
                 "name": "Door",
                 "channel_type": "direct",

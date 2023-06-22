@@ -4,9 +4,10 @@ from .common import TestPms
 
 
 class TestPmsAutomatedMails(TestPms):
-    def setUp(self):
-        super().setUp()
-        self.template = self.env["mail.template"].search(
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.template = cls.env["mail.template"].search(
             [("name", "=", "Confirmed Reservation")]
         )
 
