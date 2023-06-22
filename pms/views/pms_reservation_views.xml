@@ -3,7 +3,7 @@
     <record model="ir.actions.act_window" id="open_pms_reservation_form_tree_all">
         <field name="name">Reservation</field>
         <field name="res_model">pms.reservation</field>
-        <field name="view_mode">tree,form,graph,pivot,calendar</field>
+        <field name="view_mode">tree,form,graph,pivot,calendar,timeline</field>
     </record>
 
     <record model="ir.ui.view" id="pms_reservation_view_form">
@@ -767,6 +767,31 @@
                 <field name="partner_id" avatar_field="image_128" />
                 <field name="rooms" />
             </calendar>
+        </field>
+    </record>
+
+     <record id="pms_reservation_view_timeline" model="ir.ui.view">
+        <field name="name">pms.reservation.view.timeline</field>
+        <field name="model">pms.reservation</field>
+        <field name="arch" type="xml">
+            <timeline
+                string="Reservations"
+                date_start="checkin_datetime"
+                date_stop="checkout_datetime"
+                default_group_by="preferred_room_id"
+                stack="True"
+                mode="month"
+                event_open_popup="False"
+            >
+                <field name="name" />
+                <field name="partner_id" />
+                <field name="preferred_room_id" />
+                <templates>
+                    <div t-name="timeline-item">
+                        <div t-esc="record.name" />
+                    </div>
+                </templates>
+            </timeline>
         </field>
     </record>
 
