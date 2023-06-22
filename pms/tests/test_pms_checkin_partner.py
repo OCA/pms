@@ -13,43 +13,44 @@ _logger = logging.getLogger(__name__)
 
 
 class TestPmsCheckinPartner(TestPms):
-    @freeze_time("2012-01-14")
-    def setUp(self):
-        super().setUp()
-        self.room_type1 = self.env["pms.room.type"].create(
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        today = datetime.date(2012, 1, 14)
+        cls.room_type1 = cls.env["pms.room.type"].create(
             {
-                "pms_property_ids": [self.pms_property1.id],
+                "pms_property_ids": [cls.pms_property1.id],
                 "name": "Triple",
                 "default_code": "TRP",
-                "class_id": self.room_type_class1.id,
+                "class_id": cls.room_type_class1.id,
             }
         )
-        self.room1 = self.env["pms.room"].create(
+        cls.room1 = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "Triple 101",
-                "room_type_id": self.room_type1.id,
+                "room_type_id": cls.room_type1.id,
                 "capacity": 3,
             }
         )
-        self.room1_2 = self.env["pms.room"].create(
+        cls.room1_2 = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "Triple 111",
-                "room_type_id": self.room_type1.id,
+                "room_type_id": cls.room_type1.id,
                 "capacity": 3,
             }
         )
-        self.room1_3 = self.env["pms.room"].create(
+        cls.room1_3 = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "Triple 222",
-                "room_type_id": self.room_type1.id,
+                "room_type_id": cls.room_type1.id,
                 "capacity": 3,
             }
         )
 
-        self.host1 = self.env["res.partner"].create(
+        cls.host1 = cls.env["res.partner"].create(
             {
                 "name": "Miguel",
                 "email": "miguel@example.com",
@@ -57,41 +58,41 @@ class TestPmsCheckinPartner(TestPms):
                 "gender": "male",
             }
         )
-        self.id_category = self.env["res.partner.id_category"].search(
+        cls.id_category = cls.env["res.partner.id_category"].search(
             [("code", "=", "D")]
         )
-        if not self.id_category:
-            self.id_category = self.env["res.partner.id_category"].create(
+        if not cls.id_category:
+            cls.id_category = cls.env["res.partner.id_category"].create(
                 {"name": "DNI", "code": "D"}
             )
-        self.env["res.partner.id_number"].create(
+        cls.env["res.partner.id_number"].create(
             {
-                "category_id": self.id_category.id,
+                "category_id": cls.id_category.id,
                 "name": "30065089H",
-                "valid_from": datetime.date.today(),
-                "partner_id": self.host1.id,
+                "valid_from": today,
+                "partner_id": cls.host1.id,
             }
         )
-        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+        cls.sale_channel_direct1 = cls.env["pms.sale.channel"].create(
             {
                 "name": "Door",
                 "channel_type": "direct",
             }
         )
         reservation_vals = {
-            "checkin": datetime.date.today(),
-            "checkout": datetime.date.today() + datetime.timedelta(days=3),
-            "room_type_id": self.room_type1.id,
-            "partner_id": self.host1.id,
+            "checkin": today,
+            "checkout": today + datetime.timedelta(days=3),
+            "room_type_id": cls.room_type1.id,
+            "partner_id": cls.host1.id,
             "adults": 3,
-            "pms_property_id": self.pms_property1.id,
-            "sale_channel_origin_id": self.sale_channel_direct1.id,
+            "pms_property_id": cls.pms_property1.id,
+            "sale_channel_origin_id": cls.sale_channel_direct1.id,
         }
-        self.reservation_1 = self.env["pms.reservation"].create(reservation_vals)
-        self.checkin1 = self.env["pms.checkin.partner"].create(
+        cls.reservation_1 = cls.env["pms.reservation"].create(reservation_vals)
+        cls.checkin1 = cls.env["pms.checkin.partner"].create(
             {
-                "partner_id": self.host1.id,
-                "reservation_id": self.reservation_1.id,
+                "partner_id": cls.host1.id,
+                "reservation_id": cls.reservation_1.id,
             }
         )
 

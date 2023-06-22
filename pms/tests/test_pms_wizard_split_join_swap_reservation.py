@@ -6,58 +6,59 @@ from .common import TestPms
 
 
 class TestPmsWizardSplitJoinSwapReservation(TestPms):
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
         # pms.availability.plan
-        self.test_availability_plan = self.env["pms.availability.plan"].create(
+        cls.test_availability_plan = cls.env["pms.availability.plan"].create(
             {
                 "name": "Availability plan for TEST",
-                "pms_pricelist_ids": [(6, 0, [self.pricelist1.id])],
+                "pms_pricelist_ids": [(6, 0, [cls.pricelist1.id])],
             }
         )
 
         # pms.room.type
-        self.test_room_type_single = self.env["pms.room.type"].create(
+        cls.test_room_type_single = cls.env["pms.room.type"].create(
             {
-                "pms_property_ids": [self.pms_property1.id],
+                "pms_property_ids": [cls.pms_property1.id],
                 "name": "Single Test",
                 "default_code": "SNG_Test",
-                "class_id": self.room_type_class1.id,
+                "class_id": cls.room_type_class1.id,
             }
         )
         # pms.room.type
-        self.test_room_type_double = self.env["pms.room.type"].create(
+        cls.test_room_type_double = cls.env["pms.room.type"].create(
             {
-                "pms_property_ids": [self.pms_property1.id],
+                "pms_property_ids": [cls.pms_property1.id],
                 "name": "Double Test",
                 "default_code": "DBL_Test",
-                "class_id": self.room_type_class1.id,
+                "class_id": cls.room_type_class1.id,
             }
         )
 
         # create rooms
-        self.room1 = self.env["pms.room"].create(
+        cls.room1 = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "Double 101",
-                "room_type_id": self.test_room_type_double.id,
+                "room_type_id": cls.test_room_type_double.id,
                 "capacity": 2,
             }
         )
 
-        self.room2 = self.env["pms.room"].create(
+        cls.room2 = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "Double 102",
-                "room_type_id": self.test_room_type_double.id,
+                "room_type_id": cls.test_room_type_double.id,
                 "capacity": 2,
             }
         )
 
-        self.partner1 = self.env["res.partner"].create({"name": "Antón"})
+        cls.partner1 = cls.env["res.partner"].create({"name": "Antón"})
 
         # create a sale channel
-        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+        cls.sale_channel_direct1 = cls.env["pms.sale.channel"].create(
             {
                 "name": "Door",
                 "channel_type": "direct",

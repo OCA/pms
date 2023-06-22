@@ -6,78 +6,79 @@ from .common import TestPms
 
 
 class TestPmsFolioInvoice(TestPms):
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
         # create a room type availability
-        self.room_type_availability = self.env["pms.availability.plan"].create(
+        cls.room_type_availability = cls.env["pms.availability.plan"].create(
             {"name": "Availability plan for TEST"}
         )
 
         # journal to simplified invoices
-        self.simplified_journal = self.env["account.journal"].create(
+        cls.simplified_journal = cls.env["account.journal"].create(
             {
                 "name": "Simplified journal",
                 "code": "SMP",
                 "type": "sale",
-                "company_id": self.env.ref("base.main_company").id,
+                "company_id": cls.env.ref("base.main_company").id,
             }
         )
 
         # create a property
-        self.property = self.env["pms.property"].create(
+        cls.property = cls.env["pms.property"].create(
             {
                 "name": "MY PMS TEST",
-                "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.pricelist1.id,
-                "journal_simplified_invoice_id": self.simplified_journal.id,
+                "company_id": cls.env.ref("base.main_company").id,
+                "default_pricelist_id": cls.pricelist1.id,
+                "journal_simplified_invoice_id": cls.simplified_journal.id,
             }
         )
 
         # create room type
-        self.room_type_double = self.env["pms.room.type"].create(
+        cls.room_type_double = cls.env["pms.room.type"].create(
             {
-                "pms_property_ids": [self.property.id],
+                "pms_property_ids": [cls.property.id],
                 "name": "Double Test",
                 "default_code": "DBL_Test",
-                "class_id": self.room_type_class1.id,
+                "class_id": cls.room_type_class1.id,
                 "price": 25,
             }
         )
 
         # create rooms
-        self.room1 = self.env["pms.room"].create(
+        cls.room1 = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": cls.property.id,
                 "name": "Double 101",
-                "room_type_id": self.room_type_double.id,
+                "room_type_id": cls.room_type_double.id,
                 "capacity": 2,
             }
         )
 
-        self.room2 = self.env["pms.room"].create(
+        cls.room2 = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": cls.property.id,
                 "name": "Double 102",
-                "room_type_id": self.room_type_double.id,
+                "room_type_id": cls.room_type_double.id,
                 "capacity": 2,
             }
         )
 
-        self.room3 = self.env["pms.room"].create(
+        cls.room3 = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": cls.property.id,
                 "name": "Double 103",
-                "room_type_id": self.room_type_double.id,
+                "room_type_id": cls.room_type_double.id,
                 "capacity": 2,
             }
         )
 
         # res.partner
-        self.partner_id = self.env["res.partner"].create(
+        cls.partner_id = cls.env["res.partner"].create(
             {
                 "name": "Miguel",
                 "vat": "45224522J",
-                "country_id": self.env.ref("base.es").id,
+                "country_id": cls.env.ref("base.es").id,
                 "city": "Madrid",
                 "zip": "28013",
                 "street": "Calle de la calle",
@@ -85,7 +86,7 @@ class TestPmsFolioInvoice(TestPms):
         )
 
         # create a sale channel
-        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+        cls.sale_channel_direct1 = cls.env["pms.sale.channel"].create(
             {
                 "name": "Door",
                 "channel_type": "direct",

@@ -7,32 +7,33 @@ from .common import TestPms
 
 
 class TestProductTemplate(TestPms):
-    def setUp(self):
-        super().setUp()
-        self.room_type = self.env["pms.room.type"].create(
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.room_type = cls.env["pms.room.type"].create(
             {
                 "name": "Room type test",
                 "default_code": "DBL_Test",
-                "class_id": self.room_type_class1.id,
+                "class_id": cls.room_type_class1.id,
             }
         )
-        self.room = self.env["pms.room"].create(
+        cls.room = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "Room test",
-                "room_type_id": self.room_type.id,
+                "room_type_id": cls.room_type.id,
                 "capacity": 2,
             }
         )
-        self.partner = self.env["res.partner"].create({"name": "partner1"})
-        self.board_service = self.env["pms.board.service"].create(
+        cls.partner = cls.env["res.partner"].create({"name": "partner1"})
+        cls.board_service = cls.env["pms.board.service"].create(
             {
                 "name": "Board service test",
                 "default_code": "BST",
             }
         )
         # create a sale channel
-        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+        cls.sale_channel_direct1 = cls.env["pms.sale.channel"].create(
             {
                 "name": "Door",
                 "channel_type": "direct",

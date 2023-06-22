@@ -7,17 +7,18 @@ from .common import TestPms
 
 
 class TestPmsSharedRoom(TestPms):
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
         # create a room type availability
-        self.room_type_availability = self.env["pms.availability.plan"].create(
+        cls.room_type_availability = cls.env["pms.availability.plan"].create(
             {
                 "name": "Availability plan for TEST",
-                "pms_pricelist_ids": [(6, 0, [self.pricelist1.id])],
+                "pms_pricelist_ids": [(6, 0, [cls.pricelist1.id])],
             }
         )
 
-        self.bed_class = self.env["pms.room.type.class"].create(
+        cls.bed_class = cls.env["pms.room.type.class"].create(
             {
                 "name": "Bed Class 1",
                 "default_code": "B1",
@@ -25,57 +26,57 @@ class TestPmsSharedRoom(TestPms):
         )
 
         # create room type
-        self.room_type_test = self.env["pms.room.type"].create(
+        cls.room_type_test = cls.env["pms.room.type"].create(
             {
-                "pms_property_ids": [self.pms_property1.id],
+                "pms_property_ids": [cls.pms_property1.id],
                 "name": "Shared Test",
                 "default_code": "SHT",
-                "class_id": self.room_type_class1.id,
+                "class_id": cls.room_type_class1.id,
             }
         )
 
-        self.room_type_bed = self.env["pms.room.type"].create(
+        cls.room_type_bed = cls.env["pms.room.type"].create(
             {
-                "pms_property_ids": [self.pms_property1.id],
+                "pms_property_ids": [cls.pms_property1.id],
                 "name": "Bed Type Test",
                 "default_code": "BTT",
-                "class_id": self.bed_class.id,
+                "class_id": cls.bed_class.id,
             }
         )
 
         # create shared room
-        self.room1 = self.env["pms.room"].create(
+        cls.room1 = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "Shared 101",
-                "room_type_id": self.room_type_test.id,
+                "room_type_id": cls.room_type_test.id,
                 "capacity": 2,
             }
         )
 
         # create beds in room1
-        self.r1bed1 = self.env["pms.room"].create(
+        cls.r1bed1 = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "101 (1)",
-                "room_type_id": self.room_type_bed.id,
+                "room_type_id": cls.room_type_bed.id,
                 "capacity": 1,
-                "parent_id": self.room1.id,
+                "parent_id": cls.room1.id,
             }
         )
 
-        self.r1bed2 = self.env["pms.room"].create(
+        cls.r1bed2 = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "101 (2)",
-                "room_type_id": self.room_type_bed.id,
+                "room_type_id": cls.room_type_bed.id,
                 "capacity": 2,
-                "parent_id": self.room1.id,
+                "parent_id": cls.room1.id,
             }
         )
 
         # create partner
-        self.partner1 = self.env["res.partner"].create(
+        cls.partner1 = cls.env["res.partner"].create(
             {
                 "firstname": "Jaime",
                 "lastname": "García",
@@ -86,7 +87,7 @@ class TestPmsSharedRoom(TestPms):
         )
 
         # create a sale channel
-        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+        cls.sale_channel_direct1 = cls.env["pms.sale.channel"].create(
             {
                 "name": "Door",
                 "channel_type": "direct",

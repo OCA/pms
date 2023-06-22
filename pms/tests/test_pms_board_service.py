@@ -7,18 +7,19 @@ from .common import TestPms
 
 
 class TestBoardService(TestPms):
-    def setUp(self):
-        super().setUp()
-        self.company2 = self.env["res.company"].create(
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.company2 = cls.env["res.company"].create(
             {
                 "name": "Company 2",
             }
         )
-        self.pms_property3 = self.env["pms.property"].create(
+        cls.pms_property3 = cls.env["pms.property"].create(
             {
                 "name": "Property 3",
-                "company_id": self.company2.id,
-                "default_pricelist_id": self.pricelist1.id,
+                "company_id": cls.company2.id,
+                "default_pricelist_id": cls.pricelist1.id,
             }
         )
 
