@@ -7,114 +7,115 @@ from .common import TestPms
 
 
 class TestPmsRoomTypeAvailabilityRules(TestPms):
-    def setUp(self):
-        super().setUp()
-        self.pms_property2 = self.env["pms.property"].create(
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.pms_property2 = cls.env["pms.property"].create(
             {
                 "name": "Property 2",
-                "company_id": self.company1.id,
-                "default_pricelist_id": self.pricelist1.id,
+                "company_id": cls.company1.id,
+                "default_pricelist_id": cls.pricelist1.id,
             }
         )
-        self.pricelist2 = self.env["product.pricelist"].create(
+        cls.pricelist2 = cls.env["product.pricelist"].create(
             {
                 "name": "test pricelist 1",
                 "pms_property_ids": [
-                    (4, self.pms_property1.id),
-                    (4, self.pms_property2.id),
+                    (4, cls.pms_property1.id),
+                    (4, cls.pms_property2.id),
                 ],
-                "availability_plan_id": self.availability_plan1.id,
+                "availability_plan_id": cls.availability_plan1.id,
                 "is_pms_available": True,
             }
         )
         # pms.sale.channel
-        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+        cls.sale_channel_direct1 = cls.env["pms.sale.channel"].create(
             {
                 "name": "Door",
                 "channel_type": "direct",
             }
         )
         # pms.availability.plan
-        self.test_room_type_availability1 = self.env["pms.availability.plan"].create(
+        cls.test_room_type_availability1 = cls.env["pms.availability.plan"].create(
             {
                 "name": "Availability plan for TEST",
-                "pms_pricelist_ids": [(6, 0, [self.pricelist2.id])],
+                "pms_pricelist_ids": [(6, 0, [cls.pricelist2.id])],
             }
         )
         # pms.property
-        self.pms_property3 = self.env["pms.property"].create(
+        cls.pms_property3 = cls.env["pms.property"].create(
             {
                 "name": "MY PMS TEST",
-                "company_id": self.company1.id,
-                "default_pricelist_id": self.pricelist2.id,
+                "company_id": cls.company1.id,
+                "default_pricelist_id": cls.pricelist2.id,
             }
         )
-        self.pricelist2.write(
+        cls.pricelist2.write(
             {
                 "pms_property_ids": [
-                    (4, self.pms_property3.id),
+                    (4, cls.pms_property3.id),
                 ],
             }
         )
 
         # pms.room.type
-        self.test_room_type_single = self.env["pms.room.type"].create(
+        cls.test_room_type_single = cls.env["pms.room.type"].create(
             {
-                "pms_property_ids": [self.pms_property3.id],
+                "pms_property_ids": [cls.pms_property3.id],
                 "name": "Single Test",
                 "default_code": "SNG_Test",
-                "class_id": self.room_type_class1.id,
+                "class_id": cls.room_type_class1.id,
             }
         )
         # pms.room.type
-        self.test_room_type_double = self.env["pms.room.type"].create(
+        cls.test_room_type_double = cls.env["pms.room.type"].create(
             {
                 "pms_property_ids": [
-                    (4, self.pms_property3.id),
+                    (4, cls.pms_property3.id),
                 ],
                 "name": "Double Test",
                 "default_code": "DBL_Test",
-                "class_id": self.room_type_class1.id,
+                "class_id": cls.room_type_class1.id,
             }
         )
         # pms.room
-        self.test_room1_double = self.env["pms.room"].create(
+        cls.test_room1_double = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property3.id,
+                "pms_property_id": cls.pms_property3.id,
                 "name": "Double 201 test",
-                "room_type_id": self.test_room_type_double.id,
+                "room_type_id": cls.test_room_type_double.id,
                 "capacity": 2,
             }
         )
         # pms.room
-        self.test_room2_double = self.env["pms.room"].create(
+        cls.test_room2_double = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property3.id,
+                "pms_property_id": cls.pms_property3.id,
                 "name": "Double 202 test",
-                "room_type_id": self.test_room_type_double.id,
+                "room_type_id": cls.test_room_type_double.id,
                 "capacity": 2,
             }
         )
-        self.test_room1_single = self.env["pms.room"].create(
+        cls.test_room1_single = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property3.id,
+                "pms_property_id": cls.pms_property3.id,
                 "name": "Single 101 test",
-                "room_type_id": self.test_room_type_single.id,
+                "room_type_id": cls.test_room_type_single.id,
                 "capacity": 1,
             }
         )
         # pms.room
-        self.test_room2_single = self.env["pms.room"].create(
+        cls.test_room2_single = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property3.id,
+                "pms_property_id": cls.pms_property3.id,
                 "name": "Single 102 test",
-                "room_type_id": self.test_room_type_single.id,
+                "room_type_id": cls.test_room_type_single.id,
                 "capacity": 1,
             }
         )
         # partner
-        self.partner1 = self.env["res.partner"].create(
-            {"name": "Charles", "property_product_pricelist": self.pricelist1}
+        cls.partner1 = cls.env["res.partner"].create(
+            {"name": "Charles", "property_product_pricelist": cls.pricelist1}
         )
 
     def test_availability_rooms_all(self):

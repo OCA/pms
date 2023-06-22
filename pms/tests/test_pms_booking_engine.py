@@ -8,61 +8,62 @@ from .common import TestPms
 
 
 class TestPmsBookingEngine(TestPms):
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
         # CREATION OF ROOM TYPE (WITH ROOM TYPE CLASS)
-        self.test_room_type_double = self.env["pms.room.type"].create(
+        cls.test_room_type_double = cls.env["pms.room.type"].create(
             {
-                "pms_property_ids": [self.pms_property1.id],
+                "pms_property_ids": [cls.pms_property1.id],
                 "name": "Double Test",
                 "default_code": "DBL_Test",
-                "class_id": self.room_type_class1.id,
+                "class_id": cls.room_type_class1.id,
                 "list_price": 40.0,
             }
         )
 
         # pms.room
-        self.test_room1_double = self.env["pms.room"].create(
+        cls.test_room1_double = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "Double 201 test",
-                "room_type_id": self.test_room_type_double.id,
+                "room_type_id": cls.test_room_type_double.id,
                 "capacity": 2,
             }
         )
 
         # pms.room
-        self.test_room2_double = self.env["pms.room"].create(
+        cls.test_room2_double = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "Double 202 test",
-                "room_type_id": self.test_room_type_double.id,
+                "room_type_id": cls.test_room_type_double.id,
                 "capacity": 2,
             }
         )
 
         # pms.room
-        self.test_room3_double = self.env["pms.room"].create(
+        cls.test_room3_double = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "Double 203 test",
-                "room_type_id": self.test_room_type_double.id,
+                "room_type_id": cls.test_room_type_double.id,
                 "capacity": 2,
             }
         )
 
         # pms.room
-        self.test_room4_double = self.env["pms.room"].create(
+        cls.test_room4_double = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "Double 204 test",
-                "room_type_id": self.test_room_type_double.id,
+                "room_type_id": cls.test_room_type_double.id,
                 "capacity": 2,
             }
         )
 
         # res.partner
-        self.partner_id = self.env["res.partner"].create(
+        cls.partner_id = cls.env["res.partner"].create(
             {
                 "name": "Miguel",
                 "mobile": "654667733",
@@ -71,7 +72,7 @@ class TestPmsBookingEngine(TestPms):
         )
 
         # pms.sale.channel
-        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+        cls.sale_channel_direct1 = cls.env["pms.sale.channel"].create(
             {
                 "name": "Door",
                 "channel_type": "direct",

@@ -7,26 +7,27 @@ from .common import TestPms
 
 
 class TestRoomType(TestPms):
-    def setUp(self):
-        super().setUp()
-        self.pms_property2 = self.env["pms.property"].create(
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.pms_property2 = cls.env["pms.property"].create(
             {
                 "name": "Property 2",
-                "company_id": self.company1.id,
-                "default_pricelist_id": self.pricelist1.id,
+                "company_id": cls.company1.id,
+                "default_pricelist_id": cls.pricelist1.id,
             }
         )
-        self.company2 = self.env["res.company"].create(
+        cls.company2 = cls.env["res.company"].create(
             {
                 "name": "Company 2",
             }
         )
 
-        self.pms_property3 = self.env["pms.property"].create(
+        cls.pms_property3 = cls.env["pms.property"].create(
             {
                 "name": "Property 3",
-                "company_id": self.company2.id,
-                "default_pricelist_id": self.pricelist1.id,
+                "company_id": cls.company2.id,
+                "default_pricelist_id": cls.pricelist1.id,
             }
         )
 

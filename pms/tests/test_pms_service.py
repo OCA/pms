@@ -8,38 +8,39 @@ from .common import TestPms
 
 
 class TestPmsService(TestPms):
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
         # create room type
-        self.room_type_double = self.env["pms.room.type"].create(
+        cls.room_type_double = cls.env["pms.room.type"].create(
             {
-                "pms_property_ids": [self.pms_property1.id],
+                "pms_property_ids": [cls.pms_property1.id],
                 "name": "Double Test",
                 "default_code": "DBL_Test",
-                "class_id": self.room_type_class1.id,
+                "class_id": cls.room_type_class1.id,
             }
         )
         # create rooms
-        self.room1 = self.env["pms.room"].create(
+        cls.room1 = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "Double 101",
-                "room_type_id": self.room_type_double.id,
+                "room_type_id": cls.room_type_double.id,
                 "capacity": 2,
                 "extra_beds_allowed": 1,
             }
         )
 
-        self.room2 = self.env["pms.room"].create(
+        cls.room2 = cls.env["pms.room"].create(
             {
-                "pms_property_id": self.pms_property1.id,
+                "pms_property_id": cls.pms_property1.id,
                 "name": "Double 102",
-                "room_type_id": self.room_type_double.id,
+                "room_type_id": cls.room_type_double.id,
                 "capacity": 2,
                 "extra_beds_allowed": 1,
             }
         )
-        self.partner1 = self.env["res.partner"].create(
+        cls.partner1 = cls.env["res.partner"].create(
             {
                 "firstname": "María",
                 "lastname": "",
@@ -48,13 +49,13 @@ class TestPmsService(TestPms):
                 "gender": "male",
             }
         )
-        self.sale_channel_door = self.env["pms.sale.channel"].create(
+        cls.sale_channel_door = cls.env["pms.sale.channel"].create(
             {"name": "Door", "channel_type": "direct"}
         )
-        self.sale_channel_phone = self.env["pms.sale.channel"].create(
+        cls.sale_channel_phone = cls.env["pms.sale.channel"].create(
             {"name": "Phone", "channel_type": "direct"}
         )
-        self.sale_channel_mail = self.env["pms.sale.channel"].create(
+        cls.sale_channel_mail = cls.env["pms.sale.channel"].create(
             {"name": "Mail", "channel_type": "direct"}
         )
 
