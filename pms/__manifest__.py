@@ -29,6 +29,7 @@
         "account_reconciliation_widget",
         # "partner_identification_unique_by_category",
         "queue_job",
+        "web_timeline",
     ],
     "data": [
         "security/pms_security.xml",
