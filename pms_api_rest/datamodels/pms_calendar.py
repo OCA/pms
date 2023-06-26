@@ -30,6 +30,14 @@ class PmsCalendarSearchParam(Datamodel):
     pricelistId = fields.Integer(required=False, allow_none=True)
 
 
+class PmsCalendarHeaderSearchParam(Datamodel):
+    _name = "pms.calendar.header.search.param"
+    dateFrom = fields.String(required=False, allow_none=True)
+    dateTo = fields.String(required=False, allow_none=True)
+    pmsPropertyId = fields.Integer(required=True, allow_none=False)
+    roomIds = fields.List(fields.Integer(), required=False)
+
+
 class PmsCalendarFreeDailyRoomsByType(Datamodel):
     _name = "pms.calendar.free.daily.rooms.by.type"
     date = fields.String(required=True, allow_none=False)
@@ -42,6 +50,14 @@ class PmsCalendarDailyInvoicing(Datamodel):
     date = fields.String(required=True, allow_none=False)
     invoicingTotal = fields.Float(required=True, allow_none=False)
 
+
+class PmsCalendarHeaderInfo(Datamodel):
+    _name = "pms.calendar.header.info"
+    date = fields.String(required=True, allow_none=False)
+    dailyBilling = fields.Float(required=True, allow_none=False)
+    freeRooms = fields.Integer(required=True, allow_none=False)
+    occupancyRate = fields.Float(required=True, allow_none=False)
+    overbooking = fields.Boolean(required=False, allow_none=True)
 
 class PmsCalendarInfo(Datamodel):
     _name = "pms.calendar.info"
