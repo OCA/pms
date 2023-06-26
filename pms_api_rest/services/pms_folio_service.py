@@ -521,6 +521,7 @@ class PmsFolioService(Component):
                 "board_service_room_id": self.get_board_service_room_type_id(
                     reservation.boardServiceId,
                     reservation.roomTypeId,
+                    pms_folio_info.pmsPropertyId,
                 ),
                 "preferred_room_id": reservation.preferredRoomId,
                 "adults": reservation.adults,
@@ -1236,7 +1237,9 @@ class PmsFolioService(Component):
             return lang_code
         return self.env["res.lang"].search([("iso_code", "=", lang_code)], limit=1).code
 
-    def get_board_service_room_type_id(self, board_service_id, room_type_id):
+    def get_board_service_room_type_id(
+        self, board_service_id, room_type_id, pms_property_id
+    ):
         """
         The internal app uses the board service room type id to create the reservation,
         but the external app uses the board service id and the room type id.
@@ -1251,8 +1254,9 @@ class PmsFolioService(Component):
                 self.env["pms.board.service.room.type"]
                 .search(
                     [
-                        ("board_service_id", "=", board_service.id),
+                        ("pms_board_service_id", "=", board_service.id),
                         ("pms_room_type_id", "=", room_type.id),
+                        ("pms_property_id", "=", pms_property_id),
                     ],
                     limit=1,
                 )
