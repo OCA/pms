@@ -50,6 +50,7 @@ class PmsAmenityService(Component):
                     name=amenity.name,
                     amenityTypeId=amenity.pms_amenity_type_id.id,
                     addInRoomName=amenity.is_add_code_room_name,
+                    defaultCode=amenity.default_code if amenity.default_code else None,
                 )
             )
         return result_amenities
