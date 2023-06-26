@@ -5,6 +5,54 @@ from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
 
+def build_reservation_line_info( calendar_item, previous_item=False, next_item=False):
+    next_itemSplitted = (
+        calendar_item["splitted"]
+        and next_item
+        and calendar_item["date"] < calendar_item["checkout"] - timedelta(days=1)
+        and (
+            next_item["room_id"] != calendar_item["room_id"]
+            or next_item["reservation_id"] != calendar_item["reservation_id"]
+        )
+    )
+    previous_itemSplitted = (
+        calendar_item["splitted"]
+        and previous_item
+        and calendar_item["date"] > calendar_item["checkin"]
+        and (
+            previous_item["room_id"] != calendar_item["room_id"]
+            or previous_item["reservation_id"] != calendar_item["reservation_id"]
+        )
+    )
+    return {
+        "date": datetime.combine(calendar_item['date'], datetime.min.time()).isoformat(),
+        "roomId": calendar_item['room_id'],
+        "roomTypeId": calendar_item['room_type_id'],
+        "id": calendar_item['id'],
+        "state": calendar_item['state'],
+        "priceDayTotal": calendar_item['price_day_total'],
+        "toAssign": calendar_item['to_assign'],
+        "splitted": calendar_item['splitted'],
+        "partnerId": calendar_item['partner_id'],
+        "partnerName": calendar_item['partner_name'],
+        "folioId": calendar_item['folio_id'],
+        "reservationId": calendar_item['reservation_id'],
+        "reservationName": calendar_item['reservation_name'],
+        "reservationType": calendar_item['reservation_type'],
+        "checkin": datetime.combine(calendar_item['checkin'], datetime.min.time()).isoformat(),
+        "checkout": datetime.combine(calendar_item['checkout'], datetime.min.time()).isoformat(),
+        "priceTotal": calendar_item['price_total'],
+        "adults": calendar_item['adults'],
+        "pendingPayment": calendar_item['folio_pending_amount'],
+        "closureReasonId": calendar_item['closure_reason_id'],
+        "isFirstNight": calendar_item['date'] == calendar_item['checkin'] if calendar_item['checkin'] else None,
+        "isLastNight": calendar_item['date'] == calendar_item['checkout'] + timedelta(days=-1)
+        if calendar_item['checkout'] else None,
+        "nextLineSplitted": next_itemSplitted,
+        "previousLineSplitted": previous_itemSplitted,
+    }
+
+
 class PmsCalendarService(Component):
     _inherit = "base.rest.service"
     _name = "pms.private.service"
@@ -153,7 +201,7 @@ class PmsCalendarService(Component):
         [
             (
                 [
-                    "/temp-calendar",
+                    "/",
                 ],
                 "GET",
             )
@@ -213,7 +261,7 @@ class PmsCalendarService(Component):
                     LEFT OUTER JOIN (	SELECT id, state, price_day_total, room_id, date, reservation_id
                                         FROM pms_reservation_line
                                         WHERE pms_property_id = %s AND state != 'cancel'
-                                        AND occupies_availability = true AND date < %s
+                                        AND occupies_availability = true AND date <= %s
                     ) l ON l.room_id = dr.room_id AND l.date = dr.date
                     LEFT OUTER JOIN pms_reservation r ON l.reservation_id = r.id
                     LEFT OUTER JOIN pms_folio f ON r.folio_id = f.id
@@ -259,7 +307,7 @@ class PmsCalendarService(Component):
                 )
             if item['reservation_id'] is not None and item['reservation_id'] != last_reservation_id:
                 response[-1].dates[-1]['reservationLines'].append(
-                    self.build_reservation_line_info(
+                    build_reservation_line_info(
                         item,
                         previous_item=False
                         if (not item["splitted"] or item["date"] == date_from)
@@ -273,7 +321,7 @@ class PmsCalendarService(Component):
                 index_date_last_reservation = len(response[-1].dates) - 1
             elif item['reservation_id'] is not None and item['reservation_id'] == last_reservation_id:
                 response[-1].dates[index_date_last_reservation]['reservationLines'].append(
-                    self.build_reservation_line_info(
+                    build_reservation_line_info(
                         item,
                         previous_item=False
                         if (not item["splitted"] or item["date"] == date_from)
@@ -288,52 +336,100 @@ class PmsCalendarService(Component):
                 last_reservation_id = False
         return response
 
-    def build_reservation_line_info(self, calendar_item, previous_item=False, next_item=False):
-        next_itemSplitted = (
-            calendar_item["splitted"]
-            and next_item
-            and calendar_item["date"] < calendar_item["checkout"] - timedelta(days=1)
-            and (
-                next_item["room_id"] != calendar_item["room_id"]
-                or next_item["reservation_id"] != calendar_item["reservation_id"]
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/calendar-headers",
+                ],
+                "GET",
             )
+        ],
+        input_param=Datamodel("pms.calendar.header.search.param"),
+        output_param=Datamodel("pms.calendar.header.info", is_list=True),
+        auth="jwt_api_pms",
+    )
+    def get_calendar_headers(self, calendar_search_param):
+        response = []
+        date_from = datetime.strptime(calendar_search_param.dateFrom, "%Y-%m-%d").date()
+        date_to = datetime.strptime(calendar_search_param.dateTo, "%Y-%m-%d").date()
+
+        room_ids = tuple(calendar_search_param.roomIds)
+
+        self.env.cr.execute(
+            f"""
+            SELECT d.date,
+            bool_or(l.overbooking) overbooking,
+            SUM(l.price_day_total) daily_billing,
+            tr.num_total_rooms
+            -
+            (
+                SELECT COUNT(1)
+                FROM pms_reservation_line
+                WHERE date = d.date
+                AND pms_property_id = %s
+                AND state != 'cancel'
+                AND occupies_availability = true
+                AND room_id IN %s
+            ) free_rooms,
+            ceil((
+                SELECT COUNT(1)
+                FROM pms_reservation_line l
+                INNER JOIN pms_reservation r  ON r.id = l.reservation_id
+                WHERE r.reservation_type NOT IN ('out', 'staff')
+                AND r.pms_property_id = %s
+                AND l.occupies_availability = true
+                AND l.state != 'cancel'
+                AND l.room_id IN %s
+                AND l.date = d.date
+            ) * 100.00 / tr.num_total_rooms) occupancy_rate
+            FROM (
+                    SELECT (CURRENT_DATE + date) date
+                    FROM generate_series(date %s- CURRENT_DATE, date %s - CURRENT_DATE
+            ) date) d
+            LEFT OUTER JOIN (	SELECT date, price_day_total, overbooking
+                                FROM pms_reservation_line
+                                WHERE pms_property_id = %s
+                                AND room_id IN %s
+            ) l ON l.date = d.date,
+            (	SELECT COUNT(1) num_total_rooms
+                FROM pms_room
+                WHERE pms_property_id = %s
+                AND id IN %s
+            ) tr
+            GROUP BY d.date, tr.num_total_rooms
+            ORDER BY d.date;
+            """,
+            (
+                calendar_search_param.pmsPropertyId,
+                room_ids,
+                calendar_search_param.pmsPropertyId,
+                room_ids,
+                date_from,
+                date_to,
+                calendar_search_param.pmsPropertyId,
+                room_ids,
+                calendar_search_param.pmsPropertyId,
+                room_ids,
+            ),
         )
-        previous_itemSplitted = (
-            calendar_item["splitted"]
-            and previous_item
-            and calendar_item["date"] > calendar_item["checkin"]
-            and (
-                previous_item["room_id"] != calendar_item["room_id"]
-                or previous_item["reservation_id"] != calendar_item["reservation_id"]
+
+        result = self.env.cr.dictfetchall()
+        CalendarHeaderInfo = self.env.datamodels["pms.calendar.header.info"]
+
+        for item in result:
+            response.append(
+                CalendarHeaderInfo(
+                    date=datetime.combine(item['date'], datetime.min.time()).isoformat(),
+                    dailyBilling=item["daily_billing"] if item["daily_billing"] else 0,
+                    freeRooms=item["free_rooms"] if item["free_rooms"] else 0,
+                    occupancyRate=item["occupancy_rate"] if item["occupancy_rate"] else 0,
+                    overbooking=item["overbooking"] if item["overbooking"] else False,
+                )
             )
-        )
-        return {
-            "date": datetime.combine(calendar_item['date'], datetime.min.time()).isoformat(),
-            "roomId": calendar_item['room_id'],
-            "roomTypeId": calendar_item['room_type_id'],
-            "id": calendar_item['id'],
-            "state": calendar_item['state'],
-            "priceDayTotal": calendar_item['price_day_total'],
-            "toAssign": calendar_item['to_assign'],
-            "splitted": calendar_item['splitted'],
-            "partnerId": calendar_item['partner_id'],
-            "partnerName": calendar_item['partner_name'],
-            "folioId": calendar_item['folio_id'],
-            "reservationId": calendar_item['reservation_id'],
-            "reservationName": calendar_item['reservation_name'],
-            "reservationType": calendar_item['reservation_type'],
-            "checkin": datetime.combine(calendar_item['checkin'], datetime.min.time()).isoformat(),
-            "checkout": datetime.combine(calendar_item['checkout'], datetime.min.time()).isoformat(),
-            "priceTotal": calendar_item['price_total'],
-            "adults": calendar_item['adults'],
-            "pendingPayment": calendar_item['folio_pending_amount'],
-            "closureReasonId": calendar_item['closure_reason_id'],
-            "isFirstNight": calendar_item['date'] == calendar_item['checkin'] if calendar_item['checkin'] else None,
-            "isLastNight": calendar_item['date'] == calendar_item['checkout'] + timedelta(days=-1)
-            if calendar_item['checkout'] else None,
-            "nextLineSplitted": next_itemSplitted,
-            "previousLineSplitted": previous_itemSplitted,
-        }
+
+        return response
 
     @restapi.method(
         [
