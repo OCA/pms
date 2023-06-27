@@ -287,7 +287,9 @@ class PmsService(models.Model):
         self.name = False
         for service in self.filtered("product_id"):
             product = service.product_id.with_context(
-                lang=service.folio_id.partner_id.lang,
+                lang=service.folio_id.partner_id.lang
+                if service.folio_id.partner_id
+                else self.env.context.get("lang", "es_ES"),
                 partner=service.folio_id.partner_id.id,
             )
             title = False
