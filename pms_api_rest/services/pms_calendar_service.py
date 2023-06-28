@@ -192,7 +192,7 @@ class PmsCalendarService(Component):
                     nextLineSplitted=next_line_splitted,
                     previousLineSplitted=previous_line_splitted,
                     closureReasonId=line["closure_reason_id"],
-                    isReselling=line["is_reselling"],
+                    isReselling=line["is_reselling"] if line["is_reselling"] else False,
                 )
             )
         return result_lines
