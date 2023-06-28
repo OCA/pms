@@ -361,7 +361,7 @@ class PmsCalendarService(Component):
             f"""
             SELECT d.date,
             bool_or(l.overbooking) overbooking,
-            SUM(l.price_day_total) daily_billing,
+            CEIL(SUM(l.price_day_total)) daily_billing,
             tr.num_total_rooms
             -
             (
@@ -373,7 +373,7 @@ class PmsCalendarService(Component):
                 AND occupies_availability = true
                 AND room_id IN %s
             ) free_rooms,
-            ceil((
+            CEIL((
                 SELECT COUNT(1)
                 FROM pms_reservation_line l
                 INNER JOIN pms_reservation r  ON r.id = l.reservation_id
