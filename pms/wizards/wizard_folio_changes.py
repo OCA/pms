@@ -360,9 +360,11 @@ class WizardFolioChanges(models.TransientModel):
 
     def _update_dates(self, reservations, new_checkin, new_checkout):
         for res in reservations:
-            if new_checkin:
+            if new_checkin and new_checkout:
+                res.write({"checkin": new_checkin, "checkout": new_checkout})
+            elif new_checkin:
                 res.checkin = new_checkin
-            if new_checkout:
+            elif new_checkout:
                 res.checkout = new_checkout
 
     def _update_reservations(
