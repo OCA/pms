@@ -44,7 +44,9 @@ class PmsInvoiceService(Component):
                 ("origin_agency_id", "=", pms_invoice_search_param.originAgencyId),
             )
         if pms_invoice_search_param.pmsPropertyId:
-            domain_fields.append(("pms_property_id", "=", pms_invoice_search_param.pmsPropertyId))
+            domain_fields.append(
+                ("pms_property_id", "=", pms_invoice_search_param.pmsPropertyId)
+            )
         if pms_invoice_search_param.paymentState == "paid":
             domain_fields.append(
                 ("payment_state", "in", ("paid", "reversed", "invoicing_legacy"))
@@ -173,7 +175,9 @@ class PmsInvoiceService(Component):
                     if invoice.origin_agency_id
                     else None,
                     ref=invoice.ref if invoice.ref else None,
-                    pmsPropertyId=invoice.pms_property_id if invoice.pms_property_id else None,
+                    pmsPropertyId=invoice.pms_property_id
+                    if invoice.pms_property_id
+                    else None,
                 )
             )
         return PmsInvoiceResults(
@@ -332,6 +336,9 @@ class PmsInvoiceService(Component):
                     invoice.invoice_line_ids.filtered(lambda l: l.id == item).write(
                         {"name": updated_invoice_lines_name[item]}
                     )
+            # 4- Avoid set number invoice in draft invoices
+            if previus_state == "draft":
+                invoice.write({"name": "/"})
         if previus_state == "posted":
             invoice.action_post()
         return invoice
