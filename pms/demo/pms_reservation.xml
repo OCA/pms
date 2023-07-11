@@ -609,8 +609,8 @@
             <field name="user_id" ref="base.user_admin" />
             <field name="pricelist_id" ref="product.list0" />
             <field name="room_type_id" ref="pms_room_type_double" />
-            <field name="checkin" eval="DateTime.today() + timedelta(-10)" />
-            <field name="checkout" eval="DateTime.today() + timedelta(-7)" />
+            <field name="checkin" eval="DateTime.today() + timedelta(+8)" />
+            <field name="checkout" eval="DateTime.today() + timedelta(+9)" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field
                 name="sale_channel_origin_id"
@@ -626,8 +626,8 @@
             <field name="user_id" ref="base.user_admin" />
             <field name="pricelist_id" ref="product.list0" />
             <field name="room_type_id" ref="pms_room_type_double" />
-            <field name="checkin" eval="DateTime.today() + timedelta(-10)" />
-            <field name="checkout" eval="DateTime.today() + timedelta(-7)" />
+            <field name="checkin" eval="DateTime.today() + timedelta(+7)" />
+            <field name="checkout" eval="DateTime.today() + timedelta(+8)" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
             <field
