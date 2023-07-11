@@ -37,4 +37,21 @@
             </xpath>
         </field>
     </record>
+
+    <!-- search view add external_id -->
+    <record id="pms_folio_view_search" model="ir.ui.view">
+        <field name="name">pms.folio.wubook.connector.search</field>
+        <field name="model">pms.folio</field>
+        <field name="inherit_id" ref="pms.pms_folio_view_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <field
+                    name="channel_wubook_bind_ids"
+                    string="Channel ID"
+                    filter_domain="[('channel_wubook_bind_ids.external_id', 'ilike', self)]"
+                />
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

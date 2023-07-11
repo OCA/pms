@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2021 Dario Lodeiros <dario@roomdoo.com>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+    <record id="pms_reservation_view_search" model="ir.ui.view">
+        <field name="name">pms.reservation.view.search</field>
+        <field name="model">pms.reservation</field>
+        <field name="inherit_id" ref="pms.pms_reservation_view_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <field name="channel_external_ids" string="Channel ID" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
