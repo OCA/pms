@@ -35,7 +35,7 @@ class PmsProperty(models.Model):
         help="Current property",
         comodel_name="res.partner",
         required=True,
-        ondelete="cascade",
+        ondelete="restrict",
     )
     pms_property_code = fields.Char(
         string="Property Code",
