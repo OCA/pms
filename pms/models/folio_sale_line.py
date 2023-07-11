@@ -1050,6 +1050,8 @@ class FolioSaleLine(models.Model):
                 and x.line_ids.filtered(lambda l: l.folio_line_ids == self)
             )
             name = self.name + " (" + downpayment_invoice.name + ")"
+        elif self.display_type == "line_section" and self.reservation_id:
+            name = self.name + " - " + self.reservation_id.rooms
         else:
             name = self.name
         res = {
