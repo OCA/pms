@@ -53,6 +53,25 @@ def build_reservation_line_info( calendar_item, previous_item=False, next_item=F
     }
 
 
+def build_restriction(item):
+    result = {}
+    if item['closed'] is not None and item['closed']:
+        result.update({'closed': True})
+    if item['closed_arrival'] is not None and item['closed_arrival']:
+        result.update({'closedArrival': True})
+    if item['closed_departure'] is not None and item['closed_departure']:
+        result.update({'closedDeparture': True})
+    if item['min_stay'] is not None and item['min_stay'] != 0:
+        result.update({'minStay': item['min_stay']})
+    if item['max_stay'] is not None and item['max_stay'] != 0:
+        result.update({'maxStay': item['max_stay']})
+    if item['min_stay_arrival'] is not None and item['min_stay_arrival'] != 0:
+        result.update({'minStayArrival': item['min_stay_arrival']})
+    if item['max_stay_arrival'] is not None and item['max_stay_arrival'] != 0:
+        result.update({'maxStayArrival': item['max_stay_arrival']})
+    return result
+
+
 class PmsCalendarService(Component):
     _inherit = "base.rest.service"
     _name = "pms.private.service"
@@ -237,6 +256,13 @@ class PmsCalendarService(Component):
             "adults": "r.adults adults",
             "folio_pending_amount": "f.pending_amount folio_pending_amount",
             "closure_reason_id": "f.closure_reason_id closure_reason_id",
+            "closed": "ru.closed closed",
+            "closed_departure": "ru.closed_departure closed_departure",
+            "closed_arrival": "ru.closed_arrival closed_arrival",
+            "min_stay": "ru.min_stay min_stay",
+            "min_stay_arrival": "ru.min_stay_arrival min_stay_arrival",
+            "max_stay": "ru.max_stay max_stay",
+            "max_stay_arrival": "ru.max_stay_arrival max_stay_arrival",
         }
         selected_fields_sql = list(selected_fields_mapper.values())
         sql_select = "SELECT %s" % ", ".join(selected_fields_sql)
@@ -263,6 +289,11 @@ class PmsCalendarService(Component):
                                         WHERE pms_property_id = %s AND state != 'cancel'
                                         AND occupies_availability = true AND date <= %s
                     ) l ON l.room_id = dr.room_id AND l.date = dr.date
+                    LEFT OUTER JOIN (	SELECT 	date, room_type_id, min_stay, min_stay_arrival, max_stay,
+                                            max_stay_arrival, closed, closed_departure, closed_arrival
+                                        FROM pms_availability_plan_rule
+                                        WHERE availability_plan_id = %s and pms_property_id = %s
+                    ) ru ON ru.date = dr.date AND ru.room_type_id = dr.room_type_id
                     LEFT OUTER JOIN pms_reservation r ON l.reservation_id = r.id
                     LEFT OUTER JOIN pms_folio f ON r.folio_id = f.id
                     ORDER BY dr.room_id, dr.date
@@ -273,6 +304,8 @@ class PmsCalendarService(Component):
                 calendar_search_param.pmsPropertyId,
                 calendar_search_param.pmsPropertyId,
                 calendar_search_param.dateTo,
+                calendar_search_param.availabilityPlanId,
+                calendar_search_param.pmsPropertyId,
             ),
         )
         result = self.env.cr.dictfetchall()
@@ -281,6 +314,16 @@ class PmsCalendarService(Component):
         last_reservation_id = False
         index_date_last_reservation = False
         for index, item in enumerate(result):
+            date = {
+                "date": datetime.combine(item['date'], datetime.min.time()).isoformat(),
+                "reservationLines": [],
+            }
+            restriction = build_restriction(item)
+            if restriction:
+                date.update({
+                    "restriction": restriction,
+                })
+
             if last_room_id != item['room_id']:
                 last_room_id = item['room_id']
                 last_reservation_id = False
@@ -291,19 +334,13 @@ class PmsCalendarService(Component):
                         roomTypeClassId=item["room_type_class_id"],
                         roomTypeId=item["room_type_id"],
                         dates=[
-                            {
-                                "date": datetime.combine(item['date'], datetime.min.time()).isoformat(),
-                                "reservationLines": [],
-                            }
+                            date
                         ],
                     )
                 )
             else:
                 response[-1].dates.append(
-                    {
-                        "date": datetime.combine(item['date'], datetime.min.time()).isoformat(),
-                        "reservationLines": [],
-                    }
+                    date
                 )
             if item['reservation_id'] is not None and item['reservation_id'] != last_reservation_id:
                 response[-1].dates[-1]['reservationLines'].append(
