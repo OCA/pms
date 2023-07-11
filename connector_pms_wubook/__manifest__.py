@@ -30,6 +30,7 @@
         "views/product_pricelist_item_views.xml",
         "views/pms_availability_plan_views.xml",
         "views/pms_availability_plan_rule_views.xml",
+        "views/pms_reservation_views.xml",
         "wizards/wizard_massive_changes.xml",
     ],
     "demo": [],
