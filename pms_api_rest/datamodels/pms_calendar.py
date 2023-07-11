@@ -28,6 +28,7 @@ class PmsCalendarSearchParam(Datamodel):
     dateTo = fields.String(required=False, allow_none=True)
     pmsPropertyId = fields.Integer(required=True, allow_none=False)
     pricelistId = fields.Integer(required=False, allow_none=True)
+    availabilityPlanId = fields.Integer(required=False, allow_none=True)
 
 
 class PmsCalendarHeaderSearchParam(Datamodel):
@@ -58,6 +59,7 @@ class PmsCalendarHeaderInfo(Datamodel):
     freeRooms = fields.Integer(required=True, allow_none=False)
     occupancyRate = fields.Float(required=True, allow_none=False)
     overbooking = fields.Boolean(required=False, allow_none=True)
+
 
 class PmsCalendarInfo(Datamodel):
     _name = "pms.calendar.info"
