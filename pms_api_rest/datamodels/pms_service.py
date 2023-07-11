@@ -17,3 +17,4 @@ class PmsServiceInfo(Datamodel):
     discount = fields.Float(required=False, allow_none=True)
     isBoardService = fields.Boolean(required=False, allow_none=True)
     serviceLines = fields.List(NestedModel("pms.service.line.info"))
+    priceUnit = fields.Float(required=False, allow_none=True)
