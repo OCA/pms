@@ -27,7 +27,6 @@ class PmsReservationShortInfo(Datamodel):
     pricelistId = fields.Integer(required=False, allow_none=True)
 
 
-
 class PmsReservationInfo(Datamodel):
     _name = "pms.reservation.info"
     id = fields.Integer(required=False, allow_none=True)
@@ -36,7 +35,9 @@ class PmsReservationInfo(Datamodel):
     folioSequence = fields.Integer(required=False, allow_none=True)
     partnerName = fields.String(required=False, allow_none=True)
     boardServiceId = fields.Integer(required=False, allow_none=True)
-    boardServices = fields.List(NestedModel("pms.service.info"), required=False, allow_none=True)
+    boardServices = fields.List(
+        NestedModel("pms.service.info"), required=False, allow_none=True
+    )
     saleChannelId = fields.Integer(required=False, allow_none=True)
     agencyId = fields.Integer(required=False, allow_none=True)
     userId = fields.Integer(required=False, allow_none=True)
@@ -77,6 +78,7 @@ class PmsReservationInfo(Datamodel):
         NestedModel("pms.service.info"), required=False, allow_none=True
     )
     partnerRequests = fields.String(required=False, allow_none=True)
+    nights = fields.Integer(required=False, allow_none=True)
 
     # TODO: Refact
     # messages = fields.List(fields.Dict(required=False, allow_none=True))
