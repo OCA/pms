@@ -127,6 +127,7 @@ class PmsReservationService(Component):
                 numServices=len(reservation.service_ids)
                 if reservation.service_ids
                 else 0,
+                isReselling=any(line.is_reselling for line in reservation.reservation_line_ids),
                 )
         return res
 

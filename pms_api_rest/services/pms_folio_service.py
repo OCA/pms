@@ -235,6 +235,7 @@ class PmsFolioService(Component):
                         if reservation.service_ids
                         else 0,
                         "overbooking": reservation.overbooking,
+                        "isReselling": any(line.is_reselling for line in reservation.reservation_line_ids),
                     }
                 )
             result_folios.append(

@@ -90,6 +90,7 @@ class PmsReservationInfo(Datamodel):
     )
     partnerRequests = fields.String(required=False, allow_none=True)
     nights = fields.Integer(required=False, allow_none=True)
+    isReselling = fields.Boolean(required=False, allow_none=True)
 
     # TODO: Refact
     # messages = fields.List(fields.Dict(required=False, allow_none=True))
