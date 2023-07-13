@@ -24,3 +24,4 @@ class PmsRoomInfo(Datamodel):
     ubicationId = fields.Integer(required=False, allow_none=True)
     extraBedsAllowed = fields.Integer(required=False, allow_none=True)
     roomAmenityIds = fields.List(fields.Integer(), required=False, allow_none=True)
+    roomAmenityInName = fields.String(required=False, allow_none=True)
