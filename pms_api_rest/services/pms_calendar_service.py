@@ -274,15 +274,17 @@ class PmsCalendarService(Component):
                             r_rt_rtc.room_id,
                             r_rt_rtc.capacity,
                             r_rt_rtc.room_type_id,
-                            r_rt_rtc.room_type_class_id
+                            r_rt_rtc.room_type_class_id,
+                            r_rt_rtc.sequence
                      FROM (SELECT (CURRENT_DATE + date ) date
                            FROM generate_series(date %s- CURRENT_DATE, date %s - CURRENT_DATE) date
                      ) dates,
-                    (SELECT r.id room_id, r.capacity, rt.id room_type_id, rtc.id room_type_class_id
+                    (SELECT r.id room_id, r.capacity, rt.id room_type_id, rtc.id room_type_class_id,
+                    r.sequence
                     FROM pms_room r
                     INNER JOIN pms_room_type rt ON rt.id = r.room_type_id
                     INNER JOIN pms_room_type_class rtc ON rtc.id = rt.class_id
-                    WHERE pms_property_id = %s) r_rt_rtc
+                    WHERE r.active = true AND r.pms_property_id = %s) r_rt_rtc
                     ) dr
                     LEFT OUTER JOIN (	SELECT id, state, price_day_total, room_id, date, reservation_id
                                         FROM pms_reservation_line
@@ -296,7 +298,7 @@ class PmsCalendarService(Component):
                     ) ru ON ru.date = dr.date AND ru.room_type_id = dr.room_type_id
                     LEFT OUTER JOIN pms_reservation r ON l.reservation_id = r.id
                     LEFT OUTER JOIN pms_folio f ON r.folio_id = f.id
-                    ORDER BY dr.room_id, dr.date
+                    ORDER BY dr.sequence, dr.room_id, dr.date
                     """,
             (
                 calendar_search_param.dateFrom,
