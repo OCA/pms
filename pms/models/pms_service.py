@@ -311,13 +311,14 @@ class PmsService(models.Model):
         "reservation_id.reservation_line_ids",
         "product_id",
         "reservation_id.adults",
+        "product_qty",
     )
     def _compute_service_line_ids(self):
         for service in self:
             if service.no_auto_add_lines:
                 continue
             if service.product_id:
-                day_qty = 1
+                day_qty = service.product_qty or 1
                 if service.reservation_id and service.product_id:
                     reservation = service.reservation_id
                     # REVIEW: review method dependencies, reservation_line_ids
@@ -400,6 +401,10 @@ class PmsService(models.Model):
                                     },
                                 )
                             ]
+                        # if service lines has only one line, set its day_qty to service product_qty 
+                        elif len(service.service_line_ids) == 1 and self.product_qty:
+                            service.service_line_ids.day_qty = self.product_qty
+                            
                 else:
                     if not service.service_line_ids:
                         price_unit = service._get_price_unit_line()
