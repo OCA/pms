@@ -300,13 +300,11 @@ odoo.define('pos_pms_link.models', function (require) {
                 (month<10 ? '0' : '') + month + '-' +
                 (day<10 ? '0' : '') + day;
             
-            var domain = [
-                '|',
-                '&',
-                ['state', '=', 'onboard'],
-                ['checkout', '=', current_date],
-                ['state', '!=', 'cancel']
-            ];
+                var domain = [
+                    '|', ['state', '=', 'onboard'],
+                    '&', ['checkout', '=', current_date],
+                    ['state', '!=', 'cancel']
+                ];
             if (self.config_id && self.config.reservation_allowed_propertie_ids) domain.push(['pms_property_id', 'in', self.config.reservation_allowed_propertie_ids]);
             return domain;
         },
