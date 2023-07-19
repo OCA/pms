@@ -99,6 +99,12 @@ class PmsCalendarRenderInfo(Datamodel):
     dates = fields.List(fields.Dict(required=True, allow_none=False))
 
 
+class PmsCalendarPricesRulesRenderInfo(Datamodel):
+    _name = "pms.calendar.prices.rules.render.info"
+    roomTypeId = fields.Integer(required=True, allow_none=False)
+    dates = fields.List(fields.Dict(required=True, allow_none=False))
+
+
 class PmsCalendarAlertsPerDay(Datamodel):
     _name = "pms.calendar.alerts.per.day"
     date = fields.String(required=True, allow_none=False)

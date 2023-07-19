@@ -5,10 +5,10 @@ from odoo.addons.datamodel.core import Datamodel
 
 class PmsPricelistSearch(Datamodel):
     _name = "pms.pricelist.search"
-
     pmsPropertyId = fields.Integer(required=False, allow_none=True)
     pmsPropertyIds = fields.List(fields.Integer(), required=False)
     saleChannelId = fields.Integer(required=False, allow_none=True)
+    daily = fields.Boolean(required=False, allow_none=True)
 
 
 class PmsPricelistInfo(Datamodel):
