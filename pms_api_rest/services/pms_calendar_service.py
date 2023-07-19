@@ -91,7 +91,7 @@ class PmsCalendarService(Component):
         output_param=Datamodel("pms.calendar.info", is_list=True),
         auth="jwt_api_pms",
     )
-    def get_old_calendar(self, calendar_search_param):
+    def get_old_reservations_calendar(self, calendar_search_param):
         date_from = datetime.strptime(calendar_search_param.dateFrom, "%Y-%m-%d").date()
         date_to = datetime.strptime(calendar_search_param.dateTo, "%Y-%m-%d").date()
         count_nights = (date_to - date_from).days + 1
@@ -229,7 +229,7 @@ class PmsCalendarService(Component):
         output_param=Datamodel("pms.calendar.render.info", is_list=True),
         auth="jwt_api_pms",
     )
-    def get_calendar_new(self, calendar_search_param):
+    def get_reservations_calendar(self, calendar_search_param):
         response = []
         date_from = datetime.strptime(calendar_search_param.dateFrom, "%Y-%m-%d").date()
         date_to = datetime.strptime(calendar_search_param.dateTo, "%Y-%m-%d").date()
@@ -375,6 +375,126 @@ class PmsCalendarService(Component):
                 last_reservation_id = False
         return response
 
+    @restapi.method(
+        [
+            (
+                [
+                    "/calendar-prices-rules",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.calendar.search.param"),
+        output_param=Datamodel("pms.calendar.prices.rules.render.info", is_list=True),
+        auth="jwt_api_pms",
+    )
+    def get_prices_rules_calendar(self, calendar_search_param):
+        response = []
+        date_from = datetime.strptime(calendar_search_param.dateFrom, "%Y-%m-%d").date()
+        date_to = datetime.strptime(calendar_search_param.dateTo, "%Y-%m-%d").date()
+
+        self.env.cr.execute(
+            f"""
+                SELECT dr.room_type_id,
+                dr.date date,
+                it.id pricelist_item_id,
+                av.id availability_plan_rule_id,
+                COALESCE(av.max_avail, dr.default_max_avail) max_avail,
+                COALESCE(av.quota, dr.default_quota) quota,
+                COALESCE(av.closed, FALSE) closed,
+                COALESCE(av.closed_arrival, FALSE) closed_arrival,
+                COALESCE(av.closed_Departure, FALSE) closed_departure,
+                COALESCE(av.min_stay, 0) min_stay,
+                COALESCE(av.min_stay_arrival, 0) min_stay_arrival,
+                COALESCE(av.max_stay, 0) max_stay,
+                COALESCE(av.max_stay_arrival, 0) max_stay_arrival,
+                COALESCE(it.fixed_price, (
+                    SELECT ipp.value_float
+                    FROM ir_pms_property ipp, (SELECT id field_id, model_id
+                                                FROM ir_model_fields
+                                                WHERE name = 'list_price' AND model = 'product.template'
+                                                ) imf
+                    WHERE ipp.model_id = imf.model_id
+                    AND ipp.field_id = imf.field_id
+                    AND ipp.record = pp.product_tmpl_id
+                    AND ipp.pms_property_id = %s
+                    )
+                ) price
+                FROM
+                (
+                    SELECT dates.date, rt_r.room_type_id, rt_r.product_id, rt_r.default_max_avail, rt_r.default_quota
+                    FROM
+                    (
+                        SELECT (CURRENT_DATE + date) date
+                        FROM generate_series(date %s- CURRENT_DATE, date %s - CURRENT_DATE) date
+                    ) dates,
+                    (
+                        SELECT  rt.id room_type_id,
+                                rt.product_id,
+                                rt.default_max_avail,
+                                rt.default_quota
+                        FROM pms_room_type rt
+                        WHERE EXISTS (  SELECT 1
+                                        FROM pms_room
+                                        WHERE pms_property_id = %s AND room_type_id = rt.id)
+                    ) rt_r
+                ) dr
+                INNER JOIN product_product pp ON pp.id = dr.product_id
+                LEFT OUTER JOIN pms_availability_plan_rule av ON av.date = dr.date
+                    AND av.room_type_id = dr.room_type_id
+                    AND av.pms_property_id = %s
+                    AND av.availability_plan_id = %s
+                LEFT OUTER JOIN product_pricelist_item it ON it.date_start_consumption = dr.date
+                    AND it.date_end_consumption = dr.date
+                    AND it.product_id = dr.product_id
+                    AND it.active = true
+                    AND it.pricelist_id = %s
+                ORDER BY dr.room_type_id, dr.date;
+            """,
+            (
+                calendar_search_param.pmsPropertyId,
+                date_from,
+                date_to,
+                calendar_search_param.pmsPropertyId,
+                calendar_search_param.pmsPropertyId,
+                calendar_search_param.availabilityPlanId,
+                calendar_search_param.pricelistId,
+            ),
+        )
+
+        result = self.env.cr.dictfetchall()
+        CalendarPricesRulesRenderInfo = self.env.datamodels["pms.calendar.prices.rules.render.info"]
+        last_room_type_id = False
+        for index, item in enumerate(result):
+            date = {
+                "date": datetime.combine(item['date'], datetime.min.time()).isoformat(),
+                "pricelistItemId": item['pricelist_item_id'],
+                "price": item['price'],
+
+                "availabilityPlanRuleId": item['availability_plan_rule_id'],
+                "maxAvail": item['max_avail'],
+                "quota": item['quota'],
+
+                "closed": item['closed'],
+                "closedArrival": item['closed_arrival'],
+                "closedDeparture": item['closed_departure'],
+
+                "minStay": item['min_stay'],
+                "minStayArrival": item['min_stay_arrival'],
+                "maxStay": item['max_stay'],
+                "maxStayArrival": item['max_stay_arrival'],
+            }
+            if last_room_type_id != item['room_type_id']:
+                last_room_type_id = item['room_type_id']
+                response.append(
+                    CalendarPricesRulesRenderInfo(
+                        roomTypeId=item["room_type_id"],
+                        dates=[date],
+                    )
+                )
+            else:
+                response[-1].dates.append(date)
+        return response
 
     @restapi.method(
         [
