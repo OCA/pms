@@ -80,6 +80,8 @@ class ProductTemplate(models.Model):
         for record in self:
             pms_property_id = (
                 self.env.context.get("property")
+                # FIXME: IndexError when get_active_property_ids() returns an
+                # empty recordset.
                 or self.env.user.get_active_property_ids()[0]
             )
             record.list_price = self.env["ir.pms.property"].get_field_value(
