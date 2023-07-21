@@ -419,7 +419,22 @@ class PmsCalendarService(Component):
                     AND ipp.record = pp.product_tmpl_id
                     AND ipp.pms_property_id = %s
                     )
-                ) price
+                ) price,
+                (SELECT COUNT (1)
+                    FROM pms_room r
+                    WHERE r.room_type_id = dr.room_type_id AND r.active = true AND r.pms_property_id = 1
+                    AND NOT EXISTS (SELECT 1
+                                    FROM pms_reservation_line
+                                    WHERE date = dr.date
+                                    AND occupies_availability = true
+                                    AND room_id = r.id
+                                    AND r.is_shared_room = false)
+                    AND EXISTS (SELECT 1
+                                FROM pms_room
+                                WHERE active = true
+                                AND room_type_id = dr.room_type_id
+                                AND pms_property_id = %s)
+                 ) free_rooms
                 FROM
                 (
                     SELECT dates.date, rt_r.room_type_id, rt_r.product_id, rt_r.default_max_avail, rt_r.default_quota
@@ -436,7 +451,9 @@ class PmsCalendarService(Component):
                         FROM pms_room_type rt
                         WHERE EXISTS (  SELECT 1
                                         FROM pms_room
-                                        WHERE pms_property_id = %s AND room_type_id = rt.id)
+                                        WHERE pms_property_id = %s
+                                        AND room_type_id = rt.id
+                                        AND active = true)
                     ) rt_r
                 ) dr
                 INNER JOIN product_product pp ON pp.id = dr.product_id
@@ -453,6 +470,7 @@ class PmsCalendarService(Component):
             """,
             (
                 calendar_search_param.pmsPropertyId,
+                calendar_search_param.pmsPropertyId,
                 date_from,
                 date_to,
                 calendar_search_param.pmsPropertyId,
@@ -468,6 +486,7 @@ class PmsCalendarService(Component):
         for index, item in enumerate(result):
             date = {
                 "date": datetime.combine(item['date'], datetime.min.time()).isoformat(),
+                "freeRooms": item['free_rooms'],
                 "pricelistItemId": item['pricelist_item_id'],
                 "price": item['price'],
 
