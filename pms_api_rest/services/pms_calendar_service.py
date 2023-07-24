@@ -489,7 +489,7 @@ class PmsCalendarService(Component):
                 "freeRooms": item['free_rooms'],
                 "pricelistItemId": item['pricelist_item_id'],
                 "price": item['price'],
-
+                #
                 "availabilityPlanRuleId": item['availability_plan_rule_id'],
                 "maxAvail": item['max_avail'],
                 "quota": item['quota'],
