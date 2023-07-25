@@ -153,20 +153,20 @@ class PmsFolioService(Component):
                     [("reservation_type", "!=", "out")],
                 ]
                 domain_filter.append(expression.AND(subdomains))
-            elif folio_search_param.filterByState == 'onBoard':
+            elif folio_search_param.filterByState == "onBoard":
                 subdomains = [
                     [("state", "in", ("onboard", "departure_delayed"))],
                     [("reservation_type", "!=", "out")],
                 ]
                 domain_filter.append(expression.AND(subdomains))
-            elif folio_search_param.filterByState == 'toAssign':
+            elif folio_search_param.filterByState == "toAssign":
                 subdomains = [
                     [("to_assign", "=", True)],
                     [("state", "in", ("draft", "confirm", "arrival_delayed"))],
                     [("reservation_type", "!=", "out")],
                 ]
                 domain_filter.append(expression.AND(subdomains))
-            elif folio_search_param.filterByState == 'cancelled':
+            elif folio_search_param.filterByState == "cancelled":
                 subdomains = [
                     [("state", "=", "cancel")],
                 ]
@@ -187,7 +187,7 @@ class PmsFolioService(Component):
 
         PmsFolioShortInfo = self.env.datamodels["pms.folio.short.info"]
         for folio in self.env["pms.folio"].search(
-            [("id", "in", reservations_result),("reservation_type", "!=", "out")],
+            [("id", "in", reservations_result), ("reservation_type", "!=", "out")],
             order="write_date desc",
             limit=folio_search_param.limit,
             offset=folio_search_param.offset,
@@ -204,11 +204,12 @@ class PmsFolioService(Component):
                             reservation.checkout, datetime.min.time()
                         ).isoformat(),
                         "stateCode": reservation.state,
-                        "cancelledReason": reservation.cancelled_reason if reservation.cancelled_reason else None,
+                        "cancelledReason": reservation.cancelled_reason
+                        if reservation.cancelled_reason
+                        else None,
                         "preferredRoomId": reservation.preferred_room_id.id
                         if reservation.preferred_room_id
                         else None,
-
                         "roomTypeId": reservation.room_type_id.id
                         if reservation.room_type_id
                         else None,
@@ -235,7 +236,10 @@ class PmsFolioService(Component):
                         if reservation.service_ids
                         else 0,
                         "overbooking": reservation.overbooking,
-                        "isReselling": any(line.is_reselling for line in reservation.reservation_line_ids),
+                        "isReselling": any(
+                            line.is_reselling
+                            for line in reservation.reservation_line_ids
+                        ),
                     }
                 )
             result_folios.append(
@@ -259,7 +263,9 @@ class PmsFolioService(Component):
                     closureReasonId=folio.closure_reason_id,
                     agencyId=folio.agency_id.id if folio.agency_id else None,
                     pricelistId=folio.pricelist_id.id if folio.pricelist_id else None,
-                    saleChannelId=folio.sale_channel_origin_id.id if folio.sale_channel_origin_id else None,
+                    saleChannelId=folio.sale_channel_origin_id.id
+                    if folio.sale_channel_origin_id
+                    else None,
                     firstCheckin=str(folio.first_checkin),
                     lastCheckout=str(folio.last_checkout),
                 )
@@ -478,8 +484,8 @@ class PmsFolioService(Component):
                                     lambda x: not x.is_board_service
                                 ).mapped("product_qty")
                             ),
-                            nights= reservation.nights,
-                            numServices= len(reservation.service_ids)
+                            nights=reservation.nights,
+                            numServices=len(reservation.service_ids)
                             if reservation.service_ids
                             else 0,
                             toAssign=reservation.to_assign,
@@ -557,8 +563,6 @@ class PmsFolioService(Component):
             vals = {
                 "folio_id": folio.id,
                 "room_type_id": reservation.roomTypeId,
-                "checkin": reservation.checkin,
-                "checkout": reservation.checkout,
                 "pms_property_id": pms_folio_info.pmsPropertyId,
                 "pricelist_id": pms_folio_info.pricelistId,
                 "external_reference": pms_folio_info.externalReference or "normal",
@@ -573,6 +577,25 @@ class PmsFolioService(Component):
                 "children": reservation.children,
                 "preconfirm": pms_folio_info.preconfirm,
             }
+            if reservation.reservationLines:
+                vals_lines = []
+                for reservationLine in reservation.reservationLines:
+                    vals_lines.append(
+                        (
+                            0,
+                            0,
+                            {
+                                "date": reservationLine.date,
+                                "price": reservationLine.price,
+                                "discount": reservationLine.discount,
+                            },
+                        )
+                    )
+                vals["reservation_line_ids"] = vals_lines
+            else:
+                vals["checkin"] = reservation.checkin
+                vals["checkout"] = reservation.checkout
+
             reservation_record = (
                 self.env["pms.reservation"]
                 .with_context(
