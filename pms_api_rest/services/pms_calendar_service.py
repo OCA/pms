@@ -422,7 +422,7 @@ class PmsCalendarService(Component):
                 ) price,
                 (SELECT COUNT (1)
                     FROM pms_room r
-                    WHERE r.room_type_id = dr.room_type_id AND r.active = true AND r.pms_property_id = 1
+                    WHERE r.room_type_id = dr.room_type_id AND r.active = true AND r.pms_property_id = %s
                     AND NOT EXISTS (SELECT 1
                                     FROM pms_reservation_line
                                     WHERE date = dr.date
@@ -466,9 +466,13 @@ class PmsCalendarService(Component):
                     AND it.product_id = dr.product_id
                     AND it.active = true
                     AND it.pricelist_id = %s
+                AND EXISTS (SELECT 1
+                            FROM product_pricelist_item_pms_property_rel relp
+                            WHERE relp.product_pricelist_item_id = it.id AND relp.pms_property_id = %s)
                 ORDER BY dr.room_type_id, dr.date;
             """,
             (
+                calendar_search_param.pmsPropertyId,
                 calendar_search_param.pmsPropertyId,
                 calendar_search_param.pmsPropertyId,
                 date_from,
@@ -477,6 +481,7 @@ class PmsCalendarService(Component):
                 calendar_search_param.pmsPropertyId,
                 calendar_search_param.availabilityPlanId,
                 calendar_search_param.pricelistId,
+                calendar_search_param.pmsPropertyId,
             ),
         )
 
