@@ -429,11 +429,6 @@ class PmsCalendarService(Component):
                                     AND occupies_availability = true
                                     AND room_id = r.id
                                     AND r.is_shared_room = false)
-                    AND EXISTS (SELECT 1
-                                FROM pms_room
-                                WHERE active = true
-                                AND room_type_id = dr.room_type_id
-                                AND pms_property_id = %s)
                  ) free_rooms
                 FROM
                 (
@@ -472,7 +467,6 @@ class PmsCalendarService(Component):
                 ORDER BY dr.room_type_id, dr.date;
             """,
             (
-                calendar_search_param.pmsPropertyId,
                 calendar_search_param.pmsPropertyId,
                 calendar_search_param.pmsPropertyId,
                 date_from,
