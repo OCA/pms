@@ -60,3 +60,4 @@ from . import pms_mail
 from . import pms_notification
 from . import pms_reservation_message
 from . import pms_avail
+from . import pms_dashboard
