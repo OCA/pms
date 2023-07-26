@@ -42,3 +42,4 @@ from . import pms_invoice_service
 from . import pms_notification_service
 from . import pms_avail_service
 from . import pms_user_service
+from . import pms_dashboard_service
