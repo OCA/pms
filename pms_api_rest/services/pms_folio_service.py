@@ -414,7 +414,7 @@ class PmsFolioService(Component):
             reservations=False,
             services=False,
             partner=partner_id,
-            date=datetime.strptime(pms_account_payment_info.date, "%m/%d/%Y"),
+            date=datetime.strptime(pms_account_payment_info.date, "%Y-%m-%d"),
             ref=pms_account_payment_info.reference,
         )
 
