@@ -432,7 +432,8 @@ class PmsCalendarService(Component):
                  ) free_rooms
                 FROM
                 (
-                    SELECT dates.date, rt_r.room_type_id, rt_r.product_id, rt_r.default_max_avail, rt_r.default_quota
+                    SELECT  dates.date, rt_r.room_type_id, rt_r.sequence,
+                            rt_r.product_id, rt_r.default_max_avail, rt_r.default_quota
                     FROM
                     (
                         SELECT (CURRENT_DATE + date) date
@@ -440,6 +441,7 @@ class PmsCalendarService(Component):
                     ) dates,
                     (
                         SELECT  rt.id room_type_id,
+                                rt.sequence,
                                 rt.product_id,
                                 rt.default_max_avail,
                                 rt.default_quota
@@ -464,7 +466,7 @@ class PmsCalendarService(Component):
                 AND EXISTS (SELECT 1
                             FROM product_pricelist_item_pms_property_rel relp
                             WHERE relp.product_pricelist_item_id = it.id AND relp.pms_property_id = %s)
-                ORDER BY dr.room_type_id, dr.date;
+                ORDER BY dr.sequence, dr.room_type_id, dr.date;
             """,
             (
                 calendar_search_param.pmsPropertyId,
