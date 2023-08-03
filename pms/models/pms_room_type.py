@@ -207,8 +207,12 @@ class PmsRoomType(models.Model):
     #     return super().unlink()
 
     def get_room_type_capacity(self, pms_property_id):
+        """
+        :param pms_property_id: int
+        :return: the minimum capacity for rooms of current type
+        """
         self.ensure_one()
         capacities = self.room_ids.filtered(
-            lambda r: r.pms_property_id.id == pms_property_id.id
+            lambda r: not r.pms_property_id or r.pms_property_id.id == pms_property_id
         ).mapped("capacity")
         return min(capacities) if any(capacities) else 0

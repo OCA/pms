@@ -862,7 +862,7 @@ class TestRoomType(TestPms):
                 }
             )
 
-    def test_rooom_type_creation_consistency_amenity(self):
+    def test_room_type_creation_consistency_amenity(self):
         """
         Create an amenity belonging to one property.
         Create a room type belonging to same property.
