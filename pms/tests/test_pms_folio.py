@@ -4,7 +4,7 @@ from freezegun import freeze_time
 
 from odoo import fields
 from odoo.exceptions import ValidationError
-
+from odoo.tests import Form
 from .common import TestPms
 
 
@@ -1536,3 +1536,7 @@ class TestPmsFolio(TestPms):
             "sale_channel_origin_id of reservations that coincided "
             "with sale_channel_origin_id of folio de should be updated",
         )
+
+    def test_pms_folio_form_creation(self):
+        folio_form = Form(self.env["pms.folio"])
+        self.assertFalse(folio_form.possible_existing_customer_ids)
