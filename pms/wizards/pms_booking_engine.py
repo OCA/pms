@@ -292,7 +292,7 @@ class NumRoomsSelectionModel(models.TransientModel):
     room_type_id = fields.Char()
     booking_engine_id = fields.One2many(
         comodel_name="pms.folio.availability.wizard",
-        inverse_name="id",
+        inverse_name="num_rooms_selected",
     )
 
 
