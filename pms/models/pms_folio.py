@@ -1371,14 +1371,13 @@ class PmsFolio(models.Model):
     @api.depends("email", "mobile", "partner_name")
     def _compute_possible_existing_customer_ids(self):
         for record in self:
+            record.possible_existing_customer_ids = False
             if record.partner_name:
                 possible_customer = self._apply_possible_existing_customer_ids(
                     record.email, record.mobile, record.partner_id
                 )
                 if possible_customer:
                     record.possible_existing_customer_ids = possible_customer
-                else:
-                    record.possible_existing_customer_ids = False
 
     @api.depends("reservation_ids", "reservation_ids.checkin")
     def _compute_first_checkin(self):
