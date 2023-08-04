@@ -57,6 +57,39 @@ class AccountMoveLine(models.Model):
     )
     move_id = fields.Many2one(check_pms_properties=True)
 
+    pms_service_line_ids = fields.Many2many(
+        string="Service Lines",
+        help="The service lines in the account move lines",
+        comodel_name="pms.service.line",
+        relation="acccount_move_line_service_line_rel",
+        column1="account_move_line_id",
+        column2="service_line_id",
+        store=True,
+        compute="_compute_pms_service_line_ids",
+    )
+
+    pms_reservation_line_ids = fields.Many2many(
+        string="Reservation Lines",
+        help="The reservation lines in the account move lines",
+        comodel_name="pms.reservation.line",
+        relation="acccount_move_line_reservation_line_rel",
+        column1="account_move_line_id",
+        column2="reservation_line_id",
+        store=True,
+        compute="_compute_pms_reservation_line_ids",
+
+    )
+
+    @api.depends("folio_line_ids", "folio_line_ids.service_line_ids")
+    def _compute_pms_service_line_ids(self):
+        for line in self:
+            line.pms_service_line_ids = line.folio_line_ids.service_line_ids
+
+    @api.depends("folio_line_ids", "folio_line_ids.reservation_line_ids")
+    def _compute_pms_reservation_line_ids(self):
+        for line in self:
+            line.pms_reservation_line_ids = line.folio_line_ids.reservation_line_ids
+
     @api.depends('move_id.payment_reference', "quantity")
     def _compute_name(self):
         res = super()._compute_name()
