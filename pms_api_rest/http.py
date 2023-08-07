@@ -49,7 +49,7 @@ class HttpRestRequestPms(HttpRestRequest):
             return wrapJsonException(
                 Forbidden(ustr(e)), include_description=True, extra_info=extra_info
             )
-        except (UserError, ValidationError) as e:
+        except (UserError, ValidationError, ValueError) as e:
             extra_info = getattr(e, "rest_json_info", None)
             return wrapJsonException(
                 BadRequest(e.args[0]), include_description=True, extra_info=extra_info
