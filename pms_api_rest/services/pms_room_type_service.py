@@ -60,6 +60,7 @@ class PmsRoomTypeService(Component):
                     pmsPropertyIds=room.pms_property_ids.mapped("id"),
                     defaultCode=room.default_code,
                     price=round(room.list_price, 2),
+                    minPrice=room.min_price,
                     classId=room.class_id,
                     defaultMaxAvail=room.default_max_avail,
                     defaultQuota=room.default_quota,
