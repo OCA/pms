@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_pms_room_type_public,pms.room.type public,pms.model_pms_room_type,,1,0,0,0
+access_pms_property_public,pms.property public,pms.model_pms_property,base.group_public,1,0,0,0
+access_res_partner_public,res.partner public,base.model_res_partner,base.group_public,1,0,0,0
+access_pms_room_type_public,pms.room.type public,pms.model_pms_room_type,base.group_public,1,0,0,0

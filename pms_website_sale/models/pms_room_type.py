@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-from odoo import api, fields, models
+from odoo import fields, models
 
 from odoo.addons.http_routing.models.ir_http import slug
 
@@ -29,4 +29,3 @@ class PmsRoomType(models.Model):
         for room_type in self:
             if room_type.id:
                 room_type.website_url = "/room/%s" % slug(room_type)
-

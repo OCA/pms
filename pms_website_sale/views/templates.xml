@@ -1,31 +1,139 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- /room listings -->
+
+    <template id="assets_frontend" inherit_id="website.assets_frontend">
+        <xpath expr="." position="inside">
+            <link
+                rel="stylesheet"
+                type="text/css"
+                href="/pms/static/src/js/widgets/datepicker/datepicker.css"
+            />
+            <script
+                type="text/javascript"
+                src="/pms/static/src/js/widgets/datepicker/bootstrap-datepicker.js"
+            />
+        </xpath>
+    </template>
+
+    <!-- /rooms listing -->
     <template id="rooms" name="Rooms">
         <t t-call="website.layout">
-            <t t-call="pms_website_sale.sort"/>
             <t t-set="additional_title">Rooms</t>
+            <t t-call="pms_website_sale.sort" />
+            <div>
+                <a
+                    href="#"
+                    role="button"
+                    class="btn btn-secondary a-submit"
+                    aria-label="Shopping cart"
+                    title="Shopping cart"
+                >
+                    <span class="fa fa-shopping-cart" />
+                    Checkout
+                </a>
+            </div>
 
-            <!-- TODO: Order by room type category (or only display one category
-                 per web page) -->
+            <div name="date-range">
+                <div class="input-group input-daterange" id="datepicker">
+                    <input
+                        type="text"
+                        class="input-sm form-control"
+                        name="start_date"
+                        value="2012-04-05"
+                    />
+                    <div class="input-group-addon">to</div>
+                    <input
+                        type="text"
+                        class="input-sm form-control"
+                        name="end_date"
+                        value="2012-04-19"
+                    />
+                </div>
+                <script>
+                    // fixme
+                    $('#datepicker .input-daterange').datepicker({
+                    weekStart: 1,
+                    todayBtn: true,
+                    daysOfWeekHighlighted: "5,6",
+                    todayHighlight: true
+                    });
+                </script>
+            </div>
+
+
             <t t-foreach="availability_results" t-as="availability_result">
-                <t t-set="room_type" t-value="availability_result.room_type_id" />
-                <t t-call="pms_website_sale.room_item"/>
+                <t t-call="pms_website_sale.room_type_availability">
+                    <!-- todo compute relevant pms property -->
+                    <t t-set="pms_property_id" t-value="1" />
+                    <t t-set="start_date" t-value="1" />
+                    <t t-set="end_date" t-value="1" />
+                    <t t-set="pms_property_id" t-value="1" />
+                </t>
             </t>
         </t>
     </template>
 
-    <template id="room_item">
-        <div>
-            <span t-field="room_type.image_512"
+    <template id="room_type_availability">
+        <div name="room_type_availability">
+            <t t-set="room_type" t-value="availability_result.room_type_id" />
+            <span
+                t-field="room_type.image_512"
                 t-options="{'widget': 'image', 'preview_image': 'image_512', 'itemprop': 'image'}"
-                class="d-flex h-100 justify-content-center align-items-center"/>
+            />
             <a t-att-href="room_type.website_url">
-                <h2>Name: <span t-esc="room_type.name" /></h2>
+                <h2>Name:
+                    <span t-field="room_type.name" />
+                </h2>
             </a>
-            <p>Price: <span t-esc="room_type.lst_price" t-options='{"widget":
-            "monetary", "display_currency": website.currency_id}' /></p>
-            <p>Short description: <span t-esc="room_type.short_description" /></p>
+            <t t-if="start_date and end_date">
+                <t
+                    t-set="nb_nights"
+                    t-value="(availability_result.checkout - availability_result.checkin).days"
+                />
+                <div name="price_all_nights">Price for
+                    <span t-esc="nb_nights" />
+                    nights:
+                    <span
+                        t-field="availability_result.price_total"
+                        t-options='{"widget": "monetary", "display_currency": website.currency_id}'
+                    />
+                </div>
+            </t>
+            <t t-else="">
+                <div name="price_per_night">Price:
+                    <span
+                        t-field="room_type.lst_price"
+                        t-options='{"widget": "monetary", "display_currency": website.currency_id}'
+                    />
+                    per night
+                </div>
+            </t>
+            <div name="short_description">Short description:
+                <span t-field="room_type.short_description" />
+            </div>
+            <div name="capacity">Capacity:
+                <span t-esc="room_type.get_room_type_capacity(pms_property_id)" />
+            </div>
+            <t t-if="start_date and end_date">
+                <div name="availability">Availability:
+                    <span t-field="availability_result.num_rooms_available" />
+                </div>
+                <div name="quantity">
+                    <div class="form-group">
+                        <label for="room-type-x-quantity">Select room</label>
+                        <select class="form-control" id="room-type-x-quantity">
+                            <t
+                                t-foreach="range(0, availability_result.num_rooms_available + 1) "
+                                t-as="nb_room_option"
+                            >
+                                <option>
+                                    <t t-esc="nb_room_option" />
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+                </div>
+            </t>
         </div>
     </template>
 
@@ -34,29 +142,46 @@
         <t t-set="list_price_asc_label">Price: Low to High</t>
         <t t-set="name_asc_label">Name: A to Z</t>
         <t t-set="name_desc_label">Name: Z to A</t>
-        <t t-set="sortable" t-value="[
+        <t
+            t-set="sortable"
+            t-value="[
             (list_price_desc_label, 'list_price desc'),
             (list_price_asc_label, 'list_price asc'),
             (name_asc_label, 'name asc'),
             (name_desc_label, 'name desc')
-        ]"/>
-        <t t-set="sortable_current" t-value="[sort for sort in sortable if sort[1]==request.params.get('order', '')]"/>
+        ]"
+        />
+        <t
+            t-set="sortable_current"
+            t-value="[sort for sort in sortable if sort[1]==request.params.get('order', '')]"
+        />
         <div class="dropdown mt-2 ml-md-2 dropdown_sorty_by">
-            <a role="button" href="#" class="dropdown-toggle btn btn-secondary" data-toggle="dropdown">
+            <a
+                role="button"
+                href="#"
+                class="dropdown-toggle btn btn-secondary"
+                data-toggle="dropdown"
+            >
                 <span class="d-none d-lg-inline">
                     <t t-if='len(sortable_current)'>
-                        Sorting by : <t t-raw='sortable_current[0][0]'/>
+                        Sorting by :
+                        <t t-raw='sortable_current[0][0]' />
                     </t>
                     <t t-else='1'>
                         Sort by
                     </t>
                 </span>
-                <i class="fa fa-sort-amount-asc d-lg-none"/>
+                <i class="fa fa-sort-amount-asc d-lg-none" />
             </a>
             <div class="dropdown-menu dropdown-menu-right" role="menu">
                 <t t-foreach="sortable" t-as="sortby">
-                    <a role="menuitem" rel="noindex,nofollow" t-att-href="keep('/room', order=sortby[1])" class="dropdown-item">
-                        <span t-raw="sortby[0]"/>
+                    <a
+                        role="menuitem"
+                        rel="noindex,nofollow"
+                        t-att-href="keep('/room', order=sortby[1])"
+                        class="dropdown-item"
+                    >
+                        <span t-raw="sortby[0]" />
                     </a>
                 </t>
             </div>
@@ -66,19 +191,21 @@
     <template id="room_page">
         <t t-call="website.layout">
             <t t-set="additional_title" t-value="room_type.name" />
-            <!-- TODO: Display all images instead of just one. -->
-            <span t-field="room_type.image_512"
-                t-options="{'widget': 'image', 'preview_image': 'image_512', 'itemprop': 'image'}"
-                class="d-flex h-100 justify-content-center align-items-center"/>
-            <!-- FIXME: Everything below is not rendered correctly. -->
-            <h2>Name: <span t-esc="room_type.name" /></h2>
-            <p>Price: <span t-esc="room_type.lst_price" t-options='{"widget":
-            "monetary", "display_currency": website.currency_id}' /></p>
-            <div>
-                <p>Long description</p>
-                <!-- t-raw is deprecated in Odoo 15. It'll do for now. -->
-                <t t-raw="room_type.long_description" />
-            </div>
+            <h1>
+                <span t-field="room_type.name" />
+                - WIP
+            </h1>
+            <!--            <span t-field="room_type.image_512"-->
+            <!--                  t-options="{'widget': 'image', 'preview_image': 'image_512', 'itemprop': 'image'}"-->
+            <!--                  class="d-flex h-100 justify-content-center align-items-center"/>-->
+            <!--            <h2>Name: <span t-esc="room_type.name" /></h2>-->
+            <!--            <p>Price: <span t-esc="room_type.lst_price" t-options='{"widget":-->
+            <!--            "monetary", "display_currency": website.currency_id}' /></p>-->
+            <!--            <div>-->
+            <!--                <p>Long description</p>-->
+            <!--            t-raw is deprecated in Odoo 15. It'll do for now.-->
+            <!--                <t t-raw="room_type.long_description" />-->
+            <!--            </div>-->
         </t>
     </template>
 </odoo>
