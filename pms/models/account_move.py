@@ -65,7 +65,7 @@ class AccountMove(models.Model):
         for move in self:
             if self.env.context.get("force_pms_property"):
                 move.pms_property_id = self.env.context["force_pms_property"]
-            elif move.folio_ids:
+            elif move.folio_ids and len(move.folio_ids.mapped("pms_property_id")) == 1:
                 move.pms_property_id = move.folio_ids.mapped("pms_property_id")
             elif len(
                 move.journal_id.mapped("pms_property_ids")
