@@ -165,7 +165,7 @@ class PmsInvoiceService(Component):
                     else None,
                     partnerId=invoice.partner_id.id if invoice.partner_id.id else None,
                     moveLines=move_lines if len(move_lines) > 0 else None,
-                    folioId=invoice.folio_ids,
+                    folioId=invoice.folio_ids[0] if invoice.folio_ids else None,
                     portalUrl=portal_url,
                     moveType=invoice.move_type,
                     isReversed=invoice.payment_state == "reversed",
