@@ -507,6 +507,7 @@ class PmsFolioService(Component):
         input_param=Datamodel("pms.folio.info", is_list=False),
         auth="jwt_api_pms",
     )
+    # flake8:noqa=C901
     def create_folio(self, pms_folio_info):
         call_type = self.get_api_client_type()
         if pms_folio_info.reservationType == "out":
@@ -599,7 +600,9 @@ class PmsFolioService(Component):
             reservation_record = (
                 self.env["pms.reservation"]
                 .with_context(
-                    skip_compute_service_ids=True,
+                    skip_compute_service_ids=False
+                    if call_type == "external_app"
+                    else True,
                     force_overbooking=True if call_type == "external_app" else False,
                 )
                 .create(vals)
@@ -639,11 +642,14 @@ class PmsFolioService(Component):
                                     "product_qty": service.quantity,
                                 }
                             )
-                        self.env["pms.service"].create(vals)
+                        new_service = self.env["pms.service"].create(vals)
+                        new_service.service_line_ids.price_unit = service.priceUnit
             # Force compute board service default if not board service is set
             # REVIEW: Precharge the board service in the app form?
             if not reservation_record.board_service_room_id:
                 reservation_record._compute_board_service_room_id()
+        if pms_folio_info.transactions:
+            self.compute_transactions(folio, pms_folio_info.transactions)
         # REVIEW: analyze how to integrate the sending of mails from the API
         # with the configuration of the automatic mails pms
         # &
@@ -664,6 +670,65 @@ class PmsFolioService(Component):
             template.send_mail(folio.id, force_send=True, email_values=email_values)
         return folio.id
 
+    def compute_transactions(self, folio, transactions):
+        """
+        "transactions": [
+            {
+                "transactionReference": "De34deaDea43242",
+                "amount": 32.94,
+                "date": "2023-05-17",
+                "transactionType": "inbound"
+            },
+            ...
+        ],
+        """
+        for transaction in transactions:
+            reference = folio.name + " - "
+            if transaction.transactionReference:
+                reference += transaction.transactionReference
+            else:
+                raise ValidationError(_("The transaction reference is required"))
+            if not self.env["account.payment"].search(
+                [
+                    ("pms_property_id", "=", folio.pms_property_id.id),
+                    ("payment_type", "=", transaction.transactionType),
+                    ("folio_ids", "in", folio.id),
+                    ("ref", "ilike", transaction.transactionReference),
+                ]
+            ):
+                # TODO: Move this to the user API payment configuration
+                journal = (
+                    self.env["channel.wubook.backend"]
+                    .search([("pms_property_id", "=", folio.pms_property_id.id)])
+                    .wubook_journal_id
+                )
+                if transaction.transactionType == "inbound":
+                    folio.do_payment(
+                        journal,
+                        journal.suspense_account_id,
+                        self.env.user,
+                        transaction.amount,
+                        folio,
+                        reservations=False,
+                        services=False,
+                        partner=False,
+                        date=datetime.strptime(transaction.date, "%Y-%m-%d"),
+                        ref=reference,
+                    )
+                elif transaction.transactionType == "outbound":
+                    folio.do_refund(
+                        journal,
+                        journal.suspense_account_id,
+                        self.env.user,
+                        transaction.amount,
+                        folio,
+                        reservations=False,
+                        services=False,
+                        partner=False,
+                        date=datetime.strptime(transaction.date, "%m/%d/%Y"),
+                        ref=reference,
+                    )
+
     @restapi.method(
         [
             (
@@ -676,6 +741,7 @@ class PmsFolioService(Component):
         input_param=Datamodel("pms.folio.info", is_list=False),
         auth="jwt_api_pms",
     )
+    # flake8:noqa=C901
     def update_folio(self, folio_id, pms_folio_info):
         folio = self.env["pms.folio"].browse(folio_id)
         folio_vals = {}
@@ -1091,7 +1157,6 @@ class PmsFolioService(Component):
                     invoice_line.write({"name": item.name})
         if invoice_info.narration:
             invoices.write({"narration": invoice_info.narration})
-
         return invoices.ids
 
     # TODO: Used for the temporary function of auto-open cash session
