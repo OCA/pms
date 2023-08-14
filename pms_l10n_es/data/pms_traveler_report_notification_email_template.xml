@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <data>
+    <data noupdate="1">
         <record id="notification_send_error_travel_report_email" model="mail.template">
             <field name="name">Error Travel Report Send</field>
             <field
