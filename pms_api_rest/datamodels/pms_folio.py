@@ -48,6 +48,9 @@ class PmsFolioInfo(Datamodel):
     invoiceStatus = fields.String(required=False, allow_none=True)
     portalUrl = fields.String(required=False, allow_none=True)
     language = fields.String(required=False, allow_none=True)
+    transactions = fields.List(
+        NestedModel("pms.transaction.info"), required=False, allow_none=True
+    )
 
 
 class PmsFolioShortInfo(Datamodel):
