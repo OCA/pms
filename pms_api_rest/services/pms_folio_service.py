@@ -671,21 +671,10 @@ class PmsFolioService(Component):
         return folio.id
 
     def compute_transactions(self, folio, transactions):
-        """
-        "transactions": [
-            {
-                "transactionReference": "De34deaDea43242",
-                "amount": 32.94,
-                "date": "2023-05-17",
-                "transactionType": "inbound"
-            },
-            ...
-        ],
-        """
         for transaction in transactions:
             reference = folio.name + " - "
-            if transaction.transactionReference:
-                reference += transaction.transactionReference
+            if transaction.reference:
+                reference += transaction.reference
             else:
                 raise ValidationError(_("The transaction reference is required"))
             if not self.env["account.payment"].search(
@@ -693,7 +682,7 @@ class PmsFolioService(Component):
                     ("pms_property_id", "=", folio.pms_property_id.id),
                     ("payment_type", "=", transaction.transactionType),
                     ("folio_ids", "in", folio.id),
-                    ("ref", "ilike", transaction.transactionReference),
+                    ("ref", "ilike", transaction.reference),
                 ]
             ):
                 # TODO: Move this to the user API payment configuration
@@ -725,7 +714,7 @@ class PmsFolioService(Component):
                         reservations=False,
                         services=False,
                         partner=False,
-                        date=datetime.strptime(transaction.date, "%m/%d/%Y"),
+                        date=datetime.strptime(transaction.date, "%Y-%m-%d"),
                         ref=reference,
                     )
 
@@ -1516,7 +1505,8 @@ class PmsFolioService(Component):
                 skip_compute_service_ids=True,
                 force_overbooking=True if call_type == "external_app" else False,
             ).write(folio_vals)
-            _logger.info("FOLIO VALS", folio_vals)
+        if pms_folio_info.transactions:
+            self.compute_transactions(folio, pms_folio_info.transactions)
 
     def wrapper_reservations(self, folio, info_reservations):
         """
