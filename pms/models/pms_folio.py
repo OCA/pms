@@ -2128,6 +2128,7 @@ class PmsFolio(models.Model):
         partner=False,
         date=False,
         pay_type=False,
+        ref=False,
     ):
         """
         create folio payment
@@ -2136,12 +2137,15 @@ class PmsFolio(models.Model):
         """
         if not pay_type:
             pay_type = journal.type
+
         reference = folio.name
         if folio.external_reference:
             reference += " - " + folio.external_reference
+        if ref and not ref in reference:
+            reference += ": " + ref
         vals = {
             "journal_id": journal.id,
-            "partner_id": partner.id,
+            "partner_id": partner.id if partner else False,
             "amount": amount,
             "date": date or fields.Date.today(),
             "ref": reference,
@@ -2230,11 +2234,11 @@ class PmsFolio(models.Model):
         reference = folio.name
         if folio.external_reference:
             reference += " - " + folio.external_reference
-        if ref:
+        if ref and not ref in reference:
             reference += ": " + ref
         vals = {
             "journal_id": journal.id,
-            "partner_id": partner.id,
+            "partner_id": partner.id if partner else False,
             "amount": amount if amount > 0 else -amount,
             "date": date or fields.Date.today(),
             "ref": reference,
