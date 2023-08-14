@@ -3,120 +3,148 @@
 
     <template id="pms_room_type_list" name="Rooms">
         <t t-call="website.layout">
-            <t t-call="pms_website_sale.sort" />
-            <div>
-                <a
-                    href="#"
-                    role="button"
-                    class="btn btn-secondary a-submit"
-                    aria-label="Shopping cart"
-                    title="Shopping cart"
-                >
-                    <span class="fa fa-shopping-cart" />
-                    Checkout
-                </a>
-            </div>
-
-            <div name="date-range">
-                <div class="input-group input-daterange" id="datepicker">
-                    <input
-                        type="text"
-                        class="input-sm form-control"
-                        name="start_date"
-                        value="2012-04-05"
-                    />
-                    <div class="input-group-addon">to</div>
-                    <input
-                        type="text"
-                        class="input-sm form-control"
-                        name="end_date"
-                        value="2012-04-19"
-                    />
+            <div class="container">
+                <div name="tools" class="row">
+                    <div class="col">
+                        <t t-call="pms_website_sale.sort" />
+                    </div>
+                    <div name="date-range" class="col">
+                        <t t-call="pms_website_sale.date_picker" />
+                    </div>
+                    <div class="col">
+                        <a
+                            href="#"
+                            role="button"
+                            class="btn btn-secondary a-submit"
+                            aria-label="Shopping cart"
+                            title="Shopping cart"
+                        >
+                            <span class="fa fa-shopping-cart" />
+                            Checkout
+                        </a>
+                    </div>
                 </div>
-                <script>
-                    // fixme
-                    $('#datepicker .input-daterange').datepicker({
-                    weekStart: 1,
-                    todayBtn: true,
-                    daysOfWeekHighlighted: "5,6",
-                    todayHighlight: true
-                    });
-                </script>
+                <div class="row">
+                    <t t-foreach="availability_results" t-as="availability_result">
+                        <div class="col col-12 col-lg-6">
+                            <t t-call="pms_website_sale.room_type_availability">
+                                <!-- todo compute relevant pms property -->
+                                <t t-set="pms_property_id" t-value="1" />
+                                <t t-set="start_date" t-value="1" />
+                                <t t-set="end_date" t-value="1" />
+                                <t t-set="pms_property_id" t-value="1" />
+                            </t>
+                        </div>
+                    </t>
+                </div>
             </div>
 
-            <t t-foreach="availability_results" t-as="availability_result">
-                <t t-call="pms_website_sale.room_type_availability">
-                    <!-- todo compute relevant pms property -->
-                    <t t-set="pms_property_id" t-value="1" />
-                    <t t-set="start_date" t-value="1" />
-                    <t t-set="end_date" t-value="1" />
-                    <t t-set="pms_property_id" t-value="1" />
-                </t>
-            </t>
         </t>
     </template>
 
-    <template id="room_type_availability">
-        <div name="room_type_availability">
-            <t t-set="room_type" t-value="availability_result.room_type_id" />
-            <span
-                t-field="room_type.image_512"
-                t-options="{'widget': 'image', 'preview_image': 'image_512', 'itemprop': 'image'}"
+    <template id="date_picker">
+        <div class="input-group input-daterange" id="datepicker">
+            <input
+                type="text"
+                class="input-sm form-control"
+                name="start_date"
+                value="2012-04-05"
             />
-            <a t-att-href="room_type.website_url">
-                <h2>Name:
-                    <span t-field="room_type.name" />
-                </h2>
-            </a>
-            <t t-if="start_date and end_date">
-                <t
-                    t-set="nb_nights"
-                    t-value="(availability_result.checkout - availability_result.checkin).days"
+            <div class="input-group-addon">to</div>
+            <input
+                type="text"
+                class="input-sm form-control"
+                name="end_date"
+                value="2012-04-19"
+            />
+        </div>
+        <script>
+            // fixme
+            $('#datepicker .input-daterange').datepicker({
+            weekStart: 1,
+            todayBtn: true,
+            daysOfWeekHighlighted: "5,6",
+            todayHighlight: true
+            });
+        </script>
+    </template>
+
+    <template id="room_type_availability">
+        <div name="room_type_availability" class="row">
+            <t t-set="room_type" t-value="availability_result.room_type_id" />
+            <div class="col">
+                <span
+                    t-field="room_type.image_512"
+                    t-options="{'widget': 'image', 'preview_image': 'image_512', 'itemprop': 'image'}"
                 />
-                <div name="price_all_nights">Price for
-                    <span t-esc="nb_nights" />
-                    nights:
-                    <span
-                        t-field="availability_result.price_total"
-                        t-options='{"widget": "monetary", "display_currency": website.currency_id}'
-                    />
-                </div>
-            </t>
-            <t t-else="">
-                <div name="price_per_night">Price:
-                    <span
-                        t-field="room_type.lst_price"
-                        t-options='{"widget": "monetary", "display_currency": website.currency_id}'
-                    />
-                    per night
-                </div>
-            </t>
-            <div name="short_description">Short description:
-                <span t-field="room_type.short_description" />
             </div>
-            <div name="capacity">Capacity:
-                <span t-esc="room_type.get_room_type_capacity(pms_property_id)" />
-            </div>
-            <t t-if="start_date and end_date">
-                <div name="availability">Availability:
-                    <span t-field="availability_result.num_rooms_available" />
+            <div class="col">
+                <div class="row">
+
+                    <a t-att-href="room_type.website_url">
+                        <h2>Name:
+                            <span t-field="room_type.name" />
+                        </h2>
+                    </a>
                 </div>
-                <div name="quantity">
-                    <div class="form-group">
-                        <label for="room-type-x-quantity">Select room</label>
-                        <select class="form-control" id="room-type-x-quantity">
-                            <t
-                                t-foreach="range(0, availability_result.num_rooms_available + 1) "
-                                t-as="nb_room_option"
-                            >
-                                <option>
-                                    <t t-esc="nb_room_option" />
-                                </option>
-                            </t>
-                        </select>
+                <div class="row">
+
+                    <t t-if="start_date and end_date">
+                        <t
+                            t-set="nb_nights"
+                            t-value="(availability_result.checkout - availability_result.checkin).days"
+                        />
+                        <div name="price_all_nights">Price for
+                            <span t-esc="nb_nights" />
+                            nights:
+                            <span
+                                t-field="availability_result.price_total"
+                                t-options='{"widget": "monetary", "display_currency": website.currency_id}'
+                            />
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div name="price_per_night">Price:
+                            <span
+                                t-field="room_type.lst_price"
+                                t-options='{"widget": "monetary", "display_currency": website.currency_id}'
+                            />
+                            per night
+                        </div>
+                    </t>
+                </div>
+                <div name="short_description" class="row">
+                    Short description:
+                    <span t-field="room_type.short_description" />
+                </div>
+                <div name="capacity" class="row">
+                    Capacity:
+                    <span t-esc="room_type.get_room_type_capacity(pms_property_id)" />
+                </div>
+
+                <t t-if="start_date and end_date">
+                    <div name="availability" class="row">
+                        Availability: <span
+                            t-field="availability_result.num_rooms_available"
+                        />
                     </div>
-                </div>
-            </t>
+                    <div name="quantity" class="row">
+                        <div class="form-group">
+                            <label for="room-type-x-quantity">Select room</label>
+                            <select class="form-control" id="room-type-x-quantity">
+                                <t
+                                    t-foreach="range(0, availability_result.num_rooms_available + 1) "
+                                    t-as="nb_room_option"
+                                >
+                                    <option>
+                                        <t t-esc="nb_room_option" />
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                    </div>
+                </t>
+            </div>
         </div>
     </template>
 
