@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <data>
+    <data noupdate="1">
         <record id="document_type_dni" model="res.partner.id_category">
             <field name="name">DNI</field>
             <field name="code">D</field>
