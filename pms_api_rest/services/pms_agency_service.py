@@ -27,6 +27,8 @@ class PmsAgencyService(Component):
     )
     def get_agencies(self, agencies_search_param):
         domain = [("is_agency", "=", True)]
+        if agencies_search_param.otas:
+            domain.append(("sale_channel_id.is_on_line", "=", True))
         if agencies_search_param.name:
             domain.append(("name", "like", agencies_search_param.name))
         result_agencies = []
