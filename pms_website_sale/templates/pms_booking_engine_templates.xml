@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="pms_booking_engine_page" name="Booking">
+        <t t-call="website.layout">
+            <div name="booking_page" class="container">
+                <div name="progress_bar" class="row">
+                    <t t-call="pms_website_sale.progress_bar" />
+                </div>
+                <div name="booking" class="row">
+                    <div name="booking_table" class="col col-md-9">
+                        <t t-call="pms_website_sale.pms_booking_engine_table">
+                            <t
+                                t-set="availability_results"
+                                t-value="booking_engine.availability_results"
+                            />
+                        </t>
+                    </div>
+                    <div name="booking_summary" class="col col-md-3">
+                        <t t-call="pms_website_sale.pms_booking_engine_summary">
+                            <t t-set="booking_engine" t-value="booking_engine" />
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="progress_bar">
+        <div class="col-xl">
+            <div class="wizard">
+                <t t-set="step" t-value="5" />
+                <div class="progress-wizard">
+                    <a class="no-decoration" href="#">
+                        <div id="wizard-review" class="progress-wizard-step active">
+                            <div class="progress-wizard-bar d-none d-md-block" />
+                            <span
+                                class="progress-wizard-dot d-none d-md-inline-block"
+                            />
+                            <div
+                                class="text-center progress-wizard-steplabel"
+                            >Review Booking</div>
+                        </div>
+                    </a>
+                    <a class="no-decoration" href="#">
+                        <div id="wizard-address" class="progress-wizard-step complete">
+                            <div class="progress-wizard-bar d-none d-md-block" />
+                            <span
+                                class="progress-wizard-dot d-none d-md-inline-block"
+                            />
+                            <div
+                                class="text-center progress-wizard-steplabel"
+                            >Address</div>
+                        </div>
+                    </a>
+                    <a class="no-decoration" href="#">
+                        <div id="wizard-confirm" class="progress-wizard-step disabled">
+                            <div class="progress-wizard-bar d-none d-md-block" />
+                            <span
+                                class="progress-wizard-dot d-none d-md-inline-block"
+                            />
+                            <div
+                                class="text-center progress-wizard-steplabel"
+                            >Confirm Order</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="pms_booking_engine_table">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Room</th>
+                    <th scope="col">Checkin</th>
+                    <th scope="col">Checkout</th>
+                    <th scope="col">Number</th>
+                    <th scope="col">Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-foreach="availability_results" t-as="availability_result">
+                    <t t-if="availability_result.value_num_rooms_selected > 0">
+                        <tr>
+                            <th
+                                scope="row"
+                                t-esc="availability_result.room_type_id.name"
+                            />
+                            <td
+                                t-esc="availability_result.checkin"
+                                t-options='{"widget":"date"}'
+                            />
+                            <td
+                                t-esc="availability_result.checkout"
+                                t-options='{"widget":"date"}'
+                            />
+                            <td t-esc="availability_result.value_num_rooms_selected" />
+                            <td>
+                                <span
+                                    t-field="availability_result.price_total"
+                                    t-options='{"widget": "monetary", "display_currency": website.currency_id}'
+                                />
+                            </td>
+                        </tr>
+                    </t>
+                </t>
+            </tbody>
+        </table>
+    </template>
+
+    <template id="pms_booking_engine_summary">
+        <div name="total">
+            <h2>Total</h2>
+            <div name="nb_rooms">
+                <span t-esc="3" />
+                rooms
+            </div>
+            <span
+                t-esc="789"
+                t-options='{"widget": "monetary", "display_currency": website.currency_id}'
+            />
+        </div>
+        <button
+            name="address_button"
+            type="button"
+            class="btn btn-primary"
+        >Next</button>
+    </template>
+</odoo>

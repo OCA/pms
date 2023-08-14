@@ -10,7 +10,7 @@ from odoo.http import request
 from odoo.addons.website.controllers.main import QueryURL
 
 
-class WebsiteSale(http.Controller):
+class RoomController(http.Controller):
     @http.route(
         ["/rooms"],
         type="http",
@@ -34,7 +34,7 @@ class WebsiteSale(http.Controller):
             "availability_results": booking_engine.availability_results,
         }
 
-        return request.render("pms_website_sale.rooms", values)
+        return request.render("pms_website_sale.pms_room_type_list", values)
 
     @http.route(
         ['/room/<model("pms.room.type"):room_type>'],
@@ -51,7 +51,7 @@ class WebsiteSale(http.Controller):
         values = {
             "room_type": room_type,
         }
-        return request.render("pms_website_sale.room_page", values)
+        return request.render("pms_website_sale.pms_room_type_page", values)
 
     def _get_booking_engine(self, post):
         start_date = post.get("start_date")

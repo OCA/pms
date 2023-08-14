@@ -1,24 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <template id="assets_frontend" inherit_id="website.assets_frontend">
-        <xpath expr="." position="inside">
-            <link
-                rel="stylesheet"
-                type="text/css"
-                href="/pms/static/src/js/widgets/datepicker/datepicker.css"
-            />
-            <script
-                type="text/javascript"
-                src="/pms/static/src/js/widgets/datepicker/bootstrap-datepicker.js"
-            />
-        </xpath>
-    </template>
-
-    <!-- /rooms listing -->
-    <template id="rooms" name="Rooms">
+    <template id="pms_room_type_list" name="Rooms">
         <t t-call="website.layout">
-            <t t-set="additional_title">Rooms</t>
             <t t-call="pms_website_sale.sort" />
             <div>
                 <a
@@ -59,7 +43,6 @@
                     });
                 </script>
             </div>
-
 
             <t t-foreach="availability_results" t-as="availability_result">
                 <t t-call="pms_website_sale.room_type_availability">
@@ -188,7 +171,7 @@
         </div>
     </template>
 
-    <template id="room_page">
+    <template id="pms_room_type_page" name="Room type page">
         <t t-call="website.layout">
             <t t-set="additional_title" t-value="room_type.name" />
             <h1>

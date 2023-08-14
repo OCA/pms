@@ -1,14 +1,11 @@
 from odoo.tests.common import SavepointCase
 
-from odoo.addons.pms_website_sale.controllers.main import WebsiteSale
-
 
 class BookingEngineCase(SavepointCase):
     @classmethod
     def setUpClass(cls):
         super(BookingEngineCase, cls).setUpClass()
 
-        cls.ws_controller = WebsiteSale()
         cls.public_user = cls.env.ref("base.public_user")
         cls.company = cls.env.ref("base.main_company")
         cls.online_channel = cls.env.ref("pms_website_sale.online_channel")
