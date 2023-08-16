@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="progress_bar">
+        <!--
+            set the step value when calling the template to highlight the
+            correct step in the progress bar :
+            - step == 1 : Review Order
+            - step == 5 : Address
+            - step == 10 : Confirm Order
+        -->
+        <div class="col-xl">
+            <div class="wizard">
+                <div class="progress-wizard">
+                    <a class="no-decoration" href="#">
+                        <div
+                            id="wizard-review"
+                            t-att-class="'progress-wizard-step ' + ('active' if step &lt;= 1 else 'complete')"
+                        >
+                            <div class="progress-wizard-bar d-none d-md-block" />
+                            <span
+                                class="progress-wizard-dot d-none d-md-inline-block"
+                            />
+                            <div
+                                class="text-center progress-wizard-steplabel"
+                            >Review Booking
+                            </div>
+                        </div>
+                    </a>
+                    <a class="no-decoration" href="#">
+                        <div
+                            id="wizard-address"
+                            t-att-class="'progress-wizard-step ' + ('inactive' if step &lt; 5 else ('active' if step == 5 else 'complete'))"
+                        >
+                            <div class="progress-wizard-bar d-none d-md-block" />
+                            <span
+                                class="progress-wizard-dot d-none d-md-inline-block"
+                            />
+                            <div class="text-center progress-wizard-steplabel">Address
+                            </div>
+                        </div>
+                    </a>
+                    <a class="no-decoration" href="#">
+                        <div
+                            id="wizard-confirm"
+                            t-att-class="'progress-wizard-step ' + ('active' if step == 10 else 'inactive')"
+                        >
+                            <div class="progress-wizard-bar d-none d-md-block" />
+                            <span
+                                class="progress-wizard-dot d-none d-md-inline-block"
+                            />
+                            <div
+                                class="text-center progress-wizard-steplabel"
+                            >Confirm Booking
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="pms_booking_engine_summary">
+        <div class="row">
+            <div class="col">
+                <div class="row" name="total">
+                    <h2>Total</h2>
+                </div>
+                <div class="row" name="nb_rooms">
+                    <span t-esc="3" />&amp;nbsp;Rooms
+                </div>
+                <div class="row">
+                    <span
+                        t-esc="789"
+                        t-options='{"widget": "monetary", "display_currency": website.currency_id}'
+                    />
+                </div>
+                <div class="row">
+                    <button
+                        name="address_button"
+                        type="button"
+                        class="btn btn-primary"
+                    >Next
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+</odoo>

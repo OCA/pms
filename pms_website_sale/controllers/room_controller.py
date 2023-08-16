@@ -78,3 +78,28 @@ class RoomController(http.Controller):
         # 'website_sequence ASC'
         order = post.get("order") or "name ASC"
         return "%s, id desc" % order
+
+    def _sort_availability_results(self, records, order):
+        """Return sorted list of result based on order"""
+        if order == "name asc":
+            return records.sorted(
+                key=lambda r: r.room_type_id.name,
+                reverse=False,
+            )
+        elif order == "name desc":
+            return records.sorted(
+                key=lambda r: r.room_type_id.name,
+                reverse=True,
+            )
+        elif order == "list_price asc":
+            return records.sorted(
+                key=lambda r: r.price_per_room,
+                reverse=False,
+            )
+        elif order == "list_price desc":
+            return records.sorted(
+                key=lambda r: r.price_per_room,
+                reverse=True,
+            )
+        else:
+            return records

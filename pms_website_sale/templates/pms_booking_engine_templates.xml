@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
+<!-- todo rename page and file pms_review_booking_page -->
 <odoo>
     <template id="pms_booking_engine_page" name="Booking">
         <t t-call="website.layout">
             <div name="booking_page" class="container">
                 <div name="progress_bar" class="row">
-                    <t t-call="pms_website_sale.progress_bar" />
+                    <t t-call="pms_website_sale.progress_bar">
+                        <t t-set="step" t-value="1" />
+                    </t>
                 </div>
                 <div name="booking" class="row">
                     <div name="booking_table" class="col col-md-9">
@@ -23,49 +26,6 @@
                 </div>
             </div>
         </t>
-    </template>
-
-    <template id="progress_bar">
-        <div class="col-xl">
-            <div class="wizard">
-                <t t-set="step" t-value="5" />
-                <div class="progress-wizard">
-                    <a class="no-decoration" href="#">
-                        <div id="wizard-review" class="progress-wizard-step active">
-                            <div class="progress-wizard-bar d-none d-md-block" />
-                            <span
-                                class="progress-wizard-dot d-none d-md-inline-block"
-                            />
-                            <div
-                                class="text-center progress-wizard-steplabel"
-                            >Review Booking</div>
-                        </div>
-                    </a>
-                    <a class="no-decoration" href="#">
-                        <div id="wizard-address" class="progress-wizard-step complete">
-                            <div class="progress-wizard-bar d-none d-md-block" />
-                            <span
-                                class="progress-wizard-dot d-none d-md-inline-block"
-                            />
-                            <div
-                                class="text-center progress-wizard-steplabel"
-                            >Address</div>
-                        </div>
-                    </a>
-                    <a class="no-decoration" href="#">
-                        <div id="wizard-confirm" class="progress-wizard-step disabled">
-                            <div class="progress-wizard-bar d-none d-md-block" />
-                            <span
-                                class="progress-wizard-dot d-none d-md-inline-block"
-                            />
-                            <div
-                                class="text-center progress-wizard-steplabel"
-                            >Confirm Order</div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
     </template>
 
     <template id="pms_booking_engine_table">
@@ -109,22 +69,4 @@
         </table>
     </template>
 
-    <template id="pms_booking_engine_summary">
-        <div name="total">
-            <h2>Total</h2>
-            <div name="nb_rooms">
-                <span t-esc="3" />
-                rooms
-            </div>
-            <span
-                t-esc="789"
-                t-options='{"widget": "monetary", "display_currency": website.currency_id}'
-            />
-        </div>
-        <button
-            name="address_button"
-            type="button"
-            class="btn btn-primary"
-        >Next</button>
-    </template>
 </odoo>

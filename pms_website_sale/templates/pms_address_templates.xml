@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="pms_booking_address_page" name="Address">
+        <t t-call="website.layout">
+            <div name="booking_address_page" class="container">
+                <t t-call="pms_website_sale.progress_bar">
+                    <t t-set="step" t-value="5" />
+                </t>
+                <div class="row">
+                    <div class="col col-md-9">
+                        <form
+                            name="address_form"
+                            method="POST"
+                            action="/booking/address"
+                            autocomplete="on"
+                        >
+                            <input
+                                type="hidden"
+                                name="csrf_token"
+                                t-att-value="request.csrf_token()"
+                            />
+                            <div class="col">
+                                <div class="form-row">
+                                    <div class="col form-group">
+                                        <label for="name">Name</label>
+                                        <input
+                                            class="form-control"
+                                            id="name"
+                                            name="name"
+                                            type="text"
+                                            required="required"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col form-group">
+                                        <label for="email">Email</label>
+                                        <input
+                                            class="form-control"
+                                            id="email"
+                                            name="email"
+                                            type="email"
+                                            required="required"
+                                        />
+                                    </div>
+                                    <div class="col form-group">
+                                        <label for="phone">Phone</label>
+                                        <input
+                                            class="form-control"
+                                            id="phone"
+                                            name="phone"
+                                            type="tel"
+                                            required="required"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col form-group">
+                                        <label for="address">Address</label>
+                                        <input
+                                            class="form-control"
+                                            id="address"
+                                            name="address"
+                                            type="text"
+                                            required="required"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col form-group">
+                                        <label for="city">City</label>
+                                        <input
+                                            class="form-control"
+                                            id="city"
+                                            name="city"
+                                            type="text"
+                                            required="required"
+                                        />
+                                    </div>
+                                    <div class="col form-group">
+                                        <label for="postal-code">Postal Code</label>
+                                        <input
+                                            class="form-control"
+                                            id="postal-code"
+                                            name="postal-code"
+                                            type="text"
+                                            required="required"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col form-group">
+                                        <label for="country">Country</label>
+                                        <!--                                            type="text"-->
+                                        <select
+                                            id="country_id"
+                                            name="country_id"
+                                            class="form-control"
+                                            required="required"
+                                        >
+                                            <option value="">Country...</option>
+                                            <t
+                                                t-foreach="countries or []"
+                                                t-as="country"
+                                            >
+                                                <option
+                                                    t-att-value="country.id"
+                                                    t-att-selected="country.id == int(default_country_id) if default_country_id else False"
+                                                >
+                                                    <t t-esc="country.name" />
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row form-group justify-content-between">
+                                    <div class="col-md-4 text-left">
+                                        <button class="btn btn-secondary">Back</button>
+                                    </div>
+                                    <div class="col-md-4 text-right">
+                                        <button
+                                            class="btn btn-primary"
+                                            type="submit"
+                                        >Submit
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div name="booking_summary" class="col col-md-3">
+                        <t t-call="pms_website_sale.pms_booking_engine_summary">
+                            <t t-set="booking_engine" t-value="booking_engine" />
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
