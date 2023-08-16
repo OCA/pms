@@ -2,12 +2,13 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-from datetime import datetime
 
 from odoo import http
 from odoo.http import request
 
 from odoo.addons.website.controllers.main import QueryURL
+
+from .booking_engine_parser import BookingEngineParser
 
 
 class RoomController(http.Controller):
@@ -28,7 +29,8 @@ class RoomController(http.Controller):
             start_date=post.get("start_date"),
             end_date=post.get("end_date"),
         )
-        booking_engine = self._get_booking_engine(post)
+        be_parser = BookingEngineParser(request.env)
+        booking_engine = be_parser.parse({})
         values = {
             "keep": keep,
             "availability_results": booking_engine.availability_results,
@@ -53,34 +55,6 @@ class RoomController(http.Controller):
         }
         return request.render("pms_website_sale.pms_room_type_page", values)
 
-    def _get_booking_engine(self, post):
-        start_date = post.get("start_date")
-        end_date = post.get("end_date")
-        public_partner = request.env.ref("base.public_partner")
-        online_channel = request.env.ref("pms_website_sale.online_channel")
-
-        # Sanitise user input.
-        # todo manage ValueError
-        if start_date:
-            # todo instead of tweaking the booking engine to accept empty dates,
-            #  couldn't we just set dates far in the past / future ?
-            start_date = datetime.strptime(start_date, r"%Y-%m-%d").date()
-        if end_date:
-            end_date = datetime.strptime(end_date, r"%Y-%m-%d").date()
-
-        return (
-            request.env["pms.booking.engine"]
-            .sudo()  # fixme I sudo'ed to move forward, configure proper access rights
-            .create(
-                {
-                    "partner_id": public_partner.id,
-                    "start_date": start_date,
-                    "end_date": end_date,
-                    "channel_type_id": online_channel.id,
-                }
-            )
-        )
-
     def _search_room_types(self, post):
         # roke : cf pms_booking_engine.py :
         #   I rely on self.env["pms.room.type"].get_room_types_by_property
@@ -90,7 +64,7 @@ class RoomController(http.Controller):
         return request.env["pms.room.type"].search(domain, order=order)
 
     def _get_search_domain(self):
-        # TODO: Improve this.
+        # TODO: Improve this or remove
         return [
             # Unlike website_sale, we completely filter out non-published items,
             # meaning that even admin users cannot see greyed out unpublished
