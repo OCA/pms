@@ -34,7 +34,6 @@
         "security/pms_website_sale.xml",
         "data/data.xml",
         "views/pms_room_type_views.xml",
-        "templates/frontend_assets.xml",
         "templates/pms_booking_engine_templates.xml",
         "templates/pms_room_type_templates.xml",
     ],

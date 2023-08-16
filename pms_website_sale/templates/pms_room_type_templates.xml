@@ -45,28 +45,19 @@
     <template id="date_picker">
         <div class="input-group input-daterange" id="datepicker">
             <input
-                type="text"
+                type="date"
                 class="input-sm form-control"
                 name="start_date"
                 value="2012-04-05"
             />
             <div class="input-group-addon">to</div>
             <input
-                type="text"
+                type="date"
                 class="input-sm form-control"
                 name="end_date"
                 value="2012-04-19"
             />
         </div>
-        <script>
-            // fixme
-            $('#datepicker .input-daterange').datepicker({
-            weekStart: 1,
-            todayBtn: true,
-            daysOfWeekHighlighted: "5,6",
-            todayHighlight: true
-            });
-        </script>
     </template>
 
     <template id="room_type_availability">
@@ -189,7 +180,7 @@
                     <a
                         role="menuitem"
                         rel="noindex,nofollow"
-                        t-att-href="keep('/room', order=sortby[1])"
+                        t-att-href="keep('/rooms', order=sortby[1])"
                         class="dropdown-item"
                     >
                         <span t-raw="sortby[0]" />
