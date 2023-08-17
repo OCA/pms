@@ -73,25 +73,27 @@
     </template>
 
     <template id="room_type_availability">
-        <div name="room_type_availability" class="row">
-            <t t-set="room_type" t-value="availability_result.room_type_id" />
-            <div class="col">
+        <t t-set="room_type" t-value="availability_result.room_type_id" />
+        <form action="/booking" name="room_type_availability" class="row">
+            <input type="hidden" name="room_type_id" t-att-value="room_type.id" />
+            <input type="hidden" name="start_date" t-att-value="start_date" />
+            <input type="hidden" name="end_date" t-att-value="end_date" />
+
+            <div class="col" name="image">
                 <span
                     t-field="room_type.image_512"
                     t-options="{'widget': 'image', 'preview_image': 'image_512', 'itemprop': 'image'}"
                 />
             </div>
-            <div class="col">
-                <div class="row">
 
+            <div class="col" name="info">
+                <h2>
                     <a t-att-href="room_type.website_url">
-                        <h2>Name:
-                            <span t-field="room_type.name" />
-                        </h2>
+                        Name: <span t-field="room_type.name" />
                     </a>
-                </div>
-                <div class="row">
+                </h2>
 
+                <div name="prices">
                     <t t-if="start_date and end_date">
                         <t
                             t-set="nb_nights"
@@ -116,25 +118,33 @@
                         </div>
                     </t>
                 </div>
-                <div name="short_description" class="row">
+
+                <div name="short_description">
                     Short description:
                     <span t-field="room_type.short_description" />
                 </div>
-                <div name="capacity" class="row">
+
+                <div name="capacity">
                     Capacity:
                     <span t-esc="room_type.get_room_type_capacity(pms_property_id)" />
                 </div>
 
                 <t t-if="start_date and end_date">
-                    <div name="availability" class="row">
+                    <div name="availability">
                         Availability: <span
                             t-field="availability_result.num_rooms_available"
                         />
                     </div>
-                    <div name="quantity" class="row">
+                    <div name="quantity">
                         <div class="form-group">
-                            <label for="room-type-x-quantity">Select room</label>
-                            <select class="form-control" id="room-type-x-quantity">
+                            <label
+                                t-attf-for="room-type-{{ room_type.id }}-quantity"
+                            >Select room</label>
+                            <select
+                                class="form-control"
+                                t-attf-id="room-type-{{ room_type.id }}-quantity"
+                                name="quantity"
+                            >
                                 <t
                                     t-foreach="range(0, availability_result.num_rooms_available + 1) "
                                     t-as="nb_room_option"
@@ -146,9 +156,26 @@
                             </select>
                         </div>
                     </div>
+                    <div name="checkout">
+                        <button
+                            class="btn btn-primary"
+                            type="submit"
+                            t-att-disabled="'disabled' if availability_result.num_rooms_available == 0 else False"
+                        >
+                            Book
+                        </button>
+                    </div>
                 </t>
+                <t t-else="">
+                    <div name="details">
+                        <a class="btn btn-primary" t-att-href="room_type.website_url">
+                            See availability TODO
+                        </a>
+                    </div>
+                </t>
+
             </div>
-        </div>
+        </form>
     </template>
 
     <template id="sort">
