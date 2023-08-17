@@ -13,7 +13,7 @@
                     </div>
                     <div class="col">
                         <a
-                            href="#"
+                            href="/booking"
                             role="button"
                             class="btn btn-secondary a-submit"
                             aria-label="Shopping cart"
@@ -43,21 +43,28 @@
     </template>
 
     <template id="date_picker">
-        <div class="input-group input-daterange" id="datepicker">
-            <input
-                type="date"
-                class="input-sm form-control"
-                name="start_date"
-                value="2012-04-05"
-            />
-            <div class="input-group-addon">to</div>
-            <input
-                type="date"
-                class="input-sm form-control"
-                name="end_date"
-                value="2012-04-19"
-            />
-        </div>
+        <form>
+            <div class="form-row" id="daterange">
+                <div class="col">
+                    <input
+                        type="date"
+                        class="form-control"
+                        name="start_date"
+                        t-att-value="start_date"
+                    />
+                </div>
+                <div>to</div>
+                <div class="col">
+                    <input
+                        type="date"
+                        class="form-control"
+                        name="end_date"
+                        t-att-value="end_date"
+                    />
+                </div>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
     </template>
 
     <template id="room_type_availability">
@@ -180,7 +187,7 @@
                     <a
                         role="menuitem"
                         rel="noindex,nofollow"
-                        t-att-href="keep('/rooms', order=sortby[1])"
+                        t-att-href="url_generator('/rooms', order=sortby[1])"
                         class="dropdown-item"
                     >
                         <span t-raw="sortby[0]" />

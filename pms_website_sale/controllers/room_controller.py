@@ -23,17 +23,24 @@ class RoomController(http.Controller):
         self,
         **post,
     ):
-        keep = QueryURL(
+        if "order" not in post:
+            post["order"] = "name asc"
+
+        url_generator = QueryURL(
             "/rooms",
             order=post.get("order"),
             start_date=post.get("start_date"),
             end_date=post.get("end_date"),
         )
         be_parser = BookingEngineParser(request.env)
-        booking_engine = be_parser.parse({})
+        booking_engine = be_parser.parse(post)
         values = {
-            "keep": keep,
-            "availability_results": booking_engine.availability_results,
+            "url_generator": url_generator,
+            "start_date": post.get("start_date"),
+            "end_date": post.get("end_date"),
+            "availability_results": self._sort_availability_results(
+                booking_engine.availability_results, post.get("order")
+            ),
         }
 
         return request.render("pms_website_sale.pms_room_type_list", values)
