@@ -143,19 +143,7 @@ class PmsPricelistService(Component):
                 result.append(pricelist_info)
         return result
 
-    @restapi.method(
-        [
-            (
-                [
-                    "/<int:pricelist_id>/pricelist-items",
-                ],
-                "POST",
-            )
-        ],
-        input_param=Datamodel("pms.pricelist.items.info", is_list=False),
-        auth="jwt_api_pms",
-    )
-    def create_pricelist_item(self, pricelist_id, pms_pricelist_item_info):
+    def _create_or_update_pricelist_items(self, pms_pricelist_item_info):
         for pms_pricelist_item in pms_pricelist_item_info.pricelistItems:
             date = datetime.strptime(pms_pricelist_item.date, "%Y-%m-%d").date()
             product_id = (
@@ -191,3 +179,53 @@ class PmsPricelistService(Component):
                         "pricelist_id": pms_pricelist_item.pricelistId,
                     }
                 )
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:pricelist_id>/pricelist-items",
+                ],
+                "PATCH",
+            )
+        ],
+        input_param=Datamodel("pms.pricelist.items.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def create_pricelist_item(self, pricelist_id, pms_pricelist_item_info):
+        self._create_or_update_pricelist_items(pms_pricelist_item_info)
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:pricelist_id>/pricelist-items",
+                ],
+                "PATCH",
+            )
+        ],
+        input_param=Datamodel("pms.pricelist.items.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def create_pricelist_item(self, pricelist_id, pms_pricelist_item_info):
+        pricelist_ids = list({item.pricelistId for item in pms_pricelist_item_info.pricelistItems})
+        print(pricelist_ids)
+        if len(pricelist_ids) > 1 or pricelist_ids[0] != pricelist_id:
+            raise ValidationError("You cannot create pricelist items for different pricelists at once.")
+        else:
+            self._create_or_update_pricelist_items(pms_pricelist_item_info)
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/batch-changes",
+                ],
+                "POST",
+            )
+        ],
+        input_param=Datamodel("pms.pricelist.items.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def update_availability_plan_rules(self, pms_avail_plan_rules_info):
+        self._create_or_update_pricelist_items(pms_avail_plan_rules_info)
