@@ -23,7 +23,7 @@ class PMSRouteCase(HttpCase):
         response = self.url_open(url=url)
         self.assertEqual(response.status_code, 200)
         page = fromstring(response.content)
-        availability_divs = page.xpath("//div[@name='room_type_availability']")
+        availability_divs = page.xpath("//form[@name='room_type_availability']")
 
         default_property_id = self.env["pms.booking.engine"]._default_pms_property_id()
         nb_room_types = len(
