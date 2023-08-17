@@ -50,6 +50,7 @@
                         type="date"
                         class="form-control"
                         name="start_date"
+                        required="required"
                         t-att-value="start_date"
                     />
                 </div>
@@ -59,9 +60,16 @@
                         type="date"
                         class="form-control"
                         name="end_date"
+                        required="required"
                         t-att-value="end_date"
                     />
                 </div>
+                <a
+                    class="btn"
+                    t-att-href="url_generator('/rooms', start_date='', end_date='')"
+                >
+                    <span class="fa fa-trash" />
+                </a>
                 <button type="submit" class="btn btn-primary">Search</button>
             </div>
         </form>
