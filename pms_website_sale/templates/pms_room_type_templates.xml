@@ -30,9 +30,6 @@
                             <t t-call="pms_website_sale.room_type_availability">
                                 <!-- todo compute relevant pms property -->
                                 <t t-set="pms_property_id" t-value="1" />
-                                <t t-set="start_date" t-value="1" />
-                                <t t-set="end_date" t-value="1" />
-                                <t t-set="pms_property_id" t-value="1" />
                             </t>
                         </div>
                     </t>
@@ -112,7 +109,7 @@
                     <t t-else="">
                         <div name="price_per_night">Price:
                             <span
-                                t-field="room_type.lst_price"
+                                t-field="availability_result.price_per_room"
                                 t-options='{"widget": "monetary", "display_currency": website.currency_id}'
                             />
                             per night
