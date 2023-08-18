@@ -255,7 +255,7 @@ class PmsAvailabilityPlanService(Component):
                 [
                     "/batch-changes",
                 ],
-                "POST",
+                "PATCH",
             )
         ],
         input_param=Datamodel("pms.availability.plan.rules.info", is_list=False),
