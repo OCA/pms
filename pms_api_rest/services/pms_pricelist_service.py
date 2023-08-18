@@ -209,7 +209,6 @@ class PmsPricelistService(Component):
     )
     def create_pricelist_item(self, pricelist_id, pms_pricelist_item_info):
         pricelist_ids = list({item.pricelistId for item in pms_pricelist_item_info.pricelistItems})
-        print(pricelist_ids)
         if len(pricelist_ids) > 1 or pricelist_ids[0] != pricelist_id:
             raise ValidationError("You cannot create pricelist items for different pricelists at once.")
         else:
@@ -221,7 +220,7 @@ class PmsPricelistService(Component):
                 [
                     "/batch-changes",
                 ],
-                "POST",
+                "PATCH",
             )
         ],
         input_param=Datamodel("pms.pricelist.items.info", is_list=False),
