@@ -94,9 +94,7 @@ class BookingEngineParser:
 
     def save(self):
         """Save data into session"""
-        # FIXME: this function may be not needed as self.data is a
-        # reference to a element of the session.
-        self._session["booking_engine_data"] = self.data
+        self._session[BookingEngineParser.SESSION_KEY] = self.data
 
     def set_daterange(self, start_date, end_date, overwrite=True):
         """Set a start_date and a end_date for booking"""
@@ -110,7 +108,14 @@ class BookingEngineParser:
             self.data["end_date"] = str(end_date) if end_date else None
 
     def add_room_request(self, room_type_id, quantity, start_date=None, end_date=None):
-        """Add a room request to the booking"""
+        """Add or update a room request to the booking"""
+        # FIXME: Perhaps this method should be renamed
+        # `update_room_request` because it also update records when a
+        # record already exists. Or it can be split into two function.
+        # An idea can be also to merge `del_room_request` and
+        # `add_room_request` into `update_room_request` where the
+        # deletion is performed when quantity is null.
+        # To be discussed.
         if start_date != self.data.get("start_date") or end_date != self.data.get(
             "end_date"
         ):
@@ -118,10 +123,15 @@ class BookingEngineParser:
                 "Booking date does not match existing booking date. "
                 "The room cannot be booked."
             )
+        try:
+            room_type_id = int(room_type_id)
+            quantity = int(quantity)
+        except (ValueError, TypeError):
+            raise ValueError("Cannot proceed due to incorrect value.")
 
         new_room_request = {
-            "room_type_id": int(room_type_id),
-            "quantity": int(quantity),
+            "room_type_id": room_type_id,
+            "quantity": quantity,
         }
         existing_room_request = self._get_room_request(room_type_id)
         if existing_room_request:
