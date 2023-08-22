@@ -41,8 +41,10 @@ class BookingEngineParser:
         else:
             end_date = start_date + timedelta(days=1)
 
-        partner = self.data.get("partner_id", False)
-        if not partner:
+        partner_id = self.data.get("partner_id", False)
+        if partner_id:
+            partner = self.env["res.partner"].browse(partner_id)
+        else:
             partner = self.env.ref("base.public_partner")
 
         online_channel = self.env.ref("pms_website_sale.online_channel")

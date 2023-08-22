@@ -5,10 +5,6 @@ from lxml.html import fromstring
 
 from odoo.tests.common import HttpCase
 
-from odoo.addons.pms_website_sale.controllers.booking_controller import (
-    BookingEngineParser,
-)
-
 
 class PMSRouteCase(HttpCase):
     def setUp(self):
@@ -46,3 +42,27 @@ class PMSRouteCase(HttpCase):
         page = fromstring(response.content)
         booking_address_page_div = page.xpath("//div[@name='booking_address_page']")
         self.assertTrue(booking_address_page_div)
+
+    def test_booking_payment_route(self):
+        url = "/booking/payment"
+        response = self.url_open(url=url)
+        self.assertEqual(response.status_code, 200)
+        page = fromstring(response.content)
+        booking_payment_div = page.xpath("//div[@name='booking_payment_page']")
+        self.assertTrue(booking_payment_div)
+
+    def test_booking_payment_success_route(self):
+        url = "/booking/success"
+        response = self.url_open(url=url)
+        self.assertEqual(response.status_code, 200)
+        page = fromstring(response.content)
+        booking_payment_success_div = page.xpath("//div[@name='booking_success_page']")
+        self.assertTrue(booking_payment_success_div)
+
+    def test_booking_payment_failure_route(self):
+        url = "/booking/failure"
+        response = self.url_open(url=url)
+        self.assertEqual(response.status_code, 200)
+        page = fromstring(response.content)
+        booking_payment_failure_div = page.xpath("//div[@name='booking_failure_page']")
+        self.assertTrue(booking_payment_failure_div)

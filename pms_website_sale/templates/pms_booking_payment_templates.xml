@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- todo rename page and file pms_review_booking_page -->
+<odoo>
+    <template id="pms_booking_payment_page" name="Payment">
+        <t t-call="website.layout">
+            <div name="booking_payment_page" class="container">
+                <div name="progress_bar" class="row">
+                    <t t-call="pms_website_sale.progress_bar">
+                        <t t-set="step" t-value="10" />
+                    </t>
+                </div>
+                <div name="booking" class="row">
+                    <div name="booking_information" class="col col-md-9">
+                        <div name="partner_summary" class="row">
+                            <div class="col">
+                                <t t-call="pms_website_sale.partner_summary">
+                                    <t
+                                        t-set="partner"
+                                        t-value="booking_engine.partner_id"
+                                    />
+                                </t>
+                            </div>
+                        </div>
+                        <div name="payment_acquirer" class="row">
+                            <div class="col">
+                                <t
+                                    t-call="pms_website_sale.payment_acquirer_selection"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div name="booking_summary" class="col col-md-3">
+                        <t t-call="pms_website_sale.pms_booking_engine_summary">
+                            <t t-set="booking_engine" t-value="booking_engine" />
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="partner_summary">
+        <div class="row">
+            <div class="col col-10">
+                <h3>Contact</h3>
+                <span
+                    t-field="booking_engine.partner_id"
+                    t-options='{"widget": "contact", "fields": ["name", "address", "phone", "email"], "no_marker": True, "phone_icons": True}'
+                    name="purchase_shipping_address"
+                />
+            </div>
+            <div class="col col-2 text-right">
+                <a href="/booking/address">
+                    <button class="btn btn-light ">Edit</button>
+                </a>
+            </div>
+        </div>
+    </template>
+
+    <template id="payment_acquirer_selection">
+        <div class="row">
+            <div id="payment_method" class="col col-12">
+                <h3>Pay with</h3>
+                <t t-call="payment.payment_tokens_list">
+                    <t t-set="mode" t-value="'payment'" />
+                    <t t-set="partner_id" t-value="booking_engine.partner_id" />
+                    <t t-set="success_url" t-value="'/booking/payment/success'" />
+                    <t t-set="error_url" t-value="'/booking/payment/error'" />
+
+                    <!--                    <t t-set="access_token" t-value="access_token or ''"/>-->
+                    <!--                    <t t-set="pms" t-value="access_token or ''"/>-->
+
+                    <t t-set="form_action" t-value="'/shop/payment/token'" />
+                    <t t-set="prepare_tx_url" t-value="'/shop/payment/transaction/'" />
+
+                    <t t-set="submit_txt">Pay Now</t>
+                    <t t-set="icon_right" t-value="1" />
+                    <t t-set="icon_class" t-value="'fa-chevron-right'" />
+                    <t t-set="submit_class" t-value="'btn btn-primary'" />
+
+                    <t t-set="back_button_icon_class" t-value="'fa-chevron-left'" />
+                    <t t-set="back_button_txt">Return to Booking</t>
+                    <t t-set="back_button_class" t-value="'btn btn-secondary'" />
+                    <t t-set="back_button_link" t-value="'/booking'" />
+                </t>
+            </div>
+            <div t-if="not (acquirers or tokens)" class="alert alert-warning">
+                <strong>No suitable payment option could be found.</strong>
+                <br />
+                If you believe that it is an error, please contact the website administrator.
+            </div>
+        </div>
+    </template>
+
+    <template id="pms_booking_success_page" name="Booking Success">
+        <t t-call="website.layout">
+            <div name="booking_success_page" class="container">
+                <div name="progress_bar" class="row">
+                    <t t-call="pms_website_sale.progress_bar">
+                        <t t-set="step" t-value="20" />
+                    </t>
+                </div>
+                <div class="row justify-content-md-center">
+                    <div class="alert alert-success" role="alert">
+                        <div class="col-md-auto">
+                            Your booking is confirmed. See you soon at
+                            <span t-esc="env.user.company_id.name" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="pms_booking_failure_page" name="Booking Failure">
+        <t t-call="website.layout">
+            <div name="booking_failure_page" class="container">
+                <div name="progress_bar" class="row">
+                    <t t-call="pms_website_sale.progress_bar">
+                        <t t-set="step" t-value="-1" />
+                    </t>
+                </div>
+                <div class="row justify-content-md-center">
+                    <div class="col-md-auto">
+                        <div class="alert alert-danger" role="alert">
+                            The payment failed and the booking is cancelled. Please reach us by email or phone.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

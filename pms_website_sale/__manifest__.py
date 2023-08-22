@@ -37,6 +37,7 @@
         "templates/pms_common_templates.xml",
         "templates/pms_address_templates.xml",
         "templates/pms_booking_engine_templates.xml",
+        "templates/pms_booking_payment_templates.xml",
         "templates/pms_room_type_templates.xml",
     ],
     "demo": [],

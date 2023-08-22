@@ -4,9 +4,11 @@
         <!--
             set the step value when calling the template to highlight the
             correct step in the progress bar :
-            - step == 1 : Review Order
-            - step == 5 : Address
-            - step == 10 : Confirm Order
+            - step == -1 : Booking failed
+            - step == 1  : Review Booking
+            - step == 5  : Address
+            - step == 10 : Confirm Booking
+            - step == 20 : Booking success
         -->
         <div class="col-xl">
             <div class="wizard">
@@ -14,7 +16,7 @@
                     <a class="no-decoration" href="#">
                         <div
                             id="wizard-review"
-                            t-att-class="'progress-wizard-step ' + ('active' if step &lt;= 1 else 'complete')"
+                            t-att-class="'progress-wizard-step ' + ('inactive' if step &lt; 1 else ('active' if step == 1 else 'complete'))"
                         >
                             <div class="progress-wizard-bar d-none d-md-block" />
                             <span
@@ -42,7 +44,7 @@
                     <a class="no-decoration" href="#">
                         <div
                             id="wizard-confirm"
-                            t-att-class="'progress-wizard-step ' + ('active' if step == 10 else 'inactive')"
+                            t-att-class="'progress-wizard-step ' + ('inactive' if step &lt; 10 else ('active' if step == 10 else 'complete'))"
                         >
                             <div class="progress-wizard-bar d-none d-md-block" />
                             <span

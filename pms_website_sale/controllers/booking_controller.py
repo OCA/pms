@@ -91,10 +91,64 @@ class BookingEngineController(http.Controller):
             return request.render("pms_website_sale.pms_booking_address_page", values)
 
         # fixme dummy post
+        # todo create partner
         post.update(_dummy_request())
-        parser = BookingEngineParser(request.env)
+        parser = BookingEngineParser(request.env, request.session)
         booking_engine = parser.parse(post)
         values["booking_engine"] = booking_engine
-        return request.render(
-            "pms_website_sale.pms_booking_engine_page", values
-        )  # fixme to confirm page
+        return request.render("pms_website_sale.pms_booking_payment_page", values)
+
+    @http.route(
+        ["/booking/payment"],
+        type="http",
+        auth="public",
+        website=True,
+        methods=["GET"],
+    )
+    def booking_payment(self, **post):
+        # fixme dummy post
+        post.update(_dummy_request())
+        partner = request.env.ref("base.partner_demo")
+        post["partner_id"] = partner.id
+        parser = BookingEngineParser(request.env, request.session)
+        booking_engine = parser.parse()
+
+        acquirers = request.env["payment.acquirer"].search(
+            [
+                ("state", "in", ["enabled", "test"]),
+                ("company_id", "=", request.env.company.id),
+            ]
+        )
+        return_url = request.params.get("redirect", "/booking/payment/success")
+
+        values = {
+            "booking_engine": booking_engine,
+            # 'pms': payment_tokens,
+            "acquirers": acquirers,
+            "error_message": [post["error"]] if post.get("error") else False,
+            "return_url": return_url,
+            # 'bootstrap_formatting': True,
+            "partner_id": partner.id,
+        }
+
+        return request.render("pms_website_sale.pms_booking_payment_page", values)
+
+    @http.route(
+        ["/booking/success"],
+        type="http",
+        auth="public",
+        website=True,
+        methods=["GET"],
+    )
+    def booking_success(self, **post):
+        return request.render("pms_website_sale.pms_booking_success_page")
+
+    @http.route(
+        ["/booking/failure"],
+        type="http",
+        auth="public",
+        website=True,
+        methods=["GET"],
+    )
+    def booking_failure(self, **post):
+        return request.render("pms_website_sale.pms_booking_failure_page")
