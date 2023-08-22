@@ -22,7 +22,7 @@ def _dummy_request():
         "start_date": Date.to_string(today),
         "end_date": Date.to_string(today + timedelta(days=3)),
         "channel_type_id": False,
-        "rooms_request": [
+        "rooms_requests": [
             {"room_type_id": single.id, "room_name": single.name, "quantity": 1},
             {"room_type_id": double.id, "room_name": double.name, "quantity": 2},
         ],
@@ -35,14 +35,32 @@ class BookingEngineController(http.Controller):
         type="http",
         auth="public",
         website=True,
-        methods=["GET"],  # fixme
+        methods=["GET", "POST"],
     )
     def booking(self, **post):
-        # fixme dummy post
-        post.update(_dummy_request())
-        parser = BookingEngineParser(request.env)
+        be_parser = BookingEngineParser(request.env, request.session)
+
+        if request.httprequest.method == "POST":
+            if post.get("delete"):
+                # TODO: delete lines
+                pass
+            else:
+                try:
+                    # Set daterange if it has not been set previously
+                    be_parser.set_daterange(
+                        post.get("start_date"), post.get("end_date"), overwrite=False
+                    )
+                    be_parser.add_room_request(
+                        post.get("room_type_id"),
+                        post.get("quantity"),
+                        post.get("start_date"),
+                        post.get("end_date"),
+                    )
+                except ValueError as e:
+                    raise e
+                be_parser.save()
         try:
-            booking_engine = parser.parse(post)
+            booking_engine = be_parser.parse()
         except KeyError as e:
             # todo return a nicer error
             raise e

@@ -74,7 +74,8 @@
 
     <template id="room_type_availability">
         <t t-set="room_type" t-value="availability_result.room_type_id" />
-        <form action="/booking" name="room_type_availability" class="row">
+        <form name="room_type_availability" action="/booking" method="post" class="row">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
             <input type="hidden" name="room_type_id" t-att-value="room_type.id" />
             <input type="hidden" name="start_date" t-att-value="start_date" />
             <input type="hidden" name="end_date" t-att-value="end_date" />

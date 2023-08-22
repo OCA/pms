@@ -26,14 +26,25 @@ class RoomController(http.Controller):
         if "order" not in post:
             post["order"] = "name asc"
 
+        be_parser = BookingEngineParser(request.env, {})
+        try:
+            be_parser.set_daterange(post.get("start_date"), post.get("end_date"))
+        except ValueError as e:
+            # TODO generate error message
+            raise e
+
+        try:
+            booking_engine = be_parser.parse()
+        except ValueError as e:
+            # TODO generate error message
+            raise e
+
         url_generator = QueryURL(
             "/rooms",
             order=post.get("order"),
             start_date=post.get("start_date"),
             end_date=post.get("end_date"),
         )
-        be_parser = BookingEngineParser(request.env)
-        booking_engine = be_parser.parse(post)
         values = {
             "url_generator": url_generator,
             "start_date": post.get("start_date"),

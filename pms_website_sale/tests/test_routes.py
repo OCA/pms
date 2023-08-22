@@ -48,16 +48,18 @@ class PMSRouteCase(HttpCase):
         self.assertTrue(booking_address_page_div)
 
     def test_parse_empty_booking(self):
-        parser = BookingEngineParser(self.env)
         today = Date.today()
-
-        post_data = {
-            "partner_id": False,
-            "start_date": Date.to_string(today),
-            "end_date": Date.to_string(today + timedelta(days=3)),
-            "rooms_request": [],
+        session = {
+            BookingEngineParser.SESSION_KEY: {
+                "partner_id": None,
+                "start_date": Date.to_string(today),
+                "end_date": Date.to_string(today + timedelta(days=3)),
+                "rooms_requests": [],
+            },
         }
-        booking_engine = parser.parse(post_data)
+        parser = BookingEngineParser(self.env, session)
+
+        booking_engine = parser.parse()
         self.assertEqual(booking_engine.partner_id, self.public_partner)
         self.assertEqual(booking_engine.channel_type_id, self.online_channel)
         self.assertEqual(booking_engine.start_date, today)
@@ -70,27 +72,27 @@ class PMSRouteCase(HttpCase):
         )
 
     def test_parse_booking_for_2_rooms(self):
-        parser = BookingEngineParser(self.env)
         today = Date.today()
-
-        post_data = {
-            "partner_id": False,
-            "start_date": Date.to_string(today),
-            "end_date": Date.to_string(today + timedelta(days=3)),
-            "rooms_request": [
-                {
-                    "room_type_id": self.single.id,
-                    "room_name": self.single.name,
-                    "quantity": 1,
-                },
-                {
-                    "room_type_id": self.double.id,
-                    "room_name": self.double.name,
-                    "quantity": 2,
-                },
-            ],
+        session = {
+            BookingEngineParser.SESSION_KEY: {
+                "partner_id": None,
+                "start_date": Date.to_string(today),
+                "end_date": Date.to_string(today + timedelta(days=3)),
+                "rooms_requests": [
+                    {
+                        "room_type_id": self.single.id,
+                        "quantity": 1,
+                    },
+                    {
+                        "room_type_id": self.double.id,
+                        "quantity": 2,
+                    },
+                ],
+            },
         }
-        booking_engine = parser.parse(post_data)
+        parser = BookingEngineParser(self.env, session)
+
+        booking_engine = parser.parse()
         bookings = booking_engine.availability_results
         single_booking = bookings.filtered(
             lambda ar: ar.room_type_id.id == self.single.id
@@ -108,41 +110,43 @@ class PMSRouteCase(HttpCase):
         )
 
     def test_booking_for_non_existent_room_raises_value_error(self):
-        parser = BookingEngineParser(self.env)
         today = Date.today()
-
-        post_data = {
-            "partner_id": False,
-            "start_date": Date.to_string(today),
-            "end_date": Date.to_string(today + timedelta(days=3)),
-            "rooms_request": [
-                {
-                    "room_type_id": -1,
-                    "room_name": self.single.name,
-                    "quantity": 1,
-                },
-            ],
+        session = {
+            BookingEngineParser.SESSION_KEY: {
+                "partner_id": None,
+                "start_date": Date.to_string(today),
+                "end_date": Date.to_string(today + timedelta(days=3)),
+                "rooms_requests": [
+                    {
+                        "room_type_id": -1,
+                        "quantity": 1,
+                    },
+                ],
+            },
         }
+        parser = BookingEngineParser(self.env, session)
+
         with self.assertRaises(ValueError) as e:
-            parser.parse(post_data)
+            parser.parse()
         self.assertTrue(str(e.exception).startswith("No room type"))
 
     def test_book_too_many_rooms_raises_value_error(self):
-        parser = BookingEngineParser(self.env)
         today = Date.today()
-
-        post_data = {
-            "partner_id": False,
-            "start_date": Date.to_string(today),
-            "end_date": Date.to_string(today + timedelta(days=3)),
-            "rooms_request": [
-                {
-                    "room_type_id": self.single.id,
-                    "room_name": self.single.name,
-                    "quantity": 1000,
-                },
-            ],
+        session = {
+            BookingEngineParser.SESSION_KEY: {
+                "partner_id": None,
+                "start_date": Date.to_string(today),
+                "end_date": Date.to_string(today + timedelta(days=3)),
+                "rooms_requests": [
+                    {
+                        "room_type_id": self.single.id,
+                        "quantity": 1000,
+                    },
+                ],
+            },
         }
+        parser = BookingEngineParser(self.env, session)
+
         with self.assertRaises(ValueError) as e:
-            parser.parse(post_data)
+            parser.parse()
         self.assertTrue(str(e.exception).startswith("Not enough rooms available"))
