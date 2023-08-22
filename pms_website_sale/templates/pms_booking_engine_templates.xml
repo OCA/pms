@@ -62,6 +62,23 @@
                                     t-options='{"widget": "monetary", "display_currency": website.currency_id}'
                                 />
                             </td>
+                            <td>
+                                <form method="post">
+                                    <input
+                                        type="hidden"
+                                        name="csrf_token"
+                                        t-att-value="request.csrf_token()"
+                                    />
+                                    <input
+                                        type="hidden"
+                                        name="delete"
+                                        t-att-value="availability_result.room_type_id.id"
+                                    />
+                                    <button type="submit" class="btn">
+                                        <span class="fa fa-trash" />
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
                     </t>
                 </t>

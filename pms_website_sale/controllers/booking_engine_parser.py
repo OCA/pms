@@ -138,3 +138,18 @@ class BookingEngineParser:
             existing_room_request.update(new_room_request)
         else:
             self.data["rooms_requests"].append(new_room_request)
+
+    def del_room_request(self, room_type_id):
+        """Remove a room request to the booking"""
+        try:
+            room_type_id = int(room_type_id)
+        except (ValueError, TypeError):
+            raise ValueError("Cannot proceed due to incorrect value")
+        del_index = None
+        for index, room_request in enumerate(self.data["rooms_requests"]):
+            if room_request.get("room_type_id") == room_type_id:
+                del_index = index
+        if del_index is not None:
+            self.data["rooms_requests"].pop(del_index)
+        # FIXME: should we report error when trying to delete a non
+        # existing room to end user ?

@@ -41,9 +41,12 @@ class BookingEngineController(http.Controller):
         be_parser = BookingEngineParser(request.env, request.session)
 
         if request.httprequest.method == "POST":
-            if post.get("delete"):
-                # TODO: delete lines
-                pass
+            if "delete" in post:
+                try:
+                    be_parser.del_room_request(post.get("delete"))
+                except ValueError as e:
+                    # TODO: return nice error
+                    raise e
             else:
                 try:
                     # Set daterange if it has not been set previously
@@ -57,8 +60,9 @@ class BookingEngineController(http.Controller):
                         post.get("end_date"),
                     )
                 except ValueError as e:
+                    # TODO: return nice error
                     raise e
-                be_parser.save()
+            be_parser.save()
         try:
             booking_engine = be_parser.parse()
         except KeyError as e:
