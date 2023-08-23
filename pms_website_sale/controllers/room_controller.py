@@ -26,6 +26,11 @@ class RoomController(http.Controller):
         if "order" not in post:
             post["order"] = "name asc"
 
+        # FIXME: Do we need to take daterange from the session if not
+        # present in the url parameters ? But this imply to change the
+        # mechanism of setting the daterange on the rooms page, because
+        # the mechanism to delete the daterange selection will no longer
+        # work.
         be_parser = BookingEngineParser(request.env, {})
         try:
             be_parser.set_daterange(post.get("start_date"), post.get("end_date"))

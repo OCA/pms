@@ -64,25 +64,26 @@
     <template id="pms_booking_engine_summary">
         <div class="row">
             <div class="col">
-                <div class="row" name="total">
+                <div name="total">
                     <h2>Total</h2>
-                </div>
-                <div class="row" name="nb_rooms">
-                    <span t-esc="3" />&amp;nbsp;Rooms
-                </div>
-                <div class="row">
                     <span
-                        t-esc="789"
+                        t-esc="booking_engine.total_price_folio"
                         t-options='{"widget": "monetary", "display_currency": website.currency_id}'
                     />
                 </div>
-                <div class="row">
-                    <button
-                        name="address_button"
-                        type="button"
-                        class="btn btn-primary"
-                    >Next
-                    </button>
+                <div>
+                    <t t-if="booking_engine">
+                        <a class="btn btn-primary" href="/booking/address">Next</a>
+                        <a
+                            class="btn btn-secondary"
+                            t-attf-href="/rooms?start_date={{ booking_engine.start_date }}&amp;end_date={{ booking_engine.end_date }}"
+                        >
+                                Add other rooms
+                        </a>
+                    </t>
+                    <t t-else="">
+                        <a class="btn btn-secondary" href="/rooms">Add other rooms</a>
+                    </t>
                 </div>
             </div>
         </div>
