@@ -2,14 +2,16 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-
+import logging
 from datetime import timedelta
 
 from odoo import http
 from odoo.fields import Date
 from odoo.http import request
 
-from .booking_engine_parser import BookingEngineParser
+from .booking_engine_parser import BookingEngineParser, ParserError
+
+logger = logging.getLogger(__name__)
 
 
 def _dummy_request():
@@ -38,15 +40,16 @@ class BookingEngineController(http.Controller):
         methods=["GET", "POST"],
     )
     def booking(self, **post):
+        errors = []
         be_parser = BookingEngineParser(request.env, request.session)
 
         if request.httprequest.method == "POST":
             if "delete" in post:
                 try:
                     be_parser.del_room_request(post.get("delete"))
-                except ValueError as e:
-                    # TODO: return nice error
-                    raise e
+                except ParserError as e:
+                    logger.error(e)
+                    errors.append(e.usr_msg)
             else:
                 try:
                     # Set daterange if it has not been set previously
@@ -59,21 +62,23 @@ class BookingEngineController(http.Controller):
                         post.get("start_date"),
                         post.get("end_date"),
                     )
-                except ValueError as e:
-                    # TODO: return nice error
-                    raise e
+                except ParserError as e:
+                    logger.error(e)
+                    errors.append(e.usr_msg)
             be_parser.save()
         try:
             booking_engine = be_parser.parse()
         except KeyError as e:
             # todo return a nicer error
+            # FIXME: why this type of error occurs ?
             raise e
-        except ValueError as e:
-            # todo return a nicer error
-            raise e
+        except ParserError as e:
+            logger.error(e)
+            errors.append(e.usr_msg)
 
         values = {
             "booking_engine": booking_engine,
+            "errors": errors,
         }
         return request.render("pms_website_sale.pms_booking_engine_page", values)
 

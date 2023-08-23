@@ -2,13 +2,16 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
+import logging
 
 from odoo import http
 from odoo.http import request
 
 from odoo.addons.website.controllers.main import QueryURL
 
-from .booking_engine_parser import BookingEngineParser
+from .booking_engine_parser import BookingEngineParser, ParserError
+
+logger = logging.getLogger(__name__)
 
 
 class RoomController(http.Controller):
@@ -23,6 +26,8 @@ class RoomController(http.Controller):
         self,
         **post,
     ):
+        errors = []
+
         if "order" not in post:
             post["order"] = "name asc"
 
@@ -34,15 +39,15 @@ class RoomController(http.Controller):
         be_parser = BookingEngineParser(request.env, {})
         try:
             be_parser.set_daterange(post.get("start_date"), post.get("end_date"))
-        except ValueError as e:
-            # TODO generate error message
-            raise e
+        except ParserError as e:
+            logger.error(e)
+            errors.append(e.usr_msg)
 
         try:
             booking_engine = be_parser.parse()
-        except ValueError as e:
-            # TODO generate error message
-            raise e
+        except ParserError as e:
+            logger.error(e)
+            errors.append(e.usr_msg)
 
         url_generator = QueryURL(
             "/rooms",
@@ -57,6 +62,7 @@ class RoomController(http.Controller):
             "availability_results": self._sort_availability_results(
                 booking_engine.availability_results, post.get("order")
             ),
+            "errors": errors,
         }
 
         return request.render("pms_website_sale.pms_room_type_list", values)

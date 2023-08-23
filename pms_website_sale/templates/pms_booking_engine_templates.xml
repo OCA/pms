@@ -9,6 +9,7 @@
                         <t t-set="step" t-value="1" />
                     </t>
                 </div>
+                <t t-call="pms_website_sale.pms_booking_engine_errors" />
                 <div name="booking" class="row">
                     <div name="booking_table" class="col col-md-9">
                         <t t-call="pms_website_sale.pms_booking_engine_table">

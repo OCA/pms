@@ -66,10 +66,18 @@
             <div class="col">
                 <div name="total">
                     <h2>Total</h2>
-                    <span
-                        t-esc="booking_engine.total_price_folio"
-                        t-options='{"widget": "monetary", "display_currency": website.currency_id}'
-                    />
+                    <t t-if="booking_engine">
+                        <span
+                            t-esc="booking_engine.total_price_folio"
+                            t-options='{"widget": "monetary", "display_currency": website.currency_id}'
+                        />
+                    </t>
+                    <t t-else="">
+                        <span
+                            t-esc="int(0)"
+                            t-options='{"widget": "monetary", "display_currency": website.currency_id}'
+                        />
+                    </t>
                 </div>
                 <div>
                     <t t-if="booking_engine">
@@ -84,6 +92,30 @@
                     <t t-else="">
                         <a class="btn btn-secondary" href="/rooms">Add other rooms</a>
                     </t>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="pms_booking_engine_errors">
+        <div name="errors" class="row">
+            <div class="col">
+                <div
+                    t-foreach="errors"
+                    t-as="error"
+                    class="alert alert-danger alert-dismissible fade show"
+                    role="alert"
+                >
+                    <strong>Error!</strong>
+                    <t t-esc="error" />
+                    <button
+                        type="button"
+                        class="close"
+                        data-dismiss="alert"
+                        aria-label="Close"
+                    >
+                        <span aria-hidden="true">&amp;times;</span>
+                    </button>
                 </div>
             </div>
         </div>

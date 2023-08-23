@@ -4,6 +4,16 @@
 from datetime import date, timedelta
 
 
+class ParserError(Exception):
+    """Error containing two messages, a debugging message and a message
+    to the end user.
+    """
+
+    def __init__(self, msg, usr_msg=None):
+        self.usr_msg = usr_msg if usr_msg else msg
+        super().__init__(msg)
+
+
 class BookingEngineParser:
     SESSION_KEY = "booking_engine_data"
 
@@ -17,11 +27,11 @@ class BookingEngineParser:
     @staticmethod
     def _check_daterange(start_date, end_date):
         if (start_date and not end_date) or (not start_date and end_date):
-            raise ValueError(
+            raise ParserError(
                 "Date range is not correct: from %s to %s" % (start_date, end_date)
             )
         if start_date and end_date and start_date > end_date:
-            raise ValueError("Start date must be before the end date")
+            raise ParserError("Start date must be before the end date")
 
     def _init_data(self):
         """Init some value of data"""
@@ -65,12 +75,12 @@ class BookingEngineParser:
             )
 
             if not room_availability:
-                raise ValueError(
+                raise ParserError(
                     "No room type for room ID: %s" % (room["room_type_id"])
                 )
 
             if room["quantity"] > room_availability.num_rooms_available:
-                raise ValueError(
+                raise ParserError(
                     "Not enough rooms available"
                     " for (%s, %s)"
                     % (room["room_type_id"], room_availability.room_type_id.name)
@@ -119,7 +129,7 @@ class BookingEngineParser:
         if start_date != self.data.get("start_date") or end_date != self.data.get(
             "end_date"
         ):
-            ValueError(
+            ParserError(
                 "Booking date does not match existing booking date. "
                 "The room cannot be booked."
             )
@@ -127,7 +137,7 @@ class BookingEngineParser:
             room_type_id = int(room_type_id)
             quantity = int(quantity)
         except (ValueError, TypeError):
-            raise ValueError("Cannot proceed due to incorrect value.")
+            raise ParserError("Cannot proceed due to incorrect value.")
 
         new_room_request = {
             "room_type_id": room_type_id,
@@ -144,7 +154,7 @@ class BookingEngineParser:
         try:
             room_type_id = int(room_type_id)
         except (ValueError, TypeError):
-            raise ValueError("Cannot proceed due to incorrect value")
+            raise ParserError("Cannot proceed due to incorrect value")
         del_index = None
         for index, room_request in enumerate(self.data["rooms_requests"]):
             if room_request.get("room_type_id") == room_type_id:

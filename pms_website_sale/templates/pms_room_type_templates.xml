@@ -24,6 +24,7 @@
                         </a>
                     </div>
                 </div>
+                <t t-call="pms_website_sale.pms_booking_engine_errors" />
                 <div class="row">
                     <t t-foreach="availability_results" t-as="availability_result">
                         <div class="col col-12 col-lg-6">

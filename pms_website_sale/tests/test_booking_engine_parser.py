@@ -1,12 +1,15 @@
 # Copyright 2023 Coop IT Easy SC
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
+from datetime import timedelta
+
+from odoo.fields import Date
 from odoo.tests.common import SavepointCase
+
 from odoo.addons.pms_website_sale.controllers.booking_controller import (
     BookingEngineParser,
+    ParserError,
 )
-from odoo.fields import Date
-from datetime import timedelta
 
 
 class BookingParserCase(SavepointCase):
@@ -98,7 +101,7 @@ class BookingParserCase(SavepointCase):
         }
         parser = BookingEngineParser(self.env, session)
 
-        with self.assertRaises(ValueError) as e:
+        with self.assertRaises(ParserError) as e:
             parser.parse()
         self.assertTrue(str(e.exception).startswith("No room type"))
 
@@ -119,7 +122,7 @@ class BookingParserCase(SavepointCase):
         }
         parser = BookingEngineParser(self.env, session)
 
-        with self.assertRaises(ValueError) as e:
+        with self.assertRaises(ParserError) as e:
             parser.parse()
         self.assertTrue(str(e.exception).startswith("Not enough rooms available"))
 
@@ -127,7 +130,6 @@ class BookingParserCase(SavepointCase):
         today = Date.today()
         session = {
             BookingEngineParser.SESSION_KEY: {
-
                 "partner_id": self.demo_partner.id,
                 "start_date": Date.to_string(today),
                 "end_date": Date.to_string(today + timedelta(days=3)),
