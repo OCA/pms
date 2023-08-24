@@ -51,6 +51,7 @@ odoo.define("web.SwitchPmsMenu", function (require) {
                 });
             this.user_pms_properties =
                 session.user_pms_properties.allowed_pms_properties;
+            this.user_pms_properties.sort(function(a,b){return a[1] > b[1] ? 1 : a[1] < b[1] ?-1 :0});
             this.current_pms_property = this.allowed_pms_property_ids[0];
             this.current_pms_property_name = _.find(
                 session.user_pms_properties.allowed_pms_properties,
