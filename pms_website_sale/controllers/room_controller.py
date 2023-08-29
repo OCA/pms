@@ -92,16 +92,6 @@ class RoomController(http.Controller):
         order = self._get_search_order(post)
         return request.env["pms.room.type"].search(domain, order=order)
 
-    def _get_search_domain(self):
-        # TODO: Improve this or remove
-        return [
-            # Unlike website_sale, we completely filter out non-published items,
-            # meaning that even admin users cannot see greyed out unpublished
-            # items. If you want this feature, it shouldn't be too difficult to
-            # write.
-            ("is_published", "=", True),
-        ]
-
     def _get_search_order(self, post):
         # TODO: Get a better fallback than 'name ASC'. website_sale uses
         # 'website_sequence ASC'
