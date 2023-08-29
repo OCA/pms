@@ -100,25 +100,19 @@ class RoomController(http.Controller):
 
     def _sort_availability_results(self, records, order):
         """Return sorted list of result based on order"""
-        if order == "name asc":
-            return records.sorted(
-                key=lambda r: r.room_type_id.name,
-                reverse=False,
-            )
-        elif order == "name desc":
-            return records.sorted(
-                key=lambda r: r.room_type_id.name,
-                reverse=True,
-            )
-        elif order == "list_price asc":
-            return records.sorted(
-                key=lambda r: r.price_per_room,
-                reverse=False,
-            )
-        elif order == "list_price desc":
-            return records.sorted(
-                key=lambda r: r.price_per_room,
-                reverse=True,
-            )
+        key, *direction = order.split(" ")
+        key_functions = {
+            "name": lambda r: r.room_type_id.name,
+            "list_price": lambda r: r.price_per_room,
+        }
+        key_function = key_functions.get(key, key_functions["name"])
+
+        if direction:
+            reverse = direction.pop() == "desc"
         else:
-            return records
+            reverse = False
+
+        return records.sorted(
+            key=key_function,
+            reverse=reverse,
+        )
