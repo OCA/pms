@@ -9,20 +9,25 @@ from odoo import http
 from odoo.fields import Date
 from odoo.http import request
 
+from odoo.addons.payment.controllers.portal import PaymentProcessing
+
 from .booking_engine_parser import BookingEngineParser, ParserError
 
 logger = logging.getLogger(__name__)
 
 
-def _dummy_request():
+def _dummy_request():  # todo remove
     # dummy data
+    from random import randint
+
     today = Date.today()
+    future = randint(100, 100000)
     single = request.env.ref("pms.pms_room_type_single").sudo()
     double = request.env.ref("pms.pms_room_type_double").sudo()
     return {
         "partner_id": False,
-        "start_date": Date.to_string(today),
-        "end_date": Date.to_string(today + timedelta(days=3)),
+        "start_date": Date.to_string(today + timedelta(future)),
+        "end_date": Date.to_string(today + timedelta(days=future + 2)),
         "channel_type_id": False,
         "rooms_requests": [
             {"room_type_id": single.id, "room_name": single.name, "quantity": 1},
@@ -103,9 +108,32 @@ class BookingEngineController(http.Controller):
         # todo create partner
         post.update(_dummy_request())
         parser = BookingEngineParser(request.env, request.session)
-        booking_engine = parser.parse(post)
+        booking_engine = parser.parse()
         values["booking_engine"] = booking_engine
         return request.render("pms_website_sale.pms_booking_payment_page", values)
+
+    def _booking_payment(self):
+        """
+        processes the request on `/booking/payment`
+        :return: dictionary to pass onto the template renderer
+        """
+        errors = []
+        be_parser = BookingEngineParser(request.env, request.session)
+        booking_engine = be_parser.parse()
+
+        # todo check if need to filter on other acquirer fields (currency ?)
+        acquirers = request.env["payment.acquirer"].search(
+            [
+                ("state", "in", ["enabled", "test"]),
+                ("company_id", "=", request.env.company.id),
+            ]
+        )
+        return {
+            "booking_engine": booking_engine,
+            "acquirers": acquirers,
+            "error_message": errors,
+            "bootstrap_formatting": True,
+        }
 
     @http.route(
         ["/booking/payment"],
@@ -114,50 +142,74 @@ class BookingEngineController(http.Controller):
         website=True,
         methods=["GET"],
     )
-    def booking_payment(self, **post):
-        # fixme dummy post
-        post.update(_dummy_request())
-        partner = request.env.ref("base.partner_demo")
-        post["partner_id"] = partner.id
-        parser = BookingEngineParser(request.env, request.session)
-        booking_engine = parser.parse()
-
-        acquirers = request.env["payment.acquirer"].search(
-            [
-                ("state", "in", ["enabled", "test"]),
-                ("company_id", "=", request.env.company.id),
-            ]
-        )
-        return_url = request.params.get("redirect", "/booking/payment/success")
-
-        values = {
-            "booking_engine": booking_engine,
-            # 'pms': payment_tokens,
-            "acquirers": acquirers,
-            "error_message": [post["error"]] if post.get("error") else False,
-            "return_url": return_url,
-            # 'bootstrap_formatting': True,
-            "partner_id": partner.id,
-        }
-
+    def booking_payment(self):
+        values = self._booking_payment()
         return request.render("pms_website_sale.pms_booking_payment_page", values)
 
+    def _booking_payment_transaction(self, acquirer_id, **kwargs):
+        """
+        Processes requests on /booking/payment/transaction
+        :param acquirer_id: the payment acquirer selected by the user
+        :param kwargs:
+        :return: the transaction tp pass onto the acquirer renderer
+        """
+        acquirer = request.env["payment.acquirer"].browse(acquirer_id)
+        be_parser = BookingEngineParser(request.env, request.session)
+        be_parser.parse()
+        sudo_folio = be_parser.create_folio().sudo()
+        tx = sudo_folio._create_payment_transaction(
+            {
+                "acquirer_id": acquirer.id,
+                "type": "form",
+                "return_url": f"/booking/success/{sudo_folio.id}",
+            }
+        )
+        PaymentProcessing.add_payment_transaction(tx)
+        return tx
+
     @http.route(
-        ["/booking/success"],
+        ["/booking/payment/transaction"],
+        type="json",
+        auth="public",
+        method=["POST"],
+    )
+    def booking_payment_transaction(self, acquirer_id, **kwargs):
+        tx = self._booking_payment_transaction(acquirer_id, **kwargs)
+        acquirer = request.env["payment.acquirer"].browse(acquirer_id)
+        return acquirer.sudo().render(tx.reference, tx.amount, tx.currency_id.id)
+
+    def _booking_success(self, folio_id):
+        """
+        Processes /booking/success for given folio id
+        :return: dictionary to pass onto the template renderer
+        """
+        # todo Check for a token - otherwise anyone can validate any folio
+        sudo_folio = request.env["pms.folio"].browse(folio_id).sudo()
+        sudo_folio.action_confirm()
+        moves = sudo_folio._create_invoices(grouped=True, final=True)
+        moves.sudo().action_post()
+        request.session[BookingEngineParser.SESSION_KEY] = {}
+        return {}
+
+    @http.route(
+        ["/booking/success/<model('pms.folio'):folio>"],
         type="http",
         auth="public",
         website=True,
         methods=["GET"],
     )
-    def booking_success(self, **post):
-        return request.render("pms_website_sale.pms_booking_success_page")
+    def booking_success(self, folio):
+        values = self._booking_success(folio)
+        return request.render("pms_website_sale.pms_booking_success_page", values)
 
     @http.route(
         ["/booking/failure"],
         type="http",
         auth="public",
         website=True,
-        methods=["GET"],
+        # methods=["GET"],
     )
     def booking_failure(self, **post):
+        # todo notify property
+        # todo cancel folio
         return request.render("pms_website_sale.pms_booking_failure_page")

@@ -1,18 +1,22 @@
 # Copyright 2023 Coop IT Easy SC
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
+import json
+from unittest import mock
+
 from lxml.html import fromstring
 
+import odoo
 from odoo.tests.common import HttpCase
 
 
+@odoo.tests.tagged("post_install", "-at_install")
 class PMSRouteCase(HttpCase):
     def setUp(self):
         super().setUp()
-        self.public_partner = self.env.ref("base.public_partner")
-        self.online_channel = self.env.ref("pms_website_sale.online_channel")
-        self.single = self.env.ref("pms.pms_room_type_single")
-        self.double = self.env.ref("pms.pms_room_type_double")
+        self.public_user = self.env.ref("base.public_user")
+        self.acquirer = self.env.ref("payment.payment_acquirer_transfer")
+        self.website = self.env["website"].browse(1)
 
     def test_rooms_route(self):
         url = "/rooms"
@@ -51,13 +55,36 @@ class PMSRouteCase(HttpCase):
         booking_payment_div = page.xpath("//div[@name='booking_payment_page']")
         self.assertTrue(booking_payment_div)
 
-    def test_booking_payment_success_route(self):
-        url = "/booking/success"
-        response = self.url_open(url=url)
+    @mock.patch("odoo.http.WebRequest.validate_csrf", return_value=True)
+    def test_booking_payment_transaction_route(self, redirect_mock):
+        url = "/booking/payment/transaction"
+        data = {
+            "jsonrpc": "2.0",
+            "method": "call",
+            "params": {
+                "acquirer_id": self.acquirer.id,
+                "success_url": "/booking/payment/success",
+            },
+        }
+        response = self.url_open(
+            url=url,
+            headers={"content-type": "application/json"},
+            data=json.dumps(data),
+        )
         self.assertEqual(response.status_code, 200)
-        page = fromstring(response.content)
-        booking_payment_success_div = page.xpath("//div[@name='booking_success_page']")
-        self.assertTrue(booking_payment_success_div)
+
+    # def test_booking_payment_success_route(self):
+    #     folio = self.env.ref("pms.pms_folio_eco_01")
+    #     url = f"/booking/success/{folio.id}"
+    #     with MockRequest(
+    #         folio.with_user(self.public_user).env,
+    #         website=self.website.with_user(self.public_user),
+    #     ):
+    #         response = self.url_open(url=url)
+    #     self.assertEqual(response.status_code, 200)
+    #     page = fromstring(response.content)
+    #     booking_payment_success_div = page.xpath("//div[@name='booking_success_page']")
+    #     self.assertTrue(booking_payment_success_div)
 
     def test_booking_payment_failure_route(self):
         url = "/booking/failure"

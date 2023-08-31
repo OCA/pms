@@ -16,7 +16,7 @@ class BookingEngine(models.TransientModel):
         for engine in self:
             if not (engine.start_date and engine.end_date):
                 raise ValueError(_("Start and end dates must be set to create a folio"))
-        return super().create()
+        return super().create_folio()
 
     def _compute_availability_results(self):
         """

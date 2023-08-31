@@ -163,3 +163,7 @@ class BookingEngineParser:
             self.data["rooms_requests"].pop(del_index)
         # FIXME: should we report error when trying to delete a non
         # existing room to end user ?
+
+    def create_folio(self):
+        folio_action = self.booking_engine.create_folio()
+        return self.env["pms.folio"].browse(folio_action["res_id"])

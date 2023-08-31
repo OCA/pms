@@ -4,24 +4,16 @@
 from datetime import timedelta
 
 from odoo.fields import Date
-from odoo.tests.common import SavepointCase
 
-from odoo.addons.pms_website_sale.controllers.booking_controller import (
+from odoo.addons.pms_website_sale.controllers.booking_engine_parser import (
     BookingEngineParser,
     ParserError,
 )
 
+from .pms_test_commons import PMSTestCommons
 
-class BookingParserCase(SavepointCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.public_partner = cls.env.ref("base.public_partner")
-        cls.demo_partner = cls.env.ref("base.partner_demo")
-        cls.online_channel = cls.env.ref("pms_website_sale.online_channel")
-        cls.single = cls.env.ref("pms.pms_room_type_single")
-        cls.double = cls.env.ref("pms.pms_room_type_double")
 
+class BookingParserCase(PMSTestCommons):
     def test_parse_empty_booking(self):
         today = Date.today()
         session = {
@@ -55,11 +47,11 @@ class BookingParserCase(SavepointCase):
                 "end_date": Date.to_string(today + timedelta(days=3)),
                 "rooms_requests": [
                     {
-                        "room_type_id": self.single.id,
+                        "room_type_id": self.room_type_1.id,
                         "quantity": 1,
                     },
                     {
-                        "room_type_id": self.double.id,
+                        "room_type_id": self.room_type_2.id,
                         "quantity": 2,
                     },
                 ],
@@ -69,17 +61,18 @@ class BookingParserCase(SavepointCase):
 
         booking_engine = parser.parse()
         bookings = booking_engine.availability_results
-        single_booking = bookings.filtered(
-            lambda ar: ar.room_type_id.id == self.single.id
+        room_type_1_booking = bookings.filtered(
+            lambda ar: ar.room_type_id.id == self.room_type_1.id
         )
-        double_booking = bookings.filtered(
-            lambda ar: ar.room_type_id.id == self.double.id
+        room_type_2_booking = bookings.filtered(
+            lambda ar: ar.room_type_id.id == self.room_type_2.id
         )
         other_booking = bookings.filtered(
-            lambda ar: ar.room_type_id.id not in (self.single.id, self.double.id)
+            lambda ar: ar.room_type_id.id
+            not in (self.room_type_1.id, self.room_type_2.id)
         )
-        self.assertEqual(single_booking.value_num_rooms_selected, 1)
-        self.assertEqual(double_booking.value_num_rooms_selected, 2)
+        self.assertEqual(room_type_1_booking.value_num_rooms_selected, 1)
+        self.assertEqual(room_type_2_booking.value_num_rooms_selected, 2)
         self.assertTrue(
             all(booking.value_num_rooms_selected == 0 for booking in other_booking)
         )
@@ -114,7 +107,7 @@ class BookingParserCase(SavepointCase):
                 "end_date": Date.to_string(today + timedelta(days=3)),
                 "rooms_requests": [
                     {
-                        "room_type_id": self.single.id,
+                        "room_type_id": self.room_type_1.id,
                         "quantity": 1000,
                     },
                 ],
@@ -135,13 +128,13 @@ class BookingParserCase(SavepointCase):
                 "end_date": Date.to_string(today + timedelta(days=3)),
                 "rooms_request": [
                     {
-                        "room_type_id": self.single.id,
-                        "room_name": self.single.name,
+                        "room_type_id": self.room_type_1.id,
+                        "room_name": self.room_type_1.name,
                         "quantity": 1,
                     },
                     {
-                        "room_type_id": self.double.id,
-                        "room_name": self.double.name,
+                        "room_type_id": self.room_type_2.id,
+                        "room_name": self.room_type_2.name,
                         "quantity": 2,
                     },
                 ],

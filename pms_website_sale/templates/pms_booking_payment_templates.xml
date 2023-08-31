@@ -11,12 +11,13 @@
                 </div>
                 <div name="booking" class="row">
                     <div name="booking_information" class="col col-md-9">
-                        <div name="partner_summary" class="row">
+                        <div class="row">
                             <div class="col">
-                                <t t-call="pms_website_sale.partner_summary">
+                                <h3>Booking Summary</h3>
+                                <t t-call="pms_website_sale.pms_booking_engine_table">
                                     <t
-                                        t-set="partner"
-                                        t-value="booking_engine.partner_id"
+                                        t-set="availability_results"
+                                        t-value="booking_engine.availability_results"
                                     />
                                 </t>
                             </div>
@@ -64,24 +65,12 @@
                 <t t-call="payment.payment_tokens_list">
                     <t t-set="mode" t-value="'payment'" />
                     <t t-set="partner_id" t-value="booking_engine.partner_id" />
+                    <t
+                        t-set="prepare_tx_url"
+                        t-value="'/booking/payment/transaction'"
+                    />
                     <t t-set="success_url" t-value="'/booking/payment/success'" />
-                    <t t-set="error_url" t-value="'/booking/payment/error'" />
-
-                    <!--                    <t t-set="access_token" t-value="access_token or ''"/>-->
-                    <!--                    <t t-set="pms" t-value="access_token or ''"/>-->
-
-                    <t t-set="form_action" t-value="'/shop/payment/token'" />
-                    <t t-set="prepare_tx_url" t-value="'/shop/payment/transaction/'" />
-
-                    <t t-set="submit_txt">Pay Now</t>
-                    <t t-set="icon_right" t-value="1" />
-                    <t t-set="icon_class" t-value="'fa-chevron-right'" />
-                    <t t-set="submit_class" t-value="'btn btn-primary'" />
-
-                    <t t-set="back_button_icon_class" t-value="'fa-chevron-left'" />
-                    <t t-set="back_button_txt">Return to Booking</t>
-                    <t t-set="back_button_class" t-value="'btn btn-secondary'" />
-                    <t t-set="back_button_link" t-value="'/booking'" />
+<!--                    <t t-set="error_url" t-value="'/booking/payment/failure'"/>-->
                 </t>
             </div>
             <div t-if="not (acquirers or tokens)" class="alert alert-warning">

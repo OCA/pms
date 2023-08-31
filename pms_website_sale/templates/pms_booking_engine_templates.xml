@@ -18,6 +18,12 @@
                                 t-value="booking_engine.availability_results"
                             />
                         </t>
+                        <div class="row justify-content-end">
+                            <div class="col-auto">
+                                <a class="btn btn-primary" href="/booking/address">Next
+                                </a>
+                            </div>
+                        </div>
                     </div>
                     <div name="booking_summary" class="col col-md-3">
                         <t t-call="pms_website_sale.pms_booking_engine_summary">
@@ -28,63 +34,4 @@
             </div>
         </t>
     </template>
-
-    <template id="pms_booking_engine_table">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th scope="col">Room</th>
-                    <th scope="col">Checkin</th>
-                    <th scope="col">Checkout</th>
-                    <th scope="col">Number</th>
-                    <th scope="col">Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                <t t-foreach="availability_results" t-as="availability_result">
-                    <t t-if="availability_result.value_num_rooms_selected > 0">
-                        <tr>
-                            <th
-                                scope="row"
-                                t-esc="availability_result.room_type_id.name"
-                            />
-                            <td
-                                t-esc="availability_result.checkin"
-                                t-options='{"widget":"date"}'
-                            />
-                            <td
-                                t-esc="availability_result.checkout"
-                                t-options='{"widget":"date"}'
-                            />
-                            <td t-esc="availability_result.value_num_rooms_selected" />
-                            <td>
-                                <span
-                                    t-field="availability_result.price_total"
-                                    t-options='{"widget": "monetary", "display_currency": website.currency_id}'
-                                />
-                            </td>
-                            <td>
-                                <form method="post">
-                                    <input
-                                        type="hidden"
-                                        name="csrf_token"
-                                        t-att-value="request.csrf_token()"
-                                    />
-                                    <input
-                                        type="hidden"
-                                        name="delete"
-                                        t-att-value="availability_result.room_type_id.id"
-                                    />
-                                    <button type="submit" class="btn">
-                                        <span class="fa fa-trash" />
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    </t>
-                </t>
-            </tbody>
-        </table>
-    </template>
-
 </odoo>
