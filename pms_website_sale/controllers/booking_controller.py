@@ -95,22 +95,44 @@ class BookingEngineController(http.Controller):
         methods=["GET", "POST"],
     )
     def booking_address(self, **post):
+        errors = []
+
         countries = request.env["res.country"].sudo().search([])
         default_country = request.env.company.country_id
+
+        parser = BookingEngineParser(request.env, request.session)
+
         values = {
             "countries": countries,
             "default_country_id": default_country.id,
+            "partner": parser.data.get("partner", {}),
+            "errors": errors,
         }
-        if request.httprequest.method == "GET":
-            return request.render("pms_website_sale.pms_booking_address_page", values)
 
-        # fixme dummy post
-        # todo create partner
-        post.update(_dummy_request())
-        parser = BookingEngineParser(request.env, request.session)
+        if request.httprequest.method == "POST":
+            try:
+                parser.set_partner(
+                    name=post.get("name"),
+                    email=post.get("email"),
+                    phone=post.get("phone"),
+                    address=post.get("address"),
+                    city=post.get("city"),
+                    postal_code=post.get("postal_code"),
+                    country_id=post.get("country_id"),
+                )
+            except ParserError as e:
+                logger.error(e)
+                errors.append(e.usr_msg)
+            else:
+                parser.save()
+                return request.redirect("/booking/payment")
+            values["partner"] = post
+
+        # FIXME: Is the booking engine really needed ?
         booking_engine = parser.parse()
         values["booking_engine"] = booking_engine
-        return request.render("pms_website_sale.pms_booking_payment_page", values)
+
+        return request.render("pms_website_sale.pms_booking_address_page", values)
 
     def _booking_payment(self):
         """

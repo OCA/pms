@@ -6,6 +6,7 @@
                 <t t-call="pms_website_sale.progress_bar">
                     <t t-set="step" t-value="5" />
                 </t>
+                <t t-call="pms_website_sale.pms_booking_engine_errors" />
                 <div class="row">
                     <div class="col col-md-9">
                         <form
@@ -29,6 +30,7 @@
                                             name="name"
                                             type="text"
                                             required="required"
+                                            t-att-value="partner.get('name')"
                                         />
                                     </div>
                                 </div>
@@ -41,6 +43,7 @@
                                             name="email"
                                             type="email"
                                             required="required"
+                                            t-att-value="partner.get('email')"
                                         />
                                     </div>
                                     <div class="col form-group">
@@ -51,6 +54,7 @@
                                             name="phone"
                                             type="tel"
                                             required="required"
+                                            t-att-value="partner.get('phone')"
                                         />
                                     </div>
                                 </div>
@@ -63,6 +67,7 @@
                                             name="address"
                                             type="text"
                                             required="required"
+                                            t-att-value="partner.get('address')"
                                         />
                                     </div>
                                 </div>
@@ -75,23 +80,25 @@
                                             name="city"
                                             type="text"
                                             required="required"
+                                            t-att-value="partner.get('city')"
                                         />
                                     </div>
                                     <div class="col form-group">
                                         <label for="postal-code">Postal Code</label>
                                         <input
                                             class="form-control"
-                                            id="postal-code"
-                                            name="postal-code"
+                                            id="postal_code"
+                                            name="postal_code"
                                             type="text"
                                             required="required"
+                                            t-att-value="partner.get('postal_code')"
                                         />
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="col form-group">
                                         <label for="country">Country</label>
-                                        <!--                                            type="text"-->
+                                        <!-- type="text" -->
                                         <select
                                             id="country_id"
                                             name="country_id"
@@ -105,7 +112,7 @@
                                             >
                                                 <option
                                                     t-att-value="country.id"
-                                                    t-att-selected="country.id == int(default_country_id) if default_country_id else False"
+                                                    t-att-selected="country.id == int(partner.get('country_id') or 0)"
                                                 >
                                                     <t t-esc="country.name" />
                                                 </option>

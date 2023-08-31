@@ -119,6 +119,139 @@ class BookingParserCase(PMSTestCommons):
             parser.parse()
         self.assertTrue(str(e.exception).startswith("Not enough rooms available"))
 
+    def test_set_partner(self):
+        today = Date.today()
+        session = {
+            BookingEngineParser.SESSION_KEY: {
+                "partner_id": None,
+                "start_date": Date.to_string(today),
+                "end_date": Date.to_string(today + timedelta(days=3)),
+                "rooms_requests": [
+                    {
+                        "room_type_id": self.single.id,
+                        "quantity": 1000,
+                    },
+                ],
+            },
+        }
+        parser = BookingEngineParser(self.env, session)
+
+        values = {
+            "name": "Test",
+            "email": "test@test.rt",
+            "phone": "+322424242",
+            "address": "Quai aux pierres, 3",
+            "city": "Bruxelles",
+            "postal_code": "1000",
+            "country_id": self.env.company.country_id.id,
+        }
+
+        parser.set_partner(**values)
+        self.assertEqual(parser.data["partner"], values)
+
+    def test_set_partner_missing_required_field(self):
+        today = Date.today()
+        session = {
+            BookingEngineParser.SESSION_KEY: {
+                "partner_id": None,
+                "start_date": Date.to_string(today),
+                "end_date": Date.to_string(today + timedelta(days=3)),
+                "rooms_requests": [
+                    {
+                        "room_type_id": self.single.id,
+                        "quantity": 1000,
+                    },
+                ],
+            },
+        }
+        parser = BookingEngineParser(self.env, session)
+
+        values = {
+            "name": "",
+            "email": "test@test.rt",
+            "phone": "+322424242",
+            "address": "Quai aux pierres, 3",
+            "city": "Bruxelles",
+            "postal_code": "1000",
+            "country_id": self.env.company.country_id.id,
+        }
+
+        with self.assertRaises(ParserError) as e:
+            parser.set_partner(**values)
+            self.assertTrue(str(e.exception).endswith("is required."))
+        self.assertFalse(parser.data.get("partner"))
+
+    def test_set_partner_email_error(self):
+        today = Date.today()
+        session = {
+            BookingEngineParser.SESSION_KEY: {
+                "partner_id": None,
+                "start_date": Date.to_string(today),
+                "end_date": Date.to_string(today + timedelta(days=3)),
+                "rooms_requests": [
+                    {
+                        "room_type_id": self.single.id,
+                        "quantity": 1000,
+                    },
+                ],
+            },
+        }
+        parser = BookingEngineParser(self.env, session)
+
+        values = {
+            "name": "Test",
+            "email": "this_is_a_wrong_email",
+            "phone": "+322424242",
+            "address": "Quai aux pierres, 3",
+            "city": "Bruxelles",
+            "postal_code": "1000",
+            "country_id": self.env.company.country_id.id,
+        }
+
+        with self.assertRaises(ParserError) as e:
+            parser.set_partner(**values)
+            self.assertEqual(str(e.exception), "Email address is not valid.")
+        self.assertFalse(parser.data.get("partner"))
+
+    def test_set_partner_country_error(self):
+        today = Date.today()
+        session = {
+            BookingEngineParser.SESSION_KEY: {
+                "partner_id": None,
+                "start_date": Date.to_string(today),
+                "end_date": Date.to_string(today + timedelta(days=3)),
+                "rooms_requests": [
+                    {
+                        "room_type_id": self.single.id,
+                        "quantity": 1000,
+                    },
+                ],
+            },
+        }
+        parser = BookingEngineParser(self.env, session)
+
+        values = {
+            "name": "Test",
+            "email": "this_is_a_wrong_email",
+            "phone": "+322424242",
+            "address": "Quai aux pierres, 3",
+            "city": "Bruxelles",
+            "postal_code": "1000",
+            "country_id": "0",
+        }
+
+        with self.assertRaises(ParserError) as e:
+            parser.set_partner(**values)
+            self.assertEqual(str(e.exception), "Wrong value for Country.")
+        self.assertFalse(parser.data.get("partner"))
+
+        values["country_id"] = "this is non digit value for country"
+
+        with self.assertRaises(ParserError) as e:
+            parser.set_partner(**values)
+            self.assertEqual(str(e.exception), "Incorrect value for Country.")
+        self.assertFalse(parser.data.get("partner"))
+
     def test_parse_booking_with_partner(self):
         today = Date.today()
         session = {

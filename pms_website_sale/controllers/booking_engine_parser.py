@@ -3,6 +3,8 @@
 
 from datetime import date, timedelta
 
+from odoo import tools
+
 
 class ParserError(Exception):
     """Error containing two messages, a debugging message and a message
@@ -95,6 +97,20 @@ class BookingEngineParser:
                 return room_request
         return None
 
+    def _create_partner(self):
+        """Create partner based on values in self.data"""
+        partner_vals = {
+            "name": self.data["partner"]["name"],
+            "email": self.data["partner"]["email"],
+            "phone": self.data["partner"]["phone"],
+            "street": self.data["partner"]["address"],
+            "city": self.data["partner"]["city"],
+            "zip": self.data["partner"]["postal_code"],
+            "country_id": self.data["partner"]["country_id"],
+        }
+        partner = self.env["res.partner"].create(partner_vals)
+        return partner
+
     def parse(self):
         """Create a booking.engine based on the parser data"""
         values = self._get_booking_engine_vals()
@@ -167,3 +183,42 @@ class BookingEngineParser:
     def create_folio(self):
         folio_action = self.booking_engine.create_folio()
         return self.env["pms.folio"].browse(folio_action["res_id"])
+
+    def set_partner(self, name, email, phone, address, city, postal_code, country_id):
+        """Add partner values. Values should be clean."""
+        if not name:
+            raise ParserError("Name is required.")
+        if not email:
+            raise ParserError("Email is required.")
+        if not phone:
+            raise ParserError("Phone is required.")
+        if not address:
+            raise ParserError("Address is required.")
+        if not city:
+            raise ParserError("City is required.")
+        if not postal_code:
+            raise ParserError("Postal Code is required.")
+        if not country_id:
+            raise ParserError("Country is required.")
+
+        if not tools.mail.single_email_re.match(email):
+            raise ParserError("Email address is not valid.")
+
+        try:
+            country_id = int(country_id)
+        except (ValueError, TypeError):
+            raise ParserError("Incorrect value for Country.")
+
+        country = self.env["res.country"].browse(country_id).exists()
+        if not country:
+            raise ParserError("Wrong value for Country")
+
+        self.data["partner"] = {
+            "name": name,
+            "email": email,
+            "phone": phone,
+            "address": address,
+            "city": city,
+            "postal_code": postal_code,
+            "country_id": country_id,
+        }
