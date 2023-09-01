@@ -16,36 +16,37 @@ class PmsDashboardServices(Component):
         [
             (
                 [
-                    "/checkins",
+                    "/reservations",
                 ],
                 "GET",
             )
         ],
-        input_param=Datamodel("pms.dashboard.checkins.search.param"),
-        output_param=Datamodel("pms.dashboard.checkins", is_list=True),
+        input_param=Datamodel("pms.dashboard.pending.reservations.search.param"),
+        output_param=Datamodel("pms.dashboard.pending.reservations", is_list=True),
         auth="jwt_api_pms",
     )
-    def get_checkins(self, pms_checkins_search_param):
-        date_from = fields.Date.from_string(pms_checkins_search_param.dateFrom)
-        date_to = fields.Date.from_string(pms_checkins_search_param.dateTo)
+    def get_reservations(self, pms_reservations_search_param):
+        date_from = fields.Date.from_string(pms_reservations_search_param.dateFrom)
+        date_to = fields.Date.from_string(pms_reservations_search_param.dateTo)
 
         domain = [
             ("checkin", ">=", date_from),
             ("checkin", "<=", date_to),
-            ("state", "in", ("confirm", "arrival_delayed")),
+            ("state", "!=", "cancel"),
             ("reservation_type", "!=", "out")
         ]
         reservations = self.env["pms.reservation"].search(domain)
-        PmsDashboardCheckins = self.env.datamodels["pms.dashboard.checkins"]
-        result_checkins = []
-        for checkin_partner in reservations.checkin_partner_ids:
-            result_checkins.append(
-                PmsDashboardCheckins(
-                    id=checkin_partner.id,
-                    checkinPartnerState=checkin_partner.state,
-                    date=datetime.combine(
-                        checkin_partner.checkin, datetime.min.time()
+        PmsDashboardPendingReservations = self.env.datamodels["pms.dashboard.pending.reservations"]
+        result = []
+        for reservation in reservations:
+            result.append(
+                PmsDashboardPendingReservations(
+                    id=reservation.id,
+                    state=reservation.state,
+                    checkin=datetime.combine(
+                        reservation.checkin, datetime.min.time()
                     ).isoformat(),
+                    reservationType=reservation.reservation_type,
                 )
             )
-        return result_checkins
+        return result
