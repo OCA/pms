@@ -119,6 +119,28 @@ class BookingParserCase(PMSTestCommons):
             parser.parse()
         self.assertTrue(str(e.exception).startswith("Not enough rooms available"))
 
+    def test_set_internal_comment(self):
+        today = Date.today()
+        session = {
+            BookingEngineParser.SESSION_KEY: {
+                "partner_id": None,
+                "start_date": Date.to_string(today),
+                "end_date": Date.to_string(today + timedelta(days=3)),
+                "rooms_requests": [
+                    {
+                        "room_type_id": self.room_type_1.id,
+                        "quantity": 1000,
+                    },
+                ],
+            },
+        }
+        parser = BookingEngineParser(self.env, session)
+
+        internal_comment = "PMR access needed"
+
+        parser.set_internal_comment(internal_comment)
+        self.assertEqual(parser.data.get("internal_comment"), internal_comment)
+
     def test_set_partner(self):
         today = Date.today()
         session = {

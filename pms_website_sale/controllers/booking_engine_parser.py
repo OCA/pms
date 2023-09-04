@@ -66,6 +66,7 @@ class BookingEngineParser:
             "start_date": start_date,
             "end_date": end_date,
             "channel_type_id": online_channel.id,
+            "internal_comment": self.data.get("internal_comment", ""),
         }
         return values
 
@@ -222,3 +223,9 @@ class BookingEngineParser:
             "postal_code": postal_code,
             "country_id": country_id,
         }
+
+    def set_internal_comment(self, internal_comment):
+        """Add internal comment to booking engine."""
+        if not internal_comment:
+            internal_comment = ""
+        self.data["internal_comment"] = internal_comment

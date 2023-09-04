@@ -6,6 +6,7 @@
             correct step in the progress bar :
             - step == -1 : Booking failed
             - step == 1  : Review Booking
+            - step == 3  : Extra Info
             - step == 5  : Address
             - step == 10 : Confirm Booking
             - step == 20 : Booking success
@@ -16,7 +17,7 @@
                     <a class="no-decoration" href="/booking">
                         <div
                             id="wizard-review"
-                            t-att-class="'progress-wizard-step ' + ('inactive' if step &lt; 1 else ('active' if step == 1 else 'complete'))"
+                            t-att-class="'progress-wizard-step wizard-4-steps ' + ('inactive' if step &lt; 1 else ('active' if step == 1 else 'complete'))"
                         >
                             <div class="progress-wizard-bar d-none d-md-block" />
                             <span
@@ -28,13 +29,28 @@
                             </div>
                         </div>
                     </a>
+                    <a class="no-decoration" href="/booking/extra_info">
+                        <div
+                            id="wizard-etra-info"
+                            t-att-class="'progress-wizard-step wizard-4-steps ' + ('inactive' if step &lt; 3 else ('active' if step == 3 else 'complete'))"
+                        >
+                            <div class="progress-wizard-bar d-none d-md-block" />
+                            <span
+                                class="progress-wizard-dot d-none d-md-inline-block"
+                            />
+                            <div
+                                class="text-center progress-wizard-steplabel"
+                            >Extra information
+                            </div>
+                        </div>
+                    </a>
                     <a
                         class="no-decoration"
                         t-att-href="'/booking/address' if step > 5 else '#'"
                     >
                         <div
                             id="wizard-address"
-                            t-att-class="'progress-wizard-step ' + ('inactive' if step &lt; 5 else ('active' if step == 5 else 'complete'))"
+                            t-att-class="'progress-wizard-step wizard-4-steps ' + ('inactive' if step &lt; 5 else ('active' if step == 5 else 'complete'))"
                         >
                             <div class="progress-wizard-bar d-none d-md-block" />
                             <span
@@ -47,7 +63,7 @@
                     <div class="no-decoration" href="#">
                         <div
                             id="wizard-confirm"
-                            t-att-class="'progress-wizard-step ' + ('inactive' if step &lt; 10 else ('active' if step == 10 else 'complete'))"
+                            t-att-class="'progress-wizard-step wizard-4-steps ' + ('inactive' if step &lt; 10 else ('active' if step == 10 else 'complete'))"
                         >
                             <div class="progress-wizard-bar d-none d-md-block" />
                             <span

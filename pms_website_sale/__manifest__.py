@@ -27,6 +27,8 @@
         "security/pms_website_sale.xml",
         "data/data.xml",
         "views/pms_room_type_views.xml",
+        "templates/pms_assets_templates.xml",
+        "templates/pms_extra_info_templates.xml",
         "templates/pms_common_templates.xml",
         "templates/pms_address_templates.xml",
         "templates/pms_booking_engine_templates.xml",

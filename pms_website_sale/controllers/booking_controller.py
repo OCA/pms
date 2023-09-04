@@ -88,6 +88,42 @@ class BookingEngineController(http.Controller):
         return request.render("pms_website_sale.pms_booking_engine_page", values)
 
     @http.route(
+        ["/booking/extra_info"],
+        type="http",
+        auth="public",
+        website=True,
+        methods=["GET", "POST"],
+    )
+    def booking_extra_info(self, **post):
+        errors = []
+
+        parser = BookingEngineParser(request.env, request.session)
+
+        values = {
+            "internal_comment": parser.data.get("internal_comment", ""),
+            "errors": errors,
+        }
+
+        if request.httprequest.method == "POST":
+            try:
+                parser.set_internal_comment(
+                    internal_comment=post.get("internal_comment")
+                )
+            except ParserError as e:
+                logger.error(e)
+                errors.append(e.usr_msg)
+            else:
+                parser.save()
+                return request.redirect("/booking/address")
+            values["internal_comment"] = post.get("internal_comment", "")
+
+        # FIXME: Is the booking engine really needed ?
+        booking_engine = parser.parse()
+        values["booking_engine"] = booking_engine
+
+        return request.render("pms_website_sale.pms_booking_extra_info_page", values)
+
+    @http.route(
         ["/booking/address"],
         type="http",
         auth="public",
