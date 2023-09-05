@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-12 14:11+0000\n"
-"PO-Revision-Date: 2023-09-04 19:38+0000\n"
+"PO-Revision-Date: 2023-09-05 22:46+0000\n"
 "Last-Translator: Ivorra78 <informatica@totmaterial.es>\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -26,6 +26,11 @@ msgid ""
 "                        be the same as the checkin date!\n"
 "                        "
 msgstr ""
+"\n"
+"                        Error de cálculo: La fecha de la primera línea de "
+"habitación debería\n"
+"                        ser la misma que la fecha de entrada.\n"
+"                        "
 
 #. module: pms
 #: code:addons/pms/models/pms_reservation.py:0
@@ -36,6 +41,11 @@ msgid ""
 "                        be the previous day of the checkout date!\n"
 "                        "
 msgstr ""
+"\n"
+"                        Error de cálculo: La fecha de la última línea de "
+"habitación debería\n"
+"                        ¡ser el día anterior a la fecha de salida!\n"
+"                        "
 
 #. module: pms
 #: model:room.closure.reason,description:pms.pms_room_closure_reason_vip_privacy
@@ -44,6 +54,9 @@ msgid ""
 "                Used for closing rooms for extra privacy.\n"
 "            "
 msgstr ""
+"\n"
+"                Se utiliza para cerrar habitaciones para mayor privacidad.\n"
+"            "
 
 #. module: pms
 #: model:room.closure.reason,description:pms.pms_room_closure_reason_maintenance
@@ -54,6 +67,11 @@ msgid ""
 "                the reason in the own reservation.\n"
 "            "
 msgstr ""
+"\n"
+"                Se utiliza para cerrar salas que requieren un mantenimiento. "
+"Puede especificar\n"
+"                el motivo en la propia reserva.\n"
+"            "
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__product_variant_count
@@ -66,6 +84,8 @@ msgid ""
 "${object.company_id.name} has confirmed your reservation in ${object."
 "pms_property_id.name}"
 msgstr ""
+"${object.company_id.name} ha confirmado su reserva en ${object."
+"pms_property_id.name}"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule__penalty_late
@@ -133,6 +153,8 @@ msgid ""
 ".<br/>\n"
 "                            Your check-in has been successful."
 msgstr ""
+"<br/>\n"
+"                            Su registro se ha realizado correctamente."
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
@@ -140,6 +162,8 @@ msgid ""
 ".<br/>\n"
 "                    Do your check-in now and save time."
 msgstr ""
+"<br/>\n"
+"                    Haz tu check-in ahora y ahorra tiempo."
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
@@ -158,6 +182,9 @@ msgid ""
 "                        You can check if all the data has been saved "
 "correctly"
 msgstr ""
+"<br/>\n"
+"                        Puedes comprobar si todos los datos se han guardado "
+"correctamente"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
@@ -170,11 +197,18 @@ msgid ""
 "passage through reception will be much faster</strong>, being able to enjoy "
 "the comfort of your room right away."
 msgstr ""
+"<br/>\n"
+"                Este es nuestro<strong>sistema de registro rápido</strong>. "
+"En pocos pasos podrás registrar tus datos de forma ágil, sencilla y "
+"segura,<strong>evitando colas en recepción</strong>.\n"
+"                Si registras tus datos en nuestro sistema, <strong>tu paso "
+"por recepción será mucho más rápido</strong>, pudiendo disfrutar al instante "
+"de la comodidad de tu habitación."
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_not_checkin
 msgid "<br/> Email:"
-msgstr ""
+msgstr "<br/> Correo electrónico:"
 
 #. module: pms
 #: model:mail.template,body_html:pms.precheckin_invitation_email
