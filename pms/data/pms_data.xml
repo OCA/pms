@@ -49,14 +49,17 @@
         <record id="main_pms_sale_channel_door" model="pms.sale.channel">
             <field name="name">Door</field>
             <field name="channel_type">direct</field>
+            <field name="icon" type="base64" file="pms/data/icon-door.svg"/>
         </record>
         <record id="main_pms_sale_channel_phone" model="pms.sale.channel">
             <field name="name">Phone</field>
             <field name="channel_type">direct</field>
+            <field name="icon" type="base64" file="pms/data/icon-phone.svg"/>
         </record>
         <record id="main_pms_sale_channel_mail" model="pms.sale.channel">
             <field name="name">Mail</field>
             <field name="channel_type">direct</field>
+            <field name="icon" type="base64" file="pms/data/icon-mail.svg"/>
         </record>
         <record id="main_pms_sale_channel_agency" model="pms.sale.channel">
             <field name="name">Agency</field>
