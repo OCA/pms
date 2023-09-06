@@ -4,6 +4,11 @@
         <field name="model">pms.property</field>
         <field name="inherit_id" ref="pms.pms_property_views_form" />
         <field name="arch" type="xml">
+            <xpath expr="//page[@name='property_general']//field[@name='street']" position="before">
+                <group>
+                    <field name="hotel_image_pms_api_rest" widget="image" class="oe_avatar"/>
+                </group>
+            </xpath>
             <xpath expr="//field[@name='default_departure_hour']" position="after">
                 <group string="Planning Colors">
                     <field name="color_option_config" />
