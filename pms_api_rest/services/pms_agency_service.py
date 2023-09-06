@@ -1,4 +1,5 @@
 from odoo import _
+from odoo.addons.pms_api_rest.services.manage_url_images import url_image
 from odoo.exceptions import MissingError
 
 from odoo.addons.base_rest import restapi
@@ -41,9 +42,7 @@ class PmsAgencyService(Component):
                 PmsAgencyInfo(
                     id=agency.id,
                     name=agency.name,
-                    image=agency.image_1024.decode("utf-8")
-                    if agency.image_1024
-                    else None,
+                    imageUrl=url_image(self, 'res.partner', agency.id, 'image_128'),
                 )
             )
         return result_agencies
@@ -72,7 +71,7 @@ class PmsAgencyService(Component):
             return PmsAgencieInfo(
                 id=agency.id,
                 name=agency.name if agency.name else None,
-                image=agency.image_1024.decode("utf-8") if agency.image_1024 else None,
+                imageUrl=url_image(self, 'res.partner', agency.id, 'image_128'),
             )
         else:
             raise MissingError(_("Agency not found"))
