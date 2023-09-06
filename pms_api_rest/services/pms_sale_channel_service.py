@@ -1,4 +1,5 @@
 from odoo import _
+from odoo.addons.pms_api_rest.services.manage_url_images import url_image
 from odoo.exceptions import MissingError
 
 from odoo.addons.base_rest import restapi
@@ -62,9 +63,7 @@ class PmsSaleChannelService(Component):
                     channelType=sale_channel.channel_type
                     if sale_channel.channel_type
                     else None,
-                    icon=sale_channel.icon
-                    if sale_channel.icon
-                    else None,
+                    iconUrl=url_image(self, 'pms.sale.channel', sale_channel.id, 'icon'),
                 )
             )
         return result_sale_channels

@@ -88,3 +88,8 @@ class PmsProperty(models.Model):
         help="Color for pending payment reservations in the planning.",
         default="rgba(4, 95, 118)",
     )
+
+    hotel_image_pms_api_rest = fields.Image(
+        string="Hotel image",
+        store=True,
+    )
