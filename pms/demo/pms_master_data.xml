@@ -165,6 +165,10 @@
             <field name="name">Conference</field>
             <field name="default_code">CO</field>
         </record>
+        <record id="pms_room_type_class_parking" model="pms.room.type.class">
+            <field name="name">Parking</field>
+            <field name="default_code">PA</field>
+        </record>
         <!-- pms.room.type  (for all properties)  -->
         <record id="pms_room_type_economic" model="pms.room.type">
             <field name="name">Economic</field>
@@ -242,6 +246,12 @@
                     (4, ref('pms_amenity_half_sized_refrigerator'))
                 ]"
             />
+        </record>
+        <record id="pms_room_type_parking" model="pms.room.type">
+            <field name="name">Parking</field>
+            <field name="default_code">PRK</field>
+            <field name="list_price">11.00</field>
+            <field name="class_id" ref="pms_room_type_class_parking" />
         </record>
         <!-- pms.room.type (only for san carlo property)   -->
         <record id="demo_pms_room_type_grand_suite" model="pms.room.type">
@@ -708,6 +718,50 @@
             <field name="ubication_id" ref="pms_ubication_ground_floor" />
             <field name="capacity">8</field>
             <field name="pms_property_id" ref="san_carlos_property" />
+        </record>
+        <!-- parkings (My Property)        -->
+        <record id="pms_room_parking_01" model="pms.room">
+            <field name="name">Parking-1</field>
+            <field name="room_type_id" ref="pms_room_type_parking" />
+            <field name="ubication_id" ref="pms_ubication_ground_floor" />
+            <field name="capacity">2</field>
+            <field name="pms_property_id" ref="pms.main_pms_property" />
+        </record>
+        <record id="pms_room_parking_02" model="pms.room">
+            <field name="name">Parking-2</field>
+            <field name="room_type_id" ref="pms_room_type_parking" />
+            <field name="ubication_id" ref="pms_ubication_ground_floor" />
+            <field name="capacity">2</field>
+            <field name="pms_property_id" ref="pms.main_pms_property" />
+        </record>
+        <record id="pms_room_parking_03" model="pms.room">
+            <field name="name">Parking-3</field>
+            <field name="room_type_id" ref="pms_room_type_parking" />
+            <field name="ubication_id" ref="pms_ubication_ground_floor" />
+            <field name="capacity">2</field>
+            <field name="pms_property_id" ref="pms.main_pms_property" />
+        </record>
+        <!-- parkings (San Carlos Property)        -->
+        <record id="pms_room_parking_san_carlos_01" model="pms.room">
+            <field name="name">Parking-1</field>
+            <field name="room_type_id" ref="pms_room_type_parking" />
+            <field name="ubication_id" ref="pms_ubication_ground_floor" />
+            <field name="capacity">2</field>
+            <field name="pms_property_id" ref="pms.san_carlos_property" />
+        </record>
+        <record id="pms_room_parking_san_carlos_02" model="pms.room">
+            <field name="name">Parking-2</field>
+            <field name="room_type_id" ref="pms_room_type_parking" />
+            <field name="ubication_id" ref="pms_ubication_ground_floor" />
+            <field name="capacity">2</field>
+            <field name="pms_property_id" ref="pms.san_carlos_property" />
+        </record>
+        <record id="pms_room_parking_san_carlos_03" model="pms.room">
+            <field name="name">Parking-3</field>
+            <field name="room_type_id" ref="pms_room_type_parking" />
+            <field name="ubication_id" ref="pms_ubication_ground_floor" />
+            <field name="capacity">2</field>
+            <field name="pms_property_id" ref="pms.san_carlos_property" />
         </record>
         <!-- product.product for pms services -->
         <record id="pms_service_breakfast_buffet" model="product.product">
