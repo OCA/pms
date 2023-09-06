@@ -1,6 +1,7 @@
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
+from .manage_url_images import url_image
 
 
 class PmsRoomTypeClassService(Component):
@@ -51,6 +52,7 @@ class PmsRoomTypeClassService(Component):
                     name=room.name,
                     defaultCode=room.default_code if room.default_code else None,
                     pmsPropertyIds=room.pms_property_ids.mapped("id"),
+                    imageUrl=url_image(self, 'pms.room.type.class', room.id, 'icon_pms_api_rest'),
                 )
             )
         return result_room_type_class
