@@ -977,7 +977,7 @@
             <field name="country_id" ref="base.ne" />
             <field name="email">info@booking.com</field>
             <field name="website">http://www.booking.com</field>
-            <field name="image_1920" type="base64" file="pms/demo/booking-logo.jpg" />
+            <field name="image_1920" type="base64" file="pms/demo/booking-logo.svg" />
         </record>
         <record id="agency_airbnb" model="res.partner">
             <field name="is_agency">True</field>
@@ -989,7 +989,7 @@
             <field name="country_id" ref="base.ir" />
             <field name="email">info@airbnb.com</field>
             <field name="website">http://www.airbnb.com</field>
-            <field name="image_1920" type="base64" file="pms/demo/airbnb-logo.jpg" />
+            <field name="image_1920" type="base64" file="pms/demo/airbnb-logo.svg" />
         </record>
         <!-- Add partner mobile -->
         <record id="base.res_partner_12" model="res.partner">
