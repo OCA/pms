@@ -371,9 +371,23 @@
                     'preferred_room_id': ref('pms_room_eco_01'),
                     'checkin': (DateTime.today() + timedelta(days=19)),
                     'checkout': (DateTime.today() + timedelta(days=20)),
-                    'adults': 1,
+                    'adults': 2,
                     'state': 'confirm',
                     'partner_requests': '2 extra towels needed.'
+                    }), (0, 0, {
+                    'pricelist_id': ref('product.list0'),
+                    'preferred_room_id': ref('pms_room_conference_02'),
+                    'checkin': (DateTime.today() + timedelta(days=19)),
+                    'checkout': (DateTime.today() + timedelta(days=20)),
+                    'adults': 2,
+                    'state': 'confirm',
+                    }), (0, 0, {
+                    'pricelist_id': ref('product.list0'),
+                    'preferred_room_id': ref('pms_room_parking_01'),
+                    'checkin': (DateTime.today() + timedelta(days=19)),
+                    'checkout': (DateTime.today() + timedelta(days=20)),
+                    'adults': 1,
+                    'state': 'confirm',
                     })]"
             />
         </record>
