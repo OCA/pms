@@ -23,6 +23,7 @@ class PmsApiRestUserOutput(Datamodel):
     userEmail = fields.String(required=False, allow_none=True)
     userPhone = fields.String(required=False, allow_none=True)
     userImageBase64 = fields.String(required=False, allow_none=True)
+    userImageUrl = fields.String(required=False, allow_none=True)
     defaultPropertyId = fields.Integer(required=False, allow_none=True)
     defaultPropertyName = fields.String(required=False, allow_none=True)
     isNewInterfaceUser = fields.Boolean(required=False, allow_none=True)
