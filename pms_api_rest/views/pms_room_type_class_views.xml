@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="inherit_pms_room_type_class_views" model="ir.ui.view">
+        <field name="model">pms.room.type.class</field>
+        <field name="inherit_id" ref="pms.pms_room_type_class_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='overnight']" position="after">
+                <field name="icon_pms_api_rest" widget="image" class="oe_avatar"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -25,6 +25,7 @@
         "data/pms_app_reset_password_template.xml",
         "views/pms_property_views.xml",
         "views/res_users_views.xml",
+        "views/pms_room_type_class_views.xml",
     ],
     "demo": [
         "demo/pms_api_rest_master_data.xml",
