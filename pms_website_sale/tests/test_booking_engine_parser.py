@@ -150,7 +150,7 @@ class BookingParserCase(PMSTestCommons):
                 "end_date": Date.to_string(today + timedelta(days=3)),
                 "rooms_requests": [
                     {
-                        "room_type_id": self.single.id,
+                        "room_type_id": self.room_type_1.id,
                         "quantity": 1000,
                     },
                 ],
@@ -180,7 +180,7 @@ class BookingParserCase(PMSTestCommons):
                 "end_date": Date.to_string(today + timedelta(days=3)),
                 "rooms_requests": [
                     {
-                        "room_type_id": self.single.id,
+                        "room_type_id": self.room_type_1.id,
                         "quantity": 1000,
                     },
                 ],
@@ -212,7 +212,7 @@ class BookingParserCase(PMSTestCommons):
                 "end_date": Date.to_string(today + timedelta(days=3)),
                 "rooms_requests": [
                     {
-                        "room_type_id": self.single.id,
+                        "room_type_id": self.room_type_1.id,
                         "quantity": 1000,
                     },
                 ],
@@ -244,7 +244,7 @@ class BookingParserCase(PMSTestCommons):
                 "end_date": Date.to_string(today + timedelta(days=3)),
                 "rooms_requests": [
                     {
-                        "room_type_id": self.single.id,
+                        "room_type_id": self.room_type_1.id,
                         "quantity": 1000,
                     },
                 ],

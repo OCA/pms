@@ -5,6 +5,8 @@
 import logging
 from datetime import timedelta
 
+from werkzeug.exceptions import NotFound
+
 from odoo import http
 from odoo.fields import Date
 from odoo.http import request
@@ -246,17 +248,21 @@ class BookingEngineController(http.Controller):
         sudo_folio.action_confirm()
         moves = sudo_folio._create_invoices(grouped=True, final=True)
         moves.sudo().action_post()
+        # TODO: move the cleanup of request.session to a BookingEnginerParser method
         request.session[BookingEngineParser.SESSION_KEY] = {}
         return {}
 
     @http.route(
-        ["/booking/success/<model('pms.folio'):folio>"],
+        ["/booking/success/<int:folio_id>"],
         type="http",
         auth="public",
         website=True,
         methods=["GET"],
     )
-    def booking_success(self, folio):
+    def booking_success(self, folio_id):
+        folio = request.env["pms.folio"].sudo().browse(folio_id).exists()
+        if not folio:
+            raise NotFound("The requesting folio does not exists")
         values = self._booking_success(folio)
         return request.render("pms_website_sale.pms_booking_success_page", values)
 

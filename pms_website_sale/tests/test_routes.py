@@ -86,6 +86,11 @@ class PMSRouteCase(HttpCase):
     #     booking_payment_success_div = page.xpath("//div[@name='booking_success_page']")
     #     self.assertTrue(booking_payment_success_div)
 
+    def test_booking_payment_success_route_notfound(self):
+        url = "/booking/success/0"
+        response = self.url_open(url=url)
+        self.assertEqual(response.status_code, 404)
+
     def test_booking_payment_failure_route(self):
         url = "/booking/failure"
         response = self.url_open(url=url)
