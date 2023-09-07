@@ -13,6 +13,7 @@ class PmsReservationMessageInfo(Datamodel):
     date = fields.String(required=False, allow_none=True)
     messageType = fields.String(required=False, allow_none=True)
     authorImageBase64 = fields.String(required=False, allow_none=True)
+    authorImageUrl = fields.String(required=False, allow_none=True)
 
 
 class PmsFolioMessageInfo(Datamodel):
@@ -23,6 +24,7 @@ class PmsFolioMessageInfo(Datamodel):
     date = fields.String(required=False, allow_none=True)
     messageType = fields.String(required=False, allow_none=True)
     authorImageBase64 = fields.String(required=False, allow_none=True)
+    authorImageUrl = fields.String(required=False, allow_none=True)
 
 
 class PmsMessageInfo(Datamodel):

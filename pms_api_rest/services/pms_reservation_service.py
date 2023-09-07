@@ -271,7 +271,7 @@ class PmsReservationService(Component):
                 reservation.with_context(skip_compute_service_ids=True).write(reservation_vals)
             else:
                 reservation.write(reservation_vals)
-                print(reservation.service_ids.mapped("name"))
+                # print(reservation.service_ids.mapped("name"))
 
 
     def _get_reservation_lines_mapped(self, origin_data, reservation_line=False):
