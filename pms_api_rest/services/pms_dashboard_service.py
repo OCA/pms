@@ -93,7 +93,7 @@ class PmsDashboardServices(Component):
 
         self.env.cr.execute(
             f"""
-            SELECT CEIL(l.num * 100.00 / tr.num_total_rooms)
+            SELECT CEIL(l.num * 100.00 / tr.num_total_rooms)  AS occupancy
             FROM
             (
                 SELECT COUNT(1) num_total_rooms
@@ -112,8 +112,8 @@ class PmsDashboardServices(Component):
             ) l
             """,
             (
-                date_occupancy,
                 pms_dashboard_search_param.pmsPropertyId,
+                date_occupancy,
                 pms_dashboard_search_param.pmsPropertyId,
             ),
         )
