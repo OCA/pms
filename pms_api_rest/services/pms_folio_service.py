@@ -3,6 +3,7 @@ import logging
 from datetime import datetime, timedelta
 
 from odoo import _, fields
+from .manage_url_images import url_image
 from odoo.exceptions import MissingError, ValidationError
 from odoo.osv import expression
 from odoo.tools import get_lang
@@ -1257,6 +1258,7 @@ class PmsFolioService(Component):
                             ).decode("utf-8")
                             if message.author_id.image_1024
                             else None,
+                            authorImageUrl=url_image(self, 'res.partner', message.author_id.id, 'image_1024'),
                         )
                     )
             PmsFolioMessageInfo = self.env.datamodels["pms.folio.message.info"]
@@ -1268,9 +1270,9 @@ class PmsFolioService(Component):
                     subject = folio_message.subject if folio_message.subject else None
                 folio_messages.append(
                     PmsFolioMessageInfo(
-                        author=message.author_id.name
-                        if message.author_id
-                        else message.email_from,
+                        author=folio_message.author_id.name
+                        if folio_message.author_id
+                        else folio_message.email_from,
                         message=message_body,
                         subject=subject,
                         date=folio_message.date.strftime("%d/%m/%y %H:%M:%S"),
@@ -1280,6 +1282,7 @@ class PmsFolioService(Component):
                         ).decode("utf-8")
                         if folio_message.author_id.image_1024
                         else None,
+                        authorImageUrl=url_image(self, 'res.partner', folio_message.author_id.id, 'image_1024'),
                     )
                 )
             PmsMessageInfo = self.env.datamodels["pms.message.info"]
