@@ -1,11 +1,10 @@
 from odoo import _
-from odoo.addons.pms_api_rest.services.manage_url_images import url_image
 from odoo.exceptions import MissingError
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
-
+from ..pms_api_rest_utils import url_image_pms_api_rest
 
 class PmsSaleChannelService(Component):
     _inherit = "base.rest.service"
@@ -63,7 +62,7 @@ class PmsSaleChannelService(Component):
                     channelType=sale_channel.channel_type
                     if sale_channel.channel_type
                     else None,
-                    iconUrl=url_image(self, 'pms.sale.channel', sale_channel.id, 'icon'),
+                    iconUrl=url_image_pms_api_rest('pms.sale.channel', sale_channel.id, 'icon'),
                 )
             )
         return result_sale_channels
