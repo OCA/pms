@@ -1,7 +1,7 @@
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
-from odoo.addons.pms_api_rest.services.manage_url_images import url_image
+from ..pms_api_rest_utils import url_image_pms_api_rest
 
 
 class PmsPropertyService(Component):
@@ -49,7 +49,7 @@ class PmsPropertyService(Component):
                     simpleInColor=prop.simple_in_color,
                     simpleFutureColor=prop.simple_future_color,
                     language=prop.lang,
-                    hotelImageUrl=url_image(self, 'pms.property', prop.id, 'hotel_image_pms_api_rest'),
+                    hotelImageUrl=url_image_pms_api_rest('pms.property', prop.id, 'hotel_image_pms_api_rest'),
                 )
             )
         return result_properties
