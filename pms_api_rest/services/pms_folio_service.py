@@ -3,7 +3,6 @@ import logging
 from datetime import datetime, timedelta
 
 from odoo import _, fields
-from .manage_url_images import url_image
 from odoo.exceptions import MissingError, ValidationError
 from odoo.osv import expression
 from odoo.tools import get_lang
@@ -11,6 +10,8 @@ from odoo.tools import get_lang
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
+
+from ..pms_api_rest_utils import url_image_pms_api_rest
 
 _logger = logging.getLogger(__name__)
 
@@ -1258,7 +1259,7 @@ class PmsFolioService(Component):
                             ).decode("utf-8")
                             if message.author_id.image_1024
                             else None,
-                            authorImageUrl=url_image(self, 'res.partner', message.author_id.id, 'image_1024'),
+                            authorImageUrl=url_image_pms_api_rest('res.partner', message.author_id.id, 'image_1024'),
                         )
                     )
             PmsFolioMessageInfo = self.env.datamodels["pms.folio.message.info"]
@@ -1282,7 +1283,7 @@ class PmsFolioService(Component):
                         ).decode("utf-8")
                         if folio_message.author_id.image_1024
                         else None,
-                        authorImageUrl=url_image(self, 'res.partner', folio_message.author_id.id, 'image_1024'),
+                        authorImageUrl=url_image_pms_api_rest('res.partner', folio_message.author_id.id, 'image_1024'),
                     )
                 )
             PmsMessageInfo = self.env.datamodels["pms.message.info"]
