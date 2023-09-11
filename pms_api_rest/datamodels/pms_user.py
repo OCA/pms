@@ -20,6 +20,7 @@ class PmsApiRestUserOutput(Datamodel):
     expirationDate = fields.Integer(required=False, allow_none=True)
     userId = fields.Integer(required=True, allow_none=False)
     userName = fields.String(required=True, allow_none=False)
+    userFirstName = fields.String(required=False, allow_none=True)
     userEmail = fields.String(required=False, allow_none=True)
     userPhone = fields.String(required=False, allow_none=True)
     userImageBase64 = fields.String(required=False, allow_none=True)
