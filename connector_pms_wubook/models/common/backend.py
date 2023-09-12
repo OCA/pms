@@ -149,8 +149,9 @@ class ChannelWubookBackend(models.Model):
             self = self.with_user(self.user_id)
         for rec in self:
             # Search by same jobs pending, if not exists, create a new job
-            func_string = "channel.wubook.product.pricelist().export_data(backend_record=channel.wubook.backend(%s,))" % (
-                rec.id,
+            func_string = (
+                "channel.wubook.product.pricelist().export_data(backend_record=channel.wubook.backend(%s,))"
+                % (rec.id,)
             )
             jobs = self.env["queue.job"].search(
                 [("func_string", "=", func_string), ("state", "=", "pending")]
@@ -195,11 +196,15 @@ class ChannelWubookBackend(models.Model):
             self = self.with_user(self.user_id)
         for rec in self:
             # Search by same jobs pending, if not, create a new one
-            func_string = "channel.wubook.pms.availability.plan().export_data(backend_record=channel.wubook.backend(%s,))" % (
-                rec.id,
+            func_string = (
+                "channel.wubook.pms.availability.plan().export_data(backend_record=channel.wubook.backend(%s,))"
+                % (rec.id,)
             )
             jobs = rec.env["queue.job"].search(
-                [("state", "in", ["pending", "enqueued"]), ("func_string", "=", func_string)]
+                [
+                    ("state", "in", ["pending", "enqueued"]),
+                    ("func_string", "=", func_string),
+                ]
             )
             if not jobs:
                 rec.env["channel.wubook.pms.availability.plan"].with_delay(
@@ -236,11 +241,18 @@ class ChannelWubookBackend(models.Model):
             self = self.with_user(self.user_id)
         for rec in self:
             # Search by same jobs pending, if not, create a new one
-            func_string = "channel.wubook.pms.property.availability().export_data(backend_record=channel.wubook.backend(%s,))" % (
-                rec.id,
+            func_string = (
+                "channel.wubook.pms.property.availability().export_record(channel.wubook.backend(%s,), pms.property(%s,))"
+                % (
+                    rec.id,
+                    rec.pms_property_id.id,
+                )
             )
             jobs = self.env["queue.job"].search(
-                [("state", "in", ["pending", "enqueued"]), ("func_string", "=", func_string)]
+                [
+                    ("state", "in", ["pending", "enqueued", "started"]),
+                    ("func_string", "=", func_string),
+                ]
             )
             if not jobs:
                 rec.env["channel.wubook.pms.property.availability"].with_delay(
@@ -298,11 +310,15 @@ class ChannelWubookBackend(models.Model):
             )
         ):
             backend = binding.backend_id
-            func_string = "channel.wubook.pms.property.availability().export_data(backend_record=channel.wubook.backend(%s,))" % (
-                backend.id,
+            func_string = (
+                "channel.wubook.pms.property.availability().export_data(backend_record=channel.wubook.backend(%s,))"
+                % (backend.id,)
             )
             jobs = self.env["queue.job"].search(
-                [("state", "in", ["pending", "enqueued"]), ("func_string", "=", func_string)]
+                [
+                    ("state", "in", ["pending", "enqueued"]),
+                    ("func_string", "=", func_string),
+                ]
             )
             if jobs:
                 continue
