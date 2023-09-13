@@ -49,6 +49,11 @@ class RoomController(http.Controller):
             logger.error(e)
             errors.append(e.usr_msg)
 
+        # Set num_rooms_selected in order to computel price_total for
+        # the given daterange
+        for availability_result in booking_engine.availability_results:
+            availability_result.num_rooms_selected.value = 1
+
         sorted_availability_results = self._sort_availability_results(
             booking_engine.availability_results, post.get("order")
         )
