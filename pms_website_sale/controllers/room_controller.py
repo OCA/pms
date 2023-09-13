@@ -49,6 +49,9 @@ class RoomController(http.Controller):
             logger.error(e)
             errors.append(e.usr_msg)
 
+        sorted_availability_results = self._sort_availability_results(
+            booking_engine.availability_results, post.get("order")
+        )
         url_generator = QueryURL(
             "/rooms",
             order=post.get("order"),
@@ -59,9 +62,7 @@ class RoomController(http.Controller):
             "url_generator": url_generator,
             "start_date": post.get("start_date"),
             "end_date": post.get("end_date"),
-            "availability_results": self._sort_availability_results(
-                booking_engine.availability_results, post.get("order")
-            ),
+            "availability_results": sorted_availability_results,
             "errors": errors,
         }
 
@@ -83,20 +84,6 @@ class RoomController(http.Controller):
             "room_type": room_type,
         }
         return request.render("pms_website_sale.pms_room_type_page", values)
-
-    def _search_room_types(self, post):
-        # roke : cf pms_booking_engine.py :
-        #   I rely on self.env["pms.room.type"].get_room_types_by_property
-        #   what do you think is better ?
-        domain = self._get_search_domain()
-        order = self._get_search_order(post)
-        return request.env["pms.room.type"].search(domain, order=order)
-
-    def _get_search_order(self, post):
-        # TODO: Get a better fallback than 'name ASC'. website_sale uses
-        # 'website_sequence ASC'
-        order = post.get("order") or "name ASC"
-        return "%s, id desc" % order
 
     def _sort_availability_results(self, records, order):
         """Return sorted list of result based on order"""

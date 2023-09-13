@@ -153,8 +153,10 @@ class BookingEngineParser:
         try:
             room_type_id = int(room_type_id)
             quantity = int(quantity)
-        except (ValueError, TypeError):
-            raise ParserError("Cannot proceed due to incorrect value.")
+        except (ValueError, TypeError) as err:
+            raise ParserError(
+                msg=str(err), usr_msg="Cannot proceed due to incorrect value."
+            )
 
         new_room_request = {
             "room_type_id": room_type_id,
@@ -170,14 +172,15 @@ class BookingEngineParser:
         """Remove a room request to the booking"""
         try:
             room_type_id = int(room_type_id)
-        except (ValueError, TypeError):
-            raise ParserError("Cannot proceed due to incorrect value")
-        del_index = None
-        for index, room_request in enumerate(self.data["rooms_requests"]):
-            if room_request.get("room_type_id") == room_type_id:
-                del_index = index
-        if del_index is not None:
-            self.data["rooms_requests"].pop(del_index)
+        except (ValueError, TypeError) as err:
+            raise ParserError(
+                msg=str(err), usr_msg="Cannot proceed due to incorrect value."
+            )
+        self.data["rooms_requests"] = list(
+            filter(
+                lambda rr: rr[room_type_id] != room_type_id, self.data["rooms_requests"]
+            )
+        )
         # FIXME: should we report error when trying to delete a non
         # existing room to end user ?
 
@@ -207,8 +210,8 @@ class BookingEngineParser:
 
         try:
             country_id = int(country_id)
-        except (ValueError, TypeError):
-            raise ParserError("Incorrect value for Country.")
+        except (ValueError, TypeError) as err:
+            raise ParserError(msg=str(err), usr_msg="Incorrect value for Country.")
 
         country = self.env["res.country"].browse(country_id).exists()
         if not country:
