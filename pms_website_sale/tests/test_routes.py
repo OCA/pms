@@ -47,6 +47,59 @@ class PMSRouteCase(HttpCase):
         booking_page_div = page.xpath("//div[@name='booking_page']")
         self.assertTrue(booking_page_div)
 
+    @mock.patch("odoo.http.WebRequest.validate_csrf", return_value=True)
+    def test_booking_route_with_delete_errors(self, _):
+        url = "/ebooking/booking"
+        data = {"delete": "-1"}  # deleting non existing room request
+        response = self.url_open(url=url, data=data)
+        self.assertEqual(response.status_code, 200)
+        page = fromstring(response.content)
+        error_div = page.xpath("//div[@name='errors']")
+        self.assertTrue(error_div)
+
+    @mock.patch("odoo.http.WebRequest.validate_csrf", return_value=True)
+    def test_booking_route_with_room_request(self, _):
+        url = "/ebooking/booking"
+        room_type_class_1 = self.env["pms.room.type.class"].create(
+            {
+                "name": "room type class 1",
+                "default_code": "RTC1",
+            }
+        )
+        room_type_1 = self.env["pms.room.type"].create(
+            {
+                "name": "room type 1",
+                "default_code": "RT1",
+                "class_id": room_type_class_1.id,
+            }
+        )
+        data = {
+            "room_type_id": room_type_1.id,
+            "quantity": 1,
+            "start_date": "",
+            "end_date": "",
+        }
+        response = self.url_open(url=url, data=data)
+        self.assertEqual(response.status_code, 200)
+        page = fromstring(response.content)
+        booking_page_div = page.xpath("//div[@name='booking_page']")
+        self.assertTrue(booking_page_div)
+
+    @mock.patch("odoo.http.WebRequest.validate_csrf", return_value=True)
+    def test_booking_route_with_room_request_errors(self, _):
+        url = "/ebooking/booking"
+        data = {
+            "room_type_id": -1,
+            "quantity": -1,
+            "start_date": "",
+            "end_date": "",
+        }
+        response = self.url_open(url=url, data=data)
+        self.assertEqual(response.status_code, 200)
+        page = fromstring(response.content)
+        error_div = page.xpath("//div[@name='errors']")
+        self.assertTrue(error_div)
+
     def test_booking_address_route(self):
         url = "/ebooking/booking/address"
         response = self.url_open(url=url)

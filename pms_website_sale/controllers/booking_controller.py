@@ -50,16 +50,18 @@ class BookingEngineController(http.Controller):
                 except ParserError as e:
                     logger.debug(e)
                     errors.append(e.usr_msg)
-            be_parser.save()
+        booking_engine = request.env["pms.booking.engine"]
         try:
             booking_engine = be_parser.parse()
         except KeyError as e:
-            # todo return a nicer error
             # FIXME: why this type of error occurs ?
-            raise e
+            logger.error(e)
+            errors.append("An unknown error occurs")
         except ParserError as e:
             logger.debug(e)
             errors.append(e.usr_msg)
+        else:
+            be_parser.save()
 
         values = {
             "booking_engine": booking_engine,
