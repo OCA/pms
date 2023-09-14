@@ -91,6 +91,18 @@ class BookingEngineControllerCase(PMSTestCommons):
         self.assertEqual(tx.return_url, f"/ebooking/booking/success/{folio.id}")
         self.assertIn(tx.id, request.session["__payment_tx_ids__"])
 
+    def test_cancelling_transaction_cancels_folio(self):
+        with MockRequest(self.company.with_user(self.public_user).env) as request:
+            request.session[
+                BookingEngineParser.SESSION_KEY
+            ] = self.session_booking_engine
+            tx = self.controller._booking_payment_transaction(
+                self.wire_transfer_acquirer.id
+            )
+        tx._set_transaction_cancel()
+        folio = tx.folio_ids
+        self.assertEqual(folio.state, "cancel")
+
     def test_booking_success(self):
         with MockRequest(
             self.company.with_user(self.public_user).env,

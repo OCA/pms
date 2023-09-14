@@ -69,11 +69,6 @@
                         t-set="prepare_tx_url"
                         t-value="'/ebooking/booking/payment/transaction'"
                     />
-                    <t
-                        t-set="success_url"
-                        t-value="'/ebooking/booking/payment/success'"
-                    />
-<!--                    <t t-set="error_url" t-value="'/ebooking/booking/payment/failure'"/>-->
                 </t>
             </div>
             <div t-if="not (acquirers or tokens)" class="alert alert-warning">
@@ -97,25 +92,6 @@
                         <div class="col-md-auto">
                             Your booking is confirmed. See you soon at
                             <span t-esc="env.user.company_id.name" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </t>
-    </template>
-
-    <template id="pms_booking_failure_page" name="Booking Failure">
-        <t t-call="website.layout">
-            <div name="booking_failure_page" class="container">
-                <div name="progress_bar" class="row">
-                    <t t-call="pms_website_sale.progress_bar">
-                        <t t-set="step" t-value="-1" />
-                    </t>
-                </div>
-                <div class="row justify-content-md-center">
-                    <div class="col-md-auto">
-                        <div class="alert alert-danger" role="alert">
-                            The payment failed and the booking is cancelled. Please reach us by email or phone.
                         </div>
                     </div>
                 </div>

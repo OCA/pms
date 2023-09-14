@@ -2,5 +2,6 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
+from . import payment_transaction
 from . import pms_room_type
 from . import res_users

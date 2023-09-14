@@ -259,15 +259,3 @@ class BookingEngineController(http.Controller):
             raise NotFound("The requesting folio does not exists")
         values = self._booking_success(folio)
         return request.render("pms_website_sale.pms_booking_success_page", values)
-
-    @http.route(
-        ["/ebooking/booking/failure"],
-        type="http",
-        auth="public",
-        website=True,
-        # methods=["GET"],
-    )
-    def booking_failure(self, **post):
-        # todo notify property
-        # todo cancel folio
-        return request.render("pms_website_sale.pms_booking_failure_page")
