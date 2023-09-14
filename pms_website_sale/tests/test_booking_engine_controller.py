@@ -88,7 +88,7 @@ class BookingEngineControllerCase(PMSTestCommons):
         folio = tx.folio_ids
         self.assertEqual(tx.partner_id, self.demo_partner)
         self.assertEqual(tx.amount, expected_amount)
-        self.assertEqual(tx.return_url, f"/booking/success/{folio.id}")
+        self.assertEqual(tx.return_url, f"/ebooking/booking/success/{folio.id}")
         self.assertIn(tx.id, request.session["__payment_tx_ids__"])
 
     def test_booking_success(self):

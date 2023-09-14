@@ -12,7 +12,7 @@
                         <form
                             name="extra_info_form"
                             method="POST"
-                            action="/booking/extra_info"
+                            action="/ebooking/booking/extra_info"
                             autocomplete="on"
                         >
                             <input

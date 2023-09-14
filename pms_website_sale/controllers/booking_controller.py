@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 class BookingEngineController(http.Controller):
     @http.route(
-        ["/booking"],
+        ["/ebooking/booking"],
         type="http",
         auth="public",
         website=True,
@@ -68,7 +68,7 @@ class BookingEngineController(http.Controller):
         return request.render("pms_website_sale.pms_booking_engine_page", values)
 
     @http.route(
-        ["/booking/reset"],
+        ["/ebooking/booking/reset"],
         type="http",
         auth="public",
         website=True,
@@ -82,7 +82,7 @@ class BookingEngineController(http.Controller):
         return request.redirect(post.get("next_url", "/rooms"))
 
     @http.route(
-        ["/booking/extra_info"],
+        ["/ebooking/booking/extra_info"],
         type="http",
         auth="public",
         website=True,
@@ -108,7 +108,7 @@ class BookingEngineController(http.Controller):
                 errors.append(e.usr_msg)
             else:
                 parser.save()
-                return request.redirect("/booking/address")
+                return request.redirect("/ebooking/booking/address")
             values["internal_comment"] = post.get("internal_comment", "")
 
         # FIXME: Is the booking engine really needed ?
@@ -118,7 +118,7 @@ class BookingEngineController(http.Controller):
         return request.render("pms_website_sale.pms_booking_extra_info_page", values)
 
     @http.route(
-        ["/booking/address"],
+        ["/ebooking/booking/address"],
         type="http",
         auth="public",
         website=True,
@@ -155,7 +155,7 @@ class BookingEngineController(http.Controller):
                 errors.append(e.usr_msg)
             else:
                 parser.save()
-                return request.redirect("/booking/payment")
+                return request.redirect("/ebooking/booking/payment")
             values["partner"] = post
 
         # FIXME: Is the booking engine really needed ?
@@ -166,7 +166,7 @@ class BookingEngineController(http.Controller):
 
     def _booking_payment(self):
         """
-        processes the request on `/booking/payment`
+        processes the request on `/ebooking/booking/payment`
         :return: dictionary to pass onto the template renderer
         """
         errors = []
@@ -188,7 +188,7 @@ class BookingEngineController(http.Controller):
         }
 
     @http.route(
-        ["/booking/payment"],
+        ["/ebooking/booking/payment"],
         type="http",
         auth="public",
         website=True,
@@ -200,7 +200,7 @@ class BookingEngineController(http.Controller):
 
     def _booking_payment_transaction(self, acquirer_id, **kwargs):
         """
-        Processes requests on /booking/payment/transaction
+        Processes requests on /ebooking/booking/payment/transaction
         :param acquirer_id: the payment acquirer selected by the user
         :param kwargs:
         :return: the transaction tp pass onto the acquirer renderer
@@ -213,14 +213,14 @@ class BookingEngineController(http.Controller):
             {
                 "acquirer_id": acquirer.id,
                 "type": "form",
-                "return_url": f"/booking/success/{sudo_folio.id}",
+                "return_url": f"/ebooking/booking/success/{sudo_folio.id}",
             }
         )
         PaymentProcessing.add_payment_transaction(tx)
         return tx
 
     @http.route(
-        ["/booking/payment/transaction"],
+        ["/ebooking/booking/payment/transaction"],
         type="json",
         auth="public",
         method=["POST"],
@@ -232,7 +232,7 @@ class BookingEngineController(http.Controller):
 
     def _booking_success(self, folio_id):
         """
-        Processes /booking/success for given folio id
+        Processes /ebooking/booking/success for given folio id
         :return: dictionary to pass onto the template renderer
         """
         # todo Check for a token - otherwise anyone can validate any folio
@@ -245,7 +245,7 @@ class BookingEngineController(http.Controller):
         return {}
 
     @http.route(
-        ["/booking/success/<int:folio_id>"],
+        ["/ebooking/booking/success/<int:folio_id>"],
         type="http",
         auth="public",
         website=True,
@@ -259,7 +259,7 @@ class BookingEngineController(http.Controller):
         return request.render("pms_website_sale.pms_booking_success_page", values)
 
     @http.route(
-        ["/booking/failure"],
+        ["/ebooking/booking/failure"],
         type="http",
         auth="public",
         website=True,

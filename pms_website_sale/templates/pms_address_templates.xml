@@ -12,7 +12,7 @@
                         <form
                             name="address_form"
                             method="POST"
-                            action="/booking/address"
+                            action="/ebooking/booking/address"
                             autocomplete="on"
                         >
                             <input

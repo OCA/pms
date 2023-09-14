@@ -13,7 +13,7 @@
                     </div>
                     <div class="col">
                         <a
-                            href="/booking"
+                            href="/ebooking/booking"
                             role="button"
                             class="btn btn-secondary a-submit"
                             aria-label="Shopping cart"
@@ -72,7 +72,7 @@
                 </div>
                 <a
                     class="btn"
-                    t-att-href="url_generator('/rooms', start_date='', end_date='')"
+                    t-att-href="url_generator('/ebooking/rooms', start_date='', end_date='')"
                 >
                     <span class="fa fa-trash" />
                 </a>
@@ -83,7 +83,12 @@
 
     <template id="room_type_availability">
         <t t-set="room_type" t-value="availability_result.room_type_id" />
-        <form name="room_type_availability" action="/booking" method="post" class="row">
+        <form
+            name="room_type_availability"
+            action="/ebooking/booking"
+            method="post"
+            class="row"
+        >
             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
             <input type="hidden" name="room_type_id" t-att-value="room_type.id" />
             <input type="hidden" name="start_date" t-att-value="start_date" />
@@ -229,7 +234,7 @@
                     <a
                         role="menuitem"
                         rel="noindex,nofollow"
-                        t-att-href="url_generator('/rooms', order=sortby[1])"
+                        t-att-href="url_generator('/ebooking/rooms', order=sortby[1])"
                         class="dropdown-item"
                     >
                         <span t-raw="sortby[0]" />
@@ -269,11 +274,14 @@
                 If you want so, please finish your order an make a new
                 one for the other checkin and checkout dates.
             </p>
-            <a class="btn btn-primary" t-att-href="url_generator('/rooms')">
+            <a class="btn btn-primary" t-att-href="url_generator('/ebooking/rooms')">
                 <span class="fa fa-chevron-left" />
                 Continue with previous checkin and checkout dates
             </a>
-            <a class="btn btn-secondary" href="/booking/reset?next_url=/rooms">
+            <a
+                class="btn btn-secondary"
+                href="/ebooking/booking/reset?next_url=/ebooking/rooms"
+            >
                 <span class="fa fa-trash" />
                 Empty my current order to use new checkin and checkout dates
             </a>

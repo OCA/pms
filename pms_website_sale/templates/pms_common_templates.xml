@@ -14,7 +14,7 @@
         <div class="col-xl">
             <div class="wizard">
                 <div class="progress-wizard">
-                    <a class="no-decoration" href="/booking">
+                    <a class="no-decoration" href="/ebooking/booking">
                         <div
                             id="wizard-review"
                             t-att-class="'progress-wizard-step wizard-4-steps ' + ('inactive' if step &lt; 1 else ('active' if step == 1 else 'complete'))"
@@ -29,7 +29,7 @@
                             </div>
                         </div>
                     </a>
-                    <a class="no-decoration" href="/booking/extra_info">
+                    <a class="no-decoration" href="/ebooking/booking/extra_info">
                         <div
                             id="wizard-etra-info"
                             t-att-class="'progress-wizard-step wizard-4-steps ' + ('inactive' if step &lt; 3 else ('active' if step == 3 else 'complete'))"
@@ -46,7 +46,7 @@
                     </a>
                     <a
                         class="no-decoration"
-                        t-att-href="'/booking/address' if step > 5 else '#'"
+                        t-att-href="'/ebooking/booking/address' if step > 5 else '#'"
                     >
                         <div
                             id="wizard-address"
@@ -91,7 +91,7 @@
                 />
             </div>
             <div class="col col-4 text-right">
-                <a href="/booking/address">
+                <a href="/ebooking/booking/address">
                     <button class="btn btn-light ">Edit</button>
                 </a>
             </div>
@@ -122,13 +122,16 @@
                         <t t-if="booking_engine">
                             <a
                                 class="btn btn-secondary"
-                                t-attf-href="/rooms?start_date={{ booking_engine.start_date }}&amp;end_date={{ booking_engine.end_date }}"
+                                t-attf-href="/ebooking/rooms?start_date={{ booking_engine.start_date }}&amp;end_date={{ booking_engine.end_date }}"
                             >
                                 Add other rooms
                             </a>
                         </t>
                         <t t-else="">
-                            <a class="btn btn-secondary" href="/rooms">Add other rooms
+                            <a
+                                class="btn btn-secondary"
+                                href="/ebooking/rooms"
+                            >Add other rooms
                             </a>
                         </t>
                     </div>

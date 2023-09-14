@@ -51,7 +51,7 @@
                 />
             </div>
             <div class="col col-2 text-right">
-                <a href="/booking/address">
+                <a href="/ebooking/booking/address">
                     <button class="btn btn-light ">Edit</button>
                 </a>
             </div>
@@ -67,10 +67,13 @@
                     <t t-set="partner_id" t-value="booking_engine.partner_id" />
                     <t
                         t-set="prepare_tx_url"
-                        t-value="'/booking/payment/transaction'"
+                        t-value="'/ebooking/booking/payment/transaction'"
                     />
-                    <t t-set="success_url" t-value="'/booking/payment/success'" />
-<!--                    <t t-set="error_url" t-value="'/booking/payment/failure'"/>-->
+                    <t
+                        t-set="success_url"
+                        t-value="'/ebooking/booking/payment/success'"
+                    />
+<!--                    <t t-set="error_url" t-value="'/ebooking/booking/payment/failure'"/>-->
                 </t>
             </div>
             <div t-if="not (acquirers or tokens)" class="alert alert-warning">

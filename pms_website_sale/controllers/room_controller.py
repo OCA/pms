@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class RoomController(http.Controller):
     @http.route(
-        ["/rooms"],
+        ["/ebooking/rooms"],
         type="http",
         auth="public",
         website=True,
@@ -64,7 +64,7 @@ class RoomController(http.Controller):
             availability_results, post.get("order")
         )
         url_generator = QueryURL(
-            "/rooms",
+            "/ebooking/rooms",
             order=post.get("order"),
             start_date=be_parser.data.get("start_date"),
             end_date=be_parser.data.get("end_date"),

@@ -19,7 +19,7 @@ class PMSRouteCase(HttpCase):
         self.website = self.env["website"].browse(1)
 
     def test_rooms_route(self):
-        url = "/rooms"
+        url = "/ebooking/rooms"
         response = self.url_open(url=url)
         self.assertEqual(response.status_code, 200)
         page = fromstring(response.content)
@@ -32,7 +32,7 @@ class PMSRouteCase(HttpCase):
         self.assertEqual(len(availability_divs), nb_room_types)
 
     def test_rooms_route_with_errors(self):
-        url = "/rooms?start_date=2023-12-01&end_date=2023-01-01"
+        url = "/ebooking/rooms?start_date=2023-12-01&end_date=2023-01-01"
         response = self.url_open(url=url)
         self.assertEqual(response.status_code, 200)
         page = fromstring(response.content)
@@ -40,7 +40,7 @@ class PMSRouteCase(HttpCase):
         self.assertTrue(error_div)
 
     def test_booking_route(self):
-        url = "/booking"
+        url = "/ebooking/booking"
         response = self.url_open(url=url)
         self.assertEqual(response.status_code, 200)
         page = fromstring(response.content)
@@ -48,7 +48,7 @@ class PMSRouteCase(HttpCase):
         self.assertTrue(booking_page_div)
 
     def test_booking_address_route(self):
-        url = "/booking/address"
+        url = "/ebooking/booking/address"
         response = self.url_open(url=url)
         self.assertEqual(response.status_code, 200)
         page = fromstring(response.content)
@@ -56,7 +56,7 @@ class PMSRouteCase(HttpCase):
         self.assertTrue(booking_address_page_div)
 
     def test_booking_payment_route(self):
-        url = "/booking/payment"
+        url = "/ebooking/booking/payment"
         response = self.url_open(url=url)
         self.assertEqual(response.status_code, 200)
         page = fromstring(response.content)
@@ -65,13 +65,13 @@ class PMSRouteCase(HttpCase):
 
     @mock.patch("odoo.http.WebRequest.validate_csrf", return_value=True)
     def test_booking_payment_transaction_route(self, redirect_mock):
-        url = "/booking/payment/transaction"
+        url = "/ebooking/booking/payment/transaction"
         data = {
             "jsonrpc": "2.0",
             "method": "call",
             "params": {
                 "acquirer_id": self.acquirer.id,
-                "success_url": "/booking/payment/success",
+                "success_url": "/ebooking/booking/payment/success",
             },
         }
         response = self.url_open(
@@ -83,7 +83,7 @@ class PMSRouteCase(HttpCase):
 
     # def test_booking_payment_success_route(self):
     #     folio = self.env.ref("pms.pms_folio_eco_01")
-    #     url = f"/booking/success/{folio.id}"
+    #     url = f"/ebooking/booking/success/{folio.id}"
     #     with MockRequest(
     #         folio.with_user(self.public_user).env,
     #         website=self.website.with_user(self.public_user),
@@ -95,12 +95,12 @@ class PMSRouteCase(HttpCase):
     #     self.assertTrue(booking_payment_success_div)
 
     def test_booking_payment_success_route_notfound(self):
-        url = "/booking/success/0"
+        url = "/ebooking/booking/success/0"
         response = self.url_open(url=url)
         self.assertEqual(response.status_code, 404)
 
     def test_booking_payment_failure_route(self):
-        url = "/booking/failure"
+        url = "/ebooking/booking/failure"
         response = self.url_open(url=url)
         self.assertEqual(response.status_code, 200)
         page = fromstring(response.content)
