@@ -3,12 +3,10 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 import logging
-from datetime import timedelta
 
 from werkzeug.exceptions import NotFound
 
 from odoo import http
-from odoo.fields import Date
 from odoo.http import request
 
 from odoo.addons.payment.controllers.portal import PaymentProcessing
@@ -16,26 +14,6 @@ from odoo.addons.payment.controllers.portal import PaymentProcessing
 from .booking_engine_parser import BookingEngineParser, ParserError
 
 logger = logging.getLogger(__name__)
-
-
-def _dummy_request():  # todo remove
-    # dummy data
-    from random import randint
-
-    today = Date.today()
-    future = randint(100, 100000)
-    single = request.env.ref("pms.pms_room_type_single").sudo()
-    double = request.env.ref("pms.pms_room_type_double").sudo()
-    return {
-        "partner_id": False,
-        "start_date": Date.to_string(today + timedelta(future)),
-        "end_date": Date.to_string(today + timedelta(days=future + 2)),
-        "channel_type_id": False,
-        "rooms_requests": [
-            {"room_type_id": single.id, "room_name": single.name, "quantity": 1},
-            {"room_type_id": double.id, "room_name": double.name, "quantity": 2},
-        ],
-    }
 
 
 class BookingEngineController(http.Controller):
