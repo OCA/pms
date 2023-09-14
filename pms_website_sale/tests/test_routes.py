@@ -31,6 +31,14 @@ class PMSRouteCase(HttpCase):
         )
         self.assertEqual(len(availability_divs), nb_room_types)
 
+    def test_rooms_route_with_errors(self):
+        url = "/rooms?start_date=2023-12-01&end_date=2023-01-01"
+        response = self.url_open(url=url)
+        self.assertEqual(response.status_code, 200)
+        page = fromstring(response.content)
+        error_div = page.xpath("//div[@name='errors']")
+        self.assertTrue(error_div)
+
     def test_booking_route(self):
         url = "/booking"
         response = self.url_open(url=url)

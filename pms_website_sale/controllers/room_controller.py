@@ -22,51 +22,58 @@ class RoomController(http.Controller):
         website=True,
         methods=["GET"],
     )
-    def rooms(
-        self,
-        **post,
-    ):
+    def rooms(self, **post):
         errors = []
 
         if "order" not in post:
             post["order"] = "name asc"
 
-        # FIXME: Do we need to take daterange from the session if not
-        # present in the url parameters ? But this imply to change the
-        # mechanism of setting the daterange on the rooms page, because
-        # the mechanism to delete the daterange selection will no longer
-        # work.
-        be_parser = BookingEngineParser(request.env, {})
-        try:
-            be_parser.set_daterange(post.get("start_date"), post.get("end_date"))
-        except ParserError as e:
-            logger.error(e)
-            errors.append(e.usr_msg)
+        be_parser = BookingEngineParser(request.env, request.session)
+        daterange_error = (
+            be_parser.data.get("start_date")
+            and be_parser.data.get("end_date")
+            and (
+                be_parser.data.get("start_date") != post.get("start_date")
+                or be_parser.data.get("end_date") != post.get("end_date")
+            )
+        )
 
-        try:
-            booking_engine = be_parser.parse()
-        except ParserError as e:
-            logger.error(e)
-            errors.append(e.usr_msg)
+        availability_results = request.env["pms.folio.availability.wizard"]
+        if not daterange_error:
+            try:
+                be_parser.set_daterange(post.get("start_date"), post.get("end_date"))
+            except ParserError as e:
+                logger.debug(e)
+                errors.append(e.usr_msg)
 
-        # Set num_rooms_selected in order to computel price_total for
-        # the given daterange
-        for availability_result in booking_engine.availability_results:
+            if not errors:
+                try:
+                    booking_engine = be_parser.parse()
+                except ParserError as e:
+                    logger.debug(e)
+                    errors.append(e.usr_msg)
+                else:
+                    availability_results = booking_engine.availability_results
+
+        # Change num_rooms_selected in order to compute price_total for
+        # the given daterange, this should not be persisted in session
+        for availability_result in availability_results:
             availability_result.num_rooms_selected.value = 1
 
         sorted_availability_results = self._sort_availability_results(
-            booking_engine.availability_results, post.get("order")
+            availability_results, post.get("order")
         )
         url_generator = QueryURL(
             "/rooms",
             order=post.get("order"),
-            start_date=post.get("start_date"),
-            end_date=post.get("end_date"),
+            start_date=be_parser.data.get("start_date"),
+            end_date=be_parser.data.get("end_date"),
         )
         values = {
             "url_generator": url_generator,
-            "start_date": post.get("start_date"),
-            "end_date": post.get("end_date"),
+            "start_date": be_parser.data.get("start_date"),
+            "end_date": be_parser.data.get("end_date"),
+            "daterange_error": daterange_error,
             "availability_results": sorted_availability_results,
             "errors": errors,
         }

@@ -90,6 +90,20 @@ class BookingEngineController(http.Controller):
         return request.render("pms_website_sale.pms_booking_engine_page", values)
 
     @http.route(
+        ["/booking/reset"],
+        type="http",
+        auth="public",
+        website=True,
+        methods=["GET"],
+    )
+    def booking_reset(self, **post):
+        """Reset a the value in the session in order to make a new booking"""
+        be_parser = BookingEngineParser(request.env, request.session)
+        be_parser.reset()
+        be_parser.save()
+        return request.redirect(post.get("next_url", "/rooms"))
+
+    @http.route(
         ["/booking/extra_info"],
         type="http",
         auth="public",

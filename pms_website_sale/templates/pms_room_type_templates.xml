@@ -24,14 +24,22 @@
                         </a>
                     </div>
                 </div>
-                <t t-call="pms_website_sale.pms_booking_engine_errors" />
                 <div class="row">
-                    <t t-foreach="availability_results" t-as="availability_result">
-                        <div class="col col-12 col-lg-6">
-                            <t t-call="pms_website_sale.room_type_availability">
-                                <!-- todo compute relevant pms property -->
-                                <t t-set="pms_property_id" t-value="1" />
-                            </t>
+                    <t t-if="not errors and not daterange_error">
+                        <t t-foreach="availability_results" t-as="availability_result">
+                            <div class="col col-12 col-lg-6">
+                                <t t-call="pms_website_sale.room_type_availability">
+                                    <!-- todo compute relevant pms property -->
+                                    <t t-set="pms_property_id" t-value="1" />
+                                </t>
+                            </div>
+                        </t>
+                        <!-- TODO: show message if no results -->
+                    </t>
+                    <t t-else="">
+                        <div class="col">
+                            <t t-call="pms_website_sale.pms_booking_engine_errors" />
+                            <t t-call="pms_website_sale.pms_daterange_error" />
                         </div>
                     </t>
                 </div>
@@ -49,7 +57,7 @@
                         class="form-control"
                         name="start_date"
                         required="required"
-                        t-att-value="start_date"
+                        t-att-value="request.params.get('start_date', '')"
                     />
                 </div>
                 <div>to</div>
@@ -59,7 +67,7 @@
                         class="form-control"
                         name="end_date"
                         required="required"
-                        t-att-value="end_date"
+                        t-att-value="request.params.get('end_date', '')"
                     />
                 </div>
                 <a
@@ -250,5 +258,25 @@
             <!--                <t t-raw="room_type.long_description" />-->
             <!--            </div>-->
         </t>
+    </template>
+
+    <template id="pms_daterange_error">
+        <div class="alert alert-warning" name="daterange-error" role="alert">
+            <p>
+                The checkin and checkout date you enterred differ from
+                the ones in you order. You can not book rooms with
+                different checkin and checkout date in the same order.
+                If you want so, please finish your order an make a new
+                one for the other checkin and checkout dates.
+            </p>
+            <a class="btn btn-primary" t-att-href="url_generator('/rooms')">
+                <span class="fa fa-chevron-left" />
+                Continue with previous checkin and checkout dates
+            </a>
+            <a class="btn btn-secondary" href="/booking/reset?next_url=/rooms">
+                <span class="fa fa-trash" />
+                Empty my current order to use new checkin and checkout dates
+            </a>
+        </div>
     </template>
 </odoo>

@@ -123,6 +123,10 @@ class BookingEngineParser:
         """Save data into session"""
         self._session[BookingEngineParser.SESSION_KEY] = self.data
 
+    def reset(self):
+        self.data = {}
+        self._init_data()
+
     def set_daterange(self, start_date, end_date, overwrite=True):
         """Set a start_date and a end_date for booking"""
         if (
