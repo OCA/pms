@@ -55,7 +55,7 @@ class BookingEngineController(http.Controller):
                 try:
                     be_parser.del_room_request(post.get("delete"))
                 except ParserError as e:
-                    logger.error(e)
+                    logger.debug(e)
                     errors.append(e.usr_msg)
             else:
                 try:
@@ -70,7 +70,7 @@ class BookingEngineController(http.Controller):
                         post.get("end_date"),
                     )
                 except ParserError as e:
-                    logger.error(e)
+                    logger.debug(e)
                     errors.append(e.usr_msg)
             be_parser.save()
         try:
@@ -80,7 +80,7 @@ class BookingEngineController(http.Controller):
             # FIXME: why this type of error occurs ?
             raise e
         except ParserError as e:
-            logger.error(e)
+            logger.debug(e)
             errors.append(e.usr_msg)
 
         values = {
@@ -126,7 +126,7 @@ class BookingEngineController(http.Controller):
                     internal_comment=post.get("internal_comment")
                 )
             except ParserError as e:
-                logger.error(e)
+                logger.debug(e)
                 errors.append(e.usr_msg)
             else:
                 parser.save()
@@ -173,7 +173,7 @@ class BookingEngineController(http.Controller):
                     country_id=post.get("country_id"),
                 )
             except ParserError as e:
-                logger.error(e)
+                logger.debug(e)
                 errors.append(e.usr_msg)
             else:
                 parser.save()
