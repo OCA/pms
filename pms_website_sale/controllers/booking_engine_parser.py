@@ -103,13 +103,13 @@ class BookingEngineParser:
         partner_vals = {
             "name": self.data["partner"]["name"],
             "email": self.data["partner"]["email"],
-            "phone": self.data["partner"]["phone"],
+            "mobile": self.data["partner"]["phone"],
             "street": self.data["partner"]["address"],
             "city": self.data["partner"]["city"],
             "zip": self.data["partner"]["postal_code"],
             "country_id": self.data["partner"]["country_id"],
         }
-        partner = self.env["res.partner"].create(partner_vals)
+        partner = self.env["res.partner"].sudo().create(partner_vals)
         return partner
 
     def parse(self):
@@ -190,7 +190,13 @@ class BookingEngineParser:
 
     def create_folio(self):
         folio_action = self.booking_engine.create_folio()
-        return self.env["pms.folio"].browse(folio_action["res_id"])
+        folio = self.env["pms.folio"].browse(folio_action["res_id"])
+        # we must assign the partner after folio creation because
+        # setting the partner on the engine resets the room selection
+        partner = self._create_partner()
+        folio.sudo().partner_id = partner
+        # do not return sudo folio
+        return self.env["pms.folio"].browse(folio.id)
 
     def set_partner(self, name, email, phone, address, city, postal_code, country_id):
         """Add partner values. Values should be clean."""

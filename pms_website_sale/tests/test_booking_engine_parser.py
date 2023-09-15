@@ -299,3 +299,37 @@ class BookingParserCase(PMSTestCommons):
 
         booking_engine = parser.parse()
         self.assertEqual(booking_engine.partner_id, self.demo_partner)
+
+    def test_create_folio(self):
+        today = Date.today()
+        session = {
+            BookingEngineParser.SESSION_KEY: {
+                "partner_id": None,
+                "start_date": Date.to_string(today),
+                "end_date": Date.to_string(today + timedelta(days=3)),
+                "rooms_requests": [
+                    {
+                        "room_type_id": self.room_type_1.id,
+                        "quantity": 1,
+                    },
+                ],
+            },
+        }
+        parser = BookingEngineParser(self.env, session)
+
+        values = {
+            "name": "Test",
+            "email": "test@test.rt",
+            "phone": "+322424242",
+            "address": "Quai aux pierres, 3",
+            "city": "Bruxelles",
+            "postal_code": "1000",
+            "country_id": self.env.company.country_id.id,
+        }
+
+        parser.set_partner(**values)
+        parser.parse()
+        folio = parser.create_folio()
+        self.assertTrue(folio.partner_id)
+        self.assertTrue(folio.email, "test@test.rt")
+        self.assertTrue(folio.mobile, "+322424242")

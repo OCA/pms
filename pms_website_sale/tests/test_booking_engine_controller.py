@@ -28,6 +28,15 @@ class BookingEngineControllerCase(PMSTestCommons):
         start_date = Date.from_string("2200-05-01")
         cls.session_booking_engine = {
             "partner_id": cls.demo_partner.id,
+            "partner": {
+                "name": "Test Name",
+                "email": "test@test.rt",
+                "phone": "+322424242",
+                "address": "Quai aux pierres, 3",
+                "city": "Bruxelles",
+                "postal_code": "1000",
+                "country_id": cls.env.company.country_id.id,
+            },
             "start_date": Date.to_string(start_date),
             "end_date": Date.to_string(start_date + timedelta(days=3)),
             "rooms_requests": [
@@ -86,7 +95,7 @@ class BookingEngineControllerCase(PMSTestCommons):
         ) * 3
         expected_amount = 1.15 * untaxed_amount
         folio = tx.folio_ids
-        self.assertEqual(tx.partner_id, self.demo_partner)
+        self.assertEqual(tx.partner_id.name, "Test Name")
         self.assertEqual(tx.amount, expected_amount)
         self.assertEqual(tx.return_url, f"/ebooking/booking/success/{folio.id}")
         self.assertIn(tx.id, request.session["__payment_tx_ids__"])
