@@ -596,6 +596,9 @@ class PmsReservationService(Component):
                         countryState=checkin_partner.residence_state_id.id
                         if checkin_partner.residence_state_id
                         else None,
+                        countryStateName=checkin_partner.residence_state_id.name
+                        if checkin_partner.residence_state_id
+                        else None,
                         countryId=checkin_partner.residence_country_id.id
                         if checkin_partner.residence_country_id
                         else None,
