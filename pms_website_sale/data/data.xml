@@ -3,7 +3,7 @@
     <data noupdate="1">
         <record id="menu_room" model="website.menu">
             <field name="name">Rooms</field>
-            <field name="url">/rooms</field>
+            <field name="url">/ebooking/rooms</field>
             <field name="parent_id" ref="website.main_menu" />
             <field name="sequence" type="int">15</field>
         </record>
