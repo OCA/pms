@@ -4,8 +4,6 @@
 
 from odoo import fields, models
 
-from odoo.addons.http_routing.models.ir_http import slug
-
 
 class PmsRoomType(models.Model):
     _inherit = "pms.room.type"
@@ -28,4 +26,4 @@ class PmsRoomType(models.Model):
         """
         for room_type in self:
             if room_type.id:
-                room_type.website_url = "/room/%s" % slug(room_type)
+                room_type.website_url = f"/ebooking/room/{room_type.id}"

@@ -81,17 +81,18 @@ class RoomController(http.Controller):
         return request.render("pms_website_sale.pms_room_type_list", values)
 
     @http.route(
-        ['/room/<model("pms.room.type"):room_type>'],
+        ["/ebooking/room/<int:room_type_id>"],
         type="http",
         auth="public",
         website=True,
     )
     def room_page(
         self,
-        room_type,
+        room_type_id,
     ):
         # TODO raise NotFound if not accessible from current website (or if
         #  not published).
+        room_type = request.env["pms.room.type"].sudo().browse(room_type_id)
         values = {
             "room_type": room_type,
         }
