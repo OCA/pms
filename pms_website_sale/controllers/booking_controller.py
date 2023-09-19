@@ -11,7 +11,7 @@ from odoo.http import request
 
 from odoo.addons.payment.controllers.portal import PaymentProcessing
 
-from .booking_engine_parser import BookingEngineParser, ParserError
+from .booking_engine_parser import AvailabilityError, BookingEngineParser, ParserError
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +25,7 @@ class BookingEngineController(http.Controller):
         methods=["GET", "POST"],
     )
     def booking(self, **post):
+        # todo process in _booking(**post) -> booking_engine, errors
         errors = []
         be_parser = BookingEngineParser(request.env, request.session)
 
@@ -39,7 +40,9 @@ class BookingEngineController(http.Controller):
                 try:
                     # Set daterange if it has not been set previously
                     be_parser.set_daterange(
-                        post.get("start_date"), post.get("end_date"), overwrite=False
+                        post.get("start_date"),
+                        post.get("end_date"),
+                        overwrite=False,
                     )
                     be_parser.add_room_request(
                         post.get("room_type_id"),
@@ -60,6 +63,8 @@ class BookingEngineController(http.Controller):
         except ParserError as e:
             logger.debug(e)
             errors.append(e.usr_msg)
+        except AvailabilityError as e:
+            return self._redirect_availability_error(e)
         else:
             be_parser.save()
 
@@ -77,11 +82,11 @@ class BookingEngineController(http.Controller):
         methods=["GET"],
     )
     def booking_reset(self, **post):
-        """Reset a the value in the session in order to make a new booking"""
+        """Reset the values in the session in order to make a new booking"""
         be_parser = BookingEngineParser(request.env, request.session)
         be_parser.reset()
         be_parser.save()
-        return request.redirect(post.get("next_url", "/rooms"))
+        return request.redirect(post.get("next_url", "/ebooking/rooms"))
 
     @http.route(
         ["/ebooking/booking/extra_info"],
@@ -91,8 +96,8 @@ class BookingEngineController(http.Controller):
         methods=["GET", "POST"],
     )
     def booking_extra_info(self, **post):
+        # todo process in _booking_extra_info(**post) -> booking_engine, errors
         errors = []
-
         parser = BookingEngineParser(request.env, request.session)
 
         values = {
@@ -114,9 +119,12 @@ class BookingEngineController(http.Controller):
             values["internal_comment"] = post.get("internal_comment", "")
 
         # FIXME: Is the booking engine really needed ?
-        booking_engine = parser.parse()
-        values["booking_engine"] = booking_engine
+        try:
+            booking_engine = parser.parse()
+        except AvailabilityError as e:
+            return self._redirect_availability_error(e)
 
+        values["booking_engine"] = booking_engine
         return request.render("pms_website_sale.pms_booking_extra_info_page", values)
 
     @http.route(
@@ -127,6 +135,7 @@ class BookingEngineController(http.Controller):
         methods=["GET", "POST"],
     )
     def booking_address(self, **post):
+        # todo process in _booking_address(**post) -> booking_engine, errors
         errors = []
 
         countries = request.env["res.country"].sudo().search([])
@@ -161,8 +170,11 @@ class BookingEngineController(http.Controller):
             values["partner"] = post
 
         # FIXME: Is the booking engine really needed ?
-        booking_engine = parser.parse()
-        values["booking_engine"] = booking_engine
+        try:
+            booking_engine = parser.parse()
+            values["booking_engine"] = booking_engine
+        except AvailabilityError as e:
+            return self._redirect_availability_error(e)
 
         return request.render("pms_website_sale.pms_booking_address_page", values)
 
@@ -197,7 +209,11 @@ class BookingEngineController(http.Controller):
         methods=["GET"],
     )
     def booking_payment(self):
-        values = self._booking_payment()
+        try:
+            values = self._booking_payment()
+        except AvailabilityError as e:
+            return self._redirect_availability_error(e)
+
         return request.render("pms_website_sale.pms_booking_payment_page", values)
 
     def _booking_payment_transaction(self, acquirer_id, **kwargs):
@@ -205,7 +221,7 @@ class BookingEngineController(http.Controller):
         Processes requests on /ebooking/booking/payment/transaction
         :param acquirer_id: the payment acquirer selected by the user
         :param kwargs:
-        :return: the transaction tp pass onto the acquirer renderer
+        :return: the transaction to pass onto the acquirer renderer
         """
         acquirer = request.env["payment.acquirer"].browse(acquirer_id)
         be_parser = BookingEngineParser(request.env, request.session)
@@ -228,7 +244,11 @@ class BookingEngineController(http.Controller):
         method=["POST"],
     )
     def booking_payment_transaction(self, acquirer_id, **kwargs):
-        tx = self._booking_payment_transaction(acquirer_id, **kwargs)
+        try:
+            tx = self._booking_payment_transaction(acquirer_id, **kwargs)
+        except AvailabilityError as e:
+            return self._redirect_availability_error(e)
+
         acquirer = request.env["payment.acquirer"].browse(acquirer_id)
         return acquirer.sudo().render(tx.reference, tx.amount, tx.currency_id.id)
 
@@ -259,3 +279,14 @@ class BookingEngineController(http.Controller):
             raise NotFound("The requesting folio does not exists")
         values = self._booking_success(folio)
         return request.render("pms_website_sale.pms_booking_success_page", values)
+
+    def _redirect_availability_error(self, error: AvailabilityError):
+        logger.debug(error)
+        be_parser = BookingEngineParser(request.env, request.session)
+        be_parser.del_room_request(error.room_type_id)
+        return request.redirect(
+            "/ebooking/booking",
+            {
+                "errors": [error.usr_msg],
+            },
+        )
