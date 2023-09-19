@@ -4,14 +4,15 @@
     <template id="pms_room_type_list" name="Rooms">
         <t t-call="website.layout">
             <div class="container">
-                <div name="tools" class="row">
-                    <div class="col">
+
+                <div name="tools" class="row mt-4 align-items-center">
+                    <div class="col-auto">
                         <t t-call="pms_website_sale.sort" />
                     </div>
                     <div name="date-range" class="col">
                         <t t-call="pms_website_sale.date_picker" />
                     </div>
-                    <div class="col">
+                    <div class="col-auto">
                         <a
                             href="/ebooking/booking"
                             role="button"
@@ -20,38 +21,49 @@
                             title="Shopping cart"
                         >
                             <span class="fa fa-shopping-cart" />
-                            Checkout
+                            <span class="d-none d-lg-inline">
+                                Review booking
+                            </span>
                         </a>
                     </div>
                 </div>
-                <div class="row">
+
+                <div name="product-list" class="row mb-4">
                     <t t-if="not errors and not daterange_error">
                         <t t-foreach="availability_results" t-as="availability_result">
-                            <div class="col col-12 col-lg-6">
+                            <div class="col-12 mt-4">
                                 <t t-call="pms_website_sale.room_type_availability">
                                     <!-- todo compute relevant pms property -->
                                     <t t-set="pms_property_id" t-value="1" />
                                 </t>
                             </div>
                         </t>
-                        <!-- TODO: show message if no results -->
+                        <t t-if="not availability_results">
+                            <div class="col-12 mt-4">
+                                <p>
+                                    There is no rooms available for this
+                                    period. Try with other checkin and
+                                    checkout dates.
+                                </p>
+                            </div>
+                        </t>
                     </t>
                     <t t-else="">
-                        <div class="col">
+                        <div class="col-12 mt-4">
                             <t t-call="pms_website_sale.pms_booking_engine_errors" />
                             <t t-call="pms_website_sale.pms_daterange_error" />
                         </div>
                     </t>
                 </div>
-            </div>
 
+            </div>
         </t>
     </template>
 
     <template id="date_picker">
-        <form>
-            <div class="form-row" id="daterange">
-                <div class="col">
+        <form class="d-flex justify-content-center">
+            <div class="form-inline" id="daterange">
+                <div class="form-group">
                     <input
                         type="date"
                         class="form-control"
@@ -59,9 +71,7 @@
                         required="required"
                         t-att-value="request.params.get('start_date', '')"
                     />
-                </div>
-                <div>to</div>
-                <div class="col">
+                    <div class="mr-2 ml-2">to</div>
                     <input
                         type="date"
                         class="form-control"
@@ -70,13 +80,20 @@
                         t-att-value="request.params.get('end_date', '')"
                     />
                 </div>
-                <a
-                    class="btn"
-                    t-att-href="url_generator('/ebooking/rooms', start_date='', end_date='')"
-                >
-                    <span class="fa fa-trash" />
-                </a>
-                <button type="submit" class="btn btn-primary">Search</button>
+                <div class="form-group">
+                    <a
+                        class="btn btn-light"
+                        t-att-href="url_generator('/ebooking/rooms', start_date='', end_date='')"
+                    >
+                        <span class="fa fa-trash" />
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="fa fa-search" />
+                        <span class="d-none d-lg-inline">
+                            Search
+                        </span>
+                    </button>
+                </div>
             </div>
         </form>
     </template>
@@ -87,76 +104,84 @@
             name="room_type_availability"
             action="/ebooking/booking"
             method="post"
-            class="row"
+            class="product-item row"
         >
             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
             <input type="hidden" name="room_type_id" t-att-value="room_type.id" />
             <input type="hidden" name="start_date" t-att-value="start_date" />
             <input type="hidden" name="end_date" t-att-value="end_date" />
 
-            <div class="col" name="image">
+            <div class="col-3 image" name="image">
                 <span
                     t-field="room_type.image_512"
                     t-options="{'widget': 'image', 'preview_image': 'image_512', 'itemprop': 'image'}"
                 />
             </div>
 
-            <div class="col" name="info">
+            <div class="col info" name="info">
                 <h2>
                     <a t-att-href="room_type.website_url">
-                        Name: <span t-field="room_type.name" />
+                        <span t-field="room_type.name" />
                     </a>
                 </h2>
 
-                <div name="prices">
+                <p name="short_description" class="text-justify">
+                    <t t-if="room_type.short_description">
+                        <span t-field="room_type.short_description" />
+                    </t>
+                    <t t-else="">
+                        No description for this element.
+                    </t>
+                </p>
+
+                <div name="capacity">
+                    Capacity:
+                    <span t-esc="room_type.get_room_type_capacity(pms_property_id)" />
+                    person(s)
+                </div>
+            </div>
+
+            <div
+                class="col-3 book d-flex flex-column justify-content-between"
+                name="book"
+            >
+
+                <div name="prices" class="prices mt-4 mb-4">
                     <t t-if="start_date and end_date">
                         <t
                             t-set="nb_nights"
                             t-value="(availability_result.checkout - availability_result.checkin).days"
                         />
-                        <div name="price_all_nights">Price for
-                            <span t-esc="nb_nights" />
-                            nights:
+                        <div name="price_all_nights" class="price">
                             <span
                                 t-field="availability_result.price_total"
                                 t-options='{"widget": "monetary", "display_currency": website.currency_id}'
                             />
                         </div>
+                        <div class="price-info">
+                            for <span t-esc="nb_nights" /> night(s)
+                        </div>
                     </t>
                     <t t-else="">
-                        <div name="price_per_night">Price:
+                        <div name="price_per_night" class="price">
                             <span
                                 t-field="availability_result.price_per_room"
                                 t-options='{"widget": "monetary", "display_currency": website.currency_id}'
                             />
+                        </div>
+                        <div class="price-info">
                             per night
                         </div>
                     </t>
                 </div>
 
-                <div name="short_description">
-                    Short description:
-                    <span t-field="room_type.short_description" />
-                </div>
-
-                <div name="capacity">
-                    Capacity:
-                    <span t-esc="room_type.get_room_type_capacity(pms_property_id)" />
-                </div>
-
-                <t t-if="start_date and end_date">
-                    <div name="availability">
-                        Availability: <span
-                            t-field="availability_result.num_rooms_available"
-                        />
-                    </div>
-                    <div name="quantity">
-                        <div class="form-group">
+                <div class="checkout" name="checkout">
+                    <t t-if="start_date and end_date">
+                        <div name="quantity" class="quantity">
                             <label
                                 t-attf-for="room-type-{{ room_type.id }}-quantity"
-                            >Select room</label>
+                            >Number of rooms</label>
                             <select
-                                class="form-control"
                                 t-attf-id="room-type-{{ room_type.id }}-quantity"
                                 name="quantity"
                             >
@@ -170,24 +195,30 @@
                                 </t>
                             </select>
                         </div>
-                    </div>
-                    <div name="checkout">
+                        <div name="availability" class="availability mb-1">
+                            <span t-field="availability_result.num_rooms_available" />
+                            room(s) available
+                        </div>
                         <button
-                            class="btn btn-primary"
+                            class="btn btn-outline-primary btn-block"
                             type="submit"
                             t-att-disabled="'disabled' if availability_result.num_rooms_available == 0 else False"
                         >
-                            Book
+                            <span class="fa fa-plus" />
+                            Add to reservation
                         </button>
-                    </div>
-                </t>
-                <t t-else="">
-                    <div name="details">
-                        <a class="btn btn-primary" t-att-href="room_type.website_url">
-                            See availability TODO
-                        </a>
-                    </div>
-                </t>
+                    </t>
+                    <t t-else="">
+                        <div name="details">
+                            <a
+                                class="btn btn-outline-primary btn-block"
+                                t-att-href="room_type.website_url"
+                            >
+                                Details
+                            </a>
+                        </div>
+                    </t>
+                </div>
 
             </div>
         </form>
@@ -211,13 +242,14 @@
             t-set="sortable_current"
             t-value="[sort for sort in sortable if sort[1]==request.params.get('order', '')]"
         />
-        <div class="dropdown mt-2 ml-md-2 dropdown_sorty_by">
+        <div class="dropdown dropdown_sorty_by">
             <a
                 role="button"
                 href="#"
                 class="dropdown-toggle btn btn-secondary"
                 data-toggle="dropdown"
             >
+                <i class="fa fa-sort-amount-asc" />
                 <span class="d-none d-lg-inline">
                     <t t-if='len(sortable_current)'>
                         Sorting by :
@@ -227,7 +259,6 @@
                         Sort by
                     </t>
                 </span>
-                <i class="fa fa-sort-amount-asc d-lg-none" />
             </a>
             <div class="dropdown-menu dropdown-menu-right" role="menu">
                 <t t-foreach="sortable" t-as="sortby">
@@ -274,17 +305,22 @@
                 If you want so, please finish your order an make a new
                 one for the other checkin and checkout dates.
             </p>
-            <a class="btn btn-primary" t-att-href="url_generator('/ebooking/rooms')">
-                <span class="fa fa-chevron-left" />
-                Continue with previous checkin and checkout dates
-            </a>
-            <a
-                class="btn btn-secondary"
-                href="/ebooking/booking/reset?next_url=/ebooking/rooms"
-            >
-                <span class="fa fa-trash" />
-                Empty my current order to use new checkin and checkout dates
-            </a>
+            <div class="d-flex flex-row justify-content-between">
+                <a
+                    class="btn btn-primary"
+                    t-att-href="url_generator('/ebooking/rooms')"
+                >
+                    <span class="fa fa-chevron-left" />
+                    Continue with previous checkin and checkout dates
+                </a>
+                <a
+                    class="btn btn-secondary"
+                    href="/ebooking/booking/reset?next_url=/ebooking/rooms"
+                >
+                    <span class="fa fa-trash" />
+                    Empty my current order to use new checkin and checkout dates
+                </a>
+            </div>
         </div>
     </template>
 </odoo>
