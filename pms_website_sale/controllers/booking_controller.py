@@ -24,49 +24,20 @@ class BookingEngineController(http.Controller):
         website=True,
         methods=["GET", "POST"],
     )
-    def booking(self, **post):
-        # todo process in _booking(**post) -> booking_engine, errors
+    def booking(self, **kwargs):
         errors = []
-        be_parser = BookingEngineParser(request.env, request.session)
-
-        if request.httprequest.method == "POST":
-            if "delete" in post:
-                try:
-                    be_parser.del_room_request(post.get("delete"))
-                except ParserError as e:
-                    logger.debug(e)
-                    errors.append(e.usr_msg)
-            else:
-                try:
-                    # Set daterange if it has not been set previously
-                    be_parser.set_daterange(
-                        post.get("start_date"),
-                        post.get("end_date"),
-                        overwrite=False,
-                    )
-                    be_parser.add_room_request(
-                        post.get("room_type_id"),
-                        post.get("quantity"),
-                        post.get("start_date"),
-                        post.get("end_date"),
-                    )
-                except ParserError as e:
-                    logger.debug(e)
-                    errors.append(e.usr_msg)
         booking_engine = request.env["pms.booking.engine"]
         try:
-            booking_engine = be_parser.parse()
-        except KeyError as e:
-            # FIXME: why this type of error occurs ?
-            logger.error(e)
-            errors.append("An unknown error occurs")
+            booking_engine = self._booking(**kwargs)
         except ParserError as e:
             logger.debug(e)
             errors.append(e.usr_msg)
+        except KeyError as e:
+            # FIXME: when does this type of error occur ?
+            logger.error(e)
+            errors.append("An unknown error occurs")
         except AvailabilityError as e:
             return self._redirect_availability_error(e)
-        else:
-            be_parser.save()
 
         values = {
             "booking_engine": booking_engine,
@@ -81,36 +52,28 @@ class BookingEngineController(http.Controller):
         website=True,
         methods=["GET", "POST"],
     )
-    def booking_extra_info(self, **post):
-        # todo process in _booking_extra_info(**post) -> booking_engine, errors
+    def booking_extra_info(self, **kwargs):
         errors = []
-        parser = BookingEngineParser(request.env, request.session)
+        booking_engine = request.env["pms.booking.engine"]
 
-        values = {
-            "internal_comment": parser.data.get("internal_comment", ""),
-            "errors": errors,
-        }
-
-        if request.httprequest.method == "POST":
-            try:
-                parser.set_internal_comment(
-                    internal_comment=post.get("internal_comment")
-                )
-            except ParserError as e:
-                logger.debug(e)
-                errors.append(e.usr_msg)
-            else:
-                parser.save()
-                return request.redirect("/ebooking/booking/address")
-            values["internal_comment"] = post.get("internal_comment", "")
-
-        # FIXME: Is the booking engine really needed ?
         try:
-            booking_engine = parser.parse()
+            if request.httprequest.method == "POST":
+                self._post_booking_extra_info(**kwargs)
+                return request.redirect("/ebooking/booking/address")
+
+            booking_engine = self._get_booking_extra_info()
+        except ParserError as e:
+            logger.debug(e)
+            errors.append(e.usr_msg)
         except AvailabilityError as e:
             return self._redirect_availability_error(e)
 
-        values["booking_engine"] = booking_engine
+        # FIXME Is the booking engine really needed ?
+        values = {
+            "booking_engine": booking_engine,
+            "internal_comment": kwargs.get("internal_comment", ""),
+            "errors": errors,
+        }
         return request.render("pms_website_sale.pms_booking_extra_info_page", values)
 
     @http.route(
@@ -120,48 +83,32 @@ class BookingEngineController(http.Controller):
         website=True,
         methods=["GET", "POST"],
     )
-    def booking_address(self, **post):
-        # todo process in _booking_address(**post) -> booking_engine, errors
+    def booking_address(self, **kwargs):
+        # todo process in _booking_address(**kwargs) -> booking_engine, errors
         errors = []
+        booking_engine = request.env["pms.booking.engine"]
 
-        countries = request.env["res.country"].sudo().search([])
-        default_country = request.env.company.country_id
-
-        parser = BookingEngineParser(request.env, request.session)
-
-        values = {
-            "countries": countries,
-            "default_country_id": default_country.id,
-            "partner": parser.data.get("partner", {}),
-            "errors": errors,
-        }
-
-        if request.httprequest.method == "POST":
-            try:
-                parser.set_partner(
-                    name=post.get("name"),
-                    email=post.get("email"),
-                    phone=post.get("phone"),
-                    address=post.get("address"),
-                    city=post.get("city"),
-                    postal_code=post.get("postal_code"),
-                    country_id=post.get("country_id"),
-                )
-            except ParserError as e:
-                logger.debug(e)
-                errors.append(e.usr_msg)
-            else:
-                parser.save()
-                return request.redirect("/ebooking/booking/payment")
-            values["partner"] = post
-
-        # FIXME: Is the booking engine really needed ?
         try:
-            booking_engine = parser.parse()
-            values["booking_engine"] = booking_engine
+            if request.httprequest.method == "POST":
+                self._post_booking_address(**kwargs)
+                return request.redirect("/ebooking/booking/payment")
+            booking_engine = self._get_booking_address()
+        except ParserError as e:
+            logger.debug(e)
+            errors.append(e.usr_msg)
         except AvailabilityError as e:
             return self._redirect_availability_error(e)
 
+        countries = request.env["res.country"].sudo().search([])
+        default_country = request.env.company.country_id
+        # FIXME Is the booking engine really needed ?
+        values = {
+            "booking_engine": booking_engine,
+            "countries": countries,
+            "default_country_id": default_country.id,
+            "partner": kwargs,
+            "errors": errors,
+        }
         return request.render("pms_website_sale.pms_booking_address_page", values)
 
     @http.route(
@@ -215,12 +162,63 @@ class BookingEngineController(http.Controller):
         website=True,
         methods=["GET"],
     )
-    def booking_reset(self, **post):
+    def booking_reset(self, **kwargs):
         """Reset the values in the session in order to make a new booking"""
+        self._booking_reset()
+        next_url = kwargs.get("next_url", "/ebooking/rooms")
+        return request.redirect(next_url)
+
+    def _booking(self, **kwargs):
         be_parser = BookingEngineParser(request.env, request.session)
-        be_parser.reset()
+
+        if request.httprequest.method == "POST":
+            # todo use HTTP delete method
+            if "delete" in kwargs:
+                be_parser.del_room_request(kwargs.get("delete"))
+            else:
+                # Set daterange if it has not been set previously
+                be_parser.set_daterange(
+                    kwargs.get("start_date"),
+                    kwargs.get("end_date"),
+                    overwrite=False,
+                )
+                be_parser.add_room_request(
+                    kwargs.get("room_type_id"),
+                    kwargs.get("quantity"),
+                    kwargs.get("start_date"),
+                    kwargs.get("end_date"),
+                )
+
         be_parser.save()
-        return request.redirect(post.get("next_url", "/ebooking/rooms"))
+        booking_engine = be_parser.parse()
+        return booking_engine
+
+    def _get_booking_extra_info(self):
+        parser = BookingEngineParser(request.env, request.session)
+        return parser.parse()
+
+    def _post_booking_extra_info(self, **kwargs):
+        parser = BookingEngineParser(request.env, request.session)
+        parser.set_internal_comment(internal_comment=kwargs.get("internal_comment"))
+        parser.save()
+        return parser.parse()
+
+    def _get_booking_address(self):
+        parser = BookingEngineParser(request.env, request.session)
+        return parser.parse()
+
+    def _post_booking_address(self, **kwargs):
+        parser = BookingEngineParser(request.env, request.session)
+        parser.set_partner(
+            name=kwargs.get("name"),
+            email=kwargs.get("email"),
+            phone=kwargs.get("phone"),
+            address=kwargs.get("address"),
+            city=kwargs.get("city"),
+            postal_code=kwargs.get("postal_code"),
+            country_id=kwargs.get("country_id"),
+        )
+        parser.save()
 
     def _booking_payment(self):
         """
@@ -279,6 +277,12 @@ class BookingEngineController(http.Controller):
         # TODO: move the cleanup of request.session to a BookingEnginerParser method
         request.session[BookingEngineParser.SESSION_KEY] = {}
         return {}
+
+    def _booking_reset(self):
+        be_parser = BookingEngineParser(request.env, request.session)
+        be_parser.reset()
+        be_parser.save()
+        return
 
     def _redirect_availability_error(self, error: AvailabilityError):
         logger.debug(error)

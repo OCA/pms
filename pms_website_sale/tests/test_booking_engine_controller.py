@@ -26,8 +26,11 @@ class BookingEngineControllerCase(PMSTestCommons):
         cls.public_user = cls.env.ref("base.public_user")
         cls.website = cls.env["website"].browse(1)
 
+    def _get_date(self):
+        return Date.from_string("2200-05-01")
+
     def _get_session_booking_engine(self):
-        start_date = Date.from_string("2200-05-01")
+        start_date = self._get_date()
         return {
             "partner_id": self.demo_partner.id,
             "partner": {
@@ -73,6 +76,68 @@ class BookingEngineControllerCase(PMSTestCommons):
         availability_2.value_num_rooms_selected = 2
         folio_action = be.create_folio()
         return self.env["pms.folio"].browse(folio_action["res_id"])
+
+    @staticmethod
+    def _get_room_request_for_room_type(room_type_id: int, session):
+        rooms_requests = session["rooms_requests"]
+        room_request = [
+            rr for rr in rooms_requests if rr["room_type_id"] == room_type_id
+        ]
+        return room_request.pop()
+
+    def test_get_booking(self):
+        with MockRequest(self.company.with_user(self.public_user).env) as request:
+            request.session[
+                BookingEngineParser.SESSION_KEY
+            ] = self._get_session_booking_engine()
+            booking_engine = self.controller._booking()
+        self.assertEqual(booking_engine.partner_id, self.demo_partner)
+
+    def test_post_booking(self):
+        start_date = self._get_date()
+        end_date = self._get_date() + timedelta(days=2)
+        post = {
+            "start_date": start_date,
+            "end_date": end_date,
+            "room_type_id": self.room_type_1.id,
+            "quantity": 2,
+        }
+        be_session = self._get_session_booking_engine()
+        with MockRequest(self.company.with_user(self.public_user).env) as request:
+            request.session[BookingEngineParser.SESSION_KEY] = be_session
+            request.httprequest.method = "POST"
+            booking_engine = self.controller._booking(**post)
+
+        # no override of dates in post
+        self.assertEqual(booking_engine.start_date, start_date)
+        self.assertEqual(
+            booking_engine.end_date, Date.from_string(be_session["end_date"])
+        )
+
+        be_ar_1 = booking_engine.availability_results.filtered(
+            lambda ar: ar.room_type_id.id == self.room_type_1.id
+        )
+        self.assertEqual(be_ar_1.value_num_rooms_selected, 2)
+
+    def test_delete_booking(self):
+        # todo
+        pass
+
+    def test_get_booking_extra_info(self):
+        # todo
+        pass
+
+    def test_post_booking_extra_info(self):
+        # todo
+        pass
+
+    def test_get_booking_address(self):
+        # todo
+        pass
+
+    def test_post_booking_address(self):
+        # todo
+        pass
 
     def test_booking_payment(self):
         with MockRequest(self.company.with_user(self.public_user).env) as request:
@@ -139,9 +204,19 @@ class BookingEngineControllerCase(PMSTestCommons):
         self.assertEqual(folio.move_ids.payment_state, "paid")
         self.assertFalse(request.session[BookingEngineParser.SESSION_KEY])
 
-    def test_booking_unavailable_rooms(self):
+    def test_booking_reset(self):
         # todo
         pass
+
+    def test_booking_unavailable_rooms(self):
+        session = self._get_session_booking_engine()
+        session["rooms_requests"][0]["quantity"] = 1000
+        with MockRequest(self.company.with_user(self.public_user).env) as request:
+            request.session[BookingEngineParser.SESSION_KEY] = session
+
+            with self.assertRaises(AvailabilityError) as e:
+                self.controller._booking_payment()
+            self.assertIn("Not enough rooms available for", str(e.exception))
 
     def test_booking_extra_info_unavailable_rooms(self):
         # todo
