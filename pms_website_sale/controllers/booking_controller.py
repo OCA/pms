@@ -75,20 +75,6 @@ class BookingEngineController(http.Controller):
         return request.render("pms_website_sale.pms_booking_engine_page", values)
 
     @http.route(
-        ["/ebooking/booking/reset"],
-        type="http",
-        auth="public",
-        website=True,
-        methods=["GET"],
-    )
-    def booking_reset(self, **post):
-        """Reset the values in the session in order to make a new booking"""
-        be_parser = BookingEngineParser(request.env, request.session)
-        be_parser.reset()
-        be_parser.save()
-        return request.redirect(post.get("next_url", "/ebooking/rooms"))
-
-    @http.route(
         ["/ebooking/booking/extra_info"],
         type="http",
         auth="public",
@@ -178,6 +164,64 @@ class BookingEngineController(http.Controller):
 
         return request.render("pms_website_sale.pms_booking_address_page", values)
 
+    @http.route(
+        ["/ebooking/booking/payment"],
+        type="http",
+        auth="public",
+        website=True,
+        methods=["GET"],
+    )
+    def booking_payment(self):
+        try:
+            values = self._booking_payment()
+        except AvailabilityError as e:
+            return self._redirect_availability_error(e)
+
+        return request.render("pms_website_sale.pms_booking_payment_page", values)
+
+    @http.route(
+        ["/ebooking/booking/payment/transaction"],
+        type="json",
+        auth="public",
+        method=["POST"],
+    )
+    def booking_payment_transaction(self, acquirer_id, **kwargs):
+        try:
+            tx = self._booking_payment_transaction(acquirer_id, **kwargs)
+        except AvailabilityError as e:
+            return self._redirect_availability_error(e)
+
+        acquirer = request.env["payment.acquirer"].browse(acquirer_id)
+        return acquirer.sudo().render(tx.reference, tx.amount, tx.currency_id.id)
+
+    @http.route(
+        ["/ebooking/booking/success/<int:folio_id>"],
+        type="http",
+        auth="public",
+        website=True,
+        methods=["GET"],
+    )
+    def booking_success(self, folio_id):
+        folio = request.env["pms.folio"].sudo().browse(folio_id).exists()
+        if not folio:
+            raise NotFound("The requesting folio does not exists")
+        values = self._booking_success(folio)
+        return request.render("pms_website_sale.pms_booking_success_page", values)
+
+    @http.route(
+        ["/ebooking/booking/reset"],
+        type="http",
+        auth="public",
+        website=True,
+        methods=["GET"],
+    )
+    def booking_reset(self, **post):
+        """Reset the values in the session in order to make a new booking"""
+        be_parser = BookingEngineParser(request.env, request.session)
+        be_parser.reset()
+        be_parser.save()
+        return request.redirect(post.get("next_url", "/ebooking/rooms"))
+
     def _booking_payment(self):
         """
         processes the request on `/ebooking/booking/payment`
@@ -201,21 +245,6 @@ class BookingEngineController(http.Controller):
             "bootstrap_formatting": True,
         }
 
-    @http.route(
-        ["/ebooking/booking/payment"],
-        type="http",
-        auth="public",
-        website=True,
-        methods=["GET"],
-    )
-    def booking_payment(self):
-        try:
-            values = self._booking_payment()
-        except AvailabilityError as e:
-            return self._redirect_availability_error(e)
-
-        return request.render("pms_website_sale.pms_booking_payment_page", values)
-
     def _booking_payment_transaction(self, acquirer_id, **kwargs):
         """
         Processes requests on /ebooking/booking/payment/transaction
@@ -237,21 +266,6 @@ class BookingEngineController(http.Controller):
         PaymentProcessing.add_payment_transaction(tx)
         return tx
 
-    @http.route(
-        ["/ebooking/booking/payment/transaction"],
-        type="json",
-        auth="public",
-        method=["POST"],
-    )
-    def booking_payment_transaction(self, acquirer_id, **kwargs):
-        try:
-            tx = self._booking_payment_transaction(acquirer_id, **kwargs)
-        except AvailabilityError as e:
-            return self._redirect_availability_error(e)
-
-        acquirer = request.env["payment.acquirer"].browse(acquirer_id)
-        return acquirer.sudo().render(tx.reference, tx.amount, tx.currency_id.id)
-
     def _booking_success(self, folio_id):
         """
         Processes /ebooking/booking/success for given folio id
@@ -265,20 +279,6 @@ class BookingEngineController(http.Controller):
         # TODO: move the cleanup of request.session to a BookingEnginerParser method
         request.session[BookingEngineParser.SESSION_KEY] = {}
         return {}
-
-    @http.route(
-        ["/ebooking/booking/success/<int:folio_id>"],
-        type="http",
-        auth="public",
-        website=True,
-        methods=["GET"],
-    )
-    def booking_success(self, folio_id):
-        folio = request.env["pms.folio"].sudo().browse(folio_id).exists()
-        if not folio:
-            raise NotFound("The requesting folio does not exists")
-        values = self._booking_success(folio)
-        return request.render("pms_website_sale.pms_booking_success_page", values)
 
     def _redirect_availability_error(self, error: AvailabilityError):
         logger.debug(error)
