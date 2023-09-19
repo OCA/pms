@@ -3,7 +3,7 @@
 
 from datetime import date, timedelta
 
-from odoo import tools
+from odoo import _, tools
 
 
 class ParserError(Exception):
@@ -13,6 +13,17 @@ class ParserError(Exception):
 
     def __init__(self, msg, usr_msg=None):
         self.usr_msg = usr_msg if usr_msg else msg
+        super().__init__(msg)
+
+
+class AvailabilityError(Exception):
+    """Error containing two messages, a debugging message and a message
+    to the end user.
+    """
+
+    def __init__(self, msg, usr_msg=None, room_type_id=None):
+        self.usr_msg = usr_msg if usr_msg else msg
+        self.room_type_id = room_type_id
         super().__init__(msg)
 
 
@@ -83,10 +94,14 @@ class BookingEngineParser:
                 )
 
             if room["quantity"] > room_availability.num_rooms_available:
-                raise ParserError(
-                    "Not enough rooms available"
-                    " for (%s, %s)"
-                    % (room["room_type_id"], room_availability.room_type_id.name)
+                room_type_id = room["room_type_id"]
+                room_type_name = room_availability.room_type_id.name
+                raise AvailabilityError(
+                    msg=f"Not enough rooms available for ({room_type_id}, {room_type_name})",
+                    usr_msg=_(
+                        "{name} rooms are not available anymore at selected dates."
+                    ).format(name=room_type_name),
+                    room_type_id=room_type_id,
                 )
 
             room_availability.value_num_rooms_selected = room["quantity"]
@@ -182,7 +197,8 @@ class BookingEngineParser:
             )
         self.data["rooms_requests"] = list(
             filter(
-                lambda rr: rr[room_type_id] != room_type_id, self.data["rooms_requests"]
+                lambda rr: rr[room_type_id] != room_type_id,
+                self.data["rooms_requests"],
             )
         )
         # FIXME: should we report error when trying to delete a non

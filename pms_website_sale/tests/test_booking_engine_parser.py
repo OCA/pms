@@ -6,6 +6,7 @@ from datetime import timedelta
 from odoo.fields import Date
 
 from odoo.addons.pms_website_sale.controllers.booking_engine_parser import (
+    AvailabilityError,
     BookingEngineParser,
     ParserError,
 )
@@ -115,7 +116,7 @@ class BookingParserCase(PMSTestCommons):
         }
         parser = BookingEngineParser(self.env, session)
 
-        with self.assertRaises(ParserError) as e:
+        with self.assertRaises(AvailabilityError) as e:
             parser.parse()
         self.assertTrue(str(e.exception).startswith("Not enough rooms available"))
 

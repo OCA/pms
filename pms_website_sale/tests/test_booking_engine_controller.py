@@ -10,6 +10,7 @@ from odoo.addons.pms_website_sale.controllers.booking_controller import (
     BookingEngineController,
 )
 from odoo.addons.pms_website_sale.controllers.booking_engine_parser import (
+    AvailabilityError,
     BookingEngineParser,
 )
 from odoo.addons.website.tools import MockRequest
@@ -25,9 +26,10 @@ class BookingEngineControllerCase(PMSTestCommons):
         cls.public_user = cls.env.ref("base.public_user")
         cls.website = cls.env["website"].browse(1)
 
+    def _get_session_booking_engine(self):
         start_date = Date.from_string("2200-05-01")
-        cls.session_booking_engine = {
-            "partner_id": cls.demo_partner.id,
+        return {
+            "partner_id": self.demo_partner.id,
             "partner": {
                 "name": "Test Name",
                 "email": "test@test.rt",
@@ -35,17 +37,17 @@ class BookingEngineControllerCase(PMSTestCommons):
                 "address": "Quai aux pierres, 3",
                 "city": "Bruxelles",
                 "postal_code": "1000",
-                "country_id": cls.env.company.country_id.id,
+                "country_id": self.env.company.country_id.id,
             },
             "start_date": Date.to_string(start_date),
             "end_date": Date.to_string(start_date + timedelta(days=3)),
             "rooms_requests": [
                 {
-                    "room_type_id": cls.room_type_1.id,
+                    "room_type_id": self.room_type_1.id,
                     "quantity": 1,
                 },
                 {
-                    "room_type_id": cls.room_type_2.id,
+                    "room_type_id": self.room_type_2.id,
                     "quantity": 2,
                 },
             ],
@@ -76,7 +78,7 @@ class BookingEngineControllerCase(PMSTestCommons):
         with MockRequest(self.company.with_user(self.public_user).env) as request:
             request.session[
                 BookingEngineParser.SESSION_KEY
-            ] = self.session_booking_engine
+            ] = self._get_session_booking_engine()
             values = self.controller._booking_payment()
         booking_engine = values["booking_engine"]
         self.assertEqual(booking_engine.partner_id.id, self.demo_partner.id)
@@ -85,7 +87,7 @@ class BookingEngineControllerCase(PMSTestCommons):
         with MockRequest(self.company.with_user(self.public_user).env) as request:
             request.session[
                 BookingEngineParser.SESSION_KEY
-            ] = self.session_booking_engine
+            ] = self._get_session_booking_engine()
             tx = self.controller._booking_payment_transaction(
                 self.wire_transfer_acquirer.id
             )
@@ -104,7 +106,7 @@ class BookingEngineControllerCase(PMSTestCommons):
         with MockRequest(self.company.with_user(self.public_user).env) as request:
             request.session[
                 BookingEngineParser.SESSION_KEY
-            ] = self.session_booking_engine
+            ] = self._get_session_booking_engine()
             tx = self.controller._booking_payment_transaction(
                 self.wire_transfer_acquirer.id
             )
@@ -119,13 +121,13 @@ class BookingEngineControllerCase(PMSTestCommons):
         ) as request:
             request.session[
                 BookingEngineParser.SESSION_KEY
-            ] = self.session_booking_engine
+            ] = self._get_session_booking_engine()
             tx = self.controller._booking_payment_transaction(
                 self.wire_transfer_acquirer.id
             )
             request.session[
                 BookingEngineParser.SESSION_KEY
-            ] = self.session_booking_engine
+            ] = self._get_session_booking_engine()
             folio = tx.folio_ids
             tx.state = "done"
             tx.date = Date.today()
@@ -136,3 +138,36 @@ class BookingEngineControllerCase(PMSTestCommons):
         self.assertEqual(folio.move_ids.state, "posted")
         self.assertEqual(folio.move_ids.payment_state, "paid")
         self.assertFalse(request.session[BookingEngineParser.SESSION_KEY])
+
+    def test_booking_unavailable_rooms(self):
+        # todo
+        pass
+
+    def test_booking_extra_info_unavailable_rooms(self):
+        # todo
+        pass
+
+    def test_booking_address_unavailable_rooms(self):
+        # todo
+        pass
+
+    def test_booking_payment_unavailable_rooms(self):
+        session = self._get_session_booking_engine()
+        session["rooms_requests"][0]["quantity"] = 1000
+        with MockRequest(self.company.with_user(self.public_user).env) as request:
+            request.session[BookingEngineParser.SESSION_KEY] = session
+
+            with self.assertRaises(AvailabilityError) as e:
+                self.controller._booking_payment_transaction(
+                    self.wire_transfer_acquirer.id
+                )
+            self.assertIn("Not enough rooms available for", str(e.exception))
+
+    def test_booking_payment_transaction_unavailable_rooms(self):
+        session = self._get_session_booking_engine()
+        session["rooms_requests"][0]["quantity"] = 1000
+        with MockRequest(self.company.with_user(self.public_user).env) as request:
+            request.session[BookingEngineParser.SESSION_KEY] = session
+            with self.assertRaises(AvailabilityError) as e:
+                self.controller._booking_payment()
+            self.assertIn("Not enough rooms available for", str(e.exception))
