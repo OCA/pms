@@ -272,6 +272,7 @@ class PmsFolioService(Component):
                     else None,
                     firstCheckin=str(folio.first_checkin),
                     lastCheckout=str(folio.last_checkout),
+                    createHour=folio.create_date.strftime("%H:%M"),
                 )
             )
         return result_folios
