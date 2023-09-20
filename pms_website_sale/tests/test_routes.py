@@ -50,7 +50,15 @@ class PMSRouteCase(HttpCase):
     @mock.patch("odoo.http.WebRequest.validate_csrf", return_value=True)
     def test_booking_route_with_delete_errors(self, _):
         url = "/ebooking/booking"
+
         data = {"delete": "-1"}  # deleting non existing room request
+        response = self.url_open(url=url, data=data)
+        self.assertEqual(response.status_code, 200)
+        page = fromstring(response.content)
+        error_div = page.xpath("//div[@name='errors']")
+        self.assertTrue(error_div)
+
+        data = {"delete": "a"}  # deleting with wrong value
         response = self.url_open(url=url, data=data)
         self.assertEqual(response.status_code, 200)
         page = fromstring(response.content)
