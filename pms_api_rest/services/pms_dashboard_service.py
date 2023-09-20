@@ -42,10 +42,10 @@ class PmsDashboardServices(Component):
             END) AS reservations_pending_departure,
             SUM(CASE WHEN r.checkout = d.date AND r.state = 'done' THEN 1 ELSE 0 END) AS reservations_completed
             FROM ( SELECT CURRENT_DATE + date AS date
-            FROM generate_series(date '2023-08-30' - CURRENT_DATE, date '2023-09-30' - CURRENT_DATE) date) d
+            FROM generate_series(date %s - CURRENT_DATE, date %s - CURRENT_DATE) date) d
             LEFT JOIN pms_reservation r
             ON (r.checkin = d.date OR r.checkout = d.date)
-            AND r.pms_property_id = 1
+            AND r.pms_property_id = %s
             AND r.reservation_type != 'out'
             GROUP BY d.date
             ORDER BY d.date;
@@ -122,7 +122,7 @@ class PmsDashboardServices(Component):
         DashboardNumericResponse = self.env.datamodels["pms.dashboard.numeric.response"]
 
         return DashboardNumericResponse(
-            value=result[0]["occupancy"] if result else 0,
+            value=result[0]["occupancy"] if result[0]["occupancy"] else 0,
         )
 
     @restapi.method(
@@ -134,36 +134,34 @@ class PmsDashboardServices(Component):
                 "GET",
             )
         ],
-        input_param=Datamodel("pms.dashboard.range.dates.search.param"),
+        input_param=Datamodel("pms.dashboard.search.param"),
         output_param=Datamodel("pms.dashboard.numeric.response"),
         auth="jwt_api_pms",
     )
     def get_billing(self, pms_dashboard_search_param):
-        date_from = fields.Date.from_string(pms_dashboard_search_param.dateFrom)
-        date_to = fields.Date.from_string(pms_dashboard_search_param.dateTo)
+        date_billing = fields.Date.from_string(pms_dashboard_search_param.date)
 
         self.env.cr.execute(
             f"""
             SELECT SUM(l.price_day_total) billing
             FROM pms_reservation_line l INNER JOIN pms_reservation r ON l.reservation_id = r.id
-            WHERE l.date BETWEEN %s AND %s
+            WHERE l.date = %s
             AND l.occupies_availability = true
             AND l.state != 'cancel'
             AND l.pms_property_id = %s
             AND r.reservation_type NOT IN ('out', 'staff')
             """,
             (
-                date_from,
-                date_to,
+                date_billing,
                 pms_dashboard_search_param.pmsPropertyId,
             ),
         )
 
         result = self.env.cr.dictfetchall()
         DashboardNumericResponse = self.env.datamodels["pms.dashboard.numeric.response"]
-
+        print(result)
         return DashboardNumericResponse(
-            value=result[0]["billing"] if result else 0,
+            value=result[0]["billing"] if result[0]['billing'] else 0,
         )
 
 
@@ -219,4 +217,164 @@ class PmsDashboardServices(Component):
 
         return DashboardNumericResponse(
             value=revpar,
+        )
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/new-folios",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.dashboard.search.param"),
+        output_param=Datamodel("pms.dashboard.numeric.response"),
+        auth="jwt_api_pms",
+    )
+    def get_number_of_new_folios(self, pms_dashboard_search_param):
+        date_new_folios = fields.Date.from_string(pms_dashboard_search_param.date)
+
+        self.env.cr.execute(
+            f"""
+             SELECT COUNT(1) new_folios
+                FROM pms_folio f
+                WHERE f.create_date = %s
+                AND f.state != 'cancel'
+                AND f.pms_property_id = %s
+                AND f.reservation_type NOT IN ('out', 'staff')
+            """,
+            (
+                date_new_folios,
+                pms_dashboard_search_param.pmsPropertyId,
+            ),
+        )
+
+        result = self.env.cr.dictfetchall()
+        DashboardNumericResponse = self.env.datamodels["pms.dashboard.numeric.response"]
+
+        return DashboardNumericResponse(
+            value=result[0]["new_folios"] if result[0]["new_folios"] else 0,
+        )
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/overnights",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.dashboard.search.param"),
+        output_param=Datamodel("pms.dashboard.numeric.response"),
+        auth="jwt_api_pms",
+    )
+    def get_overnights(self, pms_dashboard_search_param):
+        date = fields.Date.from_string(pms_dashboard_search_param.date)
+
+        self.env.cr.execute(
+            f"""
+              SELECT COUNT(1) overnights
+                FROM pms_reservation_line l
+                INNER JOIN pms_reservation r ON r.id = l.reservation_id
+                WHERE l.date = %s
+                AND l.state != 'cancel'
+                AND l.occupies_availability = true
+                AND l.pms_property_id = %s
+                AND l.overbooking = false
+                AND r.reservation_type != 'out'
+            """,
+            (
+
+                date,
+                pms_dashboard_search_param.pmsPropertyId,
+            ),
+        )
+
+        result = self.env.cr.dictfetchall()
+        DashboardNumericResponse = self.env.datamodels["pms.dashboard.numeric.response"]
+
+        return DashboardNumericResponse(
+            value=result[0]["overnights"] if result[0]["overnights"] else 0,
+        )
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/cancelled-overnights",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.dashboard.search.param"),
+        output_param=Datamodel("pms.dashboard.numeric.response"),
+        auth="jwt_api_pms",
+    )
+    def get_cancelled_overnights(self, pms_dashboard_search_param):
+        date = fields.Date.from_string(pms_dashboard_search_param.date)
+
+        self.env.cr.execute(
+            f"""
+              SELECT COUNT(1) cancelled_overnights
+                FROM pms_reservation_line l
+                INNER JOIN pms_reservation r ON r.id = l.reservation_id
+                WHERE l.date = %s
+                AND l.state = 'cancel'
+                AND l.occupies_availability = false
+                AND l.pms_property_id = %s
+                AND l.overbooking = false
+                AND r.reservation_type != 'out'
+            """,
+            (
+                date,
+                pms_dashboard_search_param.pmsPropertyId,
+            ),
+        )
+
+        result = self.env.cr.dictfetchall()
+        DashboardNumericResponse = self.env.datamodels["pms.dashboard.numeric.response"]
+
+        return DashboardNumericResponse(
+            value=result[0]["cancelled_overnights"] if result[0]["cancelled_overnights"] else 0,
+        )
+
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/overbookings",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.dashboard.search.param"),
+        output_param=Datamodel("pms.dashboard.numeric.response"),
+        auth="jwt_api_pms",
+    )
+    def get_overbookings(self, pms_dashboard_search_param):
+        date = fields.Date.from_string(pms_dashboard_search_param.date)
+
+        self.env.cr.execute(
+            f"""
+              SELECT COUNT(1) overbookings
+                FROM pms_reservation_line l
+                WHERE l.date = %s
+                AND l.pms_property_id = %s
+                AND l.overbooking = true
+            """,
+            (
+
+                date,
+                pms_dashboard_search_param.pmsPropertyId,
+            ),
+        )
+
+        result = self.env.cr.dictfetchall()
+        DashboardNumericResponse = self.env.datamodels["pms.dashboard.numeric.response"]
+
+        return DashboardNumericResponse(
+            value=result[0]["overbookings"] if result[0]["overbookings"] else 0,
         )

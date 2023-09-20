@@ -71,3 +71,4 @@ class PmsFolioShortInfo(Datamodel):
     saleChannelId = fields.Integer(required=False, allow_none=True)
     firstCheckin = fields.String(required=False, allow_none=True)
     lastCheckout = fields.String(required=False, allow_none=True)
+    createHour = fields.String(required=False, allow_none=True)
