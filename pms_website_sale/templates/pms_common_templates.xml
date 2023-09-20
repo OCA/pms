@@ -178,7 +178,7 @@
                                 name="delete"
                                 t-att-value="availability_result.room_type_id.id"
                             />
-                            <button type="submit" class="btn btn-light">
+                            <button type="submit" class="btn btn-light btn-sm">
                                 <span class="fa fa-trash" />
                             </button>
                         </form>
