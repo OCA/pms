@@ -195,14 +195,16 @@ class BookingEngineParser:
             raise ParserError(
                 msg=str(err), usr_msg="Cannot proceed due to incorrect value."
             )
+        if room_type_id not in (
+            rr["room_type_id"] for rr in self.data["rooms_requests"]
+        ):
+            raise ParserError("There is no room with id %s." % room_type_id)
         self.data["rooms_requests"] = list(
             filter(
-                lambda rr: rr[room_type_id] != room_type_id,
+                lambda rr: rr["room_type_id"] != room_type_id,
                 self.data["rooms_requests"],
             )
         )
-        # FIXME: should we report error when trying to delete a non
-        # existing room to end user ?
 
     def create_folio(self):
         folio_action = self.booking_engine.create_folio()
