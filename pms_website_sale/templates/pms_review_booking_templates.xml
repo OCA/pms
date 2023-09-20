@@ -9,15 +9,19 @@
                         <t t-set="step" t-value="1" />
                     </t>
                 </div>
-                <t t-call="pms_website_sale.pms_booking_engine_errors" />
                 <div name="booking" class="row mt-4">
                     <div name="booking_table" class="col col-md-9">
+                        <div t-if="errors" name="errors">
+                            <t t-call="pms_website_sale.pms_booking_engine_errors" />
+                        </div>
+
                         <t t-call="pms_website_sale.pms_booking_engine_table">
                             <t
                                 t-set="availability_results"
                                 t-value="booking_engine.availability_results.filtered(lambda r: r.value_num_rooms_selected > 0)"
                             />
                         </t>
+
                         <div class="d-flex flex-row justify-content-between mb-4">
                             <a
                                 class="btn btn-secondary"
