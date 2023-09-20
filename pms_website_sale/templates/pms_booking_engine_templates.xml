@@ -10,22 +10,24 @@
                     </t>
                 </div>
                 <t t-call="pms_website_sale.pms_booking_engine_errors" />
-                <div name="booking" class="row">
+                <div name="booking" class="row mt-4">
                     <div name="booking_table" class="col col-md-9">
                         <t t-call="pms_website_sale.pms_booking_engine_table">
                             <t
                                 t-set="availability_results"
-                                t-value="booking_engine.availability_results"
+                                t-value="booking_engine.availability_results.filtered(lambda r: r.value_num_rooms_selected > 0)"
                             />
                         </t>
-                        <div class="row justify-content-end">
-                            <div class="col-auto">
-                                <a
-                                    class="btn btn-primary"
-                                    href="/ebooking/booking/address"
-                                >Next
-                                </a>
-                            </div>
+                        <div class="d-flex flex-row justify-content-between mb-4">
+                            <a
+                                class="btn btn-secondary"
+                                t-attf-href="/ebooking/rooms?start_date={{ booking_engine.start_date }}&amp;end_date={{ booking_engine.end_date }}"
+                            >
+                                <span class="fa fa-chevron-left" /> Add other rooms
+                            </a>
+                            <a class="btn btn-primary" href="/ebooking/booking/address">
+                                Next <span class="fa fa-chevron-right" />
+                            </a>
                         </div>
                     </div>
                     <div name="booking_summary" class="col col-md-3">

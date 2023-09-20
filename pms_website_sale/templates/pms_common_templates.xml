@@ -81,74 +81,43 @@
     </template>
 
     <template id="partner_summary">
-        <div class="row">
-            <div class="col col-8">
-                <h3>Contact</h3>
-                <span
-                    t-field="booking_engine.partner_id"
-                    t-options='{"widget": "contact", "fields": ["name", "address", "phone", "email"], "no_marker": True, "phone_icons": True}'
-                    name="booking_partner_address"
-                />
-            </div>
-            <div class="col col-4 text-right">
-                <a href="/ebooking/booking/address">
-                    <button class="btn btn-light ">Edit</button>
-                </a>
-            </div>
+        <div name="partner_tile" class="d-flex flex-row justify-content-between">
+            <h3>Contact</h3>
+        </div>
+        <div name="partner_info">
+            <span
+                t-field="booking_engine.partner_id"
+                t-options='{"widget": "contact", "fields": ["name", "address", "phone", "email"], "no_marker": True, "phone_icons": True}'
+                name="booking_partner_address"
+            />
         </div>
     </template>
 
     <template id="pms_booking_engine_summary">
-        <div class="row">
-            <div class="col">
+        <div name="summary" class="d-flex flex-column">
 
-                <div name="total" class="row justify-content-between">
-                    <div class="col col-auto">
-                        <h3>Total</h3>
-                        <t t-if="booking_engine">
-                            <span
-                                t-esc="booking_engine.total_price_folio"
-                                t-options='{"widget": "monetary", "display_currency": website.currency_id}'
-                            />
-                        </t>
-                        <t t-else="">
-                            <span
-                                t-esc="int(0)"
-                                t-options='{"widget": "monetary", "display_currency": website.currency_id}'
-                            />
-                        </t>
-                    </div>
-                    <div class="col col-auto">
-                        <t t-if="booking_engine">
-                            <a
-                                class="btn btn-secondary"
-                                t-attf-href="/ebooking/rooms?start_date={{ booking_engine.start_date }}&amp;end_date={{ booking_engine.end_date }}"
-                            >
-                                Add other rooms
-                            </a>
-                        </t>
-                        <t t-else="">
-                            <a
-                                class="btn btn-secondary"
-                                href="/ebooking/rooms"
-                            >Add other rooms
-                            </a>
-                        </t>
-                    </div>
-                    <t t-if="booking_engine">
-                        <div name="partner_summary" class="row">
-                            <div class="col">
-                                <t t-call="pms_website_sale.partner_summary">
-                                    <t
-                                        t-set="partner"
-                                        t-value="booking_engine.partner_id"
-                                    />
-                                </t>
-                            </div>
-                        </div>
-                    </t>
-                </div>
+            <div name="total" class="mb-2">
+                <h3>Total</h3>
+                <t t-if="booking_engine">
+                    <span
+                        t-esc="booking_engine.total_price_folio"
+                        t-options='{"widget": "monetary", "display_currency": website.currency_id}'
+                    />
+                </t>
+                <t t-else="">
+                    <span
+                        t-esc="int(0)"
+                        t-options='{"widget": "monetary", "display_currency": website.currency_id}'
+                    />
+                </t>
             </div>
+
+            <div t-if="booking_engine" name="partner_summary" class="mb-2">
+                <t t-call="pms_website_sale.partner_summary">
+                    <t t-set="partner" t-value="booking_engine.partner_id" />
+                </t>
+            </div>
+
         </div>
     </template>
 
@@ -189,48 +158,48 @@
                 </tr>
             </thead>
             <tbody>
-                <t t-foreach="availability_results" t-as="availability_result">
-                    <t t-if="availability_result.value_num_rooms_selected > 0">
-                        <tr>
-                            <th
-                                scope="row"
-                                t-esc="availability_result.room_type_id.name"
+                <tr t-foreach="availability_results" t-as="availability_result">
+                    <th scope="row" t-esc="availability_result.room_type_id.name" />
+                    <td
+                        t-esc="availability_result.checkin"
+                        t-options='{"widget":"date"}'
+                    />
+                    <td
+                        t-esc="availability_result.checkout"
+                        t-options='{"widget":"date"}'
+                    />
+                    <td t-esc="availability_result.value_num_rooms_selected" />
+                    <td>
+                        <span
+                            t-field="availability_result.price_total"
+                            t-options='{"widget": "monetary", "display_currency": website.currency_id}'
+                        />
+                    </td>
+                    <td>
+                        <form method="post">
+                            <input
+                                type="hidden"
+                                name="csrf_token"
+                                t-att-value="request.csrf_token()"
                             />
-                            <td
-                                t-esc="availability_result.checkin"
-                                t-options='{"widget":"date"}'
+                            <input
+                                type="hidden"
+                                name="delete"
+                                t-att-value="availability_result.room_type_id.id"
                             />
-                            <td
-                                t-esc="availability_result.checkout"
-                                t-options='{"widget":"date"}'
-                            />
-                            <td t-esc="availability_result.value_num_rooms_selected" />
-                            <td>
-                                <span
-                                    t-field="availability_result.price_total"
-                                    t-options='{"widget": "monetary", "display_currency": website.currency_id}'
-                                />
-                            </td>
-                            <td>
-                                <form method="post">
-                                    <input
-                                        type="hidden"
-                                        name="csrf_token"
-                                        t-att-value="request.csrf_token()"
-                                    />
-                                    <input
-                                        type="hidden"
-                                        name="delete"
-                                        t-att-value="availability_result.room_type_id.id"
-                                    />
-                                    <button type="submit" class="btn">
-                                        <span class="fa fa-trash" />
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    </t>
-                </t>
+                            <button type="submit" class="btn btn-light">
+                                <span class="fa fa-trash" />
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                <tr t-if="not availability_results">
+                    <td colspan="6">
+                        <p class="text-center">
+                            This order is currently empty.
+                        </p>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </template>

@@ -121,14 +121,14 @@
                                     </div>
                                 </div>
                                 <div class="row form-group justify-content-between">
-                                    <div class="col-md-4 text-left">
-                                        <button class="btn btn-secondary">Back</button>
+                                    <div class="col text-left">
+                                        <button class="btn btn-secondary">
+                                            <span class="fa fa-chevron-left" /> Back
+                                        </button>
                                     </div>
-                                    <div class="col-md-4 text-right">
-                                        <button
-                                            class="btn btn-primary"
-                                            type="submit"
-                                        >Submit
+                                    <div class="col text-right">
+                                        <button class="btn btn-primary" type="submit">
+                                            Next <span class="fa fa-chevron-right" />
                                         </button>
                                     </div>
                                 </div>
