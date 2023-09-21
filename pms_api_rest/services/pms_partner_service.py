@@ -6,8 +6,61 @@ from odoo.osv import expression
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
+from odoo.exceptions import ValidationError
+from odoo import _
 
-
+_ref_vat = {
+    'al': 'J91402501L',
+    'ar': '200-5536168-2 or 20055361682',
+    'at': 'U12345675',
+    'au': '83 914 571 673',
+    'be': '0477472701',
+    'bg': '1234567892',
+    'ch': 'CHE-123.456.788 TVA or CHE-123.456.788 MWST or CHE-123.456.788 IVA',
+    'cl': '76086428-5',
+    'co': '213123432-1 or 213.123.432-1',
+    'cy': '10259033P',
+    'cz': '12345679',
+    'de': '123456788',
+    'dk': '12345674',
+    'do': '1-01-85004-3 or 101850043',
+    'ec': '1792060346-001',
+    'ee': '123456780',
+    'el': '12345670',
+    'es': '12345674A',
+    'fi': '12345671',
+    'fr': '23334175221',
+    'gb': '123456782 or 123456782',
+    'gr': '12345670',
+    'hu': '12345676',
+    'hr': '01234567896',
+    'ie': '1234567FA',
+    'in': "12AAAAA1234AAZA",
+    'is': '062199',
+    'it': '12345670017',
+    'lt': '123456715',
+    'lu': '12345613',
+    'lv': '41234567891',
+    'mc': '53000004605',
+    'mt': '12345634',
+    'mx': 'GODE561231GR8',
+    'nl': '123456782B90',
+    'no': '123456785',
+    'pe': '10XXXXXXXXY or 20XXXXXXXXY or 15XXXXXXXXY or 16XXXXXXXXY or 17XXXXXXXXY',
+    'ph': '123-456-789-123',
+    'pl': '1234567883',
+    'pt': '123456789',
+    'ro': '1234567897',
+    'rs': '101134702',
+    'ru': '123456789047',
+    'se': '123456789701',
+    'si': '12345679',
+    'sk': '2022749619',
+    'sm': '24165',
+    'tr': '1234567890 (VERGINO) or 17291716060 (TCKIMLIKNO)',
+    've': 'V-12345678-1, V123456781, V-12.345.678-1',
+    'xi': '123456782',
+}
 class PmsPartnerService(Component):
     _inherit = "base.rest.service"
     _name = "pms.partner.service"
@@ -308,81 +361,88 @@ class PmsPartnerService(Component):
             [("id", "=", document_type)]
         )
         # Clean Document number
-        doc_number = False
         document_number = re.sub(r"[^a-zA-Z0-9]", "", document_number).upper()
         partner = self.env["pms.checkin.partner"]._get_partner_by_document(
             document_number, doc_type
         )
-        if partner.id_numbers:
-            doc_number = partner.id_numbers[0]
-
         partners = []
-        PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
-        if not doc_number:
-            pass
-        else:
+        if partner:
+            doc_number = partner.id_numbers.filtered(
+                lambda doc: doc.category_id.id == doc_type.id
+            )
+
+
+            PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
+
+            document_expedition_date = False
             if doc_number.valid_from:
                 document_expedition_date = doc_number.valid_from.strftime("%d/%m/%Y")
-            if doc_number.partner_id.birthdate_date:
-                birthdate_date = doc_number.partner_id.birthdate_date.strftime(
+            birthdate_date = False
+            if partner.birthdate_date:
+                birthdate_date = partner.birthdate_date.strftime(
                     "%d/%m/%Y"
                 )
             partners.append(
                 PmsCheckinPartnerInfo(
-                    id=doc_number.partner_id.id,
-                    name=doc_number.partner_id.name
-                    if doc_number.partner_id.name
-                    else None,
-                    firstname=doc_number.partner_id.firstname
-                    if doc_number.partner_id.firstname
-                    else None,
-                    lastname=doc_number.partner_id.lastname
-                    if doc_number.partner_id.lastname
-                    else None,
-                    lastname2=doc_number.partner_id.lastname2
-                    if doc_number.partner_id.lastname2
-                    else None,
-                    email=doc_number.partner_id.email
-                    if doc_number.partner_id.email
-                    else None,
-                    mobile=doc_number.partner_id.mobile
-                    if doc_number.partner_id.mobile
-                    else None,
-                    documentType=doc_type.id,
-                    documentNumber=doc_number.name,
-                    documentExpeditionDate=document_expedition_date
-                    if doc_number.valid_from and doc_number.category_id == doc_type
-                    else None,
-                    documentSupportNumber=doc_number.support_number
-                    if doc_number.support_number and doc_number.category_id == doc_type
-                    else None,
-                    gender=doc_number.partner_id.gender
-                    if doc_number.partner_id.gender
-                    else None,
-                    birthdate=birthdate_date
-                    if doc_number.partner_id.birthdate_date
-                    else None,
-                    residenceStreet=doc_number.partner_id.residence_street
-                    if doc_number.partner_id.residence_street
-                    else None,
-                    zip=doc_number.partner_id.residence_zip
-                    if doc_number.partner_id.residence_zip
-                    else None,
-                    residenceCity=doc_number.partner_id.residence_city
-                    if doc_number.partner_id.residence_city
-                    else None,
-                    nationality=doc_number.partner_id.nationality_id.id
-                    if doc_number.partner_id.nationality_id
-                    else None,
-                    countryId=doc_number.partner_id.residence_country_id
-                    if doc_number.partner_id.residence_country_id
-                    else None,
-                    countryState=doc_number.partner_id.residence_state_id.id
-                    if doc_number.partner_id.residence_state_id
-                    else None,
+                    partnerId=partner.id or None,
+                    name=partner.name or None,
+                    firstname=partner.firstname or None,
+                    lastname=partner.lastname or None,
+                    lastname2=partner.lastname2 or None,
+                    email=partner.email or None,
+                    mobile=partner.mobile or None,
+                    documentType=doc_type.id or None,
+                    documentNumber=doc_number.name or None,
+                    documentExpeditionDate=document_expedition_date or None,
+                    documentSupportNumber=doc_number.support_number or None,
+                    gender=partner.gender or None,
+                    birthdate=birthdate_date or None,
+                    residenceStreet=partner.residence_street or None,
+                    zip=partner.residence_zip or None,
+                    residenceCity=partner.residence_city or None,
+                    nationality=partner.nationality_id.id or None,
+                    countryId=partner.residence_country_id or None,
+                    countryState=partner.residence_state_id.id or None,
                 )
             )
         return partners
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/check-doc-number/<string:document_number>/<int:document_type_id>/<int:country_id>",
+                ],
+                "GET",
+            )
+        ],
+        auth="jwt_api_pms",
+    )
+    # REVIEW: create a new datamodel and service for documents?
+    def check_document_number(self, document_number, document_type_id, country_id):
+        error_mens = False
+        country = self.env['res.country'].browse(country_id)
+        document_type = self.env['res.partner.id_category'].browse(document_type_id)
+        id_number = self.env["res.partner.id_number"].new(
+            {
+                "name": document_number,
+                "category_id": document_type,
+            }
+        )
+        try:
+            document_type.validate_id_number(id_number)
+        except ValidationError as e:
+            error_mens = str(e)
+        if document_type.aeat_identification_type in ["02", "04"]:
+            Partner = self.env["res.partner"]
+            error = not Partner.simple_vat_check(
+                country_code=country.code,
+                vat_number=document_number,
+            )
+            if error:
+                error_mens = self._construct_check_vat_error_msg(vat_number=document_number, country_code=country.code)
+        if error_mens:
+            raise ValidationError(error_mens)
 
     @restapi.method(
         [
@@ -581,3 +641,23 @@ class PmsPartnerService(Component):
             if v is not None:
                 vals.update({k: v})
         return vals
+
+    def _construct_check_vat_error_msg(self, vat_number, country_code):
+        country_code = country_code.lower()
+        vat_no = "(##=VAT Number)"
+        vat_no = _ref_vat.get(country_code) or vat_no
+        if self.env.context.get('company_id'):
+            company = self.env['res.company'].browse(self.env.context['company_id'])
+        else:
+            company = self.env.company
+        if company.vat_check_vies:
+            return '\n' + _(
+                'The VAT number [%(vat)s] either failed the VIES VAT validation check or did not respect the expected format %(format)s.',
+                vat=vat_number,
+                format=vat_no
+            )
+        return '\n' + _(
+            'The VAT number [%(vat)s] does not seem to be valid. \nNote: the expected format is %(format)s',
+            vat=vat_number,
+            format=vat_no
+        )
