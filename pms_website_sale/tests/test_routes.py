@@ -144,7 +144,7 @@ class PMSRouteCase(HttpCase):
 
     # def test_booking_payment_success_route(self):
     #     folio = self.env.ref("pms.pms_folio_eco_01")
-    #     url = f"/ebooking/booking/success/{folio.id}"
+    #     url = f"/ebooking/booking/success/{folio.id}/{folio.access_token}"
     #     with MockRequest(
     #         folio.with_user(self.public_user).env,
     #         website=self.website.with_user(self.public_user),
