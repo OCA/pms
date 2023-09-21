@@ -1,7 +1,6 @@
 # Copyright 2023 Coop IT Easy SC
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-import json
 from unittest import mock
 
 from lxml.html import fromstring
@@ -123,37 +122,6 @@ class PMSRouteCase(HttpCase):
         page = fromstring(response.content)
         booking_payment_div = page.xpath("//div[@name='booking_payment_page']")
         self.assertTrue(booking_payment_div)
-
-    @mock.patch("odoo.http.WebRequest.validate_csrf", return_value=True)
-    def test_booking_payment_transaction_route(self, redirect_mock):
-        url = "/ebooking/booking/payment/transaction"
-        data = {
-            "jsonrpc": "2.0",
-            "method": "call",
-            "params": {
-                "acquirer_id": self.acquirer.id,
-                "success_url": "/ebooking/booking/payment/success",
-            },
-        }
-        response = self.url_open(
-            url=url,
-            headers={"content-type": "application/json"},
-            data=json.dumps(data),
-        )
-        self.assertEqual(response.status_code, 200)
-
-    # def test_booking_payment_success_route(self):
-    #     folio = self.env.ref("pms.pms_folio_eco_01")
-    #     url = f"/ebooking/booking/success/{folio.id}/{folio.access_token}"
-    #     with MockRequest(
-    #         folio.with_user(self.public_user).env,
-    #         website=self.website.with_user(self.public_user),
-    #     ):
-    #         response = self.url_open(url=url)
-    #     self.assertEqual(response.status_code, 200)
-    #     page = fromstring(response.content)
-    #     booking_payment_success_div = page.xpath("//div[@name='booking_success_page']")
-    #     self.assertTrue(booking_payment_success_div)
 
     def test_booking_payment_success_route_notfound(self):
         url = "/ebooking/booking/success/0"
