@@ -7,3 +7,4 @@ class PmsIdCategoryInfo(Datamodel):
     _name = "pms.id.category.info"
     id = fields.Integer(required=False, allow_none=True)
     documentType = fields.String(required=False, allow_none=True)
+    code = fields.String(required=False, allow_none=True)
