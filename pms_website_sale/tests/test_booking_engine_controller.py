@@ -91,7 +91,7 @@ class BookingEngineControllerCase(PMSTestCommons):
             request.session[
                 BookingEngineParser.SESSION_KEY
             ] = self._get_session_booking_engine()
-            booking_engine = self.controller._booking()
+            booking_engine = self.controller._get_booking()
         self.assertEqual(booking_engine.partner_id, self.demo_partner)
 
     def test_post_booking(self):
@@ -106,8 +106,7 @@ class BookingEngineControllerCase(PMSTestCommons):
         be_session = self._get_session_booking_engine()
         with MockRequest(self.company.with_user(self.public_user).env) as request:
             request.session[BookingEngineParser.SESSION_KEY] = be_session
-            request.httprequest.method = "POST"
-            booking_engine = self.controller._booking(**post)
+            booking_engine = self.controller._post_booking(**post)
 
         # no override of dates in post
         self.assertEqual(booking_engine.start_date, start_date)
@@ -145,7 +144,7 @@ class BookingEngineControllerCase(PMSTestCommons):
             request.session[
                 BookingEngineParser.SESSION_KEY
             ] = self._get_session_booking_engine()
-            values = self.controller._booking_payment()
+            values = self.controller._get_booking_payment()
         booking_engine = values["booking_engine"]
         self.assertEqual(booking_engine.partner_id.id, self.demo_partner.id)
 
@@ -154,7 +153,7 @@ class BookingEngineControllerCase(PMSTestCommons):
             request.session[
                 BookingEngineParser.SESSION_KEY
             ] = self._get_session_booking_engine()
-            tx = self.controller._booking_payment_transaction(
+            tx = self.controller._post_booking_payment_transaction(
                 self.wire_transfer_acquirer.id
             )
 
@@ -175,7 +174,7 @@ class BookingEngineControllerCase(PMSTestCommons):
             request.session[
                 BookingEngineParser.SESSION_KEY
             ] = self._get_session_booking_engine()
-            tx = self.controller._booking_payment_transaction(
+            tx = self.controller._post_booking_payment_transaction(
                 self.wire_transfer_acquirer.id
             )
         tx._set_transaction_cancel()
@@ -190,7 +189,7 @@ class BookingEngineControllerCase(PMSTestCommons):
             request.session[
                 BookingEngineParser.SESSION_KEY
             ] = self._get_session_booking_engine()
-            tx = self.controller._booking_payment_transaction(
+            tx = self.controller._post_booking_payment_transaction(
                 self.wire_transfer_acquirer.id
             )
             request.session[
@@ -227,7 +226,7 @@ class BookingEngineControllerCase(PMSTestCommons):
             request.session[BookingEngineParser.SESSION_KEY] = session
 
             with self.assertRaises(AvailabilityError) as e:
-                self.controller._booking_payment()
+                self.controller._get_booking_payment()
             self.assertIn("Not enough rooms available for", str(e.exception))
 
     def test_booking_extra_info_unavailable_rooms(self):
@@ -245,7 +244,7 @@ class BookingEngineControllerCase(PMSTestCommons):
             request.session[BookingEngineParser.SESSION_KEY] = session
 
             with self.assertRaises(AvailabilityError) as e:
-                self.controller._booking_payment_transaction(
+                self.controller._post_booking_payment_transaction(
                     self.wire_transfer_acquirer.id
                 )
             self.assertIn("Not enough rooms available for", str(e.exception))
@@ -256,5 +255,5 @@ class BookingEngineControllerCase(PMSTestCommons):
         with MockRequest(self.company.with_user(self.public_user).env) as request:
             request.session[BookingEngineParser.SESSION_KEY] = session
             with self.assertRaises(AvailabilityError) as e:
-                self.controller._booking_payment()
+                self.controller._get_booking_payment()
             self.assertIn("Not enough rooms available for", str(e.exception))
