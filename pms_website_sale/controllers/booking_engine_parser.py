@@ -117,9 +117,7 @@ class BookingEngineParser:
 
     def _create_partner(self):
         """Create partner based on values in self.data"""
-        # FIXME: see comment in create_folio() about the fact that
-        # "partner" key may be missing in self.data
-        if "partner" in self.data:
+        try:
             partner_vals = {
                 "name": self.data["partner"]["name"],
                 "email": self.data["partner"]["email"],
@@ -129,9 +127,12 @@ class BookingEngineParser:
                 "zip": self.data["partner"]["postal_code"],
                 "country_id": self.data["partner"]["country_id"],
             }
-            partner = self.env["res.partner"].sudo().create(partner_vals)
-        else:
-            partner = self.env.ref("base.public_partner")
+        except KeyError as err:
+            raise ParserError(
+                msg="Can not create partner: %s" % err,
+                usr_msg="No value for contact person.",
+            )
+        partner = self.env["res.partner"].sudo().create(partner_vals)
         return partner
 
     def parse(self):
