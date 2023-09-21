@@ -29,7 +29,10 @@ class BookingEngineController(http.Controller):
         errors = []
         booking_engine = request.env["pms.booking.engine"]
         try:
-            booking_engine = self._booking(**kwargs)
+            if request.httprequest.method == "GET":
+                booking_engine = booking_engine = self._get_booking()
+            elif request.httprequest.method == "POST":
+                booking_engine = self._post_booking(**kwargs)
         except ParserError as e:
             logger.debug(e)
             errors.append(e.usr_msg)
@@ -137,7 +140,7 @@ class BookingEngineController(http.Controller):
     )
     def booking_payment_transaction(self, acquirer_id, **kwargs):
         try:
-            tx = self._booking_payment_transaction(acquirer_id, **kwargs)
+            tx = self._post_booking_payment_transaction(acquirer_id, **kwargs)
         except AvailabilityError as e:
             return self._redirect_availability_error(e)
 
@@ -167,29 +170,32 @@ class BookingEngineController(http.Controller):
     )
     def booking_reset(self, **kwargs):
         """Reset the values in the session in order to make a new booking"""
-        self._booking_reset()
+        self._get_booking_reset()
         next_url = kwargs.get("next_url", "/ebooking/rooms")
         return request.redirect(next_url)
 
-    def _booking(self, **kwargs):
+    def _get_booking(self):
         be_parser = BookingEngineParser(request.env, request.session)
+        booking_engine = be_parser.parse()
+        return booking_engine
 
-        if request.httprequest.method == "POST":
-            if "delete" in kwargs:
-                be_parser.del_room_request(kwargs.get("delete"))
-            else:
-                # Set daterange if it has not been set previously
-                be_parser.set_daterange(
-                    kwargs.get("start_date"),
-                    kwargs.get("end_date"),
-                    overwrite=False,
-                )
-                be_parser.add_room_request(
-                    kwargs.get("room_type_id"),
-                    kwargs.get("quantity"),
-                    kwargs.get("start_date"),
-                    kwargs.get("end_date"),
-                )
+    def _post_booking(self, **kwargs):
+        be_parser = BookingEngineParser(request.env, request.session)
+        if "delete" in kwargs:
+            be_parser.del_room_request(kwargs.get("delete"))
+        else:
+            # Set daterange if it has not been set previously
+            be_parser.set_daterange(
+                kwargs.get("start_date"),
+                kwargs.get("end_date"),
+                overwrite=False,
+            )
+            be_parser.add_room_request(
+                kwargs.get("room_type_id"),
+                kwargs.get("quantity"),
+                kwargs.get("start_date"),
+                kwargs.get("end_date"),
+            )
 
         be_parser.save()
         booking_engine = be_parser.parse()
@@ -222,7 +228,7 @@ class BookingEngineController(http.Controller):
         )
         parser.save()
 
-    def _booking_payment(self):
+    def _get_booking_payment(self):
         """
         processes the request on `/ebooking/booking/payment`
         :return: dictionary to pass onto the template renderer
@@ -245,7 +251,7 @@ class BookingEngineController(http.Controller):
             "bootstrap_formatting": True,
         }
 
-    def _booking_payment_transaction(self, acquirer_id, **kwargs):
+    def _post_booking_payment_transaction(self, acquirer_id, **kwargs):
         """
         Processes requests on /ebooking/booking/payment/transaction
         :param acquirer_id: the payment acquirer selected by the user
@@ -281,7 +287,7 @@ class BookingEngineController(http.Controller):
         request.session[BookingEngineParser.SESSION_KEY] = {}
         return {}
 
-    def _booking_reset(self):
+    def _get_booking_reset(self):
         be_parser = BookingEngineParser(request.env, request.session)
         be_parser.reset()
         be_parser.save()
