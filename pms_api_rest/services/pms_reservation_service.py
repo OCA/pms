@@ -146,10 +146,13 @@ class PmsReservationService(Component):
             reservation_vals.update({"adults": reservation_data.adults})
         if reservation_data.children is not None:
             reservation_vals.update({"children": reservation_data.children})
-        if reservation_data.segmentationId:
-            reservation_vals.update(
-                {"segmentation_ids": [(6, 0, [reservation_data.segmentationId])]}
-            )
+        if reservation_data.segmentationId is not None:
+            if reservation_data.segmentationId != 0:
+                reservation_vals.update(
+                    {"segmentation_ids": [(6, 0, [reservation_data.segmentationId])]}
+                )
+            else:
+                reservation_vals.update({"segmentation_ids": [(5, 0, 0)]})
         if reservation_data.checkin:
             reservation_vals.update({"checkin": reservation_data.checkin})
         if reservation_data.checkout:
