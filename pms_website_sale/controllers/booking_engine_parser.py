@@ -93,6 +93,8 @@ class BookingEngineParser:
                     "No room type for room ID: %s" % (room["room_type_id"])
                 )
 
+            # FIXME: AvailabilityError should be done on all rooms at
+            # one time.
             if room["quantity"] > room_availability.num_rooms_available:
                 room_type_id = room["room_type_id"]
                 room_type_name = room_availability.room_type_id.name

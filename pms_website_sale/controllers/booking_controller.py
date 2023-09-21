@@ -37,7 +37,9 @@ class BookingEngineController(http.Controller):
             logger.error(e)
             errors.append("An unknown error occurs")
         except AvailabilityError as e:
-            return self._redirect_availability_error(e)
+            logger.debug(e)
+            errors.append(e.usr_msg)
+            self._process_availability_error(e)
 
         values = {
             "booking_engine": booking_engine,
@@ -172,7 +174,6 @@ class BookingEngineController(http.Controller):
         be_parser = BookingEngineParser(request.env, request.session)
 
         if request.httprequest.method == "POST":
-            # todo use HTTP delete method
             if "delete" in kwargs:
                 be_parser.del_room_request(kwargs.get("delete"))
             else:
@@ -284,13 +285,10 @@ class BookingEngineController(http.Controller):
         be_parser.save()
         return
 
-    def _redirect_availability_error(self, error: AvailabilityError):
-        logger.debug(error)
+    def _process_availability_error(self, error: AvailabilityError):
         be_parser = BookingEngineParser(request.env, request.session)
         be_parser.del_room_request(error.room_type_id)
-        return request.redirect(
-            "/ebooking/booking",
-            {
-                "errors": [error.usr_msg],
-            },
-        )
+        be_parser.save()
+
+    def _redirect_availability_error(self, error: AvailabilityError):
+        return request.redirect("/ebooking/booking")
