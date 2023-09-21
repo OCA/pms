@@ -24,11 +24,12 @@ class PmsIdCategoryService(Component):
     def get_id_categories(self):
         result_id_categories = []
         PmsIdCategoryInfo = self.env.datamodels["pms.id.category.info"]
-        for id_category in self.env["res.partner.id_category"].search([]):
+        for id_category in self.env["res.partner.id_category"].with_context(lang=self.env.user.lang).search([]):
             result_id_categories.append(
                 PmsIdCategoryInfo(
                     id=id_category.id,
                     documentType=id_category.name,
+                    code=id_category.code,
                 )
             )
         return result_id_categories
