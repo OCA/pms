@@ -6,7 +6,8 @@ import logging
 
 from werkzeug.exceptions import NotFound
 
-from odoo import http
+from odoo import _, http
+from odoo.exceptions import AccessError
 from odoo.http import request
 
 from odoo.addons.payment.controllers.portal import PaymentProcessing
@@ -144,17 +145,17 @@ class BookingEngineController(http.Controller):
         return acquirer.sudo().render(tx.reference, tx.amount, tx.currency_id.id)
 
     @http.route(
-        ["/ebooking/booking/success/<int:folio_id>"],
+        ["/ebooking/booking/success/<int:folio_id>/<string:access_token>"],
         type="http",
         auth="public",
         website=True,
         methods=["GET"],
     )
-    def booking_success(self, folio_id):
+    def booking_success(self, folio_id, access_token):
         folio = request.env["pms.folio"].sudo().browse(folio_id).exists()
         if not folio:
-            raise NotFound("The requesting folio does not exists")
-        values = self._booking_success(folio)
+            raise NotFound("The requested folio does not exists")
+        values = self._get_booking_success(folio_id, access_token)
         return request.render("pms_website_sale.pms_booking_success_page", values)
 
     @http.route(
@@ -259,23 +260,24 @@ class BookingEngineController(http.Controller):
             {
                 "acquirer_id": acquirer.id,
                 "type": "form",
-                "return_url": f"/ebooking/booking/success/{sudo_folio.id}",
+                "return_url": f"/ebooking/booking/success"
+                f"/{sudo_folio.id}/{sudo_folio.access_token}",
             }
         )
         PaymentProcessing.add_payment_transaction(tx)
         return tx
 
-    def _booking_success(self, folio_id):
+    def _get_booking_success(self, folio_id, access_token):
         """
         Processes /ebooking/booking/success for given folio id
         :return: dictionary to pass onto the template renderer
         """
-        # todo Check for a token - otherwise anyone can validate any folio
         sudo_folio = request.env["pms.folio"].browse(folio_id).sudo()
+        if not sudo_folio.access_token == access_token:
+            raise AccessError(_("Folio token does not match"))
         sudo_folio.action_confirm()
         moves = sudo_folio._create_invoices(grouped=True, final=True)
         moves.sudo().action_post()
-        # TODO: move the cleanup of request.session to a BookingEnginerParser method
         request.session[BookingEngineParser.SESSION_KEY] = {}
         return {}
 

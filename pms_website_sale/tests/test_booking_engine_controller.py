@@ -3,6 +3,7 @@
 
 from datetime import timedelta
 
+from odoo.exceptions import AccessError
 from odoo.fields import Date
 
 from odoo.addons.payment.controllers.portal import PaymentProcessing
@@ -164,7 +165,9 @@ class BookingEngineControllerCase(PMSTestCommons):
         folio = tx.folio_ids
         self.assertEqual(tx.partner_id.name, "Test Name")
         self.assertEqual(tx.amount, expected_amount)
-        self.assertEqual(tx.return_url, f"/ebooking/booking/success/{folio.id}")
+        self.assertEqual(
+            tx.return_url, f"/ebooking/booking/success/{folio.id}/{folio.access_token}"
+        )
         self.assertIn(tx.id, request.session["__payment_tx_ids__"])
 
     def test_cancelling_transaction_cancels_folio(self):
@@ -179,7 +182,7 @@ class BookingEngineControllerCase(PMSTestCommons):
         folio = tx.folio_ids
         self.assertEqual(folio.state, "cancel")
 
-    def test_booking_success(self):
+    def test_get_booking_success(self):
         with MockRequest(
             self.company.with_user(self.public_user).env,
             website=self.website.with_user(self.public_user),
@@ -197,12 +200,21 @@ class BookingEngineControllerCase(PMSTestCommons):
             tx.state = "done"
             tx.date = Date.today()
             PaymentProcessing().payment_status_poll()
-            self.controller._booking_success(folio.id)
+            self.controller._get_booking_success(folio.id, folio.access_token)
 
         self.assertEqual(folio.state, "confirm")
         self.assertEqual(folio.move_ids.state, "posted")
         self.assertEqual(folio.move_ids.payment_state, "paid")
         self.assertFalse(request.session[BookingEngineParser.SESSION_KEY])
+
+    def test_get_booking_success_raises_access_error(self):
+        with MockRequest(
+            self.company.with_user(self.public_user).env,
+            website=self.website.with_user(self.public_user),
+        ):
+            folio = self._create_folio()
+            with self.assertRaises(AccessError):
+                self.controller._get_booking_success(folio.id, "forged-token")
 
     def test_booking_reset(self):
         # todo
