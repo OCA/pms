@@ -117,16 +117,21 @@ class BookingEngineParser:
 
     def _create_partner(self):
         """Create partner based on values in self.data"""
-        partner_vals = {
-            "name": self.data["partner"]["name"],
-            "email": self.data["partner"]["email"],
-            "mobile": self.data["partner"]["phone"],
-            "street": self.data["partner"]["address"],
-            "city": self.data["partner"]["city"],
-            "zip": self.data["partner"]["postal_code"],
-            "country_id": self.data["partner"]["country_id"],
-        }
-        partner = self.env["res.partner"].sudo().create(partner_vals)
+        # FIXME: see comment in create_folio() about the fact that
+        # "partner" key may be missing in self.data
+        if "partner" in self.data:
+            partner_vals = {
+                "name": self.data["partner"]["name"],
+                "email": self.data["partner"]["email"],
+                "mobile": self.data["partner"]["phone"],
+                "street": self.data["partner"]["address"],
+                "city": self.data["partner"]["city"],
+                "zip": self.data["partner"]["postal_code"],
+                "country_id": self.data["partner"]["country_id"],
+            }
+            partner = self.env["res.partner"].sudo().create(partner_vals)
+        else:
+            partner = self.env.ref("base.public_partner")
         return partner
 
     def parse(self):
@@ -209,6 +214,9 @@ class BookingEngineParser:
         )
 
     def create_folio(self):
+        # FIXME: what to do if this function is called and that there is
+        # no information about the partner recorded in the parser?
+        # E.g.: The user has bypassed the address formular.
         folio_action = self.booking_engine.create_folio()
         folio = self.env["pms.folio"].browse(folio_action["res_id"])
         # we must assign the partner after folio creation because
