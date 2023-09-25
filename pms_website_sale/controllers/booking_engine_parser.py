@@ -16,15 +16,20 @@ class ParserError(Exception):
         super().__init__(msg)
 
 
-class AvailabilityError(Exception):
-    """Error containing two messages, a debugging message and a message
-    to the end user.
-    """
+class AvailabilityError(ParserError):
+    """Error when a room is no more available"""
 
     def __init__(self, msg, usr_msg=None, room_type_id=None):
-        self.usr_msg = usr_msg if usr_msg else msg
+        super().__init__(msg, usr_msg=usr_msg)
         self.room_type_id = room_type_id
+
+
+class AvailabilityErrorGroup(Exception):
+    """Group multiple AvailabilityError in one Error"""
+
+    def __init__(self, msg, excs):
         super().__init__(msg)
+        self.excs = tuple(excs) if excs else tuple()
 
 
 class BookingEngineParser:
@@ -83,6 +88,7 @@ class BookingEngineParser:
 
     def _populate_availability_results(self):
         rooms_requests = self.data.get("rooms_requests", [])
+        availability_errors = []
         for room in rooms_requests:
             room_availability = self.booking_engine.availability_results.filtered(
                 lambda ar: ar.room_type_id.id == room["room_type_id"]
@@ -93,20 +99,29 @@ class BookingEngineParser:
                     "No room type for room ID: %s" % (room["room_type_id"])
                 )
 
-            # FIXME: AvailabilityError should be done on all rooms at
-            # one time.
             if room["quantity"] > room_availability.num_rooms_available:
                 room_type_id = room["room_type_id"]
                 room_type_name = room_availability.room_type_id.name
-                raise AvailabilityError(
-                    msg=f"Not enough rooms available for ({room_type_id}, {room_type_name})",
-                    usr_msg=_(
-                        "{name} rooms are not available anymore at selected dates."
-                    ).format(name=room_type_name),
-                    room_type_id=room_type_id,
+                availability_errors.append(
+                    AvailabilityError(
+                        msg=(
+                            f"Not enough rooms available for "
+                            f"({room_type_id}, {room_type_name})"
+                        ),
+                        usr_msg=_(
+                            "{name} rooms are not available anymore at selected dates."
+                        ).format(name=room_type_name),
+                        room_type_id=room_type_id,
+                    )
                 )
+                room["quantity"] = 0
 
             room_availability.value_num_rooms_selected = room["quantity"]
+        if availability_errors:
+            raise AvailabilityErrorGroup(
+                "Some rooms are not available anymore",
+                availability_errors,
+            )
 
     def _get_room_request(self, room_type_id):
         """Return (first) room request that match room_type_id"""

@@ -12,7 +12,12 @@ from odoo.http import request
 
 from odoo.addons.payment.controllers.portal import PaymentProcessing
 
-from .booking_engine_parser import AvailabilityError, BookingEngineParser, ParserError
+from .booking_engine_parser import (
+    AvailabilityError,
+    AvailabilityErrorGroup,
+    BookingEngineParser,
+    ParserError,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -40,10 +45,12 @@ class BookingEngineController(http.Controller):
             # FIXME: when does this type of error occur ?
             logger.error(e)
             errors.append("An unknown error occurs")
-        except AvailabilityError as e:
+        except AvailabilityErrorGroup as e:
             logger.debug(e)
-            errors.append(e.usr_msg)
-            self._process_availability_error(e)
+            for ae in e.excs:
+                logger.debug(ae)
+                errors.append(ae.usr_msg)
+                self._process_availability_error(ae)
 
         values = {
             "booking_engine": booking_engine,
@@ -71,7 +78,7 @@ class BookingEngineController(http.Controller):
         except ParserError as e:
             logger.debug(e)
             errors.append(e.usr_msg)
-        except AvailabilityError as e:
+        except AvailabilityErrorGroup as e:
             return self._redirect_availability_error(e)
 
         # FIXME Is the booking engine really needed ?
@@ -102,7 +109,7 @@ class BookingEngineController(http.Controller):
         except ParserError as e:
             logger.debug(e)
             errors.append(e.usr_msg)
-        except AvailabilityError as e:
+        except AvailabilityErrorGroup as e:
             return self._redirect_availability_error(e)
 
         countries = request.env["res.country"].sudo().search([])
@@ -126,8 +133,8 @@ class BookingEngineController(http.Controller):
     )
     def booking_payment(self):
         try:
-            values = self._booking_payment()
-        except AvailabilityError as e:
+            values = self._get_booking_payment()
+        except AvailabilityErrorGroup as e:
             return self._redirect_availability_error(e)
 
         return request.render("pms_website_sale.pms_booking_payment_page", values)
@@ -141,7 +148,7 @@ class BookingEngineController(http.Controller):
     def booking_payment_transaction(self, acquirer_id, **kwargs):
         try:
             tx = self._post_booking_payment_transaction(acquirer_id, **kwargs)
-        except AvailabilityError as e:
+        except AvailabilityErrorGroup as e:
             return self._redirect_availability_error(e)
 
         acquirer = request.env["payment.acquirer"].browse(acquirer_id)
