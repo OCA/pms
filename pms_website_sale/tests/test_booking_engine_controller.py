@@ -11,7 +11,7 @@ from odoo.addons.pms_website_sale.controllers.booking_controller import (
     BookingEngineController,
 )
 from odoo.addons.pms_website_sale.controllers.booking_engine_parser import (
-    AvailabilityError,
+    AvailabilityErrorGroup,
     BookingEngineParser,
 )
 from odoo.addons.website.tools import MockRequest
@@ -225,9 +225,9 @@ class BookingEngineControllerCase(PMSTestCommons):
         with MockRequest(self.company.with_user(self.public_user).env) as request:
             request.session[BookingEngineParser.SESSION_KEY] = session
 
-            with self.assertRaises(AvailabilityError) as e:
+            with self.assertRaises(AvailabilityErrorGroup) as e:
                 self.controller._get_booking_payment()
-            self.assertIn("Not enough rooms available for", str(e.exception))
+            self.assertIn("Some rooms are not available", str(e.exception))
 
     def test_booking_extra_info_unavailable_rooms(self):
         # todo
@@ -243,17 +243,17 @@ class BookingEngineControllerCase(PMSTestCommons):
         with MockRequest(self.company.with_user(self.public_user).env) as request:
             request.session[BookingEngineParser.SESSION_KEY] = session
 
-            with self.assertRaises(AvailabilityError) as e:
+            with self.assertRaises(AvailabilityErrorGroup) as e:
                 self.controller._post_booking_payment_transaction(
                     self.wire_transfer_acquirer.id
                 )
-            self.assertIn("Not enough rooms available for", str(e.exception))
+            self.assertIn("Some rooms are not available", str(e.exception))
 
     def test_booking_payment_transaction_unavailable_rooms(self):
         session = self._get_session_booking_engine()
         session["rooms_requests"][0]["quantity"] = 1000
         with MockRequest(self.company.with_user(self.public_user).env) as request:
             request.session[BookingEngineParser.SESSION_KEY] = session
-            with self.assertRaises(AvailabilityError) as e:
+            with self.assertRaises(AvailabilityErrorGroup) as e:
                 self.controller._get_booking_payment()
-            self.assertIn("Not enough rooms available for", str(e.exception))
+            self.assertIn("Some rooms are not available", str(e.exception))
