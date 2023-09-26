@@ -112,7 +112,15 @@
             <input type="hidden" name="end_date" t-att-value="end_date" />
 
             <div class="col-3 image" name="image">
+
                 <span
+                    t-if="room_type.product_template_image_ids"
+                    t-field="room_type.product_template_image_ids[0].image_1920"
+                    t-options="{'widget': 'image', 'preview_image': 'image_1024' if product_image_big else 'image_256', 'itemprop': 'image'}"
+                    class="d-flex h-100 justify-content-center align-items-center"
+                />
+                <span
+                    t-else=""
                     t-field="room_type.image_512"
                     t-options="{'widget': 'image', 'preview_image': 'image_512', 'itemprop': 'image'}"
                 />
@@ -135,7 +143,7 @@
                 </p>
 
                 <div name="capacity">
-                    Capacity:
+                    For
                     <span t-esc="room_type.get_room_type_capacity(pms_property_id)" />
                     person(s)
                 </div>
@@ -180,7 +188,7 @@
                         <div name="quantity" class="quantity">
                             <label
                                 t-attf-for="room-type-{{ room_type.id }}-quantity"
-                            >Number of rooms</label>
+                            >How many rooms?</label>
                             <select
                                 t-attf-id="room-type-{{ room_type.id }}-quantity"
                                 name="quantity"
