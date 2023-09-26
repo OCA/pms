@@ -29,7 +29,10 @@
                             >
                                 <span class="fa fa-chevron-left" /> Add other rooms
                             </a>
-                            <a class="btn btn-primary" href="/ebooking/booking/address">
+                            <a
+                                class="btn btn-primary"
+                                href="/ebooking/booking/extra_info"
+                            >
                                 Next <span class="fa fa-chevron-right" />
                             </a>
                         </div>
