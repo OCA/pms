@@ -122,9 +122,12 @@
                                 </div>
                                 <div class="row form-group justify-content-between">
                                     <div class="col text-left">
-                                        <button class="btn btn-secondary">
+                                        <a
+                                            href="/ebooking/booking/extra_info"
+                                            class="btn btn-secondary"
+                                        >
                                             <span class="fa fa-chevron-left" /> Back
-                                        </button>
+                                        </a>
                                     </div>
                                     <div class="col text-right">
                                         <button class="btn btn-primary" type="submit">

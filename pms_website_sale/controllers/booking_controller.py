@@ -84,7 +84,10 @@ class BookingEngineController(http.Controller):
         # FIXME Is the booking engine really needed ?
         values = {
             "booking_engine": booking_engine,
-            "internal_comment": kwargs.get("internal_comment", ""),
+            "notes": kwargs.get(
+                "notes",
+                booking_engine.internal_comment,
+            ),
             "errors": errors,
         }
         return request.render("pms_website_sale.pms_booking_extra_info_page", values)
@@ -214,7 +217,7 @@ class BookingEngineController(http.Controller):
 
     def _post_booking_extra_info(self, **kwargs):
         parser = BookingEngineParser(request.env, request.session)
-        parser.set_internal_comment(internal_comment=kwargs.get("internal_comment"))
+        parser.set_internal_comment(internal_comment=kwargs.get("notes"))
         parser.save()
         return parser.parse()
 

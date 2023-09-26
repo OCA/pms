@@ -27,18 +27,21 @@
                                         class="form-control"
                                         id="notes"
                                         name="notes"
-                                    ># TODO add text already submit
+                                    ><t t-esc="notes" />
                                     </textarea>
                                 </div>
                                 <div class="form-group">
                                     <div class="pull-left">
-                                        <button class="btn btn-secondary">Back</button>
+                                        <a
+                                            href="/ebooking/booking"
+                                            class="btn btn-secondary"
+                                        >
+                                            <span class="fa fa-chevron-left" /> Back
+                                        </a>
                                     </div>
                                     <div class="pull-right">
-                                        <button
-                                            class="btn btn-primary"
-                                            type="submit"
-                                        >Submit
+                                        <button class="btn btn-primary" type="submit">
+                                            Next <span class="fa fa-chevron-right" />
                                         </button>
                                     </div>
                                 </div>
