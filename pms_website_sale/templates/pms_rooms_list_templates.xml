@@ -40,7 +40,7 @@
                         </t>
                         <t t-if="not availability_results">
                             <div class="col-12 mt-4">
-                                <p>
+                                <p class="text-center">
                                     There is no rooms available for this
                                     period. Try with other checkin and
                                     checkout dates.
