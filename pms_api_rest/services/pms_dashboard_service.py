@@ -125,6 +125,83 @@ class PmsDashboardServices(Component):
             value=result[0]["occupancy"] if result[0]["occupancy"] else 0,
         )
 
+    @restapi.method([
+            (
+                [
+                    "/rooms-state",
+                ],
+                "GET",
+            )
+        ],
+
+        input_param=Datamodel("pms.dashboard.range.dates.search.param"),
+        output_param=Datamodel("pms.dashboard.state.rooms", is_list=True),
+    )
+    def get_state_rooms(self, pms_dashboard_search_param):
+        dateFrom = fields.Date.from_string(pms_dashboard_search_param.dateFrom)
+        dateTo = fields.Date.from_string(pms_dashboard_search_param.dateTo)
+        self.env.cr.execute(
+            f"""
+                SELECT 	d.date,
+                COALESCE(rln.num_occupied_rooms, 0) AS num_occupied_rooms,
+                COALESCE( rlo.num_out_of_service_rooms, 0) AS num_out_of_service_rooms,
+                COUNT(r.id) free_rooms
+                FROM
+                (
+                    SELECT (CURRENT_DATE + date) date
+                    FROM generate_series(date %s- CURRENT_DATE, date %s - CURRENT_DATE
+                ) date) d
+                LEFT OUTER JOIN (SELECT COUNT(1) num_occupied_rooms, date
+                                 FROM pms_reservation_line l
+                                 INNER JOIN pms_reservation r ON l.reservation_id = r.id
+                                 WHERE l.pms_property_id = %s
+                                 AND l.occupies_availability
+                                 AND r.reservation_type != 'out'
+                                 GROUP BY date
+                ) rln ON rln.date = d.date
+                LEFT OUTER JOIN (SELECT COUNT(1) num_out_of_service_rooms, date
+                                 FROM pms_reservation_line l
+                                 INNER JOIN pms_reservation r ON l.reservation_id = r.id
+                                 WHERE l.pms_property_id = %s
+                                 AND l.occupies_availability
+                                 AND r.reservation_type = 'out'
+                                 GROUP BY date
+                ) rlo ON rlo.date = d.date,
+                pms_room r
+                WHERE r.pms_property_id = %s
+                AND r.id NOT IN (SELECT room_id
+                                 FROM pms_reservation_line l
+                                 WHERE l.date = d.date
+                                 AND l.occupies_availability
+                                 AND l.pms_property_id = %s
+                                )
+                GROUP BY d.date, num_occupied_rooms, num_out_of_service_rooms
+                ORDER BY d.date
+                    """,
+            (
+                dateFrom,
+                dateTo,
+                pms_dashboard_search_param.pmsPropertyId,
+                pms_dashboard_search_param.pmsPropertyId,
+                pms_dashboard_search_param.pmsPropertyId,
+                pms_dashboard_search_param.pmsPropertyId,
+            ),
+        )
+
+        result = self.env.cr.dictfetchall()
+        state_rooms_result = []
+        DashboardStateRooms = self.env.datamodels["pms.dashboard.state.rooms"]
+        for item in result:
+            state_rooms_result.append(
+                DashboardStateRooms(
+                    date=datetime.combine(item['date'], datetime.min.time()).isoformat(),
+                    numOccupiedRooms=item["num_occupied_rooms"] if item["num_occupied_rooms"] else 0,
+                    numOutOfServiceRooms=item["num_out_of_service_rooms"] if item["num_out_of_service_rooms"] else 0,
+                    numFreeRooms=item["free_rooms"] if item["free_rooms"] else 0,
+                )
+            )
+        return state_rooms_result
+
     @restapi.method(
         [
             (
