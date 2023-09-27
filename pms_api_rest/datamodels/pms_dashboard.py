@@ -16,7 +16,6 @@ class PmsDashboardRangeDatesSearchParam(Datamodel):
     pmsPropertyId = fields.Integer(required=False, allow_none=True)
 
 
-
 class PmsDashboardPendingReservations(Datamodel):
     _name = "pms.dashboard.pending.reservations"
     date = fields.String(required=False, allow_none=True)
@@ -26,6 +25,12 @@ class PmsDashboardPendingReservations(Datamodel):
     completedDepartureReservations = fields.Integer(required=False, allow_none=True)
 
 
+class PmsDashboardStateRooms(Datamodel):
+    _name = "pms.dashboard.state.rooms"
+    date = fields.String(required=False, allow_none=True)
+    numOccupiedRooms = fields.Integer(required=False, allow_none=True)
+    numFreeRooms = fields.Integer(required=False, allow_none=True)
+    numOutOfServiceRooms = fields.Integer(required=False, allow_none=True)
 
 class PmsDashboardNumericResponse(Datamodel):
     _name = "pms.dashboard.numeric.response"
