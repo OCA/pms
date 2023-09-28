@@ -1,0 +1,369 @@
+# Copyright 2021 Eric Antones <eantones@nuobit.com>
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import datetime
+import logging
+import xmlrpc.client
+
+from odoo import _, fields
+from odoo.exceptions import ValidationError
+
+from odoo.addons.component.core import AbstractComponent
+from odoo.addons.connector_pms.components.adapter import ChannelAdapterError
+
+_logger = logging.getLogger(__name__)
+
+# TODO: move this auxiliary class to a library or connector_pms adapter
+class ChannelCallControl:
+    # https://tdocs.wubook.net/wired/policies.html#anti-flood-policies
+    def __init__(self, obj, funcname, args):
+        self.obj = obj
+        self.args = args
+        self.method = self.obj.env["channel.backend.method"].search(
+            [
+                ("name", "=", funcname),
+                (
+                    "backend_type_id",
+                    "=",
+                    self.obj.backend_record.backend_type_id.id,
+                ),
+            ]
+        )
+        if not self.method:
+            self.method = self.obj.env["channel.backend.method"].create(
+                {
+                    "name": funcname,
+                    "backend_type_id": self.obj.backend_record.backend_type_id.id,
+                }
+            )
+        self.exec_timestamp = fields.Datetime.now()
+        if self.method.max_calls > 0 and self.method.time_window > 0:
+            calls_int = self.obj.env["channel.backend.log"].search_count(
+                [
+                    ("backend_id", "=", self.obj.backend_record.id),
+                    ("method_id", "=", self.method.id),
+                    (
+                        "timestamp",
+                        ">=",
+                        self.exec_timestamp
+                        - datetime.timedelta(seconds=self.method.time_window),
+                    ),
+                ]
+            )
+            if calls_int >= self.method.max_calls:
+                raise ValidationError(
+                    _("Too many calls to '%s': %i in last %i minutes")
+                    % (funcname, calls_int, int(self.method.time_window / 60))
+                )
+
+    def add_result(self, res, data):
+        self.obj.env["channel.backend.log"].create(
+            {
+                "backend_id": self.obj.backend_record.parent_id.id,
+                "timestamp": self.exec_timestamp,
+                "method_id": self.method.id,
+                "arguments": self.args,
+                "response_code": res,
+                "response": data,
+            }
+        )
+
+
+class ChannelWubookAdapter(AbstractComponent):
+    _name = "channel.wubook.adapter"
+    _inherit = ["channel.adapter", "base.channel.wubook.connector"]
+
+    _id = "id"
+
+    _date_format = "%d/%m/%Y"
+
+    def __init__(self, environment):
+        super().__init__(environment)
+
+        self.url = self.backend_record.url
+        self.username = self.backend_record.username
+        self.password = self.backend_record.password
+        self.apikey = self.backend_record.pkey
+        self.property_code = self.backend_record.property_code
+
+    def _exec(self, funcname, *args, pms_property=True):
+        cc = ChannelCallControl(self, funcname, args)
+        s = xmlrpc.client.Server(self.url)
+        res, token = s.acquire_token(self.username, self.password, self.apikey)
+        if res:
+            raise ChannelAdapterError(_("Error authorizing to endpoint. %s") % token)
+        if pms_property:
+            args = (self.property_code, *args)
+        func = getattr(s, funcname)
+        try:
+            _logger.info(
+                f"Request to Wubook: {self.model._name}.{funcname}({', '.join(map(repr, args))})"
+            )
+            try:
+                data = func(token, *args)
+                if funcname == "get_channels_info":
+                    res = 0
+                else:
+                    res, data = data
+                cc.add_result(res, data)
+            except xmlrpc.client.Fault as e:
+                if e.faultCode == 8002:
+                    raise ChannelAdapterError(
+                        _(
+                            "Some of the resources (id's) not found on Backend "
+                            "executing %s(%s). Probably they have been "
+                            "deleted from the Backend"
+                        )
+                        % (funcname, args)
+                    )
+                raise
+            if res:
+                # TODO: rethink this and maybie put it to the UX
+                # or better or both as a constant and reuse it on skip_item methods
+                # or maybe it's not necessary to have this here although
+                # it makes a confusing wubbok message clear with the actual
+                # reason of the error
+                # TODO: with many cases, try to infer a rule by export/import
+                #  instead of function
+                func_restrictions = {
+                    # IMPORTS
+                    # fetch_rooms_values(token, lcode, dfrom, dto[, rooms])
+                    "fetch_rooms_values": (1, 1),
+                    # EXPORTS
+                    # update_avail(token, lcode, dfrom, rooms)
+                    "update_avail": (1, 2),
+                    # rplan_update_rplan_values(token, lcode, pid, dfrom, values)
+                    "rplan_update_rplan_values": (2, 2),
+                    # update_plan_prices(token, lcode, pid, dfrom, prices)
+                    "update_plan_prices": (2, 2),
+                }
+                if funcname in func_restrictions:
+                    arg_pos, max_past_date = func_restrictions[funcname]
+                    dfrom = datetime.datetime.strptime(
+                        args[arg_pos], self._date_format
+                    ).date()
+
+                    diff_days = (datetime.date.today() - dfrom).days
+                    if diff_days > max_past_date:
+                        raise ChannelAdapterError(
+                            _(
+                                "Error executing function %s with params %s. %s. "
+                                "Wubook does not allow a 'dfrom' %i days older"
+                            )
+                            % (funcname, args, data, max_past_date)
+                        )
+                raise ChannelAdapterError(
+                    _("Error executing function %s with params %s. %s")
+                    % (funcname, args, data)
+                )
+            return data
+        finally:
+            # TODO: reutilize token on multiple calls acoording the limits
+            #   https://tdocs.wubook.net/wired/policies.html#token-limits
+            res, info = s.release_token(token)
+            if res:
+                raise ChannelAdapterError(_("Error releasing token. %s") % info)
+
+    def _prepare_field_type(self, field_data):
+        default_values = {}
+        fields = []
+        for m in field_data:
+            if isinstance(m, tuple):
+                fields.append(m[0])
+                default_values[m[0]] = m[1]
+            else:
+                fields.append(m)
+
+        return fields, default_values
+
+    def _prepare_parameters(self, values, mandatory, optional=None):
+        if not optional:
+            optional = []
+
+        mandatory, mandatory_default_values = self._prepare_field_type(mandatory)
+        optional, default_values = self._prepare_field_type(optional)
+
+        default_values.update(mandatory_default_values)
+
+        missing_fields = list(set(mandatory) - set(values))
+        if missing_fields:
+            raise ChannelAdapterError(_("Missing mandatory fields %s") % missing_fields)
+
+        mandatory_values = [values[x] for x in mandatory]
+
+        optional_values = []
+        found = False
+        for o in optional[::-1]:
+            if not found and o in values:
+                found = True
+            if found:
+                optional_values.append(values.get(o, default_values.get(o, False)))
+
+        return mandatory_values + optional_values[::-1]
+
+    def _normalize_value(self, value):
+        if isinstance(value, datetime.date):
+            value = value.strftime(self._date_format)
+        elif isinstance(value, bool):
+            value = value and 1 or 0
+        elif isinstance(value, (int, str, list, tuple)):
+            pass
+        else:
+            raise Exception("Type '%s' not supported" % type(value))
+        return value
+
+    def _domain_to_normalized_dict(self, domain, interval_fields=None):
+        """Convert, if possible, standard Odoo domain to a dictionary.
+        To do so it is necessary to convert all operators to
+        equal '=' operator.
+        """
+        if not interval_fields:
+            interval_fields = []
+        else:
+            if not isinstance(interval_fields, (tuple, list)):
+                interval_fields = [interval_fields]
+        res = {}
+        ifields_check = {}
+        for elem in domain:
+            if len(elem) != 3:
+                raise ValidationError(_("Wrong domain clause format %s") % elem)
+            field, op, value = elem
+            if op == "=":
+                if field in interval_fields:
+                    for postfix in ["from", "to"]:
+                        field_field = "{}_{}".format(field, postfix)
+                        ifields_check.setdefault(field, set())
+                        if field_field in ifields_check[field]:
+                            raise ValidationError(
+                                _("Interval field %s duplicated") % field_field
+                            )
+                        ifields_check[field].add(field_field)
+                        if field_field in res:
+                            raise ValidationError(
+                                _("Duplicated field %s") % field_field
+                            )
+                        res[field_field] = self._normalize_value(value)
+                else:
+                    if field in res:
+                        raise ValidationError(_("Duplicated field %s") % field)
+                    res[field] = self._normalize_value(value)
+            elif op == "!=":
+                if field in interval_fields:
+                    raise ValidationError(
+                        _("Operator {} not supported on interval fields {}").format(
+                            op, field
+                        )
+                    )
+                if not isinstance(value, bool):
+                    raise ValidationError(
+                        _("Not equal operation not supported for non boolean fields")
+                    )
+                if field in res:
+                    raise ValidationError(_("Duplicated field %s") % field)
+                res[field] = self._normalize_value(not value)
+            elif op == "in":
+                if field in interval_fields:
+                    raise ValidationError(
+                        _("Operator {} not supported on interval fields {}").format(
+                            op, field
+                        )
+                    )
+                if not isinstance(value, (tuple, list)):
+                    raise ValidationError(
+                        _("Operator '%s' only supports tuples or lists, not %s")
+                        % (op, type(value))
+                    )
+                if field in res:
+                    raise ValidationError(_("Duplicated field %s") % field)
+                res[field] = self._normalize_value(value)
+            elif op in (">", ">=", "<", "<="):
+                if field not in interval_fields:
+                    raise ValidationError(
+                        _("The operator %s is only supported on interval fields") % op
+                    )
+                if not isinstance(
+                    value, (datetime.date, datetime.datetime, int, float)
+                ):
+                    raise ValidationError(
+                        _("Type {} not supported for operator {}").format(
+                            type(value), op
+                        )
+                    )
+                if op in (">", "<"):
+                    adj = 1
+                    if isinstance(value, (datetime.date, datetime.datetime)):
+                        adj = datetime.timedelta(days=adj)
+                    if op == "<":
+                        op, value = "<=", value - adj
+                    else:
+                        op, value = ">=", value + adj
+                field_field = "{}_{}".format(field, op == ">=" and "from" or "to")
+                ifields_check.setdefault(field, set())
+                if field_field in ifields_check[field]:
+                    raise ValidationError(
+                        _("Interval field %s duplicated") % field_field
+                    )
+                ifields_check[field].add(field_field)
+                if field_field in res:
+                    raise ValidationError(_("Duplicated field %s") % field_field)
+                res[field_field] = self._normalize_value(value)
+            else:
+                raise ValidationError(_("Operator %s not supported") % op)
+        for field in interval_fields:
+            if field in ifields_check:
+                if len(ifields_check[field]) != 2:
+                    raise ValidationError(
+                        _(
+                            "Interval field %s should have exactly 2 clauses on the domain"
+                        )
+                        % field
+                    )
+        return res
+
+    # def _check_format_domain_search_read(self, domain):
+    #     values = {}
+    #     for field, op, value in domain:
+    #         if re.match("^(.+_)?(dfrom|dto)$", field):
+    #             if op != "=":
+    #                 raise NotImplementedError(
+    #                     _("Operator %s not supported for field %s") % (op, field)
+    #                 )
+    #             if not isinstance(value, datetime.date):
+    #                 raise ValidationError(
+    #                     _("Date fields must be of type date, not %s") % type(value)
+    #                 )
+    #             value = value.strftime(self._date_format)
+    #         elif field in ("rooms", "id", "reservation_code"):
+    #             if op == "=":
+    #                 if not isinstance(value, int):
+    #                     raise ValidationError(
+    #                         _("Value should be an integer for field %s and operator %s")
+    #                         % (field, op)
+    #                     )
+    #                 if field == "rooms":
+    #                     value = [value]
+    #             elif op == "in":
+    #                 if not isinstance(value, (tuple, list)):
+    #                     raise ValidationError(
+    #                         _(
+    #                             "Value should be a list of valued "
+    #                             "for field %s and operator %s"
+    #                         )
+    #                         % (field, op)
+    #                     )
+    #             else:
+    #                 raise NotImplementedError(
+    #                     _("Operator %s not suported for field %s") % (op, field)
+    #                 )
+    #         elif field == 'mark':
+    #             if op == "=":
+    #                 value = value and 1 or 0
+    #             elif op == '!=':
+    #                 value = not value and 1 or 0
+    #             else:
+    #                 raise NotImplementedError(
+    #                     _("Operator %s not supported for field %s") % (op, field)
+    #                 )
+    #         else:
+    #             raise ValidationError(_("Unexpected field %s") % field)
+    #         values[field] = value
+    #     return values
