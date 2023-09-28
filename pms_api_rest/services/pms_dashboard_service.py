@@ -128,7 +128,7 @@ class PmsDashboardServices(Component):
     @restapi.method([
             (
                 [
-                    "/rooms-state",
+                    "/state-rooms",
                 ],
                 "GET",
             )
