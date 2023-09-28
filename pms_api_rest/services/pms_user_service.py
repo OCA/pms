@@ -41,7 +41,7 @@ class PmsRoomTypeClassService(Component):
             return PmsUserInfo(
                 userId=user.id,
                 userName=user.name,
-                userFirstNmame=user.first_name if user.first_name else "",
+                userFirstName=user.firstname if user.firstname else "",
                 userEmail=user.email if user.email else "",
                 userPhone=user.phone if user.phone else "",
                 userImageBase64=user.image_1920 if user.image_1920 else "",
