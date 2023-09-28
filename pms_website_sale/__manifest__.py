@@ -20,6 +20,7 @@
         #  We're only using a _portion_ of website_sale for our functionality.
         #  payments can be dealt with sepraratly, other minor things depend on it
         "website_sale",
+        "website_legal_page",
     ],
     "excludes": [],
     "data": [

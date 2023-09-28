@@ -3,7 +3,7 @@
 
 from datetime import timedelta
 
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, ValidationError
 from odoo.fields import Date
 
 from odoo.addons.payment.controllers.portal import PaymentProcessing
@@ -42,6 +42,7 @@ class BookingEngineControllerCase(PMSTestCommons):
                 "city": "Bruxelles",
                 "postal_code": "1000",
                 "country_id": self.env.company.country_id.id,
+                "accepted_terms_and_conditions": True,
             },
             "start_date": Date.to_string(start_date),
             "end_date": Date.to_string(start_date + timedelta(days=3)),
@@ -168,6 +169,16 @@ class BookingEngineControllerCase(PMSTestCommons):
             tx.return_url, f"/ebooking/booking/success/{folio.id}/{folio.access_token}"
         )
         self.assertIn(tx.id, request.session["__payment_tx_ids__"])
+
+    def test_booking_payment_transaction_fails_wo_terms_and_conditions(self):
+        session = self._get_session_booking_engine()
+        del session["partner"]["accepted_terms_and_conditions"]
+        with MockRequest(self.company.with_user(self.public_user).env) as request:
+            request.session[BookingEngineParser.SESSION_KEY] = session
+            with self.assertRaises(ValidationError):
+                self.controller._post_booking_payment_transaction(
+                    self.wire_transfer_acquirer.id
+                )
 
     def test_cancelling_transaction_cancels_folio(self):
         with MockRequest(self.company.with_user(self.public_user).env) as request:

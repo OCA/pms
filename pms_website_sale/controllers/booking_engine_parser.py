@@ -242,7 +242,17 @@ class BookingEngineParser:
         # do not return sudo folio
         return self.env["pms.folio"].browse(folio.id)
 
-    def set_partner(self, name, email, phone, address, city, postal_code, country_id):
+    def set_partner(
+        self,
+        name,
+        email,
+        phone,
+        address,
+        city,
+        postal_code,
+        country_id,
+        accepted_terms_and_conditions,
+    ):
         """Add partner values. Values should be clean."""
         if not name:
             raise ParserError("Name is required.")
@@ -258,6 +268,8 @@ class BookingEngineParser:
             raise ParserError("Postal Code is required.")
         if not country_id:
             raise ParserError("Country is required.")
+        if not accepted_terms_and_conditions:
+            raise ParserError("You must accept terms and conditions.")
 
         if not tools.mail.single_email_re.match(email):
             raise ParserError("Email address is not valid.")
@@ -279,6 +291,7 @@ class BookingEngineParser:
             "city": city,
             "postal_code": postal_code,
             "country_id": country_id,
+            "accepted_terms_and_conditions": accepted_terms_and_conditions == "on",
         }
 
     def set_internal_comment(self, internal_comment):
