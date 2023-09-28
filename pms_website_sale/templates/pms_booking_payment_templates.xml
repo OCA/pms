@@ -20,6 +20,7 @@
                                         t-value="booking_engine.availability_results.filtered(lambda r: r.value_num_rooms_selected > 0)"
                                     />
                                 </t>
+                                <t t-call="pms_website_sale.pms_tourist_tax_warning" />
                             </div>
                         </div>
                         <div name="payment_acquirer" class="row">
@@ -38,6 +39,14 @@
                 </div>
             </div>
         </t>
+    </template>
+
+    <template id="pms_tourist_tax_warning">
+        <div class="alert alert-info">
+            <p>
+                <strong>Info</strong> The tourist tax must be paid at arrival.
+            </p>
+        </div>
     </template>
 
     <template id="payment_acquirer_selection">
