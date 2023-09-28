@@ -167,10 +167,14 @@ class BookingParserCase(PMSTestCommons):
             "city": "Bruxelles",
             "postal_code": "1000",
             "country_id": self.env.company.country_id.id,
+            "accepted_terms_and_conditions": "on",
         }
 
         parser.set_partner(**values)
-        self.assertEqual(parser.data["partner"], values)
+
+        expected_values = values.copy()
+        expected_values["accepted_terms_and_conditions"] = True
+        self.assertEqual(parser.data["partner"], expected_values)
 
     def test_set_partner_missing_required_field(self):
         today = Date.today()
@@ -197,6 +201,7 @@ class BookingParserCase(PMSTestCommons):
             "city": "Bruxelles",
             "postal_code": "1000",
             "country_id": self.env.company.country_id.id,
+            "accepted_terms_and_conditions": "on",
         }
 
         with self.assertRaises(ParserError) as e:
@@ -229,6 +234,7 @@ class BookingParserCase(PMSTestCommons):
             "city": "Bruxelles",
             "postal_code": "1000",
             "country_id": self.env.company.country_id.id,
+            "accepted_terms_and_conditions": "on",
         }
 
         with self.assertRaises(ParserError) as e:
@@ -261,6 +267,7 @@ class BookingParserCase(PMSTestCommons):
             "city": "Bruxelles",
             "postal_code": "1000",
             "country_id": "0",
+            "accepted_terms_and_conditions": "on",
         }
 
         with self.assertRaises(ParserError) as e:
@@ -326,6 +333,7 @@ class BookingParserCase(PMSTestCommons):
             "city": "Bruxelles",
             "postal_code": "1000",
             "country_id": self.env.company.country_id.id,
+            "accepted_terms_and_conditions": "on",
         }
 
         parser.set_partner(**values)

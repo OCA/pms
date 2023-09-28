@@ -7,7 +7,7 @@ import logging
 from werkzeug.exceptions import NotFound
 
 from odoo import _, http
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, ValidationError
 from odoo.http import request
 
 from odoo.addons.payment.controllers.portal import PaymentProcessing
@@ -235,6 +235,7 @@ class BookingEngineController(http.Controller):
             city=kwargs.get("city"),
             postal_code=kwargs.get("postal_code"),
             country_id=kwargs.get("country_id"),
+            accepted_terms_and_conditions=kwargs.get("accepted_terms_and_conditions"),
         )
         parser.save()
 
@@ -271,6 +272,16 @@ class BookingEngineController(http.Controller):
         acquirer = request.env["payment.acquirer"].browse(acquirer_id)
         be_parser = BookingEngineParser(request.env, request.session)
         be_parser.parse()
+
+        if not be_parser.data.get("partner"):
+            raise ValidationError(
+                _("Return to the address page to fill in your details")
+            )
+        if not be_parser.data["partner"].get("accepted_terms_and_conditions"):
+            raise ValidationError(
+                _("You must accept the terms and conditions to continue.")
+            )
+
         sudo_folio = be_parser.create_folio().sudo()
         tx = sudo_folio._create_payment_transaction(
             {
