@@ -194,7 +194,7 @@
                                 name="quantity"
                             >
                                 <t
-                                    t-foreach="range(0, availability_result.num_rooms_available + 1) "
+                                    t-foreach="range(1, availability_result.num_rooms_available + 1) "
                                     t-as="nb_room_option"
                                 >
                                     <option>
