@@ -30,6 +30,7 @@ class PmsReservationLine(models.Model):
         string="Room",
         help="The room of a reservation. ",
         readonly=False,
+        index=True,
         store=True,
         compute="_compute_room_id",
         comodel_name="pms.room",
@@ -51,6 +52,7 @@ class PmsReservationLine(models.Model):
         store=True,
         comodel_name="pms.property",
         related="reservation_id.pms_property_id",
+        index=True,
         check_pms_properties=True,
     )
     date = fields.Date(
@@ -87,6 +89,7 @@ class PmsReservationLine(models.Model):
         comodel_name="pms.availability",
         ondelete="restrict",
         compute="_compute_avail_id",
+        index=True,
         check_pms_properties=True,
     )
     discount = fields.Float(
@@ -122,6 +125,7 @@ class PmsReservationLine(models.Model):
         string="Sale Channel",
         help="Sale Channel through which reservation line was created",
         comodel_name="pms.sale.channel",
+        index=True,
         check_pms_properties=True,
     )
     default_invoice_to = fields.Many2one(
@@ -133,6 +137,7 @@ class PmsReservationLine(models.Model):
         store=True,
         compute="_compute_default_invoice_to",
         comodel_name="res.partner",
+        index=True,
         ondelete="restrict",
     )
 

@@ -35,6 +35,7 @@ class PmsRoomAmenity(models.Model):
         string="Amenity Category",
         help="Segment the amenities by categories (multimedia, comfort, etc ...)",
         comodel_name="pms.amenity.type",
+        index=True,
         check_pms_properties=True,
     )
     default_code = fields.Char(

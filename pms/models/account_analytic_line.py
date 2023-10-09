@@ -12,6 +12,7 @@ class AccountAnalyticLine(models.Model):
         store=True,
         readonly=False,
         check_pms_properties=True,
+        index=True,
     )
 
     @api.depends("move_id")
@@ -30,4 +31,5 @@ class AccountAnalyticDistribution(models.Model):
         name="Property",
         comodel_name="pms.property",
         check_pms_properties=True,
+        index=True,
     )

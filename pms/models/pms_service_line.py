@@ -22,6 +22,7 @@ class PmsServiceLine(models.Model):
         help="Service identifier",
         required=True,
         copy=False,
+        index=True,
         comodel_name="pms.service",
         ondelete="cascade",
     )
@@ -35,6 +36,7 @@ class PmsServiceLine(models.Model):
         string="Product",
         help="Product associated with this service line",
         store=True,
+        index=True,
         related="service_id.product_id",
         check_pms_properties=True,
     )
@@ -50,6 +52,7 @@ class PmsServiceLine(models.Model):
         help="Property to which the service belongs",
         readonly=True,
         store=True,
+        index=True,
         comodel_name="pms.property",
         related="service_id.pms_property_id",
         check_pms_properties=True,
@@ -100,6 +103,7 @@ class PmsServiceLine(models.Model):
         help="The currency used in relation to the service where it's included",
         readonly=True,
         store=True,
+        index=True,
         related="service_id.currency_id",
     )
     reservation_id = fields.Many2one(
@@ -107,6 +111,7 @@ class PmsServiceLine(models.Model):
         help="Room to which the services will be applied",
         readonly=True,
         store=True,
+        index=True,
         related="service_id.reservation_id",
         check_pms_properties=True,
     )
@@ -140,6 +145,7 @@ class PmsServiceLine(models.Model):
         a guest or the generic contact will be used instead""",
         comodel_name="res.partner",
         store=True,
+        index=True,
         related="service_id.default_invoice_to",
         ondelete="restrict",
     )
