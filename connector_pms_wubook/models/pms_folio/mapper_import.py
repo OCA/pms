@@ -50,17 +50,13 @@ class ChannelWubookPmsFolioMapperImport(Component):
             return {"payment_gateway_fee": record["payment_gateway_fee"]}
 
         # Expedia payments gateway
-        if record["channel_data"].get("pay_model") == "merchant":
+        if record["id_channel"] == 1 and record["channel_data"].get("pay_model") == "merchant":
             return {"payment_gateway_fee": record["amount"]}
 
         # Booking payments gateway
-        if record["channel_data"].get("vcc_additional_info"):
-            if record["channel_data"]["vcc_additional_info"].get("vcc_balance"):
-                return {
-                    "payment_gateway_fee": record["channel_data"][
-                        "vcc_additional_info"
-                    ]["vcc_balance"]
-                }
+        if record["id_channel"] == 2 and record["ancillary"].get("Payment"):
+            if record["ancillary"]["Payment"].get("Payout") == "BankTransfer":
+                return {record["amount"]}
         # Not online pre payment
         return {"payment_gateway_fee": 0}
 
