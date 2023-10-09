@@ -41,7 +41,6 @@ class PmsReservation(models.Model):
     priority = fields.Integer(
         string="Priority",
         help="Priority of a reservation",
-        index=True,
         store="True",
         compute="_compute_priority",
     )
@@ -52,6 +51,7 @@ class PmsReservation(models.Model):
         copy=False,
         comodel_name="pms.room",
         ondelete="restrict",
+        index=True,
         domain="["
         "('id', 'in', allowed_room_ids),"
         "('pms_property_id', '=', pms_property_id),"
@@ -69,6 +69,7 @@ class PmsReservation(models.Model):
         string="Folio",
         help="The folio where the reservations are included",
         copy=False,
+        index=True,
         comodel_name="pms.folio",
         ondelete="restrict",
         tracking=True,
@@ -87,6 +88,7 @@ class PmsReservation(models.Model):
         store=True,
         comodel_name="pms.board.service.room.type",
         compute="_compute_board_service_room_id",
+        index=True,
         tracking=True,
         check_pms_properties=True,
     )
@@ -98,6 +100,7 @@ class PmsReservation(models.Model):
         readonly=False,
         copy=False,
         store=True,
+        index=True,
         comodel_name="pms.room.type",
         ondelete="restrict",
         compute="_compute_room_type_id",
@@ -109,6 +112,7 @@ class PmsReservation(models.Model):
         help="Name of who made the reservation",
         readonly=False,
         store=True,
+        index=True,
         comodel_name="res.partner",
         ondelete="restrict",
         compute="_compute_partner_id",
@@ -120,6 +124,7 @@ class PmsReservation(models.Model):
         help="Agency that made the reservation",
         readonly=False,
         store=True,
+        index=True,
         related="folio_id.agency_id",
         depends=["folio_id.agency_id"],
         tracking=True,
@@ -136,6 +141,7 @@ class PmsReservation(models.Model):
         help="Sale Channel through which reservation was created, the original",
         default=lambda self: self._get_default_sale_channel_origin(),
         comodel_name="pms.sale.channel",
+        index=True,
     )
     force_update_origin = fields.Boolean(
         string="Update Sale Channel Origin",
@@ -171,6 +177,7 @@ class PmsReservation(models.Model):
         readonly=True,
         store=True,
         related="folio_id.company_id",
+        index=True,
     )
     pms_property_id = fields.Many2one(
         string="Pms Property",
@@ -180,6 +187,7 @@ class PmsReservation(models.Model):
         default=lambda self: self.env.user.get_active_property_ids()[0],
         related="folio_id.pms_property_id",
         comodel_name="pms.property",
+        index=True,
         check_pms_properties=True,
     )
     reservation_line_ids = fields.One2many(
@@ -215,6 +223,7 @@ class PmsReservation(models.Model):
         compute="_compute_pricelist_id",
         tracking=True,
         check_pms_properties=True,
+        index=True,
         domain="[('is_pms_available', '=', True)]",
     )
     user_id = fields.Many2one(
@@ -324,6 +333,7 @@ class PmsReservation(models.Model):
         help="The currency used in relation to the pricelist",
         readonly=True,
         store=True,
+        index=True,
         related="pricelist_id.currency_id",
         depends=["pricelist_id"],
     )

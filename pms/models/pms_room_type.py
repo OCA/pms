@@ -30,6 +30,7 @@ class PmsRoomType(models.Model):
         comodel_name="product.product",
         required=True,
         delegate=True,
+        index=True,
         ondelete="cascade",
     )
     room_ids = fields.One2many(
@@ -44,6 +45,7 @@ class PmsRoomType(models.Model):
         help="Class to which the room type belongs",
         comodel_name="pms.room.type.class",
         required=True,
+        index=True,
         check_pms_properties=True,
     )
     board_service_room_type_ids = fields.One2many(

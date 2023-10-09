@@ -23,6 +23,7 @@ class PmsService(models.Model):
         string="Service",
         help="Product associated with this service",
         required=True,
+        index=True,
         comodel_name="product.product",
         ondelete="restrict",
         check_pms_properties=True,
@@ -33,6 +34,7 @@ class PmsService(models.Model):
         help="Folio in which the service is included",
         readonly=False,
         store=True,
+        index=True,
         comodel_name="pms.folio",
         compute="_compute_folio_id",
         check_pms_properties=True,
@@ -51,6 +53,7 @@ class PmsService(models.Model):
         default=lambda self: self._default_reservation_id(),
         comodel_name="pms.reservation",
         ondelete="cascade",
+        index=True,
         check_pms_properties=True,
     )
     service_line_ids = fields.One2many(
@@ -68,6 +71,7 @@ class PmsService(models.Model):
         help="Company to which the service belongs",
         readonly=True,
         store=True,
+        index=True,
         related="folio_id.company_id",
     )
     pms_property_id = fields.Many2one(
@@ -75,6 +79,7 @@ class PmsService(models.Model):
         help="Property to which the service belongs",
         readonly=True,
         store=True,
+        index=True,
         comodel_name="pms.property",
         related="folio_id.pms_property_id",
         check_pms_properties=True,
@@ -98,6 +103,7 @@ class PmsService(models.Model):
         help="The currency used in relation to the folio",
         readonly=True,
         store=True,
+        index=True,
         related="folio_id.currency_id",
     )
     sequence = fields.Integer(string="Sequence", help="", default=10)
@@ -152,6 +158,7 @@ class PmsService(models.Model):
         help="Sale Channel through which service was created, the original",
         comodel_name="pms.sale.channel",
         check_pms_properties=True,
+        index=True,
     )
     price_subtotal = fields.Monetary(
         string="Subtotal",
@@ -199,6 +206,7 @@ class PmsService(models.Model):
         a guest or the generic contact will be used instead""",
         readonly=False,
         store=True,
+        index=True,
         compute="_compute_default_invoice_to",
         comodel_name="res.partner",
         ondelete="restrict",
@@ -315,6 +323,7 @@ class PmsService(models.Model):
         "reservation_id.adults",
         "product_qty",
     )
+    # flake8:noqa=C901
     def _compute_service_line_ids(self):
         for service in self:
             if service.no_auto_add_lines:
@@ -403,10 +412,11 @@ class PmsService(models.Model):
                                     },
                                 )
                             ]
-                        # if service lines has only one line, set its day_qty to service product_qty 
+                        # if service lines has only one line,
+                        # set its day_qty to service product_qty
                         elif len(service.service_line_ids) == 1 and self.product_qty:
                             service.service_line_ids.day_qty = self.product_qty
-                            
+
                 else:
                     if not service.service_line_ids:
                         price_unit = service._get_price_unit_line()

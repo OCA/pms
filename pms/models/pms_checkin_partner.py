@@ -30,6 +30,7 @@ class PmsCheckinPartner(models.Model):
         string="Partner",
         help="Partner associated with checkin partner",
         readonly=False,
+        index=True,
         store=True,
         comodel_name="res.partner",
         domain="[('is_company', '=', False)]",
@@ -38,12 +39,14 @@ class PmsCheckinPartner(models.Model):
     reservation_id = fields.Many2one(
         string="Reservation",
         help="Reservation to which checkin partners belong",
+        index=True,
         comodel_name="pms.reservation",
     )
     folio_id = fields.Many2one(
         string="Folio",
         help="Folio to which reservation of checkin partner belongs",
         store=True,
+        index=True,
         comodel_name="pms.folio",
         related="reservation_id.folio_id",
     )
@@ -52,6 +55,7 @@ class PmsCheckinPartner(models.Model):
         help="Property to which the folio associated belongs",
         readonly=True,
         store=True,
+        index=True,
         comodel_name="pms.property",
         related="reservation_id.pms_property_id",
     )
@@ -137,6 +141,7 @@ class PmsCheckinPartner(models.Model):
         help="host nationality",
         readonly=False,
         store=True,
+        index=True,
         compute="_compute_nationality_id",
         comodel_name="res.country",
     )
@@ -174,6 +179,7 @@ class PmsCheckinPartner(models.Model):
         help="Country of the guest's residence",
         readonly=False,
         store=True,
+        index=True,
         compute="_compute_residence_country_id",
         comodel_name="res.country",
     )
@@ -182,6 +188,7 @@ class PmsCheckinPartner(models.Model):
         help="State of the guest's residence",
         readonly=False,
         store=True,
+        index=True,
         compute="_compute_residence_state_id",
         comodel_name="res.country.state",
     )
@@ -226,6 +233,7 @@ class PmsCheckinPartner(models.Model):
         help="Select a valid document type",
         readonly=False,
         store=True,
+        index=True,
         comodel_name="res.partner.id_category",
         compute="_compute_document_type",
     )
@@ -242,6 +250,7 @@ class PmsCheckinPartner(models.Model):
         help="Technical field",
         readonly=False,
         store=True,
+        index=True,
         comodel_name="res.partner.id_number",
         compute="_compute_document_id",
         ondelete="restrict",

@@ -13,6 +13,7 @@ class PmsBoardServiceRoomTypeLine(models.Model):
         string="Board Service Room",
         help="Board Service Room Type in which this line is included",
         required=True,
+        index=True,
         comodel_name="pms.board.service.room.type",
         ondelete="cascade",
     )
@@ -28,6 +29,7 @@ class PmsBoardServiceRoomTypeLine(models.Model):
         string="Product",
         help="Product associated with this board service room type line",
         comodel_name="product.product",
+        index=True,
         readonly=True,
         check_pms_properties=True,
         domain="[('is_pms_available', '=', True)]",

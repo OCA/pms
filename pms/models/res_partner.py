@@ -31,6 +31,7 @@ class ResPartner(models.Model):
         comodel_name="pms.sale.channel",
         domain=[("channel_type", "=", "indirect")],
         ondelete="restrict",
+        index=True,
     )
     default_commission = fields.Integer(string="Commission", help="Default commission")
     apply_pricelist = fields.Boolean(
@@ -91,6 +92,7 @@ class ResPartner(models.Model):
     nationality_id = fields.Many2one(
         readonly=False,
         store=True,
+        index=True,
         compute="_compute_nationality_id",
     )
     email = fields.Char(
@@ -127,11 +129,13 @@ class ResPartner(models.Model):
     country_id = fields.Many2one(
         readonly=False,
         store=True,
+        index=True,
         compute="_compute_country_id",
     )
     state_id = fields.Many2one(
         readonly=False,
         store=True,
+        index=True,
         compute="_compute_state_id",
     )
     city = fields.Char(
@@ -221,6 +225,7 @@ class ResPartner(models.Model):
         help="Partner country of residence",
         readonly=False,
         store=True,
+        index=True,
         compute="_compute_residence_country_id",
         comodel_name="res.country",
     )
@@ -229,6 +234,7 @@ class ResPartner(models.Model):
         help="Partner state of residence",
         readonly=False,
         store=True,
+        index=True,
         compute="_compute_residence_state_id",
         comodel_name="res.country.state",
     )

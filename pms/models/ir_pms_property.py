@@ -5,10 +5,17 @@ class IrPmsProperty(models.Model):
     _name = "ir.pms.property"
     _description = "IrPmsProperty"
     pms_property_id = fields.Many2one(
-        string="Properties", help="", comodel_name="pms.property"
+        string="Properties",
+        help="",
+        comodel_name="pms.property",
+        index=True,
     )
-    model_id = fields.Many2one(string="Model", comodel_name="ir.model")
-    field_id = fields.Many2one(string="Field", comodel_name="ir.model.fields")
+    model_id = fields.Many2one(string="Model", comodel_name="ir.model", index=True)
+    field_id = fields.Many2one(
+        string="Field",
+        comodel_name="ir.model.fields",
+        index=True,
+    )
     record = fields.Integer(string="Record Id")
 
     value_integer = fields.Integer(string="Integer Field Value")

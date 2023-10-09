@@ -12,6 +12,7 @@ class PmsBoardServiceLine(models.Model):
         string="Board Service",
         help="Board Service in which this line is included",
         required=True,
+        index=True,
         comodel_name="pms.board.service",
         ondelete="cascade",
         check_pms_properties=True,
@@ -20,6 +21,7 @@ class PmsBoardServiceLine(models.Model):
         string="Product",
         help="Product associated with this board service line",
         required=True,
+        index=True,
         comodel_name="product.product",
         check_pms_properties=True,
     )

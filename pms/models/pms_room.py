@@ -38,6 +38,7 @@ class PmsRoom(models.Model):
         required=True,
         default=lambda self: self.env.user.get_active_property_ids()[0],
         comodel_name="pms.property",
+        index=True,
         ondelete="restrict",
     )
     room_type_id = fields.Many2one(
@@ -46,6 +47,7 @@ class PmsRoom(models.Model):
         required=True,
         comodel_name="pms.room.type",
         ondelete="restrict",
+        index=True,
         check_pms_properties=True,
     )
     parent_id = fields.Many2one(
@@ -53,6 +55,7 @@ class PmsRoom(models.Model):
         help="Indicates that this room is a child of another room",
         comodel_name="pms.room",
         ondelete="restrict",
+        index=True,
         check_pms_properties=True,
     )
     child_ids = fields.One2many(
@@ -66,6 +69,7 @@ class PmsRoom(models.Model):
         string="Ubication",
         help="At which ubication the room is located.",
         comodel_name="pms.ubication",
+        index=True,
         check_pms_properties=True,
     )
     capacity = fields.Integer(

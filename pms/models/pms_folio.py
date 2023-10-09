@@ -42,6 +42,7 @@ class PmsFolio(models.Model):
         help="The property for folios",
         comodel_name="pms.property",
         required=True,
+        index=True,
         default=lambda self: self.env.user.get_active_property_ids()[0],
         check_pms_properties=True,
     )
@@ -51,6 +52,7 @@ class PmsFolio(models.Model):
         readonly=False,
         store=True,
         tracking=True,
+        index=True,
         compute="_compute_partner_id",
         comodel_name="res.partner",
         ondelete="restrict",
@@ -114,6 +116,7 @@ class PmsFolio(models.Model):
         string="Company",
         help="The company for folio",
         store=True,
+        index=True,
         comodel_name="res.company",
         compute="_compute_company_id",
     )
@@ -121,6 +124,7 @@ class PmsFolio(models.Model):
         string="Analytic Account",
         help="The analytic account related to a folio.",
         readonly=True,
+        index=True,
         states={"draft": [("readonly", False)], "sent": [("readonly", False)]},
         copy=False,
         comodel_name="account.analytic.account",
@@ -130,6 +134,7 @@ class PmsFolio(models.Model):
         help="The currency of the property location",
         readonly=True,
         required=True,
+        index=True,
         related="pricelist_id.currency_id",
         ondelete="restrict",
     )
@@ -138,6 +143,7 @@ class PmsFolio(models.Model):
         help="Pricelist for current folio.",
         readonly=False,
         store=True,
+        index=True,
         comodel_name="product.pricelist",
         ondelete="restrict",
         check_pms_properties=True,
@@ -199,6 +205,7 @@ class PmsFolio(models.Model):
         comodel_name="res.partner",
         domain=[("is_agency", "=", True)],
         ondelete="restrict",
+        index=True,
         check_pms_properties=True,
     )
     sale_channel_ids = fields.Many2many(
@@ -212,6 +219,7 @@ class PmsFolio(models.Model):
         string="Sale Channel Origin",
         help="Sale Channel through which folio was created, the original",
         comodel_name="pms.sale.channel",
+        index=True,
     )
 
     transaction_ids = fields.Many2many(
@@ -249,6 +257,7 @@ class PmsFolio(models.Model):
         help="Payment terms for current folio.",
         readonly=False,
         store=True,
+        index=True,
         comodel_name="account.payment.term",
         ondelete="restrict",
         compute="_compute_payment_term_id",
@@ -329,11 +338,13 @@ class PmsFolio(models.Model):
         string="Fiscal Position",
         help="The fiscal position depends on the location of the client",
         comodel_name="account.fiscal.position",
+        index=True,
     )
     closure_reason_id = fields.Many2one(
         string="Closure Reason",
         help="The closure reason for a closure room",
         comodel_name="room.closure.reason",
+        index=True,
         check_pms_properties=True,
     )
     out_service_description = fields.Text(

@@ -22,6 +22,7 @@ class PmsTeamMember(models.Model):
         string="Property",
         comodel_name="pms.property",
         store=True,
+        index=True,
         ondelete="restrict",
     )
     user_id = fields.Many2one(
@@ -29,6 +30,7 @@ class PmsTeamMember(models.Model):
         copy=False,
         comodel_name="res.users",
         ondelete="restrict",
+        index=True,
     )
     pms_role = fields.Selection(
         string="PMS Role",

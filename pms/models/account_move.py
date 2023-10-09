@@ -29,6 +29,7 @@ class AccountMove(models.Model):
         compute="_compute_pms_property_id",
         store=True,
         readonly=False,
+        index=True,
         # check_pms_properties=True,
     )
     # journal_id = fields.Many2one(check_pms_properties=True)
@@ -44,6 +45,7 @@ class AccountMove(models.Model):
         domain="[('is_agency', '=', True)]",
         compute="_compute_origin_agency_id",
         store=True,
+        index=True,
         readonly=False,
     )
 

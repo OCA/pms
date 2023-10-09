@@ -16,6 +16,7 @@ class PmsAvailability(models.Model):
         help="Room type for which availability is indicated",
         readonly=True,
         required=True,
+        index=True,
         comodel_name="pms.room.type",
         ondelete="cascade",
         check_pms_properties=True,
@@ -31,6 +32,7 @@ class PmsAvailability(models.Model):
         help="Property to which the availability is directed",
         readonly=True,
         required=True,
+        index=True,
         comodel_name="pms.property",
         ondelete="restrict",
         check_pms_properties=True,
@@ -64,6 +66,7 @@ class PmsAvailability(models.Model):
         ondelete="restrict",
         compute="_compute_parent_avail_id",
         store=True,
+        index=True,
         check_pms_properties=True,
     )
     child_avail_ids = fields.One2many(
