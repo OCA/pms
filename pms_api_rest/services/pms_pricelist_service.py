@@ -199,7 +199,7 @@ class PmsPricelistService(Component):
         [
             (
                 [
-                    "/<int:pricelist_id>/pricelist-items",
+                    "/p/<int:pricelist_id>/pricelist-items",
                 ],
                 "PATCH",
             )
@@ -220,7 +220,7 @@ class PmsPricelistService(Component):
                 [
                     "/batch-changes",
                 ],
-                "PATCH",
+                "POST",
             )
         ],
         input_param=Datamodel("pms.pricelist.items.info", is_list=False),
