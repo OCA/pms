@@ -26,6 +26,7 @@ class PmsBoardServiceRoomType(models.Model):
         help="Property with access to the element;"
         " if not set, all property can access",
         required=False,
+        index=True,
         ondelete="restrict",
         comodel_name="pms.property",
         check_pms_properties=True,

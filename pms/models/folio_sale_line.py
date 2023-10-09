@@ -54,6 +54,7 @@ class FolioSaleLine(models.Model):
         store=True,
         comodel_name="pms.property",
         related="folio_id.pms_property_id",
+        index=True,
         check_pms_properties=True,
     )
     is_board_service = fields.Boolean(
@@ -185,6 +186,7 @@ class FolioSaleLine(models.Model):
             ('company_id', '=', company_id)]",
         ondelete="restrict",
         compute="_compute_product_id",
+        index=True,
         check_company=True,
         change_default=True,
     )
@@ -200,6 +202,7 @@ class FolioSaleLine(models.Model):
         string="Unit of Measure",
         help="",
         comodel_name="uom.uom",
+        index=True,
         domain="[('category_id', '=', product_uom_category_id)]",
     )
     product_uom_category_id = fields.Many2one(
@@ -277,6 +280,7 @@ class FolioSaleLine(models.Model):
         domain="[('is_agency', '=', True)]",
         compute="_compute_origin_agency_id",
         store=True,
+        index=True,
         readonly=False,
     )
     analytic_tag_ids = fields.Many2many(
@@ -316,6 +320,7 @@ class FolioSaleLine(models.Model):
         help="The section of the folio sale line",
         comodel_name="folio.sale.line",
         compute="_compute_section_id",
+        index=True,
     )
 
     service_order = fields.Integer(
@@ -348,6 +353,7 @@ class FolioSaleLine(models.Model):
         a guest or the generic contact will be used instead""",
         comodel_name="res.partner",
         ondelete="restrict",
+        index=True,
     )
     autoinvoice_date = fields.Date(
         string="Autoinvoice Date",

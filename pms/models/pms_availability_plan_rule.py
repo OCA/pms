@@ -21,6 +21,7 @@ class PmsAvailabilityPlanRule(models.Model):
         string="Room Type",
         help="Room type for which availability rule is applied",
         required=True,
+        index=True,
         comodel_name="pms.room.type",
         ondelete="cascade",
         check_pms_properties=True,
@@ -84,6 +85,7 @@ class PmsAvailabilityPlanRule(models.Model):
         help="Properties with access to the element",
         ondelete="restrict",
         required=True,
+        index=True,
         comodel_name="pms.property",
         check_pms_properties=True,
     )
@@ -93,6 +95,7 @@ class PmsAvailabilityPlanRule(models.Model):
         compute="_compute_avail_id",
         store=True,
         readonly=False,
+        index=True,
         ondelete="restrict",
         check_pms_properties=True,
     )

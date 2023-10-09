@@ -27,6 +27,7 @@ class AccountPayment(models.Model):
         domain="[('is_agency', '=', True)]",
         compute="_compute_origin_agency_id",
         store=True,
+        index=True,
         readonly=True,
     )
     origin_reference = fields.Char(

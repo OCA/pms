@@ -55,5 +55,6 @@ class ResCompany(models.Model):
         string="Cancel penalty product",
         help="Product used to calculate the cancel penalty",
         comodel_name="product.product",
+        index=True,
         ondelete="restrict",
     )

@@ -33,11 +33,13 @@ class ProductPricelist(models.Model):
     company_id = fields.Many2one(
         string="Company",
         help="Company to which the pricelist belongs",
+        index=True,
     )
     cancelation_rule_id = fields.Many2one(
         string="Cancelation Policy",
         help="Cancelation Policy included in the room",
         comodel_name="pms.cancelation.rule",
+        index=True,
         check_pms_properties=True,
     )
     pricelist_type = fields.Selection(
@@ -57,6 +59,7 @@ class ProductPricelist(models.Model):
         help="Availability Plan for which the pricelist is included",
         comodel_name="pms.availability.plan",
         ondelete="restrict",
+        index=True,
         check_pms_properties=True,
     )
     item_ids = fields.One2many(
