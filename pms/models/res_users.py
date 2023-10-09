@@ -14,6 +14,7 @@ class ResUsers(models.Model):
         comodel_name="pms.property",
         domain="[('id','in',pms_property_ids)]",
         context={"user_preference": True},
+        index=True,
     )
     pms_property_ids = fields.Many2many(
         string="Properties",

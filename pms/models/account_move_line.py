@@ -44,6 +44,7 @@ class AccountMoveLine(models.Model):
         compute="_compute_pms_property_id",
         store=True,
         readonly=False,
+        index=True,
         check_pms_properties=True,
     )
     origin_agency_id = fields.Many2one(
@@ -53,6 +54,7 @@ class AccountMoveLine(models.Model):
         domain="[('is_agency', '=', True)]",
         compute="_compute_origin_agency_id",
         store=True,
+        index=True,
         readonly=False,
     )
     move_id = fields.Many2one(check_pms_properties=True)

@@ -30,21 +30,25 @@ class ProductPricelistItem(models.Model):
         string="Board Service",
         help="Specify a Board services on Room Types.",
         comodel_name="pms.board.service.room.type",
+        index=True,
         check_pms_properties=True,
     )
     pricelist_id = fields.Many2one(
         string="Pricelist",
         help="Pricelist in which this item is included",
+        index=True,
         check_pms_properties=True,
     )
     product_id = fields.Many2one(
         string="Product",
         help="Product associated with the item",
+        index=True,
         check_pms_properties=True,
     )
     product_tmpl_id = fields.Many2one(
         string="Product Template",
         help="Product template associated with the item",
+        index=True,
         check_pms_properties=True,
     )
     allowed_board_service_product_ids = fields.Many2many(

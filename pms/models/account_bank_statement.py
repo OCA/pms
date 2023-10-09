@@ -13,6 +13,7 @@ class AccountBankStatement(models.Model):
         compute="_compute_pms_property_id",
         store=True,
         copy=False,
+        index=True,
         check_pms_properties=True,
     )
     journal_id = fields.Many2one(check_pms_properties=True)
