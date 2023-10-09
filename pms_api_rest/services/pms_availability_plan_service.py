@@ -230,7 +230,7 @@ class PmsAvailabilityPlanService(Component):
         [
             (
                 [
-                    "/<int:availability_plan_id>/availability-plan-rules",
+                    "/p/<int:availability_plan_id>/availability-plan-rules",
                 ],
                 "PATCH",
             )
@@ -255,7 +255,7 @@ class PmsAvailabilityPlanService(Component):
                 [
                     "/batch-changes",
                 ],
-                "PATCH",
+                "POST",
             )
         ],
         input_param=Datamodel("pms.availability.plan.rules.info", is_list=False),
