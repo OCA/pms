@@ -50,13 +50,16 @@ class ChannelWubookPmsFolioMapperImport(Component):
             return {"payment_gateway_fee": record["payment_gateway_fee"]}
 
         # Expedia payments gateway
-        if record["id_channel"] == 1 and record["channel_data"].get("pay_model") == "merchant":
+        if (
+            record["id_channel"] == 1
+            and record["channel_data"].get("pay_model") == "merchant"
+        ):
             return {"payment_gateway_fee": record["amount"]}
 
         # Booking payments gateway
         if record["id_channel"] == 2 and record["ancillary"].get("Payment"):
             if record["ancillary"]["Payment"].get("Payout") == "BankTransfer":
-                return {record["amount"]}
+                return {"payment_gateway_fee": record["amount"]}
         # Not online pre payment
         return {"payment_gateway_fee": 0}
 
@@ -180,9 +183,9 @@ class ChannelWubookPmsFolioChildMapperImport(Component):
         # outside the main loop in another one and create wubook_status on
         # reservation
         if reservations and map_record.parent.source["was_modified"] == 0:
-            reservations.filtered(
-                lambda x: x.allowed_cancel
-            ).with_context(modified=True, force_write_blocked=True).action_cancel()
+            reservations.filtered(lambda x: x.allowed_cancel).with_context(
+                modified=True, force_write_blocked=True
+            ).action_cancel()
 
         return mapped
 
