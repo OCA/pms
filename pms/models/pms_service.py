@@ -414,8 +414,8 @@ class PmsService(models.Model):
                             ]
                         # if service lines has only one line,
                         # set its day_qty to service product_qty
-                        elif len(service.service_line_ids) == 1 and self.product_qty:
-                            service.service_line_ids.day_qty = self.product_qty
+                        elif len(service.service_line_ids) == 1 and service.product_qty:
+                            service.service_line_ids.day_qty = service.product_qty
 
                 else:
                     if not service.service_line_ids:
