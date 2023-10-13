@@ -55,9 +55,13 @@ class PmsPaymentnService(Component):
                 .sudo()
                 .search(
                     [
-                        ("name", "=", booking_identifier),
+                        "&",
                         ("pms_property_id", "=", pms_property.id),
-                    ]
+                        "|",
+                        ("name", "=", booking_identifier),
+                        ("folio_id.name", "=", booking_identifier),
+                    ],
+                    limit=1,
                 )
             )
             if not reservation:
@@ -131,12 +135,13 @@ class PmsPaymentnService(Component):
                 .sudo()
                 .search(
                     [
-                        "|",
                         "&",
-                        ("name", "=", booking_identifier),
-                        ("folio.name", "=", booking_identifier),
                         ("pms_property_id", "=", pms_property.id),
-                    ]
+                        "|",
+                        ("name", "=", booking_identifier),
+                        ("folio_id.name", "=", booking_identifier),
+                    ],
+                    limit=1,
                 )
             )
             if not reservation:
