@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import datetime, date, timedelta
 
 from odoo.osv import expression
 
@@ -83,24 +83,60 @@ class PmsPartnerService(Component):
     def get_partners(self, pms_partner_search_params):
         result_partners = []
         domain = []
+        print("pms_partner_search_params", pms_partner_search_params)
 
-        if pms_partner_search_params.housed:
-            partners_housed = (
+        if pms_partner_search_params.housedNow:
+            partners_housed_now = (
                 self.env["pms.checkin.partner"]
                 .search([("state", "=", "onboard")])
                 .mapped("partner_id")
             )
-            domain.append(("id", "in", partners_housed.ids))
-        if pms_partner_search_params.filterByType:
-            filter_by_type = pms_partner_search_params.filterByType.split(",")
-
-            if "individual" in filter_by_type:
+            domain.append(("id", "in", partners_housed_now.ids))
+        if pms_partner_search_params.housedLastWeek:
+            today = date.today()
+            last_week_day = today - timedelta(days=7)
+            partners_housed_last_week = (
+                self.env["pms.checkin.partner"]
+                .search(
+                    [
+                        '|',
+                        '&', ('checkin', '>=', last_week_day), ('checkin', '<=', today),
+                        '|', ('checkout', '>=', last_week_day), ('checkout', '<=', today),
+                        '|', '&', ('checkin', '<=', last_week_day), ('checkout', '<', today),
+                        '&', ('checkin', '>=', last_week_day), ('checkout', '>', today),
+                        '|', ('checkin', '<', last_week_day), ('checkout', '>', today),
+                    ]
+                ).mapped("partner_id")
+            )
+            domain.append(("id", "in", partners_housed_last_week.ids))
+        if pms_partner_search_params.housedLastMonth:
+            today = date.today()
+            last_month_day = today - timedelta(days=30)
+            partners_housed_last_month = (
+                self.env["pms.checkin.partner"]
+                .search(
+                    [
+                        '|',
+                        '&', ('checkin', '>=', last_month_day), ('checkin', '<=', today),
+                        '|', ('checkout', '>=', last_month_day), ('checkout', '<=', today),
+                        '|', '&', ('checkin', '<=', last_month_day), ('checkout', '<', today),
+                        '&', ('checkin', '>=', last_month_day), ('checkout', '>', today),
+                        '|', ('checkin', '<', last_month_day), ('checkout', '>', today),
+                    ]
+                ).mapped("partner_id")
+            )
+            domain.append(("id", "in", partners_housed_last_month.ids))
+        if (
+            pms_partner_search_params.filterByType
+            and pms_partner_search_params.filterByType != "all"
+        ):
+            if pms_partner_search_params.filterByType == "company":
+                domain.append(("is_company", "=", True))
+            elif pms_partner_search_params.filterByType == "agency":
+                domain.append(("is_agency", "=", True))
+            elif pms_partner_search_params.filterByType == "individual":
                 domain.append(("is_company", "=", False))
                 domain.append(("is_agency", "=", False))
-            if "company" in filter_by_type:
-                domain.append(("is_company", "=", True))
-            if "agency" in filter_by_type:
-                domain.append(("is_agency", "=", True))
 
         if pms_partner_search_params.filter:
             subdomains = [
