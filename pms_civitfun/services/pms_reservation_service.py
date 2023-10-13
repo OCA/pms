@@ -60,8 +60,10 @@ class CivitfunReservationService(Component):
                 domain.extend(
                     [
                         "|",
+                        "|",
                         ("external_reference", "=", booking_code),
                         ("name", "=", booking_code),
+                        ("folio_id.name", "=", booking_code),
                     ]
                 )
             if pms_search_param.entranceDate:
