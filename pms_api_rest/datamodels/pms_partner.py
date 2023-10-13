@@ -11,7 +11,9 @@ class PmsPartnerSearchParam(Datamodel):
     documentType = fields.Integer(required=False, allow_none=True)
     documentNumber = fields.String(required=False, allow_none=True)
     name = fields.String(required=False, allow_none=True)
-    housed = fields.Boolean(required=False, allow_none=True)
+    housedNow = fields.Boolean(required=False, allow_none=True)
+    housedLastWeek = fields.Boolean(required=False, allow_none=True)
+    housedLastMonth = fields.Boolean(required=False, allow_none=True)
     filter = fields.String(required=False, allow_none=True)
     filterByType = fields.String(required=False, allow_none=True)
 
