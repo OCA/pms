@@ -122,7 +122,7 @@ class ChannelWubookProductPricelistAdapter(Component):
 
         for plan in all_plans:
             if "vpid" in plan:
-                if plan["vpid"] == 0:
+                if plan["vpid"] == 0 or plan["vpid"] == -1:
                     plan["vpid"] = self.backend_record.pricelist_external_id
                     plan["daily"] = plans_by_id[plan["vpid"]]["daily"]
 

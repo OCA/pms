@@ -264,9 +264,11 @@ class ChannelWubookPmsFolioAdapter(Component):
                 lines = []
                 room_rate_id = None
                 for days in room["roomdays"]:
-                    rate_id = (
-                        days["rate_id"] or self.backend_record.pricelist_external_id
-                    )
+                    if not days["rate_id"] or days["rate_id"] == -1:
+                        # TODO: If -1 warning in folio (pricelist unknown)
+                        rate_id = self.backend_record.pricelist_external_id
+                    else:
+                        rate_id = days["rate_id"]
                     if room_rate_id is None:
                         room_rate_id = rate_id
                     else:
