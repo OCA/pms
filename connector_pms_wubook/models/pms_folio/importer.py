@@ -53,6 +53,9 @@ class ChannelWubookPmsFolioImporter(Component):
         folio = binding.odoo_id
         # If Wubook status is 7 (Wubook modification) the folio state is not changed
         if binding.wubook_status in ("3", "5", "6") and binding.state != "cancel":
+            # If folio has draft invoice, cancel invoices:
+            if folio.move_ids.filtered(lambda x: x.state == "draft"):
+                folio.move_ids.filtered(lambda x: x.state == "draft").button_cancel()
             folio.action_cancel()
         elif binding.wubook_status in ("1", "2", "4") and binding.state == "cancel":
             folio.with_context(confirm_all_reservations=True).action_confirm()
