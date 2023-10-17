@@ -15,6 +15,7 @@
         "base_location",
         "l10n_es_aeat",
         "sql_export_excel",
+        "feed_rss",
     ],
     "external_dependencies": {
         "python": ["jwt", "simplejson", "marshmallow", "jose"],
