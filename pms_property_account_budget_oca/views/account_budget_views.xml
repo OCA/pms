@@ -1,0 +1,25 @@
+<odoo>
+    <!--
+    Budgets
+    -->
+    <record id="crossovered_budget_view_form" model="ir.ui.view">
+        <field name="name">pms.property.crossovered.budget.view.form</field>
+        <field name="model">crossovered.budget</field>
+        <field name="inherit_id" ref="account.view_budget_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="pms_property_id" />
+            </xpath>
+        </field>
+    </record>
+    <record id="crossovered_budget_view_tree" model="ir.ui.view">
+        <field name="name">pms.property.crossovered.budget.view.tree</field>
+        <field name="model">crossovered.budget</field>
+        <field name="inherit_id" ref="account.view_budget_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='creating_user_id']" position="after">
+                <field name="pms_property_id" optional="show" />
+            </xpath>
+        </field>
+    </record>
+</odoo>
