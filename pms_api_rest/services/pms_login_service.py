@@ -73,9 +73,9 @@ class PmsLoginService(Component):
             expirationDate=timestamp_expire_in_a_min,
             userId=user_record.id,
             userName=user_record.name,
-            userFirstName=user_record.firstname,
-            userEmail=user_record.email if user_record.email else None,
-            userPhone=user_record.phone if user_record.phone else None,
+            userFirstName=user_record.firstname or None,
+            userEmail=user_record.email or None,
+            userPhone=user_record.phone or None,
             defaultPropertyId=user_record.pms_property_id.id,
             defaultPropertyName=user_record.pms_property_id.name,
             userImageBase64=user_record.partner_id.image_1024
