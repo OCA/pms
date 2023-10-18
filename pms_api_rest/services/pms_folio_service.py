@@ -100,10 +100,9 @@ class PmsFolioService(Component):
         domain_fields = list()
         pms_property_id = int(folio_search_param.pmsPropertyId)
         domain_fields.append(("pms_property_id", "=", pms_property_id))
-        today = fields.Datetime.now()
-        today = today.replace(hour=0, minute=0, second=0, microsecond=0)
+        order_field = "write_date desc"
         if folio_search_param.last:
-            domain_fields.append(("create_date", ">", today))
+            order_field = "create_date desc"
 
         if folio_search_param.dateTo and folio_search_param.dateFrom:
             date_from = fields.Date.from_string(folio_search_param.dateFrom)
@@ -193,7 +192,7 @@ class PmsFolioService(Component):
         PmsFolioShortInfo = self.env.datamodels["pms.folio.short.info"]
         for folio in self.env["pms.folio"].search(
             [("id", "in", reservations_result), ("reservation_type", "!=", "out")],
-            order="write_date desc",
+            order=order_field,
             limit=folio_search_param.limit,
             offset=folio_search_param.offset,
         ):
