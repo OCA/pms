@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models
+from odoo.osv import expression
 
 
 class PmsFolio(models.Model):
@@ -18,7 +19,9 @@ class PmsFolio(models.Model):
     )
 
     @api.model
-    def _name_search(self, name="", args=None, operator="ilike", limit=100):
+    def _name_search(
+        self, name="", args=None, operator="ilike", limit=100, name_get_uid=None
+    ):
         args = args or []
         domain = []
         if name:
@@ -28,5 +31,6 @@ class PmsFolio(models.Model):
                 ("reservation_origin_code", operator, name),
                 ("channel_wubook_bind_ids.external_id", operator, name),
             ]
-        folios = self.search(domain + args, limit=limit)
-        return folios.name_get()
+        return self._search(
+            expression.AND([domain + args]), limit=limit, access_rights_uid=name_get_uid
+        )

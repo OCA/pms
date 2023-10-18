@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models
+from odoo.osv import expression
 
 
 class PmsReservation(models.Model):
@@ -26,7 +27,9 @@ class PmsReservation(models.Model):
         return [("folio_id", "in", folios.ids)]
 
     @api.model
-    def _name_search(self, name="", args=None, operator="ilike", limit=100):
+    def _name_search(
+        self, name="", args=None, operator="ilike", limit=100, name_get_uid=None
+    ):
         args = args or []
         domain = []
         if name:
@@ -36,5 +39,6 @@ class PmsReservation(models.Model):
                 ("reservation_origin_code", operator, name),
                 ("channel_wubook_bind_ids.external_id", operator, name),
             ]
-        reservations = self.search(domain + args, limit=limit)
-        return reservations.name_get()
+        return self._search(
+            expression.AND([domain + args]), limit=limit, access_rights_uid=name_get_uid
+        )
