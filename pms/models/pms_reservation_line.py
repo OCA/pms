@@ -399,7 +399,7 @@ class PmsReservationLine(models.Model):
                     line._get_display_price(product),
                     product.taxes_id,
                     reservation.tax_ids,
-                    reservation.company_id,
+                    reservation.pms_property_id.company_id,
                 )
                 # TODO: Out of service 0 amount
 
