@@ -10,6 +10,7 @@ from odoo.tools import get_lang
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
+import pytz
 
 from ..pms_api_rest_utils import url_image_pms_api_rest
 
@@ -1237,11 +1238,14 @@ class PmsFolioService(Component):
         if folio_id:
             folio = self.env["pms.folio"].browse(folio_id)
             reservations = self.env["pms.reservation"].browse(folio.reservation_ids.ids)
+            user_tz = pytz.timezone(self.env.user.tz)
             for messages in reservations.message_ids:
                 PmsReservationMessageInfo = self.env.datamodels[
                     "pms.reservation.message.info"
                 ]
                 for message in messages:
+                    reservation_message_date = pytz.UTC.localize(message.date)
+                    reservation_message_date = reservation_message_date.astimezone(user_tz)
                     message_body = self.parse_message_body(message)
                     if message.message_type == "email":
                         subject = "Email enviado: " + message.subject
@@ -1255,7 +1259,7 @@ class PmsFolioService(Component):
                             else message.email_from,
                             message=message_body,
                             subject=subject,
-                            date=message.date.strftime("%d/%m/%y %H:%M:%S"),
+                            date=reservation_message_date.strftime("%d/%m/%y %H:%M:%S"),
                             messageType=message.message_type,
                             authorImageBase64=base64.b64encode(
                                 message.author_id.image_1024
@@ -1272,6 +1276,8 @@ class PmsFolioService(Component):
                     subject = "Email enviado: " + folio_message.subject
                 else:
                     subject = folio_message.subject if folio_message.subject else None
+                folio_message_date = pytz.UTC.localize(folio_message.date)
+                folio_message_date = folio_message_date.astimezone(user_tz)
                 folio_messages.append(
                     PmsFolioMessageInfo(
                         author=folio_message.author_id.name
@@ -1279,7 +1285,7 @@ class PmsFolioService(Component):
                         else folio_message.email_from,
                         message=message_body,
                         subject=subject,
-                        date=folio_message.date.strftime("%d/%m/%y %H:%M:%S"),
+                        date=folio_message_date.strftime("%d/%m/%y %H:%M:%S"),
                         messageType=folio_message.message_type,
                         authorImageBase64=base64.b64encode(
                             folio_message.author_id.image_1024
