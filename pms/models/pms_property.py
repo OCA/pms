@@ -38,6 +38,12 @@ class PmsProperty(models.Model):
         index=True,
         ondelete="restrict",
     )
+    parent_id = fields.Many2one(
+        comodel_name="pms.property", string="Parent Property", index=True
+    )
+    child_ids = fields.One2many(
+        comodel_name="pms.property", inverse_name="parent_id", string="Child Properties"
+    )
     pms_property_code = fields.Char(
         string="Property Code",
         help="Short name property",
