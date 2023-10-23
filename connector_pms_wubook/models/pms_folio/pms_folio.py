@@ -27,6 +27,7 @@ class PmsFolio(models.Model):
         if name:
             domain = [
                 "|",
+                "|",
                 ("name", operator, name),
                 ("reservation_origin_code", operator, name),
                 ("channel_wubook_bind_ids.external_id", operator, name),
