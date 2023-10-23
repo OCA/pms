@@ -1106,6 +1106,7 @@
                         string="Property"
                         enable_counters="1"
                         icon="fa-h-square"
+                        domain="[('company_id', '=', company_id])]"
                     />
                     <field
                         name="state"
