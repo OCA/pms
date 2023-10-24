@@ -81,19 +81,23 @@ class PmsTransactionService(Component):
             )
 
         if pms_transactions_search_param.transactionType:
-            domain_fields.append(
-                (
-                    "pms_api_transaction_type",
-                    "=",
-                    pms_transactions_search_param.transactionType,
-                )
-            )
+            transaction_types = pms_transactions_search_param.transactionType.split(",")
+            type_domain = []
 
+            for transaction_type in transaction_types:
+                payment_type, partner_type = self._get_mapper_transaction_type(transaction_type)
+                type_domain.append([
+                    ["partner_type", "=", partner_type],
+                    ["payment_type", "=", payment_type],
+                ])
+
+            if type_domain:
+                type_domain = expression.OR(type_domain)
+                domain_fields.extend(type_domain)
         if domain_filter:
             domain = expression.AND([domain_fields, domain_filter[0]])
         else:
             domain = domain_fields
-
         PmsTransactionResults = self.env.datamodels["pms.transaction.results"]
         PmsTransactiontInfo = self.env.datamodels["pms.transaction.info"]
         total_transactions = self.env["account.payment"].search_count(domain)
