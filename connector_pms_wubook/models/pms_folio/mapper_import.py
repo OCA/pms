@@ -186,6 +186,7 @@ class ChannelWubookPmsFolioChildMapperImport(Component):
             draft_invoices = binding.move_ids.filtered(lambda x: x.state == "draft")
             if draft_invoices:
                 draft_invoices.button_cancel()
+                draft_invoices.unlink()
             reservations.filtered(lambda x: x.allowed_cancel).with_context(
                 modified=True, force_write_blocked=True
             ).action_cancel()
