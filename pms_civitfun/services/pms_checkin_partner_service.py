@@ -145,7 +145,8 @@ class PmsCheckinPartnerService(Component):
             res_zip = self.env["res.city.zip"].search(
                 [
                     ("name", "=", zip_code),
-                ]
+                ],
+                limit=1,
             )
         if res_zip:
             checkin_vals["residence_zip"] = res_zip.name
