@@ -808,7 +808,9 @@ class TestPmsBookingEngine(TestPms):
         room_price = self.test_room_type_double.list_price
         days = (checkout - checkin).days
         board_service_price = self.board_service_test.amount
-        room_capacity = self.test_room_type_double.get_room_type_capacity(self.pms_property1.id)
+        room_capacity = self.test_room_type_double.get_room_type_capacity(
+            self.pms_property1.id
+        )
         expected_price = room_price * days + (
             board_service_price * room_capacity * days
         )
