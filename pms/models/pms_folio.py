@@ -1221,7 +1221,9 @@ class PmsFolio(models.Model):
     def _compute_untaxed_amount_to_invoice(self):
         for folio in self:
             folio.untaxed_amount_to_invoice = sum(
-                folio.mapped("sale_line_ids.untaxed_amount_to_invoice")
+                folio.sale_line_ids.filtered(lambda l: not l.is_downpayment).mapped(
+                    "untaxed_amount_to_invoice"
+                )
             )
 
     # TODO: Add return_ids to depends
