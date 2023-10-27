@@ -882,12 +882,12 @@ class PmsFolio(models.Model):
     )
     def _compute_pricelist_id(self):
         for folio in self:
-            is_new = not folio.pricelist_id or not isinstance(folio.id, models.NewId)
+            is_new = not folio.pricelist_id or isinstance(folio.id, models.NewId)
             if folio.reservation_type in ("out", "staff"):
                 folio.pricelist_id = False
             elif len(folio.reservation_ids.pricelist_id) == 1:
                 folio.pricelist_id = folio.reservation_ids.pricelist_id
-            elif folio.agency_id and folio.agency_id.apply_pricelist and is_new:
+            elif is_new and folio.agency_id and folio.agency_id.apply_pricelist:
                 folio.pricelist_id = folio.agency_id.property_product_pricelist
             elif (
                 is_new
