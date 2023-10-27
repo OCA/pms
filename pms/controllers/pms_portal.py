@@ -381,7 +381,7 @@ class PortalPrecheckin(CustomerPortal):
             )
         except (AccessError, MissingError):
             return request.redirect("/my")
-        values.update({"no_breadcrumbs": True,"folio": folio_sudo})
+        values.update({"no_breadcrumbs": True, "folio": folio_sudo})
         return request.render("pms.portal_my_prechekin_folio", values)
 
     @http.route(
@@ -391,12 +391,20 @@ class PortalPrecheckin(CustomerPortal):
         website=True,
         csrf=False,
     )
-    def portal_precheckin_reservation(self, folio_id, reservation_id, access_token=None, **kw):
+    def portal_precheckin_reservation(
+        self, folio_id, reservation_id, access_token=None, **kw
+    ):
         folio = request.env["pms.folio"].sudo().browse(folio_id)
         reservation = request.env["pms.reservation"].sudo().browse(reservation_id)
         values = {}
         values.update({"folio": folio})
-        values.update({"no_breadcrumbs": True,"folio_access_token": access_token, "reservation": reservation})
+        values.update(
+            {
+                "no_breadcrumbs": True,
+                "folio_access_token": access_token,
+                "reservation": reservation,
+            }
+        )
         return request.render("pms.portal_my_prechekin_reservation", values)
 
     @http.route(
@@ -408,7 +416,9 @@ class PortalPrecheckin(CustomerPortal):
         website=True,
         csrf=False,
     )
-    def portal_precheckin(self, folio_id, reservation_id, checkin_partner_id, access_token=None, **kw):
+    def portal_precheckin(
+        self, folio_id, reservation_id, checkin_partner_id, access_token=None, **kw
+    ):
         folio = request.env["pms.folio"].sudo().browse(folio_id)
         reservation = request.env["pms.reservation"].sudo().browse(reservation_id)
         try:

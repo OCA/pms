@@ -278,7 +278,9 @@ class BookingEngine(models.TransientModel):
                     record.discount * 100
                 )
             action = self.sudo().env.ref("pms.open_pms_folio1_form_tree_all").read()[0]
-            action["views"] = [(self.sudo().env.ref("pms.pms_folio_view_form").id, "form")]
+            action["views"] = [
+                (self.sudo().env.ref("pms.pms_folio_view_form").id, "form")
+            ]
             action["res_id"] = folio.id
             return action
 
