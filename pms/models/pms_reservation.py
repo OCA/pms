@@ -1018,7 +1018,7 @@ class PmsReservation(models.Model):
     @api.depends("partner_id", "agency_id")
     def _compute_pricelist_id(self):
         for reservation in self:
-            is_new = not reservation.pricelist_id or not isinstance(
+            is_new = not reservation.pricelist_id or isinstance(
                 reservation.id, models.NewId
             )
             if reservation.reservation_type in ("out", "staff"):
