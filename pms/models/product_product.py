@@ -40,7 +40,8 @@ class ProductProduct(models.Model):
                             ),
                             ("product_id", "=", record.id),
                             ("pms_property_id", "=", pms_property_id),
-                        ]
+                        ],
+                        limit=1,
                     )
                     .amount
                 )
