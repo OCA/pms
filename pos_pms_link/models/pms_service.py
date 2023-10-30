@@ -17,14 +17,22 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import models, api
+from odoo import api, models
+
 
 class PMSService(models.Model):
-    _inherit = 'pms.service'
+    _inherit = "pms.service"
 
     @api.model
     def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
         if self.env.context.get("pos_user_force", False):
-            return super().sudo().with_context(pos_user_force=False).search_read(domain, fields, offset, limit, order)
+            return (
+                super()
+                .sudo()
+                .with_context(pos_user_force=False)
+                .search_read(domain, fields, offset, limit, order)
+            )
         else:
-            return super(PMSService, self).search_read(domain, fields, offset, limit, order)
+            return super(PMSService, self).search_read(
+                domain, fields, offset, limit, order
+            )

@@ -17,14 +17,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import fields, models, api, _
-from odoo.osv.expression import AND
-import pytz
-from datetime import timedelta
-from odoo.addons.point_of_sale.wizard.pos_box import PosBox
+from odoo import api, fields, models
+
 
 class PMSServiceLine(models.Model):
-    _inherit = 'pms.service.line'
+    _inherit = "pms.service.line"
 
     pos_order_line_ids = fields.One2many(
         string="POS lines",
@@ -35,6 +32,13 @@ class PMSServiceLine(models.Model):
     @api.model
     def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
         if self.env.context.get("pos_user_force", False):
-            return super().sudo().with_context(pos_user_force=False).search_read(domain, fields, offset, limit, order)
+            return (
+                super()
+                .sudo()
+                .with_context(pos_user_force=False)
+                .search_read(domain, fields, offset, limit, order)
+            )
         else:
-            return super(PMSServiceLine, self).search_read(domain, fields, offset, limit, order)
+            return super(PMSServiceLine, self).search_read(
+                domain, fields, offset, limit, order
+            )
