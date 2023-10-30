@@ -139,6 +139,10 @@ class PmsCheckinPartnerService(Component):
             checkin_vals["support_number"] = guest.customFields.get(
                 "document_support_number"
             )
+        if guest.customFields.get("documentSupportNumber"):
+            checkin_vals["support_number"] = guest.customFields.get(
+                "documentSupportNumber"
+            )
         if guest.customFields.get("address"):
             checkin_vals["residence_street"] = guest.customFields.get(
                 "address"
