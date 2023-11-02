@@ -1,6 +1,5 @@
 <?xml version="1.0" ?>
 <odoo>
-    <data noupdate="0">
         <template id="template_header">
             <h1 t-field="object.pms_property_id.name" />
             <div class="row">
@@ -114,18 +113,18 @@
             </div>
         </template>
         <template
-            id="template_reservation_confirmed"
-            name="Property Reservation Confirmed"
-        >
+        id="template_reservation_confirmed"
+        name="Property Reservation Confirmed"
+    >
             <t t-call="web.layout">
                 <t t-set="head">
                     <!-- TODO: ensure bootstrap in shipped within the email -->
                     <link
-                        rel="stylesheet"
-                        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-                        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-                        crossorigin="anonymous"
-                    />
+                    rel="stylesheet"
+                    href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+                    integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+                    crossorigin="anonymous"
+                />
                 </t>
                 <t t-set="body_classname" t-value="'container'" />
                 <div class="container">
@@ -140,8 +139,8 @@
             <field name="name">Property: Reservation Confirmed</field>
             <field name="model_id" ref="pms.model_pms_folio" />
             <field
-                name="email_from"
-            >${('%s &lt;%s&gt;' % (object.pms_property_id.partner_id.name, object.pms_property_id.partner_id.email) or '')|safe}</field>
+            name="email_from"
+        >${('%s &lt;%s&gt;' % (object.pms_property_id.partner_id.name, object.pms_property_id.partner_id.email) or '')|safe}</field>
             <field name="email_to">${(object.email or '')|safe}</field>
             <field name="partner_to">${(object.partner_id.id or '')}</field>
             <field name="lang">${object.lang}</field>
@@ -152,5 +151,4 @@
             <field name="body_type">qweb</field>
             <field name="body_view_id" ref="pms.template_reservation_confirmed" />
         </record>
-    </data>
 </odoo>

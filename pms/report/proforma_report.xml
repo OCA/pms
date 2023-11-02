@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <data>
         <record id="action_report_pms_pro_forma_invoice" model="ir.actions.report">
             <field name="name">PRO-FORMA Invoice</field>
             <field name="model">account.move</field>
@@ -11,5 +10,4 @@
             <field name="binding_model_id" ref="model_account_move" />
             <field name="binding_type">report</field>
         </record>
-    </data>
 </odoo>

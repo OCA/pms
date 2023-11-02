@@ -104,6 +104,7 @@
         "views/account_analytic_line_view.xml",
     ],
     "demo": [
+        "demo/pms_master_data_no_update.xml",
         "demo/pms_master_data.xml",
         "demo/pms_folio.xml",
         "demo/pms_reservation.xml",
