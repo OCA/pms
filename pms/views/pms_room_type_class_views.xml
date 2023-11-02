@@ -45,7 +45,7 @@
         <field name="name">pms.room.type.class.tree</field>
         <field name="model">pms.room.type.class</field>
         <field name="arch" type="xml">
-            <tree string="Room Class">
+            <tree name="Room Class">
                 <field name="sequence" widget="handle" />
                 <field name="name" />
                 <field name="default_code" />
