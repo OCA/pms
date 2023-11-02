@@ -24,7 +24,7 @@
         <field name="name">pms.ubication.tree</field>
         <field name="model">pms.ubication</field>
         <field name="arch" type="xml">
-            <tree string=" Property Ubications">
+            <tree name=" Property Ubications">
                 <field name="name" colspan="1" />
                 <field name="sequence" select="1" />
             </tree>

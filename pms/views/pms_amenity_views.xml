@@ -90,7 +90,7 @@
         <field name="name">pms.room_amenity_list</field>
         <field name="model">pms.amenity</field>
         <field name="arch" type="xml">
-            <tree string="Room Amenities">
+            <tree name="Room Amenities">
                 <field name="name" />
                 <field name="pms_amenity_type_id" select="1" />
                 <field name="default_code" />

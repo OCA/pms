@@ -21,7 +21,7 @@
         <field name="name">>pms.room.closure.reason.tree</field>
         <field name="model">room.closure.reason</field>
         <field name="arch" type="xml">
-            <tree string="Room Closure Reason">
+            <tree name="Room Closure Reason">
                 <field name="name" />
                 <field name="description" />
             </tree>

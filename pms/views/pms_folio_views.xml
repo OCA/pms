@@ -378,7 +378,7 @@
                                 widget="section_and_note_one2many"
                                 default_order="folio_id, sequence, reservation_id asc, service_order, date_order, display_type"
                             >
-                                <tree string="Sales Lines" editable="bottom">
+                                <tree name="Sales Lines" editable="bottom">
                                     <control>
                                         <create
                                             name="add_product_control"
@@ -625,7 +625,7 @@
         <field name="model">pms.folio</field>
         <field name="arch" type="xml">
             <tree
-                string="Folio"
+                name="Folio"
                 multi_edit="1"
                 sample="1"
                 create="false"

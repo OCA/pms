@@ -46,7 +46,7 @@
         <field name="name">pms.cancelation.rule.tree</field>
         <field name="model">pms.cancelation.rule</field>
         <field name="arch" type="xml">
-            <tree string="Cancelation Rules">
+            <tree name="Cancelation Rules">
                 <field name="name" />
                 <field name="days_intime" />
                 <field name="penalty_late" />

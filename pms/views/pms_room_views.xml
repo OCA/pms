@@ -177,7 +177,7 @@
         <field name="name">pms.room.tree</field>
         <field name="model">pms.room</field>
         <field name="arch" type="xml">
-            <tree string="Property Room" editable="bottom" multi_edit="1" sample="1">
+            <tree name="Property Room" editable="bottom" multi_edit="1" sample="1">
                 <field name="sequence" widget="handle" />
                 <field name="pms_property_id" />
                 <field name="name" />

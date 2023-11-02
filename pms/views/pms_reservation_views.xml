@@ -523,7 +523,7 @@
                                 >
                                     <!-- If charge this view with tree_view_ref, its !crash! (field not found) when open reservation form from folio form... ¿?-->
                                     <tree
-                                        string="Services"
+                                        name="Services"
                                         editable="bottom"
                                         decoration-success="is_board_service == True"
                                     >
@@ -597,7 +597,7 @@
                                             invisible="1"
                                             readonly="1"
                                         >
-                                            <tree string="Days">
+                                            <tree name="Days">
                                                 <field name="date" />
                                                 <field name="day_qty" />
                                                 <field
@@ -800,7 +800,7 @@
         <field name="model">pms.reservation</field>
         <field name="arch" type="xml">
             <tree
-                string="Reservation"
+                name="Reservation"
                 multi_edit="1"
                 sample="1"
                 class="o_sale_order"

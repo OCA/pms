@@ -92,7 +92,7 @@
         <field name="name">pms.room_type.tree</field>
         <field name="model">pms.room.type</field>
         <field name="arch" type="xml">
-            <tree string=" Property Room Type">
+            <tree name=" Property Room Type">
                 <field name="sequence" widget="handle" />
                 <field name="pms_property_ids" widget="many2many_tags" />
                 <field name="name" />

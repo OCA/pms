@@ -41,7 +41,7 @@
         <field name="name">pms.availability.plan.rule.tree</field>
         <field name="model">pms.availability.plan.rule</field>
         <field name="arch" type="xml">
-            <tree string="Availability rules">
+            <tree name="Availability rules">
                 <field name="availability_plan_id" />
                 <field name="date" />
                 <field name="room_type_id" />
