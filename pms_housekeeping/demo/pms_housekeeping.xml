@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<odoo>
-    <data noupdate="1">
+<odoo noupdate="1">
         <!-- pms.housekeeping.task -->
         <record id="pms_housekeeping_task_0" model="pms.housekeeping.task">
             <field name="name">Full clean</field>
@@ -61,5 +60,4 @@
             <field name="task_id" ref="pms_housekeeping.pms_housekeeping_task_1" />
             <field name="state">draft</field>
         </record>
-    </data>
 </odoo>

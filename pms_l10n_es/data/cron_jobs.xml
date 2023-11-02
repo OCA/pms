@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<odoo>
-    <data noupdate="1">
-
+<odoo noupdate="1">
         <record model="ir.cron" id="autosend_traveller_report">
             <field name="name">Automatic Send Traveller Report</field>
             <field name="active" eval="False" />
@@ -13,11 +11,9 @@
             <field name="state">code</field>
             <field name="model_id" ref="model_traveller_report_wizard" />
             <field
-                name="nextcall"
-                eval="datetime.now(pytz.timezone('UTC')).strftime('%Y-%m-%d 16:57:00')"
-            />
+            name="nextcall"
+            eval="datetime.now(pytz.timezone('UTC')).strftime('%Y-%m-%d 16:57:00')"
+        />
             <field name="code">model.send_file_institution_async()</field>
         </record>
-
-    </data>
 </odoo>
