@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <template id="report_invoice_document" inherit_id="account.report_invoice_document">
+    <template
+        id="report_invoice_document"
+        inherit_id="account.report_invoice_document"
+        priority="99999"
+    >
         <xpath expr="//address" position="before">
             <t t-if="o.pms_property_id">
                 <t t-set="information_block">
@@ -13,6 +17,9 @@
                 </t>
             </t>
         </xpath>
+<!-- fixme Dangerous use of "replace". Only replace as a last resort.
+     Try position="attributes", position="move" or t-if="False" first - [xml-dangerous-qweb-replace-low-priority]
+-->
         <xpath expr="//div[@class='page']//h2" position="replace">
             <h2>
                 <t t-if="not (env.context.get('proforma', False) or is_pro_forma)">
