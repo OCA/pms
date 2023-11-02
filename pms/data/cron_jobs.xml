@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<odoo>
-    <data noupdate="1">
+<odoo noupdate="1">
         <!-- Set reservation like No Show if the client does not show up  -->
         <record model="ir.cron" id="noshow_reservations">
             <field name="name">Automatic No Show Reservation</field>
@@ -12,9 +11,9 @@
             <field name="state">code</field>
             <field name="model_id" ref="model_pms_reservation" />
             <field
-                name="nextcall"
-                eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 09:00:00')"
-            />
+            name="nextcall"
+            eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 09:00:00')"
+        />
             <field name="code">model.auto_arrival_delayed()</field>
         </record>
         <!-- Set reservation like No Checout if checkout is not confirmed-->
@@ -41,9 +40,9 @@
             <field name="state">code</field>
             <field name="model_id" ref="model_pms_reservation" />
             <field
-                name="nextcall"
-                eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 05:30:00')"
-            />
+            name="nextcall"
+            eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 05:30:00')"
+        />
             <field name="code">model.update_daily_priority_reservation()</field>
         </record>
         <!-- Scheduler for send confirmed email -->
@@ -97,9 +96,9 @@
             <field name="state">code</field>
             <field name="model_id" ref="model_pms_property" />
             <field
-                name="nextcall"
-                eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 23:30:00')"
-            />
+            name="nextcall"
+            eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 23:30:00')"
+        />
             <field name="code">model.autoinvoicing()</field>
         </record>
         <record model="ir.cron" id="autoinvoicing_downpayments">
@@ -113,10 +112,9 @@
             <field name="state">code</field>
             <field name="model_id" ref="model_account_payment" />
             <field
-                name="nextcall"
-                eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 04:30:00')"
-            />
+            name="nextcall"
+            eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 04:30:00')"
+        />
             <field name="code">model.auto_invoice_downpayments(offset=1)</field>
         </record>
-    </data>
 </odoo>

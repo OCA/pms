@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <data>
         <record id="traveller_report_paperformat" model="report.paperformat">
             <field name="name">Traveller Report PaperFormat</field>
             <field name="default" eval="True" />
@@ -16,5 +15,4 @@
             <field name="header_spacing">1</field>
             <field name="dpi">201</field>
         </record>
-    </data>
 </odoo>
