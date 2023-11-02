@@ -9,7 +9,7 @@
     <field name="priority" eval="16" />
     <field name="active" eval="True" />
     <field name="arch" type="xml">
-        <tree string=" Property Ubications">
+        <tree name=" Property Ubications">
             <field name="active" colspan="1" />
             <field name="name" colspan="1" />
             <field name="clean_type" colspan="1" />
