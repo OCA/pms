@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<odoo>
-    <data noupdate="1">
+<odoo noupdate="1">
         <!--ECONOMIC RESERVATIONS (Main Property) -->
         <!-- out of service PAST -->
         <record id="pms_reservation_eco_out_01" model="pms.reservation">
@@ -12,8 +11,8 @@
             <field name="checkout" eval="DateTime.today()" />
             <field name="closure_reason_id" ref="pms_room_closure_reason_vip_privacy" />
             <field
-                name="out_service_description"
-            >Extra privacy for school field trip.</field>
+            name="out_service_description"
+        >Extra privacy for school field trip.</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
         </record>
@@ -65,15 +64,15 @@
             <field name="checkin" eval="DateTime.today() + timedelta(-8)" />
             <field name="checkout" eval="DateTime.today() + timedelta(-6)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_eco_full_board"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_eco_full_board"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
             <field name="state">done</field>
             <field
-                name="partner_requests"
-            >Lactose intolerant, soy milk for breakfast.</field>
+            name="partner_requests"
+        >Lactose intolerant, soy milk for breakfast.</field>
         </record>
         <record id="pms_checkin_partner_r_eco_01" model="pms.checkin.partner">
             <field name="partner_id" ref="base.res_partner_address_28" />
@@ -95,9 +94,9 @@
             <field name="checkin" eval="DateTime.today() + timedelta(-7)" />
             <field name="checkout" eval="DateTime.today() + timedelta(-5)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_eco_full_board"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_eco_full_board"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
             <field name="state">done</field>
@@ -124,9 +123,9 @@
             <field name="checkin" eval="DateTime.today() + timedelta(-7)" />
             <field name="checkout" eval="DateTime.today() + timedelta(-5)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_eco_full_board"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_eco_full_board"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
             <field name="state">done</field>
@@ -158,9 +157,9 @@
             <field name="checkin" eval="DateTime.today() + timedelta(-7)" />
             <field name="checkout" eval="DateTime.today() + timedelta(-6)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_eco_full_board"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_eco_full_board"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
             <field name="state">done</field>
@@ -185,9 +184,9 @@
             <field name="checkin" eval="DateTime.today() + timedelta(-7)" />
             <field name="checkout" eval="DateTime.today() + timedelta(-3)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_eco_full_board"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_eco_full_board"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
             <field name="state">done</field>
@@ -212,9 +211,9 @@
             <field name="checkin" eval="DateTime.today() + timedelta(-4)" />
             <field name="checkout" eval="DateTime.today() + timedelta(-1)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_eco_full_board"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_eco_full_board"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
             <field name="state">done</field>
@@ -239,8 +238,8 @@
             <field name="adults">2</field>
             <field name="state">onboard</field>
             <field
-                name="checkin_partner_ids"
-                eval="[(5, 0),
+            name="checkin_partner_ids"
+            eval="[(5, 0),
                 (0, 0, {
                     'partner_id': ref('base.res_partner_address_28'),
                     'state': 'onboard'
@@ -250,19 +249,19 @@
                     'state': 'onboard'
                     }),
                 ]"
-            />
+        />
             <field name="checkin" eval="DateTime.today()" />
             <field name="checkout" eval="DateTime.today() + timedelta(1)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_eco_half_board"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_eco_half_board"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_booking" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
         </record>
         <!-- 5 nights eco no board service -->
         <record id="pms_reservation_eco_08" model="pms.reservation">
@@ -274,9 +273,9 @@
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_booking" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
             <field name="partner_requests">Need 1 extra towel.</field>
         </record>
         <!-- 2 nights eco no board service -->
@@ -298,9 +297,9 @@
             <field name="checkout" eval="DateTime.today() + timedelta(5)" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
             <field name="partner_requests">Need 2 extra towel.</field>
         </record>
         <!-- 7 nights eco no board service -->
@@ -313,9 +312,9 @@
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_airbnb" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
         </record>
         <!-- 7 nights eco no board service -->
         <record id="pms_reservation_eco_12" model="pms.reservation">
@@ -358,9 +357,9 @@
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_booking" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
             <field name="partner_requests">Preferably street view.</field>
         </record>
         <!-- 2 nights eco no board service -->
@@ -374,9 +373,9 @@
             <field name="checkout" eval="DateTime.today() + timedelta(7)" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
         </record>
         <!--SINGLE RESERVATIONS (Main Property) -->
         <!-- 5 nights sng full board service PAST -->
@@ -389,9 +388,9 @@
             <field name="checkin" eval="DateTime.today() + timedelta(-9)" />
             <field name="checkout" eval="DateTime.today() + timedelta(-4)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_single_full_board"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_single_full_board"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
             <field name="state">done</field>
@@ -417,9 +416,9 @@
             <field name="checkin" eval="DateTime.today() + timedelta(-5)" />
             <field name="checkout" eval="DateTime.today() + timedelta(1)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_single_full_board"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_single_full_board"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
             <field name="state">done</field>
@@ -444,9 +443,9 @@
             <field name="checkin" eval="DateTime.today() + timedelta(-1)" />
             <field name="checkout" eval="DateTime.today()" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_single_full_board"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_single_full_board"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="state">done</field>
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
@@ -469,20 +468,20 @@
             <field name="room_type_id" ref="pms_room_type_single" />
             <field name="adults">1</field>
             <field
-                name="checkin_partner_ids"
-                eval="[(5, 0),
+            name="checkin_partner_ids"
+            eval="[(5, 0),
                 (0, 0, {
                     'partner_id': ref('base.res_partner_address_27'),
                     'state': 'onboard'
                     }),
                 ]"
-            />
+        />
             <field name="checkin" eval="DateTime.today() + timedelta(-1)" />
             <field name="checkout" eval="DateTime.today() + timedelta(1)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_single_full_board"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_single_full_board"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
             <field name="partner_requests">breakfast at 5:00 am </field>
@@ -495,25 +494,25 @@
             <field name="room_type_id" ref="pms_room_type_single" />
             <field name="adults">1</field>
             <field
-                name="checkin_partner_ids"
-                eval="[(5, 0),
+            name="checkin_partner_ids"
+            eval="[(5, 0),
                 (0, 0, {
                     'partner_id': ref('base.res_partner_address_10'),
                     }),
                 ]"
-            />
+        />
             <field name="checkin" eval="DateTime.today() + timedelta(-1)" />
             <field name="checkout" eval="DateTime.today() + timedelta(3)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_single_breakfast"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_single_breakfast"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_booking" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
         </record>
         <!-- 4 nights sng full board service -->
         <record id="pms_reservation_sng_06" model="pms.reservation">
@@ -525,9 +524,9 @@
             <field name="checkin" eval="DateTime.today()" />
             <field name="checkout" eval="DateTime.today() + timedelta(4)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_single_full_board"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_single_full_board"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
             <field name="partner_requests">Breakfast to take away. </field>
@@ -542,15 +541,15 @@
             <field name="checkin" eval="DateTime.today() + timedelta(7)" />
             <field name="checkout" eval="DateTime.today() + timedelta(8)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_single_half_board"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_single_half_board"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_airbnb" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
         </record>
         <!-- 4 nights sng no board service -->
         <record id="pms_reservation_sng_08" model="pms.reservation">
@@ -564,9 +563,9 @@
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_airbnb" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
             <field name="partner_requests">preferably street view</field>
         </record>
         <!-- 4 nights sng no board service -->
@@ -580,9 +579,9 @@
             <field name="checkout" eval="DateTime.today() + timedelta(13)" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
         </record>
         <!-- 1 night sng no board service -->
         <record id="pms_reservation_sng_10" model="pms.reservation">
@@ -597,9 +596,9 @@
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_airbnb" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
             <field name="partner_requests">Preferably street view.</field>
         </record>
         <!--DOUBLE RESERVATIONS (Main Property) -->
@@ -613,9 +612,9 @@
             <field name="checkout" eval="DateTime.today() + timedelta(+9)" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
         </record>
         <function model="pms.reservation" name="action_cancel">
             <value eval="[ref('pms_reservation_dbl_cancel_01')]" />
@@ -631,8 +630,8 @@
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
             <field
-                name="checkin_partner_ids"
-                eval="[(5, 0),
+            name="checkin_partner_ids"
+            eval="[(5, 0),
                 (0, 0, {
                     'partner_id': ref('base.res_partner_3'),
                     }),
@@ -640,7 +639,7 @@
                     'partner_id': ref('base.res_partner_4'),
                     }),
                 ]"
-            />
+        />
         </record>
         <function model="pms.reservation" name="action_cancel">
             <value eval="[ref('pms_reservation_dbl_cancel_02')]" />
@@ -680,15 +679,15 @@
             <field name="checkin" eval="DateTime.today()" />
             <field name="checkout" eval="DateTime.today() + timedelta(4)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_double_half_board"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_double_half_board"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_booking" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
             <field name="partner_requests">3 extra towels</field>
         </record>
         <!-- 2 nights dbl no board service  -->
@@ -702,9 +701,9 @@
             <field name="checkout" eval="DateTime.today() + timedelta(6)" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
         </record>
         <!-- 2 nights dbl breakfast board service  -->
         <record id="pms_reservation_dbl_05" model="pms.reservation">
@@ -716,15 +715,15 @@
             <field name="checkin" eval="DateTime.today() + timedelta(4)" />
             <field name="checkout" eval="DateTime.today() + timedelta(6)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_double_breakfast"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_double_breakfast"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_booking" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
             <field name="partner_requests">Vegan breakfast</field>
         </record>
         <!-- 2 nights dbl no board service  -->
@@ -735,20 +734,20 @@
             <field name="room_type_id" ref="pms_room_type_double" />
             <field name="adults">2</field>
             <field
-                name="checkin_partner_ids"
-                eval="[(5, 0),
+            name="checkin_partner_ids"
+            eval="[(5, 0),
                     (0, 0, {'partner_id': ref('base.res_partner_12')}),
                     (0, 0, {'partner_id': ref('base.res_partner_18')}),
                     ]"
-            />
+        />
             <field name="checkin" eval="DateTime.today() + timedelta(6)" />
             <field name="checkout" eval="DateTime.today() + timedelta(8)" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_booking" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
         </record>
         <!-- 2 nights dbl no board service  -->
         <record id="pms_reservation_dbl_07" model="pms.reservation">
@@ -760,9 +759,9 @@
             <field name="checkin" eval="DateTime.today() + timedelta(6)" />
             <field name="checkout" eval="DateTime.today() + timedelta(8)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_double_half_board"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_double_half_board"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
             <field name="partner_requests">Help needed with the luggage.</field>
@@ -778,9 +777,9 @@
             <field name="checkin" eval="DateTime.today() + timedelta(10)" />
             <field name="checkout" eval="DateTime.today() + timedelta(11)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_double_breakfast"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_double_breakfast"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
         </record>
@@ -796,9 +795,9 @@
             <field name="checkout" eval="DateTime.today() + timedelta(11)" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
             <field name="partner_requests">Need 1 extra set of bedclothes</field>
         </record>
         <!-- 2 nights dbl breakfast board service  -->
@@ -811,13 +810,13 @@
             <field name="checkin" eval="DateTime.today() + timedelta(11)" />
             <field name="checkout" eval="DateTime.today() + timedelta(13)" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_double_breakfast"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_double_breakfast"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
         </record>
         <!-- 2 nights dbl no board service  -->
@@ -828,12 +827,12 @@
             <field name="room_type_id" ref="pms_room_type_double" />
             <field name="adults">2</field>
             <field
-                name="checkin_partner_ids"
-                eval="[(5, 0),
+            name="checkin_partner_ids"
+            eval="[(5, 0),
                     (0, 0, {'partner_id': ref('base.res_partner_18')}),
                     (0, 0, {'partner_id': ref('base.res_partner_12')}),
                     ]"
-            />
+        />
             <field name="checkin" eval="DateTime.today() + timedelta(11)" />
             <field name="checkout" eval="DateTime.today() + timedelta(13)" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
@@ -851,9 +850,9 @@
             <field name="checkin" eval="DateTime.today() + timedelta(-9)" />
             <field name="checkout" eval="DateTime.today() + timedelta(-2)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_triple_full_board"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_triple_full_board"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
             <field name="state">done</field>
@@ -878,8 +877,8 @@
             <field name="children">1</field>
             <field name="state">onboard</field>
             <field
-                name="checkin_partner_ids"
-                eval="[(5, 0),
+            name="checkin_partner_ids"
+            eval="[(5, 0),
                 (0, 0, {
                     'partner_id': ref('base.res_partner_12'),
                     'state': 'onboard'
@@ -889,19 +888,19 @@
                     'state': 'onboard'
                     }),
                 ]"
-            />
+        />
             <field name="checkin" eval="DateTime.today()" />
             <field name="checkout" eval="DateTime.today() + timedelta(4)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_triple_full_board"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_triple_full_board"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_booking" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
             <field name="partner_requests">Vegetarian food for all guests.</field>
         </record>
         <!-- 7 nights trp no board service  -->
@@ -914,9 +913,9 @@
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_airbnb" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
         </record>
         <!-- 2 nights trp no board service  -->
         <record id="pms_reservation_trp_04" model="pms.reservation">
@@ -926,13 +925,13 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="adults">3</field>
             <field
-                name="checkin_partner_ids"
-                eval="[(5, 0),
+            name="checkin_partner_ids"
+            eval="[(5, 0),
                     (0, 0, {'partner_id': ref('base.res_partner_3')}),
                     (0, 0, {'partner_id': ref('base.res_partner_address_14')}),
                     (0, 0, {'partner_id': ref('base.res_partner_address_33')}),
                     ]"
-            />
+        />
             <field name="checkin" eval="DateTime.today() + timedelta(4)" />
             <field name="checkout" eval="DateTime.today() + timedelta(6)" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
@@ -947,20 +946,20 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="adults">3</field>
             <field
-                name="checkin_partner_ids"
-                eval="[(5, 0),
+            name="checkin_partner_ids"
+            eval="[(5, 0),
                     (0, 0, {'partner_id': ref('base.res_partner_10')}),
                     (0, 0, {'partner_id': ref('base.res_partner_address_10')}),
                     (0, 0, {'partner_id': ref('base.res_partner_address_18')}),
                     ]"
-            />
+        />
             <field name="checkin" eval="DateTime.today() + timedelta(6)" />
             <field name="checkout" eval="DateTime.today() + timedelta(8)" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
         </record>
         <!-- 1 night trp breakfast board service  -->
         <record id="pms_reservation_trp_06" model="pms.reservation">
@@ -970,18 +969,18 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="adults">1</field>
             <field
-                name="checkin_partner_ids"
-                eval="[(5, 0),
+            name="checkin_partner_ids"
+            eval="[(5, 0),
                     (0, 0, {'partner_id': ref('base.res_partner_3')}),
                     ]"
-            />
+        />
             <field name="children">2</field>
             <field name="checkin" eval="DateTime.today() + timedelta(10)" />
             <field name="checkout" eval="DateTime.today() + timedelta(11)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_triple_breakfast"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_triple_breakfast"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
             <field name="partner_requests">Celiac breakfast</field>
@@ -996,9 +995,9 @@
             <field name="checkin" eval="DateTime.today() + timedelta(11)" />
             <field name="checkout" eval="DateTime.today() + timedelta(13)" />
             <field
-                name="board_service_room_id"
-                ref="pms_board_service_room_triple_full_board"
-            />
+            name="board_service_room_id"
+            ref="pms_board_service_room_triple_full_board"
+        />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
         </record>
@@ -1012,9 +1011,9 @@
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_airbnb" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
             <field name="partner_requests">room with low noise 24x7</field>
         </record>
         <!-- QUADRUPLE RESERVATIONS (Main Property)-->
@@ -1049,13 +1048,13 @@
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_booking" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
             <field name="state">done</field>
             <field
-                name="partner_requests"
-            >Italian guests, they don't speak english</field>
+            name="partner_requests"
+        >Italian guests, they don't speak english</field>
         </record>
         <record id="pms_checkin_partner_r_qdp_02" model="pms.checkin.partner">
             <field name="partner_id" ref="base.res_partner_address_11" />
@@ -1076,9 +1075,9 @@
             <field name="checkout" eval="DateTime.today() + timedelta(-2)" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
             <field name="state">done</field>
         </record>
         <record id="pms_checkin_partner_r_qdp_03" model="pms.checkin.partner">
@@ -1101,9 +1100,9 @@
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_booking" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
             <field name="partner_requests">Allergic to chemicals</field>
             <field name="state">done</field>
         </record>
@@ -1127,9 +1126,9 @@
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_booking" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
         </record>
         <!-- 3 nights qdp no board service  -->
         <record id="pms_reservation_qdp_06" model="pms.reservation">
@@ -1142,8 +1141,8 @@
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
             <field name="partner_requests">Hard mattress needed.</field>
             <field
-                name="reservation_line_ids"
-                eval="[(5, 0),
+            name="reservation_line_ids"
+            eval="[(5, 0),
                     (0, 0, {
                     'date': (DateTime.today()),
                     'sale_channel_id': ref('pms.main_pms_sale_channel_door')
@@ -1157,7 +1156,7 @@
                     'sale_channel_id': ref('pms.main_pms_sale_channel_phone')
                     })
                     ]"
-            />
+        />
         </record>
         <!-- 3 nights qdp no board service  -->
         <record id="pms_reservation_qdp_07" model="pms.reservation">
@@ -1207,9 +1206,9 @@
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_airbnb" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
         </record>
         <!-- 2 nights cnf no board service  -->
         <record id="pms_reservation_cnf_03" model="pms.reservation">
@@ -1223,8 +1222,8 @@
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
             <field name="partner_requests">Projector needed</field>
             <field
-                name="reservation_line_ids"
-                eval="[(5, 0),
+            name="reservation_line_ids"
+            eval="[(5, 0),
                     (0, 0, {
                     'date': (DateTime.today() + timedelta(days=6)),
                     'sale_channel_id': ref('pms.main_pms_sale_channel_door')
@@ -1234,7 +1233,7 @@
                     'sale_channel_id': ref('pms.main_pms_sale_channel_phone')
                     })
                     ]"
-            />
+        />
         </record>
         <!-- 2 nights cnf no board service  -->
         <record id="pms_reservation_cnf_04" model="pms.reservation">
@@ -1246,9 +1245,9 @@
             <field name="checkout" eval="DateTime.today() + timedelta(12)" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
         </record>
         <!-- GRAND SUITE RESERVATIONS (SAN CARLOS) -->
         <!-- 3 nights grsui no board service  PAST -->
@@ -1260,9 +1259,9 @@
             <field name="checkout" eval="DateTime.today() + timedelta(-6)" />
             <field name="pms_property_id" ref="pms.san_carlos_property" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
             <field name="state">done</field>
         </record>
         <record id="pms_checkin_partner_r_grsui_01" model="pms.checkin.partner">
@@ -1327,9 +1326,9 @@
             <field name="checkout" eval="DateTime.today() + timedelta(1)" />
             <field name="pms_property_id" ref="pms.san_carlos_property" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
             <field name="partner_requests">Welcome cocktail.</field>
         </record>
         <!-- 4 nights grsui no board service  -->
@@ -1363,9 +1362,9 @@
             <field name="checkout" eval="DateTime.today() + timedelta(-7)" />
             <field name="pms_property_id" ref="pms.san_carlos_property" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
             <field name="state">done</field>
         </record>
         <record id="pms_checkin_partner_r_jrsui_01" model="pms.checkin.partner">
@@ -1430,9 +1429,9 @@
             <field name="checkout" eval="DateTime.today() + timedelta(2)" />
             <field name="pms_property_id" ref="pms.san_carlos_property" />
             <field
-                name="sale_channel_origin_id"
-                ref="pms.main_pms_sale_channel_phone"
-            />
+            name="sale_channel_origin_id"
+            ref="pms.main_pms_sale_channel_phone"
+        />
             <field name="partner_requests">Smoking room.</field>
         </record>
         <!-- 4 nights jrsui no board service  -->
@@ -1456,5 +1455,4 @@
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
             <field name="partner_requests">two bottles of moët</field>
         </record>
-    </data>
 </odoo>

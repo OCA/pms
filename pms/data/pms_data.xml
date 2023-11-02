@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<odoo>
-    <data noupdate="1">
+<odoo noupdate="1">
         <!-- Basic pms  -->
         <record id="main_pms_availability_plan" model="pms.availability.plan">
             <field name="name">Availability Plan</field>
@@ -27,8 +26,8 @@
         <record id="various_pms_partner" model="res.partner">
             <field name="name">Various Clients</field>
             <field
-                name="comment"
-            >Contact used for simplified invoices where no customer is available</field>
+            name="comment"
+        >Contact used for simplified invoices where no customer is available</field>
         </record>
         <!-- pms.users -->
         <record id="base.user_root" model="res.users">
@@ -113,9 +112,9 @@ else:
 <!--            <field name="has_unique_numbers">True</field>-->
         </record>
         <record
-            id="document_type_identification_document"
-            model="res.partner.id_category"
-        >
+        id="document_type_identification_document"
+        model="res.partner.id_category"
+    >
             <field name="name">Identification Document</field>
             <field name="code">I</field>
 <!--            <field name="has_unique_numbers">True</field>-->
@@ -149,5 +148,4 @@ else:
     failed = True
             </field>
         </record>
-    </data>
 </odoo>
