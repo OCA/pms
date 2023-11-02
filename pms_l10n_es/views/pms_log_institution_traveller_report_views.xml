@@ -28,7 +28,7 @@
         <field name="model">pms.log.institution.traveller.report</field>
         <field name="arch" type="xml">
             <tree
-                string="Property Ubications"
+                name="Property Ubications"
                 create="false"
                 decoration-danger="error_sending_data"
             >

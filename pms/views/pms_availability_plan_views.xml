@@ -63,7 +63,7 @@
         <field name="model">pms.availability.plan</field>
 
         <field name="arch" type="xml">
-            <tree string="Availability Plans">
+            <tree name="Availability Plans">
                 <field name="name" />
                 <field name="pms_property_ids" widget="many2many_tags" />
                 <field
