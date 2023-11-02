@@ -1002,8 +1002,7 @@ class TestPmsBookingEngine(TestPms):
                 "channel_type_id": self.sale_channel_direct1.id,
             }
         )
-        lines_availability_test_double = booking_engine.availability_results.filtered(
+        booking_engine.availability_results.filtered(
             lambda r: r.room_type_id.id == self.test_room_type_double.id
         )
-        lines_availability_test_double
         self.assertTrue(False)
