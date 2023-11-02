@@ -30,7 +30,7 @@
         <field name="name">pms.board.service.tree</field>
         <field name="model">pms.board.service</field>
         <field name="arch" type="xml">
-            <tree string="Board Services">
+            <tree name="Board Services">
                 <field name="name" />
                 <field name="default_code" />
                 <field name="amount" />
