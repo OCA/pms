@@ -132,6 +132,13 @@ class PmsFolioService(Component):
             domain_fields.append(("folio_id", "in", folio_ids))
 
         domain_filter = list()
+        if folio_search_param.last:
+            domain_filter.append(
+                [
+                    ("checkin", ">=", fields.Date.today())
+                ]
+            )
+
         if folio_search_param.filter:
             target = folio_search_param.filter
             if "@" in target:

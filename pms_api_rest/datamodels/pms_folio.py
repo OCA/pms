@@ -67,6 +67,7 @@ class PmsFolioShortInfo(Datamodel):
     paymentStateCode = fields.String(required=False, allow_none=True)
     paymentStateDescription = fields.String(required=False, allow_none=True)
     reservations = fields.List(fields.Dict(required=False, allow_none=True))
+    numReservations = fields.Integer(required=False, allow_none=True)
     reservationType = fields.String(required=False, allow_none=True)
     closureReasonId = fields.Integer(required=False, allow_none=True)
     agencyId = fields.Integer(required=False, allow_none=True)
