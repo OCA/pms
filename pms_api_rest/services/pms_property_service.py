@@ -29,10 +29,14 @@ class PmsPropertyService(Component):
         for prop in self.env["pms.property"].search(
             domain,
         ):
+            state_name = False
+            if prop.state_id:
+                state_name = self.env['res.country.state'].search([('id', '=', prop.state_id.id)]).name
             result_properties.append(
                 PmsPropertyInfo(
                     id=prop.id,
                     name=prop.name,
+                    stateName=state_name if state_name else None,
                     defaultPricelistId=prop.default_pricelist_id.id,
                     colorOptionConfig=prop.color_option_config,
                     preReservationColor=prop.pre_reservation_color,
