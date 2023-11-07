@@ -12,6 +12,7 @@ class PmsPropertyInfo(Datamodel):
     _name = "pms.property.info"
     id = fields.Integer(required=False, allow_none=True)
     name = fields.String(required=False, allow_none=True)
+    stateName = fields.String(required=False, allow_none=True)
     company = fields.String(required=False, allow_none=True)
     defaultPricelistId = fields.Integer(required=False, allow_none=True)
     colorOptionConfig = fields.String(required=False, allow_none=True)
