@@ -74,7 +74,6 @@ class PmsDashboardServices(Component):
             )
         return pending_reservations
 
-
     @restapi.method(
         [
             (
@@ -133,7 +132,7 @@ class PmsDashboardServices(Component):
                 "GET",
             )
         ],
-
+        auth="jwt_api_pms",
         input_param=Datamodel("pms.dashboard.range.dates.search.param"),
         output_param=Datamodel("pms.dashboard.state.rooms", is_list=True),
     )
@@ -210,9 +209,9 @@ class PmsDashboardServices(Component):
             "GET",
         )
     ],
-
         input_param=Datamodel("pms.dashboard.range.dates.search.param"),
         output_param=Datamodel("pms.dashboard.state.rooms", is_list=True),
+        auth="jwt_api_pms",
     )
     def get_reservations_by_sale_channel(self, pms_dashboard_search_param):
         dateFrom = fields.Date.from_string(pms_dashboard_search_param.dateFrom)
@@ -373,7 +372,7 @@ class PmsDashboardServices(Component):
             f"""
              SELECT COUNT(1) new_folios
                 FROM pms_folio f
-                WHERE f.create_date = %s
+                WHERE DATE(f.create_date) = %s
                 AND f.state != 'cancel'
                 AND f.pms_property_id = %s
                 AND f.reservation_type NOT IN ('out', 'staff')
@@ -523,6 +522,7 @@ class PmsDashboardServices(Component):
 
         input_param=Datamodel("pms.dashboard.range.dates.search.param"),
         output_param=Datamodel("pms.dashboard.state.rooms", is_list=True),
+        auth="jwt_api_pms",
     )
     def get_occupied_rooms(self, pms_dashboard_search_param):
         dateFrom = fields.Date.from_string(pms_dashboard_search_param.dateFrom)
@@ -565,18 +565,17 @@ class PmsDashboardServices(Component):
             )
         return occupied_rooms_result
 
-
     @restapi.method([
-            (
-                [
-                    "/daily-billings",
-                ],
-                "GET",
-            )
-        ],
-
+        (
+            [
+                "/daily-billings",
+            ],
+            "GET",
+        )
+    ],
         input_param=Datamodel("pms.dashboard.range.dates.search.param"),
         output_param=Datamodel("pms.dashboard.state.rooms", is_list=True),
+        auth="jwt_api_pms",
     )
     def get_daily_billings(self, pms_dashboard_search_param):
         dateFrom = fields.Date.from_string(pms_dashboard_search_param.dateFrom)
@@ -618,3 +617,78 @@ class PmsDashboardServices(Component):
                 )
             )
         return result_daily_billings
+
+    @restapi.method([
+        (
+            [
+                "/last-received-folios",
+            ],
+            "GET",
+        ),
+    ],
+        input_param=Datamodel("pms.folio.search.param", is_list=False),
+        output_param=Datamodel("pms.folio.short.info", is_list=True),
+        auth="jwt_api_pms",
+    )
+    def get_last_received_folios(self, pms_folio_search_param):
+        result_folios = []
+        PmsFolioShortInfo = self.env.datamodels["pms.folio.short.info"]
+        for folio in self.env['pms.folio'].search(
+            [
+                ("first_checkin", ">=", datetime.now().date()),
+                ("pms_property_id", "=", pms_folio_search_param.pmsPropertyId),
+            ],
+            limit=pms_folio_search_param.limit,
+            offset=pms_folio_search_param.offset,
+            order="create_date desc",
+        ):
+            print(folio.id)
+            result_folios.append(
+                PmsFolioShortInfo(
+                    id=folio.id,
+                    name=folio.name,
+                    state=folio.state,
+                    partnerName=folio.partner_name if folio.partner_name else None,
+                    partnerPhone=folio.mobile if folio.mobile else None,
+                    partnerEmail=folio.email if folio.email else None,
+                    amountTotal=round(folio.amount_total, 2),
+                    pendingAmount=round(folio.pending_amount, 2),
+                    paymentStateCode=folio.payment_state,
+                    paymentStateDescription=dict(
+                        folio.fields_get(["payment_state"])["payment_state"][
+                            "selection"
+                        ]
+                    )[folio.payment_state],
+                    numReservations=len(folio.reservation_ids),
+                    reservationType=folio.reservation_type,
+                    closureReasonId=folio.closure_reason_id,
+                    agencyId=folio.agency_id.id if folio.agency_id else None,
+                    pricelistId=folio.pricelist_id.id if folio.pricelist_id else None,
+                    saleChannelId=folio.sale_channel_origin_id.id
+                    if folio.sale_channel_origin_id
+                    else None,
+                    firstCheckin=str(folio.first_checkin),
+                    lastCheckout=str(folio.last_checkout),
+                    createHour=folio.create_date.strftime("%H:%M"),
+                )
+            )
+        return result_folios
+
+    @restapi.method([
+        (
+            [
+                "/num-last-received-folios",
+            ],
+            "GET",
+        ),
+    ],
+        input_param=Datamodel("pms.folio.search.param", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def get_num_last_received_folios(self, pms_folio_search_param):
+        return self.env['pms.folio'].search_count(
+            [
+                ("first_checkin", ">=", datetime.now().date()),
+                ("pms_property_id", "=", pms_folio_search_param.pmsPropertyId),
+            ],
+        )

@@ -33,7 +33,7 @@ class PmsFeedRss(Component):
                     description=rss.description,
                     publishDate=str(rss.publish_date),
                     author=rss.author if rss.author else "",
-                    imageUrl=rss.image_url if rss.image_url else "",
+                    imageUrl="https://www.roomdoo.com/wp-content/uploads/2021/09/hotel-roomdoo.png"
                 )
             )
         return result_rss
