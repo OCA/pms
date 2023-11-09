@@ -14,6 +14,10 @@
                 />
                 <script
                     type="text/javascript"
+                    src="/pms/static/src/js/widgets/switch_company_menu.js"
+                />
+                <script
+                    type="text/javascript"
                     src="/pms/static/src/js/pms_list_controller.js"
                 />
                 <script

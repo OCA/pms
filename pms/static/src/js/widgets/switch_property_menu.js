@@ -71,10 +71,6 @@ odoo.define("web.SwitchPmsMenu", function (require) {
                 else if (alowed_properties.indexOf(element[0]) >= 0) {
                     alowed_properties.splice(alowed_properties.indexOf(element[0]),1)
                 };});
-            if (alowed_properties.length == 0){
-                alowed_properties = display_properties[0][0]
-                location.reload()
-            }
 
             this.user_pms_properties = display_properties
             this.user_pms_properties.sort(function(a,b){return a[1] > b[1] ? 1 : a[1] < b[1] ?-1 :0});
@@ -83,10 +79,10 @@ odoo.define("web.SwitchPmsMenu", function (require) {
             session.user_context.allowed_pms_property_ids = alowed_properties;
             utils.set_cookie("pms_pids", alowed_properties);
 
-
             this.allowed_pms_property_ids = alowed_properties;
             if (this.user_pms_properties.length != this.allowed_pms_property_ids.length) {
                 this.user_pms_properties.unshift([0,  _t('All propertys')])}
+
             this.current_pms_property = this.allowed_pms_property_ids[0];
             this.current_pms_property_name = _.find(
                 session.user_pms_properties.allowed_pms_properties,
@@ -94,6 +90,7 @@ odoo.define("web.SwitchPmsMenu", function (require) {
                     return pms_property[0] === self.current_pms_property;
                 }
             )[1];
+            // this.alowed_properties = alowed_properties.toString();
 
             return this._super.apply(this, arguments);
         },
