@@ -65,14 +65,15 @@ repos:
         args:
           - --plugin=@prettier/plugin-xml
         files: \.(css|htm|html|js|json|jsx|less|md|scss|toml|ts|xml|yaml|yml)$
-  - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v7.8.1
-    hooks:
-      - id: eslint
-        verbose: true
-        args:
-          - --color
-          - --fix
+  #  - repo: https://github.com/pre-commit/mirrors-eslint
+  #    rev: v7.8.1
+  #    hooks:
+  #      - id: eslint
+  #        verbose: true
+  #        args:
+  #          - --color
+  #          - --fix
+  #        exclude: /static/src/js/widgets/datepicker
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.2.0
     hooks:
@@ -101,7 +102,7 @@ repos:
       - id: pyupgrade
         args: ["--keep-percent-format"]
   - repo: https://github.com/PyCQA/isort
-    rev: 5.5.1
+    rev: 5.12.0
     hooks:
       - id: isort
         name: isort except __init__.py
@@ -124,6 +125,7 @@ repos:
       - id: flake8
         name: flake8
         additional_dependencies: ["flake8-bugbear==20.1.4"]
+        exclude: get-pip.py
   - repo: https://github.com/OCA/pylint-odoo
     rev: 7.0.2
     hooks:

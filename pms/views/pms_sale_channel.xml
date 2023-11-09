@@ -7,7 +7,7 @@
             <form string="Sale Channel">
                 <sheet>
                     <group>
-                        <field name="icon" widget="image"/>
+                        <field name="icon" widget="image" />
                         <field name="name" colspan="1" />
                         <field name="channel_type" />
                         <field name="is_on_line" />

@@ -1018,22 +1018,26 @@ class PmsReservation(models.Model):
     @api.depends("partner_id", "agency_id")
     def _compute_pricelist_id(self):
         for reservation in self:
+            is_new = not reservation.pricelist_id or isinstance(
+                reservation.id, models.NewId
+            )
             if reservation.reservation_type in ("out", "staff"):
                 reservation.pricelist_id = False
-            elif reservation.agency_id and reservation.agency_id.apply_pricelist:
+            elif (
+                is_new
+                and reservation.agency_id
+                and reservation.agency_id.apply_pricelist
+            ):
                 reservation.pricelist_id = (
                     reservation.agency_id.property_product_pricelist
                 )
             # only change de pricelist if the reservation is not yet saved
             # and the partner has a pricelist default
             elif (
-                reservation.partner_id
+                is_new
+                and reservation.partner_id
                 and reservation.partner_id.property_product_pricelist
                 and reservation.partner_id.property_product_pricelist.is_pms_available
-                and (
-                    not reservation.pricelist_id
-                    or not isinstance(reservation.id, models.NewId)
-                )
             ):
                 reservation.pricelist_id = (
                     reservation.partner_id.property_product_pricelist

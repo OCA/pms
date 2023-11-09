@@ -5,6 +5,7 @@ from freezegun import freeze_time
 from odoo import fields
 from odoo.exceptions import ValidationError
 from odoo.tests import Form
+
 from .common import TestPms
 
 
