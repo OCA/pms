@@ -272,6 +272,7 @@ class PmsProperty(models.Model):
         class_id = self._context.get("class_id", False)
         real_avail = self._context.get("real_avail", False)
         overnight_rooms = self._context.get("overnight_rooms", False)
+        capacity = self._context.get("capacity", False)
         for pms_property in self:
             free_rooms = pms_property.get_real_free_rooms(
                 checkin, checkout, current_lines
@@ -312,6 +313,10 @@ class PmsProperty(models.Model):
             if overnight_rooms:
                 free_rooms = free_rooms.filtered(
                     lambda x: x.room_type_id.overnight_room
+                )
+            if capacity:
+                free_rooms = free_rooms.filtered(
+                    lambda x: x.capacity >= capacity
                 )
             if len(free_rooms) > 0:
                 pms_property.free_room_ids = free_rooms.ids
@@ -398,6 +403,7 @@ class PmsProperty(models.Model):
             class_id = self._context.get("class_id", False)
             real_avail = self._context.get("real_avail", False)
             overnight_rooms = self._context.get("overnight_rooms", False)
+            capacity = self._context.get("capacity", False)
             pms_property = record.with_context(
                 checkin=checkin,
                 checkout=checkout,
@@ -407,6 +413,7 @@ class PmsProperty(models.Model):
                 class_id=class_id,
                 real_avail=real_avail,
                 overnight_rooms=overnight_rooms,
+                capacity=capacity,
             )
             count_free_rooms = len(pms_property.free_room_ids)
             if current_lines and not isinstance(current_lines, list):
