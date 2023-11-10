@@ -733,7 +733,10 @@ class PmsReservation(models.Model):
         store=True,
         readonly=False,
     )
-
+    count_alternative_free_rooms = fields.Integer(
+        string="Count alternative free rooms",
+        compute="_compute_count_alternative_free_rooms",
+    )
     @api.depends("folio_id", "folio_id.external_reference")
     def _compute_external_reference(self):
         for reservation in self:
@@ -1696,6 +1699,19 @@ class PmsReservation(models.Model):
                 record.is_reselling = True
             else:
                 record.is_reselling = False
+
+    @api.depends("reservation_line_ids")
+    def _compute_count_alternative_free_rooms(self):
+        for record in self:
+            record.count_alternative_free_rooms = record.pms_property_id.with_context(
+                checkin=record.checkin,
+                checkout=record.checkout,
+                real_avail=True,
+                capacity=record.adults,
+                class_id=record.room_type_id.class_id.id,
+                current_lines=record.reservation_line_ids.ids,
+            ).availability
+
 
     def _search_allowed_checkin(self, operator, value):
         if operator not in ("=",):
