@@ -842,8 +842,6 @@ class TestPmsReservations(TestPms):
     #         {
     #             "partner_id": host1.id,
     #             "reservation_id": res.id,
-    #             "document_type": self.id_category.id,
-    #             "document_number": "77156490T",
     #             "document_expedition_date": fields.date.today()
     #             + datetime.timedelta(days=665),
     #         }
@@ -946,8 +944,6 @@ class TestPmsReservations(TestPms):
             {
                 "partner_id": host1.id,
                 "reservation_id": res.id,
-                "document_type": self.id_category.id,
-                "document_number": "77156490T",
                 "document_expedition_date": fields.date.today()
                 + datetime.timedelta(days=665),
             }
@@ -1016,8 +1012,6 @@ class TestPmsReservations(TestPms):
             {
                 "partner_id": host1.id,
                 "reservation_id": res.id,
-                "document_type": self.id_category.id,
-                "document_number": "77156490T",
                 "document_expedition_date": fields.date.today()
                 + datetime.timedelta(days=665),
             }
@@ -1116,8 +1110,6 @@ class TestPmsReservations(TestPms):
             {
                 "partner_id": host1.id,
                 "reservation_id": res.id,
-                "document_type": self.id_category.id,
-                "document_number": "77156490T",
                 "document_expedition_date": fields.date.today()
                 + datetime.timedelta(days=665),
             }
@@ -1182,8 +1174,6 @@ class TestPmsReservations(TestPms):
             {
                 "partner_id": host1.id,
                 "reservation_id": res.id,
-                "document_type": self.id_category.id,
-                "document_number": "77156490T",
                 "document_expedition_date": fields.date.today()
                 + datetime.timedelta(days=665),
             }
@@ -1339,8 +1329,6 @@ class TestPmsReservations(TestPms):
             {
                 "partner_id": host1.id,
                 "reservation_id": res.id,
-                "document_type": self.id_category.id,
-                "document_number": "77156490T",
                 "document_expedition_date": fields.date.today()
                 + datetime.timedelta(days=665),
             }
@@ -1418,8 +1406,6 @@ class TestPmsReservations(TestPms):
             {
                 "partner_id": host1.id,
                 "reservation_id": res.id,
-                "document_type": self.id_category.id,
-                "document_number": "77156490T",
                 "document_expedition_date": fields.date.today()
                 + datetime.timedelta(days=665),
             }
@@ -1497,8 +1483,6 @@ class TestPmsReservations(TestPms):
             {
                 "partner_id": host1.id,
                 "reservation_id": res.id,
-                "document_type": self.id_category.id,
-                "document_number": "77156490T",
                 "document_expedition_date": fields.date.today()
                 + datetime.timedelta(days=665),
             }
@@ -3358,9 +3342,9 @@ class TestPmsReservations(TestPms):
         """
         Check that a res_partner is created from a reservation.
         ------------
-        A reservation is created by adding the document_type and
-        document_number fields, with these two fields a res.partner
-        should be created, which is what is checked after creating
+        A reservation is created
+        and a res.partner
+        should also be created, which is what is checked after creating
         the reservation.
         """
         # ARRANGE
@@ -3379,8 +3363,6 @@ class TestPmsReservations(TestPms):
                 "partner_name": "Elis",
                 "email": "elis@mail.com",
                 "mobile": "61568547",
-                "document_type": self.id_category.id,
-                "document_number": "31640132K",
                 "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
@@ -3391,15 +3373,11 @@ class TestPmsReservations(TestPms):
     def test_auto_complete_partner_mobile(self):
         """
         It is checked that the mobile field of the reservation
-        is correctly added to it when the document_number and
-        document_type fields of a res.partner that exists in
+        is correctly added to
+        a res.partner that exists in
         the DB are put in the reservation.
         --------------------
         A res.partner is created with the name, mobile and email fields.
-        The document_id is added to the res.partner. The reservation is
-        created and the category_id of the document_id associated with
-        the res.partner is added as document_type and as document_number
-        the name of the document_id associated with the res.partner as well.
         Then it is verified that the mobile of the res.partner and that of
         the reservation are the same.
         """
@@ -3431,8 +3409,6 @@ class TestPmsReservations(TestPms):
                 "room_type_id": self.room_type_double.id,
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": partner.name,
-                "document_type": self.document_id.category_id.id,
-                "document_number": self.document_id.name,
                 "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
@@ -3447,15 +3423,12 @@ class TestPmsReservations(TestPms):
     def test_auto_complete_partner_email(self):
         """
         It is checked that the email field of the reservation
-        is correctly added to it when the document_number and
-        document_type fields of a res.partner that exists in
+        is correctly added to
+         a res.partner that exists in
         the DB are put in the reservation.
         --------------------
         A res.partner is created with the name, mobile and email fields.
-        The document_id is added to the res.partner. The reservation is
-        created and the category_id of the document_id associated with
-        the res.partner is added as document_type and as document_number
-        the name of the document_id associated with the res.partner as well.
+        The document_id is added to the res.partner.
         Then it is verified that the email of the res.partner and that of
         the reservation are the same.
         """
@@ -3487,8 +3460,6 @@ class TestPmsReservations(TestPms):
                 "room_type_id": self.room_type_double.id,
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": partner.name,
-                "document_type": self.document_id.category_id.id,
-                "document_number": self.document_id.name,
                 "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
