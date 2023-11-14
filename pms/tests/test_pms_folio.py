@@ -731,22 +731,15 @@ class TestPmsFolio(TestPms):
         """
         Check that a res_partner is created from a folio.
         ------------
-        A folio is created by adding the document_type and
-        document_number fields, with these two fields a res.partner
+        A folio is created by adding the property_id a res.partner
         should be created, which is what is checked after creating
         the folio.
         """
-        # ARRANGE
-        self.id_category = self.env["res.partner.id_category"].create(
-            {"name": "DNI", "code": "D"}
-        )
         # ACT
         folio1 = self.env["pms.folio"].create(
             {
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": "Savannah Byles",
-                "document_type": self.id_category.id,
-                "document_number": "32861114W",
             }
         )
         # ASSERT
@@ -755,15 +748,11 @@ class TestPmsFolio(TestPms):
     def test_auto_complete_partner_mobile(self):
         """
         It is checked that the mobile field of the folio
-        is correctly added to it when the document_number and
-        document_type fields of a res.partner that exists in
+        is correctly added to
+        a res.partner that exists in
         the DB are put in the folio.
         --------------------
         A res.partner is created with the name, mobile and email fields.
-        The document_id is added to the res.partner. The folio is
-        created and the category_id of the document_id associated with
-        the res.partner is added as document_type and as document_number
-        the name of the document_id associated with the res.partner as well.
         Then it is checked that the mobile of the res.partner and that of
         the folio are the same.
         """
@@ -778,20 +767,11 @@ class TestPmsFolio(TestPms):
         self.id_category = self.env["res.partner.id_category"].create(
             {"name": "DNI", "code": "D"}
         )
-        self.document_id = self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "61645604S",
-                "partner_id": partner.id,
-            }
-        )
         # ACT
         folio1 = self.env["pms.folio"].create(
             {
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": partner.name,
-                "document_type": self.document_id.category_id.id,
-                "document_number": self.document_id.name,
             }
         )
         # ASSERT
@@ -804,15 +784,11 @@ class TestPmsFolio(TestPms):
     def test_auto_complete_partner_email(self):
         """
         It is checked that the email field of the folio
-        is correctly added to it when the document_number and
-        document_type fields of a res.partner that exists in
+        is correctly added to
+        a res.partner that exists in
         the DB are put in the folio.
         --------------------
         A res.partner is created with the name, mobile and email fields.
-        The document_id is added to the res.partner. The folio is
-        created and the category_id of the document_id associated with
-        the res.partner is added as document_type and as document_number
-        the name of the document_id associated with the res.partner as well.
         Then it is checked that the email of the res.partner and that of
         the folio are the same.
         """
@@ -827,21 +803,12 @@ class TestPmsFolio(TestPms):
         self.id_category = self.env["res.partner.id_category"].create(
             {"name": "DNI", "code": "D"}
         )
-        self.document_id = self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "74247377L",
-                "partner_id": partner.id,
-            }
-        )
 
         # ACT
         folio1 = self.env["pms.folio"].create(
             {
                 "pms_property_id": self.pms_property1.id,
                 "partner_name": partner.name,
-                "document_type": self.document_id.category_id.id,
-                "document_number": self.document_id.name,
             }
         )
         # ASSERT
