@@ -1561,7 +1561,7 @@ class TestPmsCheckinPartner(TestPms):
         )
         checkin_partner_id = self.reservation.checkin_partner_ids[0]
         checkin_partner_vals = {
-            "checkin_partner_id": checkin_partner_id.id,
+            "checkin_partner": checkin_partner_id,
             "id": checkin_partner_id.id,
             "firstname": "Serafín",
             "lastname": "Rivas",
