@@ -249,6 +249,7 @@ class TestWizardINE(TestPms):
         self.checkin1 = self.env["pms.checkin.partner"].create(
             {
                 "partner_id": self.partner_1.id,
+                "name": self.partner_1.name,
                 "reservation_id": self.reservation_1.id,
             }
         )
@@ -256,6 +257,7 @@ class TestWizardINE(TestPms):
         self.checkin2 = self.env["pms.checkin.partner"].create(
             {
                 "partner_id": self.partner_2.id,
+                "name": self.partner_2.name,
                 "reservation_id": self.reservation_1.id,
             }
         )
