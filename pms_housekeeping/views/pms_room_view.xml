@@ -78,7 +78,7 @@
         <field name="priority" eval="20" />
         <field name="active" eval="True" />
         <field name="arch" type="xml">
-            <tree string="Property Room">
+            <tree name="Property Room">
                 <field name="sequence" widget="handle" />
                 <field name="name" />
                 <field name="capacity" />

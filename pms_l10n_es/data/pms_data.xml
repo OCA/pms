@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<odoo>
-    <data noupdate="1">
+<odoo noupdate="1">
         <record id="document_type_dni" model="res.partner.id_category">
             <field name="name">DNI</field>
             <field name="code">D</field>
@@ -44,20 +43,22 @@ else:
         </record>
 
         <!-- aeat document type mapped -->
+        <!-- disabled because this is an override of an existe record in this file -->
         <!-- pylint: disable=redundant-modulename-xml -->
+        <!-- oca-hooks:disable=xml-redundant-module-name -->
         <record id="pms_l10n_es.document_type_dni" model="res.partner.id_category">
             <field name="aeat_identification_type">02</field>
         </record>
         <record
-            id="pms.document_type_spanish_residence"
-            model="res.partner.id_category"
-        >
+        id="pms.document_type_spanish_residence"
+        model="res.partner.id_category"
+    >
             <field name="aeat_identification_type">05</field>
         </record>
         <record
-            id="pms.document_type_european_residence"
-            model="res.partner.id_category"
-        >
+        id="pms.document_type_european_residence"
+        model="res.partner.id_category"
+    >
             <field name="aeat_identification_type">05</field>
         </record>
         <record id="pms.document_type_passport" model="res.partner.id_category">
@@ -67,11 +68,9 @@ else:
             <field name="aeat_identification_type">06</field>
         </record>
         <record
-            id="pms.document_type_identification_document"
-            model="res.partner.id_category"
-        >
+        id="pms.document_type_identification_document"
+        model="res.partner.id_category"
+    >
             <field name="aeat_identification_type">06</field>
         </record>
-
-    </data>
 </odoo>

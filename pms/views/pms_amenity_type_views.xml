@@ -27,7 +27,7 @@
         <field name="name">pms.room_amenity_type_list</field>
         <field name="model">pms.amenity.type</field>
         <field name="arch" type="xml">
-            <tree string="Room Amenities Type">
+            <tree name="Room Amenities Type">
                 <field name="name" />
             </tree>
         </field>

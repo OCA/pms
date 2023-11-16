@@ -8,7 +8,7 @@
         <field name="priority" eval="16" />
         <field name="active" eval="True" />
         <field name="arch" type="xml">
-            <tree string="Housekeeping tasks">
+            <tree name="Housekeeping tasks">
                 <field name="task_date" colspan="1" />
                 <field name="state" colspan="1" />
                 <field name="room_id" colspan="1" />

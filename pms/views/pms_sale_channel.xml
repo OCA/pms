@@ -22,7 +22,7 @@
         <field name="name">pms.sale.channel.tree</field>
         <field name="model">pms.sale.channel</field>
         <field name="arch" type="xml">
-            <tree string=" Sale Channel">
+            <tree name=" Sale Channel">
                 <field name="name" />
                 <field name="channel_type" />
                 <field name="is_on_line" />

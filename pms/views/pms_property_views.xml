@@ -255,7 +255,7 @@
         <field name="name">pms_property_views_tree</field>
         <field name="model">pms.property</field>
         <field name="arch" type="xml">
-            <tree string="Property settings summary">
+            <tree name="Property settings summary">
                 <field name="name" />
                 <field name="company_id" />
             </tree>

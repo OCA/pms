@@ -98,7 +98,6 @@ odoo.define("web.SwitchPmsMenu", function (require) {
                     return pms_property[0] === self.current_pms_property;
                 }
             )[1];
-            // this.alowed_properties = alowed_properties.toString();
 
             return this._super.apply(this, arguments);
         },

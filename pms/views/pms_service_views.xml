@@ -36,7 +36,7 @@
                     <field name="price_tax" invisible="1" />
                     <field name="price_total" invisible="1" />
                     <field name="service_line_ids" nolabel="1">
-                        <tree string="Days" editable="bottom">
+                        <tree name="Days" editable="bottom">
                             <field name="date" />
                             <field name="day_qty" />
                             <field name="price_unit" />
@@ -58,7 +58,7 @@
         <field name="model">pms.service</field>
         <field name="arch" type="xml">
             <tree
-                string="Services"
+                name="Services"
                 editable="bottom"
                 decoration-success="is_board_service == True"
             >
@@ -103,7 +103,7 @@
                 <field name="price_tax" />
                 <field name="price_total" />
                 <field name="service_line_ids" invisible="1">
-                    <tree string="Days">
+                    <tree name="Days">
                         <field name="date" />
                         <field name="day_qty" />
                         <field
