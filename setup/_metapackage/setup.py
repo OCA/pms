@@ -12,6 +12,7 @@ setuptools.setup(
         'odoo14-addon-mis_builder_pms',
         'odoo14-addon-multi_pms_properties',
         'odoo14-addon-pms',
+        'odoo14-addon-pms_account_move_budget',
         'odoo14-addon-pms_housekeeping',
         'odoo14-addon-pms_l10n_es',
         'odoo14-addon-pms_l10n_es_sii',
