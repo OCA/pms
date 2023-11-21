@@ -25,6 +25,7 @@ addon | version | maintainers | summary
 [mis_builder_pms](mis_builder_pms/) | 14.0.1.0.0 |  | Add property in mis builder
 [multi_pms_properties](multi_pms_properties/) | 14.0.1.0.0 |  | Multi Properties Manager
 [pms](pms/) | 14.0.2.36.4 |  | A property management system
+[pms_account_move_budget](pms_account_move_budget/) | 14.0.1.0.0 |  | Add Property Field in Account Move Budget
 [pms_housekeeping](pms_housekeeping/) | 14.0.1.0.1 |  | Housekeeping
 [pms_l10n_es](pms_l10n_es/) | 14.0.2.6.7 |  | PMS Spanish Adaptation
 [pms_l10n_es_sii](pms_l10n_es_sii/) | 14.0.1.0.2 |  | PMS AEAT SII Integration
