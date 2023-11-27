@@ -14,6 +14,7 @@ setuptools.setup(
         'odoo14-addon-pms',
         'odoo14-addon-pms_account_move_budget',
         'odoo14-addon-pms_housekeeping',
+        'odoo14-addon-pms_hr_property',
         'odoo14-addon-pms_l10n_es',
         'odoo14-addon-pms_l10n_es_sii',
         'odoo14-addon-pms_rooming_xls',
