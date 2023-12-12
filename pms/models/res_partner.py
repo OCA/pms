@@ -747,7 +747,11 @@ class ResPartner(models.Model):
 
     @api.model
     def _missing_document(self, vals, partners=False):
+        # If not is a partner contact and not have vat, then return missing document True
         if (
+            not vals.get("parent_id")
+            or (partners and any([not partner.parent_id for partner in partners]))
+        ) and (
             vals.get("vat") is False
             or vals.get("vat") == ""
             or (
