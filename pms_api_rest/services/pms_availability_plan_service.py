@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+from odoo import _
 from odoo.exceptions import MissingError, ValidationError
 
 from odoo.addons.base_rest import restapi
@@ -238,14 +239,24 @@ class PmsAvailabilityPlanService(Component):
         input_param=Datamodel("pms.availability.plan.rules.info", is_list=False),
         auth="jwt_api_pms",
     )
-    def create_availability_plan_rule(self, availability_plan_id, pms_avail_plan_rules_info):
+    def create_availability_plan_rule(
+        self, availability_plan_id, pms_avail_plan_rules_info
+    ):
         availability_plan_ids = list(
             {
-                item.availabilityPlanId for item in pms_avail_plan_rules_info.availabilityPlanRules
+                item.availabilityPlanId
+                for item in pms_avail_plan_rules_info.availabilityPlanRules
             }
         )
-        if len(availability_plan_ids) > 1 or availability_plan_ids[0] != availability_plan_id:
-            raise ValidationError("You cannot create availability plan rules for different availability plans")
+        if (
+            len(availability_plan_ids) > 1
+            or availability_plan_ids[0] != availability_plan_id
+        ):
+            raise ValidationError(
+                _(
+                    "You cannot create availability plan rules for different availability plans"
+                )
+            )
         else:
             self._create_or_update_avail_plan_rules(pms_avail_plan_rules_info)
 

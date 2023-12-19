@@ -1,66 +1,68 @@
 import re
-from datetime import datetime, date, timedelta
+from datetime import date, datetime, timedelta
 
+from odoo import _
+from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
-from odoo.exceptions import ValidationError
-from odoo import _
 
 _ref_vat = {
-    'al': 'J91402501L',
-    'ar': '200-5536168-2 or 20055361682',
-    'at': 'U12345675',
-    'au': '83 914 571 673',
-    'be': '0477472701',
-    'bg': '1234567892',
-    'ch': 'CHE-123.456.788 TVA or CHE-123.456.788 MWST or CHE-123.456.788 IVA',
-    'cl': '76086428-5',
-    'co': '213123432-1 or 213.123.432-1',
-    'cy': '10259033P',
-    'cz': '12345679',
-    'de': '123456788',
-    'dk': '12345674',
-    'do': '1-01-85004-3 or 101850043',
-    'ec': '1792060346-001',
-    'ee': '123456780',
-    'el': '12345670',
-    'es': '12345674A',
-    'fi': '12345671',
-    'fr': '23334175221',
-    'gb': '123456782 or 123456782',
-    'gr': '12345670',
-    'hu': '12345676',
-    'hr': '01234567896',
-    'ie': '1234567FA',
-    'in': "12AAAAA1234AAZA",
-    'is': '062199',
-    'it': '12345670017',
-    'lt': '123456715',
-    'lu': '12345613',
-    'lv': '41234567891',
-    'mc': '53000004605',
-    'mt': '12345634',
-    'mx': 'GODE561231GR8',
-    'nl': '123456782B90',
-    'no': '123456785',
-    'pe': '10XXXXXXXXY or 20XXXXXXXXY or 15XXXXXXXXY or 16XXXXXXXXY or 17XXXXXXXXY',
-    'ph': '123-456-789-123',
-    'pl': '1234567883',
-    'pt': '123456789',
-    'ro': '1234567897',
-    'rs': '101134702',
-    'ru': '123456789047',
-    'se': '123456789701',
-    'si': '12345679',
-    'sk': '2022749619',
-    'sm': '24165',
-    'tr': '1234567890 (VERGINO) or 17291716060 (TCKIMLIKNO)',
-    've': 'V-12345678-1, V123456781, V-12.345.678-1',
-    'xi': '123456782',
+    "al": "J91402501L",
+    "ar": "200-5536168-2 or 20055361682",
+    "at": "U12345675",
+    "au": "83 914 571 673",
+    "be": "0477472701",
+    "bg": "1234567892",
+    "ch": "CHE-123.456.788 TVA or CHE-123.456.788 MWST or CHE-123.456.788 IVA",
+    "cl": "76086428-5",
+    "co": "213123432-1 or 213.123.432-1",
+    "cy": "10259033P",
+    "cz": "12345679",
+    "de": "123456788",
+    "dk": "12345674",
+    "do": "1-01-85004-3 or 101850043",
+    "ec": "1792060346-001",
+    "ee": "123456780",
+    "el": "12345670",
+    "es": "12345674A",
+    "fi": "12345671",
+    "fr": "23334175221",
+    "gb": "123456782 or 123456782",
+    "gr": "12345670",
+    "hu": "12345676",
+    "hr": "01234567896",
+    "ie": "1234567FA",
+    "in": "12AAAAA1234AAZA",
+    "is": "062199",
+    "it": "12345670017",
+    "lt": "123456715",
+    "lu": "12345613",
+    "lv": "41234567891",
+    "mc": "53000004605",
+    "mt": "12345634",
+    "mx": "GODE561231GR8",
+    "nl": "123456782B90",
+    "no": "123456785",
+    "pe": "10XXXXXXXXY or 20XXXXXXXXY or 15XXXXXXXXY or 16XXXXXXXXY or 17XXXXXXXXY",
+    "ph": "123-456-789-123",
+    "pl": "1234567883",
+    "pt": "123456789",
+    "ro": "1234567897",
+    "rs": "101134702",
+    "ru": "123456789047",
+    "se": "123456789701",
+    "si": "12345679",
+    "sk": "2022749619",
+    "sm": "24165",
+    "tr": "1234567890 (VERGINO) or 17291716060 (TCKIMLIKNO)",
+    "ve": "V-12345678-1, V123456781, V-12.345.678-1",
+    "xi": "123456782",
 }
+
+
 class PmsPartnerService(Component):
     _inherit = "base.rest.service"
     _name = "pms.partner.service"
@@ -83,7 +85,6 @@ class PmsPartnerService(Component):
     def get_partners(self, pms_partner_search_params):
         result_partners = []
         domain = []
-        print("pms_partner_search_params", pms_partner_search_params)
 
         if pms_partner_search_params.housedNow:
             partners_housed_now = (
@@ -99,14 +100,26 @@ class PmsPartnerService(Component):
                 self.env["pms.checkin.partner"]
                 .search(
                     [
-                        '|',
-                        '&', ('checkin', '>=', last_week_day), ('checkin', '<=', today),
-                        '|', ('checkout', '>=', last_week_day), ('checkout', '<=', today),
-                        '|', '&', ('checkin', '<=', last_week_day), ('checkout', '<', today),
-                        '&', ('checkin', '>=', last_week_day), ('checkout', '>', today),
-                        '|', ('checkin', '<', last_week_day), ('checkout', '>', today),
+                        "|",
+                        "&",
+                        ("checkin", ">=", last_week_day),
+                        ("checkin", "<=", today),
+                        "|",
+                        ("checkout", ">=", last_week_day),
+                        ("checkout", "<=", today),
+                        "|",
+                        "&",
+                        ("checkin", "<=", last_week_day),
+                        ("checkout", "<", today),
+                        "&",
+                        ("checkin", ">=", last_week_day),
+                        ("checkout", ">", today),
+                        "|",
+                        ("checkin", "<", last_week_day),
+                        ("checkout", ">", today),
                     ]
-                ).mapped("partner_id")
+                )
+                .mapped("partner_id")
             )
             domain.append(("id", "in", partners_housed_last_week.ids))
         if pms_partner_search_params.housedLastMonth:
@@ -116,14 +129,26 @@ class PmsPartnerService(Component):
                 self.env["pms.checkin.partner"]
                 .search(
                     [
-                        '|',
-                        '&', ('checkin', '>=', last_month_day), ('checkin', '<=', today),
-                        '|', ('checkout', '>=', last_month_day), ('checkout', '<=', today),
-                        '|', '&', ('checkin', '<=', last_month_day), ('checkout', '<', today),
-                        '&', ('checkin', '>=', last_month_day), ('checkout', '>', today),
-                        '|', ('checkin', '<', last_month_day), ('checkout', '>', today),
+                        "|",
+                        "&",
+                        ("checkin", ">=", last_month_day),
+                        ("checkin", "<=", today),
+                        "|",
+                        ("checkout", ">=", last_month_day),
+                        ("checkout", "<=", today),
+                        "|",
+                        "&",
+                        ("checkin", "<=", last_month_day),
+                        ("checkout", "<", today),
+                        "&",
+                        ("checkin", ">=", last_month_day),
+                        ("checkout", ">", today),
+                        "|",
+                        ("checkin", "<", last_month_day),
+                        ("checkout", ">", today),
                     ]
-                ).mapped("partner_id")
+                )
+                .mapped("partner_id")
             )
             domain.append(("id", "in", partners_housed_last_month.ids))
         if (
@@ -325,7 +350,9 @@ class PmsPartnerService(Component):
                     name=payment.name if payment.name else None,
                     amount=payment.amount,
                     journalId=payment.journal_id.id if payment.journal_id else None,
-                    destinationJournalId=destination_journal_id if destination_journal_id else None,
+                    destinationJournalId=destination_journal_id
+                    if destination_journal_id
+                    else None,
                     date=datetime.combine(
                         payment.date, datetime.min.time()
                     ).isoformat(),
@@ -373,18 +400,14 @@ class PmsPartnerService(Component):
                         PmsInvoiceLineInfo(
                             id=move_line.id,
                             name=move_line.name if move_line.name else None,
-                            quantity=move_line.quantity
-                            if move_line.quantity
-                            else None,
+                            quantity=move_line.quantity if move_line.quantity else None,
                             priceUnit=move_line.price_unit
                             if move_line.price_unit
                             else None,
                             total=move_line.price_total
                             if move_line.price_total
                             else None,
-                            discount=move_line.discount
-                            if move_line.discount
-                            else None,
+                            discount=move_line.discount if move_line.discount else None,
                             displayType=move_line.display_type
                             if move_line.display_type
                             else None,
@@ -420,15 +443,11 @@ class PmsPartnerService(Component):
                         else None,
                         date=invoice_date,
                         state=move.state if move.state else None,
-                        paymentState=move.payment_state
-                        if move.payment_state
-                        else None,
+                        paymentState=move.payment_state if move.payment_state else None,
                         partnerName=move.partner_id.name
                         if move.partner_id.name
                         else None,
-                        partnerId=move.partner_id.id
-                        if move.partner_id.id
-                        else None,
+                        partnerId=move.partner_id.id if move.partner_id.id else None,
                         moveLines=move_lines if move_lines else None,
                         portalUrl=portal_url,
                         moveType=move.move_type,
@@ -467,7 +486,6 @@ class PmsPartnerService(Component):
                 lambda doc: doc.category_id.id == doc_type.id
             )
 
-
             PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
 
             document_expedition_date = False
@@ -475,9 +493,7 @@ class PmsPartnerService(Component):
                 document_expedition_date = doc_number.valid_from.strftime("%d/%m/%Y")
             birthdate_date = False
             if partner.birthdate_date:
-                birthdate_date = partner.birthdate_date.strftime(
-                    "%d/%m/%Y"
-                )
+                birthdate_date = partner.birthdate_date.strftime("%d/%m/%Y")
             partners.append(
                 PmsCheckinPartnerInfo(
                     partnerId=partner.id or None,
@@ -507,7 +523,8 @@ class PmsPartnerService(Component):
         [
             (
                 [
-                    "/check-doc-number/<string:document_number>/<int:document_type_id>/<int:country_id>",
+                    "/check-doc-number/<string:document_number>/"
+                    "<int:document_type_id>/<int:country_id>",
                 ],
                 "GET",
             )
@@ -517,8 +534,8 @@ class PmsPartnerService(Component):
     # REVIEW: create a new datamodel and service for documents?
     def check_document_number(self, document_number, document_type_id, country_id):
         error_mens = False
-        country = self.env['res.country'].browse(country_id)
-        document_type = self.env['res.partner.id_category'].browse(document_type_id)
+        country = self.env["res.country"].browse(country_id)
+        document_type = self.env["res.partner.id_category"].browse(document_type_id)
         id_number = self.env["res.partner.id_number"].new(
             {
                 "name": document_number,
@@ -536,7 +553,9 @@ class PmsPartnerService(Component):
                 vat_number=document_number,
             )
             if error:
-                error_mens = self._construct_check_vat_error_msg(vat_number=document_number, country_code=country.code)
+                error_mens = self._construct_check_vat_error_msg(
+                    vat_number=document_number, country_code=country.code
+                )
         if error_mens:
             raise ValidationError(error_mens)
 
@@ -742,18 +761,20 @@ class PmsPartnerService(Component):
         country_code = country_code.lower()
         vat_no = "(##=VAT Number)"
         vat_no = _ref_vat.get(country_code) or vat_no
-        if self.env.context.get('company_id'):
-            company = self.env['res.company'].browse(self.env.context['company_id'])
+        if self.env.context.get("company_id"):
+            company = self.env["res.company"].browse(self.env.context["company_id"])
         else:
             company = self.env.company
         if company.vat_check_vies:
-            return '\n' + _(
-                'The VAT number [%(vat)s] either failed the VIES VAT validation check or did not respect the expected format %(format)s.',
+            return "\n" + _(
+                "The VAT number [%(vat)s] either failed the VIES VAT "
+                "validation check or did not respect the expected format %(format)s.",
                 vat=vat_number,
-                format=vat_no
+                format=vat_no,
             )
-        return '\n' + _(
-            'The VAT number [%(vat)s] does not seem to be valid. \nNote: the expected format is %(format)s',
+        return "\n" + _(
+            "The VAT number [%(vat)s] does not seem to be valid. "
+            "\nNote: the expected format is %(format)s",
             vat=vat_number,
-            format=vat_no
+            format=vat_no,
         )

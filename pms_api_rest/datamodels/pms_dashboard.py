@@ -36,7 +36,9 @@ class PmsDashboardStateRooms(Datamodel):
 class PmsDashboardReservationsBySaleChannel(Datamodel):
     _name = "pms.dashboard.reservations.by.sale.channel"
     saleChannelName = fields.String(required=False, allow_none=True)
-    percentageReservationsSoldBySaleChannel = fields.Integer(required=False, allow_none=True)
+    percentageReservationsSoldBySaleChannel = fields.Integer(
+        required=False, allow_none=True
+    )
 
 
 class PmsDashboardNumericResponse(Datamodel):
@@ -45,6 +47,6 @@ class PmsDashboardNumericResponse(Datamodel):
 
 
 class PmsDashboardDailyBilling(Datamodel):
-    _name ="pms.dashboard.daily.billing"
+    _name = "pms.dashboard.daily.billing"
     date = fields.String(required=False, allow_none=True)
     billing = fields.Float(required=False, allow_none=True)

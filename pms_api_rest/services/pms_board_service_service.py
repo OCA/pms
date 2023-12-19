@@ -52,7 +52,9 @@ class PmsBoardServiceService(Component):
                     roomTypeId=board_service.pms_room_type_id.id,
                     amount=round(board_service.amount, 2),
                     boardServiceId=board_service.pms_board_service_id,
-                    productIds=board_service.board_service_line_ids.mapped("product_id.id"),
+                    productIds=board_service.board_service_line_ids.mapped(
+                        "product_id.id"
+                    ),
                 )
             )
         return result_board_services

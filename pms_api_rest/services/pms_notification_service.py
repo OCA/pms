@@ -1,6 +1,7 @@
 import datetime
 
 from odoo import fields
+
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
