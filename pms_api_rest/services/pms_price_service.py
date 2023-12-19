@@ -49,11 +49,7 @@ class PmsPriceService(Component):
                 [("id", "=", prices_search_param.boardServiceId)]
             )
         else:
-            raise MissingError(
-                _(
-                    "Wrong input param"
-                )
-            )
+            raise MissingError(_("Wrong input param"))
 
         PmsPriceInfo = self.env.datamodels["pms.price.info"]
         result_prices = []
@@ -154,7 +150,7 @@ class PmsPriceService(Component):
     ):
         price = 0
         if product_id:
-            products = self.env['product.product'].browse(product_id)
+            products = self.env["product.product"].browse(product_id)
         else:
             products = board_service.board_service_line_ids.mapped("product_id")
         for product in products:
