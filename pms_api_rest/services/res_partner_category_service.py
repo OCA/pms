@@ -24,7 +24,11 @@ class PmsPartnerCategoriesService(Component):
     def get_categories(self):
         result_categories = []
         ResPartnerCategoryInfo = self.env.datamodels["res.partner.category.info"]
-        for category in self.env["res.partner.category"].with_context(lang=self.env.user.lang).search([]):
+        for category in (
+            self.env["res.partner.category"]
+            .with_context(lang=self.env.user.lang)
+            .search([])
+        ):
             result_categories.append(
                 ResPartnerCategoryInfo(
                     id=category.id,

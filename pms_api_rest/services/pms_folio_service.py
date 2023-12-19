@@ -2,6 +2,8 @@ import base64
 import logging
 from datetime import datetime, timedelta
 
+import pytz
+
 from odoo import _, fields
 from odoo.exceptions import MissingError, ValidationError
 from odoo.osv import expression
@@ -10,7 +12,6 @@ from odoo.tools import get_lang
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
-import pytz
 
 from ..pms_api_rest_utils import url_image_pms_api_rest
 
@@ -133,11 +134,7 @@ class PmsFolioService(Component):
 
         domain_filter = list()
         if folio_search_param.last:
-            domain_filter.append(
-                [
-                    ("checkin", ">=", fields.Date.today())
-                ]
-            )
+            domain_filter.append([("checkin", ">=", fields.Date.today())])
 
         if folio_search_param.filter:
             target = folio_search_param.filter
@@ -1251,7 +1248,9 @@ class PmsFolioService(Component):
                 ]
                 for message in messages:
                     reservation_message_date = pytz.UTC.localize(message.date)
-                    reservation_message_date = reservation_message_date.astimezone(user_tz)
+                    reservation_message_date = reservation_message_date.astimezone(
+                        user_tz
+                    )
                     message_body = self.parse_message_body(message)
                     if message.message_type == "email":
                         subject = "Email enviado: " + message.subject
@@ -1272,7 +1271,9 @@ class PmsFolioService(Component):
                             ).decode("utf-8")
                             if message.author_id.image_1024
                             else None,
-                            authorImageUrl=url_image_pms_api_rest('res.partner', message.author_id.id, 'image_1024'),
+                            authorImageUrl=url_image_pms_api_rest(
+                                "res.partner", message.author_id.id, "image_1024"
+                            ),
                         )
                     )
             PmsFolioMessageInfo = self.env.datamodels["pms.folio.message.info"]
@@ -1298,7 +1299,9 @@ class PmsFolioService(Component):
                         ).decode("utf-8")
                         if folio_message.author_id.image_1024
                         else None,
-                        authorImageUrl=url_image_pms_api_rest('res.partner', folio_message.author_id.id, 'image_1024'),
+                        authorImageUrl=url_image_pms_api_rest(
+                            "res.partner", folio_message.author_id.id, "image_1024"
+                        ),
                     )
                 )
             PmsMessageInfo = self.env.datamodels["pms.message.info"]

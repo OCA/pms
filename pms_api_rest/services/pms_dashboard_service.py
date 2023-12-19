@@ -1,9 +1,10 @@
-from odoo.addons.component.core import Component
-from odoo.addons.base_rest import restapi
-from odoo.addons.base_rest_datamodel.restapi import Datamodel
-from odoo import fields
 from datetime import datetime
 
+from odoo import fields
+
+from odoo.addons.base_rest import restapi
+from odoo.addons.base_rest_datamodel.restapi import Datamodel
+from odoo.addons.component.core import Component
 
 
 class PmsDashboardServices(Component):
@@ -30,17 +31,20 @@ class PmsDashboardServices(Component):
         dateTo = fields.Date.from_string(pms_dashboard_search_param.dateTo)
 
         self.env.cr.execute(
-            f"""
+            """
             SELECT
             d.date,
-            SUM(CASE WHEN r.checkin = d.date AND r.state IN ('confirm', 'arrival_delayed') THEN 1 ELSE 0
+            SUM(CASE WHEN r.checkin = d.date AND r.state IN ('confirm', 'arrival_delayed')
+            THEN 1 ELSE 0
             END) AS reservations_pending_arrival,
             SUM(CASE WHEN r.checkin = d.date AND r.state = 'onboard' THEN 1 ELSE 0
             END) AS
             reservations_on_board,
-            SUM(CASE WHEN r.checkout = d.date AND r.state IN ('onboard', 'departure_delayed') THEN 1 ELSE 0
+            SUM(CASE WHEN r.checkout = d.date AND r.state IN ('onboard', 'departure_delayed')
+            THEN 1 ELSE 0
             END) AS reservations_pending_departure,
-            SUM(CASE WHEN r.checkout = d.date AND r.state = 'done' THEN 1 ELSE 0 END) AS reservations_completed
+            SUM(CASE WHEN r.checkout = d.date AND r.state = 'done' THEN 1 ELSE 0 END)
+            AS reservations_completed
             FROM ( SELECT CURRENT_DATE + date AS date
             FROM generate_series(date %s - CURRENT_DATE, date %s - CURRENT_DATE) date) d
             LEFT JOIN pms_reservation r
@@ -57,19 +61,30 @@ class PmsDashboardServices(Component):
             ),
         )
 
-
         result = self.env.cr.dictfetchall()
         pending_reservations = []
-        DashboardPendingReservations = self.env.datamodels["pms.dashboard.pending.reservations"]
+        DashboardPendingReservations = self.env.datamodels[
+            "pms.dashboard.pending.reservations"
+        ]
 
         for item in result:
             pending_reservations.append(
                 DashboardPendingReservations(
-                    date=datetime.combine(item['date'], datetime.min.time()).isoformat(),
-                    pendingArrivalReservations=item["reservations_pending_arrival"] if item["reservations_pending_arrival"] else 0,
-                    completedArrivalReservations=item["reservations_on_board"] if item["reservations_on_board"] else 0,
-                    pendingDepartureReservations=item["reservations_pending_departure"] if item["reservations_pending_departure"] else 0,
-                    completedDepartureReservations=item["reservations_completed"] if item["reservations_completed"] else 0,
+                    date=datetime.combine(
+                        item["date"], datetime.min.time()
+                    ).isoformat(),
+                    pendingArrivalReservations=item["reservations_pending_arrival"]
+                    if item["reservations_pending_arrival"]
+                    else 0,
+                    completedArrivalReservations=item["reservations_on_board"]
+                    if item["reservations_on_board"]
+                    else 0,
+                    pendingDepartureReservations=item["reservations_pending_departure"]
+                    if item["reservations_pending_departure"]
+                    else 0,
+                    completedDepartureReservations=item["reservations_completed"]
+                    if item["reservations_completed"]
+                    else 0,
                 )
             )
         return pending_reservations
@@ -91,7 +106,7 @@ class PmsDashboardServices(Component):
         date_occupancy = fields.Date.from_string(pms_dashboard_search_param.date)
 
         self.env.cr.execute(
-            f"""
+            """
             SELECT CEIL(l.num * 100.00 / tr.num_total_rooms)  AS occupancy
             FROM
             (
@@ -124,7 +139,8 @@ class PmsDashboardServices(Component):
             value=result[0]["occupancy"] if result[0]["occupancy"] else 0,
         )
 
-    @restapi.method([
+    @restapi.method(
+        [
             (
                 [
                     "/state-rooms",
@@ -140,7 +156,7 @@ class PmsDashboardServices(Component):
         dateFrom = fields.Date.from_string(pms_dashboard_search_param.dateFrom)
         dateTo = fields.Date.from_string(pms_dashboard_search_param.dateTo)
         self.env.cr.execute(
-            f"""
+            """
                 SELECT 	d.date,
                 COALESCE(rln.num_occupied_rooms, 0) AS num_occupied_rooms,
                 COALESCE( rlo.num_out_of_service_rooms, 0) AS num_out_of_service_rooms,
@@ -193,22 +209,29 @@ class PmsDashboardServices(Component):
         for item in result:
             state_rooms_result.append(
                 DashboardStateRooms(
-                    date=datetime.combine(item['date'], datetime.min.time()).isoformat(),
-                    numOccupiedRooms=item["num_occupied_rooms"] if item["num_occupied_rooms"] else 0,
-                    numOutOfServiceRooms=item["num_out_of_service_rooms"] if item["num_out_of_service_rooms"] else 0,
+                    date=datetime.combine(
+                        item["date"], datetime.min.time()
+                    ).isoformat(),
+                    numOccupiedRooms=item["num_occupied_rooms"]
+                    if item["num_occupied_rooms"]
+                    else 0,
+                    numOutOfServiceRooms=item["num_out_of_service_rooms"]
+                    if item["num_out_of_service_rooms"]
+                    else 0,
                     numFreeRooms=item["free_rooms"] if item["free_rooms"] else 0,
                 )
             )
         return state_rooms_result
 
-    @restapi.method([
-        (
-            [
-                "/reservations-by-sale-channel",
-            ],
-            "GET",
-        )
-    ],
+    @restapi.method(
+        [
+            (
+                [
+                    "/reservations-by-sale-channel",
+                ],
+                "GET",
+            )
+        ],
         input_param=Datamodel("pms.dashboard.range.dates.search.param"),
         output_param=Datamodel("pms.dashboard.state.rooms", is_list=True),
         auth="jwt_api_pms",
@@ -217,11 +240,12 @@ class PmsDashboardServices(Component):
         dateFrom = fields.Date.from_string(pms_dashboard_search_param.dateFrom)
         dateTo = fields.Date.from_string(pms_dashboard_search_param.dateTo)
         self.env.cr.execute(
-            f"""
+            """
                 SELECT CASE WHEN sc.channel_type = 'direct' THEN sc.name
                         ELSE (SELECT name FROM res_partner WHERE id = r.agency_id)
                 END AS sale_channel_name,
-                CEIL(COUNT(r.id) * 100.00 / tr.num_total_reservations)  AS percentage_by_sale_channel
+                CEIL(COUNT(r.id) * 100.00 / tr.num_total_reservations)
+                AS percentage_by_sale_channel
                 FROM
                 (
                     SELECT COUNT(1) num_total_reservations
@@ -235,7 +259,11 @@ class PmsDashboardServices(Component):
                 WHERE r.create_date::date BETWEEN %s AND %s
                 AND r.reservation_type != 'out'
                 AND r.pms_property_id = %s
-                GROUP BY r.sale_channel_origin_id, sc.channel_type, sc.name, r.agency_id, tr.num_total_reservations
+                GROUP BY
+                    r.sale_channel_origin_id,
+                    sc.channel_type, sc.name,
+                    r.agency_id,
+                    tr.num_total_reservations
                 ORDER BY percentage_by_sale_channel DESC;
                 """,
             (
@@ -250,12 +278,20 @@ class PmsDashboardServices(Component):
 
         result = self.env.cr.dictfetchall()
         state_rooms_result = []
-        DashboardReservationsBySaleChannel = self.env.datamodels["pms.dashboard.reservations.by.sale.channel"]
+        DashboardReservationsBySaleChannel = self.env.datamodels[
+            "pms.dashboard.reservations.by.sale.channel"
+        ]
         for item in result:
             state_rooms_result.append(
                 DashboardReservationsBySaleChannel(
-                    saleChannelName=item["sale_channel_name"] if item["sale_channel_name"] else '',
-                    percentageReservationsSoldBySaleChannel=item["percentage_by_sale_channel"] if item["percentage_by_sale_channel"] else 0,
+                    saleChannelName=item["sale_channel_name"]
+                    if item["sale_channel_name"]
+                    else "",
+                    percentageReservationsSoldBySaleChannel=item[
+                        "percentage_by_sale_channel"
+                    ]
+                    if item["percentage_by_sale_channel"]
+                    else 0,
                 )
             )
         return state_rooms_result
@@ -277,7 +313,7 @@ class PmsDashboardServices(Component):
         date_billing = fields.Date.from_string(pms_dashboard_search_param.date)
 
         self.env.cr.execute(
-            f"""
+            """
             SELECT SUM(l.price_day_total) billing
             FROM pms_reservation_line l INNER JOIN pms_reservation r ON l.reservation_id = r.id
             WHERE l.date = %s
@@ -295,7 +331,7 @@ class PmsDashboardServices(Component):
         result = self.env.cr.dictfetchall()
         DashboardNumericResponse = self.env.datamodels["pms.dashboard.numeric.response"]
         return DashboardNumericResponse(
-            value=result[0]["billing"] if result[0]['billing'] else 0,
+            value=result[0]["billing"] if result[0]["billing"] else 0,
         )
 
     @restapi.method(
@@ -315,7 +351,9 @@ class PmsDashboardServices(Component):
         date_from = fields.Date.from_string(pms_dashboard_search_param.dateFrom)
         date_to = fields.Date.from_string(pms_dashboard_search_param.dateTo)
 
-        pms_property = self.env["pms.property"].search([("id", "=", pms_dashboard_search_param.pmsPropertyId)])
+        pms_property = self.env["pms.property"].search(
+            [("id", "=", pms_dashboard_search_param.pmsPropertyId)]
+        )
 
         adr = pms_property._get_adr(date_from, date_to)
 
@@ -342,7 +380,9 @@ class PmsDashboardServices(Component):
         date_from = fields.Date.from_string(pms_dashboard_search_param.dateFrom)
         date_to = fields.Date.from_string(pms_dashboard_search_param.dateTo)
 
-        pms_property = self.env["pms.property"].search([("id", "=", pms_dashboard_search_param.pmsPropertyId)])
+        pms_property = self.env["pms.property"].search(
+            [("id", "=", pms_dashboard_search_param.pmsPropertyId)]
+        )
 
         revpar = pms_property._get_revpar(date_from, date_to)
 
@@ -369,7 +409,7 @@ class PmsDashboardServices(Component):
         date_new_folios = fields.Date.from_string(pms_dashboard_search_param.date)
 
         self.env.cr.execute(
-            f"""
+            """
              SELECT COUNT(1) new_folios
                 FROM pms_folio f
                 WHERE DATE(f.create_date) = %s
@@ -407,7 +447,7 @@ class PmsDashboardServices(Component):
         date = fields.Date.from_string(pms_dashboard_search_param.date)
 
         self.env.cr.execute(
-            f"""
+            """
               SELECT COUNT(1) overnights
                 FROM pms_reservation_line l
                 INNER JOIN pms_reservation r ON r.id = l.reservation_id
@@ -419,7 +459,6 @@ class PmsDashboardServices(Component):
                 AND r.reservation_type != 'out'
             """,
             (
-
                 date,
                 pms_dashboard_search_param.pmsPropertyId,
             ),
@@ -449,7 +488,7 @@ class PmsDashboardServices(Component):
         date = fields.Date.from_string(pms_dashboard_search_param.date)
 
         self.env.cr.execute(
-            f"""
+            """
               SELECT COUNT(1) cancelled_overnights
                 FROM pms_reservation_line l
                 INNER JOIN pms_reservation r ON r.id = l.reservation_id
@@ -470,7 +509,9 @@ class PmsDashboardServices(Component):
         DashboardNumericResponse = self.env.datamodels["pms.dashboard.numeric.response"]
 
         return DashboardNumericResponse(
-            value=result[0]["cancelled_overnights"] if result[0]["cancelled_overnights"] else 0,
+            value=result[0]["cancelled_overnights"]
+            if result[0]["cancelled_overnights"]
+            else 0,
         )
 
     @restapi.method(
@@ -490,7 +531,7 @@ class PmsDashboardServices(Component):
         date = fields.Date.from_string(pms_dashboard_search_param.date)
 
         self.env.cr.execute(
-            f"""
+            """
               SELECT COUNT(1) overbookings
                 FROM pms_reservation_line l
                 WHERE l.date = %s
@@ -498,7 +539,6 @@ class PmsDashboardServices(Component):
                 AND l.overbooking = true
             """,
             (
-
                 date,
                 pms_dashboard_search_param.pmsPropertyId,
             ),
@@ -511,7 +551,8 @@ class PmsDashboardServices(Component):
             value=result[0]["overbookings"] if result[0]["overbookings"] else 0,
         )
 
-    @restapi.method([
+    @restapi.method(
+        [
             (
                 [
                     "/occupied-rooms",
@@ -519,7 +560,6 @@ class PmsDashboardServices(Component):
                 "GET",
             )
         ],
-
         input_param=Datamodel("pms.dashboard.range.dates.search.param"),
         output_param=Datamodel("pms.dashboard.state.rooms", is_list=True),
         auth="jwt_api_pms",
@@ -528,7 +568,7 @@ class PmsDashboardServices(Component):
         dateFrom = fields.Date.from_string(pms_dashboard_search_param.dateFrom)
         dateTo = fields.Date.from_string(pms_dashboard_search_param.dateTo)
         self.env.cr.execute(
-            f"""
+            """
             SELECT 	d.date, COALESCE(rln.num_occupied_rooms, 0) AS num_occupied_rooms
             FROM
             (
@@ -559,20 +599,25 @@ class PmsDashboardServices(Component):
         for item in result:
             occupied_rooms_result.append(
                 DashboardStateRooms(
-                    date=datetime.combine(item['date'], datetime.min.time()).isoformat(),
-                    numOccupiedRooms=item["num_occupied_rooms"] if item["num_occupied_rooms"] else 0,
+                    date=datetime.combine(
+                        item["date"], datetime.min.time()
+                    ).isoformat(),
+                    numOccupiedRooms=item["num_occupied_rooms"]
+                    if item["num_occupied_rooms"]
+                    else 0,
                 )
             )
         return occupied_rooms_result
 
-    @restapi.method([
-        (
-            [
-                "/daily-billings",
-            ],
-            "GET",
-        )
-    ],
+    @restapi.method(
+        [
+            (
+                [
+                    "/daily-billings",
+                ],
+                "GET",
+            )
+        ],
         input_param=Datamodel("pms.dashboard.range.dates.search.param"),
         output_param=Datamodel("pms.dashboard.state.rooms", is_list=True),
         auth="jwt_api_pms",
@@ -581,12 +626,12 @@ class PmsDashboardServices(Component):
         dateFrom = fields.Date.from_string(pms_dashboard_search_param.dateFrom)
         dateTo = fields.Date.from_string(pms_dashboard_search_param.dateTo)
         self.env.cr.execute(
-            f"""
+            """
             SELECT 	d.date, COALESCE(rln.daily_billing, 0) AS daily_billing
             FROM
             (
                 SELECT (CURRENT_DATE + date) date
-                FROM generate_series(date %s- CURRENT_DATE, date %s - CURRENT_DATE
+                FROM generate_series(date %s - CURRENT_DATE, date %s - CURRENT_DATE
             ) date) d
             LEFT OUTER JOIN (SELECT sum(l.price_day_total) daily_billing, date
                              FROM pms_reservation_line l
@@ -612,20 +657,23 @@ class PmsDashboardServices(Component):
         for item in result:
             result_daily_billings.append(
                 DashboardStateRooms(
-                    date=datetime.combine(item['date'], datetime.min.time()).isoformat(),
+                    date=datetime.combine(
+                        item["date"], datetime.min.time()
+                    ).isoformat(),
                     billing=item["daily_billing"] if item["daily_billing"] else 0,
                 )
             )
         return result_daily_billings
 
-    @restapi.method([
-        (
-            [
-                "/last-received-folios",
-            ],
-            "GET",
-        ),
-    ],
+    @restapi.method(
+        [
+            (
+                [
+                    "/last-received-folios",
+                ],
+                "GET",
+            ),
+        ],
         input_param=Datamodel("pms.folio.search.param", is_list=False),
         output_param=Datamodel("pms.folio.short.info", is_list=True),
         auth="jwt_api_pms",
@@ -633,7 +681,7 @@ class PmsDashboardServices(Component):
     def get_last_received_folios(self, pms_folio_search_param):
         result_folios = []
         PmsFolioShortInfo = self.env.datamodels["pms.folio.short.info"]
-        for folio in self.env['pms.folio'].search(
+        for folio in self.env["pms.folio"].search(
             [
                 ("first_checkin", ">=", datetime.now().date()),
                 ("pms_property_id", "=", pms_folio_search_param.pmsPropertyId),
@@ -642,7 +690,6 @@ class PmsDashboardServices(Component):
             offset=pms_folio_search_param.offset,
             order="create_date desc",
         ):
-            print(folio.id)
             result_folios.append(
                 PmsFolioShortInfo(
                     id=folio.id,
@@ -674,19 +721,20 @@ class PmsDashboardServices(Component):
             )
         return result_folios
 
-    @restapi.method([
-        (
-            [
-                "/num-last-received-folios",
-            ],
-            "GET",
-        ),
-    ],
+    @restapi.method(
+        [
+            (
+                [
+                    "/num-last-received-folios",
+                ],
+                "GET",
+            ),
+        ],
         input_param=Datamodel("pms.folio.search.param", is_list=False),
         auth="jwt_api_pms",
     )
     def get_num_last_received_folios(self, pms_folio_search_param):
-        return self.env['pms.folio'].search_count(
+        return self.env["pms.folio"].search_count(
             [
                 ("first_checkin", ">=", datetime.now().date()),
                 ("pms_property_id", "=", pms_folio_search_param.pmsPropertyId),

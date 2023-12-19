@@ -24,7 +24,9 @@ class ResCountryService(Component):
     def get_countries(self):
         result_countries = []
         ResCountriesInfo = self.env.datamodels["res.country.info"]
-        for country in self.env["res.country"].with_context(lang=self.env.user.lang).search([]):
+        for country in (
+            self.env["res.country"].with_context(lang=self.env.user.lang).search([])
+        ):
             result_countries.append(
                 ResCountriesInfo(
                     id=country.id,
