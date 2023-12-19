@@ -24,7 +24,7 @@ class PmsFeedRss(Component):
     def get_feed_posts(self):
         result_rss = []
         PmsFeedRss = self.env.datamodels["feed.post.info"]
-        for rss in self.env["rss.post"].search([], limit=5, order='publish_date desc'):
+        for rss in self.env["rss.post"].search([], limit=5, order="publish_date desc"):
             result_rss.append(
                 PmsFeedRss(
                     postId=rss.post_id,
@@ -33,7 +33,8 @@ class PmsFeedRss(Component):
                     description=rss.description,
                     publishDate=str(rss.publish_date),
                     author=rss.author if rss.author else "",
-                    imageUrl="https://www.roomdoo.com/wp-content/uploads/2021/09/hotel-roomdoo.png"
+                    imageUrl="https://www.roomdoo.com/wp-content"
+                    "/uploads/2021/09/hotel-roomdoo.png",
                 )
             )
         return result_rss

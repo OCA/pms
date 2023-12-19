@@ -32,7 +32,7 @@ class PmsPricelistService(Component):
             ("is_pms_available", "=", True),
         ]
         if pms_search_param.daily and pms_search_param.daily is True:
-            domain.append(("pricelist_type", "=", 'daily'))
+            domain.append(("pricelist_type", "=", "daily"))
 
         pricelists = self.env["product.pricelist"].search(domain)
         if pms_search_param.pmsPropertyIds and pms_search_param.pmsPropertyId:
@@ -192,7 +192,7 @@ class PmsPricelistService(Component):
         input_param=Datamodel("pms.pricelist.items.info", is_list=False),
         auth="jwt_api_pms",
     )
-    def create_pricelist_item(self, pricelist_id, pms_pricelist_item_info):
+    def create_pricelist_item_old(self, pricelist_id, pms_pricelist_item_info):
         self._create_or_update_pricelist_items(pms_pricelist_item_info)
 
     @restapi.method(
@@ -207,10 +207,14 @@ class PmsPricelistService(Component):
         input_param=Datamodel("pms.pricelist.items.info", is_list=False),
         auth="jwt_api_pms",
     )
-    def create_pricelist_item(self, pricelist_id, pms_pricelist_item_info):
-        pricelist_ids = list({item.pricelistId for item in pms_pricelist_item_info.pricelistItems})
+    def create_pricelist_item_fix_patch(self, pricelist_id, pms_pricelist_item_info):
+        pricelist_ids = list(
+            {item.pricelistId for item in pms_pricelist_item_info.pricelistItems}
+        )
         if len(pricelist_ids) > 1 or pricelist_ids[0] != pricelist_id:
-            raise ValidationError("You cannot create pricelist items for different pricelists at once.")
+            raise ValidationError(
+                _("You cannot create pricelist items for different pricelists at once.")
+            )
         else:
             self._create_or_update_pricelist_items(pms_pricelist_item_info)
 

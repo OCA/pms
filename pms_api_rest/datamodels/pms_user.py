@@ -32,6 +32,7 @@ class PmsApiRestUserOutput(Datamodel):
         fields.String(), required=False, allow_none=True
     )
 
+
 class PmsApiRestUserLoginOutput(Datamodel):
     _name = "pms.api.rest.user.login.output"
     login = fields.String(required=True, allow_none=False)

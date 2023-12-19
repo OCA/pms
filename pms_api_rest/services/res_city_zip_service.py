@@ -9,7 +9,6 @@ class ResCityZipService(Component):
     _usage = "zips"
     _collection = "pms.services"
 
-
     @restapi.method(
         [
             (
@@ -28,7 +27,9 @@ class ResCityZipService(Component):
         if not zip_search_param.address:
             return result_res_zip
         ResCityZipInfo = self.env.datamodels["res.city.zip.info"]
-        res_zip = self.env["res.city.zip"].search([("display_name", "ilike", zip_search_param.address)], limit=10)
+        res_zip = self.env["res.city.zip"].search(
+            [("display_name", "ilike", zip_search_param.address)], limit=10
+        )
 
         if res_zip:
             for address in res_zip:
@@ -43,7 +44,6 @@ class ResCityZipService(Component):
                     )
                 )
         return result_res_zip
-
 
     @restapi.method(
         [

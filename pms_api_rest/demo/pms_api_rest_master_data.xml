@@ -1,32 +1,50 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<odoo>
-    <data noupdate="1">
-        <record id="base.user_admin" model="res.users">
-            <field
-                name="availability_rule_field_ids"
-                eval="[(6, 0, [ref('pms.field_pms_availability_plan_rule__min_stay'), ref('pms.field_pms_availability_plan_rule__quota')])]"
-            />
-        </record>
-        <record id="base.user_demo" model="res.users">
-            <field
-                name="availability_rule_field_ids"
-                eval="[(6, 0, [ref('pms.field_pms_availability_plan_rule__min_stay'), ref('pms.field_pms_availability_plan_rule__quota')])]"
-            />
-        </record>
-        <record id="pms.main_pms_property" model="pms.property">
-            <field name="hotel_image_pms_api_rest" type="base64" file="pms_api_rest/demo/pms_property_hotel_image_pms_api_rest_my_property.jpg"/>
-        </record>
-        <record id="pms.san_carlos_property" model="pms.property">
-            <field name="hotel_image_pms_api_rest" type="base64" file="pms_api_rest/demo/pms_property_hotel_image_pms_api_rest_san_carlos.jpg"/>
-        </record>
-        <record id="pms.pms_room_type_class_bedroom" model="pms.room.type.class">
-            <field name="icon_pms_api_rest" type="base64" file="pms_api_rest/demo/pms_room_type_class_icon_pms_api_rest_room.svg"/>
-        </record>
-        <record id="pms.pms_room_type_class_conference_room" model="pms.room.type.class">
-            <field name="icon_pms_api_rest" type="base64" file="pms_api_rest/demo/pms_room_type_class_icon_pms_api_rest_conference.svg"/>
-        </record>
-        <record id="pms.pms_room_type_class_parking" model="pms.room.type.class">
-            <field name="icon_pms_api_rest" type="base64" file="pms_api_rest/demo/pms_room_type_class_icon_pms_api_rest_parking.svg"/>
-        </record>
-    </data>
+<odoo noupdate="1">
+    <record id="base.user_admin" model="res.users">
+        <field
+            name="availability_rule_field_ids"
+            eval="[(6, 0, [ref('pms.field_pms_availability_plan_rule__min_stay'), ref('pms.field_pms_availability_plan_rule__quota')])]"
+        />
+    </record>
+    <record id="base.user_demo" model="res.users">
+        <field
+            name="availability_rule_field_ids"
+            eval="[(6, 0, [ref('pms.field_pms_availability_plan_rule__min_stay'), ref('pms.field_pms_availability_plan_rule__quota')])]"
+        />
+    </record>
+    <record id="pms.main_pms_property" model="pms.property">
+        <field
+            name="hotel_image_pms_api_rest"
+            type="base64"
+            file="pms_api_rest/demo/pms_property_hotel_image_pms_api_rest_my_property.jpg"
+        />
+    </record>
+    <record id="pms.san_carlos_property" model="pms.property">
+        <field
+            name="hotel_image_pms_api_rest"
+            type="base64"
+            file="pms_api_rest/demo/pms_property_hotel_image_pms_api_rest_san_carlos.jpg"
+        />
+    </record>
+    <record id="pms.pms_room_type_class_bedroom" model="pms.room.type.class">
+        <field
+            name="icon_pms_api_rest"
+            type="base64"
+            file="pms_api_rest/demo/pms_room_type_class_icon_pms_api_rest_room.svg"
+        />
+    </record>
+    <record id="pms.pms_room_type_class_conference_room" model="pms.room.type.class">
+        <field
+            name="icon_pms_api_rest"
+            type="base64"
+            file="pms_api_rest/demo/pms_room_type_class_icon_pms_api_rest_conference.svg"
+        />
+    </record>
+    <record id="pms.pms_room_type_class_parking" model="pms.room.type.class">
+        <field
+            name="icon_pms_api_rest"
+            type="base64"
+            file="pms_api_rest/demo/pms_room_type_class_icon_pms_api_rest_parking.svg"
+        />
+    </record>
 </odoo>
