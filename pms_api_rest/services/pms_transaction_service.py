@@ -85,11 +85,15 @@ class PmsTransactionService(Component):
             type_domain = []
 
             for transaction_type in transaction_types:
-                payment_type, partner_type = self._get_mapper_transaction_type(transaction_type)
-                type_domain.append([
-                    ["partner_type", "=", partner_type],
-                    ["payment_type", "=", payment_type],
-                ])
+                payment_type, partner_type = self._get_mapper_transaction_type(
+                    transaction_type
+                )
+                type_domain.append(
+                    [
+                        ["partner_type", "=", partner_type],
+                        ["payment_type", "=", payment_type],
+                    ]
+                )
 
             if type_domain:
                 type_domain = expression.OR(type_domain)

@@ -9,7 +9,9 @@ from odoo.exceptions import AccessDenied
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
+
 from ..pms_api_rest_utils import url_image_pms_api_rest
+
 
 class PmsLoginService(Component):
     _inherit = "base.rest.service"
@@ -81,7 +83,9 @@ class PmsLoginService(Component):
             userImageBase64=user_record.partner_id.image_1024
             if user_record.partner_id.image_1024
             else None,
-            userImageUrl=url_image_pms_api_rest('res.partner', user_record.partner_id.id, 'image_1024'),
+            userImageUrl=url_image_pms_api_rest(
+                "res.partner", user_record.partner_id.id, "image_1024"
+            ),
             isNewInterfaceUser=user_record.is_new_interface_app_user,
             availabilityRuleFields=avail_rule_names,
         )

@@ -97,8 +97,13 @@ class PmsRoomService(Component):
                     roomAmenityIds=room.room_amenity_ids.ids
                     if room.room_amenity_ids
                     else None,
-                    roomAmenityInName=room.room_amenity_ids.filtered(lambda x: x.is_add_code_room_name).default_code if
-                    room.room_amenity_ids.filtered(lambda x: x.is_add_code_room_name).name else ''
+                    roomAmenityInName=room.room_amenity_ids.filtered(
+                        lambda x: x.is_add_code_room_name
+                    ).default_code
+                    if room.room_amenity_ids.filtered(
+                        lambda x: x.is_add_code_room_name
+                    ).name
+                    else "",
                 )
             )
         return result_rooms

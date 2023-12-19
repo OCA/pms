@@ -127,11 +127,15 @@ class PmsReservationService(Component):
                 numServices=len(reservation.service_ids)
                 if reservation.service_ids
                 else 0,
-                isReselling=any(line.is_reselling for line in reservation.reservation_line_ids),
-                )
+                isReselling=any(
+                    line.is_reselling for line in reservation.reservation_line_ids
+                ),
+            )
         return res
 
-    def _create_vals_from_params(self, reservation_vals, reservation_data, reservation_id):
+    def _create_vals_from_params(
+        self, reservation_vals, reservation_data, reservation_id
+    ):
         if reservation_data.preferredRoomId:
             reservation_vals.update(
                 {"preferred_room_id": reservation_data.preferredRoomId}
@@ -157,7 +161,6 @@ class PmsReservationService(Component):
             reservation_vals.update({"checkin": reservation_data.checkin})
         if reservation_data.checkout:
             reservation_vals.update({"checkout": reservation_data.checkout})
-
 
         return reservation_vals
 
@@ -231,8 +234,13 @@ class PmsReservationService(Component):
         )
 
         service_cmds = []
-        if reservation_data.boardServiceId is not None or reservation_data.boardServices is not None:
-            for service in reservation.service_ids.filtered(lambda x: x.is_board_service):
+        if (
+            reservation_data.boardServiceId is not None
+            or reservation_data.boardServices is not None
+        ):
+            for service in reservation.service_ids.filtered(
+                lambda x: x.is_board_service
+            ):
                 service_cmds.append((2, service.id))
 
         if reservation_data.boardServices is not None:
@@ -261,18 +269,19 @@ class PmsReservationService(Component):
                             "is_board_service": True,
                             "reservation_id": reservation_id,
                             "service_line_ids": service_line_cmds,
-                        }
+                        },
                     )
                 )
-        if service_cmds:
-            reservation_vals.update({"service_ids": service_cmds})
-        if reservation_vals:
-            if reservation_data.boardServices:
-                reservation.with_context(skip_compute_service_ids=True).write(reservation_vals)
-            else:
-                reservation.write(reservation_vals)
-                # print(reservation.service_ids.mapped("name"))
-
+        # if service_cmds:
+        #     reservation_vals.update({"service_ids": service_cmds})
+        # if reservation_vals:
+        #     if reservation_data.boardServices:
+        #         reservation.with_context(skip_compute_service_ids=True).write(
+        #             reservation_vals
+        #         )
+        #     else:
+        #         reservation.write(reservation_vals)
+        #         # print(reservation.service_ids.mapped("name"))
 
     def _get_reservation_lines_mapped(self, origin_data, reservation_line=False):
         # Return dict witch reservation.lines values (only modified if line exist,
@@ -542,7 +551,7 @@ class PmsReservationService(Component):
             pass
         else:
             # TODO Review state draft
-            #.filtered(
+            # .filtered(
             #     lambda ch: ch.state != "dummy"
             # )
             for checkin_partner in reservation.checkin_partner_ids:
