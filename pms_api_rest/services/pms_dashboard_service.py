@@ -716,7 +716,7 @@ class PmsDashboardServices(Component):
                     else None,
                     firstCheckin=str(folio.first_checkin),
                     lastCheckout=str(folio.last_checkout),
-                    createHour=folio.create_date.strftime("%H:%M"),
+                    createDate=folio.create_date.isoformat(),
                 )
             )
         return result_folios
