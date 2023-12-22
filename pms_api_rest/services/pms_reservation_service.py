@@ -217,15 +217,7 @@ class PmsReservationService(Component):
                         "reservation_line_ids": reservation_lines_vals,
                     }
                 )
-
-        if reservation_data.toAssign is not None and not reservation_data.toAssign:
-            reservation.action_assign()
-        if reservation_data.stateCode == "cancel":
-            reservation.action_cancel()
-        if reservation_data.stateCode == "confirm":
-            reservation.confirm()
-        if reservation_data.toCheckout is not None and reservation_data.toCheckout:
-            reservation.action_reservation_checkout()
+        self._update_reservation_state(reservation, reservation_data)
 
         reservation_vals = self._create_vals_from_params(
             reservation_vals,
@@ -272,16 +264,25 @@ class PmsReservationService(Component):
                         },
                     )
                 )
-        # if service_cmds:
-        #     reservation_vals.update({"service_ids": service_cmds})
-        # if reservation_vals:
-        #     if reservation_data.boardServices:
-        #         reservation.with_context(skip_compute_service_ids=True).write(
-        #             reservation_vals
-        #         )
-        #     else:
-        #         reservation.write(reservation_vals)
-        #         # print(reservation.service_ids.mapped("name"))
+        if service_cmds:
+            reservation_vals.update({"service_ids": service_cmds})
+
+        if reservation_vals and reservation_data.boardServices:
+            reservation.with_context(skip_compute_service_ids=True).write(
+                reservation_vals
+            )
+        elif reservation_vals:
+            reservation.write(reservation_vals)
+
+    def _update_reservation_state(self, reservation, reservation_data):
+        if reservation_data.toAssign is not None and not reservation_data.toAssign:
+            reservation.action_assign()
+        if reservation_data.stateCode == "cancel":
+            reservation.action_cancel()
+        if reservation_data.stateCode == "confirm":
+            reservation.confirm()
+        if reservation_data.toCheckout is not None and reservation_data.toCheckout:
+            reservation.action_reservation_checkout()
 
     def _get_reservation_lines_mapped(self, origin_data, reservation_line=False):
         # Return dict witch reservation.lines values (only modified if line exist,
