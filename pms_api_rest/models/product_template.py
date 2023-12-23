@@ -1,8 +1,8 @@
 from odoo import fields, models
 
 
-class ProductProduct(models.Model):
-    _inherit = "product.product"
+class ProductTemplate(models.Model):
+    _inherit = "product.template"
 
     channel_available = fields.Boolean(
         string="Sale Channel Available",
