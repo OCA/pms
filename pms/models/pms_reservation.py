@@ -327,6 +327,7 @@ class PmsReservation(models.Model):
         default=lambda self: self._get_default_segmentation(),
         comodel_name="res.partner.category",
         ondelete="restrict",
+        domain="[('is_used_in_checkin', '=', True)]",
     )
     currency_id = fields.Many2one(
         string="Currency",

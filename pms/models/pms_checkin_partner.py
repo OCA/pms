@@ -93,6 +93,7 @@ class PmsCheckinPartner(models.Model):
         help="Segmentation tags to classify checkin partners",
         readonly=True,
         related="reservation_id.segmentation_ids",
+        domain="[('is_used_in_checkin', '=', True)]",
     )
     checkin = fields.Date(
         string="Checkin",
