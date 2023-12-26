@@ -27,7 +27,7 @@ class PmsPartnerCategoriesService(Component):
         for category in (
             self.env["res.partner.category"]
             .with_context(lang=self.env.user.lang)
-            .search([])
+            .search([("is_used_in_checkin", "=", True)])
         ):
             result_categories.append(
                 ResPartnerCategoryInfo(
