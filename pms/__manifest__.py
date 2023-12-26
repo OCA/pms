@@ -102,6 +102,7 @@
         "views/payment_acquirer_views.xml",
         "views/account_analytic_distribution_view.xml",
         "views/account_analytic_line_view.xml",
+        "views/res_partner_category.xml",
     ],
     "demo": [
         "demo/pms_master_data_no_update.xml",

@@ -50,6 +50,7 @@ class BookingDuplicate(models.TransientModel):
         compute="_compute_segmentation_ids",
         store=True,
         readonly=False,
+        domain="[('is_used_in_checkin', '=', True)]",
     )
     partner_name = fields.Char(
         string="Partner name",

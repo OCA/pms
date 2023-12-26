@@ -50,3 +50,4 @@ from . import pms_team_member
 from . import ir_pms_property
 from . import payment_acquirer
 from . import account_analytic_line
+from . import res_partner_category

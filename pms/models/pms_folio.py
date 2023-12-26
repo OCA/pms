@@ -356,6 +356,7 @@ class PmsFolio(models.Model):
         help="Segmentation tags to classify folios",
         comodel_name="res.partner.category",
         ondelete="restrict",
+        domain="[('is_used_in_checkin', '=', True)]",
     )
     reservation_type = fields.Selection(
         string="Type",
