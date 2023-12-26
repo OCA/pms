@@ -40,6 +40,7 @@ class BookingEngine(models.TransientModel):
         help="Partner Tags",
         ondelete="restrict",
         comodel_name="res.partner.category",
+        domain="[('is_used_in_checkin', '=', True)]",
     )
     partner_name = fields.Char(
         string="Partner name",
