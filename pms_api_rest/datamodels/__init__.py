@@ -65,3 +65,4 @@ from . import feed_post
 
 from . import pms_wizard_state
 
+from . import pms_ocr
