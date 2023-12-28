@@ -4,5 +4,6 @@ jose
 jwt
 marshmallow
 pycountry
+regula.documentreader.webclient
 simplejson
 xlrd
