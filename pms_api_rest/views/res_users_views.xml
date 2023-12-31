@@ -17,6 +17,18 @@
                             options="{'no_create': True}"
                             domain="['&amp;',('model_id', '=', 'pms.availability.plan.rule'), ('name', 'in', ('min_stay', 'max_stay', 'quota',  'max_stay_arrival', 'closed_arrival', 'closed', 'closed_departure', 'min_stay_arrival', 'max_avail'))]"
                         />
+                        <field
+                            name="pms_api_client"
+                            string="PMS API Client"
+                            help="This user is used to PMS API's client (channel managers, precheckin apps, booking engines, etc.)"
+                        />
+                        <field
+                            name="pms_api_payment_journal_id"
+                            string="PMS API Payment Journal"
+                            domain="[('type', '=', 'bank')]"
+                            help="This journal is used to PMS API's client (channel managers, precheckin apps, booking engines, etc.)"
+                            attrs="{'invisible': [('pms_api_client', '=', False)]}"
+                        />
                     </group>
                 </group>
             </xpath>
