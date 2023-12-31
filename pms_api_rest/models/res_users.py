@@ -22,6 +22,17 @@ class ResUsers(models.Model):
         readonly=False,
     )
 
+    pms_api_client = fields.Boolean(
+        string="PMS API Client",
+        help="PMS API Client",
+    )
+
+    pms_api_payment_journal_id = fields.Many2one(
+        string="Payment Journal",
+        help="Payment Journal",
+        comodel_name="account.journal",
+    )
+
     def _get_default_avail_rule_fields(self):
         default_avail_rule_fields = self.env["ir.model.fields"].search(
             [
