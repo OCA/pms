@@ -21,6 +21,7 @@
         "python": ["jwt", "simplejson", "marshmallow", "jose"],
     },
     "data": [
+        "security/ir.model.access.csv",
         "data/sql_reports.xml",
         "data/auth_jwt_validator.xml",
         "data/pms_app_reset_password_template.xml",
