@@ -90,6 +90,22 @@
                     </group>
                 </group>
             </xpath>
+            <xpath expr="//field[@name='default_departure_hour']" position="after">
+                <group string="OTAs API Configuration">
+                    <field name="ota_property_settings_ids">
+                        <tree name="OTAs" editable="bottom">
+                            <field name="pms_property_id" invisible="1" />
+                            <field name="agency_id" options="{'no_create': True}" />
+                            <field name="pms_api_alowed_payments" />
+                            <field
+                                name="pms_api_payment_journal_id"
+                                options="{'no_create': True}"
+                            />
+                            <field name="pms_api_payment_identifier" />
+                        </tree>
+                    </field>
+                </group>
+            </xpath>
         </field>
     </record>
 </odoo>

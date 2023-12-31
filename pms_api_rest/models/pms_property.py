@@ -93,3 +93,10 @@ class PmsProperty(models.Model):
         string="Hotel image",
         store=True,
     )
+
+    ota_property_settings_ids = fields.One2many(
+        string="OTA Property Settings",
+        help="OTA Property Settings",
+        comodel_name="ota.property.settings",
+        inverse_name="pms_property_id",
+    )
