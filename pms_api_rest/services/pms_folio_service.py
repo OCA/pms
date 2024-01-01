@@ -745,6 +745,16 @@ class PmsFolioService(Component):
                 "auto_delete": False,
             }
             template.send_mail(folio.id, force_send=True, email_values=email_values)
+        # Mapped room types and dates to call force_api_update_avail
+        mapped_room_types = folio.reservation_ids.mapped("room_type_id")
+        date_from = min(folio.reservation_ids.mapped("checkin"))
+        date_to = max(folio.reservation_ids.mapped("checkout"))
+        self.force_api_update_avail(
+            pms_property_id=pms_folio_info.pmsPropertyId,
+            room_type_ids=mapped_room_types.ids,
+            date_from=date_from,
+            date_to=date_to,
+        )
         return folio.id
 
     def compute_transactions(self, folio, transactions):
@@ -1597,6 +1607,16 @@ class PmsFolioService(Component):
             ).write(folio_vals)
         if pms_folio_info.transactions:
             self.compute_transactions(folio, pms_folio_info.transactions)
+        # Force update availability
+        mapped_room_types = folio.reservation_ids.mapped("room_type_id")
+        date_from = min(folio.reservation_ids.mapped("checkin"))
+        date_to = max(folio.reservation_ids.mapped("checkout"))
+        self.force_api_update_avail(
+            pms_property_id=pms_folio_info.pmsPropertyId,
+            room_type_ids=mapped_room_types.ids,
+            date_from=date_from,
+            date_to=date_to,
+        )
 
     def wrapper_reservations(self, folio, info_reservations):
         """
@@ -1683,3 +1703,24 @@ class PmsFolioService(Component):
                 )
             )
         return cmds
+
+    def force_api_update_avail(
+        self, pms_property_id, room_type_ids, date_from, date_to
+    ):
+        """
+        This method is used to force the update of the availability
+        of the given room types in the given dates
+        It is used to override potential availability changes on the channel made unilaterally,
+        for example, upon entering or canceling a reservation.
+        """
+        if not room_type_ids:
+            return False
+        for room_type_id in room_type_ids:
+            pms_property_id = self.env["pms.property"].browse(pms_property_id)
+            self.env["pms.property"].neobookings_push_batch(
+                call_type="availability",  # 'availability', 'prices', 'restrictions'
+                date_from=date_from.strftime("%Y-%m-%d"),  # 'YYYY-MM-DD'
+                date_to=date_to.strftime("%Y-%m-%d"),  # 'YYYY-MM-DD'
+                filter_room_type_id=room_type_id,
+                pms_property_codes=[pms_property_id.pms_property_code],
+            )
