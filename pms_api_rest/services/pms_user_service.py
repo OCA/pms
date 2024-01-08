@@ -12,6 +12,8 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
+from ..pms_api_rest_utils import url_image_pms_api_rest
+
 
 class PmsRoomTypeClassService(Component):
     _inherit = "base.rest.service"
@@ -42,6 +44,9 @@ class PmsRoomTypeClassService(Component):
                 userEmail=user.email if user.email else "",
                 userPhone=user.phone if user.phone else "",
                 userImageBase64=user.image_1920 if user.image_1920 else "",
+                userImageUrl=url_image_pms_api_rest(
+                    "res.partner", user.partner_id.id, "image_1024"
+                ),
                 isNewInterfaceUser=user.is_new_interface_app_user,
             )
 
