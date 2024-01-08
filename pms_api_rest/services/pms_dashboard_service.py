@@ -685,6 +685,7 @@ class PmsDashboardServices(Component):
             [
                 ("first_checkin", ">=", datetime.now().date()),
                 ("pms_property_id", "=", pms_folio_search_param.pmsPropertyId),
+                ("reservation_type", "=", "normal"),
             ],
             limit=pms_folio_search_param.limit,
             offset=pms_folio_search_param.offset,
@@ -738,5 +739,6 @@ class PmsDashboardServices(Component):
             [
                 ("first_checkin", ">=", datetime.now().date()),
                 ("pms_property_id", "=", pms_folio_search_param.pmsPropertyId),
+                ("reservation_type", "=", "normal"),
             ],
         )
