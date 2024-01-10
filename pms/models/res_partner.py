@@ -760,6 +760,16 @@ class ResPartner(models.Model):
                     any([not partner.vat for partner in partners]) if partners else True
                 )
             )
+            or vals.get("country_id") is False
+            or vals.get("country_id") == ""
+            or (
+                "country_id" not in vals
+                and (
+                    any([not partner.country_id for partner in partners])
+                    if partners
+                    else True
+                )
+            )
         ):
             return True
         return False
