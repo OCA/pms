@@ -655,8 +655,13 @@ class PmsFolioService(Component):
                         new_service.service_line_ids.price_unit = service.priceUnit
             # Force compute board service default if not board service is set
             # REVIEW: Precharge the board service in the app form?
-            if not reservation_record.board_service_room_id:
-                reservation_record._compute_board_service_room_id()
+            if (
+                not reservation_record.board_service_room_id
+                or reservation_record.board_service_room_id == 0
+            ):
+                reservation_record.with_context(
+                    skip_compute_service_ids=False
+                )._compute_board_service_room_id()
         if pms_folio_info.transactions:
             self.compute_transactions(folio, pms_folio_info.transactions)
         # REVIEW: analyze how to integrate the sending of mails from the API
@@ -1403,10 +1408,10 @@ class PmsFolioService(Component):
         but the external app uses the board service id and the room type id.
         Returns the board service room type id for the given board service and room type
         """
-        if self.get_api_client_type() == "internal_app":
-            return board_service_id
         board_service = self.env["pms.board.service"].browse(board_service_id)
         room_type = self.env["pms.room.type"].browse(room_type_id)
+        if self.get_api_client_type() == "internal_app":
+            return board_service_id
         if board_service and room_type:
             return (
                 self.env["pms.board.service.room.type"]
