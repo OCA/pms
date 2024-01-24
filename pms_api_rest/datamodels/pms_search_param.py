@@ -9,3 +9,4 @@ class PmsSearchParam(Datamodel):
     pmsPropertyId = fields.Integer(required=False, allow_none=True)
     pmsPropertyIds = fields.List(fields.Integer(), required=False)
     toAssign = fields.Boolean(required=False, allow_none=True)
+    ids = fields.List(fields.Integer(), required=False)
