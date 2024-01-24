@@ -6,6 +6,8 @@ from odoo.addons.datamodel.core import Datamodel
 class PmsReservationLineSearchParam(Datamodel):
     _name = "pms.reservation.line.search.param"
     date = fields.String(required=False, allow_none=False)
+    dateFrom = fields.String(required=False, allow_none=False)
+    dateTo = fields.String(required=False, allow_none=False)
     reservationId = fields.Integer(required=False, allow_none=False)
     pmsPropertyId = fields.Integer(required=False, allow_none=False)
     roomId = fields.Integer(required=False, allow_none=False)
@@ -23,3 +25,6 @@ class PmsReservationLineInfo(Datamodel):
     reservationId = fields.Integer(required=False, allow_none=False)
     pmsPropertyId = fields.Integer(required=False, allow_none=False)
     isReselling = fields.Boolean(required=False, allow_none=True)
+    reservationType = fields.String(required=False, allow_none=True)
+    state = fields.String(required=False, allow_none=True)
+    isSplitted = fields.Boolean(required=False, allow_none=True)
