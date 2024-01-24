@@ -673,6 +673,8 @@ class PmsReservationService(Component):
         if pms_search_param.toAssign:
             domain.append(("to_assign", "=", True))
             domain.append(("checkin", ">=", fields.Date.today()))
+        if pms_search_param.ids:
+            domain.append(("id", "in", pms_search_param.ids))
         reservations = self.env["pms.reservation"].search(domain)
         PmsReservationInfo = self.env.datamodels["pms.reservation.info"]
         if not reservations:
