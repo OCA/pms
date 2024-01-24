@@ -13,6 +13,7 @@ class PmsFolioSearchParam(Datamodel):
     filter = fields.String(required=False, allow_none=True)
     filterByState = fields.String(required=False, allow_none=True)
     last = fields.Boolean(required=False, allow_none=True)
+    ids = fields.List(fields.Integer(), required=False)
 
 
 class PmsFolioInfo(Datamodel):
