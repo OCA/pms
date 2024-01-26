@@ -61,7 +61,6 @@ class PmsLoginService(Component):
                 "iss": "pms",
                 "exp": timestamp_expire_in_a_min,
                 "username": user.username,
-                "password": user.password,
             },
             key=validator.secret_key,
             algorithm=validator.secret_algorithm,
