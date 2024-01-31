@@ -235,7 +235,7 @@
 
                     <widget
                         name="web_ribbon"
-                        title="Out of Service"
+                        title="Out of Order"
                         bg_color="bg-dark"
                         attrs="{'invisible': [('reservation_type', 'not in', 'out')]}"
                     />

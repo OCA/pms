@@ -11,7 +11,7 @@
             <field name="checkout" eval="DateTime.today()" />
             <field name="closure_reason_id" ref="pms_room_closure_reason_vip_privacy" />
             <field
-            name="out_service_description"
+            name="out_order_description"
         >Extra privacy for school field trip.</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
@@ -24,7 +24,7 @@
             <field name="checkin" eval="DateTime.today() + timedelta(-3)" />
             <field name="checkout" eval="DateTime.today() + timedelta(1)" />
             <field name="closure_reason_id" ref="pms_room_closure_reason_maintenance" />
-            <field name="out_service_description">Carpet replacement.</field>
+            <field name="out_order_description">Carpet replacement.</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
         </record>
@@ -36,7 +36,7 @@
             <field name="checkin" eval="DateTime.today() + timedelta(-1)" />
             <field name="checkout" eval="DateTime.today() + timedelta(1)" />
             <field name="closure_reason_id" ref="pms_room_closure_reason_maintenance" />
-            <field name="out_service_description">Carpet replacement.</field>
+            <field name="out_order_description">Carpet replacement.</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
         </record>
@@ -49,7 +49,7 @@
             <field name="checkin" eval="DateTime.today() + timedelta(2)" />
             <field name="checkout" eval="DateTime.today() + timedelta(7)" />
             <field name="closure_reason_id" ref="pms_room_closure_reason_maintenance" />
-            <field name="out_service_description">Wall painting.</field>
+            <field name="out_order_description">Wall painting.</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
         </record>

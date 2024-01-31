@@ -283,7 +283,7 @@
 
                     <widget
                         name="web_ribbon"
-                        title="Out of Service"
+                        title="Out of Order"
                         bg_color="bg-dark"
                         attrs="{'invisible': [('reservation_type', 'not in', 'out')]}"
                     />
@@ -379,8 +379,8 @@
                                 attrs="{'invisible':[('reservation_type','in',('out'))]}"
                             />
                             <field
-                                name="out_service_description"
-                                placeholder="Out service description"
+                                name="out_order_description"
+                                placeholder="Out order description"
                                 attrs="{'invisible':[('reservation_type','not in',('out'))]}"
                             />
                             <field
@@ -1051,8 +1051,8 @@
                     domain="[('reservation_type','in',['staff'])]"
                 />
                 <filter
-                    string="Out of Service"
-                    name="out_of_service"
+                    string="Out of Order"
+                    name="out_of_order"
                     domain="[('reservation_type','in',['out'])]"
                 />
                 <group expand="0" string="Group By">

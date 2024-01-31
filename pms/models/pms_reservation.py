@@ -165,10 +165,10 @@ class PmsReservation(models.Model):
         check_pms_properties=True,
         readonly=False,
     )
-    out_service_description = fields.Text(
-        string="Cause of out of service",
-        help="Indicates the cause of out of service",
-        related="folio_id.out_service_description",
+    out_order_description = fields.Text(
+        string="Cause of out of order",
+        help="Indicates the cause of out of order",
+        related="folio_id.out_order_description",
         readonly=False,
     )
     company_id = fields.Many2one(
@@ -399,11 +399,11 @@ class PmsReservation(models.Model):
     )
     reservation_type = fields.Selection(
         string="Reservation Type",
-        help="Type of reservations. It can be 'normal', 'staff' or 'out of service",
+        help="Type of reservations. It can be 'normal', 'staff' or 'out of order",
         store=True,
         readonly=False,
         compute="_compute_reservation_type",
-        selection=[("normal", "Normal"), ("staff", "Staff"), ("out", "Out of Service")],
+        selection=[("normal", "Normal"), ("staff", "Staff"), ("out", "Out of Order")],
     )
     splitted = fields.Boolean(
         string="Splitted",
@@ -1477,7 +1477,7 @@ class PmsReservation(models.Model):
         "partner_id.name",
         "agency_id",
         "reservation_type",
-        "out_service_description",
+        "out_order_description",
     )
     def _compute_partner_name(self):
         for record in self:
@@ -1849,6 +1849,7 @@ class PmsReservation(models.Model):
                 not record.checkin_partner_ids.filtered(lambda c: c.state == "onboard")
                 and record.state == "onboard"
                 and record.reservation_type != "out"
+                and record.preferred_room_id.state == "ready"
             ):
                 raise ValidationError(
                     _("No person from reserve %s has arrived", record.name)
@@ -1895,7 +1896,7 @@ class PmsReservation(models.Model):
                     raise ValidationError(
                         _(
                             "A closure reason is mandatory when reservation"
-                            " type is 'out of service'"
+                            " type is 'out of order'"
                         )
                     )
 
@@ -2181,7 +2182,7 @@ class PmsReservation(models.Model):
             raise ValidationError(
                 _(
                     "A closure reason is mandatory when reservation"
-                    " type is 'out of service'"
+                    " type is 'out of order'"
                 )
             )
 
@@ -2486,6 +2487,7 @@ class PmsReservation(models.Model):
                     reservation.autocheckout(reservation)
             else:
                 reservation.state = "done"
+                reservation.preferred_room_id.room_state = "not_ready"
 
     def preview_reservation(self):
         self.ensure_one()

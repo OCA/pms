@@ -246,7 +246,7 @@
                     'state': 'confirm',
                     'reservation_type': 'out',
                     'closure_reason_id': ref('pms_room_closure_reason_maintenance'),
-                    'out_service_description': 'Change of lighting',
+                    'out_order_description': 'Change of lighting',
                     })]"
         />
         </record>
@@ -407,7 +407,7 @@
                     'state': 'confirm',
                     'reservation_type': 'out',
                     'closure_reason_id': ref('pms_room_closure_reason_vip_privacy'),
-                    'out_service_description': 'Room next to noisy guests.',
+                    'out_order_description': 'Room next to noisy guests.',
                     })]"
         />
         </record>

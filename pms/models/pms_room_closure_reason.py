@@ -5,7 +5,7 @@ from odoo import fields, models
 
 class RoomClosureReason(models.Model):
     _name = "room.closure.reason"
-    _description = "Cause of out of service"
+    _description = "Cause of out of order"
 
     name = fields.Char(
         string="Name",

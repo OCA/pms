@@ -347,9 +347,9 @@ class PmsFolio(models.Model):
         index=True,
         check_pms_properties=True,
     )
-    out_service_description = fields.Text(
-        string="Cause of out of service",
-        help="Indicates the cause of out of service",
+    out_order_description = fields.Text(
+        string="Cause of out of order",
+        help="Indicates the cause of out of order",
     )
     segmentation_ids = fields.Many2many(
         string="Segmentation",
@@ -360,9 +360,9 @@ class PmsFolio(models.Model):
     reservation_type = fields.Selection(
         string="Type",
         help="The type of the reservation. "
-        "Can be 'Normal', 'Staff' or 'Out of Service'",
+        "Can be 'Normal', 'Staff' or 'Out of Order'",
         default=lambda *a: "normal",
-        selection=[("normal", "Normal"), ("staff", "Staff"), ("out", "Out of Service")],
+        selection=[("normal", "Normal"), ("staff", "Staff"), ("out", "Out of Order")],
     )
     date_order = fields.Datetime(
         string="Order Date",
