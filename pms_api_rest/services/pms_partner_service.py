@@ -196,6 +196,19 @@ class PmsPartnerService(Component):
                 .filtered(lambda x: x.checkout)
                 .mapped("checkout")
             )
+            doc_number = False
+            document_number = False
+            document_expedition_date = False
+            document_type = False
+            if partner.id_numbers:
+                doc_number = partner.id_numbers[0]
+            if doc_number:
+                if doc_number.name:
+                    document_number = doc_number.name
+                if doc_number.category_id:
+                    document_type = doc_number.category_id.id
+                if doc_number.valid_from:
+                    document_expedition_date = doc_number.valid_from.strftime("%d/%m/%Y")
             result_partners.append(
                 PmsPartnerInfo(
                     id=partner.id,
@@ -242,6 +255,8 @@ class PmsPartnerService(Component):
                     residenceCountryId=partner.residence_country_id.id
                     if partner.residence_country_id
                     else None,
+                    documentNumber=document_number if document_number else None,
+                    documentType=document_type if document_type else None,
                     vatNumber=partner.vat
                     if partner.vat
                     else partner.aeat_identification
@@ -251,6 +266,9 @@ class PmsPartnerService(Component):
                     if partner.vat
                     else partner.aeat_identification_type
                     if partner.aeat_identification_type
+                    else None,
+                    documentExpeditionDate=document_expedition_date
+                    if document_expedition_date
                     else None,
                     comment=partner.comment if partner.comment else None,
                     language=partner.lang if partner.lang else None,
