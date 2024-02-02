@@ -30,6 +30,7 @@ class PmsReservationShortInfo(Datamodel):
     numServices = fields.Integer(required=False, allow_none=True)
     toAssign = fields.Boolean(required=False, allow_none=True)
     overbooking = fields.Boolean(required=False, allow_none=True)
+    isBlocked = fields.Boolean(required=False, allow_none=True)
 
 
 class PmsReservationInfo(Datamodel):
@@ -92,6 +93,7 @@ class PmsReservationInfo(Datamodel):
     nights = fields.Integer(required=False, allow_none=True)
     isReselling = fields.Boolean(required=False, allow_none=True)
     createdBy = fields.String(required=False, allow_none=True)
+    isBlocked = fields.Boolean(required=False, allow_none=True)
 
     # TODO: Refact
     # messages = fields.List(fields.Dict(required=False, allow_none=True))

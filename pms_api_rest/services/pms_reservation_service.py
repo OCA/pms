@@ -133,7 +133,7 @@ class PmsReservationService(Component):
                 isReselling=any(
                     line.is_reselling for line in reservation.reservation_line_ids
                 ),
-
+                isBlocked=reservation.blocked,
             )
         return res
 

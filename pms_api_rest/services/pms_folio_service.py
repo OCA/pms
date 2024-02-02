@@ -308,6 +308,7 @@ class PmsFolioService(Component):
                             line.is_reselling
                             for line in reservation.reservation_line_ids
                         ),
+                        "isBlocked": reservation.blocked
                     }
                 )
             result_folios.append(
@@ -559,6 +560,7 @@ class PmsFolioService(Component):
                             else 0,
                             toAssign=reservation.to_assign,
                             overbooking=reservation.overbooking,
+                            isBlocked=reservation.blocked
                         )
                     )
 
