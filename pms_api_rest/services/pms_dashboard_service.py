@@ -30,6 +30,7 @@ class PmsDashboardServices(Component):
         dateFrom = fields.Date.from_string(pms_dashboard_search_param.dateFrom)
         dateTo = fields.Date.from_string(pms_dashboard_search_param.dateTo)
 
+        # If you modify this SQL you must modify the get_folios service in pms_folio_service.py
         self.env.cr.execute(
             """
             SELECT
