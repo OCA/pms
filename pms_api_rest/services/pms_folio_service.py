@@ -150,7 +150,63 @@ class PmsFolioService(Component):
                 ]
                 domain_filter.append(expression.OR(subdomains))
         if folio_search_param.filterByState:
-            if folio_search_param.filterByState == "byCheckin":
+            if folio_search_param.filterByState == "checkinYesterday":
+                subdomains = [
+                    [("state", "in", ("confirm", "arrival_delayed"))],
+                    [("checkin", "=", fields.Date.today() - timedelta(days=1))],
+                    [("reservation_type", "!=", "out")],
+                ]
+                domain_filter.append(expression.AND(subdomains))
+            elif folio_search_param.filterByState == "pendingCheckinToday":
+                subdomains = [
+                    [("state", "in", ("confirm", "arrival_delayed"))],
+                    [("checkin", "=", fields.Date.today())],
+                    [("reservation_type", "!=", "out")],
+                ]
+                domain_filter.append(expression.AND(subdomains))
+            elif folio_search_param.filterByState == "completedCheckinsToday":
+                subdomains = [
+                    [("state", "=", "onboard")],
+                    [("checkin", "=", fields.Date.today())],
+                    [("reservation_type", "!=", "out")],
+                ]
+                domain_filter.append(expression.AND(subdomains))
+            elif folio_search_param.filterByState == "pendingCheckinsTomorrow":
+                subdomains = [
+                    [("state", "=", "confirm")],
+                    [("checkin", "=", fields.Date.today() + timedelta(days=1))],
+                    [("reservation_type", "!=", "out")],
+                ]
+                domain_filter.append(expression.AND(subdomains))
+            elif folio_search_param.filterByState == "pendingCheckoutsToday":
+                subdomains = [
+                    [("state", "in", ("onboard", "departure_delayed"))],
+                    [("checkout", "=", fields.Date.today())],
+                    [("reservation_type", "!=", "out")],
+                ]
+                domain_filter.append(expression.AND(subdomains))
+            elif folio_search_param.filterByState == "pendingCheckoutsTomorrow":
+                subdomains = [
+                    [("state", "in", ("onboard", "departure_delayed"))],
+                    [("checkout", "=", fields.Date.today() + timedelta(days=1))],
+                    [("reservation_type", "!=", "out")],
+                ]
+                domain_filter.append(expression.AND(subdomains))
+            elif folio_search_param.filterByState == "completedCheckoutsToday":
+                subdomains = [
+                    [("state", "=", "done")],
+                    [("checkout", "=", fields.Date.today())],
+                    [("reservation_type", "!=", "out")],
+                ]
+                domain_filter.append(expression.AND(subdomains))
+            elif folio_search_param.filterByState == "completedCheckoutsTomorrow":
+                subdomains = [
+                    [("state", "=", "done")],
+                    [("checkout", "=", fields.Date.today() + timedelta(days=1))],
+                    [("reservation_type", "!=", "out")],
+                ]
+                domain_filter.append(expression.AND(subdomains))
+            elif folio_search_param.filterByState == "byCheckin":
                 subdomains = [
                     [("state", "in", ("confirm", "arrival_delayed"))],
                     [("checkin", "<=", fields.Date.today())],
