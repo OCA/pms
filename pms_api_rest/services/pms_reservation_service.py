@@ -103,6 +103,7 @@ class PmsReservationService(Component):
                 isSplitted=reservation.splitted,
                 pendingCheckinData=reservation.pending_checkin_data,
                 createDate=reservation.create_date.isoformat(),
+                createdBy=reservation.create_uid.name,
                 segmentationId=reservation.segmentation_ids[0].id
                 if reservation.segmentation_ids
                 else None,
@@ -130,6 +131,7 @@ class PmsReservationService(Component):
                 isReselling=any(
                     line.is_reselling for line in reservation.reservation_line_ids
                 ),
+
             )
         return res
 
