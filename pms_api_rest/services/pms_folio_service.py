@@ -62,6 +62,7 @@ class PmsFolioService(Component):
                 firstCheckin=str(folio.first_checkin),
                 lastCheckout=str(folio.last_checkout),
                 createDate=folio.create_date.isoformat(),
+                createdBy=folio.create_uid.name,
                 internalComment=folio.internal_comment
                 if folio.internal_comment
                 else None,
