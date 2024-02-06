@@ -29,6 +29,8 @@ class PmsFolioInfo(Datamodel):
     firstCheckin = fields.String(required=False, allow_none=True)
     lastCheckout = fields.String(required=False, allow_none=True)
     createDate = fields.String(required=False, allow_none=True)
+    createdBy = fields.String(required=False, allow_none=True)
+
     pmsPropertyId = fields.Integer(required=False, allow_none=True)
     partnerId = fields.Integer(required=False, allow_none=True)
     reservations = fields.List(
