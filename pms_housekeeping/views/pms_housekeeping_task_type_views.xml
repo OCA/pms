@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="view_pms_housekeeping_task_type_tree" model="ir.ui.view">
+            <field name="name">pms.housekeeping.task.type.tree</field>
+            <field name="model">pms.housekeeping.task.type</field>
+            <field name="arch" type="xml">
+                <tree string="Housekeeping Task Type">
+                    <field name="name" />
+                    <field name="description" />
+                    <field name="is_automated" />
+                    <field name="clean_event" />
+                    <field name="days_after_clean_event" />
+                    <field name="housekeepers" />
+                    <field name="parent_id" />
+                </tree>
+            </field>
+        </record>
+        <record id="view_pms_housekeeping_task_type_form" model="ir.ui.view">
+            <field name="name">pms.housekeeping.task.type.form</field>
+            <field name="model">pms.housekeeping.task.type</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Housekeeping Task Type">
+                    <group>
+                        <field name="name" />
+                        <field name="description" />
+                        <field name="is_automated" />
+                        <field name="clean_event" />
+                        <field
+                            name="days_after_clean_event"
+                            attrs="{'invisible': [('clean_event', '!=', 'overnight'), ('clean_event', '!=', 'empty')]}"
+                        />
+                        <field name="housekeepers" widget="many2many_tags" />
+                        <field name="parent_id" widget="many2many_tags" />
+                    </group>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>
