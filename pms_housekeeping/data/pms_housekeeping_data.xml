@@ -1,0 +1,6 @@
+<odoo noupdate="1">
+    <record id="housekeeping_job_id" model="hr.job">
+        <field name="name">Housekeeper</field>
+        <field name="state">open</field>
+    </record>
+</odoo>
