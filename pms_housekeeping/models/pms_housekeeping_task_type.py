@@ -7,19 +7,13 @@ class PmsHouseKeepingTaskType(models.Model):
     name = fields.Char(string="Name", required=True)
     description = fields.Text(string="Description")
     is_automated = fields.Boolean(string="Is Automated")
-    clean_event = fields.Selection(
-        selection=[
-            ("overnight", "Overnight"),
-            ("checkin", "Checkin"),
-            ("checkout", "Checkout"),
-            ("empty", "Empty"),
-            ("priority", "Priority"),
-        ],
-        string="Clean When",
-        required=True,
-        default="overnight",
-    )
-    days_after_clean_event = fields.Integer(string="Days After Clean Event")
+    is_overnight = fields.Boolean(string="Overnight")
+    is_empty = fields.Boolean(string="Empty")
+    is_checkin = fields.Boolean(string="Checkin")
+    is_checkout = fields.Boolean(string="Checkout")
+    priority = fields.Integer(string="Priority", default=0)
+    days_after_clean_overnight = fields.Integer(string="Days After Clean",)
+    days_after_clean_empty = fields.Integer(string="Days After Clean", )
     housekeepers = fields.Many2many(
         comodel_name="hr.employee",
         relation="pms_housekeeping_task_type_hr_employee_rel",

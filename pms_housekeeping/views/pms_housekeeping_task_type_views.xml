@@ -6,13 +6,18 @@
             <field name="model">pms.housekeeping.task.type</field>
             <field name="arch" type="xml">
                 <tree string="Housekeeping Task Type">
-                    <field name="name" />
+                    <field name="name"/>
+                    <field name="is_automated"/>
+                    <field name="housekeepers" widget="many2many_tags" />
+                    <field name="parent_id" widget="many2many_tags" />
                     <field name="description" />
-                    <field name="is_automated" />
-                    <field name="clean_event" />
-                    <field name="days_after_clean_event" />
-                    <field name="housekeepers" />
-                    <field name="parent_id" />
+                    <field name="priority" attrs="{'invisible': [('is_automated', '==', False)]}"/>
+                    <field name="is_overnight" attrs="{'invisible': [('is_automated', '==', False)]}"/>
+                    <field name="is_empty" attrs="{'invisible': [('is_automated', '==', False)]}"/>
+                    <field name="is_checkin" attrs="{'invisible': [('is_automated', '==', False)]}"/>
+                    <field name="is_checkout" attrs="{'invisible': [('is_automated', '==', False)]}"/>
+                    <field name="days_after_clean_overnight" attrs="{'invisible': [('is_automated', '==', False), ('is_overnight', '==', False)]}"/>
+                    <field name="days_after_clean_empty" attrs="{'invisible': [('is_automated', '==', False), ('is_empty', '==', False)]}"/>
                 </tree>
             </field>
         </record>
@@ -23,16 +28,18 @@
             <field name="arch" type="xml">
                 <form string="Housekeeping Task Type">
                     <group>
-                        <field name="name" />
-                        <field name="description" />
-                        <field name="is_automated" />
-                        <field name="clean_event" />
-                        <field
-                            name="days_after_clean_event"
-                            attrs="{'invisible': [('clean_event', '!=', 'overnight'), ('clean_event', '!=', 'empty')]}"
-                        />
+                        <field name="name"/>
+                        <field name="is_automated"/>
                         <field name="housekeepers" widget="many2many_tags" />
                         <field name="parent_id" widget="many2many_tags" />
+                        <field name="description" />
+                        <field name="priority" attrs="{'invisible': [('is_automated', '==', False)]}"/>
+                        <field name="is_overnight" attrs="{'invisible': [('is_automated', '==', False)]}"/>
+                        <field name="is_empty" attrs="{'invisible': [('is_automated', '==', False)]}"/>
+                        <field name="is_checkin" attrs="{'invisible': [('is_automated', '==', False)]}"/>
+                        <field name="is_checkout" attrs="{'invisible': [('is_automated', '==', False)]}"/>
+                        <field name="days_after_clean_overnight" attrs="{'invisible': [('is_automated', '==', False), ('is_overnight', '==', False)]}"/>
+                        <field name="days_after_clean_empty" attrs="{'invisible': [('is_automated', '==', False), ('is_empty', '==', False)]}"/>
                     </group>
                 </form>
             </field>
