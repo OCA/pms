@@ -6,6 +6,11 @@
             <field name="res_model">pms.housekeeping.task.type</field>
             <field name="view_mode">tree,form</field>
         </record>
+        <record model="ir.actions.act_window" id="action_pms_housekeeping_task">
+            <field name="name">Housekeeping Task</field>
+            <field name="res_model">pms.housekeeping.task</field>
+            <field name="view_mode">tree,form</field>
+        </record>
         <menuitem
             name="Housekeeping"
             id="menu_action_pms_housekeeping"
@@ -13,10 +18,17 @@
             parent="pms.pms_management_menu"
         />
         <menuitem
-            name="Task Type"
+            name="Task Types"
             id="menu_action_pms_housekeeping_view_task_type"
             action="pms_housekeeping.action_pms_housekeeping_task_type"
             sequence="10"
+            parent="pms_housekeeping.menu_action_pms_housekeeping"
+        />
+        <menuitem
+            name="Tasks"
+            id="menu_action_pms_housekeeping_view_task"
+            action="pms_housekeeping.action_pms_housekeeping_task"
+            sequence="9"
             parent="pms_housekeeping.menu_action_pms_housekeeping"
         />
     </data>
