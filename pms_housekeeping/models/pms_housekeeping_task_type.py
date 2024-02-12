@@ -12,8 +12,8 @@ class PmsHouseKeepingTaskType(models.Model):
     is_checkin = fields.Boolean(string="Checkin")
     is_checkout = fields.Boolean(string="Checkout")
     priority = fields.Integer(string="Priority", default=0)
-    days_after_clean_overnight = fields.Integer(string="Days After Clean",)
-    days_after_clean_empty = fields.Integer(string="Days After Clean", )
+    days_after_clean_overnight = fields.Integer(string="Days After Clean Overnight",)
+    days_after_clean_empty = fields.Integer(string="Days After Clean Empty", )
     housekeepers = fields.Many2many(
         comodel_name="hr.employee",
         relation="pms_housekeeping_task_type_hr_employee_rel",
@@ -22,13 +22,10 @@ class PmsHouseKeepingTaskType(models.Model):
         string="Housekeepers",
         domain="[('job_id.name', '=', 'Housekeeper')]",
     )
-    parent_id = fields.Many2many(
+    parent_id = fields.Many2one(
         string="Parent Task Type",
         help="Indicates that this task type is a child of another task type",
         comodel_name="pms.housekeeping.task.type",
-        relation="pms_housekeeping_task_type_rel",
-        column1="parent_task_type_id",
-        column2="child_task_type_id",
-        ondelete="restrict",
         domain="[('id', '!=', id)]",
     )
+    is_inspection = fields.Boolean(string="Inspection")

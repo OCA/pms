@@ -24,21 +24,62 @@
             <field name="arch" type="xml">
                 <form string="Housekeeping Task">
                     <header>
-                        <field name="state" widget="statusbar" />
+                        <button
+                            name="action_pending"
+                            string="Mark as Pending"
+                            class="oe_highlight"
+                            type="object"
+                            attrs="{'invisible': [('state', '!=', 'cancel'), ('is_today', '=', True)]}"
+                        />
+                        <button
+                            name="action_to_do"
+                            string="Mark as To Do"
+                            class="oe_highlight"
+                            type="object"
+                            attrs="{'invisible':[('state' ,'=', 'to_do'), ('is_today', '=', False), ('is_future', '=', True)]}"
+                        />
+                        <button
+                            name="action_in_progress"
+                            string="Mark as In Progress"
+                            class="oe_highlight"
+                            type="object"
+                            attrs="{'invisible':[('state','in', ('done', 'in_progress', 'cancel', 'pending'))]}"
+                        />
+                        <button
+                            name="action_done"
+                            string="Mark as Done"
+                            class="oe_highlight"
+                            type="object"
+                            attrs="{'invisible':[('state' ,'in', ('done', 'to_do', 'cancel', 'pending'))]}"
+                        />
+                        <button
+                            name="action_cancel"
+                            string="Cancel Task"
+                            type="object"
+                            attrs="{'invisible':[('state','in', ('done', 'in_progress', 'cancel'))]}"
+                        />
+                        <field name="state" widget="statusbar"/>
                     </header>
                     <group class="col-6">
                         <field name="name" />
                         <field name="room_id" />
                         <field name="task_type_id" />
+                        <field name="parent_state" />
+                        <field name="is_today" />
+                        <field name="is_future" />
+
                     </group>
                     <group class="col-6">
-                        <field name="task_datetime" />
+                        <field name="task_date" />
                         <field name="priority" />
                         <field name="employee_ids" widget="many2many_tags"/>
                     </group>
                     <group class="col-12">
-                        <field name="parent_id" widget="many2many_tags"/>
+                        <field name="parent_id"/>
                         <field name="cleaning_comments" />
+                    </group>
+                    <group class="col-12">
+                        <field name="cancellation_type_id" attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
                     </group>
                 </form>
             </field>
