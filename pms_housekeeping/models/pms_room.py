@@ -1,4 +1,4 @@
-from odoo import fields, models, api
+from odoo import fields, models
 
 
 class PmsRoom(models.Model):
@@ -14,4 +14,3 @@ class PmsRoom(models.Model):
         required=True,
         default="dirty",
     )
-
