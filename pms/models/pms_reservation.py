@@ -738,6 +738,7 @@ class PmsReservation(models.Model):
         string="Count alternative free rooms",
         compute="_compute_count_alternative_free_rooms",
     )
+
     @api.depends("folio_id", "folio_id.external_reference")
     def _compute_external_reference(self):
         for reservation in self:
@@ -1712,7 +1713,6 @@ class PmsReservation(models.Model):
                 class_id=record.room_type_id.class_id.id,
                 current_lines=record.reservation_line_ids.ids,
             ).availability
-
 
     def _search_allowed_checkin(self, operator, value):
         if operator not in ("=",):

@@ -249,7 +249,7 @@ class ResPartner(models.Model):
                     lambda x: x.write_date
                     == max(record.pms_checkin_partner_ids.mapped("write_date"))
                 )
-                if last_update_gender:
+                if last_update_gender and last_update_gender[0].gender:
                     record.gender = last_update_gender[0].gender
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.birthdate_date")
@@ -262,7 +262,7 @@ class ResPartner(models.Model):
                     lambda x: x.write_date
                     == max(record.pms_checkin_partner_ids.mapped("write_date"))
                 )
-                if last_update_birthdate:
+                if last_update_birthdate and last_update_birthdate[0].birthdate_date:
                     record.birthdate_date = last_update_birthdate[0].birthdate_date
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.nationality_id")
@@ -275,7 +275,10 @@ class ResPartner(models.Model):
                     lambda x: x.write_date
                     == max(record.pms_checkin_partner_ids.mapped("write_date"))
                 )
-                if last_update_nationality:
+                if (
+                    last_update_nationality
+                    and last_update_nationality[0].nationality_id
+                ):
                     record.nationality_id = last_update_nationality[0].nationality_id
                 if not record.nationality_id and record.country_id:
                     record.nationality_id = record.country_id
@@ -290,7 +293,7 @@ class ResPartner(models.Model):
                     lambda x: x.write_date
                     == max(record.pms_checkin_partner_ids.mapped("write_date"))
                 )
-                if last_update_phone:
+                if last_update_phone and last_update_phone[0].phone:
                     record.phone = last_update_phone[0].phone
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_street")
@@ -303,7 +306,7 @@ class ResPartner(models.Model):
                     lambda x: x.write_date
                     == max(record.pms_checkin_partner_ids.mapped("write_date"))
                 )
-                if last_update_street:
+                if last_update_street and last_update_street[0].residence_street:
                     record.residence_street = last_update_street[0].residence_street
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_street2")
@@ -316,7 +319,7 @@ class ResPartner(models.Model):
                     lambda x: x.write_date
                     == max(record.pms_checkin_partner_ids.mapped("write_date"))
                 )
-                if last_update_street2:
+                if last_update_street2 and last_update_street2[0].residence_street2:
                     record.residence_street2 = last_update_street2[0].residence_street2
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_zip")
@@ -329,7 +332,7 @@ class ResPartner(models.Model):
                     lambda x: x.write_date
                     == max(record.pms_checkin_partner_ids.mapped("write_date"))
                 )
-                if last_update_zip:
+                if last_update_zip and last_update_zip[0].residence_zip:
                     record.residence_zip = last_update_zip[0].residence_zip
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_city")
@@ -342,7 +345,7 @@ class ResPartner(models.Model):
                     lambda x: x.write_date
                     == max(record.pms_checkin_partner_ids.mapped("write_date"))
                 )
-                if last_update_city:
+                if last_update_city and last_update_city[0].residence_city:
                     record.residence_city = last_update_city[0].residence_city
 
     @api.depends(
@@ -359,7 +362,7 @@ class ResPartner(models.Model):
                     lambda x: x.write_date
                     == max(record.pms_checkin_partner_ids.mapped("write_date"))
                 )
-                if last_update_country:
+                if last_update_country and last_update_country[0].residence_country_id:
                     record.residence_country_id = last_update_country[
                         0
                     ].residence_country_id
@@ -376,7 +379,7 @@ class ResPartner(models.Model):
                     lambda x: x.write_date
                     == max(record.pms_checkin_partner_ids.mapped("write_date"))
                 )
-                if last_update_state:
+                if last_update_state and last_update_state[0].residence_state_id:
                     record.residence_state_id = last_update_state[0].residence_state_id
 
     @api.depends(
@@ -396,7 +399,7 @@ class ResPartner(models.Model):
                     lambda x: x.write_date
                     == max(record.pms_checkin_partner_ids.mapped("write_date"))
                 )
-                if last_update_checkin_mail:
+                if last_update_checkin_mail and last_update_checkin_mail[0].email:
                     record.email = last_update_checkin_mail[0].email
 
     @api.depends(
@@ -416,7 +419,7 @@ class ResPartner(models.Model):
                     lambda x: x.write_date
                     == max(record.pms_checkin_partner_ids.mapped("write_date"))
                 )
-                if last_update_mobile:
+                if last_update_mobile and last_update_mobile[0].mobile:
                     record.mobile = last_update_mobile[0].mobile
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.firstname")
@@ -429,7 +432,7 @@ class ResPartner(models.Model):
                     lambda x: x.write_date
                     == max(record.pms_checkin_partner_ids.mapped("write_date"))
                 )
-                if last_update_firstname:
+                if last_update_firstname and last_update_firstname[0].firstname:
                     record.firstname = last_update_firstname[0].firstname
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.lastname")
@@ -442,7 +445,7 @@ class ResPartner(models.Model):
                     lambda x: x.write_date
                     == max(record.pms_checkin_partner_ids.mapped("write_date"))
                 )
-                if last_update_lastname:
+                if last_update_lastname and last_update_lastname[0].lastname:
                     record.lastname = last_update_lastname[0].lastname
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.lastname2")
@@ -455,7 +458,7 @@ class ResPartner(models.Model):
                     lambda x: x.write_date
                     == max(record.pms_checkin_partner_ids.mapped("write_date"))
                 )
-                if last_update_lastname2:
+                if last_update_lastname2 and last_update_lastname2[0].lastname2:
                     record.lastname2 = last_update_lastname2[0].lastname2
 
     @api.depends("residence_country_id")

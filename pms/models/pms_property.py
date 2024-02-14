@@ -315,9 +315,7 @@ class PmsProperty(models.Model):
                     lambda x: x.room_type_id.overnight_room
                 )
             if capacity:
-                free_rooms = free_rooms.filtered(
-                    lambda x: x.capacity >= capacity
-                )
+                free_rooms = free_rooms.filtered(lambda x: x.capacity >= capacity)
             if len(free_rooms) > 0:
                 pms_property.free_room_ids = free_rooms.ids
             else:
