@@ -932,7 +932,7 @@ class PmsCheckinPartner(models.Model):
     def _save_data_from_portal(self, values):
         checkin_partner = values.get("checkin_partner", "")
         values.pop("checkin_partner")
-        values.pop("folio_access_token")
+        values.pop("folio_access_token") if "folio_access_token" in values else None
         if values.get("nationality"):
             values.update({"nationality_id": int(values.get("nationality_id"))})
 
