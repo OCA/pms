@@ -200,6 +200,7 @@ class PmsPartnerService(Component):
             document_number = False
             document_expedition_date = False
             document_type = False
+            document_support_number = False
             if partner.id_numbers:
                 doc_number = partner.id_numbers[0]
             if doc_number:
@@ -209,6 +210,8 @@ class PmsPartnerService(Component):
                     document_type = doc_number.category_id.id
                 if doc_number.valid_from:
                     document_expedition_date = doc_number.valid_from.strftime("%d/%m/%Y")
+                if doc_number.support_number:
+                    document_support_number = doc_number.support_number
             result_partners.append(
                 PmsPartnerInfo(
                     id=partner.id,
@@ -257,6 +260,7 @@ class PmsPartnerService(Component):
                     else None,
                     documentNumber=document_number if document_number else None,
                     documentType=document_type if document_type else None,
+                    documentSupportNumber=document_support_number if document_support_number else None,
                     vatNumber=partner.vat
                     if partner.vat
                     else partner.aeat_identification
