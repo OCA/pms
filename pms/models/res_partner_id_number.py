@@ -14,11 +14,38 @@ from odoo.exceptions import ValidationError
 class ResPartnerIdNumber(models.Model):
     _inherit = "res.partner.id_number"
 
+    name = fields.Char(
+        readonly=False,
+        store=True,
+        compute="_compute_name",
+    )
+
+    category_id = fields.Many2one(
+        readonly=False,
+        store=True,
+        compute="_compute_category_id",
+    )
+
     valid_from = fields.Date(
         readonly=False,
         store=True,
         compute="_compute_valid_from",
     )
+
+    @api.depends("partner_id", "partner_id.pms_checkin_partner_ids.document_number")
+    def _compute_name(self):
+        if hasattr(super(), "_compute_name"):
+            super()._compute_name()
+        for record in self:
+            if record.partner_id.pms_checkin_partner_ids:
+                last_update_name = record.partner_id.pms_checkin_partner_ids.filtered(
+                    lambda x: x.write_date
+                    == max(
+                        record.partner_id.pms_checkin_partner_ids.mapped("write_date")
+                    )
+                )
+                if last_update_name and last_update_name[0].document_number:
+                    record.name = last_update_name[0].document_number
 
     @api.depends(
         "partner_id", "partner_id.pms_checkin_partner_ids.document_expedition_date"
@@ -27,20 +54,43 @@ class ResPartnerIdNumber(models.Model):
         if hasattr(super(), "_compute_valid_from"):
             super()._compute_valid_from()
         for record in self:
-            if not record.valid_from and record.partner_id.pms_checkin_partner_ids:
-                document_expedition_date = list(
-                    set(
-                        record.partner_id.pms_checkin_partner_ids.mapped(
-                            "document_expedition_date"
+            if record.partner_id.pms_checkin_partner_ids:
+                last_update_valid_from = (
+                    record.partner_id.pms_checkin_partner_ids.filtered(
+                        lambda x: x.write_date
+                        == max(
+                            record.partner_id.pms_checkin_partner_ids.mapped(
+                                "write_date"
+                            )
                         )
                     )
                 )
-                if len(document_expedition_date) == 1:
-                    record.valid_from = document_expedition_date[0]
-                else:
-                    record.valid_from = False
-            elif not record.valid_from:
-                record.valid_from = False
+                if (
+                    last_update_valid_from
+                    and last_update_valid_from[0].document_expedition_date
+                ):
+                    record.valid_from = last_update_valid_from[
+                        0
+                    ].document_expedition_date
+
+    @api.depends("partner_id", "partner_id.pms_checkin_partner_ids.document_type")
+    def _compute_category_id(self):
+        if hasattr(super(), "_compute_category_id"):
+            super()._compute_category_id()
+        for record in self:
+            if record.partner_id.pms_checkin_partner_ids:
+                last_update_category_id = (
+                    record.partner_id.pms_checkin_partner_ids.filtered(
+                        lambda x: x.write_date
+                        == max(
+                            record.partner_id.pms_checkin_partner_ids.mapped(
+                                "write_date"
+                            )
+                        )
+                    )
+                )
+                if last_update_category_id and last_update_category_id[0].document_type:
+                    record.category_id = last_update_category_id[0].document_type
 
     @api.constrains("partner_id", "category_id")
     def _check_category_id_unique(self):
