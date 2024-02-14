@@ -81,6 +81,7 @@ class TestPmsService(TestPms):
             {
                 "name": "Test Board Service 1",
                 "default_code": "CB1",
+                "pms_property_ids": [self.pms_property1.id],
             }
         )
         self.board_service_line1 = self.env["pms.board.service.line"].create(
@@ -95,6 +96,7 @@ class TestPmsService(TestPms):
             {
                 "pms_room_type_id": self.room_type_double.id,
                 "pms_board_service_id": self.board_service1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         # ACT
@@ -145,6 +147,7 @@ class TestPmsService(TestPms):
             {
                 "name": "Test Board Service 1",
                 "default_code": "CB1",
+                "pms_property_ids": [self.pms_property1.id],
             }
         )
         self.board_service_line1 = self.env["pms.board.service.line"].create(
@@ -159,6 +162,7 @@ class TestPmsService(TestPms):
             {
                 "pms_room_type_id": self.room_type_double.id,
                 "pms_board_service_id": self.board_service1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
 
@@ -213,6 +217,7 @@ class TestPmsService(TestPms):
             {
                 "name": "Test Board Service 1",
                 "default_code": "CB1",
+                "pms_property_ids": [self.pms_property1.id],
             }
         )
         self.board_service_line1 = self.env["pms.board.service.line"].create(
@@ -227,6 +232,7 @@ class TestPmsService(TestPms):
             {
                 "pms_room_type_id": self.room_type_double.id,
                 "pms_board_service_id": self.board_service1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         self.reservation = self.env["pms.reservation"].create(
@@ -290,6 +296,7 @@ class TestPmsService(TestPms):
             {
                 "name": "Test Board Service 1",
                 "default_code": "CB1",
+                "pms_property_ids": [self.pms_property1.id],
             }
         )
         self.board_service_line1 = self.env["pms.board.service.line"].create(
@@ -304,6 +311,7 @@ class TestPmsService(TestPms):
             {
                 "pms_room_type_id": self.room_type_double.id,
                 "pms_board_service_id": self.board_service1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
 
