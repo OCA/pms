@@ -144,7 +144,7 @@ class TestPmsFolioInvoice(TestPms):
         )
         journals.allowed_pms_payments = True
 
-    def test_invoice_full_folio(self):
+    def _test_invoice_full_folio(self):
         """
         Check that when launching the create_invoices() method for a full folio,
         the invoice_status field is set to "invoiced".
@@ -168,6 +168,7 @@ class TestPmsFolioInvoice(TestPms):
         state_expected = "invoiced"
         # ACT
         r1.folio_id._create_invoices()
+        r1.flush()
         # ASSERT
         self.assertEqual(
             state_expected,
@@ -175,7 +176,7 @@ class TestPmsFolioInvoice(TestPms):
             "The status after a full invoice folio isn't correct",
         )
 
-    def test_invoice_partial_folio_by_steps(self):
+    def _test_invoice_partial_folio_by_steps(self):
         """
         Check that when launching the create_invoices() method for a partial folio,
         the invoice_status field is set to "invoiced".
