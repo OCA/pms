@@ -839,7 +839,7 @@ class TestRoomType(TestPms):
                 {
                     "pms_board_service_id": board_service.id,
                     "pms_room_type_id": room_type.id,
-                    "pms_property_ids": self.pms_property2,
+                    "pms_property_id": self.pms_property2.id,
                 }
             )
 

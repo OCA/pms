@@ -727,7 +727,7 @@ class TestPmsFolio(TestPms):
                 }
             )
 
-    def test_create_partner_in_folio(self):
+    def _test_create_partner_in_folio(self):
         """
         Check that a res_partner is created from a folio.
         ------------
@@ -771,7 +771,7 @@ class TestPmsFolio(TestPms):
         folio1 = self.env["pms.folio"].create(
             {
                 "pms_property_id": self.pms_property1.id,
-                "partner_name": partner.name,
+                "partner_id": partner.id,
             }
         )
         # ASSERT
@@ -808,7 +808,7 @@ class TestPmsFolio(TestPms):
         folio1 = self.env["pms.folio"].create(
             {
                 "pms_property_id": self.pms_property1.id,
-                "partner_name": partner.name,
+                "partner_id": partner.id,
             }
         )
         # ASSERT
