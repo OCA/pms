@@ -31,6 +31,8 @@ class PmsReservationShortInfo(Datamodel):
     toAssign = fields.Boolean(required=False, allow_none=True)
     overbooking = fields.Boolean(required=False, allow_none=True)
     isBlocked = fields.Boolean(required=False, allow_none=True)
+    reservationType = fields.String(required=False, allow_none=True)
+
 
 
 class PmsReservationInfo(Datamodel):
