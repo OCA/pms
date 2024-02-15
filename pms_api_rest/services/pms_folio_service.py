@@ -560,7 +560,9 @@ class PmsFolioService(Component):
                             else 0,
                             toAssign=reservation.to_assign,
                             overbooking=reservation.overbooking,
-                            isBlocked=reservation.blocked
+                            isBlocked=reservation.blocked,
+                            reservationType=reservation.reservation_type,
+
                         )
                     )
 
