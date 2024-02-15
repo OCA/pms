@@ -1,1 +1,0 @@
-git+https://github.com/commitsun/l10n-spain@14.0-l10n_es_document_numbers#subdirectory=setup/l10n_es_aeat_partner_identification
