@@ -1026,7 +1026,7 @@ class PmsReservation(models.Model):
             is_new = not reservation.pricelist_id or isinstance(
                 reservation.id, models.NewId
             )
-            if reservation.reservation_type in ("out", "staff"):
+            if reservation.reservation_type == "out":
                 reservation.pricelist_id = False
             elif (
                 is_new
@@ -1390,7 +1390,7 @@ class PmsReservation(models.Model):
                     line.invoice_status = "no"
             else:
                 line.invoice_status = "no"
-            if line.reservation_type != "normal":
+            if line.reservation_type not in ("normal", "staff"):
                 line.invoice_status = "no"
 
     @api.depends("reservation_line_ids")
