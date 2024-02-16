@@ -814,7 +814,7 @@ class PmsFolio(models.Model):
     def _compute_sale_line_ids(self):
         for folio in self.filtered(lambda f: isinstance(f.id, int)):
             sale_lines_vals = []
-            if folio.reservation_type == "normal":
+            if folio.reservation_type in ("normal", "staff"):
                 sale_lines_vals_to_drop = []
                 seq = 0
                 for reservation in sorted(
@@ -884,7 +884,7 @@ class PmsFolio(models.Model):
     def _compute_pricelist_id(self):
         for folio in self:
             is_new = not folio.pricelist_id or isinstance(folio.id, models.NewId)
-            if folio.reservation_type in ("out", "staff"):
+            if folio.reservation_type == "out":
                 folio.pricelist_id = False
             elif len(folio.reservation_ids.pricelist_id) == 1:
                 folio.pricelist_id = folio.reservation_ids.pricelist_id
@@ -1246,7 +1246,7 @@ class PmsFolio(models.Model):
     )
     def _compute_amount(self):
         for record in self:
-            if record.reservation_type in ("staff", "out"):
+            if record.reservation_type == "out":
                 record.amount_total = 0
                 vals = {
                     "payment_state": "nothing_to_pay",
@@ -1371,7 +1371,10 @@ class PmsFolio(models.Model):
 
     def _compute_checkin_partner_count(self):
         for record in self:
-            if record.reservation_type == "normal" and record.reservation_ids:
+            if (
+                record.reservation_type in ("normal", "staff")
+                and record.reservation_ids
+            ):
                 filtered_reservs = record.reservation_ids.filtered(
                     lambda x: x.state != "cancel"
                 )
