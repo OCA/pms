@@ -542,7 +542,7 @@ class PmsService(models.Model):
 
     def _get_price_unit_line(self, date=False):
         self.ensure_one()
-        if self.reservation_id.reservation_type == "normal":
+        if self.reservation_id.reservation_type in ("normal", "staff"):
             folio = self.folio_id
             reservation = self.reservation_id
             origin = reservation if reservation else folio
