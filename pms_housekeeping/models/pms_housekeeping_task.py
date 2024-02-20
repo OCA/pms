@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -102,6 +104,12 @@ class PmsHouseKeepingTask(models.Model):
                 raise ValidationError(
                     _("Task Date must be greater than or equal to today")
                 )
+
+    @api.constrains("parent_id")
+    def _check_parent_id(self):
+        for rec in self:
+            if rec.parent_id.parent_id:
+                raise ValidationError(_("Parent task cannot have a parent task"))
 
     def action_cancel(self):
         for rec in self:
@@ -235,3 +243,144 @@ class PmsHouseKeepingTask(models.Model):
         )
 
         return super(PmsHouseKeepingTask, self).create(vals)
+
+    @api.model
+    def generate_tasks(self, pms_property_id):
+        for room in self.env["pms.room"].search(
+            [("pms_property_id", "=", pms_property_id.id)]
+        ):
+            for task_type in self.env["pms.housekeeping.task.type"].search(
+                [
+                    "|",
+                    ("pms_property_ids", "in", [pms_property_id.id]),
+                    ("pms_property_ids", "=", False),
+                ],
+                order="priority asc",
+            ):
+                if task_type.is_checkout:
+                    reservations_with_checkout_today = self.env[
+                        "pms.reservation"
+                    ].search(
+                        [
+                            ("checkout", "=", fields.Date.today()),
+                        ]
+                    )
+                    reservation_line_with_checkout_today = self.env[
+                        "pms.reservation.line"
+                    ].search(
+                        [
+                            (
+                                "reservation_id",
+                                "in",
+                                reservations_with_checkout_today.ids,
+                            ),
+                            ("room_id", "=", room.id),
+                        ]
+                    )
+                    if reservation_line_with_checkout_today:
+                        self.create_housekeeping_tasks(room, task_type)
+                        break
+
+                if task_type.is_overnight:
+                    reservation_line_today = self.env["pms.reservation.line"].search(
+                        [
+                            ("room_id", "=", room.id),
+                            ("date", "=", fields.Date.today() + timedelta(days=-1)),
+                            ("occupies_availability", "=", True),
+                        ]
+                    )
+                    if reservation_line_today and len(reservation_line_today) == 1:
+                        reservation_checkin = (
+                            self.env["pms.reservation"]
+                            .browse(reservation_line_today.reservation_id.id)
+                            .checkin
+                        )
+
+                        days_between_checkin_and_today = (
+                            fields.Date.today()
+                        ) - reservation_checkin
+                        if (
+                            days_between_checkin_and_today.days
+                            % task_type.days_after_clean_overnight
+                            == 0
+                        ):
+                            self.create_housekeeping_tasks(room, task_type)
+                            break
+                if task_type.is_checkin:
+                    reservations_with_checkin_today = self.env[
+                        "pms.reservation"
+                    ].search(
+                        [
+                            ("checkin", "=", fields.Date.today()),
+                        ]
+                    )
+                    reservation_line_with_checkout_today = self.env[
+                        "pms.reservation.line"
+                    ].search(
+                        [
+                            (
+                                "reservation_id",
+                                "in",
+                                reservations_with_checkin_today.ids,
+                            ),
+                            ("room_id", "=", room.id),
+                        ]
+                    )
+                    if reservation_line_with_checkout_today:
+                        self.create_housekeeping_tasks(room, task_type)
+                        break
+                if task_type.is_empty:
+                    previous_reservations = self.env["pms.reservation"].search(
+                        [
+                            ("checkout", "<", fields.Date.today()),
+                            ("pms_property_id", "=", pms_property_id.id),
+                        ]
+                    )
+                    checkouts = (
+                        self.env["pms.reservation.line"]
+                        .search(
+                            [
+                                ("reservation_id", "in", previous_reservations.ids),
+                                ("room_id", "=", room.id),
+                            ],
+                        )
+                        .mapped("date")
+                    )
+
+                    if checkouts:
+                        last_checkout = max(checkouts)
+                        days_between_last_checkout_and_today = (fields.Date.today()) - (
+                            last_checkout + timedelta(days=1)
+                        )
+                        if (
+                            days_between_last_checkout_and_today.days
+                            % task_type.days_after_clean_empty
+                            == 0
+                        ):
+                            self.create_housekeeping_tasks(room, task_type)
+                            break
+
+    def create_housekeeping_tasks(self, room, task_type):
+        task = self.env["pms.housekeeping.task"].create(
+            {
+                "name": task_type.name + " " + room.name,
+                "room_id": room.id,
+                "task_type_id": task_type.id,
+                "task_date": fields.Date.today(),
+            }
+        )
+
+        for task_type_child in task_type.child_ids:
+            self.env["pms.housekeeping.task"].create(
+                {
+                    "name": task_type_child.name + " " + room.name,
+                    "task_type_id": task_type_child.id,
+                    "room_id": room.id,
+                    "task_date": fields.Date.today(),
+                    "parent_id": task.id,
+                }
+            )
+
+    def generate_task_properties(self):
+        for pms_property in self.env["pms.property"].search([]):
+            self.generate_tasks(pms_property)
