@@ -17,6 +17,7 @@
     "data": [
         "security/ir.model.access.csv",
         "data/pms_housekeeping_data.xml",
+        "data/cron_jobs.xml",
         "views/hr_employee_views.xml",
         "views/pms_housekeeping_task_type_views.xml",
         "views/pms_housekeeping_views.xml",

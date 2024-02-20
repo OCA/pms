@@ -9,8 +9,10 @@
                     name="pre_assigned_room_ids"
                     widget="many2many_tags"
                     attrs="{'invisible': [('job_name', '!=', 'Housekeeper')]}"
+                    domain="[('id', 'in', allowed_pre_assigned_room_ids)]"
                 />
                 <field name="job_name" invisible="1" />
+                <field name="allowed_pre_assigned_room_ids" invisible="1" />
             </xpath>
         </field>
     </record>
