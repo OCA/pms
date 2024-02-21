@@ -691,6 +691,7 @@ class PmsProperty(models.Model):
         # REVIEW: We clean the autoinvoice_date of the past draft invoices
         # to avoid blocking the autoinvoicing
         self.clean_date_on_past_draft_invoices(date_reference)
+        # 1- Invoicing the folios
         folios = self.env["pms.folio"].search(
             [
                 ("sale_line_ids.autoinvoice_date", "=", date_reference),
@@ -717,7 +718,7 @@ class PmsProperty(models.Model):
                 self.with_delay().autoinvoice_folio(folio)
             else:
                 self.autoinvoice_folio(folio)
-
+        # 2- Validate the draft invoices created by the folios
         draft_invoices_to_post = self.env["account.move"].search(
             [
                 ("state", "=", "draft"),
@@ -730,6 +731,31 @@ class PmsProperty(models.Model):
                 self.with_delay().autovalidate_folio_invoice(invoice)
             else:
                 self.autovalidate_folio_invoice(invoice)
+
+        # 3- Reverse the downpayment invoices that not was included in final invoice
+        downpayments_invoices_to_reverse = self.env["account.move.line"].search(
+            [
+                ("move_id.state", "=", "posted"),
+                ("folio_line_ids.is_downpayment", "=", True),
+                ("folio_line_ids.qty_invoiced", ">", 0),
+                ("folio_ids", "in", folios.ids),
+            ]
+        )
+        downpayment_invoices = downpayments_invoices_to_reverse.mapped("move_id")
+        if downpayment_invoices:
+            for downpayment_invoice in downpayment_invoices:
+                downpayment_invoice.with_context(
+                    {"sii_refund_type": "I"}
+                )._reverse_moves(cancel=True)
+                downpayment_invoice.message_post(
+                    body=_(
+                        """
+                           The downpayment invoice has been reversed
+                           because it was not included in the final invoice
+                        """
+                    )
+                )
+
         return True
 
     @api.model
@@ -775,21 +801,12 @@ class PmsProperty(models.Model):
                     lambda l: not l.autoinvoice_date
                 ):
                     line._compute_autoinvoice_date()
-                # REVIEW: Reverse downpayment invoices if the downpayment is not included
-                # in the service invoice (qty_to_invoice < 0)
-                downpayment_invoices = (
-                    folio.sale_line_ids.filtered(
-                        lambda l: l.is_downpayment and l.qty_to_invoice < 0
-                    )
-                    .mapped("invoice_lines")
-                    .mapped("move_id")
-                    .filtered(lambda i: i.is_simplified_invoice)
-                )
-                if downpayment_invoices:
-                    downpayment_invoices._reverse_moves(cancel=True)
                 invoices = folio.with_context(autoinvoice=True)._create_invoices(
                     grouped=True,
-                    final=True,
+                    final=False,
+                )
+                downpayments = folio.sale_line_ids.filtered(
+                    lambda l: l.is_downpayment and l.qty_invoiced > 0
                 )
                 for invoice in invoices:
                     if (
@@ -815,7 +832,29 @@ class PmsProperty(models.Model):
                             )
                             folio.message_post(body=mens)
                             raise ValidationError(mens)
+                    for downpayment in downpayments.filtered(
+                        lambda d: d.default_invoice_to == invoice.partner_id
+                    ):
+                        # If the downpayment invoice partner is the same that the
+                        # folio partner, we include the downpayment in the normal invoice
+                        invoice_down_payment_vals = downpayment._prepare_invoice_line(
+                            sequence=max(invoice.invoice_line_ids.mapped("sequence"))
+                            + 1,
+                        )
+                        invoice.write(
+                            {"invoice_line_ids": [(0, 0, invoice_down_payment_vals)]}
+                        )
                     invoice.action_post()
+                # The downpayment invoices that not was included in final invoice, are reversed
+                downpayment_invoices = (
+                    downpayments.filtered(
+                        lambda d: d.qty_invoiced > 0
+                    ).invoice_lines.mapped("move_id")
+                ).filtered(lambda i: i.is_simplified_invoice)
+                if downpayment_invoices:
+                    downpayment_invoices.with_context(
+                        {"sii_refund_type": "I"}
+                    )._reverse_moves(cancel=True)
         except Exception as e:
             folio.message_post(body=_("Error in autoinvoicing folio: " + str(e)))
 
