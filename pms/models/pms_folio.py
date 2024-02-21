@@ -688,6 +688,10 @@ class PmsFolio(models.Model):
                     )
                     invoice_lines_vals.append(down_payments_section)
                     for down_payment in down_payments:
+                        # If the down payment is not for the current partner, skip it
+                        # it will be managed manually or by the automatic invoice cron
+                        if down_payment.default_invoice_to.id != group["partner_id"]:
+                            continue
                         invoice_item_sequence += 1
                         invoice_down_payment_vals = down_payment._prepare_invoice_line(
                             sequence=invoice_item_sequence
