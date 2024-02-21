@@ -308,7 +308,7 @@ class PmsFolioService(Component):
                             line.is_reselling
                             for line in reservation.reservation_line_ids
                         ),
-                        "isBlocked": reservation.blocked
+                        "isBlocked": reservation.blocked,
                     }
                 )
             result_folios.append(
@@ -562,7 +562,6 @@ class PmsFolioService(Component):
                             overbooking=reservation.overbooking,
                             isBlocked=reservation.blocked,
                             reservationType=reservation.reservation_type,
-
                         )
                     )
 
@@ -1508,7 +1507,7 @@ class PmsFolioService(Component):
     def update_put_external_folio(self, external_reference, pms_folio_info):
         folio = self.env["pms.folio"].search(
             [
-                ("external_reference", "=", external_reference),
+                ("external_reference", "ilike", external_reference),
                 ("pms_property_id", "=", pms_folio_info.pmsPropertyId),
             ]
         )
