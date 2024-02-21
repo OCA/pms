@@ -1870,6 +1870,10 @@ class PmsReservation(models.Model):
                 raise ValidationError(
                     _("No person from reserve %s has arrived", record.name)
                 )
+            if record.state == "cancel" and not self.env.context.get("action_cancel"):
+                raise ValidationError(
+                    _("The reservation must be canceled by action: action_cancel")
+                )
 
     @api.constrains("arrival_hour")
     def _check_arrival_hour(self):
@@ -2307,9 +2311,15 @@ class PmsReservation(models.Model):
             if not record.allowed_cancel:
                 raise UserError(_("This reservation cannot be cancelled"))
             else:
-                record.state = "cancel"
+                record.with_context(action_cancel=True).state = "cancel"
                 record._check_cancel_penalty()
                 record.cancel_datetime = fields.Datetime.now()
+                if all(
+                    record.folio_id.reservation_ids.filtered(
+                        lambda r: r.state == "cancel"
+                    )
+                ):
+                    record.folio_id.action_cancel()
                 record.folio_id._compute_amount()
 
     def action_assign(self):
