@@ -116,7 +116,7 @@ class ResPartner(models.Model):
         return self.with_context(active_test=False).search(domain, limit=1)
 
     def _missing_document(self, vals, partners=False):
-        res = super(ResPartner, self)._missing_document(vals)
+        res = super(ResPartner, self)._missing_document(vals, partners)
         if not res:
             return res
         if (
