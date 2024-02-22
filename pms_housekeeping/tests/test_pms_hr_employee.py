@@ -77,11 +77,16 @@ class TestPmsHrEmployee(TestPms):
 
     def test_not_pre_assigned_room_no_housekeeper_employee(self):
         # ARRANGE
+        self.job_id = self.env["hr.job"].create(
+            {
+                "name": "Test Job",
+            }
+        )
         self.hr_employee = self.env["hr.employee"].create(
             {
                 "name": "Test Employee",
                 "company_id": self.company1.id,
-                "job_id": self.env.ref("hr.job_trainee").id,
+                "job_id": self.job_id.id,
             }
         )
 

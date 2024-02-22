@@ -359,7 +359,7 @@ class TestPmsHousekeepingTask(TestPms):
         self.assertFalse(housekeeping_task, "Housekeeping task shouldn't be created")
 
     @freeze_time("2000-01-04")
-    def test_create_task_type_childs(self):
+    def test_create_task_childs(self):
         # ARRANGE
         # create task type
         parent_task_type = self.env["pms.housekeeping.task.type"].create(
@@ -400,7 +400,7 @@ class TestPmsHousekeepingTask(TestPms):
         # Verify that the housekeeping task is not created
         self.assertTrue(housekeeping_task, "Child housekeeping task should be created")
 
-    def test_no_create_task_type_childs(self):
+    def test_no_create_task_childs(self):
         # ARRANGE
         # create task type
         self.env["pms.housekeeping.task.type"].create(
@@ -437,30 +437,190 @@ class TestPmsHousekeepingTask(TestPms):
             housekeeping_task.child_ids, "Child housekeeping task shouldn´t be created"
         )
 
-    def test_days_after_clean_overnight_constraint(self):
-        # ARRANGE, ACT & ASSERT
-        # create task type and verify that the constraint is raised
+    def test_no_create_grandchild_task(self):
+        # ARRANGE
+        # create task type
+        task_type = self.env["pms.housekeeping.task.type"].create(
+            {
+                "name": "Task Type Parent",
+                "is_checkout": True,
+            }
+        )
+        parent_task = self.env["pms.housekeeping.task"].create(
+            {
+                "name": "Task",
+                "room_id": self.room1.id,
+                "task_type_id": task_type.id,
+                "task_date": datetime.today(),
+            }
+        )
+        child_task = self.env["pms.housekeeping.task"].create(
+            {
+                "name": "Child Task",
+                "room_id": self.room1.id,
+                "task_type_id": task_type.id,
+                "parent_id": parent_task.id,
+                "task_date": datetime.today(),
+            }
+        )
+        # ACT & ASSERT
         with self.assertRaises(
-            ValidationError, msg="Days After Clean Overnight should be greater than 0"
+            ValidationError, msg="Grandchild task shouldn´t exist."
         ):
-            self.env["pms.housekeeping.task.type"].create(
+            self.env["pms.housekeeping.task"].create(
                 {
-                    "name": "Task Type 1",
-                    "is_overnight": True,
-                    "days_after_clean_overnight": 0,
+                    "name": "Grandchild Task",
+                    "room_id": self.room1.id,
+                    "task_type_id": task_type.id,
+                    "parent_id": child_task.id,
+                    "task_date": datetime.today(),
                 }
             )
 
-    def test_days_after_clean_empty_constraint(self):
-        # ARRANGE, ACT & ASSERT
-        # create task type and verify that the constraint is raised
+    def test_create_task_with_no_housekeeper(self):
+
+        # ARRANGE
+        self.job_id = self.env["hr.job"].create(
+            {
+                "name": "Test Job",
+            }
+        )
+        self.employee = self.env["hr.employee"].create(
+            {
+                "name": "Test Employee",
+                "company_id": self.company1.id,
+                "job_id": self.job_id.id,
+            }
+        )
+        # create task type
+        self.task_type = self.env["pms.housekeeping.task.type"].create(
+            {
+                "name": "Task Type 1",
+                "is_checkout": True,
+            }
+        )
+
+        # ACT & ASSERT
         with self.assertRaises(
-            ValidationError, msg="Days After Clean Overnight should be greater than 0"
+            ValidationError, msg="Employee should have a housekeeper job"
         ):
-            self.env["pms.housekeeping.task.type"].create(
+            self.env["pms.housekeeping.task"].create(
                 {
-                    "name": "Task Type 1",
-                    "is_empty": True,
-                    "days_after_clean_empty": 0,
+                    "name": "Task",
+                    "room_id": self.room1.id,
+                    "task_type_id": self.task_type.id,
+                    "task_date": datetime.today(),
+                    "housekeeper_ids": [(6, 0, [self.employee.id])],
                 }
             )
+
+    def test_create_task_with_housekeeper(self):
+
+        # ARRANGE
+        self.employee = self.env["hr.employee"].create(
+            {
+                "name": "Test Employee",
+                "company_id": self.company1.id,
+                "job_id": self.env.ref("pms_housekeeping.housekeeping_job_id").id,
+            }
+        )
+        # create task type
+        self.task_type = self.env["pms.housekeeping.task.type"].create(
+            {
+                "name": "Task Type 1",
+                "is_checkout": True,
+            }
+        )
+
+        # ACT
+        self.task = self.env["pms.housekeeping.task"].create(
+            {
+                "name": "Task",
+                "room_id": self.room1.id,
+                "task_type_id": self.task_type.id,
+                "task_date": datetime.today(),
+                "housekeeper_ids": [(6, 0, [self.employee.id])],
+            }
+        )
+
+        #ASSERT
+        self.assertTrue(self.task, "Housekeeping task should be created")
+
+    def test_task_housekeeper_room_inconsistency(self):
+
+            # ARRANGE
+            self.pms_property2 = self.env["pms.property"].create(
+                {
+                    "name": "Property 2",
+                    "company_id": self.company1.id,
+                    "default_pricelist_id": self.pricelist1.id,
+                }
+            )
+            self.room2 = self.env["pms.room"].create(
+                {
+                    "name": "Room 202",
+                    "pms_property_id": self.pms_property2.id,
+                    "room_type_id": self.room_type1.id,
+                }
+            )
+            self.employee = self.env["hr.employee"].create(
+                {
+                    "name": "Test Employee",
+                    "company_id": self.company1.id,
+                    "job_id": self.env.ref("pms_housekeeping.housekeeping_job_id").id,
+                    "property_ids": [(6, 0, [self.pms_property1.id])],
+                }
+            )
+            # create task type
+            self.task_type = self.env["pms.housekeeping.task.type"].create(
+                {
+                    "name": "Task Type 1",
+                    "is_checkout": True,
+                }
+            )
+
+            # ACT & ASSERT
+            with self.assertRaises(
+                ValidationError, msg="The room and housekeeper should belong to the same property."
+            ):
+                self.env["pms.housekeeping.task"].create(
+                    {
+                        "name": "Task",
+                        "room_id": self.room2.id,
+                        "task_type_id": self.task_type.id,
+                        "task_date": datetime.today(),
+                        "housekeeper_ids": [(6, 0, [self.employee.id])],
+                    }
+                )
+
+    def test_task_housekeeper_room_consistency(self):
+        # ARRANGE
+        self.employee = self.env["hr.employee"].create(
+            {
+                "name": "Test Employee",
+                "company_id": self.company1.id,
+                "job_id": self.env.ref("pms_housekeeping.housekeeping_job_id").id,
+                "property_ids": [(6, 0, [self.pms_property1.id])],
+            }
+        )
+        # create task type
+        self.task_type = self.env["pms.housekeeping.task.type"].create(
+            {
+                "name": "Task Type 1",
+                "is_checkout": True,
+            }
+        )
+
+        # ACT
+        task = self.env["pms.housekeeping.task"].create(
+            {
+                "name": "Task",
+                "room_id": self.room1.id,
+                "task_type_id": self.task_type.id,
+                "task_date": datetime.today(),
+                "housekeeper_ids": [(6, 0, [self.employee.id])],
+            }
+        )
+
+        # ASSERT
+        self.assertTrue(task, "Housekeeping task should be created")

@@ -57,10 +57,12 @@
                         <field
                             name="housekeeper_ids"
                             widget="many2many_tags"
-                            domain="[('id', 'in', allowed_housekeeper_ids)]"
+                            domain="[('job_id.name', '=', 'Housekeeper')]"
                         />
-                        <field name="pms_property_ids" widget="many2many_tags" />
-                        <field name="allowed_housekeeper_ids" invisible="1" />
+                        <field
+                            name="pms_property_ids"
+                            widget="many2many_tags"
+                        />
                         <field name="parent_id" />
                         <field name="description" />
                     </group>

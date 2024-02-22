@@ -47,14 +47,6 @@ class PmsHouseKeepingTaskType(models.Model):
         string="Properties",
     )
 
-    allowed_housekeeper_ids = fields.Many2many(
-        comodel_name="hr.employee",
-        relation="pms_housekeeping_task_type_allowed_hr_employee_rel",
-        column1="task_type_id",
-        column2="employee_id",
-        string="Allowed Employees",
-        compute="_compute_allowed_housekeeper_ids",
-    )
 
     @api.constrains("is_overnight", "days_after_clean_overnight")
     def _check_days_after_clean_overnight(self):
@@ -80,15 +72,12 @@ class PmsHouseKeepingTaskType(models.Model):
                     _("Parent task type cannot have a parent task type")
                 )
 
-    @api.depends("pms_property_ids")
-    def _compute_allowed_housekeeper_ids(self):
+    @api.constrains("housekeeper_ids")
+    def _check_housekeeper_ids(self):
         for record in self:
-            domain = []
-            if record.pms_property_ids:
-                domain = [
-                    "|",
-                    ("property_ids", "in", record.pms_property_ids.ids),
-                    ("property_ids", "in", False),
-                ]
-            domain.append(("job_id.name", "=", "Housekeeper"))
-            record.allowed_housekeeper_ids = self.env["hr.employee"].search(domain).ids
+            if record.housekeeper_ids:
+                for employee in record.housekeeper_ids:
+                    if employee.job_id.name != 'Housekeeper':
+                        raise ValidationError(
+                            _("The job position should be Housekeeper.")
+                        )

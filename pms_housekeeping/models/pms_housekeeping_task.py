@@ -44,14 +44,14 @@ class PmsHouseKeepingTask(models.Model):
         readonly=False,
     )
     cleaning_comments = fields.Text(string="Cleaning Comments")
-    employee_ids = fields.Many2many(
+    housekeeper_ids = fields.Many2many(
         comodel_name="hr.employee",
         relation="pms_housekeeping_task_hr_employee_rel",
         column1="task_id",
         column2="employee_id",
-        string="Employees",
+        string="Housekeepers",
         domain="[('job_id.name', '=', 'Housekeeper')]",
-        compute="_compute_employee_ids",
+        compute="_compute_housekeeper_ids",
         store=True,
         readonly=False,
     )
@@ -96,6 +96,11 @@ class PmsHouseKeepingTask(models.Model):
         string="Is Done Allowed",
         compute="_compute_done_allowed",
     )
+    allowed_housekeeper_ids = fields.Many2many(
+        comodel_name="hr.employee",
+        string="Allowed Housekeepers",
+        compute="_compute_allowed_housekeeper_ids",
+    )
 
     @api.constrains("task_date")
     def _check_task_date(self):
@@ -110,6 +115,16 @@ class PmsHouseKeepingTask(models.Model):
         for rec in self:
             if rec.parent_id.parent_id:
                 raise ValidationError(_("Parent task cannot have a parent task"))
+
+    @api.constrains("housekeeper_ids")
+    def _check_housekeeper_ids(self):
+        for rec in self:
+            if rec.housekeeper_ids:
+                for housekeeper in rec.housekeeper_ids:
+                    if housekeeper not in rec.allowed_housekeeper_ids:
+                        raise ValidationError(
+                            _("The housekeeper should belong to the room's property.")
+                        )
 
     def action_cancel(self):
         for rec in self:
@@ -207,20 +222,20 @@ class PmsHouseKeepingTask(models.Model):
                 rec.done_allowed = False
 
     @api.depends("room_id", "task_type_id")
-    def _compute_employee_ids(self):
+    def _compute_housekeeper_ids(self):
         for rec in self:
-            employee_ids = False
+            housekeeper_ids = False
             if rec.room_id or rec.task_type_id:
-                employee_ids = self.env["hr.employee"].search(
+                housekeeper_ids = self.env["hr.employee"].search(
                     [("pre_assigned_room_ids", "in", [rec.room_id.id])]
                 )
-                if not employee_ids:
-                    employee_ids = (
+                if not housekeeper_ids:
+                    housekeeper_ids = (
                         self.env["pms.housekeeping.task.type"]
                         .search([("id", "=", rec.task_type_id.id)])
                         .housekeeper_ids
                     )
-            rec.employee_ids = employee_ids
+            rec.housekeeper_ids = housekeeper_ids
 
     @api.depends("task_type_id")
     def _compute_priority(self):
@@ -229,6 +244,19 @@ class PmsHouseKeepingTask(models.Model):
                 rec.priority = rec.task_type_id.priority
             else:
                 rec.priority = False
+
+    @api.depends('room_id')
+    def _compute_allowed_housekeeper_ids(self):
+        for rec in self:
+            domain = [('job_id.name', '=', 'Housekeeper')]
+            if rec.room_id:
+                domain = [
+                    ('job_id.name', '=', 'Housekeeper'),
+                    '|',
+                    ('property_ids', 'in', rec.room_id.pms_property_id.ids),
+                    ('property_ids', '=', False),
+                ]
+            rec.allowed_housekeeper_ids = self.env['hr.employee'].search(domain).ids
 
     @api.model
     def create(self, vals):
