@@ -159,13 +159,15 @@ class PmsDashboardServices(Component):
         self.env.cr.execute(
             """
                 SELECT 	d.date,
-                COALESCE(rln.num_occupied_rooms, 0) AS num_occupied_rooms,
-                COALESCE( rlo.num_out_of_service_rooms, 0) AS num_out_of_service_rooms,
-                COUNT(r.id) free_rooms
+                COALESCE(rln.num_occupied_rooms, 0) num_occupied_rooms,
+                COALESCE( rlo.num_out_of_service_rooms, 0) num_out_of_service_rooms,
+                COALESCE(total_rooms.num_total_rooms, 0)
+                    - COALESCE(rln.num_occupied_rooms, 0)
+                    - COALESCE( rlo.num_out_of_service_rooms, 0) free_rooms
                 FROM
                 (
                     SELECT (CURRENT_DATE + date) date
-                    FROM generate_series(date %s- CURRENT_DATE, date %s - CURRENT_DATE
+                    FROM generate_series(date %s - CURRENT_DATE, date %s - CURRENT_DATE
                 ) date) d
                 LEFT OUTER JOIN (SELECT COUNT(1) num_occupied_rooms, date
                                  FROM pms_reservation_line l
@@ -182,22 +184,17 @@ class PmsDashboardServices(Component):
                                  AND l.occupies_availability
                                  AND r.reservation_type = 'out'
                                  GROUP BY date
-                ) rlo ON rlo.date = d.date,
-                pms_room r
-                WHERE r.pms_property_id = %s
-                AND r.id NOT IN (SELECT room_id
-                                 FROM pms_reservation_line l
-                                 WHERE l.date = d.date
-                                 AND l.occupies_availability
-                                 AND l.pms_property_id = %s
-                                )
-                GROUP BY d.date, num_occupied_rooms, num_out_of_service_rooms
+                ) rlo ON rlo.date = d.date
+                LEFT OUTER JOIN (SELECT COUNT(1) num_total_rooms
+                                 FROM pms_room
+                                 WHERE pms_property_id = %s
+                ) total_rooms ON true
+                GROUP BY d.date, num_occupied_rooms, num_out_of_service_rooms, num_total_rooms
                 ORDER BY d.date
                     """,
             (
                 dateFrom,
                 dateTo,
-                pms_dashboard_search_param.pmsPropertyId,
                 pms_dashboard_search_param.pmsPropertyId,
                 pms_dashboard_search_param.pmsPropertyId,
                 pms_dashboard_search_param.pmsPropertyId,
