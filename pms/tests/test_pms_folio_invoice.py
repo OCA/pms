@@ -168,6 +168,8 @@ class TestPmsFolioInvoice(TestPms):
         state_expected = "invoiced"
         # ACT
         r1.folio_id._create_invoices()
+        r1.folio_id.move_ids.action_post()
+        r1.flush()
         # ASSERT
         self.assertEqual(
             state_expected,
@@ -202,6 +204,7 @@ class TestPmsFolioInvoice(TestPms):
             r1.folio_id.sale_line_ids.filtered(lambda l: not l.display_type)[0].id
         ] = 3
         r1.folio_id._create_invoices(lines_to_invoice=dict_lines)
+        r1.folio_id.move_ids.action_post()
 
         self.assertEqual(
             "invoiced",
