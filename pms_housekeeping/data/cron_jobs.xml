@@ -10,7 +10,10 @@
         <field name="doall" eval="False" />
         <field name="state">code</field>
         <field name="model_id" ref="model_pms_housekeeping_task" />
-        <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 05:00:00')" />
+        <field
+            name="nextcall"
+            eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 05:00:00')"
+        />
         <field name="code">model.generate_task_properties()</field>
     </record>
 </odoo>

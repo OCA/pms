@@ -464,9 +464,7 @@ class TestPmsHousekeepingTask(TestPms):
             }
         )
         # ACT & ASSERT
-        with self.assertRaises(
-            ValidationError, msg="Grandchild task shouldn´t exist."
-        ):
+        with self.assertRaises(ValidationError, msg="Grandchild task shouldn´t exist."):
             self.env["pms.housekeeping.task"].create(
                 {
                     "name": "Grandchild Task",
@@ -543,55 +541,56 @@ class TestPmsHousekeepingTask(TestPms):
             }
         )
 
-        #ASSERT
+        # ASSERT
         self.assertTrue(self.task, "Housekeeping task should be created")
 
     def test_task_housekeeper_room_inconsistency(self):
 
-            # ARRANGE
-            self.pms_property2 = self.env["pms.property"].create(
-                {
-                    "name": "Property 2",
-                    "company_id": self.company1.id,
-                    "default_pricelist_id": self.pricelist1.id,
-                }
-            )
-            self.room2 = self.env["pms.room"].create(
-                {
-                    "name": "Room 202",
-                    "pms_property_id": self.pms_property2.id,
-                    "room_type_id": self.room_type1.id,
-                }
-            )
-            self.employee = self.env["hr.employee"].create(
-                {
-                    "name": "Test Employee",
-                    "company_id": self.company1.id,
-                    "job_id": self.env.ref("pms_housekeeping.housekeeping_job_id").id,
-                    "property_ids": [(6, 0, [self.pms_property1.id])],
-                }
-            )
-            # create task type
-            self.task_type = self.env["pms.housekeeping.task.type"].create(
-                {
-                    "name": "Task Type 1",
-                    "is_checkout": True,
-                }
-            )
+        # ARRANGE
+        self.pms_property2 = self.env["pms.property"].create(
+            {
+                "name": "Property 2",
+                "company_id": self.company1.id,
+                "default_pricelist_id": self.pricelist1.id,
+            }
+        )
+        self.room2 = self.env["pms.room"].create(
+            {
+                "name": "Room 202",
+                "pms_property_id": self.pms_property2.id,
+                "room_type_id": self.room_type1.id,
+            }
+        )
+        self.employee = self.env["hr.employee"].create(
+            {
+                "name": "Test Employee",
+                "company_id": self.company1.id,
+                "job_id": self.env.ref("pms_housekeeping.housekeeping_job_id").id,
+                "property_ids": [(6, 0, [self.pms_property1.id])],
+            }
+        )
+        # create task type
+        self.task_type = self.env["pms.housekeeping.task.type"].create(
+            {
+                "name": "Task Type 1",
+                "is_checkout": True,
+            }
+        )
 
-            # ACT & ASSERT
-            with self.assertRaises(
-                ValidationError, msg="The room and housekeeper should belong to the same property."
-            ):
-                self.env["pms.housekeeping.task"].create(
-                    {
-                        "name": "Task",
-                        "room_id": self.room2.id,
-                        "task_type_id": self.task_type.id,
-                        "task_date": datetime.today(),
-                        "housekeeper_ids": [(6, 0, [self.employee.id])],
-                    }
-                )
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="The room and housekeeper should belong to the same property.",
+        ):
+            self.env["pms.housekeeping.task"].create(
+                {
+                    "name": "Task",
+                    "room_id": self.room2.id,
+                    "task_type_id": self.task_type.id,
+                    "task_date": datetime.today(),
+                    "housekeeper_ids": [(6, 0, [self.employee.id])],
+                }
+            )
 
     def test_task_housekeeper_room_consistency(self):
         # ARRANGE

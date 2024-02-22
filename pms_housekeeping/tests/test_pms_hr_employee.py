@@ -1,4 +1,5 @@
 from odoo.exceptions import ValidationError
+
 from .common import TestPms
 
 
@@ -54,7 +55,8 @@ class TestPmsHrEmployee(TestPms):
 
         # ASSERT
         self.assertTrue(
-            self.hr_employee.pre_assigned_room_ids, "Pre assigned room is not consistent with property"
+            self.hr_employee.pre_assigned_room_ids,
+            "Pre assigned room is not consistent with property",
         )
 
     def test_employee_pre_assigned_room_consistent_without_properties(self):
@@ -72,7 +74,8 @@ class TestPmsHrEmployee(TestPms):
 
         # ASSERT
         self.assertTrue(
-            self.hr_employee.pre_assigned_room_ids, "Pre assigned room is not consistent without properties"
+            self.hr_employee.pre_assigned_room_ids,
+            "Pre assigned room is not consistent without properties",
         )
 
     def test_not_pre_assigned_room_no_housekeeper_employee(self):

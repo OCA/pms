@@ -1,5 +1,6 @@
-from .common import TestPms
 from odoo.exceptions import ValidationError
+
+from .common import TestPms
 
 
 class TestPmsHousekeepingTask(TestPms):

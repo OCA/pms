@@ -245,18 +245,18 @@ class PmsHouseKeepingTask(models.Model):
             else:
                 rec.priority = False
 
-    @api.depends('room_id')
+    @api.depends("room_id")
     def _compute_allowed_housekeeper_ids(self):
         for rec in self:
-            domain = [('job_id.name', '=', 'Housekeeper')]
+            domain = [("job_id.name", "=", "Housekeeper")]
             if rec.room_id:
                 domain = [
-                    ('job_id.name', '=', 'Housekeeper'),
-                    '|',
-                    ('property_ids', 'in', rec.room_id.pms_property_id.ids),
-                    ('property_ids', '=', False),
+                    ("job_id.name", "=", "Housekeeper"),
+                    "|",
+                    ("property_ids", "in", rec.room_id.pms_property_id.ids),
+                    ("property_ids", "=", False),
                 ]
-            rec.allowed_housekeeper_ids = self.env['hr.employee'].search(domain).ids
+            rec.allowed_housekeeper_ids = self.env["hr.employee"].search(domain).ids
 
     @api.model
     def create(self, vals):
