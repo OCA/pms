@@ -656,6 +656,10 @@ class TestPmsPricelist(TestPms):
     @freeze_time("2000-01-01")
     def _test_inconsistencies_pricelist_daily(self):
         """
+        Daily pricelist should have certain rules: have only one property,
+        the compute_price should be fixed and the difference days between date_start_consumption
+        and date_end_consumtion should be one day
+
         Test cases to verify that a daily pricelist cannot be created because:
         (Test case1): item has two properties and a items daily pricelist only
                       can has a one property.

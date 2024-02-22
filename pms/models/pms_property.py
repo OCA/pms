@@ -238,6 +238,9 @@ class PmsProperty(models.Model):
         default=get_default_logo(),
     )
 
+    def _valid_field_parameter(self, field, name):
+        return name == "tracking" or super()._valid_field_parameter(field, name)
+
     @api.depends_context(
         "checkin",
         "checkout",

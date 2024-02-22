@@ -727,24 +727,6 @@ class TestPmsFolio(TestPms):
                 }
             )
 
-    def _test_create_partner_in_folio(self):
-        """
-        Check that a res_partner is created from a folio.
-        ------------
-        A folio is created by adding the property_id a res.partner
-        should be created, which is what is checked after creating
-        the folio.
-        """
-        # ACT
-        folio1 = self.env["pms.folio"].create(
-            {
-                "pms_property_id": self.pms_property1.id,
-                "partner_name": "Savannah Byles",
-            }
-        )
-        # ASSERT
-        self.assertTrue(folio1.partner_id.id, "The partner has not been created")
-
     def test_auto_complete_partner_mobile(self):
         """
         It is checked that the mobile field of the folio

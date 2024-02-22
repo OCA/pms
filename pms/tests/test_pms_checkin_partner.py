@@ -580,14 +580,15 @@ class TestPmsCheckinPartner(TestPms):
         """
         The state of reservation 'arrival_delayed' happen when the checkin day
         has already passed and the reservation had not yet changed its state to onboard.
-        But, if checkout day is passed without checkout, the reservation pass to
-        departure delayed with a reservation note warning
+        But, if checkout day is passed without checkout, the reservation state still
+        been 'arrival_delayed'
 
         The date that was previously set was 2012-01-14,
         it was advanced two days (to 2012-01-16).
         There are three reservations with checkout day on 2012-01-15,
         after invoking the method auto_arrival_delayed
-        those reservation change their state to 'departure_delayed'
+        those reservation not change their state to 'departure_delayed',
+        still in 'arrival_delayed'
         """
 
         # ARRANGE
@@ -677,13 +678,13 @@ class TestPmsCheckinPartner(TestPms):
         freezer.start()
         PmsReservation.auto_arrival_delayed()
 
-        departure_delayed_reservations = folio_1.reservation_ids.filtered(
-            lambda r: r.state == "departure_delayed"
+        arrival_delayed_reservations = folio_1.reservation_ids.filtered(
+            lambda r: r.state == "arrival_delayed"
         )
 
         # ASSERT
         self.assertEqual(
-            len(departure_delayed_reservations),
+            len(arrival_delayed_reservations),
             3,
             "Reservations not set like No Show",
         )

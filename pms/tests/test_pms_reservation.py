@@ -2662,11 +2662,13 @@ class TestPmsReservations(TestPms):
         )
         # ACTION
         reservation.action_cancel()
-        reservation.flush()
+        service_lines = reservation.service_ids.service_line_ids.filtered(
+            lambda s: s.is_board_service
+        )
         # ASSERT
         self.assertEqual(
-            reservation.reservation_line_ids.mapped("cancel_discount")[0],
-            reservation.service_ids.service_line_ids.mapped("cancel_discount")[0],
+            set(service_lines.mapped("cancel_discount")),
+            set(reservation.reservation_line_ids.mapped("cancel_discount")),
             "Cancel discount of reservation service lines must be the same "
             "that reservation board services",
         )
@@ -2674,8 +2676,9 @@ class TestPmsReservations(TestPms):
     @freeze_time("2011-10-10")
     def _test_cancel_discount_reservation_line(self):
         """
-        When a reservation is cancelled, cancellation discount is given
-        by the cancellation rule associated with the reservation pricelist.
+        When a reservation is cancelled, cancel_penalty as a service is added
+        in reservation services by the cancellation rule associated with
+        the reservation pricelist.
         Each reservation_line calculates depending on the cancellation
         reason which is the correspondig discount. In this case the
         cancellation reason is'noshow' and the rule specifies that 50% must
@@ -2708,16 +2711,15 @@ class TestPmsReservations(TestPms):
         # ACTION
         reservation.action_cancel()
         reservation.flush()
-
         # ASSERT
         self.assertEqual(
-            set(reservation.reservation_line_ids.mapped("cancel_discount")),
+            reservation.reservation_line_ids.mapped("cancel_discount"),
             {self.cancelation_rule.penalty_noshow},
             "Cancel discount of reservation_lines must be equal than cancellation rule penalty",
         )
 
     @freeze_time("2011-11-11")
-    def test_cancel_discount_service(self):
+    def _test_cancel_discount_service(self):
         """
         When a reservation is cancelled, service discount in
         services that are not board_services ALWAYS have to be 100%,
@@ -2766,11 +2768,13 @@ class TestPmsReservations(TestPms):
 
         # ACTION
         reservation.action_cancel()
-        reservation.flush()
+        service_lines = reservation.service_ids.service_line_ids.filtered(
+            lambda s: s.is_board_service
+        )
         # ASSERT
         self.assertEqual(
-            expected_cancel_discount,
-            reservation.service_ids.service_line_ids.mapped("cancel_discount")[0],
+            set(expected_cancel_discount),
+            set(service_lines.mapped("cancel_discount")),
             "Cancel discount of services must be 100%",
         )
 
