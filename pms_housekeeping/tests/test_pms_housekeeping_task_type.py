@@ -7,7 +7,7 @@ class TestPmsHousekeepingTask(TestPms):
     def setUp(self):
         super().setUp()
 
-    def test_days_after_clean_overnight_constraint(self):
+    def test_task_type_days_after_overnight_should_be_gt_zero(self):
         # ARRANGE, ACT & ASSERT
         # create task type and verify that the constraint is raised
         with self.assertRaises(
@@ -21,7 +21,7 @@ class TestPmsHousekeepingTask(TestPms):
                 }
             )
 
-    def test_days_after_clean_empty_constraint(self):
+    def test_task_type_days_after_empty_should_be_gt_zero(self):
         # ARRANGE, ACT & ASSERT
         # create task type and verify that the constraint is raised
         with self.assertRaises(
@@ -35,7 +35,7 @@ class TestPmsHousekeepingTask(TestPms):
                 }
             )
 
-    def test_no_create_grandchild_task_type(self):
+    def test_task_type_max_inheritance(self):
         # ARRANGE
         # create task type
         parent_task_type = self.env["pms.housekeeping.task.type"].create(
@@ -53,7 +53,8 @@ class TestPmsHousekeepingTask(TestPms):
         )
         # ACT & ASSERT
         with self.assertRaises(
-            ValidationError, msg="Grandchild task type shouldn´t exist."
+            ValidationError,
+            msg="The maximum level of inheritance between tasks types should be 2",
         ):
             self.env["pms.housekeeping.task.type"].create(
                 {

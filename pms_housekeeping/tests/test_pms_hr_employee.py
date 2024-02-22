@@ -7,9 +7,10 @@ class TestPmsHrEmployee(TestPms):
     def setUp(self):
         super().setUp()
 
-    def test_employee_pre_assigned_room_inconsistent(self):
+    def test_hr_employee_inconsistency_between_employees_properties_and_pre_assigned_rooms(
+        self,
+    ):
         # ARRANGE
-
         self.pms_property2 = self.env["pms.property"].create(
             {
                 "name": "Property 2",
@@ -24,7 +25,6 @@ class TestPmsHrEmployee(TestPms):
                 "room_type_id": self.room_type1.id,
             }
         )
-
         # ACT & ASSERT
         with self.assertRaises(
             ValidationError, msg="The room should belong to the employee's property."
@@ -39,7 +39,9 @@ class TestPmsHrEmployee(TestPms):
                 }
             )
 
-    def test_employee_pre_assigned_room_consistent_with_property(self):
+    def test_hr_employee_consistency_between_employees_properties_and_pre_assigned_rooms(
+        self,
+    ):
         # ARRANGE
         self.hr_employee = self.env["hr.employee"].create(
             {
@@ -59,7 +61,9 @@ class TestPmsHrEmployee(TestPms):
             "Pre assigned room is not consistent with property",
         )
 
-    def test_employee_pre_assigned_room_consistent_without_properties(self):
+    def test_hr_employee_consistency_between_employees_no_properties_and_pre_assigned_rooms(
+        self,
+    ):
         # ARRANGE
         self.hr_employee = self.env["hr.employee"].create(
             {
@@ -78,7 +82,9 @@ class TestPmsHrEmployee(TestPms):
             "Pre assigned room is not consistent without properties",
         )
 
-    def test_not_pre_assigned_room_no_housekeeper_employee(self):
+    def test_hr_employee_consistency_between_employees_pre_assigned_rooms_and_position(
+        self,
+    ):
         # ARRANGE
         self.job_id = self.env["hr.job"].create(
             {
