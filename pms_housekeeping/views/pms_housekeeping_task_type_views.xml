@@ -59,10 +59,7 @@
                             widget="many2many_tags"
                             domain="[('job_id.name', '=', 'Housekeeper')]"
                         />
-                        <field
-                            name="pms_property_ids"
-                            widget="many2many_tags"
-                        />
+                        <field name="pms_property_ids" widget="many2many_tags" />
                         <field name="parent_id" />
                         <field name="description" />
                     </group>

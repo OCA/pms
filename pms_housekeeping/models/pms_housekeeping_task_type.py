@@ -47,7 +47,6 @@ class PmsHouseKeepingTaskType(models.Model):
         string="Properties",
     )
 
-
     @api.constrains("is_overnight", "days_after_clean_overnight")
     def _check_days_after_clean_overnight(self):
         for record in self:
@@ -77,7 +76,7 @@ class PmsHouseKeepingTaskType(models.Model):
         for record in self:
             if record.housekeeper_ids:
                 for employee in record.housekeeper_ids:
-                    if employee.job_id.name != 'Housekeeper':
+                    if employee.job_id.name != "Housekeeper":
                         raise ValidationError(
                             _("The job position should be Housekeeper.")
                         )

@@ -78,7 +78,7 @@
                         widget="many2many_tags"
                         domain="[('id', 'in', allowed_housekeeper_ids)]"
                     />
-                    <field name="allowed_housekeeper_ids" invisible="1"/>
+                    <field name="allowed_housekeeper_ids" invisible="1" />
                 </group>
                 <group class="col-12">
                     <field name="parent_id" />
