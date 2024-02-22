@@ -11,7 +11,7 @@
                 <field name="state" />
                 <field name="priority" />
                 <field name="cleaning_comments" />
-                <field name="employee_ids" />
+                <field name="housekeeper_ids" />
                 <field name="parent_id" />
             </tree>
         </field>
@@ -73,7 +73,12 @@
                 <group class="col-6">
                     <field name="task_date" />
                     <field name="priority" />
-                    <field name="employee_ids" widget="many2many_tags" />
+                    <field
+                        name="housekeeper_ids"
+                        widget="many2many_tags"
+                        domain="[('id', 'in', allowed_housekeeper_ids)]"
+                    />
+                    <field name="allowed_housekeeper_ids" invisible="1"/>
                 </group>
                 <group class="col-12">
                     <field name="parent_id" />
