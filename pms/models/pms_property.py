@@ -216,7 +216,7 @@ class PmsProperty(models.Model):
         default=400.0,
     )
     avoid_simplified_max_amount_downpayment = fields.Boolean(
-        string="Downpayment Invoive without limit amount",
+        string="Downpayment Invoice without limit amount",
         help="Avoid simplified invoice max amount downpayment",
         default=True,
     )
