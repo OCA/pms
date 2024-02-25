@@ -581,7 +581,7 @@ class PmsFolioService(Component):
     )
     # flake8:noqa=C901
     def create_folio(self, pms_folio_info):
-        call_type = self.get_api_client_type()
+        external_app = self.env.user.pms_api_client
         if pms_folio_info.reservationType == "out":
             vals = {
                 "pms_property_id": pms_folio_info.pmsPropertyId,
@@ -652,6 +652,13 @@ class PmsFolioService(Component):
             }
             if reservation.reservationLines:
                 vals_lines = []
+                board_day_price = 0
+                # The service price is included in day price when it is a board service (external api)
+                if external_app and vals.get("board_service_room_id"):
+                    board = self.env["pms.board.service.room.type"].browse(
+                        vals["board_service_room_id"]
+                    )
+                    board_day_price = board.amount * reservation.adults
                 for reservationLine in reservation.reservationLines:
                     vals_lines.append(
                         (
@@ -659,7 +666,7 @@ class PmsFolioService(Component):
                             0,
                             {
                                 "date": reservationLine.date,
-                                "price": reservationLine.price,
+                                "price": reservationLine.price - board_day_price,
                                 "discount": reservationLine.discount,
                             },
                         )
@@ -672,10 +679,8 @@ class PmsFolioService(Component):
             reservation_record = (
                 self.env["pms.reservation"]
                 .with_context(
-                    skip_compute_service_ids=False
-                    if call_type == "external_app"
-                    else True,
-                    force_overbooking=True if call_type == "external_app" else False,
+                    skip_compute_service_ids=False if external_app else True,
+                    force_overbooking=True if external_app else False,
                 )
                 .create(vals)
             )
@@ -1423,29 +1428,16 @@ class PmsFolioService(Component):
                 )
         return message_body
 
-    def get_api_client_type(self):
-        """
-        Returns the type of the call:
-            - Internal APP: The call is made from the internal vue app
-            - External APP: The call is made from an external app
-        """
-        # TODO: Set the new roles in API Key users:
-        #    - Channel Manager
-        #    - Booking Engine
-        #    - ...
-        if self.env.user.pms_api_client:
-            return "external_app"
-        return "internal_app"
-
     def get_channel_origin_id(self, sale_channel_id, agency_id):
         """
         Returns the channel origin id for the given agency
         or website channel if not agency is given
         (TODO change by configuration user api in the future)
         """
+        external_app = self.env.user.pms_api_client
         if sale_channel_id:
             return sale_channel_id
-        if not agency_id and self.get_api_client_type() == "external_app":
+        if not agency_id and external_app:
             # TODO change by configuration user api in the future
             return (
                 self.env["pms.sale.channel"]
@@ -1464,7 +1456,8 @@ class PmsFolioService(Component):
         """
         Returns the language for the given language code
         """
-        if self.get_api_client_type() == "internal_app":
+        external_app = self.env.user.pms_api_client
+        if not external_app:
             return lang_code
         return self.env["res.lang"].search([("iso_code", "=", lang_code)], limit=1).code
 
@@ -1478,7 +1471,8 @@ class PmsFolioService(Component):
         """
         board_service = self.env["pms.board.service"].browse(board_service_id)
         room_type = self.env["pms.room.type"].browse(room_type_id)
-        if self.get_api_client_type() == "internal_app":
+        external_app = self.env.user.pms_api_client
+        if not external_app:
             return board_service_id
         if board_service and room_type:
             return (
@@ -1541,7 +1535,7 @@ class PmsFolioService(Component):
         return folio.id
 
     def update_folio_values(self, folio, pms_folio_info):
-        call_type = self.get_api_client_type()
+        external_app = self.env.user.pms_api_client
         folio_vals = {}
         if pms_folio_info.state == "cancel":
             folio.action_cancel()
@@ -1597,8 +1591,8 @@ class PmsFolioService(Component):
                     lambda r: r.state != "cancel"
                 ).with_context(modified=True, force_write_blocked=True).action_cancel()
             folio.with_context(
-                skip_compute_service_ids=True,
-                force_overbooking=True if call_type == "external_app" else False,
+                skip_compute_service_ids=False if external_app else True,
+                force_overbooking=True if external_app else False,
             ).write(folio_vals)
         # Compute OTA transactions
         pms_folio_info.transactions = self.normalize_payments_structure(pms_folio_info)
@@ -1621,6 +1615,9 @@ class PmsFolioService(Component):
         and incorporate them in the transactions datamodel param
         """
         if pms_folio_info.transactions:
+            # If the payment issuer is the API client, the payment will come in transactions
+            # if not, we will have to look in the payload for the
+            # payment identifier configured in the OTA
             for transaction in pms_folio_info.transactions:
                 if not transaction.journalId:
                     ota_conf = self.env["ota.property.settings"].search(
@@ -1671,6 +1668,7 @@ class PmsFolioService(Component):
         To find the reservation we compare the number of reservations and try
         To return a list of ids with resevations to cancel by modification
         """
+        external_app = self.env.user.pms_api_client
         cmds = []
         for info_reservation in info_reservations:
             vals = {}
@@ -1700,8 +1698,16 @@ class PmsFolioService(Component):
             if info_reservation.children:
                 vals.update({"children": info_reservation.children})
             if info_reservation.reservationLines:
+                # The service price is included in day price when it is a board service (external api)
+                board_day_price = 0
+                if external_app and vals.get("board_service_room_id"):
+                    board = self.env["pms.board.service.room.type"].browse(
+                        vals["board_service_room_id"]
+                    )
+                    board_day_price = board.amount * info_reservation.adults
                 reservation_lines_cmds = self.wrapper_reservation_lines(
-                    info_reservation
+                    reservation=info_reservation,
+                    board_day_price=board_day_price,
                 )
                 if reservation_lines_cmds:
                     vals.update({"reservation_line_ids": reservation_lines_cmds})
@@ -1717,7 +1723,7 @@ class PmsFolioService(Component):
                 cmds.append((0, False, vals))
         return cmds
 
-    def wrapper_reservation_lines(self, reservation):
+    def wrapper_reservation_lines(self, reservation, board_day_price=0):
         cmds = []
         for line in reservation.reservationLines:
             cmds.append(
@@ -1726,7 +1732,7 @@ class PmsFolioService(Component):
                     False,
                     {
                         "date": line.date,
-                        "price": line.price,
+                        "price": line.price - board_day_price,
                         "discount": line.discount or 0,
                     },
                 )
