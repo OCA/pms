@@ -22,13 +22,6 @@
                             string="PMS API Client"
                             help="This user is used to PMS API's client (channel managers, precheckin apps, booking engines, etc.)"
                         />
-                        <field
-                            name="pms_api_payment_journal_id"
-                            string="PMS API Payment Journal"
-                            domain="[('type', '=', 'bank')]"
-                            help="This journal is used to PMS API's client (channel managers, precheckin apps, booking engines, etc.)"
-                            attrs="{'invisible': [('pms_api_client', '=', False)]}"
-                        />
                     </group>
                 </group>
             </xpath>
