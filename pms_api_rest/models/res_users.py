@@ -21,10 +21,25 @@ class ResUsers(models.Model):
         store=True,
         readonly=False,
     )
-
     pms_api_client = fields.Boolean(
         string="PMS API Client",
         help="PMS API Client",
+    )
+    url_endpoint_prices = fields.Char(
+        string="URL Endpoint Prices",
+        help="URL Endpoint Prices",
+    )
+    url_endpoint_availability = fields.Char(
+        string="URL Endpoint Availability",
+        help="URL Endpoint Availability",
+    )
+    url_endpoint_rules = fields.Char(
+        string="URL Endpoint Rules",
+        help="URL Endpoint Rules",
+    )
+    external_public_token = fields.Char(
+        string="External Public Token",
+        help="External Public Token",
     )
 
     def _get_default_avail_rule_fields(self):

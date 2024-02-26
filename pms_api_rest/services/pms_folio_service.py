@@ -1764,14 +1764,20 @@ class PmsFolioService(Component):
         It is used to override potential availability changes on the channel made unilaterally,
         for example, upon entering or canceling a reservation.
         """
-        if not room_type_ids:
+        api_clients = self.env["res.users"].search(
+            [
+                ("pms_api_client", "=", True),
+                ("pms_property_ids", "in", pms_property_id),
+            ]
+        )
+        if not room_type_ids or not api_clients:
             return False
         for room_type_id in room_type_ids:
-            pms_property_id = self.env["pms.property"].browse(pms_property_id)
-            self.env["pms.property"].neobookings_push_batch(
+            pms_property = self.env["pms.property"].browse(pms_property_id)
+            self.env["pms.property"].pms_api_push_batch(
                 call_type="availability",  # 'availability', 'prices', 'restrictions'
                 date_from=date_from.strftime("%Y-%m-%d"),  # 'YYYY-MM-DD'
                 date_to=date_to.strftime("%Y-%m-%d"),  # 'YYYY-MM-DD'
                 filter_room_type_id=room_type_id,
-                pms_property_codes=[pms_property_id.pms_property_code],
+                pms_property_codes=[pms_property.pms_property_code],
             )
