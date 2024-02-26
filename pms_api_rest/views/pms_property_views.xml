@@ -102,6 +102,16 @@
                                 options="{'no_create': True}"
                             />
                             <field name="pms_api_payment_identifier" />
+                            <field
+                                name="main_avail_plan_id"
+                                string="Main Availability Plan"
+                            />
+                            <field name="main_pricelist_id" string="Main Pricelist" />
+                            <field
+                                name="excluded_room_type_ids"
+                                widget="many2many_tags"
+                                string="Excluded Room Types"
+                            />
                         </tree>
                     </field>
                 </group>
