@@ -32,3 +32,18 @@ class OtaPropertySettings(models.Model):
             The string will be searched within the partnerRequests parameter.
         """,
     )
+    main_avail_plan_id = fields.Many2one(
+        string="Main Availability Plan",
+        help="Main Availability Plan",
+        comodel_name="pms.availability.plan",
+    )
+    main_pricelist_id = fields.Many2one(
+        string="Main Pricelist",
+        help="Main Pricelist",
+        comodel_name="product.pricelist",
+    )
+    excluded_room_type_ids = fields.Many2many(
+        string="Excluded Room Types",
+        help="Excluded Room Types",
+        comodel_name="pms.room.type",
+    )
