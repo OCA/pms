@@ -114,11 +114,17 @@ class PmsProperty(models.Model):
     # PUSH API NOTIFICATIONS
     def get_payload_avail(self, avails, client):
         self.ensure_one()
-        endpoint = client.url_endpoint_avail
+        endpoint = client.url_endpoint_availability
         pms_property_id = self.id
         avails_dict = {"pmsPropertyId": pms_property_id, "avails": []}
         room_type_ids = avails.mapped("room_type_id.id")
-        plan_avail = client.main_avail_plan_id
+        property_client_conf = self.env["ota.property.settings"].search(
+            [
+                ("pms_property_id", "=", self.id),
+                ("agency_id", "=", client.id),
+            ]
+        )
+        plan_avail = property_client_conf.main_avail_plan_id
         for room_type_id in room_type_ids:
             room_type_avails = sorted(
                 avails.filtered(lambda r: r.room_type_id.id == room_type_id),
@@ -292,7 +298,13 @@ class PmsProperty(models.Model):
             date_from + datetime.timedelta(days=x)
             for x in range((date_to - date_from).days + 1)
         ]
-        plan_avail = client.main_avail_plan_id
+        property_client_conf = self.env["ota.property.settings"].search(
+            [
+                ("pms_property_id", "=", pms_property_id),
+                ("agency_id", "=", client.id),
+            ]
+        )
+        plan_avail = property_client_conf.main_avail_plan_id
         for date in all_dates:
             avail_record = avail_records.filtered(lambda r: r.date == date)
             if avail_record:
@@ -386,13 +398,23 @@ class PmsProperty(models.Model):
                 }
             ]
         """
+        property_client_conf = self.env["ota.property.settings"].search(
+            [
+                ("pms_property_id", "=", pms_property_id),
+                ("agency_id", "=", client.id),
+            ]
+        )
         rules_records = self.env["pms.availability.plan.rule"].search(
             [
                 ("date", ">=", date_from),
                 ("date", "<=", date_to),
                 ("pms_property_id", "=", pms_property_id),
                 ("room_type_id", "=", room_type_id),
-                ("availability_plan_id", "=", self.main_avail_plan_id.id),
+                (
+                    "availability_plan_id",
+                    "=",
+                    property_client_conf.main_avail_plan_id.id,
+                ),
             ],
             order="date",
         )
@@ -463,8 +485,14 @@ class PmsProperty(models.Model):
             for x in range((date_to - date_from).days + 1)
         ]
         product = self.env["pms.room.type"].browse(room_type_id).product_id
+        property_client_conf = self.env["ota.property.settings"].search(
+            [
+                ("pms_property_id", "=", pms_property_id),
+                ("agency_id", "=", client.id),
+            ]
+        )
         pms_property = self.env["pms.property"].browse(pms_property_id)
-        pricelist = client.main_pricelist_id
+        pricelist = property_client_conf.main_pricelist_id
         product_context = dict(
             self.env.context,
             date=datetime.datetime.today().date(),
@@ -544,6 +572,12 @@ class PmsProperty(models.Model):
             clients = client
         else:
             clients = self.env["res.users"].search([("pms_api_client", "=", True)])
+        property_client_conf = self.env["ota.property.settings"].search(
+            [
+                ("pms_property_id", "in", clients.pms_property_ids.ids),
+                ("agency_id", "in", clients.ids),
+            ]
+        )
         _logger.info("PMS API push batch")
         if isinstance(date_from, str):
             date_from = datetime.datetime.strptime(date_from, "%Y-%m-%d").date()
@@ -571,7 +605,10 @@ class PmsProperty(models.Model):
                     else self.env["pms.room"]
                     .search([("pms_property_id", "=", pms_property_id)])
                     .mapped("room_type_id")
-                    .filtered(lambda r: r.id not in client.excluded_room_type_ids.ids)
+                    .filtered(
+                        lambda r: r.id
+                        not in property_client_conf.excluded_room_type_ids.ids
+                    )
                     .ids
                 )
                 payload = {
@@ -580,7 +617,7 @@ class PmsProperty(models.Model):
                 data = []
                 for room_type_id in room_type_ids:
                     if call_type == "availability":
-                        endpoint = client.url_endpoint_avail
+                        endpoint = client.url_endpoint_availability
                         data.extend(
                             pms_property.generate_availability_json(
                                 date_from=date_from,
