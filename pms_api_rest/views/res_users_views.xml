@@ -17,10 +17,36 @@
                             options="{'no_create': True}"
                             domain="['&amp;',('model_id', '=', 'pms.availability.plan.rule'), ('name', 'in', ('min_stay', 'max_stay', 'quota',  'max_stay_arrival', 'closed_arrival', 'closed', 'closed_departure', 'min_stay_arrival', 'max_avail'))]"
                         />
+                    </group>
+                    <group string="Clien API configuration">
                         <field
                             name="pms_api_client"
                             string="PMS API Client"
                             help="This user is used to PMS API's client (channel managers, precheckin apps, booking engines, etc.)"
+                        />
+                        <field
+                            name="url_endpoint_prices"
+                            string="Prices Endpoint"
+                            help="URL endpoint to get prices"
+                            attrs="{'invisible': [('pms_api_client', '=', False)]}"
+                        />
+                        <field
+                            name="url_endpoint_availability"
+                            string="Availability Endpoint"
+                            help="URL endpoint to get availability"
+                            attrs="{'invisible': [('pms_api_client', '=', False)]}"
+                        />
+                        <field
+                            name="url_endpoint_rules"
+                            string="Avail Rules Endpoint"
+                            help="URL endpoint to get reservations"
+                            attrs="{'invisible': [('pms_api_client', '=', False)]}"
+                        />
+                        <field
+                            name="external_public_token"
+                            string="Public Token"
+                            help="URL endpoint to get rules"
+                            attrs="{'invisible': [('pms_api_client', '=', False)]}"
                         />
                     </group>
                 </group>
