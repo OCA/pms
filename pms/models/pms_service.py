@@ -130,6 +130,12 @@ class PmsService(models.Model):
         string="Is Board Service",
         help="Indicates if the service is part of a board service",
     )
+    board_service_line_id = fields.Many2one(
+        string="Board Service Line",
+        help="Board Service Line in which this service is included",
+        comodel_name="pms.board.service.room.type.line",
+        check_pms_properties=True,
+    )
     # Non-stored related field to allow portal user to
     # see the image of the product he has ordered
     product_image = fields.Binary(
@@ -537,7 +543,17 @@ class PmsService(models.Model):
         # TODO: Pass per_person to service line from product default_per_person
         #   When the user modifies the quantity avoid overwriting
         if self.product_id.per_person:
-            qty = self.reservation_id.adults
+            if self.is_board_service:
+                qty = (
+                    self.reservation.adults if self.board_service_line_id.adults else 0
+                )
+                qty += (
+                    self.reservation.children
+                    if self.board_service_line_id.children
+                    else 0
+                )
+            else:
+                qty = self.reservation_id.adults
         return qty
 
     def _get_price_unit_line(self, date=False):

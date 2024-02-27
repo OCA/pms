@@ -18,6 +18,8 @@
                         <tree editable="bottom">
                             <field name="product_id" />
                             <field name="amount" />
+                            <field name="adults" />
+                            <field name="children" />
                             <field name="pms_property_ids" invisible="1" />
                         </tree>
                     </field>
