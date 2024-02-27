@@ -582,185 +582,223 @@ class PmsFolioService(Component):
     # flake8:noqa=C901
     def create_folio(self, pms_folio_info):
         external_app = self.env.user.pms_api_client
-        if pms_folio_info.reservationType == "out":
-            vals = {
-                "pms_property_id": pms_folio_info.pmsPropertyId,
-                "reservation_type": pms_folio_info.reservationType,
-                "closure_reason_id": pms_folio_info.closureReasonId,
-                "out_service_description": pms_folio_info.outOfServiceDescription
-                if pms_folio_info.outOfServiceDescription
-                else None,
-            }
-        else:
-            vals = {
-                "pms_property_id": pms_folio_info.pmsPropertyId,
-                "agency_id": pms_folio_info.agencyId
-                if pms_folio_info.agencyId
-                else False,
-                "sale_channel_origin_id": self.get_channel_origin_id(
-                    pms_folio_info.saleChannelId, pms_folio_info.agencyId
-                ),
-                "reservation_type": pms_folio_info.reservationType or "normal",
-                "external_reference": pms_folio_info.externalReference,
-                "internal_comment": pms_folio_info.internalComment,
-                "lang": self.get_language(pms_folio_info.language),
-            }
+        try:
+            if pms_folio_info.reservationType == "out":
+                vals = {
+                    "pms_property_id": pms_folio_info.pmsPropertyId,
+                    "reservation_type": pms_folio_info.reservationType,
+                    "closure_reason_id": pms_folio_info.closureReasonId,
+                    "out_service_description": pms_folio_info.outOfServiceDescription
+                    if pms_folio_info.outOfServiceDescription
+                    else None,
+                }
+            else:
+                vals = {
+                    "pms_property_id": pms_folio_info.pmsPropertyId,
+                    "agency_id": pms_folio_info.agencyId
+                    if pms_folio_info.agencyId
+                    else False,
+                    "sale_channel_origin_id": self.get_channel_origin_id(
+                        pms_folio_info.saleChannelId, pms_folio_info.agencyId
+                    ),
+                    "reservation_type": pms_folio_info.reservationType or "normal",
+                    "external_reference": pms_folio_info.externalReference,
+                    "internal_comment": pms_folio_info.internalComment,
+                    "lang": self.get_language(pms_folio_info.language),
+                }
 
-            if pms_folio_info.partnerId:
-                vals.update(
+                if pms_folio_info.partnerId:
+                    vals.update(
+                        {
+                            "partner_id": pms_folio_info.partnerId,
+                        }
+                    )
+                else:
+                    if pms_folio_info.partnerName:
+                        vals.update(
+                            {
+                                "partner_name": pms_folio_info.partnerName,
+                            }
+                        )
+                    if pms_folio_info.partnerPhone:
+                        vals.update(
+                            {
+                                "mobile": pms_folio_info.partnerPhone,
+                            }
+                        )
+                    if pms_folio_info.partnerEmail:
+                        vals.update(
+                            {
+                                "email": pms_folio_info.partnerEmail,
+                            }
+                        )
+            folio = self.env["pms.folio"].create(vals)
+            for reservation in pms_folio_info.reservations:
+                vals = {
+                    "folio_id": folio.id,
+                    "room_type_id": reservation.roomTypeId,
+                    "pms_property_id": pms_folio_info.pmsPropertyId,
+                    "pricelist_id": pms_folio_info.pricelistId,
+                    "external_reference": pms_folio_info.externalReference or "normal",
+                    "board_service_room_id": self.get_board_service_room_type_id(
+                        reservation.boardServiceId,
+                        reservation.roomTypeId,
+                        pms_folio_info.pmsPropertyId,
+                    ),
+                    "preferred_room_id": reservation.preferredRoomId,
+                    "adults": reservation.adults,
+                    "reservation_type": pms_folio_info.reservationType or "normal",
+                    "children": reservation.children,
+                    "preconfirm": pms_folio_info.preconfirm,
+                }
+                if reservation.reservationLines:
+                    vals_lines = []
+                    board_day_price = 0
+                    # The service price is included in day price when it is a board service (external api)
+                    if external_app and vals.get("board_service_room_id"):
+                        board = self.env["pms.board.service.room.type"].browse(
+                            vals["board_service_room_id"]
+                        )
+                        board_day_price = board.amount * reservation.adults
+                    for reservationLine in reservation.reservationLines:
+                        vals_lines.append(
+                            (
+                                0,
+                                0,
+                                {
+                                    "date": reservationLine.date,
+                                    "price": reservationLine.price - board_day_price,
+                                    "discount": reservationLine.discount,
+                                },
+                            )
+                        )
+                    vals["reservation_line_ids"] = vals_lines
+                else:
+                    vals["checkin"] = reservation.checkin
+                    vals["checkout"] = reservation.checkout
+
+                reservation_record = (
+                    self.env["pms.reservation"]
+                    .with_context(
+                        skip_compute_service_ids=False if external_app else True,
+                        force_overbooking=True if external_app else False,
+                    )
+                    .create(vals)
+                )
+                if reservation.services:
+                    for service in reservation.services:
+                        if service.serviceLines:
+                            vals = {
+                                "product_id": service.productId,
+                                "reservation_id": reservation_record.id,
+                                "is_board_service": service.isBoardService,
+                                "service_line_ids": [
+                                    (
+                                        0,
+                                        False,
+                                        {
+                                            "date": line.date,
+                                            "price_unit": line.priceUnit,
+                                            "discount": line.discount or 0,
+                                            "day_qty": line.quantity,
+                                        },
+                                    )
+                                    for line in service.serviceLines
+                                ],
+                            }
+                            self.env["pms.service"].create(vals)
+                        else:
+                            product = self.env["product.product"].browse(
+                                service.productId
+                            )
+                            vals = {
+                                "product_id": service.productId,
+                                "reservation_id": reservation_record.id,
+                                "discount": service.discount or 0,
+                            }
+                            if not (product.per_day or product.per_person):
+                                vals.update(
+                                    {
+                                        "product_qty": service.quantity,
+                                    }
+                                )
+                            new_service = self.env["pms.service"].create(vals)
+                            new_service.service_line_ids.price_unit = service.priceUnit
+                # Force compute board service default if not board service is set
+                # REVIEW: Precharge the board service in the app form?
+                if (
+                    not reservation_record.board_service_room_id
+                    or reservation_record.board_service_room_id == 0
+                ):
+                    reservation_record.with_context(
+                        skip_compute_service_ids=False
+                    )._compute_board_service_room_id()
+            if pms_folio_info.transactions:
+                self.compute_transactions(folio, pms_folio_info.transactions)
+            # REVIEW: analyze how to integrate the sending of mails from the API
+            # with the configuration of the automatic mails pms
+            # &
+            # the sending of mail should be a specific call once the folio has been created?
+            if folio and folio.email and pms_folio_info.sendConfirmationMail:
+                template = folio.pms_property_id.property_confirmed_template
+                if not template:
+                    raise ValidationError(
+                        _("There is no confirmation template for this property")
+                    )
+                email_values = {
+                    "email_to": folio.email,
+                    "email_from": folio.pms_property_id.email
+                    if folio.pms_property_id.email
+                    else False,
+                    "auto_delete": False,
+                }
+                template.send_mail(folio.id, force_send=True, email_values=email_values)
+            # Mapped room types and dates to call force_api_update_avail
+            mapped_room_types = folio.reservation_ids.mapped("room_type_id")
+            date_from = min(folio.reservation_ids.mapped("checkin"))
+            date_to = max(folio.reservation_ids.mapped("checkout"))
+            self.force_api_update_avail(
+                pms_property_id=pms_folio_info.pmsPropertyId,
+                room_type_ids=mapped_room_types.ids,
+                date_from=date_from,
+                date_to=date_to,
+            )
+            if external_app:
+                self.env["pms.api.log"].sudo().create(
                     {
-                        "partner_id": pms_folio_info.partnerId,
+                        "pms_property_id": pms_folio_info.pmsPropertyId,
+                        "client_id": self.env.user.id,
+                        "request": pms_folio_info,
+                        "response": folio.id,
+                        "status": "success",
+                        "request_date": fields.Datetime.now(),
+                        "method": "POST",
+                        "endpoint": "/folios",
                     }
                 )
-            else:
-                if pms_folio_info.partnerName:
-                    vals.update(
-                        {
-                            "partner_name": pms_folio_info.partnerName,
-                        }
-                    )
-                if pms_folio_info.partnerPhone:
-                    vals.update(
-                        {
-                            "mobile": pms_folio_info.partnerPhone,
-                        }
-                    )
-                if pms_folio_info.partnerEmail:
-                    vals.update(
-                        {
-                            "email": pms_folio_info.partnerEmail,
-                        }
-                    )
-        folio = self.env["pms.folio"].create(vals)
-        for reservation in pms_folio_info.reservations:
-            vals = {
-                "folio_id": folio.id,
-                "room_type_id": reservation.roomTypeId,
-                "pms_property_id": pms_folio_info.pmsPropertyId,
-                "pricelist_id": pms_folio_info.pricelistId,
-                "external_reference": pms_folio_info.externalReference or "normal",
-                "board_service_room_id": self.get_board_service_room_type_id(
-                    reservation.boardServiceId,
-                    reservation.roomTypeId,
-                    pms_folio_info.pmsPropertyId,
-                ),
-                "preferred_room_id": reservation.preferredRoomId,
-                "adults": reservation.adults,
-                "reservation_type": pms_folio_info.reservationType or "normal",
-                "children": reservation.children,
-                "preconfirm": pms_folio_info.preconfirm,
-            }
-            if reservation.reservationLines:
-                vals_lines = []
-                board_day_price = 0
-                # The service price is included in day price when it is a board service (external api)
-                if external_app and vals.get("board_service_room_id"):
-                    board = self.env["pms.board.service.room.type"].browse(
-                        vals["board_service_room_id"]
-                    )
-                    board_day_price = board.amount * reservation.adults
-                for reservationLine in reservation.reservationLines:
-                    vals_lines.append(
-                        (
-                            0,
-                            0,
-                            {
-                                "date": reservationLine.date,
-                                "price": reservationLine.price - board_day_price,
-                                "discount": reservationLine.discount,
-                            },
-                        )
-                    )
-                vals["reservation_line_ids"] = vals_lines
-            else:
-                vals["checkin"] = reservation.checkin
-                vals["checkout"] = reservation.checkout
-
-            reservation_record = (
-                self.env["pms.reservation"]
-                .with_context(
-                    skip_compute_service_ids=False if external_app else True,
-                    force_overbooking=True if external_app else False,
-                )
-                .create(vals)
+            return folio.id
+        except Exception as e:
+            _logger.error(
+                "Error creating folio from API: %s",
+                e,
+                exc_info=True,
             )
-            if reservation.services:
-                for service in reservation.services:
-                    if service.serviceLines:
-                        vals = {
-                            "product_id": service.productId,
-                            "reservation_id": reservation_record.id,
-                            "is_board_service": service.isBoardService,
-                            "service_line_ids": [
-                                (
-                                    0,
-                                    False,
-                                    {
-                                        "date": line.date,
-                                        "price_unit": line.priceUnit,
-                                        "discount": line.discount or 0,
-                                        "day_qty": line.quantity,
-                                    },
-                                )
-                                for line in service.serviceLines
-                            ],
-                        }
-                        self.env["pms.service"].create(vals)
-                    else:
-                        product = self.env["product.product"].browse(service.productId)
-                        vals = {
-                            "product_id": service.productId,
-                            "reservation_id": reservation_record.id,
-                            "discount": service.discount or 0,
-                        }
-                        if not (product.per_day or product.per_person):
-                            vals.update(
-                                {
-                                    "product_qty": service.quantity,
-                                }
-                            )
-                        new_service = self.env["pms.service"].create(vals)
-                        new_service.service_line_ids.price_unit = service.priceUnit
-            # Force compute board service default if not board service is set
-            # REVIEW: Precharge the board service in the app form?
-            if (
-                not reservation_record.board_service_room_id
-                or reservation_record.board_service_room_id == 0
-            ):
-                reservation_record.with_context(
-                    skip_compute_service_ids=False
-                )._compute_board_service_room_id()
-        if pms_folio_info.transactions:
-            self.compute_transactions(folio, pms_folio_info.transactions)
-        # REVIEW: analyze how to integrate the sending of mails from the API
-        # with the configuration of the automatic mails pms
-        # &
-        # the sending of mail should be a specific call once the folio has been created?
-        if folio and folio.email and pms_folio_info.sendConfirmationMail:
-            template = folio.pms_property_id.property_confirmed_template
-            if not template:
-                raise ValidationError(
-                    _("There is no confirmation template for this property")
-                )
-            email_values = {
-                "email_to": folio.email,
-                "email_from": folio.pms_property_id.email
-                if folio.pms_property_id.email
-                else False,
-                "auto_delete": False,
-            }
-            template.send_mail(folio.id, force_send=True, email_values=email_values)
-        # Mapped room types and dates to call force_api_update_avail
-        mapped_room_types = folio.reservation_ids.mapped("room_type_id")
-        date_from = min(folio.reservation_ids.mapped("checkin"))
-        date_to = max(folio.reservation_ids.mapped("checkout"))
-        self.force_api_update_avail(
-            pms_property_id=pms_folio_info.pmsPropertyId,
-            room_type_ids=mapped_room_types.ids,
-            date_from=date_from,
-            date_to=date_to,
-        )
-        return folio.id
+            self.env["pms.api.log"].sudo().create(
+                {
+                    "pms_property_id": pms_folio_info.pmsPropertyId,
+                    "client_id": self.env.user.id,
+                    "request": pms_folio_info,
+                    "response": e,
+                    "status": "error",
+                    "request_date": fields.Datetime.now(),
+                    "method": "POST",
+                    "endpoint": "/folios",
+                }
+            )
+            if not external_app:
+                raise ValidationError(_("Error creating folio from API: %s") % e)
+            else:
+                return False
 
     def compute_transactions(self, folio, transactions):
         for transaction in transactions:
@@ -1528,11 +1566,47 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def update_put_folio(self, folio_id, pms_folio_info):
-        folio = self.env["pms.folio"].browse(folio_id)
-        if not folio:
-            raise MissingError(_("Folio not found"))
-        self.update_folio_values(folio, pms_folio_info)
-        return folio.id
+        external_app = self.env.user.pms_api_client
+        try:
+            folio = self.env["pms.folio"].browse(folio_id)
+            if not folio:
+                raise MissingError(_("Folio not found"))
+            self.update_folio_values(folio, pms_folio_info)
+            self.env["pms.api.log"].create(
+                {
+                    "pms_property_id": pms_folio_info.pmsPropertyId,
+                    "client_id": self.env.user.id,
+                    "request": pms_folio_info,
+                    "response": folio.id,
+                    "status": "success",
+                    "request_date": fields.Datetime.now(),
+                    "method": "PUT",
+                    "endpoint": "/folios",
+                }
+            )
+            return folio.id
+        except Exception as e:
+            _logger.error(
+                "Error updating folio from API: %s",
+                e,
+                exc_info=True,
+            )
+            self.env["pms.api.log"].sudo().create(
+                {
+                    "pms_property_id": pms_folio_info.pmsPropertyId,
+                    "client_id": self.env.user.id,
+                    "request": pms_folio_info,
+                    "response": e,
+                    "status": "error",
+                    "request_date": fields.Datetime.now(),
+                    "method": "PUT",
+                    "endpoint": "/folios",
+                }
+            )
+            if not external_app:
+                raise ValidationError(_("Error updating folio from API: %s") % e)
+            else:
+                return False
 
     def update_folio_values(self, folio, pms_folio_info):
         external_app = self.env.user.pms_api_client
