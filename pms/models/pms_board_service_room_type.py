@@ -143,6 +143,15 @@ class PmsBoardServiceRoomType(models.Model):
         board_service = self.env["pms.board.service"].browse(board_service_id)
         for line in board_service.board_service_line_ids:
             cmds.append(
-                (0, False, {"product_id": line.product_id.id, "amount": line.amount})
+                (
+                    0,
+                    False,
+                    {
+                        "product_id": line.product_id.id,
+                        "amount": line.amount,
+                        "adults": line.adults,
+                        "children": line.children,
+                    },
+                )
             )
         return {"board_service_line_ids": cmds}

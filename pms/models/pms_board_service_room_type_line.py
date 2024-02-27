@@ -1,6 +1,7 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class PmsBoardServiceRoomTypeLine(models.Model):
@@ -40,6 +41,22 @@ class PmsBoardServiceRoomTypeLine(models.Model):
         default=lambda self: self._default_amount(),
         digits=("Product Price"),
     )
+    adults = fields.Boolean(
+        string="Adults",
+        help="Apply service to adults",
+        default=False,
+    )
+    children = fields.Boolean(
+        string="Children",
+        help="Apply service to children",
+        default=False,
+    )
 
     def _default_amount(self):
         return self.product_id.list_price
+
+    @api.constrains("adults", "children")
+    def _check_adults_children(self):
+        for record in self:
+            if not record.adults and not record.children:
+                raise ValidationError(_("Adults or Children must be checked"))
