@@ -1008,12 +1008,16 @@ class PmsReservation(models.Model):
                     reservation.board_service_room_id.id
                 )
                 for line in board.board_service_line_ids:
-                    res = {
-                        "product_id": line.product_id.id,
-                        "is_board_service": True,
-                        "folio_id": reservation.folio_id.id,
-                        "reservation_id": reservation.id,
-                    }
+                    if (reservation.adults and line.adults) or (
+                        reservation.children and line.children
+                    ):
+                        res = {
+                            "product_id": line.product_id.id,
+                            "is_board_service": True,
+                            "folio_id": reservation.folio_id.id,
+                            "reservation_id": reservation.id,
+                            "board_service_line_id": line.id,
+                        }
                     board_services.append((0, False, res))
                 reservation.service_ids -= old_board_lines
                 reservation.service_ids = board_services
