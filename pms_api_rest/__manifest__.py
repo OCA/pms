@@ -29,6 +29,7 @@
         "views/res_users_views.xml",
         "views/pms_room_type_class_views.xml",
         "views/product_template_views.xml",
+        "views/pms_api_log_views.xml",
     ],
     "demo": [
         "demo/pms_api_rest_master_data.xml",
