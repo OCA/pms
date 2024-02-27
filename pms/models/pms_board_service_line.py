@@ -44,6 +44,16 @@ class PmsBoardServiceLine(models.Model):
         inverse="_inverse_amount",
         digits=("Product Price"),
     )
+    adults = fields.Boolean(
+        string="Adults",
+        help="Apply service to adults",
+        default=False,
+    )
+    children = fields.Boolean(
+        string="Children",
+        help="Apply service to children",
+        default=False,
+    )
 
     def _get_default_price(self):
         if self.product_id:
