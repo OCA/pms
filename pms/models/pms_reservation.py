@@ -1198,7 +1198,7 @@ class PmsReservation(models.Model):
             record.allowed_cancel = (
                 True
                 if (
-                    record.state not in ["cancel", "done"]
+                    record.state not in ["done"]
                     and fields.Date.today() <= record.checkout
                 )
                 else False
