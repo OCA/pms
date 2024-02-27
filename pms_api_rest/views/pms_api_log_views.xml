@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="pms_api_log_tree" model="ir.ui.view">
+        <field name="name">pms.api.log.tree</field>
+        <field name="model">pms.api.log</field>
+        <field name="arch" type="xml">
+            <tree string="API Logs" decoration-danger="status == 'error'">
+                <field name="pms_property_id" />
+                <field name="client_id" widget="many2one_avatar_user" />
+                <field name="request_date" />
+                <field name="method" />
+                <field name="endpoint" />
+                <field name="response" />
+                <field name="status" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="pms_api_log_form" model="ir.ui.view">
+        <field name="name">pms.api.log.form</field>
+        <field name="model">pms.api.log</field>
+        <field name="arch" type="xml">
+            <form string="API Log">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="pms_property_id" />
+                            <field name="client_id" />
+                            <field name="request_date" />
+                            <field name="method" />
+                            <field name="endpoint" />
+                            <field name="status" />
+                        </group>
+                        <group>
+                            <field name="request" />
+                        </group>
+                        <group>
+                            <field name="response" />
+                        </group>
+
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="pms_api_log_search" model="ir.ui.view">
+        <field name="name">pms.api.log.search</field>
+        <field name="model">pms.api.log</field>
+        <field name="arch" type="xml">
+            <search string="API Logs">
+                <field name="pms_property_id" />
+                <field name="client_id" />
+                <field name="method" />
+                <field name="endpoint" />
+                <field name="status" />
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pms_api_log" model="ir.actions.act_window">
+        <field name="name">API Logs</field>
+        <field name="res_model">pms.api.log</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="menu_pms_api_log"
+        name="API Logs"
+        parent="base.menu_administration"
+        sequence="100"
+        action="action_pms_api_log"
+    />
+
+</odoo>

@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 user_access_ota_property_settings,user_access_ota_property_settings,model_ota_property_settings,pms.group_pms_user,1,0,0,0
 manager_access_ota_property_settings,manager_access_ota_property_settings,model_ota_property_settings,pms.group_pms_manager,1,1,1,1
+techinal_pms_api_log_access,techinal_pms_api_log_access,model_pms_api_log,base.group_system,1,1,1,1
