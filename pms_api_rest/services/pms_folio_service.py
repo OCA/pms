@@ -582,6 +582,7 @@ class PmsFolioService(Component):
     # flake8:noqa=C901
     def create_folio(self, pms_folio_info):
         external_app = self.env.user.pms_api_client
+        log_payload = pms_folio_info
         try:
             if pms_folio_info.reservationType == "out":
                 vals = {
@@ -659,7 +660,28 @@ class PmsFolioService(Component):
                         board = self.env["pms.board.service.room.type"].browse(
                             vals["board_service_room_id"]
                         )
-                        board_day_price = board.amount * reservation.adults
+                        if reservation.adults:
+                            board_day_price += (
+                                sum(
+                                    board.board_service_line_ids.with_context(
+                                        property=folio.pms_property_id.id
+                                    )
+                                    .filtered(lambda l: l.adults)
+                                    .mapped("amount")
+                                )
+                                * reservation.adults
+                            )
+                        if reservation.children:
+                            board_day_price += (
+                                sum(
+                                    board.board_service_line_ids.with_context(
+                                        property=folio.pms_property_id.id
+                                    )
+                                    .filtered(lambda l: l.children)
+                                    .mapped("amount")
+                                )
+                                * reservation.children
+                            )
                     for reservationLine in reservation.reservationLines:
                         vals_lines.append(
                             (
@@ -733,6 +755,9 @@ class PmsFolioService(Component):
                     reservation_record.with_context(
                         skip_compute_service_ids=False
                     )._compute_board_service_room_id()
+            pms_folio_info.transactions = self.normalize_payments_structure(
+                pms_folio_info
+            )
             if pms_folio_info.transactions:
                 self.compute_transactions(folio, pms_folio_info.transactions)
             # REVIEW: analyze how to integrate the sending of mails from the API
@@ -768,7 +793,7 @@ class PmsFolioService(Component):
                     {
                         "pms_property_id": pms_folio_info.pmsPropertyId,
                         "client_id": self.env.user.id,
-                        "request": pms_folio_info,
+                        "request": log_payload,
                         "response": folio.id,
                         "status": "success",
                         "request_date": fields.Datetime.now(),
@@ -787,7 +812,7 @@ class PmsFolioService(Component):
                 {
                     "pms_property_id": pms_folio_info.pmsPropertyId,
                     "client_id": self.env.user.id,
-                    "request": pms_folio_info,
+                    "request": log_payload,
                     "response": e,
                     "status": "error",
                     "request_date": fields.Datetime.now(),
@@ -815,7 +840,18 @@ class PmsFolioService(Component):
                     ("ref", "ilike", transaction.reference),
                 ]
             ):
-                journal = transaction.journalId
+                journal = self.env["account.journal"].search(
+                    [("id", "=", transaction.journalId)]
+                )
+                if not journal:
+                    ota_conf = self.env["ota.property.settings"].search(
+                        [
+                            ("pms_property_id", "=", folio.pms_property_id.id),
+                            ("agency_id", "=", self.env.user.partner_id.id),
+                        ]
+                    )
+                    if ota_conf:
+                        journal = ota_conf.pms_api_payment_journal_id
                 if transaction.transactionType == "inbound":
                     folio.do_payment(
                         journal,
@@ -1542,41 +1578,23 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def update_put_external_folio(self, external_reference, pms_folio_info):
-        folio = self.env["pms.folio"].search(
-            [
-                ("external_reference", "ilike", external_reference),
-                ("pms_property_id", "=", pms_folio_info.pmsPropertyId),
-            ]
-        )
-        if not folio or len(folio) > 1:
-            raise MissingError(_("Folio not found"))
-        self.update_folio_values(folio, pms_folio_info)
-        return folio.id
-
-    @restapi.method(
-        [
-            (
-                [
-                    "/<int:folio_id>",
-                ],
-                "PUT",
-            )
-        ],
-        input_param=Datamodel("pms.folio.info", is_list=False),
-        auth="jwt_api_pms",
-    )
-    def update_put_folio(self, folio_id, pms_folio_info):
         external_app = self.env.user.pms_api_client
+        log_payload = pms_folio_info
         try:
-            folio = self.env["pms.folio"].browse(folio_id)
-            if not folio:
+            folio = self.env["pms.folio"].search(
+                [
+                    ("external_reference", "ilike", external_reference),
+                    ("pms_property_id", "=", pms_folio_info.pmsPropertyId),
+                ]
+            )
+            if not folio or len(folio) > 1:
                 raise MissingError(_("Folio not found"))
             self.update_folio_values(folio, pms_folio_info)
             self.env["pms.api.log"].create(
                 {
                     "pms_property_id": pms_folio_info.pmsPropertyId,
                     "client_id": self.env.user.id,
-                    "request": pms_folio_info,
+                    "request": log_payload,
                     "response": folio.id,
                     "status": "success",
                     "request_date": fields.Datetime.now(),
@@ -1595,7 +1613,63 @@ class PmsFolioService(Component):
                 {
                     "pms_property_id": pms_folio_info.pmsPropertyId,
                     "client_id": self.env.user.id,
-                    "request": pms_folio_info,
+                    "request": log_payload,
+                    "response": e,
+                    "status": "error",
+                    "request_date": fields.Datetime.now(),
+                    "method": "PUT",
+                    "endpoint": "/folios",
+                }
+            )
+            if not external_app:
+                raise ValidationError(_("Error updating folio from API: %s") % e)
+            else:
+                return False
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:folio_id>",
+                ],
+                "PUT",
+            )
+        ],
+        input_param=Datamodel("pms.folio.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def update_put_folio(self, folio_id, pms_folio_info):
+        external_app = self.env.user.pms_api_client
+        log_payload = pms_folio_info
+        try:
+            folio = self.env["pms.folio"].browse(folio_id)
+            if not folio:
+                raise MissingError(_("Folio not found"))
+            self.update_folio_values(folio, pms_folio_info)
+            self.env["pms.api.log"].create(
+                {
+                    "pms_property_id": pms_folio_info.pmsPropertyId,
+                    "client_id": self.env.user.id,
+                    "request": log_payload,
+                    "response": folio.id,
+                    "status": "success",
+                    "request_date": fields.Datetime.now(),
+                    "method": "PUT",
+                    "endpoint": "/folios",
+                }
+            )
+            return folio.id
+        except Exception as e:
+            _logger.error(
+                "Error updating folio from API: %s",
+                e,
+                exc_info=True,
+            )
+            self.env["pms.api.log"].sudo().create(
+                {
+                    "pms_property_id": log_payload.pmsPropertyId,
+                    "client_id": self.env.user.id,
+                    "request": log_payload,
                     "response": e,
                     "status": "error",
                     "request_date": fields.Datetime.now(),
@@ -1724,7 +1798,7 @@ class PmsFolioService(Component):
             ):
                 journal = ota_conf.pms_api_payment_journal_id
                 pmsTransactionInfo = self.env.datamodels["pms.transaction.info"]
-                pms_folio_info.transactions = [
+                pms_folio_infotransactions = [
                     pmsTransactionInfo(
                         journalId=journal.id,
                         transactionType="inbound",
@@ -1733,6 +1807,7 @@ class PmsFolioService(Component):
                         reference=pms_folio_info.externalReference,
                     )
                 ]
+        return pms_folio_info.transactions
 
     def wrapper_reservations(self, folio, info_reservations):
         """
@@ -1778,7 +1853,28 @@ class PmsFolioService(Component):
                     board = self.env["pms.board.service.room.type"].browse(
                         vals["board_service_room_id"]
                     )
-                    board_day_price = board.amount * info_reservation.adults
+                    if info_reservation.adults:
+                        board_day_price += (
+                            sum(
+                                board.board_service_line_ids.with_context(
+                                    property=folio.pms_property_id.id
+                                )
+                                .filtered(lambda l: l.adults)
+                                .mapped("amount")
+                            )
+                            * info_reservation.adults
+                        )
+                    if info_reservation.children:
+                        board_day_price += (
+                            sum(
+                                board.board_service_line_ids.with_context(
+                                    property=folio.pms_property_id.id
+                                )
+                                .filtered(lambda l: l.children)
+                                .mapped("amount")
+                            )
+                            * info_reservation.children
+                        )
                 reservation_lines_cmds = self.wrapper_reservation_lines(
                     reservation=info_reservation,
                     board_day_price=board_day_price,
