@@ -545,10 +545,12 @@ class PmsService(models.Model):
         if self.product_id.per_person:
             if self.is_board_service:
                 qty = (
-                    self.reservation.adults if self.board_service_line_id.adults else 0
+                    self.reservation_id.adults
+                    if self.board_service_line_id.adults
+                    else 0
                 )
                 qty += (
-                    self.reservation.children
+                    self.reservation_id.children
                     if self.board_service_line_id.children
                     else 0
                 )
