@@ -1018,7 +1018,7 @@ class PmsReservation(models.Model):
                             "reservation_id": reservation.id,
                             "board_service_line_id": line.id,
                         }
-                    board_services.append((0, False, res))
+                        board_services.append((0, False, res))
                 reservation.service_ids -= old_board_lines
                 reservation.service_ids = board_services
             elif old_board_lines:
