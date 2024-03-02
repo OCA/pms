@@ -51,6 +51,8 @@ class PmsSaleChannelService(Component):
         domain = [
             ("id", "in", sale_channels_total),
         ]
+        if sale_channel_search_param.isOnLine:
+            domain.append(("is_on_line", "=", sale_channel_search_param.isOnLine))
 
         result_sale_channels = []
         PmsSaleChannelInfo = self.env.datamodels["pms.sale.channel.info"]
@@ -67,6 +69,7 @@ class PmsSaleChannelService(Component):
                     iconUrl=url_image_pms_api_rest(
                         "pms.sale.channel", sale_channel.id, "icon"
                     ),
+                    isOnLine=sale_channel.is_on_line,
                 )
             )
         return result_sale_channels
