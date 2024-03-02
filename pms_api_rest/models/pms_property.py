@@ -121,7 +121,7 @@ class PmsProperty(models.Model):
         property_client_conf = self.env["ota.property.settings"].search(
             [
                 ("pms_property_id", "=", self.id),
-                ("agency_id", "=", client.id),
+                ("agency_id", "=", client.partner_id.id),
             ]
         )
         plan_avail = property_client_conf.main_avail_plan_id
@@ -301,7 +301,7 @@ class PmsProperty(models.Model):
         property_client_conf = self.env["ota.property.settings"].search(
             [
                 ("pms_property_id", "=", pms_property_id),
-                ("agency_id", "=", client.id),
+                ("agency_id", "=", client.partner_id.id),
             ]
         )
         plan_avail = property_client_conf.main_avail_plan_id
@@ -401,7 +401,7 @@ class PmsProperty(models.Model):
         property_client_conf = self.env["ota.property.settings"].search(
             [
                 ("pms_property_id", "=", pms_property_id),
-                ("agency_id", "=", client.id),
+                ("agency_id", "=", client.partner_id.id),
             ]
         )
         rules_records = self.env["pms.availability.plan.rule"].search(
@@ -437,7 +437,8 @@ class PmsProperty(models.Model):
                 current_date_from = date
                 current_date_to = date
             elif (
-                current_rule.min_stay == rule.min_stay
+                rule
+                and current_rule.min_stay == rule.min_stay
                 and current_rule.max_stay == rule.max_stay
                 and current_rule.closed == rule.closed
                 and current_rule.closed_arrival == rule.closed_arrival
@@ -488,7 +489,7 @@ class PmsProperty(models.Model):
         property_client_conf = self.env["ota.property.settings"].search(
             [
                 ("pms_property_id", "=", pms_property_id),
-                ("agency_id", "=", client.id),
+                ("agency_id", "=", client.partner_id.id),
             ]
         )
         pms_property = self.env["pms.property"].browse(pms_property_id)
@@ -572,12 +573,6 @@ class PmsProperty(models.Model):
             clients = client
         else:
             clients = self.env["res.users"].search([("pms_api_client", "=", True)])
-        property_client_conf = self.env["ota.property.settings"].search(
-            [
-                ("pms_property_id", "in", clients.pms_property_ids.ids),
-                ("agency_id", "in", clients.ids),
-            ]
-        )
         _logger.info("PMS API push batch")
         if isinstance(date_from, str):
             date_from = datetime.datetime.strptime(date_from, "%Y-%m-%d").date()
@@ -598,6 +593,12 @@ class PmsProperty(models.Model):
                     ]
                 )
             for pms_property in pms_properties:
+                property_client_conf = self.env["ota.property.settings"].search(
+                    [
+                        ("pms_property_id", "=", pms_property.id),
+                        ("agency_id", "=", client.partner_id.id),
+                    ]
+                )
                 pms_property_id = pms_property.id
                 room_type_ids = (
                     [filter_room_type_id]
