@@ -110,23 +110,27 @@
                 line.day_qty as "Units",
                 reservation.adults as "Room Adults",
                 reservation.children as "Room Childrens",
-                line.is_board_service as "Board Service"
+                line.is_board_service as "Board Service",
+                reservation.partner_name as "Partner name",
+                line.price_unit as "Precio"
             FROM pms_service_line line
                 LEFT JOIN product_product product
-                ON line.product_id = product.id
+                    ON line.product_id = product.id
                 LEFT JOIN product_template product_tmpl
-                ON product.product_tmpl_id = product_tmpl.id
+                    ON product.product_tmpl_id = product_tmpl.id
                 LEFT JOIN pms_reservation reservation
-                ON line.reservation_id = reservation.id
+                    ON line.reservation_id = reservation.id
                 LEFT JOIN pms_checkin_partner room_host
-                ON room_host.reservation_id = reservation.id
+                    ON room_host.reservation_id = reservation.id
             WHERE (line.date >= %(x_date_from)s)
+                AND (line.date <= %(x_date_to)s)
                 AND (line.pms_property_id = %(x_pms_property_id)s)
-            GROUP BY
-                line.id, product_tmpl.name, reservation.name, reservation.rooms, reservation.adults, reservation.children;
+                AND (reservation.state != 'cancel')
+            GROUP BY line.id, product_tmpl.name, reservation.name, reservation.rooms, reservation.adults, reservation.children, reservation.partner_name,   line.price_unit
+            ORDER BY date asc
         </field>
         <field
-            eval="[(6, 0, [ref('date_from_field_variable_sql'), ref('pms_property_field_variable_sql')])]"
+            eval="[(6, 0, [ref('date_from_field_variable_sql'), ref('date_to_field_variable_sql'), ref('pms_property_field_variable_sql')])]"
             name="field_ids"
         />
     </record>
