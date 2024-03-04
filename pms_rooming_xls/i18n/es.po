@@ -6,38 +6,40 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2024-03-04 21:35+0000\n"
+"Last-Translator: Ivorra78 <informatica@totmaterial.es>\n"
 "Language-Team: none\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.17\n"
 
 #. module: pms_rooming_xls
 #: model_terms:ir.ui.view,arch_db:pms_rooming_xls.pms_folio_view_form
 msgid "<span class=\"o_stat_text\">Import Rooming</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">Importar Habitación</span>"
 
 #. module: pms_rooming_xls
 #: model_terms:ir.ui.view,arch_db:pms_rooming_xls.pms_folio_view_form
 msgid "<span class=\"o_stat_text\">Print Rooming</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">Imprimir Habitación</span>"
 
 #. module: pms_rooming_xls
 #: model_terms:ir.ui.view,arch_db:pms_rooming_xls.import_rooming_xlsx_form
 msgid "Cancel"
-msgstr ""
+msgstr "Cancelado"
 
 #. module: pms_rooming_xls
 #: model:ir.model.fields,field_description:pms_rooming_xls.field_import_rooming_xlsx__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Creado por"
 
 #. module: pms_rooming_xls
 #: model:ir.model.fields,field_description:pms_rooming_xls.field_import_rooming_xlsx__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Creado el"
 
 #. module: pms_rooming_xls
 #: model:ir.model.fields,field_description:pms_rooming_xls.field_import_rooming_xlsx__display_name
@@ -45,22 +47,22 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_rooming_xls.field_pms_folio__display_name
 #: model:ir.model.fields,field_description:pms_rooming_xls.field_report_pms_rooming_xls_rooming_export_xlsx__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Mostrar Nombre"
 
 #. module: pms_rooming_xls
 #: model:ir.model.fields,field_description:pms_rooming_xls.field_import_rooming_xlsx__file
 msgid "File"
-msgstr ""
+msgstr "Archivo"
 
 #. module: pms_rooming_xls
 #: model:ir.model.fields,field_description:pms_rooming_xls.field_import_rooming_xlsx__name
 msgid "File name"
-msgstr ""
+msgstr "Nombre de archivo"
 
 #. module: pms_rooming_xls
 #: model:ir.model.fields,field_description:pms_rooming_xls.field_import_rooming_xlsx__type
 msgid "File type."
-msgstr ""
+msgstr "Tipo de fichero."
 
 #. module: pms_rooming_xls
 #: model:ir.model.fields,field_description:pms_rooming_xls.field_import_rooming_xlsx__id
@@ -68,17 +70,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_rooming_xls.field_pms_folio__id
 #: model:ir.model.fields,field_description:pms_rooming_xls.field_report_pms_rooming_xls_rooming_export_xlsx__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: pms_rooming_xls
 #: model_terms:ir.ui.view,arch_db:pms_rooming_xls.import_rooming_xlsx_form
 msgid "Import"
-msgstr ""
+msgstr "Importación"
 
 #. module: pms_rooming_xls
 #: model:ir.actions.act_window,name:pms_rooming_xls.action_import_rooming
 msgid "Import Rooming"
-msgstr ""
+msgstr "Importación de Habitaciones"
 
 #. module: pms_rooming_xls
 #: model:ir.model.fields,field_description:pms_rooming_xls.field_import_rooming_xlsx____last_update
@@ -86,51 +88,51 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_rooming_xls.field_pms_folio____last_update
 #: model:ir.model.fields,field_description:pms_rooming_xls.field_report_pms_rooming_xls_rooming_export_xlsx____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Última Modificación el"
 
 #. module: pms_rooming_xls
 #: model:ir.model.fields,field_description:pms_rooming_xls.field_import_rooming_xlsx__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Última Actualización por"
 
 #. module: pms_rooming_xls
 #: model:ir.model.fields,field_description:pms_rooming_xls.field_import_rooming_xlsx__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Última Actualización el"
 
 #. module: pms_rooming_xls
 #: code:addons/pms_rooming_xls/wizard/import_rooming_xlsx.py:0
 #, python-format
 msgid "Not found reservation (%s)"
-msgstr ""
+msgstr "Reserva no encontrada (%s)"
 
 #. module: pms_rooming_xls
 #: model:ir.model,name:pms_rooming_xls.model_pms_folio
 msgid "PMS Folio"
-msgstr ""
+msgstr "Folio PMS"
 
 #. module: pms_rooming_xls
 #: model:ir.model,name:pms_rooming_xls.model_pms_checkin_partner
 msgid "Partner Checkins"
-msgstr ""
+msgstr "Registros de Socio"
 
 #. module: pms_rooming_xls
 #: code:addons/pms_rooming_xls/wizard/import_rooming_xlsx.py:0
 #, python-format
 msgid "Please Select an .xls file to Import"
-msgstr ""
+msgstr "Seleccione un archivo .xls para importar"
 
 #. module: pms_rooming_xls
 #: model:ir.model,name:pms_rooming_xls.model_import_rooming_xlsx
 msgid "Rooming Import"
-msgstr ""
+msgstr "Importación de Habitaciones"
 
 #. module: pms_rooming_xls
 #: model:ir.model,name:pms_rooming_xls.model_report_pms_rooming_xls_rooming_export_xlsx
 msgid "Rooming list"
-msgstr ""
+msgstr "Lista de habitaciones"
 
 #. module: pms_rooming_xls
 #: model:ir.model.fields.selection,name:pms_rooming_xls.selection__import_rooming_xlsx__type__xlsx
 msgid "XLSX"
-msgstr ""
+msgstr "XLSX"
