@@ -6,7 +6,7 @@ from odoo.addons.datamodel.core import Datamodel
 class PmsSaleChannelSearchParam(Datamodel):
     _name = "pms.sale.channel.search.param"
     pmsPropertyIds = fields.List(fields.Integer(), required=False)
-    IsOnLine = fields.Boolean(required=False, allow_none=True)
+    isOnLine = fields.Boolean(required=False, allow_none=True)
 
 
 class PmsSaleChannelInfo(Datamodel):
