@@ -54,6 +54,7 @@ class ChannelWubookPmsReservationMapperImport(Component):
     direct = [
         ("occupancy", "adults"),
         ("ota_reservation_code", "ota_reservation_code"),
+        ("children", "children"),
     ]
 
     children = [

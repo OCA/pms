@@ -225,21 +225,39 @@ class ChannelWubookPmsFolioAdapter(Component):
     def _reorg_folio_data(self, values):
         # reorganize data
         for value in values:
-            # reservations
-            occupancies_d = {
-                x["id"]: x["occupancy"] for x in value.pop("rooms_occupancies")
-            }
+            # If the reservation is for a single room, the children
+            # field unequivocally gives us the number of children in the room
+            # and the men field gives us the number of adults.
+            if len(value["booked_rooms"]) == 1:
+                occupancies_d_children = {
+                    value["booked_rooms"][0]["room_id"]: value["children"]
+                }
+                occupancies_d = {value["booked_rooms"][0]["room_id"]: value["men"]}
+            # TODO: If the reservation is for multiple rooms, the children
+            # field don't give us the number of children in the room,
+            # and we need a heuristic to determine the number of children per room
+            # Only Booking.com send the children field for multiple rooms
+            # (view down in the code if id_channel == 2)
+            else:
+                occupancies_d = {
+                    x["id"]: x["occupancy"] for x in value.pop("rooms_occupancies")
+                }
+                occupancies_d_children = {}
             boards_d = {}
             boards = value.pop("boards")
             if boards:
                 boards_d = {k: v != "nb" and v or None for k, v in boards.items()}
 
             channel_data = value.get("channel_data")
-            vat_included = channel_data.get("vat_included", True)
             id_channel = value["id_channel"]
+            # TODO: Add tax_included field in Agencies with True/False/Automatic options
+            vat_included = (
+                channel_data.get("vat_included", True) if id_channel != 2 else True
+            )
 
             customer_notes = value.pop("customer_notes")
             reservations = []
+
             for room in value.pop("booked_rooms"):
                 room_id = room["room_id"]
                 # If not occupancies in values set the default occupancy
@@ -251,15 +269,20 @@ class ChannelWubookPmsFolioAdapter(Component):
                 # TODO: move the following code to method and
                 #  remove boards_d
                 board = boards_d.get(room_id)
-                if id_channel == 2: # Booking.com
+                if id_channel == 2:  # Booking.com
                     # Board services can be included in the rate
                     # plan and detected by the WuBook API
                     detected_board = value.get("ancillary", {}).get("Detected Board")
                     board = detected_board != "nb" and detected_board or None
                     # Guests can differ from the Wubook ones???
-                    guests = room.get("ancillary", {}).get("guests")
-                    if guests:
-                        occupancies_d[room_id] = min(occupancies_d[room_id], guests)
+                    guests_adults = room.get("ancillary", {}).get("guests_adults")
+                    if guests_adults:
+                        occupancies_d[room_id] = min(
+                            occupancies_d[room_id], guests_adults
+                        )
+                    guests_children = room.get("ancillary", {}).get("guests_children")
+                    if guests_children:
+                        occupancies_d_children[room_id] = guests_children
 
                 lines = []
                 room_rate_id = None
@@ -284,6 +307,8 @@ class ChannelWubookPmsFolioAdapter(Component):
                             "room_id": room_id,
                             "board": board,
                             "occupancy": occupancies_d.get(room_id) or 1,
+                            "occupancy_children": occupancies_d_children.get(room_id)
+                            or 0,
                             "board_included": id_channel != 0,
                             "vat_included": vat_included,
                         }
@@ -296,6 +321,7 @@ class ChannelWubookPmsFolioAdapter(Component):
                         "ota_reservation_code": value["channel_reservation_code"],
                         "board": board,
                         "occupancy": occupancies_d[room_id],
+                        "children": occupancies_d_children.get(room_id) or 0,
                         "rate_id": room_rate_id,
                         "customer_notes": customer_notes,
                         "lines": lines,
