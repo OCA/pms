@@ -289,9 +289,7 @@ class ChannelWubookBackend(models.Model):
         for binding in (
             self.env["channel.wubook.pms.property.availability"]
             .search([])
-            .filtered(
-                lambda x: not x.backend_id.export_disabled and not x._is_synced_export()
-            )
+            .filtered(lambda x: not x._is_synced_export())
         ):
             backend = binding.backend_id
             if backend.user_id:
@@ -305,9 +303,7 @@ class ChannelWubookBackend(models.Model):
         for binding in (
             self.env["channel.wubook.pms.availability.plan"]
             .search([])
-            .filtered(
-                lambda x: not x.backend_id.export_disabled and not x._is_synced_export()
-            )
+            .filtered(lambda x: not x._is_synced_export())
         ):
             backend = binding.backend_id
             func_string = (
@@ -333,9 +329,7 @@ class ChannelWubookBackend(models.Model):
         for binding in (
             self.env["channel.wubook.product.pricelist"]
             .search([])
-            .filtered(
-                lambda x: not x.backend_id.export_disabled and not x._is_synced_export()
-            )
+            .filtered(lambda x: not x._is_synced_export())
         ):
             backend = binding.backend_id
             if backend.user_id:
