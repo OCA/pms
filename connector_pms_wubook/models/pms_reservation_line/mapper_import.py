@@ -25,10 +25,9 @@ class ChannelWubookPmsReservationLineMapperImport(Component):
         room_type = get_room_type(self, record["room_id"])
         # REVIEW: Wubook send vat_included False in cases that the price is
         # already included. Deactivate this line while is not clear
-        # vat_included = record["vat_included"] (all detected cases have taxes included)
-        vat_included = True
+        vat_included = record["vat_included"]
         # By default, taxes are included in the price
-        # if not included, wi need handle the price
+        # if not included, we need handle the price
         if not vat_included:
             product = room_type.product_id
             company = self.backend_record.pms_property_id.company_id
@@ -41,5 +40,26 @@ class ChannelWubookPmsReservationLineMapperImport(Component):
             board_service_room = get_board_service_room_type(
                 self, room_type, record["board"]
             )
-            price -= board_service_room.amount * record["occupancy"]
+            # occupancy is the adults in the reservation
+            board_day_price_adults = (
+                sum(
+                    board_service_room.board_service_line_ids.with_context(
+                        property=self.backend_record.pms_property_id.id
+                    )
+                    .filtered(lambda line: line.adults)
+                    .mapped("amount")
+                )
+                * record["occupancy"]
+            )
+            board_day_price_children = (
+                sum(
+                    board_service_room.board_service_line_ids.with_context(
+                        property=self.backend_record.pms_property_id.id
+                    )
+                    .filtered(lambda line: line.children)
+                    .mapped("amount")
+                )
+                * record["children"]
+            )
+            price -= board_day_price_adults + board_day_price_children
         return {"price": price}

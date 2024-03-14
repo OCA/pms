@@ -108,7 +108,8 @@ class ChannelWubookPmsRoomTypeBinding(models.Model):
 
     occupancy = fields.Integer(
         string="Occupancy",
-        default=1,
+        compute="_compute_occupancy",
+        store=True,
         help="The occupancy/capacity/beds of the rooms (children included)",
     )
     min_price = fields.Float(
@@ -126,7 +127,7 @@ class ChannelWubookPmsRoomTypeBinding(models.Model):
 
     @api.model
     def export_data(self, backend_record=None):
-        """ Prepare the batch export of Room Types to Channel """
+        """Prepare the batch export of Room Types to Channel"""
         room_types = self.odoo_id.get_room_types_by_property(
             backend_record.pms_property_id.id
         )
@@ -135,6 +136,9 @@ class ChannelWubookPmsRoomTypeBinding(models.Model):
             domain=[
                 ("channel_wubook_bind_ids.backend_id", "in", backend_record.ids),
                 ("id", "in", room_types.ids),
-                # ("default_code", "=", "ECO")
             ],
         )
+
+    def _compute_occupancy(self):
+        for record in self:
+            record.occupancy = min(record.room_ids.mapped("capacity"), default=1)
