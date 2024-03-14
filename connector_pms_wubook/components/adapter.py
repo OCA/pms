@@ -87,6 +87,9 @@ class ChannelWubookAdapter(AbstractComponent):
 
     def _exec(self, funcname, *args, pms_property=True):
         cc = ChannelCallControl(self, funcname, args)
+        if self.backend_record.export_disabled:
+            cc.add_result(1, "Export disabled")
+            return False
         s = xmlrpc.client.Server(self.url)
         res, token = s.acquire_token(self.username, self.password, self.apikey)
         if res:
