@@ -294,14 +294,14 @@ class GenericExporterCustom(AbstractComponent):
         """Create the External record"""
         # special check on data before export
         self._validate_create_data(data)
-        if self.backend_record.export_disabled:
-            _logger.info(
-                _(
-                    "The backend record creation is not allowed. Export is disabled, data: %s"
-                )
-                % data
-            )
-            return None
+        # if self.backend_record.export_disabled:
+        #     _logger.info(
+        #         _(
+        #             "The backend record creation is not allowed. Export is disabled, data: %s"
+        #         )
+        #         % data
+        #     )
+        #     return None
         return self.backend_adapter.create(data)
 
     def _update_data(self, map_record, fields=None, **kwargs):
@@ -313,12 +313,12 @@ class GenericExporterCustom(AbstractComponent):
         assert self.external_id
         # special check on data before export
         self._validate_update_data(data)
-        if self.backend_record.export_disabled:
-            _logger.info(
-                _(
-                    "The backend record update is not allowed. Export is disabled, data: %s"
-                )
-                % data
-            )
-            return
+        # if self.backend_record.export_disabled:
+        #     _logger.info(
+        #         _(
+        #             "The backend record update is not allowed. Export is disabled, data: %s"
+        #         )
+        #         % data
+        #     )
+        #     return
         self.backend_adapter.write(self.external_id, data)
