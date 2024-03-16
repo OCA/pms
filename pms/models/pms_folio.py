@@ -1954,17 +1954,6 @@ class PmsFolio(models.Model):
                     month_day,
                 )
         if invoice_date:
-            if (
-                self.company_id.period_lock_date
-                and invoice_date < self.company_id.period_lock_date
-                and not self.user_has_groups("account.group_account_manager")
-            ):
-                raise UserError(
-                    _(
-                        "The period to create this invoice is locked. "
-                        "Please contact your administrator to unlock it."
-                    )
-                )
             if invoice_date < datetime.date.today() and not self._context.get(
                 "autoinvoice"
             ):
@@ -2212,7 +2201,7 @@ class PmsFolio(models.Model):
                 date=date,
             )
             self.env["account.bank.statement.line"].sudo().create(line)
-        folio.message_post(
+        folio.sudo().message_post(
             body=_(
                 """Payment: <b>%s</b> by <b>%s</b>""",
                 amount,
@@ -2299,7 +2288,7 @@ class PmsFolio(models.Model):
             )
             self.env["account.bank.statement.line"].sudo().create(line)
 
-        folio.message_post(
+        folio.sudo().message_post(
             body=_(
                 """Refund: <b>%s</b> by <b>%s</b>""",
                 amount,

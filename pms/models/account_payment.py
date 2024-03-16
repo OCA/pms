@@ -4,7 +4,7 @@ from collections import defaultdict
 
 from dateutil.relativedelta import relativedelta
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class AccountPayment(models.Model):
@@ -113,7 +113,15 @@ class AccountPayment(models.Model):
                     lambda inv: inv._is_downpayment()
                 )
                 if downpayment_invoices.state == "posted":
-                    downpayment_invoices._reverse_moves(cancel=True)
+                    default_values_list = [
+                        {
+                            "ref": _(f'Reversal of: {move.name + " - " + move.ref}'),
+                        }
+                        for move in downpayment_invoices
+                    ]
+                    downpayment_invoices._reverse_moves(
+                        default_values_list, cancel=True
+                    )
                 else:
                     downpayment_invoices.unlink()
         return super(AccountPayment, self).action_draft()

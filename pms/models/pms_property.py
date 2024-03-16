@@ -708,7 +708,7 @@ class PmsProperty(models.Model):
             if any([res.state != "cancel" for res in folio.reservation_ids]):
                 folios_to_invoice += folio
             else:
-                folio.message_post(
+                folio.sudo().message_post(
                     body=_(
                         "Not invoiced due to pending amounts and cancelled reservations"
                     )
@@ -744,9 +744,15 @@ class PmsProperty(models.Model):
         downpayment_invoices = downpayments_invoices_to_reverse.mapped("move_id")
         if downpayment_invoices:
             for downpayment_invoice in downpayment_invoices:
+                default_values_list = [
+                    {
+                        "ref": _(f'Reversal of: {move.name + " - " + move.ref}'),
+                    }
+                    for move in downpayment_invoice
+                ]
                 downpayment_invoice.with_context(
                     {"sii_refund_type": "I"}
-                )._reverse_moves(cancel=True)
+                )._reverse_moves(default_values_list, cancel=True)
                 downpayment_invoice.message_post(
                     body=_(
                         """
@@ -830,7 +836,7 @@ class PmsProperty(models.Model):
                                 "maximum amount allowed for simplified invoices, and dont have "
                                 "enought data in hosts to create a normal invoice."
                             )
-                            folio.message_post(body=mens)
+                            folio.sudo().message_post(body=mens)
                             raise ValidationError(mens)
                     for downpayment in downpayments.filtered(
                         lambda d: d.default_invoice_to == invoice.partner_id
@@ -852,11 +858,17 @@ class PmsProperty(models.Model):
                     ).invoice_lines.mapped("move_id")
                 ).filtered(lambda i: i.is_simplified_invoice)
                 if downpayment_invoices:
+                    default_values_list = [
+                        {
+                            "ref": _(f'Reversal of: {move.name + " - " + move.ref}'),
+                        }
+                        for move in downpayment_invoices
+                    ]
                     downpayment_invoices.with_context(
                         {"sii_refund_type": "I"}
-                    )._reverse_moves(cancel=True)
+                    )._reverse_moves(default_values_list, cancel=True)
         except Exception as e:
-            folio.message_post(body=_("Error in autoinvoicing folio: " + str(e)))
+            folio.sudo().message_post(body=_("Error in autoinvoicing folio: " + str(e)))
 
     @api.constrains("journal_normal_invoice_id")
     def _check_journal_normal_invoice(self):
