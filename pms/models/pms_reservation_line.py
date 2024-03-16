@@ -245,10 +245,10 @@ class PmsReservationLine(models.Model):
 
                         # if the preferred room is NOT available
                         else:
-                            if self.env.context.get("force_overbooking"):
-                                line.overbooking = True
-                                line.room_id = reservation.preferred_room_id
-                            elif not line.occupies_availability:
+                            if (
+                                self.env.context.get("force_overbooking")
+                                or not line.occupies_availability
+                            ):
                                 line.room_id = reservation.preferred_room_id
                             else:
                                 raise ValidationError(
@@ -275,7 +275,6 @@ class PmsReservationLine(models.Model):
                     real_avail=True,
                 ):
                     if self.env.context.get("force_overbooking"):
-                        reservation.overbooking = True
                         line.room_id = reservation.room_type_id.room_ids.filtered(
                             lambda r: r.pms_property_id == line.pms_property_id
                         )[0]
@@ -408,7 +407,7 @@ class PmsReservationLine(models.Model):
         for line in self:
             if (
                 line.reservation_id.state == "cancel"
-                or line.reservation_id.overbooking
+                or line.overbooking
                 or line.is_reselling
             ):
                 line.occupies_availability = False
@@ -476,25 +475,19 @@ class PmsReservationLine(models.Model):
             discount = first_discount + cancel_discount
             line.price_day_total = line.price - discount
 
-    @api.depends("reservation_id.overbooking")
+    @api.depends("room_id")
     def _compute_overbooking(self):
-        for record in self:
-            if record.reservation_id.overbooking:
-                real_avail = (
-                    self.env["pms.availability"]
-                    .search(
-                        [
-                            ("room_type_id", "=", record.room_id.room_type_id.id),
-                            ("date", "=", record.date),
-                            ("pms_property_id", "=", record.pms_property_id.id),
-                        ]
-                    )
-                    .real_avail
-                )
-                if real_avail == 0:
+        for record in self.filtered("room_id"):
+            if record.occupies_availability and not record.overbooking:
+                if self.env["pms.reservation.line"].search(
+                    [
+                        ("date", "=", record.date),
+                        ("room_id", "=", record.room_id.id),
+                        ("id", "!=", record.id),
+                        ("occupies_availability", "=", True),
+                    ]
+                ):
                     record.overbooking = True
-                else:
-                    record.overbooking = False
             else:
                 record.overbooking = False
 
