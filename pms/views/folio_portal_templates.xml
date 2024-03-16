@@ -78,7 +78,7 @@
       <template id="portal_folio_payment" name="Folio Payment">
         <div
             class="row"
-            t-if="not tx_ids and folio.state in ('confirm','done') and folio.payment_state in ('not_paid', 'partial') and folio.amount_total"
+            t-if="folio.payment_state in ('not_paid', 'partial') and folio.pending_amount"
             id="portal_pay"
         >
             <div class="modal fade" id="pay_with" role="dialog">
@@ -117,6 +117,10 @@
                                         t-set="access_token"
                                         t-value="access_token or ''"
                                     />
+                                    <t
+                                        t-set="custom_amount"
+                                        t-value="custom_amount or ''"
+                                    />
                                     <t t-set="callback_method" t-value="''" />
                                     <t
                                         t-set="form_action"
@@ -124,9 +128,14 @@
                                     />
                                     <t
                                         t-set="prepare_tx_url"
-                                        t-value="'/folio/pay/' + str(folio.id) + '/form_tx/'"
+                                        t-value="'/folio/pay/' + str(folio.id) + '?custom_amount=' + custom_amount + '/form_tx/'"
                                     />
-                                    <t t-set="submit_txt">Pay Now</t>
+                                    <t t-if="custom_amount" t.set="submit_txt">
+                                            Pay <t t-esc="custom_amount" />
+                                    </t>
+                                    <t t-else="" t-set="submit_txt">
+                                            Pay Now
+                                    </t>
                                     <t t-set="icon_class" t-value="'fa-lock'" />
                                 </t>
                             </div>
@@ -146,10 +155,11 @@
             t-set="pending_manual_txs"
             t-value="tx_ids.filtered(lambda tx: tx.state == 'pending' and tx.acquirer_id.provider in ('transfer', 'manual'))"
         />
+        <t t-set="custom_amount" t-value="custom_amount or ''" />
         <div>
             <a
                 href="#"
-                t-if="folio.state in ('confirm','done') and folio.payment_state in ('not_paid', 'partial') and folio.amount_total and (pending_manual_txs or not tx_ids)"
+                t-if="folio.payment_state in ('not_paid', 'partial') and folio.pending_amount and not custom_amount"
                 class="btn btn-primary btn-block mb-2"
                 data-toggle="modal"
                 data-target="#pay_with"
@@ -157,10 +167,11 @@
                 <i class="fa fa-fw fa-arrow-circle-right" /> Pay Now
             </a>
             <div
-                t-if="tx_ids and not pending_manual_txs and folio.payment_state in ('not_paid', 'partial')"
+                t-if="folio.payment_state in ('not_paid', 'partial') and folio.pending_amount"
                 class="alert alert-info py-1 mb-2"
             >
-                <i class="fa fa-fw fa-check-circle" /> Pending
+                <!-- añadimos el importe en el boton-->
+                <i class="fa fa-fw fa-check-circle" /> Pay <t t-esc="custom_amount" />
             </div>
             <div
                 t-if="folio.payment_state in ('paid', 'overpayment')"
@@ -175,7 +186,7 @@
             t-value="folio.transaction_ids.filtered(lambda tx: tx.state in ('authorized', 'done'))"
         />
         <div
-            t-if="not tx_ids and folio.state in('confirm','done') and folio.payment_state in ('not_paid', 'partial') and folio.amount_total"
+            t-if="folio.payment_state in ('not_paid', 'partial') and folio.pending_amount"
             id="portal_pay"
         >
             <div t-if="pms or acquirers" id="payment_method">
