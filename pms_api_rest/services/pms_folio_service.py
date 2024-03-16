@@ -1,3 +1,4 @@
+import ast
 import base64
 import logging
 from datetime import datetime, timedelta
@@ -651,6 +652,7 @@ class PmsFolioService(Component):
                     "reservation_type": pms_folio_info.reservationType or "normal",
                     "children": reservation.children,
                     "preconfirm": pms_folio_info.preconfirm,
+                    "blocked": True if external_app else False,
                 }
                 if reservation.reservationLines:
                     vals_lines = []
@@ -704,6 +706,7 @@ class PmsFolioService(Component):
                     .with_context(
                         skip_compute_service_ids=False if external_app else True,
                         force_overbooking=True if external_app else False,
+                        force_write_blocked=True if external_app else False,
                     )
                     .create(vals)
                 )
@@ -753,7 +756,8 @@ class PmsFolioService(Component):
                     or reservation_record.board_service_room_id == 0
                 ):
                     reservation_record.with_context(
-                        skip_compute_service_ids=False
+                        skip_compute_service_ids=False,
+                        force_write_blocked=True if external_app else False,
                     )._compute_board_service_room_id()
             pms_folio_info.transactions = self.normalize_payments_structure(
                 pms_folio_info
@@ -789,7 +793,9 @@ class PmsFolioService(Component):
                 date_to=date_to,
             )
             if external_app:
-                self.env["pms.api.log"].sudo().create(
+                self.env["pms.api.log"].with_context(
+                    record_ids=folio.ids
+                ).sudo().create(
                     {
                         "pms_property_id": pms_folio_info.pmsPropertyId,
                         "client_id": self.env.user.id,
@@ -799,6 +805,9 @@ class PmsFolioService(Component):
                         "request_date": fields.Datetime.now(),
                         "method": "POST",
                         "endpoint": "/folios",
+                        "model_id": self.env["ir.model"]
+                        .search([("model", "=", "pms.folio")])
+                        .id,
                     }
                 )
             return folio.id
@@ -818,6 +827,9 @@ class PmsFolioService(Component):
                     "request_date": fields.Datetime.now(),
                     "method": "POST",
                     "endpoint": "/folios",
+                    "model_id": self.env["ir.model"]
+                    .search([("model", "=", "pms.folio")])
+                    .id,
                 }
             )
             if not external_app:
@@ -1590,7 +1602,7 @@ class PmsFolioService(Component):
             if not folio or len(folio) > 1:
                 raise MissingError(_("Folio not found"))
             self.update_folio_values(folio, pms_folio_info)
-            self.env["pms.api.log"].create(
+            self.env["pms.api.log"].with_context(record_ids=folio.ids).sudo().create(
                 {
                     "pms_property_id": pms_folio_info.pmsPropertyId,
                     "client_id": self.env.user.id,
@@ -1600,6 +1612,9 @@ class PmsFolioService(Component):
                     "request_date": fields.Datetime.now(),
                     "method": "PUT",
                     "endpoint": "/folios",
+                    "model_id": self.env["ir.model"]
+                    .search([("model", "=", "pms.folio")])
+                    .id,
                 }
             )
             return folio.id
@@ -1619,6 +1634,9 @@ class PmsFolioService(Component):
                     "request_date": fields.Datetime.now(),
                     "method": "PUT",
                     "endpoint": "/folios",
+                    "model_id": self.env["ir.model"]
+                    .search([("model", "=", "pms.folio")])
+                    .id,
                 }
             )
             if not external_app:
@@ -1646,7 +1664,7 @@ class PmsFolioService(Component):
             if not folio:
                 raise MissingError(_("Folio not found"))
             self.update_folio_values(folio, pms_folio_info)
-            self.env["pms.api.log"].create(
+            self.env["pms.api.log"].with_context(record_ids=folio.ids).sudo().create(
                 {
                     "pms_property_id": pms_folio_info.pmsPropertyId,
                     "client_id": self.env.user.id,
@@ -1656,8 +1674,12 @@ class PmsFolioService(Component):
                     "request_date": fields.Datetime.now(),
                     "method": "PUT",
                     "endpoint": "/folios",
+                    "model_id": self.env["ir.model"]
+                    .search([("model", "=", "pms.folio")])
+                    .id,
                 }
             )
+
             return folio.id
         except Exception as e:
             _logger.error(
@@ -1675,6 +1697,9 @@ class PmsFolioService(Component):
                     "request_date": fields.Datetime.now(),
                     "method": "PUT",
                     "endpoint": "/folios",
+                    "model_id": self.env["ir.model"]
+                    .search([("model", "=", "pms.folio")])
+                    .id,
                 }
             )
             if not external_app:
@@ -1684,6 +1709,15 @@ class PmsFolioService(Component):
 
     def update_folio_values(self, folio, pms_folio_info):
         external_app = self.env.user.pms_api_client
+        origin_values_dict = False
+        if external_app:
+            origin_values_dict = ast.literal_eval(folio.origin_json)
+        if origin_values_dict:
+            # Compare the values of the origin folio with the new values
+            # and set the new value to None if it is the same as the origin value
+            for key, value in origin_values_dict:
+                if value == pms_folio_info[key]:
+                    pms_folio_info[key] = None
         folio_vals = {}
         if pms_folio_info.state == "cancel":
             folio.action_cancel()
@@ -1699,9 +1733,15 @@ class PmsFolioService(Component):
         #         reservation.confirm()
         if (
             pms_folio_info.internalComment is not None
-            and folio.internal_comment != pms_folio_info.internalComment
+            and pms_folio_info.internalComment not in folio.internal_comment
         ):
-            folio_vals.update({"internal_comment": pms_folio_info.internalComment})
+            folio_vals.update(
+                {
+                    "internal_comment": folio.internal_comment
+                    + " "
+                    + pms_folio_info.internalComment
+                }
+            )
         if pms_folio_info.partnerId and folio.partner_id.id != pms_folio_info.partnerId:
             folio_vals.update({"partner_id": pms_folio_info.partnerId})
         elif not pms_folio_info.partnerId:
@@ -1735,12 +1775,18 @@ class PmsFolioService(Component):
                 folio_vals.update({"reservation_ids": reservations_vals})
         if folio_vals:
             if reservations_vals:
+                # Cancel the old reservations that have not been included in the update
+                update_reservation_ids = []
+                for val in reservations_vals:
+                    if val[0] == 1:
+                        update_reservation_ids.append(val[1])
                 folio.reservation_ids.filtered(
-                    lambda r: r.state != "cancel"
+                    lambda r: r.state != "cancel" and r.id not in update_reservation_ids
                 ).with_context(modified=True, force_write_blocked=True).action_cancel()
             folio.with_context(
                 skip_compute_service_ids=False if external_app else True,
                 force_overbooking=True if external_app else False,
+                force_write_blocked=True if external_app else False,
             ).write(folio_vals)
         # Compute OTA transactions
         pms_folio_info.transactions = self.normalize_payments_structure(pms_folio_info)
@@ -1819,34 +1865,83 @@ class PmsFolioService(Component):
         """
         external_app = self.env.user.pms_api_client
         cmds = []
+        saved_reservations = folio.reservation_ids
         for info_reservation in info_reservations:
-            vals = {}
-            vals.update({"folio_id": folio.id})
-            if info_reservation.roomTypeId:
-                vals.update({"room_type_id": info_reservation.roomTypeId})
-            if info_reservation.checkin:
-                vals.update({"checkin": info_reservation.checkin})
-            if info_reservation.checkout:
-                vals.update({"checkout": info_reservation.checkout})
-            if info_reservation.pricelistId:
-                vals.update({"pricelist_id": info_reservation.pricelistId})
-            if info_reservation.boardServiceId:
-                vals.update(
-                    {
-                        "board_service_room_id": self.get_board_service_room_type_id(
-                            info_reservation.boardServiceId,
-                            info_reservation.roomTypeId,
-                            folio.pms_property_id.id,
-                        )
-                    }
+            # Search a reservation in saved_reservations whose sum of night amounts is equal
+            # to the sum of night amounts of info_reservation, and dates equal,
+            # if we find it we update it
+            payload_nights = round(
+                sum(info_reservation.reservationLines.mapped("price")), 2
+            )
+            proposed_reservation = saved_reservations.filtered(
+                lambda r: r.checkin == info_reservation.checkin
+                and r.checkout == info_reservation.checkout
+                and r.room_type_id == info_reservation.roomTypeId
+            ).filtered(
+                lambda r: round(
+                    sum(r.reservation_line_ids.mapped("price"))
+                    + r.service_ids.filtered(lambda s: s.is_board_service).mapped(""),
+                    2,
                 )
+                == payload_nights
+            )
+            if proposed_reservation:
+                saved_reservations -= proposed_reservation
+            vals = {}
+            new_res = not proposed_reservation
+            if new_res:
+                vals.update({"folio_id": folio.id})
+            if info_reservation.roomTypeId:
+                if (
+                    new_res
+                    or proposed_reservation.room_type_id.id
+                    != info_reservation.roomTypeId
+                ):
+                    vals.update({"room_type_id": info_reservation.roomTypeId})
+            if info_reservation.checkin:
+                if new_res or proposed_reservation.checkin != info_reservation.checkin:
+                    vals.update({"checkin": info_reservation.checkin})
+            if info_reservation.checkout:
+                if (
+                    new_res
+                    or proposed_reservation.checkout != info_reservation.checkout
+                ):
+                    vals.update({"checkout": info_reservation.checkout})
+            if info_reservation.pricelistId:
+                if (
+                    new_res
+                    or proposed_reservation.pricelist_id.id
+                    != info_reservation.pricelistId
+                ):
+                    vals.update({"pricelist_id": info_reservation.pricelistId})
+            if info_reservation.boardServiceId:
+                board_service_id = self.get_board_service_room_type_id(
+                    info_reservation.boardServiceId,
+                    info_reservation.roomTypeId,
+                    folio.pms_property_id.id,
+                )
+                if (
+                    new_res
+                    or proposed_reservation.board_service_room_id.id != board_service_id
+                ):
+                    vals.update({"board_service_room_id": board_service_id})
             if info_reservation.preferredRoomId:
-                vals.update({"preferred_room_id": info_reservation.preferredRoomId})
+                if (
+                    new_res
+                    or proposed_reservation.preferredRoomId
+                    != info_reservation.preferredRoomId
+                ):
+                    vals.update({"preferred_room_id": info_reservation.preferredRoomId})
             if info_reservation.adults:
-                vals.update({"adults": info_reservation.adults})
+                if new_res or proposed_reservation.adults != info_reservation.adults:
+                    vals.update({"adults": info_reservation.adults})
             if info_reservation.children:
-                vals.update({"children": info_reservation.children})
-            if info_reservation.reservationLines:
+                if (
+                    new_res
+                    or proposed_reservation.children != info_reservation.children
+                ):
+                    vals.update({"children": info_reservation.children})
+            if info_reservation.reservationLines and new_res:
                 # The service price is included in day price when it is a board service (external api)
                 board_day_price = 0
                 if external_app and vals.get("board_service_room_id"):
@@ -1883,14 +1978,19 @@ class PmsFolioService(Component):
                     vals.update({"reservation_line_ids": reservation_lines_cmds})
             if info_reservation.services:
                 reservation_services_cmds = self.wrapper_reservation_services(
-                    info_reservation.services
+                    info_services=info_reservation.services,
+                    services=proposed_reservation.service_ids
+                    if proposed_reservation
+                    else False,
                 )
                 if reservation_services_cmds:
                     vals.update({"service_ids": reservation_services_cmds})
             if not vals:
                 continue
-            else:
+            elif new_res:
                 cmds.append((0, False, vals))
+            else:
+                cmds.append((1, proposed_reservation.id, vals))
         return cmds
 
     def wrapper_reservation_lines(self, reservation, board_day_price=0):
@@ -1909,17 +2009,27 @@ class PmsFolioService(Component):
             )
         return cmds
 
-    def wrapper_reservation_services(self, info_reservations):
+    def wrapper_reservation_services(self, info_services, services=False):
         cmds = []
-        for service in info_reservations:
+        for info_service in info_services:
+            if services:
+                service_id = services.filtered(
+                    lambda s: s.product_id.id == info_service.productId
+                )
+                if service_id:
+                    service_id = service_id[0]
+                    services -= service_id
+                else:
+                    service_id = False
+
             cmds.append(
                 (
                     0,
                     False,
                     {
-                        "product_id": service.productId,
-                        "product_qty": service.quantity,
-                        "discount": service.discount or 0,
+                        "product_id": info_service.productId,
+                        "product_qty": info_service.quantity,
+                        "discount": info_service.discount or 0,
                     },
                 )
             )

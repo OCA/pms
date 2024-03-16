@@ -7,3 +7,4 @@ from . import account_bank_statement
 from . import product_template
 from . import ota_property_settings
 from . import pms_api_log
+from . import pms_folio
