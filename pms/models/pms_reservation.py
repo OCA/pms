@@ -496,8 +496,8 @@ class PmsReservation(models.Model):
     overbooking = fields.Boolean(
         string="Is Overbooking",
         help="Indicate if exists overbooking",
-        default=False,
-        copy=False,
+        compute="_compute_overbooking",
+        store=True,
     )
     nights = fields.Integer(
         string="Nights",
@@ -1773,6 +1773,11 @@ class PmsReservation(models.Model):
         recs = self.search([]).filtered(lambda x: x.checkin_partner_pending_count > 0)
         return [("id", "in", [x.id for x in recs])] if recs else []
 
+    @api.depends("reservation_line_ids", "reservation_line_ids.overbooking")
+    def _compute_overbooking(self):
+        for record in self:
+            record.overbooking = any(record.reservation_line_ids.mapped("overbooking"))
+
     def _get_default_segmentation(self):
         folio = False
         segmentation_ids = False
@@ -2289,10 +2294,6 @@ class PmsReservation(models.Model):
         reservations = self.env["pms.reservation"].search([("priority", "<", 1000)])
         reservations._compute_priority()
         return True
-
-    def overbooking_button(self):
-        self.ensure_one()
-        self.overbooking = not self.overbooking
 
     def confirm(self):
         for record in self:
