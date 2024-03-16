@@ -21,6 +21,13 @@
         <field name="model">pms.api.log</field>
         <field name="arch" type="xml">
             <form string="API Log">
+                <header>
+                    <button
+                        name="related_action_open_record"
+                        string="Related"
+                        type="object"
+                    />
+                </header>
                 <sheet>
                     <group>
                         <group>
