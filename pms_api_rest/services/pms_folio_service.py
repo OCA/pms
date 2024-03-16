@@ -1475,6 +1475,7 @@ class PmsFolioService(Component):
             )
 
     def parse_message_body(self, message):
+        message = message.sudo()
         message_body = ""
         if message.body:
             message_body = message.body
