@@ -14,7 +14,6 @@
             <form string="Reservation">
                 <header>
                     <field name="splitted" invisible="True" />
-                    <field name="tax_ids" invisible="1" />
                     <field name="checkin_partner_count" invisible="1" />
                     <field name="to_assign" invisible="1" />
                     <field name="check_adults" invisible="1" />
@@ -586,7 +585,7 @@
                                         <field
                                             name="tax_ids"
                                             widget="many2many_tags"
-                                            optional="hide"
+                                            optional="show"
                                         />
                                         <field name="price_subtotal" optional="hide" />
                                         <field name="price_tax" optional="hide" />
@@ -713,6 +712,13 @@
                             string="Invoicing"
                             attrs="{'invisible': [('reservation_type','in',('out','staff'))]}"
                         >
+                            <group>
+                                <field
+                                    name="tax_ids"
+                                    widget="many2many_tags"
+                                    options="{'no_create': True,'no_open': True}"
+                                />
+                            </group>
                         </page>
                         <page name="others" string="Others">
                             <div class="row">
