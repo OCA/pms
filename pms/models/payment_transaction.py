@@ -22,7 +22,9 @@ class PaymentTransaction(models.Model):
             add_payment_vals["folio_ids"] = [(6, 0, self.folio_ids.ids)]
         return super(PaymentTransaction, self)._create_payment(add_payment_vals)
 
-    def render_folio_button(self, folio, submit_txt=None, render_values=None):
+    def render_folio_button(
+        self, folio, submit_txt=None, render_values=None, custom_amount=None
+    ):
         values = {
             "partner_id": folio.partner_id.id,
             "type": self.type,
@@ -36,7 +38,7 @@ class PaymentTransaction(models.Model):
             .sudo()
             .render(
                 self.reference,
-                folio.pending_amount,
+                custom_amount or folio.pending_amount,
                 folio.currency_id.id,
                 values=values,
             )

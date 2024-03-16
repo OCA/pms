@@ -93,6 +93,10 @@ class PortalFolio(CustomerPortal):
             "success_url",
             "%s?%s" % (folio_sudo.access_url, access_token if access_token else ""),
         )
+        custom_amount = False
+        if "custom_amount" in kwargs:
+            custom_amount = float(kwargs["custom_amount"])
+
         vals = {
             "acquirer_id": acquirer_id,
             "return_url": success_url,
@@ -118,6 +122,7 @@ class PortalFolio(CustomerPortal):
                     "subscription payments will be made automatically."
                 ),
             },
+            amount=custom_amount,
         )
 
     @http.route(
@@ -199,6 +204,8 @@ class PortalFolio(CustomerPortal):
                 download=download,
             )
         values = self._folio_get_page_view_values(folio_sudo, access_token, **kw)
+        if "custom_amount" in kw:
+            values["custom_amount"] = float(kw["custom_amount"])
         return request.render("pms.folio_portal_template", values)
 
 
