@@ -205,6 +205,7 @@ class PmsInvoiceService(Component):
             raise UserError(_("You can't update a refund invoice"))
         if invoice.payment_state == "reversed":
             raise UserError(_("You can't update a reversed invoice"))
+        invoice._check_fiscalyear_lock_date()
         new_vals = {}
         if (
             pms_invoice_info.partnerId
@@ -227,7 +228,7 @@ class PmsInvoiceService(Component):
             if cmd_invoice_lines:
                 new_vals["invoice_line_ids"] = cmd_invoice_lines
         new_invoice = False
-        if new_vals:
+        if new_vals and self.check_blocked_fields(invoice, new_vals):
             # Update Invoice
             # When modifying an invoice, depending on the company's configuration,
             # and the invoice state it will be modified directly or a reverse
@@ -260,7 +261,13 @@ class PmsInvoiceService(Component):
                             cmd_new_invoice_lines.append((1, new_id, item[2]))
                 if cmd_new_invoice_lines:
                     new_vals["invoice_line_ids"] = cmd_new_invoice_lines
-                invoice._reverse_moves(cancel=True)
+                default_values_list = [
+                    {
+                        "ref": _(f'Reversal of: {move.name + " - " + move.ref}'),
+                    }
+                    for move in invoice
+                ]
+                invoice._reverse_moves(default_values_list, cancel=True)
                 # Update Journal by partner if necessary (simplified invoice -> normal invoice)
                 new_vals["journal_id"] = (
                     invoice.pms_property_id._get_folio_default_journal(
@@ -342,6 +349,26 @@ class PmsInvoiceService(Component):
         if previus_state == "posted":
             invoice.action_post()
         return invoice
+
+    def check_blocked_fields(self, invoice, new_vals):
+        # Check partner and amounts
+        if new_vals.get("partner_id") != invoice.partner_id.id:
+            return True
+        if new_vals.get("invoice_line_ids"):
+            for line in new_vals["invoice_line_ids"]:
+                if line[0] == 2:
+                    move_line = self.env["account.move.line"].browse(line[1])
+                    if not move_line.display_type:
+                        return True
+                if line[0] == 1:
+                    move_line = self.env["account.move.line"].browse(line[1])
+                    if "quantity" in line[2] and move_line.quantity != line[2].get(
+                        "quantity"
+                    ):
+                        return True
+                if line[0] == 0 and not line[2].get("display_type"):
+                    return True
+        return False
 
     @restapi.method(
         [
@@ -431,6 +458,11 @@ class PmsInvoiceService(Component):
             "auto_delete": False,
         }
         template.send_mail(invoice.id, force_send=True, email_values=email_values)
+        invoice.write(
+            {
+                "is_move_sent": True,
+            }
+        )
         return True
 
     def _get_invoice_lines_commands(self, invoice, pms_invoice_info):
