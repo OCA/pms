@@ -91,7 +91,7 @@ class ChannelWubookPmsFolioImporter(Component):
                     if folio.state == "cancel" and folio.amount_total == 0:
                         ota_payments.action_draft()
                         ota_payments.action_cancel()
-                        folio.message_post(
+                        folio.sudo().message_post(
                             body=_(
                                 "The folio and the OTA payment have been cancelled."
                             ),
@@ -107,7 +107,7 @@ class ChannelWubookPmsFolioImporter(Component):
                         ota_payments[0].action_post()
                         if len(ota_payments) > 1:
                             ota_payments[1:].action_cancel()
-                        folio.message_post(
+                        folio.sudo().message_post(
                             body=_(
                                 "The amount of the payment has been updated to %s by OTA modification"
                                 % binding.payment_gateway_fee
@@ -143,14 +143,17 @@ class ChannelWubookPmsFolioImporter(Component):
         # in availability and force to update Wubook avail changes
         # (Wubook add/delete avail by itself)
         dates = folio.mapped("reservation_ids.reservation_line_ids.date")
-        avails = self.env["channel.wubook.pms.availability"].search([
-            ("backend_id", "=", binding.backend_id.id),
-            ("date", ">=", min(dates)),
-            ("date", "<=", max(dates)),
-            ("room_type_id", "in", folio.mapped("reservation_ids.room_type_id.id")),
-        ])
-        query = 'UPDATE "channel_wubook_pms_availability" SET "actual_write_date"=%s WHERE id IN %%s' % (
-            AsIs("(now() at time zone 'UTC')"),
+        avails = self.env["channel.wubook.pms.availability"].search(
+            [
+                ("backend_id", "=", binding.backend_id.id),
+                ("date", ">=", min(dates)),
+                ("date", "<=", max(dates)),
+                ("room_type_id", "in", folio.mapped("reservation_ids.room_type_id.id")),
+            ]
+        )
+        query = (
+            'UPDATE "channel_wubook_pms_availability" SET "actual_write_date"=%s WHERE id IN %%s'
+            % (AsIs("(now() at time zone 'UTC')"),)
         )
         cr = self.env.cr
         for sub_ids in cr.split_for_in_conditions(
