@@ -822,7 +822,8 @@
             name="board_service_line_ids"
             eval="[(5, 0), (0, 0, {
                     'product_id': ref('pms_service_breakfast_buffet'),
-                    'amount': 3})]"
+                    'amount': 3,
+                    'adults': True,})]"
         />
         </record>
         <record id="pms_board_service_half_board" model="pms.board.service">
@@ -832,9 +833,11 @@
             name="board_service_line_ids"
             eval="[(5, 0), (0, 0, {
                     'product_id': ref('pms_service_breakfast_buffet'),
-                    'amount': 3}),
+                    'amount': 3,
+                    'adults': True,}),
                     (0, 0, {'product_id': ref('pms_service_dinner'),
-                    'amount': 8})
+                    'amount': 8,
+                    'adults': True,})
                     ]"
         />
         </record>
@@ -845,11 +848,14 @@
             name="board_service_line_ids"
             eval="[(5, 0), (0, 0, {
                     'product_id': ref('pms_service_breakfast_buffet'),
-                    'amount': 3}),
+                    'amount': 3,
+                    'adults': True,}),
                     (0, 0, {'product_id': ref('pms_service_lunch'),
-                    'amount': 8}),
+                    'amount': 8,
+                    'adults': True,}),
                     (0, 0, {'product_id': ref('pms_service_dinner'),
-                    'amount': 8})
+                    'amount': 8,
+                    'adults': True,})
                     ]"
         />
         </record>
