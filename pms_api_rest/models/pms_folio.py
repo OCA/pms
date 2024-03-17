@@ -2,7 +2,7 @@ from odoo import fields, models
 
 
 class PmsFolio(models.Model):
-    _name = "pms.folio"
+    _inherit = "pms.folio"
 
     pms_api_log_id = fields.Many2one(
         string="PMS API Log",
