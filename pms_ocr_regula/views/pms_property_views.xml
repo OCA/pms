@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="regula_pms_property_views_inherit" model="ir.ui.view">
+        <field name="model">pms.property</field>
+        <field name="inherit_id" ref="pms.pms_property_views_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='property_settings']" position="inside">
+                <group string="OCR Regula">
+                    <field name="is_used_regula" widget="boolean_toggle" />
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
