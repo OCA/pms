@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2021 Eric Antones <eantones@nuobit.com>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="availability_view_form" model="ir.ui.view">
+        <field name="name">pms.availability.plan.connector.form</field>
+        <field name="model">pms.availability.plan</field>
+        <field name="inherit_id" ref="pms.availability_view_form" />
+        <field
+            name="groups_id"
+            eval="[(4, ref('connector.group_connector_manager'))]"
+        />
+        <field name="arch" type="xml">
+            <field name="rule_ids" position="replace">
+                <notebook>
+                    <page name="rules" string="Rules">
+                        <field name="rule_ids" nolabel="1" />
+                    </page>
+                    <page string="Connectors" name="connector" />
+                </notebook>
+
+            </field>
+        </field>
+    </record>
+</odoo>

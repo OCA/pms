@@ -2,3 +2,4 @@ partner-contact
 reporting-engine
 queue
 community-data-files
+connector

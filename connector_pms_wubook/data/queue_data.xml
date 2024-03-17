@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2021 Eric Antones <eantones@nuobit.com>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <data noupdate="0">
+        <record id="channel_wubook" model="queue.job.channel">
+            <field name="name">wubook</field>
+            <field name="parent_id" ref="connector_pms.channel_pms" />
+        </record>
+        <record id="scheduler_export" model="queue.job.channel">
+            <field name="name">scheduler_export</field>
+            <field name="parent_id" ref="connector_pms_wubook.channel_wubook" />
+        </record>
+        <record id="folios" model="queue.job.channel">
+            <field name="name">folios</field>
+            <field name="parent_id" ref="connector_pms_wubook.channel_wubook" />
+        </record>
+        <record id="avail" model="queue.job.channel">
+            <field name="name">avail</field>
+            <field name="parent_id" ref="connector_pms_wubook.channel_wubook" />
+        </record>
+        <record id="rules" model="queue.job.channel">
+            <field name="name">rules</field>
+            <field name="parent_id" ref="connector_pms_wubook.channel_wubook" />
+        </record>
+        <record id="prices" model="queue.job.channel">
+            <field name="name">prices</field>
+            <field name="parent_id" ref="connector_pms_wubook.channel_wubook" />
+        </record>
+        <record id="others" model="queue.job.channel">
+            <field name="name">others</field>
+            <field name="parent_id" ref="connector_pms_wubook.channel_wubook" />
+        </record>
+    </data>
+</odoo>
