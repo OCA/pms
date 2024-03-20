@@ -23,7 +23,7 @@ class IrHttp(models.AbstractModel):
                     # TODO: filter all properties based on
                     # the current set of active companies
                     "allowed_pms_properties": [
-                        (property.id, property.name)
+                        (property.id, property.name, property.company_id.id)
                         for property in user.pms_property_ids
                     ],
                 },
