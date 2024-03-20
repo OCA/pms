@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="pms_booking_extra_info_page" name="Extra Info">
+        <t t-call="website.layout">
+            <div name="booking_extra_info_page" class="container">
+                <t t-call="pms_website_sale.progress_bar">
+                    <t t-set="step" t-value="3" />
+                </t>
+                <t t-call="pms_website_sale.pms_booking_engine_errors" />
+                <div class="row">
+                    <div class="col col-md-9">
+                        <form
+                            name="extra_info_form"
+                            method="POST"
+                            action="/ebooking/booking/extra_info"
+                            autocomplete="on"
+                        >
+                            <input
+                                type="hidden"
+                                name="csrf_token"
+                                t-att-value="request.csrf_token()"
+                            />
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="notes">Extra Info</label>
+                                    <textarea
+                                        class="form-control"
+                                        id="notes"
+                                        name="notes"
+                                    ><t t-esc="notes" />
+                                    </textarea>
+                                </div>
+                                <div class="form-group">
+                                    <div class="pull-left">
+                                        <a
+                                            href="/ebooking/booking"
+                                            class="btn btn-secondary"
+                                        >
+                                            <span class="fa fa-chevron-left" /> Back
+                                        </a>
+                                    </div>
+                                    <div class="pull-right">
+                                        <button class="btn btn-primary" type="submit">
+                                            Next <span class="fa fa-chevron-right" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div name="booking_summary" class="col col-md-3">
+                        <t t-call="pms_website_sale.pms_booking_engine_summary">
+                            <t t-set="booking_engine" t-value="booking_engine" />
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

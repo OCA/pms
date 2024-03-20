@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- todo rename page and file pms_review_booking_page -->
+<odoo>
+    <template id="pms_booking_payment_page" name="Payment">
+        <t t-call="website.layout">
+            <div name="booking_payment_page" class="container">
+                <div name="progress_bar" class="row">
+                    <t t-call="pms_website_sale.progress_bar">
+                        <t t-set="step" t-value="10" />
+                    </t>
+                </div>
+                <div name="booking" class="row">
+                    <div name="booking_information" class="col col-md-9">
+                        <div class="row">
+                            <div class="col">
+                                <h3>Booking Summary</h3>
+                                <t t-call="pms_website_sale.pms_booking_engine_table">
+                                    <t
+                                        t-set="availability_results"
+                                        t-value="booking_engine.availability_results.filtered(lambda r: r.value_num_rooms_selected > 0)"
+                                    />
+                                </t>
+                                <t t-call="pms_website_sale.pms_tourist_tax_warning" />
+                            </div>
+                        </div>
+                        <div name="payment_acquirer" class="row">
+                            <div class="col">
+                                <t
+                                    t-call="pms_website_sale.payment_acquirer_selection"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div name="booking_summary" class="col col-md-3">
+                        <t t-call="pms_website_sale.pms_booking_engine_summary">
+                            <t t-set="booking_engine" t-value="booking_engine" />
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="pms_tourist_tax_warning">
+        <div class="alert alert-info">
+            <p>
+                <strong>Info</strong> The tourist tax must be paid at arrival.
+            </p>
+        </div>
+    </template>
+
+    <template id="payment_acquirer_selection">
+        <div class="row">
+            <div id="payment_method" class="col col-12">
+                <h3>Pay with</h3>
+                <t t-call="payment.payment_tokens_list">
+                    <t t-set="mode" t-value="'payment'" />
+                    <t t-set="partner_id" t-value="booking_engine.partner_id" />
+                    <t
+                        t-set="prepare_tx_url"
+                        t-value="'/ebooking/booking/payment/transaction'"
+                    />
+                </t>
+            </div>
+            <div t-if="not (acquirers or tokens)" class="alert alert-warning">
+                <strong>No suitable payment option could be found.</strong>
+                <br />
+                If you believe that it is an error, please contact the website administrator.
+            </div>
+        </div>
+    </template>
+
+    <template id="pms_booking_success_page" name="Booking Success">
+        <t t-call="website.layout">
+            <div name="booking_success_page" class="container">
+                <div name="progress_bar" class="row">
+                    <t t-call="pms_website_sale.progress_bar">
+                        <t t-set="step" t-value="20" />
+                    </t>
+                </div>
+                <div class="row justify-content-md-center">
+                    <div class="alert alert-success" role="alert">
+                        <div class="col-md-auto">
+                            Your booking is confirmed. See you soon at
+                            <span t-esc="env.user.company_id.name" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

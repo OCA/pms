@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="progress_bar">
+        <!--
+            set the step value when calling the template to highlight the
+            correct step in the progress bar :
+            - step == -1 : Booking failed
+            - step == 1  : Review Booking
+            - step == 3  : Extra Info
+            - step == 5  : Address
+            - step == 10 : Confirm Booking
+            - step == 20 : Booking success
+        -->
+        <div class="col-xl">
+            <div class="wizard">
+                <div class="progress-wizard">
+                    <a class="no-decoration" href="/ebooking/booking">
+                        <div
+                            id="wizard-review"
+                            t-att-class="'progress-wizard-step wizard-4-steps ' + ('inactive' if step &lt; 1 else ('active' if step == 1 else 'complete'))"
+                        >
+                            <div class="progress-wizard-bar d-none d-md-block" />
+                            <span
+                                class="progress-wizard-dot d-none d-md-inline-block"
+                            />
+                            <div
+                                class="text-center progress-wizard-steplabel"
+                            >Review Booking
+                            </div>
+                        </div>
+                    </a>
+                    <a class="no-decoration" href="/ebooking/booking/extra_info">
+                        <div
+                            id="wizard-etra-info"
+                            t-att-class="'progress-wizard-step wizard-4-steps ' + ('inactive' if step &lt; 3 else ('active' if step == 3 else 'complete'))"
+                        >
+                            <div class="progress-wizard-bar d-none d-md-block" />
+                            <span
+                                class="progress-wizard-dot d-none d-md-inline-block"
+                            />
+                            <div
+                                class="text-center progress-wizard-steplabel"
+                            >Extra information
+                            </div>
+                        </div>
+                    </a>
+                    <a
+                        class="no-decoration"
+                        t-att-href="'/ebooking/booking/address' if step > 5 else '#'"
+                    >
+                        <div
+                            id="wizard-address"
+                            t-att-class="'progress-wizard-step wizard-4-steps ' + ('inactive' if step &lt; 5 else ('active' if step == 5 else 'complete'))"
+                        >
+                            <div class="progress-wizard-bar d-none d-md-block" />
+                            <span
+                                class="progress-wizard-dot d-none d-md-inline-block"
+                            />
+                            <div class="text-center progress-wizard-steplabel">Address
+                            </div>
+                        </div>
+                    </a>
+                    <div class="no-decoration" href="#">
+                        <div
+                            id="wizard-confirm"
+                            t-att-class="'progress-wizard-step wizard-4-steps ' + ('inactive' if step &lt; 10 else ('active' if step == 10 else 'complete'))"
+                        >
+                            <div class="progress-wizard-bar d-none d-md-block" />
+                            <span
+                                class="progress-wizard-dot d-none d-md-inline-block"
+                            />
+                            <div
+                                class="text-center progress-wizard-steplabel"
+                            >Confirm Booking
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="partner_summary">
+        <div name="partner_tile" class="d-flex flex-row justify-content-between">
+            <h3>Contact</h3>
+        </div>
+        <div name="partner_info">
+            <span
+                t-field="booking_engine.partner_id"
+                t-options='{"widget": "contact", "fields": ["name", "address", "phone", "email"], "no_marker": True, "phone_icons": True}'
+                name="booking_partner_address"
+            />
+        </div>
+    </template>
+
+    <template id="pms_booking_engine_summary">
+        <div name="summary" class="d-flex flex-column">
+
+            <div name="total" class="mb-2">
+                <h3>Total</h3>
+                <t t-if="booking_engine">
+                    <span
+                        t-esc="booking_engine.total_price_folio"
+                        t-options='{"widget": "monetary", "display_currency": website.currency_id}'
+                    />
+                </t>
+                <t t-else="">
+                    <span
+                        t-esc="int(0)"
+                        t-options='{"widget": "monetary", "display_currency": website.currency_id}'
+                    />
+                </t>
+            </div>
+
+            <div t-if="booking_engine" name="partner_summary" class="mb-2">
+                <t t-call="pms_website_sale.partner_summary">
+                    <t t-set="partner" t-value="booking_engine.partner_id" />
+                </t>
+            </div>
+
+        </div>
+    </template>
+
+    <template id="pms_booking_engine_errors">
+        <div
+            t-foreach="errors"
+            t-as="error"
+            class="alert alert-danger alert-dismissible fade show"
+            role="alert"
+        >
+            <strong>Error!</strong>
+            <t t-esc="error" />
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&amp;times;</span>
+            </button>
+        </div>
+    </template>
+
+    <template id="pms_booking_engine_table">
+        <table name="booking_engine_table" class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Room</th>
+                    <th scope="col">Checkin</th>
+                    <th scope="col">Checkout</th>
+                    <th scope="col">Number</th>
+                    <th scope="col">Price</th>
+                    <th scope="col" />
+                </tr>
+            </thead>
+            <tbody>
+                <tr t-foreach="availability_results" t-as="availability_result">
+                    <th scope="row" t-esc="availability_result.room_type_id.name" />
+                    <td
+                        t-esc="availability_result.checkin"
+                        t-options='{"widget":"date"}'
+                    />
+                    <td
+                        t-esc="availability_result.checkout"
+                        t-options='{"widget":"date"}'
+                    />
+                    <td t-esc="availability_result.value_num_rooms_selected" />
+                    <td>
+                        <span
+                            t-field="availability_result.price_total"
+                            t-options='{"widget": "monetary", "display_currency": website.currency_id}'
+                        />
+                    </td>
+                    <td>
+                        <form method="post">
+                            <input
+                                type="hidden"
+                                name="csrf_token"
+                                t-att-value="request.csrf_token()"
+                            />
+                            <input
+                                type="hidden"
+                                name="delete"
+                                t-att-value="availability_result.room_type_id.id"
+                            />
+                            <button type="submit" class="btn btn-light btn-sm">
+                                <span class="fa fa-trash" />
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                <tr t-if="not availability_results">
+                    <td colspan="6">
+                        <p class="text-center">
+                            This order is currently empty.
+                        </p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </template>
+</odoo>

@@ -1,0 +1,35 @@
+.progress-wizard .wizard-4-steps {
+    width: 25%;
+}
+
+.product-item {
+    border: 1px lightgrey solid;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+
+    .image {
+        margin-top: -0.5em;
+        margin-bottom: -0.5em;
+        padding-left: 0;
+    }
+    .prices {
+        text-align: right;
+    }
+    .price {
+        font-size: 1.5em;
+    }
+    .price-info {
+        font-size: 0.8em;
+    }
+    .checkout {
+        text-align: right;
+    }
+    .availability {
+        font-size: 0.8em;
+    }
+    .quantity {
+        label {
+            font-weight: normal;
+        }
+    }
+}

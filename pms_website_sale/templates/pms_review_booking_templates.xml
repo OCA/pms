@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- todo rename page and file pms_review_booking_page -->
+<odoo>
+    <template id="pms_booking_engine_page" name="Booking">
+        <t t-call="website.layout">
+            <div name="booking_page" class="container">
+                <div name="progress_bar" class="row">
+                    <t t-call="pms_website_sale.progress_bar">
+                        <t t-set="step" t-value="1" />
+                    </t>
+                </div>
+                <div name="booking" class="row mt-4">
+                    <div name="booking_table" class="col col-md-9">
+                        <div t-if="errors" name="errors">
+                            <t t-call="pms_website_sale.pms_booking_engine_errors" />
+                        </div>
+
+                        <t t-call="pms_website_sale.pms_booking_engine_table">
+                            <t
+                                t-set="availability_results"
+                                t-value="booking_engine.availability_results.filtered(lambda r: r.value_num_rooms_selected > 0)"
+                            />
+                        </t>
+
+                        <div class="d-flex flex-row justify-content-between mb-4">
+                            <a
+                                class="btn btn-secondary"
+                                t-attf-href="/ebooking/rooms?start_date={{ booking_engine.start_date }}&amp;end_date={{ booking_engine.end_date }}"
+                            >
+                                <span class="fa fa-chevron-left" /> Add other rooms
+                            </a>
+                            <a
+                                class="btn btn-primary"
+                                href="/ebooking/booking/extra_info"
+                            >
+                                Next <span class="fa fa-chevron-right" />
+                            </a>
+                        </div>
+                    </div>
+                    <div name="booking_summary" class="col col-md-3">
+                        <t t-call="pms_website_sale.pms_booking_engine_summary">
+                            <t t-set="booking_engine" t-value="booking_engine" />
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2023 Coop IT Easy SC
+     SPDX-License-Identifier: AGPL-3.0-or-later
+     -->
+<odoo>
+    <record model="ir.ui.view" id="pms_room_type_view_form">
+        <field name="name">pms.room.type.form</field>
+        <field name="model">pms.room.type</field>
+        <field name="inherit_id" ref="pms.pms_room_type_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//group" position="before">
+                <!-- In combination with an oe_title div this could look a lot nicer, but
+                this would require some changes in pms. -->
+                <field
+                    name="image_1920"
+                    widget="image"
+                    class="oe_avatar"
+                    options="{'preview_image': 'image_128'}"
+                />
+            </xpath>
+            <xpath expr="//group[@name='accounting_group']/.." position="after">
+                <group colspan="4">
+                    <field name="short_description" />
+                    <field name="long_description" />
+                </group>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page name="media" string="Media">
+                    <!-- fixme introduces dependency to website_sale-->
+                    <field name="product_template_image_ids" class="o_website_sale_image_list" context="{'default_name': name}" mode="kanban" options="{'create_text':'Add a Media'}" nolabel="1"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

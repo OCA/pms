@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <template id="pms_room_type_page" name="Room type page">
+        <t t-call="website.layout">
+            <t t-set="additional_title" t-value="room_type.name" />
+            <h1>
+                <span t-field="room_type.name" />
+                - WIP
+            </h1>
+            <!--            <span t-field="room_type.image_512"-->
+            <!--                  t-options="{'widget': 'image', 'preview_image': 'image_512', 'itemprop': 'image'}"-->
+            <!--                  class="d-flex h-100 justify-content-center align-items-center"/>-->
+            <!--            <h2>Name: <span t-esc="room_type.name" /></h2>-->
+            <!--            <p>Price: <span t-esc="room_type.lst_price" t-options='{"widget":-->
+            <!--            "monetary", "display_currency": website.currency_id}' /></p>-->
+            <!--            <div>-->
+            <!--                <p>Long description</p>-->
+            <!--            t-raw is deprecated in Odoo 15. It'll do for now.-->
+            <!--                <t t-raw="room_type.long_description" />-->
+            <!--            </div>-->
+        </t>
+    </template>
+
+</odoo>
