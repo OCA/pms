@@ -111,6 +111,32 @@ class PmsRoom(models.Model):
         "the room name and two incremental numbers",
     )
 
+    room_state = fields.Selection(
+        string="Room State",
+        help="Room status at a specific time. It can be 'ready' or 'not ready'",
+        store=True,
+        readonly=False,
+        selection=[("ready", "Ready"), ("not_ready", "Not Ready")],
+        default="ready",
+    )
+
+    out_of_service = fields.Boolean(
+        string="Out of service",
+        help="True if room has any incidence, false if the room is ok",
+    )
+
+    out_of_service_reason = fields.Text(
+        string="Cause of out of service",
+        help="Description of why the room is out of order",
+    )
+
+    out_of_order = fields.Boolean(
+        string="Out of order",
+        help="True if room is not for sale, false if the room is for sale",
+        store=False,
+        compute="_compute_out_of_order",
+    )
+
     _sql_constraints = [
         (
             "room_property_unique",
@@ -133,6 +159,19 @@ class PmsRoom(models.Model):
                 record.is_shared_room = True
             elif not record.is_shared_room:
                 record.is_shared_room = False
+
+    # @api.depends("reservation_line_ids")
+    def _compute_out_of_order(self):
+        for record in self:
+            today = fields.Date.today()
+            reservation_lines = self.env["pms.reservation.line"].search(
+                [
+                    ("room_id", "=", record.id),
+                    ("date", "=", today),
+                    ("reservation_id.reservation_type", "=", "out"),
+                ]
+            )
+            record.out_of_order = bool(reservation_lines)
 
     def name_get(self):
         result = []
