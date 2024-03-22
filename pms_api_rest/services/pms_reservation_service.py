@@ -564,12 +564,6 @@ class PmsReservationService(Component):
             #     lambda ch: ch.state != "dummy"
             # )
             for checkin_partner in reservation.checkin_partner_ids:
-                if checkin_partner.document_expedition_date:
-                    document_expedition_date = (
-                        checkin_partner.document_expedition_date.strftime("%d/%m/%Y")
-                    )
-                if checkin_partner.birthdate_date:
-                    birthdate_date = checkin_partner.birthdate_date.strftime("%d/%m/%Y")
                 checkin_partners.append(
                     PmsCheckinPartnerInfo(
                         id=checkin_partner.id,
@@ -592,14 +586,18 @@ class PmsReservationService(Component):
                         documentNumber=checkin_partner.document_number
                         if checkin_partner.document_number
                         else None,
-                        documentExpeditionDate=document_expedition_date
+                        documentExpeditionDate=datetime.combine(
+                            checkin_partner.document_expedition_date, datetime.min.time()
+                        ).isoformat()
                         if checkin_partner.document_expedition_date
                         else None,
                         documentSupportNumber=checkin_partner.support_number
                         if checkin_partner.support_number
                         else None,
                         gender=checkin_partner.gender if checkin_partner.gender else "",
-                        birthdate=birthdate_date
+                        birthdate=datetime.combine(
+                            checkin_partner.birthdate_date, datetime.min.time()
+                        ).isoformat()
                         if checkin_partner.birthdate_date
                         else None,
                         residenceStreet=checkin_partner.residence_street
@@ -653,9 +651,16 @@ class PmsReservationService(Component):
             and pms_checkin_partner_info.actionOnBoard is not None
         ):
             checkin_partner.action_on_board()
+            return checkin_partner.id
         checkin_partner.write(
-            self.mapping_checkin_partner_values(pms_checkin_partner_info)
+            self.mapping_checkin_partner_values(
+                pms_checkin_partner_info,
+                checkin_partner.partner_id.id if checkin_partner.partner_id else False
+            )
         )
+        # if not partner_id we need to force compute to create partner
+        if not checkin_partner.partner_id:
+            checkin_partner._compute_partner_id()
         return checkin_partner.id
 
     @restapi.method(
@@ -850,8 +855,14 @@ class PmsReservationService(Component):
                 checkin_partner_last_id
             )
             checkin_partner.write(
-                self.mapping_checkin_partner_values(pms_checkin_partner_info)
+                self.mapping_checkin_partner_values(
+                    pms_checkin_partner_info,
+                    checkin_partner.partner_id.id if checkin_partner.partner_id else False
+                )
             )
+            # if not partner_id we need to force compute to create partner
+            if not checkin_partner.partner_id:
+                checkin_partner._compute_partner_id()
             return checkin_partner.id
 
     @restapi.method(
@@ -870,9 +881,8 @@ class PmsReservationService(Component):
         if checkin_partner:
             checkin_partner.unlink()
 
-    def mapping_checkin_partner_values(self, pms_checkin_partner_info):
-        vals = dict()
-        checkin_partner_fields = {
+    def mapping_checkin_partner_values(self, pms_checkin_partner_info, partner_id=False):
+        vals = {
             "firstname": pms_checkin_partner_info.firstname,
             "lastname": pms_checkin_partner_info.lastname,
             "lastname2": pms_checkin_partner_info.lastname2,
@@ -888,22 +898,26 @@ class PmsReservationService(Component):
             "residence_city": pms_checkin_partner_info.residenceCity,
             "residence_state_id": pms_checkin_partner_info.countryState,
             "residence_country_id": pms_checkin_partner_info.countryId,
+            "origin_input_data": pms_checkin_partner_info.originInputData,
         }
+        if pms_checkin_partner_info.partnerId != partner_id:
+            vals.update({"partner_id": pms_checkin_partner_info.partnerId})
         if pms_checkin_partner_info.documentExpeditionDate:
             document_expedition_date = datetime.strptime(
                 pms_checkin_partner_info.documentExpeditionDate, "%d/%m/%Y"
             )
             document_expedition_date = document_expedition_date.strftime("%Y-%m-%d")
             vals.update({"document_expedition_date": document_expedition_date})
+        else:
+            vals.update({"document_expedition_date": False})
         if pms_checkin_partner_info.birthdate:
             birthdate = datetime.strptime(
                 pms_checkin_partner_info.birthdate, "%d/%m/%Y"
             )
             birthdate = birthdate.strftime("%Y-%m-%d")
             vals.update({"birthdate_date": birthdate})
-        for k, v in checkin_partner_fields.items():
-            if v:
-                vals.update({k: v})
+        else:
+            vals.update({"birthdate_date": False})
         return vals
 
     @restapi.method(
@@ -1305,5 +1319,4 @@ class PmsReservationService(Component):
                     title='',
                     text='',
                 )
-
 

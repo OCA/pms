@@ -507,15 +507,7 @@ class PmsPartnerService(Component):
             doc_number = partner.id_numbers.filtered(
                 lambda doc: doc.category_id.id == doc_type.id
             )
-
             PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
-
-            document_expedition_date = False
-            if doc_number.valid_from:
-                document_expedition_date = doc_number.valid_from.strftime("%d/%m/%Y")
-            birthdate_date = False
-            if partner.birthdate_date:
-                birthdate_date = partner.birthdate_date.strftime("%d/%m/%Y")
             partners.append(
                 PmsCheckinPartnerInfo(
                     partnerId=partner.id or None,
@@ -527,10 +519,14 @@ class PmsPartnerService(Component):
                     mobile=partner.mobile or None,
                     documentType=doc_type.id or None,
                     documentNumber=doc_number.name or None,
-                    documentExpeditionDate=document_expedition_date or None,
+                    documentExpeditionDate=datetime.combine(
+                        doc_number.valid_from, datetime.min.time()
+                    ).isoformat() if doc_number.valid_from else None,
                     documentSupportNumber=doc_number.support_number or None,
                     gender=partner.gender or None,
-                    birthdate=birthdate_date or None,
+                    birthdate=datetime.combine(
+                        partner.birthdate_date, datetime.min.time()
+                    ).isoformat() if partner.birthdate_date else None,
                     residenceStreet=partner.residence_street or None,
                     zip=partner.residence_zip or None,
                     residenceCity=partner.residence_city or None,
