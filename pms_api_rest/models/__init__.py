@@ -8,3 +8,4 @@ from . import product_template
 from . import ota_property_settings
 from . import pms_api_log
 from . import pms_folio
+from . import pms_checkin_partner
