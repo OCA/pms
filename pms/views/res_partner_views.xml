@@ -95,6 +95,7 @@
             </xpath>
             <xpath expr="//page[@name='personal_information_page']">
                 <group>
+                    <field name="document_country_id" />
                     <label for="residence_street" string="Residence Address" />
                     <div class="o_address_format">
                         <field
@@ -187,7 +188,6 @@
                             <field name="nationality_id" />
                             <field name="email" />
                             <field name="mobile" />
-
                         </group>
                     </group>
                     </group>
