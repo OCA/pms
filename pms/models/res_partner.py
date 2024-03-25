@@ -239,6 +239,12 @@ class ResPartner(models.Model):
         comodel_name="res.country.state",
     )
 
+    document_country_id = fields.Many2one(
+        string="Document Country",
+        help="Country of the document",
+        comodel_name="res.country",
+    )
+
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.gender")
     def _compute_gender(self):
         if hasattr(super(), "_compute_gender"):

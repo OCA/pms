@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_partner_id_category_form_inherited" model="ir.ui.view">
+        <field name="name">view.partner.id.category.form.inherited</field>
+        <field name="model">res.partner.id_category</field>
+        <field
+            name="inherit_id"
+            ref="partner_identification.view_partner_id_category_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr='//field[@name="code"]' position='after'>
+                <field name="country_ids" widget="many2many_tags" />
+            </xpath>
+        </field>
+    </record>
+    <record id="view_partner_id_category_tree_inherited" model="ir.ui.view">
+        <field name="name">view.partner.id.category.tree.inherited</field>
+        <field name="model">res.partner.id_category</field>
+        <field
+            name="inherit_id"
+            ref="partner_identification.view_partner_id_category_tree"
+        />
+        <field name="arch" type="xml">
+            <xpath expr='//field[@name="code"]' position='after'>
+                <field name="country_ids" widget="many2many_tags" />
+            </xpath>
+        </field>
+    </record>
+</odoo>
