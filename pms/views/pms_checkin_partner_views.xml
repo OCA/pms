@@ -63,6 +63,7 @@
                             <field name="lastname2" />
                             <field name="gender" />
                             <field name="birthdate_date" />
+                            <field name="document_country_id" />
                             <field name="document_type" />
                             <field name="document_number" />
                             <field name="document_expedition_date" />
@@ -158,6 +159,7 @@
                 <field name="lastname2" />
                 <field name="gender" />
                 <field name="birthdate_date" />
+                <field name="document_country_id" />
                 <field name="document_type" />
                 <field name="document_number" />
                 <field name="document_expedition_date" />
@@ -204,6 +206,7 @@
                 <field name="lastname2" />
                 <field name="gender" />
                 <field name="birthdate_date" />
+                <field name="document_country_id" />
                 <field name="document_type" />
                 <field name="document_number" />
                 <field name="document_expedition_date" />
@@ -247,6 +250,7 @@
                 <field name="lastname2" />
                 <field name="gender" />
                 <field name="birthdate_date" />
+                <field name="document_country_id" />
                 <field name="document_type" />
                 <field name="document_number" />
                 <field name="document_expedition_date" />
@@ -286,6 +290,7 @@
                 <field name="lastname2" />
                 <field name="gender" />
                 <field name="birthdate_date" />
+                <field name="document_country_id" />
                 <field name="document_type" />
                 <field name="document_number" />
                 <field name="document_expedition_date" />
