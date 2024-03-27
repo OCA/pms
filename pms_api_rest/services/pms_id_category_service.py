@@ -27,13 +27,14 @@ class PmsIdCategoryService(Component):
         for id_category in (
             self.env["res.partner.id_category"]
             .with_context(lang=self.env.user.lang)
-            .search([])
+            .search([], order="priority asc")
         ):
             result_id_categories.append(
                 PmsIdCategoryInfo(
                     id=id_category.id,
                     documentType=id_category.name,
                     code=id_category.code,
+                    countryIds=id_category.country_ids.mapped("id"),
                 )
             )
         return result_id_categories

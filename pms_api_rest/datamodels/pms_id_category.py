@@ -8,3 +8,4 @@ class PmsIdCategoryInfo(Datamodel):
     id = fields.Integer(required=False, allow_none=True)
     documentType = fields.String(required=False, allow_none=True)
     code = fields.String(required=False, allow_none=True)
+    countryIds = fields.List(fields.Integer(), required=False, allow_none=True)

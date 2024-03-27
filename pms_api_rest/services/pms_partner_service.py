@@ -523,6 +523,7 @@ class PmsPartnerService(Component):
                         doc_number.valid_from, datetime.min.time()
                     ).isoformat() if doc_number.valid_from else None,
                     documentSupportNumber=doc_number.support_number or None,
+                    documentCountryId=doc_number.country_id.id or None,
                     gender=partner.gender or None,
                     birthdate=datetime.combine(
                         partner.birthdate_date, datetime.min.time()
