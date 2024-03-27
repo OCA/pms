@@ -287,6 +287,9 @@ class PmsReservationService(Component):
             reservation.confirm()
         if reservation_data.toCheckout is not None and reservation_data.toCheckout:
             reservation.action_reservation_checkout()
+        if reservation_data.undoOnboard:
+            reservation.action_undo_onboard()
+
 
     def _get_reservation_lines_mapped(self, origin_data, reservation_line=False):
         # Return dict witch reservation.lines values (only modified if line exist,
