@@ -594,6 +594,9 @@ class PmsReservationService(Component):
                         documentSupportNumber=checkin_partner.support_number
                         if checkin_partner.support_number
                         else None,
+                        documentCountryId=checkin_partner.document_country_id.id
+                        if checkin_partner.document_country_id
+                        else None,
                         gender=checkin_partner.gender if checkin_partner.gender else "",
                         birthdate=datetime.combine(
                             checkin_partner.birthdate_date, datetime.min.time()
@@ -890,6 +893,7 @@ class PmsReservationService(Component):
             "mobile": pms_checkin_partner_info.mobile,
             "document_type": pms_checkin_partner_info.documentType,
             "document_number": pms_checkin_partner_info.documentNumber,
+            "document_country_id": pms_checkin_partner_info.documentCountryId,
             "support_number": pms_checkin_partner_info.documentSupportNumber,
             "gender": pms_checkin_partner_info.gender,
             "residence_street": pms_checkin_partner_info.residenceStreet,
