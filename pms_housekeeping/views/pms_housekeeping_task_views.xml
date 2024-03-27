@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_pms_housekeeping_task_tree" model="ir.ui.view">
+        <field name="name">pms.housekeeping.task.tree</field>
+        <field name="model">pms.housekeeping.task</field>
+        <field name="arch" type="xml">
+            <tree name="Housekeeping Task">
+                <field name="name" />
+                <field name="room_id" />
+                <field name="task_type_id" />
+                <field name="state" />
+                <field name="priority" />
+                <field name="cleaning_comments" />
+                <field name="housekeeper_ids" />
+                <field name="parent_id" />
+            </tree>
+        </field>
+    </record>
+    <record id="view_pms_housekeeping_task_form" model="ir.ui.view">
+        <field name="name">pms.housekeeping.task.form</field>
+        <field name="model">pms.housekeeping.task</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Housekeeping Task">
+                <header>
+                    <button
+                        name="action_pending"
+                        string="Mark as Pending"
+                        class="oe_highlight"
+                        type="object"
+                        attrs="{'invisible': [('pending_allowed', '=', False)]}"
+                    />
+                    <button
+                        name="action_to_do"
+                        string="Mark as To Do"
+                        class="oe_highlight"
+                        type="object"
+                        attrs="{'invisible':[('to_do_allowed', '=', False)]}"
+                    />
+                    <button
+                        name="action_in_progress"
+                        string="Mark as In Progress"
+                        class="oe_highlight"
+                        type="object"
+                        attrs="{'invisible':[('in_progress_allowed', '=', False)]}"
+                    />
+                    <button
+                        name="action_done"
+                        string="Mark as Done"
+                        class="oe_highlight"
+                        type="object"
+                        attrs="{'invisible':[('done_allowed', '=', False)]}"
+                    />
+                    <button
+                        name="action_cancel"
+                        string="Cancel Task"
+                        type="object"
+                        attrs="{'invisible':[('cancel_allowed', '=', False)]}"
+                    />
+                    <field name="state" widget="statusbar" />
+                </header>
+                <group class="col-6">
+                    <field name="name" />
+                    <field name="room_id" />
+                    <field name="task_type_id" />
+                    <field name="parent_state" invisible="1" />
+                    <field name="pending_allowed" invisible="1" />
+                    <field name="to_do_allowed" invisible="1" />
+                    <field name="in_progress_allowed" invisible="1" />
+                    <field name="done_allowed" invisible="1" />
+                    <field name="cancel_allowed" invisible="1" />
+                </group>
+                <group class="col-6">
+                    <field name="task_date" />
+                    <field name="priority" />
+                    <field
+                        name="housekeeper_ids"
+                        widget="many2many_tags"
+                        domain="[('id', 'in', allowed_housekeeper_ids)]"
+                    />
+                    <field name="allowed_housekeeper_ids" invisible="1" />
+                </group>
+                <group class="col-12">
+                    <field name="parent_id" />
+                    <field name="cleaning_comments" />
+                </group>
+                <group class="col-12">
+                    <field
+                        name="cancellation_type_id"
+                        attrs="{'invisible': [('state', '!=', 'cancel')]}"
+                    />
+                </group>
+            </form>
+        </field>
+    </record>
+</odoo>

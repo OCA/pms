@@ -12,18 +12,17 @@
     "depends": [
         "pms",
         "hr",
+        "pms_hr_property",
     ],
     "data": [
-        # "wizard/housekeeping_rack.xml",
-        "views/pms_room_view.xml",
-        "views/pms_reservation_view.xml",
-        "views/pms_housekeeping_task_view.xml",
-        "views/pms_housekeeping_views.xml",
         "security/ir.model.access.csv",
+        "data/pms_housekeeping_data.xml",
         "data/cron_jobs.xml",
-    ],
-    "demo": [
-        "demo/pms_housekeeping.xml",
+        "views/hr_employee_views.xml",
+        "views/pms_housekeeping_task_type_views.xml",
+        "views/pms_housekeeping_views.xml",
+        "views/pms_housekeeping_task_views.xml",
+        "views/pms_room_views.xml",
     ],
     "installable": True,
 }

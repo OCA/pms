@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-        <!-- Set all task   -->
-        <record model="ir.cron" id="add_all_today_tasks">
-            <field name="name">Automatic add all today housekeeping tasks</field>
-            <field name="interval_number">1</field>
-            <field name="user_id" ref="base.user_root" />
-            <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
-            <field name="doall" eval="False" />
-            <field name="state">code</field>
-            <field name="model_id" ref="model_pms_room" />
-            <field
+    <!-- Generate housekeeping tasks-->
+    <record model="ir.cron" id="generate_tasks">
+        <field name="name">Generate Housekeeping Tasks</field>
+        <field name="interval_number">1</field>
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False" />
+        <field name="state">code</field>
+        <field name="model_id" ref="model_pms_housekeeping_task" />
+        <field
             name="nextcall"
-            eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 03:00:00')"
+            eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 05:00:00')"
         />
-            <field name="code">model.add_all_today_tasks()</field>
-        </record>
+        <field name="code">model.generate_task_properties()</field>
+    </record>
 </odoo>

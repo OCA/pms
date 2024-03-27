@@ -1,0 +1,15 @@
+<odoo noupdate="1">
+    <record id="housekeeping_job_id" model="hr.job">
+        <field name="name">Housekeeper</field>
+        <field name="state">open</field>
+    </record>
+    <record
+        id="cancellation_type_dont_disturb"
+        model="pms.housekeeping.cancellation.type"
+    >
+        <field name="name">Don´t disturb</field>
+    </record>
+    <record id="cancellation_type_promotion" model="pms.housekeeping.cancellation.type">
+        <field name="name">Promotion</field>
+    </record>
+</odoo>

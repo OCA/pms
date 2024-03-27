@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="pms_housekeeping_room" model="ir.ui.view">
+        <field name="model">pms.room</field>
+        <field name="inherit_id" ref="pms.pms_room_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='short_name']" position="after">
+                <field name="housekeeping_state" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

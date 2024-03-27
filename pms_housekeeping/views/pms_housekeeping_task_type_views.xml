@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_pms_housekeeping_task_type_tree" model="ir.ui.view">
+        <field name="name">pms.housekeeping.task.type.tree</field>
+        <field name="model">pms.housekeeping.task.type</field>
+        <field name="arch" type="xml">
+            <tree name="Housekeeping Task Type">
+                <field name="name" />
+                <field name="is_automated" />
+                <field name="is_inspection" />
+                <field name="housekeeper_ids" widget="many2many_tags" />
+                <field name="parent_id" />
+                <field name="description" />
+                <field
+                    name="priority"
+                    attrs="{'invisible': [('is_automated', '==', False)]}"
+                />
+                <field
+                    name="is_overnight"
+                    attrs="{'invisible': [('is_automated', '==', False)]}"
+                />
+                <field
+                    name="is_empty"
+                    attrs="{'invisible': [('is_automated', '==', False)]}"
+                />
+                <field
+                    name="is_checkin"
+                    attrs="{'invisible': [('is_automated', '==', False)]}"
+                />
+                <field
+                    name="is_checkout"
+                    attrs="{'invisible': [('is_automated', '==', False)]}"
+                />
+                <field
+                    name="days_after_clean_overnight"
+                    attrs="{'invisible': [('is_automated', '==', False), ('is_overnight', '==', False)]}"
+                />
+                <field
+                    name="days_after_clean_empty"
+                    attrs="{'invisible': [('is_automated', '==', False), ('is_empty', '==', False)]}"
+                />
+            </tree>
+        </field>
+    </record>
+    <record id="view_pms_housekeeping_task_type_form" model="ir.ui.view">
+        <field name="name">pms.housekeeping.task.type.form</field>
+        <field name="model">pms.housekeeping.task.type</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Housekeeping Task Type">
+                <group>
+
+                    <group>
+                        <field name="name" />
+                        <field name="is_automated" />
+                        <field name="is_inspection" />
+                        <field
+                            name="housekeeper_ids"
+                            widget="many2many_tags"
+                            domain="[('job_id.name', '=', 'Housekeeper')]"
+                        />
+                        <field name="pms_property_ids" widget="many2many_tags" />
+                        <field name="parent_id" />
+                        <field name="description" />
+                    </group>
+
+                    <group attrs="{'invisible': [('is_automated', '==', False)]}">
+                        <field name="priority" />
+                        <field name="is_overnight" />
+                        <field name="is_empty" />
+                        <field name="is_checkin" />
+                        <field name="is_checkout" />
+                        <field
+                            name="days_after_clean_overnight"
+                            attrs="{'invisible': [('is_overnight', '==', False)]}"
+                        />
+                        <field
+                            name="days_after_clean_empty"
+                            attrs="{'invisible': [('is_empty', '==', False)]}"
+                        />
+                    </group>
+
+                </group>
+            </form>
+        </field>
+    </record>
+</odoo>
