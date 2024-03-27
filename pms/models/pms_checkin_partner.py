@@ -855,6 +855,15 @@ class PmsCheckinPartner(models.Model):
             record.update(vals)
         return True
 
+    def action_undo_onboard(self):
+        for record in self.filtered(lambda c: c.state == "onboard"):
+            vals = {
+                "state": "precheckin",
+                "arrival": False,
+            }
+            record.update(vals)
+        return True
+
     def open_partner(self):
         """Utility method used to add an "View Customer" button in checkin partner views"""
         self.ensure_one()
