@@ -4,6 +4,7 @@
             <field name="name">DNI</field>
             <field name="code">D</field>
             <field name="country_ids" eval="[(6, 0, [ref('base.es')])]"/>
+            <field name="priority">10</field>
             <field name="validation_code">
 letters = {
     0: "T",
@@ -43,6 +44,24 @@ else:
 <!--            <field name="has_unique_numbers">True</field>-->
         </record>
 
+    <record id="document_type_spanish_residence" model="res.partner.id_category">
+            <field name="name">Spanish Residence permit</field>
+            <field name="code">N</field>
+            <field name="priority">30</field>
+            <field name="country_ids" eval="[(6, 0, [ref('base.es')])]"/>
+            <field name="validation_code">
+permit_first_letter=id_number.name[0:1]
+permit_last_letter = id_number.name[
+    len(id_number.name) - 1 : len(id_number.name)
+]
+if (permit_first_letter.upper() in ['X','Y']) and id_number.name[1:8].isdigit() and not permit_last_letter.isdigit():
+    failed = False
+else:
+    failed = True
+            </field>
+<!--            <field name="has_unique_numbers">True</field>-->
+        </record>
+
         <!-- aeat document type mapped -->
         <!-- disabled because this is an override of an existe record in this file -->
         <!-- pylint: disable=redundant-modulename-xml -->
@@ -51,9 +70,9 @@ else:
             <field name="aeat_identification_type">02</field>
         </record>
         <record
-            id="pms.document_type_spanish_residence"
-            model="res.partner.id_category"
-        >
+        id="pms_l10n_es.document_type_spanish_residence"
+        model="res.partner.id_category"
+    >
             <field name="aeat_identification_type">05</field>
         </record>
         <record
