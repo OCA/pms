@@ -461,7 +461,7 @@ class ResPartner(models.Model):
                 if last_update_lastname2 and last_update_lastname2[0].lastname2:
                     record.lastname2 = last_update_lastname2[0].lastname2
 
-    @api.depends("residence_country_id")
+    @api.depends("id_numbers")
     def _compute_country_id(self):
         if hasattr(super(), "_compute_country_id"):
             super()._compute_country_id()
@@ -469,9 +469,10 @@ class ResPartner(models.Model):
             if (
                 not record.parent_id
                 and not record.country_id
-                and record.residence_country_id
+                and record.id_numbers
+                and record.id_numbers.country_id
             ):
-                record.country_id = record.residence_country_id
+                record.country_id = record.id_numbers[0].country_id
 
     @api.depends("residence_state_id")
     def _compute_state_id(self):
