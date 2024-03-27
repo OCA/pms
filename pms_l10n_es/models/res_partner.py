@@ -134,16 +134,17 @@ class ResPartner(models.Model):
             return True
         return False
 
-    @api.constrains("country_id", "vat")
+    @api.constrains("id_numbers", "vat")
     def update_vat_code_country(self):
         if self.env.context.get("ignore_vat_update"):
             return
         for record in self:
-            country_id = record.country_id.id
-            vat = record.vat
-            if vat and country_id:
-                vat_with_code = record.fix_eu_vat_number(country_id, vat)
-                if country_id and vat != vat_with_code:
-                    record.with_context({"ignore_vat_update": True}).write(
-                        {"vat": vat_with_code}
-                    )
+            if record.id_numbers:
+                country_id = record.id_numbers[0].country_id.id
+                vat = record.vat
+                if vat and country_id:
+                    vat_with_code = record.fix_eu_vat_number(country_id, vat)
+                    if country_id and vat != vat_with_code:
+                        record.with_context({"ignore_vat_update": True}).write(
+                            {"vat": vat_with_code}
+                        )
