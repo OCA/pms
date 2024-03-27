@@ -2441,6 +2441,15 @@ class PmsReservation(models.Model):
                 ).action_done()
         return True
 
+    def action_undo_onboard(self):
+        for record in self:
+            # Undo onboard all checkin partners:
+            record.checkin_partner_ids.filtered(
+                lambda check: check.state == "onboard"
+            ).action_undo_onboard()
+            record.state = "confirm"
+        return True
+
     def action_checkin_partner_view(self):
         self.ensure_one()
         tree_id = self.env.ref("pms.pms_checkin_partner_reservation_view_tree").id
