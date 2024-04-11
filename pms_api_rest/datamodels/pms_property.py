@@ -39,3 +39,4 @@ class PmsPropertyInfo(Datamodel):
     ineCategory = fields.String(required=False, allow_none=True)
     cardexWarning = fields.String(required=False, allow_none=True)
     companyPrivacyPolicy = fields.String(required=False, allow_none=True)
+    isUsedOCR = fields.Boolean(required=True, allow_none=False)

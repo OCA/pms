@@ -111,6 +111,12 @@ class PmsProperty(models.Model):
         inverse_name="pms_property_id",
     )
 
+    ocr_checkin_supplier = fields.Selection(
+        string="OCR Checkin Supplier",
+        help="Select ocr supplier for checkin documents",
+        selection=[],
+    )
+
     # PUSH API NOTIFICATIONS
     def get_payload_avail(self, avails, client):
         self.ensure_one()
