@@ -62,6 +62,7 @@ class PmsPropertyService(Component):
                     simpleInColor=prop.simple_in_color,
                     simpleFutureColor=prop.simple_future_color,
                     language=prop.lang,
+                    isUsedOCR=True if prop.ocr_checkin_supplier else False,
                     hotelImageUrl=url_image_pms_api_rest(
                         "pms.property", prop.id, "hotel_image_pms_api_rest"
                     ),
@@ -104,6 +105,7 @@ class PmsPropertyService(Component):
                 toAssignReservationColor=pms_property.to_assign_reservation_color,
                 pendingPaymentReservationColor=pms_property.pending_payment_reservation_color,
                 language=pms_property.lang,
+                isUsedOCR=True if pms_property.ocr_checkin_supplier else False,
             )
 
         return res
