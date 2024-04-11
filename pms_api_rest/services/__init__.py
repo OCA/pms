@@ -44,3 +44,4 @@ from . import pms_avail_service
 from . import pms_user_service
 from . import pms_dashboard_service
 from . import feed_post_service
+from . import ocr_document_service
