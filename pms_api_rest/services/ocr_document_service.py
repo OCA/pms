@@ -34,130 +34,33 @@ class PmsOcr(Component):
         output_param=Datamodel("pms.ocr.checkin.result", is_list=False),
         auth="jwt_api_pms",
     )
-    def process_ocr_document_regula(self, input_param):
-        PmsOcrCheckinResult = self.env.datamodels["pms.ocr.checkin.result"]
-        pms_ocr_checkin_result = PmsOcrCheckinResult()
-        ocr_regula_url = (
-            self.env["ir.config_parameter"].sudo().get_param("ocr_regula_url")
+    def process_ocr_document(self, input_param):
+        pms_property = self.env['pms.property'].browse(input_param.pmsPropertyId)
+        ocr_find_method_name = '_%s_document_process' % pms_property.ocr_checkin_supplier
+        checkin_data_dict = hasattr(self, ocr_find_method_name)(
+            input_param.imageBase64Front,
+            input_param.imageBase64Back
         )
-        with DocumentReaderApi(host=ocr_regula_url) as api:
-            params = ProcessParams(
-                scenario=Scenario.FULL_PROCESS,
-                result_type_output=[
-                    Result.TEXT,
-                    Result.STATUS,
-                    Result.VISUAL_TEXT,
-                    Result.DOCUMENT_TYPE,
-                ],
-            )
-            request = RecognitionRequest(
-                process_params=params, images=[input_param.imageBase64]
-            )
-            response = api.process(request)
-            if response.text and response.text.field_list:
-                # for elemento in response.text.field_list:
-                #     print("campo: ", elemento.field_name)
-                #     print("valor: ", elemento.value)
-                #     print('-')
-                id_country_spain = (
-                    self.env["res.country"].search([("code", "=", "ES")]).id
-                )
-                country_id = self.process_nationality(
-                    response.text.get_field(TextFieldType.NATIONALITY),
-                    response.text.get_field(TextFieldType.NATIONALITY_CODE),
-                    response.text.get_field(TextFieldType.NATIONALITY_CODE_NUMERIC),
-                )
-                firstname, lastname, lastname2 = self.process_name(
-                    id_country_spain,
-                    country_id,
-                    response.text.get_field(TextFieldType.GIVEN_NAMES),
-                    response.text.get_field(TextFieldType.FIRST_SURNAME),
-                    response.text.get_field(TextFieldType.SECOND_SURNAME),
-                    response.text.get_field(TextFieldType.SURNAME),
-                    response.text.get_field(TextFieldType.SURNAME_AND_GIVEN_NAMES),
-                )
-                if country_id:
-                    pms_ocr_checkin_result.nationality = country_id
-                if firstname:
-                    pms_ocr_checkin_result.firstname = firstname
-                if lastname:
-                    pms_ocr_checkin_result.lastname = lastname
-                if lastname2:
-                    pms_ocr_checkin_result.lastname2 = lastname2
-                gender = response.text.get_field(TextFieldType.SEX)
-                if gender and gender.value != "":
-                    pms_ocr_checkin_result.gender = (
-                        "male"
-                        if gender.value == "M"
-                        else "female"
-                        if gender.value == "F"
-                        else "other"
-                    )
-                date_of_birth = response.text.get_field(TextFieldType.DATE_OF_BIRTH)
-                if date_of_birth and date_of_birth.value != "":
-                    pms_ocr_checkin_result.birthdate = (
-                        datetime.strptime(
-                            date_of_birth.value.replace("-", "/"), "%Y/%m/%d"
-                        )
-                        .date()
-                        .isoformat()
-                    )
-                date_of_expiry = response.text.get_field(TextFieldType.DATE_OF_EXPIRY)
-                age = response.text.get_field(TextFieldType.AGE)
-                document_class_code = response.text.get_field(
-                    TextFieldType.DOCUMENT_CLASS_CODE
-                )
-                if (
-                    document_class_code
-                    and document_class_code.value != ""
-                    and document_class_code.value == "P"
-                ):
-                    pms_ocr_checkin_result.documentType = (
-                        self.env["res.partner.id_category"]
-                        .search([("code", "=", "P")])
-                        .id
-                    )
-                date_of_issue = response.text.get_field(TextFieldType.DATE_OF_ISSUE)
-                if country_id == id_country_spain and (
-                    not date_of_issue or date_of_issue.value == ""
-                ):
-                    date_of_issue = self.calc_expedition_date(
-                        document_class_code,
-                        date_of_expiry,
-                        age,
-                        date_of_birth,
-                    )
-                    pms_ocr_checkin_result.documentExpeditionDate = date_of_issue
-                elif date_of_issue and date_of_issue.value != "":
-                    pms_ocr_checkin_result.documentExpeditionDate = (
-                        date_of_issue.value.replace("-", "/")
-                    )
-                support_number, document_number = self.proccess_document_number(
-                    id_country_spain,
-                    country_id,
-                    document_class_code,
-                    response.text.get_field(TextFieldType.DOCUMENT_NUMBER),
-                    response.text.get_field(TextFieldType.PERSONAL_NUMBER),
-                )
-                if support_number:
-                    pms_ocr_checkin_result.documentSupportNumber = support_number
-                if document_number:
-                    pms_ocr_checkin_result.documentNumber = document_number
-                address_street, address_city, address_area = self.process_address(
-                    id_country_spain,
-                    country_id,
-                    response.text.get_field(TextFieldType.ADDRESS_STREET),
-                    response.text.get_field(TextFieldType.ADDRESS_CITY),
-                    response.text.get_field(TextFieldType.ADDRESS_AREA),
-                    response.text.get_field(TextFieldType.ADDRESS),
-                )
-                if address_street:
-                    pms_ocr_checkin_result.residenceStreet = address_street
-                if address_city:
-                    pms_ocr_checkin_result.residenceCity = address_city
-                if address_area:
-                    pms_ocr_checkin_result.countryState = address_area
-        return pms_ocr_checkin_result
+        PmsOcrCheckinResult = self.env.datamodels["pms.ocr.checkin.result"]
+
+        return PmsOcrCheckinResult(
+            nationality=checkin_data_dict.get('nationality') or None,
+            countryId=checkin_data_dict.get('country_id') or None,
+            firstname=checkin_data_dict.get('firstname') or None,
+            lastname=checkin_data_dict.get('lastname') or None,
+            lastname2=checkin_data_dict.get('lastname2') or None,
+            gender=checkin_data_dict.get('gender') or None,
+            birthdate=checkin_data_dict.get('gender') or None,
+            documentType=checkin_data_dict.get('document_type') or None,
+            documentExpeditionDate=checkin_data_dict.get('document_expedition_date') or None,
+            documentSupportNumber=checkin_data_dict.get('document_support_number') or None,
+            documentNumber=checkin_data_dict.get('document_number') or None,
+            residenceStreet=checkin_data_dict.get('residence_street') or None,
+            residenceCity=checkin_data_dict.get('residence_city') or None,
+            countryState=checkin_data_dict.get('country_state') or None,
+            documentCountryId=checkin_data_dict.get('document_country_id') or None,
+            zip=checkin_data_dict.get('zip') or None
+        )
 
     def process_nationality(
         self, nationality, nationality_code, nationality_code_numeric
