@@ -198,7 +198,6 @@ class PmsPartnerService(Component):
             )
             doc_number = False
             document_number = False
-            document_expedition_date = False
             document_type = False
             document_support_number = False
             if partner.id_numbers:
@@ -208,8 +207,6 @@ class PmsPartnerService(Component):
                     document_number = doc_number.name
                 if doc_number.category_id:
                     document_type = doc_number.category_id.id
-                if doc_number.valid_from:
-                    document_expedition_date = doc_number.valid_from.strftime("%d/%m/%Y")
                 if doc_number.support_number:
                     document_support_number = doc_number.support_number
             result_partners.append(
@@ -260,7 +257,9 @@ class PmsPartnerService(Component):
                     else None,
                     documentNumber=document_number if document_number else None,
                     documentType=document_type if document_type else None,
-                    documentSupportNumber=document_support_number if document_support_number else None,
+                    documentSupportNumber=document_support_number
+                    if document_support_number
+                    else None,
                     vatNumber=partner.vat
                     if partner.vat
                     else partner.aeat_identification
@@ -271,8 +270,10 @@ class PmsPartnerService(Component):
                     else partner.aeat_identification_type
                     if partner.aeat_identification_type
                     else None,
-                    documentExpeditionDate=document_expedition_date
-                    if document_expedition_date
+                    documentExpeditionDate=datetime.combine(
+                        doc_number.valid_from, datetime.min.time()
+                    ).isoformat()
+                    if doc_number and doc_number.valid_from
                     else None,
                     comment=partner.comment if partner.comment else None,
                     language=partner.lang if partner.lang else None,
@@ -521,13 +522,17 @@ class PmsPartnerService(Component):
                     documentNumber=doc_number.name or None,
                     documentExpeditionDate=datetime.combine(
                         doc_number.valid_from, datetime.min.time()
-                    ).isoformat() if doc_number.valid_from else None,
+                    ).isoformat()
+                    if doc_number.valid_from
+                    else None,
                     documentSupportNumber=doc_number.support_number or None,
                     documentCountryId=doc_number.country_id.id or None,
                     gender=partner.gender or None,
                     birthdate=datetime.combine(
                         partner.birthdate_date, datetime.min.time()
-                    ).isoformat() if partner.birthdate_date else None,
+                    ).isoformat()
+                    if partner.birthdate_date
+                    else None,
                     residenceStreet=partner.residence_street or None,
                     zip=partner.residence_zip or None,
                     residenceCity=partner.residence_city or None,
