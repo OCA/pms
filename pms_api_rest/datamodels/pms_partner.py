@@ -32,6 +32,7 @@ class PmsPartnerInfo(Datamodel):
     documentNumber = fields.String(required=False, allow_none=True)
     documentExpeditionDate = fields.String(required=False, allow_none=True)
     documentSupportNumber = fields.String(required=False, allow_none=True)
+    documentCountryId = fields.Integer(required=False, allow_none=True)
     gender = fields.String(required=False, allow_none=True)
     birthdate = fields.String(required=False, allow_none=True)
     age = fields.Integer(required=False, allow_none=True)
