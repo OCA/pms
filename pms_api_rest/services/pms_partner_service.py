@@ -260,6 +260,7 @@ class PmsPartnerService(Component):
                     documentSupportNumber=document_support_number
                     if document_support_number
                     else None,
+                    documentCountryId=doc_number.country_id.id if doc_number.country_id else None,
                     vatNumber=partner.vat
                     if partner.vat
                     else partner.aeat_identification
