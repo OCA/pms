@@ -128,7 +128,7 @@
                                     />
                                     <t
                                         t-set="prepare_tx_url"
-                                        t-value="'/folio/pay/' + str(folio.id) + '?custom_amount=' + custom_amount + '/form_tx/'"
+                                        t-value="'/folio/pay/' + str(folio.id) + '/form_tx/'"
                                     />
                                     <t t-if="custom_amount" t.set="submit_txt">
                                             Pay <t t-esc="custom_amount" />
@@ -159,20 +159,28 @@
         <div>
             <a
                 href="#"
-                t-if="folio.payment_state in ('not_paid', 'partial') and folio.pending_amount and not custom_amount"
+                t-if="folio.payment_state in ('not_paid', 'partial') and folio.pending_amount and custom_amount"
                 class="btn btn-primary btn-block mb-2"
                 data-toggle="modal"
                 data-target="#pay_with"
             >
-                <i class="fa fa-fw fa-arrow-circle-right" /> Pay Now
+                <i class="fa fa-fw fa-arrow-circle-right" /> Pay Now <t
+                    t-esc="custom_amount"
+                    t-options="{'widget': 'monetary', 'display_currency': folio.currency_id}"
+                />
             </a>
-            <div
+            <a
+                href="#"
                 t-if="folio.payment_state in ('not_paid', 'partial') and folio.pending_amount"
-                class="alert alert-info py-1 mb-2"
+                class="btn btn-primary btn-block mb-2"
+                data-toggle="modal"
+                data-target="#pay_with"
             >
-                <!-- añadimos el importe en el boton-->
-                <i class="fa fa-fw fa-check-circle" /> Pay <t t-esc="custom_amount" />
-            </div>
+                <i class="fa fa-fw fa-arrow-circle-right" /> Pay Now <t
+                    t-esc="folio.pending_amount"
+                    t-options="{'widget': 'monetary', 'display_currency': folio.currency_id}"
+                />
+            </a>
             <div
                 t-if="folio.payment_state in ('paid', 'overpayment')"
                 class="alert alert-success py-1 mb-2"
