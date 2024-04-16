@@ -122,7 +122,7 @@ class PortalFolio(CustomerPortal):
                     "subscription payments will be made automatically."
                 ),
             },
-            amount=custom_amount,
+            custom_amount=custom_amount,
         )
 
     @http.route(
