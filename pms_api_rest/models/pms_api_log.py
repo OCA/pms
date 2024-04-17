@@ -1,4 +1,6 @@
-from odoo import _, api, fields, models
+from datetime import timedelta
+
+from odoo import _, fields, models
 
 
 class PmsApiLog(models.Model):
@@ -72,10 +74,39 @@ class PmsApiLog(models.Model):
         string="Response URL",
         help="Response URL",
     )
-    model_id = fields.Many2one(
-        string="Model",
-        help="Model",
-        comodel_name="ir.model",
+    request_type = fields.Selection(
+        string="Request Type",
+        help="Request Type",
+        selection=[
+            ("folios", "Folios"),
+            ("availability", "Availability"),
+            ("restrictions", "Restrictions rules"),
+            ("prices", "Prices"),
+        ],
+    )
+    target_date_from = fields.Date(
+        string="Target Date From",
+        help="Target Date From",
+    )
+    target_date_to = fields.Date(
+        string="Target Date To",
+        help="Target Date To",
+    )
+    folio_ids = fields.Many2many(
+        string="Folios",
+        help="Folios",
+        comodel_name="pms.folio",
+        relation="pms_folio_pms_api_log_rel",
+        column1="pms_api_log_ids",
+        column2="folio_ids",
+    )
+    room_type_ids = fields.Many2many(
+        string="Room Types",
+        help="Room Types",
+        comodel_name="pms.room.type",
+        relation="pms_room_type_pms_api_log_rel",
+        column1="pms_api_log_ids",
+        column2="room_type_ids",
     )
 
     def related_action_open_record(self):
@@ -90,10 +121,7 @@ class PmsApiLog(models.Model):
 
         """
         self.ensure_one()
-        if "pms_api_log_id" in self.env[self.model_id.model]._fields:
-            records = self.env[self.model_id.model].search(
-                [("pms_api_log_id", "=", self.id)]
-            )
+        records = self.folio_ids
         if not records:
             return None
         action = {
@@ -114,21 +142,15 @@ class PmsApiLog(models.Model):
             )
         return action
 
-    @api.model
-    def create(self, vals):
+    def clean_log_data(self, offset=60):
+        """Clean log data older than the offset.
+
+        :param int offset: The number of days to keep the log data.
+
         """
-        set pms_api_log_id and origin_json in related records
-        if record_ids id present in context
-        """
-        log_record = super().create(vals)
-        if self.env.context.get("record_ids"):
-            records = self.env[self.env.context.get("model")].browse(
-                self.env.context.get("record_ids")
-            )
-            records.write(
-                {
-                    "pms_api_log_id": log_record.id,
-                    "origin_json": log_record.request,
-                }
-            )
-        return log_record
+        self.sudo().search(
+            [
+                ("status", "=", "success"),
+                ("create_date", "<", fields.Datetime.now() - timedelta(days=offset)),
+            ]
+        ).unlink()
