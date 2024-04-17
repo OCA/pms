@@ -25,6 +25,7 @@
         "data/sql_reports.xml",
         "data/auth_jwt_validator.xml",
         "data/pms_app_reset_password_template.xml",
+        "data/cron_jobs.xml",
         "views/pms_property_views.xml",
         "views/res_users_views.xml",
         "views/pms_room_type_class_views.xml",
