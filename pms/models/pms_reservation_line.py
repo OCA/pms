@@ -415,7 +415,7 @@ class PmsReservationLine(models.Model):
                 line.occupies_availability = True
 
     # TODO: Refact method and allowed cancelled single days
-    @api.depends("reservation_id.cancelled_reason")
+    @api.depends("reservation_id.cancelled_reason", "reservation_id.state")
     def _compute_cancel_discount(self):
         for line in self:
             if line.state == "cancel":
