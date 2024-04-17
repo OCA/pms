@@ -37,9 +37,8 @@ class PmsLoginService(Component):
         user_record = (
             self.env["res.users"].sudo().search([("login", "=", user.username)])
         )
-        # formula = ms_now + ms in 1 sec * secs in 1 min
-        minutes = 10000
-        timestamp_expire_in_a_min = int(time.time() * 1000.0) + 1000 * 60 * minutes
+        # formula = ms_now + 24 hours
+        timestamp_expire_in_a_sec = int(time.time()) + 24 * 60 * 60
 
         if not user_record:
             raise werkzeug.exceptions.Unauthorized(_("wrong user/pass"))
@@ -59,7 +58,7 @@ class PmsLoginService(Component):
             {
                 "aud": "api_pms",
                 "iss": "pms",
-                "exp": timestamp_expire_in_a_min,
+                "exp": timestamp_expire_in_a_sec,
                 "username": user.username,
             },
             key=validator.secret_key,
@@ -71,7 +70,7 @@ class PmsLoginService(Component):
 
         return PmsApiRestUserOutput(
             token=token,
-            expirationDate=timestamp_expire_in_a_min,
+            expirationDate=timestamp_expire_in_a_sec,
             userId=user_record.id,
             userName=user_record.name,
             userFirstName=user_record.firstname or None,
