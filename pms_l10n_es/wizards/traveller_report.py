@@ -242,12 +242,13 @@ class TravellerReport(models.TransientModel):
             login_route = "/e-hotel/execute_login"
             next_file_name_route = "/e-hotel/hospederia/ficheros/vista/envioFicheros"
             upload_file_route = "/e-hotel/hospederia/ficheros/subirFichero"
-            pre_get_list_files_sent_route = (
-                "/e-hotel/hospederia/vista/seguimientoHospederia"
+
+            pre_receipt_acknowledgment_route = (
+                "/e-hotel/hospederia/generarInformeFichero"
             )
-            files_sent_list_route = "/e-hotel/hospederia/listar/ficherosHospederia"
-            last_file_errors_route = (
-                "/e-hotel/hospederia/report/erroresFicheroHospederia"
+
+            post_receipt_acknowledgment_route2 = (
+                "/e-hotel/hospederia/pdfInformeFichero"
             )
             logout_route = "/e-hotel/execute_logout"
             target_date = self.date_target or fields.date.today()
@@ -304,155 +305,37 @@ class TravellerReport(models.TransientModel):
                 },
                 files={"fichero": (file_name, file_content)},
             )
-
             if upload_result.status_code != 200:
                 raise MissingError(_("Could not upload file."))
 
             time.sleep(0.2)
-
-            # retrieve property data
-            response_pre_files_sent_list_route = session.post(
-                base_url + pre_get_list_files_sent_route,
+            # ask for receipt acknowledgment
+            session.post(
+                base_url + pre_receipt_acknowledgment_route,
                 headers=headers,
                 verify=False,
                 data={
                     "jsonHiddenComunes": "",
-                    "ficheroJ": "",
+                    "ficheroJ": json.loads(upload_result.content.decode('latin-1'))['ficheroJ'],
                     "_csrf": token,
                 },
             )
-            if response_pre_files_sent_list_route.status_code != 200:
-                raise MissingError(_("Could not get property_info."))
-
-            time.sleep(0.2)
-
-            soup = bs(response_pre_files_sent_list_route.text, "html.parser")
-            property_specific_data = {
-                "codigoHospederia": soup.select("#codigoHospederia")[0]["value"],
-                "nombreHospederia": soup.select("#nombreHospederia")[0]["value"],
-                "direccionCompleta": soup.select("#direccionCompleta")[0]["value"],
-                "telefono": soup.select("#telefono")[0]["value"],
-                "tieneAgrup": soup.select("#tieneAgrup")[0]["value"],
-            }
-            common_file_data = {
-                "jsonHiddenComunes": "",
-                "fechaDesde": (
-                    datetime.date.today() + datetime.timedelta(days=-1)
-                ).strftime("%d/%m/%Y"),
-                "fechaHasta": datetime.date.today().strftime("%d/%m/%Y"),
-                "_csrf": token,
-                "_search": False,
-                "nd": str(int(time.time() * 1000)),
-                "rows": 10,
-                "page": 1,
-                "sidx": "",
-                "sord": "dat_fich.fecha_alta desc",
-            }
-            # retrieve list of sent files
-            file_data = dict()
-            for _attempt in range(1, 10):
-                response_files_sent_list_route = session.post(
-                    base_url + files_sent_list_route,
-                    headers=headers,
-                    verify=False,
-                    data={
-                        **property_specific_data,
-                        **common_file_data,
-                        "primeraConsulta": True,
-                    },
-                )
-                file_list = json.loads(
-                    str(bs(response_files_sent_list_route.text, "html.parser"))
-                )["rows"]
-
-                file_data = list(
-                    filter(lambda x: x["nombreFichero"] == file_name, file_list)
-                )
-                if file_data:
-                    file_data = file_data[0]
-                    break
-                else:
-                    time.sleep(1)
-
-            if not file_data:
-                raise ValidationError(_("Could not get last file sent"))
-            else:
-                response_last_file_errors_route = session.post(
-                    base_url + last_file_errors_route,
-                    headers=headers,
-                    verify=False,
-                    data={
-                        "idFichero": file_data["idFichero"],
-                        "numErroresHuespedes": file_data["numErroresHuespedes"],
-                        "numAvisosHuespedes": file_data["numAvisosHuespedes"],
-                        "nombreFichero": file_data["nombreFichero"],
-                        "fechaAlta": file_data["fechaAlta"],
-                        "envioDesdeAgrupacion": file_data["envioDesdeAgrupacion"],
-                        "envioDesdeAgrupacionImg": "",
-                        "estadoProceso": file_data["estadoProceso"],
-                        "numTotalErrores": file_data["numTotalErrores"],
-                        "numTotalAvisos": file_data["numTotalAvisos"],
-                        "separadorTabla": "",
-                        "numHuespedesInformados": file_data["numHuespedesInformados"],
-                        "numHuespedes": file_data["numHuespedes"],
-                        "primeraConsulta": False,
-                        **property_specific_data,
-                        **common_file_data,
-                        "datosServidor": False,
-                    },
-                )
-
-                if response_last_file_errors_route.status_code != 200:
-                    raise ValidationError(_("Could last files sent"))
-
-                time.sleep(0.4)
-                soup = bs(response_last_file_errors_route.text, "html.parser")
-                # get file sent pdf report
-                response_last_file_errors_route = session.get(
-                    base_url + soup.select("#iframePdf")[0].attrs["src"],
-                    headers=headers,
-                    verify=False,
-                )
-
-                if response_last_file_errors_route.status_code != 200:
-                    raise ValidationError(_("Could last files sent"))
-
-                time.sleep(0.4)
-                pdfReader = PyPDF2.PdfFileReader(
-                    io.BytesIO(response_last_file_errors_route.content)
-                )
-
-                if (
-                    pdfReader.getPage(0)
-                    .extractText()
-                    .find("ERRORES Y AVISOS HUESPEDES")
-                    == -1
-                ):
-                    message = _("Successful file sending")
-                    error = False
-                    log = self.env["pms.log.institution.traveller.report"].create(
-                        {
-                            "error_sending_data": False,
-                            "pms_property_id": pms_property.id,
-                            "target_date": target_date,
-                            "txt_message": _("Successful file sending"),
-                        }
-                    )
-                else:
-                    message = _("Errors (check the pdf file).")
-                    error = True
-                    log = self.env["pms.log.institution.traveller.report"].create(
-                        {
-                            "error_sending_data": error,
-                            "txt_message": message,
-                            "pms_property_id": pms_property.id,
-                            "target_date": target_date,
-                            "file_incidencies_from_institution": base64.b64encode(
-                                response_last_file_errors_route.content
-                            ),
-                            "txt_filename": file_name + ".pdf",
-                        }
-                    )
+            # get receipt acknowledgment
+            response_post_ask_file2 = session.get(
+                base_url + post_receipt_acknowledgment_route2,
+            )
+            time.sleep(0.5)
+            log = self.env["pms.log.institution.traveller.report"].create(
+                {
+                    "pms_property_id": pms_property.id,
+                    "target_date": target_date,
+                    "error_sending_data": False,
+                    "file_incidencies_from_institution": base64.b64encode(
+                        response_post_ask_file2.content
+                    ),
+                    "txt_filename": file_name + ".pdf",
+                }
+            )
             # do logout
             session.post(
                 base_url + logout_route,
