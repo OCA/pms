@@ -228,7 +228,7 @@ class PmsInvoiceService(Component):
             if cmd_invoice_lines:
                 new_vals["invoice_line_ids"] = cmd_invoice_lines
         new_invoice = False
-        if new_vals and self.check_blocked_fields(invoice, new_vals):
+        if new_vals:
             # Update Invoice
             # When modifying an invoice, depending on the company's configuration,
             # and the invoice state it will be modified directly or a reverse
@@ -236,7 +236,9 @@ class PmsInvoiceService(Component):
             # with the updated data.
             # TODO: to create core pms correct_invoice_policy field
             # if invoice.state != "draft" and company.corrective_invoice_policy == "strict":
-            if invoice.state == "posted":
+            if invoice.state == "posted" and self.check_blocked_fields(
+                invoice, new_vals
+            ):
                 # invoice create refund
                 new_invoice = invoice.copy()
                 cmd_new_invoice_lines = []
@@ -263,7 +265,9 @@ class PmsInvoiceService(Component):
                     new_vals["invoice_line_ids"] = cmd_new_invoice_lines
                 default_values_list = [
                     {
-                        "ref": _(f'Reversal of: {move.name + " - " + move.ref}'),
+                        "ref": _(
+                            f'Reversal of: {move.name + (" - " + move.ref if move.ref else "")}'
+                        ),
                     }
                     for move in invoice
                 ]
@@ -352,7 +356,10 @@ class PmsInvoiceService(Component):
 
     def check_blocked_fields(self, invoice, new_vals):
         # Check partner and amounts
-        if new_vals.get("partner_id") != invoice.partner_id.id:
+        if (
+            new_vals.get("partner_id")
+            and new_vals.get("partner_id") != invoice.partner_id.id
+        ):
             return True
         if new_vals.get("invoice_line_ids"):
             for line in new_vals["invoice_line_ids"]:
