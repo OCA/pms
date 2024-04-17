@@ -573,6 +573,9 @@ class PmsProperty(models.Model):
             clients = client
         else:
             clients = self.env["res.users"].search([("pms_api_client", "=", True)])
+        room_type_ids = []
+        endpoint = ""
+        response = None
         _logger.info("PMS API push batch")
         if isinstance(date_from, str):
             date_from = datetime.datetime.strptime(date_from, "%Y-%m-%d").date()
@@ -593,73 +596,112 @@ class PmsProperty(models.Model):
                     ]
                 )
             for pms_property in pms_properties:
-                property_client_conf = self.env["ota.property.settings"].search(
-                    [
-                        ("pms_property_id", "=", pms_property.id),
-                        ("agency_id", "=", client.partner_id.id),
-                    ]
-                )
-                pms_property_id = pms_property.id
-                room_type_ids = (
-                    [filter_room_type_id]
-                    if filter_room_type_id
-                    else self.env["pms.room"]
-                    .search([("pms_property_id", "=", pms_property_id)])
-                    .mapped("room_type_id")
-                    .filtered(
-                        lambda r: r.id
-                        not in property_client_conf.excluded_room_type_ids.ids
+                try:
+                    property_client_conf = (
+                        self.env["ota.property.settings"]
+                        .sudo()
+                        .search(
+                            [
+                                ("pms_property_id", "=", pms_property.id),
+                                ("agency_id", "=", client.partner_id.id),
+                            ]
+                        )
                     )
-                    .ids
-                )
-                payload = {
-                    "pmsPropertyId": pms_property_id,
-                }
-                data = []
-                for room_type_id in room_type_ids:
-                    if call_type == "availability":
-                        endpoint = client.url_endpoint_availability
-                        data.extend(
-                            pms_property.generate_availability_json(
-                                date_from=date_from,
-                                date_to=date_to,
-                                pms_property_id=pms_property_id,
-                                room_type_id=room_type_id,
-                                client=client,
-                            )
+                    pms_property_id = pms_property.id
+                    room_type_ids = (
+                        [filter_room_type_id]
+                        if filter_room_type_id
+                        else self.env["pms.room"]
+                        .search([("pms_property_id", "=", pms_property_id)])
+                        .mapped("room_type_id")
+                        .filtered(
+                            lambda r: r.id
+                            not in property_client_conf.excluded_room_type_ids.ids
                         )
-                        key_data = "avails"
-                    elif call_type == "restrictions":
-                        endpoint = client.url_endpoint_rules
-                        data.extend(
-                            pms_property.generate_restrictions_json(
-                                date_from=date_from,
-                                date_to=date_to,
-                                pms_property_id=pms_property_id,
-                                room_type_id=room_type_id,
-                                client=client,
-                            )
-                        )
-                        key_data = "rules"
-                    elif call_type == "prices":
-                        endpoint = client.url_endpoint_prices
-                        data.extend(
-                            pms_property.generate_prices_json(
-                                date_from=date_from,
-                                date_to=date_to,
-                                pms_property_id=pms_property_id,
-                                room_type_id=room_type_id,
-                                client=client,
-                            )
-                        )
-                        key_data = "prices"
-                    else:
-                        raise ValidationError(_("Invalid call type"))
-                if data:
-                    payload[key_data] = data
-                    response = self.pms_api_push_payload(payload, endpoint, client)
-                    _logger.info(
-                        f"""PMS API push batch response to
-                        {endpoint}: {response.status_code} - {response.text}"""
+                        .ids
                     )
-                self.invalidate_cache()
+                    payload = {
+                        "pmsPropertyId": pms_property_id,
+                    }
+                    data = []
+                    for room_type_id in room_type_ids:
+                        if call_type == "availability":
+                            endpoint = client.url_endpoint_availability
+                            data.extend(
+                                pms_property.generate_availability_json(
+                                    date_from=date_from,
+                                    date_to=date_to,
+                                    pms_property_id=pms_property_id,
+                                    room_type_id=room_type_id,
+                                    client=client,
+                                )
+                            )
+                            key_data = "avails"
+                        elif call_type == "restrictions":
+                            endpoint = client.url_endpoint_rules
+                            data.extend(
+                                pms_property.generate_restrictions_json(
+                                    date_from=date_from,
+                                    date_to=date_to,
+                                    pms_property_id=pms_property_id,
+                                    room_type_id=room_type_id,
+                                    client=client,
+                                )
+                            )
+                            key_data = "rules"
+                        elif call_type == "prices":
+                            endpoint = client.url_endpoint_prices
+                            data.extend(
+                                pms_property.generate_prices_json(
+                                    date_from=date_from,
+                                    date_to=date_to,
+                                    pms_property_id=pms_property_id,
+                                    room_type_id=room_type_id,
+                                    client=client,
+                                )
+                            )
+                            key_data = "prices"
+                        else:
+                            raise ValidationError(_("Invalid call type"))
+                    if data:
+                        payload[key_data] = data
+                        response = self.pms_api_push_payload(payload, endpoint, client)
+                        _logger.info(
+                            f"""PMS API push batch response to
+                            {endpoint}: {response.status_code} - {response.text}"""
+                        )
+                    self.invalidate_cache()
+                    self.env["pms.api.log"].sudo().create(
+                        {
+                            "pms_property_id": pms_property_id,
+                            "client_id": client.id,
+                            "request": payload,
+                            "response": str(response),
+                            "status": "success" if response.ok else "error",
+                            "request_date": fields.Datetime.now(),
+                            "method": "PUSH",
+                            "endpoint": endpoint,
+                            "target_date_from": date_from,
+                            "target_date_to": date_to,
+                            "request_type": call_type,
+                            "room_type_ids": room_type_ids,
+                        }
+                    )
+                except Exception as e:
+                    _logger.error(f"""PMS API push batch error: {e}""")
+                    self.env["pms.api.log"].sudo().create(
+                        {
+                            "pms_property_id": pms_property_id,
+                            "client_id": client.id,
+                            "request": payload,
+                            "response": str(e),
+                            "status": "error",
+                            "request_date": fields.Datetime.now(),
+                            "method": "PUSH",
+                            "endpoint": endpoint,
+                            "target_date_from": date_from,
+                            "target_date_to": date_to,
+                            "request_type": call_type,
+                            "room_type_ids": room_type_ids,
+                        }
+                    )
