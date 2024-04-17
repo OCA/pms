@@ -475,15 +475,22 @@ class PmsReservationLine(models.Model):
             discount = first_discount + cancel_discount
             line.price_day_total = line.price - discount
 
-    @api.depends("room_id")
+    @api.depends("room_id", "avail_id", "avail_id.real_avail", "occupies_availability")
     def _compute_overbooking(self):
         for record in self.filtered("room_id"):
-            if record.occupies_availability and not record.overbooking:
+            if record.occupies_availability:
+                record_id = (
+                    record.id
+                    if isinstance(record, int)
+                    else record._origin.id
+                    if hasattr(record, "_origin")
+                    else False
+                )
                 if self.env["pms.reservation.line"].search(
                     [
                         ("date", "=", record.date),
                         ("room_id", "=", record.room_id.id),
-                        ("id", "!=", record.id),
+                        ("id", "!=", record_id),
                         ("occupies_availability", "=", True),
                     ]
                 ):
