@@ -276,12 +276,6 @@ class AccountMove(models.Model):
                     .line_ids.filtered(
                         lambda line: line.account_id == pay_term_lines.account_id
                         and line.folio_ids in move.folio_ids
-                        and (
-                            line.move_id.partner_id == move.partner_id
-                            or not line.move_id.partner_id
-                            or move.partner_id
-                            == self.env.ref("pms.various_pms_partner")
-                        )
                     )
                 )
                 to_reconcile = self.match_pays_by_amount(
@@ -300,41 +294,6 @@ class AccountMove(models.Model):
             record._check_pms_valid_invoice(record)
         res = super(AccountMove, self)._post(soft)
         self._autoreconcile_folio_payments()
-        return res
-
-    def reconcile(self):
-        """
-        Reconcile the account move
-        """
-        res = super(AccountMove, self).reconcile()
-        # Update partner in payments and statement lines
-        for record in self:
-            if record.payment_id:
-                old_payment_partner = record.payment_id.partner_id
-                if old_payment_partner != record.partner_id:
-                    record.payment_id.partner_id = record.partner_id
-                    if old_payment_partner:
-                        record.payment_id.message_post(
-                            body=_(
-                                f"""
-                                Partner modify automatically from invoice {record.name}:
-                                {old_payment_partner.name} to {record.partner_id.name}
-                                """
-                            )
-                        )
-            if record.statement_line_id:
-                old_statement_partner = record.statement_line_id.partner_id
-                if old_statement_partner != record.partner_id:
-                    record.statement_line_id.partner_id = record.partner_id
-                    if old_statement_partner:
-                        record.statement_line_id.message_post(
-                            body=_(
-                                f"""
-                                Partner modify automatically from invoice {record.name}:
-                                {old_statement_partner.name} to {record.partner_id.name}
-                                """
-                            )
-                        )
         return res
 
     def match_pays_by_amount(self, payments, invoice):
