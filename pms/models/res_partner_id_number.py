@@ -6,7 +6,6 @@
 #        Antonio Espinosa <antonioea@antiun.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -30,6 +29,15 @@ class ResPartnerIdNumber(models.Model):
         readonly=False,
         store=True,
         compute="_compute_valid_from",
+    )
+
+    country_id = fields.Many2one(
+        string="Country",
+        comodel_name="res.country",
+        help="Country of the document",
+        compute="_compute_country_id",
+        store=True,
+        readonly=False,
     )
 
     @api.depends("partner_id", "partner_id.pms_checkin_partner_ids.document_number")
@@ -95,6 +103,24 @@ class ResPartnerIdNumber(models.Model):
                 if last_update_category_id and last_update_category_id[0].document_type:
                     record.category_id = last_update_category_id[0].document_type
 
+    @api.depends("partner_id", "partner_id.pms_checkin_partner_ids.document_country_id")
+    def _compute_country_id(self):
+        for record in self:
+            if record.partner_id.pms_checkin_partner_ids:
+                last_update_document = (
+                    record.partner_id.pms_checkin_partner_ids.filtered(
+                        lambda x: x.document_id == record
+                        and x.write_date
+                        == max(
+                            record.partner_id.pms_checkin_partner_ids.mapped(
+                                "write_date"
+                            )
+                        )
+                    )
+                )
+                if last_update_document and last_update_document[0].document_country_id:
+                    record.country_id = last_update_document[0].document_country_id
+
     @api.constrains("partner_id", "category_id")
     def _check_category_id_unique(self):
         for record in self:
@@ -106,3 +132,15 @@ class ResPartnerIdNumber(models.Model):
             )
             if len(id_number) > 1:
                 raise ValidationError(_("Partner already has this document type"))
+
+    @api.constrains("country_id", "category_id")
+    def _check_document_country_id_category_id_consistence(self):
+        for record in self:
+            if record.category_id and record.country_id:
+                if (
+                    record.category_id.country_ids
+                    and record.country_id not in record.category_id.country_ids
+                ):
+                    raise ValidationError(
+                        _("Country is not allowed for this document type")
+                    )
