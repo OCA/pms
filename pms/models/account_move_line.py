@@ -1,7 +1,7 @@
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class AccountMoveLine(models.Model):
@@ -63,8 +63,7 @@ class AccountMoveLine(models.Model):
     def _compute_name(self):
         res = super()._compute_name()
         for record in self:
-            if record.folio_line_ids and not record.name_changed_by_user:
-                record.name_changed_by_user = False
+            if record.folio_line_ids and not record.name:
                 record.name = self.env["folio.sale.line"].generate_folio_sale_name(
                     record.folio_line_ids.reservation_id,
                     record.product_id,
@@ -129,3 +128,50 @@ class AccountMoveLine(models.Model):
                     move.pms_property_id.id or move.move_id.pms_property_id.id
                 )
         return result
+
+    def reconcile(self):
+        """
+        Reconcile the account move
+        """
+        res = super(AccountMoveLine, self).reconcile()
+        # Update partner in payments and statement lines
+        for record in self:
+            if record.payment_id:
+                old_payment_partner = record.payment_id.partner_id
+                new_payment_partner = record.payment_id.mapped(
+                    "reconciled_invoice_ids.partner_id"
+                )
+                if (
+                    old_payment_partner != new_payment_partner
+                    and len(new_payment_partner) == 1
+                ):
+                    record.payment_id.partner_id = new_payment_partner
+                    if old_payment_partner:
+                        record.payment_id.message_post(
+                            body=_(
+                                f"""
+                                Partner modify automatically from invoice:
+                                {old_payment_partner.name} to {new_payment_partner.name}
+                                """
+                            )
+                        )
+            if record.statement_line_id:
+                old_statement_partner = record.statement_line_id.partner_id
+                new_payment_partner = record.payment_id.mapped(
+                    "reconciled_invoice_ids.partner_id"
+                )
+                if (
+                    old_statement_partner != new_payment_partner
+                    and len(new_payment_partner) == 1
+                ):
+                    record.statement_line_id.partner_id = new_payment_partner
+                    if old_statement_partner:
+                        record.statement_line_id.message_post(
+                            body=_(
+                                f"""
+                                Partner modify automatically from invoice:
+                                {old_statement_partner.name} to {new_payment_partner.name}
+                                """
+                            )
+                        )
+        return res

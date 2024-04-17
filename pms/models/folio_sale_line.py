@@ -1006,6 +1006,7 @@ class FolioSaleLine(models.Model):
                     )
             # If has draft invoices, we need to update the invoice lines
             if "draft" in self.mapped("invoice_lines.move_id.state"):
+                draft_moves = self.env["account.move"]
                 if "product_uom_qty" in values:
                     for line in self:
                         if line.qty_invoiced > values["product_uom_qty"]:
@@ -1015,7 +1016,10 @@ class FolioSaleLine(models.Model):
                                     " You must reduce the invoiced quantity first."
                                 )
                             )
-                for line in self.filtered(lambda l: not l.display_type):
+                for line in self.filtered(
+                    lambda l: not l.display_type and l.move_id.state == "draft"
+                ):
+                    draft_moves |= line.invoice_lines.move_id
                     mapped_fields = self._get_mapped_move_line_fields()
                     move_line_vals = [
                         (
@@ -1036,6 +1040,9 @@ class FolioSaleLine(models.Model):
                     )
                     if "product_uom_qty" in values:
                         line._mens_update_line_quantity(values)
+                # avoid draft invoice naming compute
+                if draft_moves:
+                    draft_moves.name = "/"
 
         result = super(FolioSaleLine, self).write(values)
         return result
@@ -1084,12 +1091,22 @@ class FolioSaleLine(models.Model):
     def unlink(self):
         for record in self:
             if record.qty_invoiced > 0:
-                raise UserError(
-                    _(
-                        "You cannot delete a sale order line once a "
-                        "invoice has been created from it."
+                # If the invoice line is in draft, unlink it, else raise an error
+                if record.invoice_lines.filtered(lambda l: l.move_id.state == "draft"):
+                    moves = record.invoice_lines.mapped("move_id")
+                    record.invoice_lines.with_context(
+                        check_move_validity=False
+                    ).filtered(lambda l: l.move_id.state == "draft").unlink()
+                    moves._recompute_dynamic_lines(
+                        recompute_all_taxes=True, recompute_tax_base_amount=True
                     )
-                )
+                else:
+                    raise UserError(
+                        _(
+                            "You cannot delete a sale order line once a "
+                            "invoice has been created from it."
+                        )
+                    )
         return super(FolioSaleLine, self).unlink()
 
     def _get_real_price_currency(self, product, rule_id, qty, uom, pricelist_id):
