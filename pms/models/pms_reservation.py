@@ -1883,6 +1883,10 @@ class PmsReservation(models.Model):
                 raise ValidationError(
                     _("The reservation must be canceled by action: action_cancel")
                 )
+            if record.state == "confirm" and not self.env.context.get("action_confirm"):
+                raise ValidationError(
+                    _("The reservation must be confirmed by action: action_confirm")
+                )
 
     @api.constrains("arrival_hour")
     def _check_arrival_hour(self):
@@ -2131,7 +2135,7 @@ class PmsReservation(models.Model):
         record = super(PmsReservation, self).create(vals)
         record._check_capacity()
         if record.preconfirm and record.state == "draft":
-            record.confirm()
+            record.action_confirm()
 
         record._check_services(vals)
 
@@ -2295,14 +2299,14 @@ class PmsReservation(models.Model):
         reservations._compute_priority()
         return True
 
-    def confirm(self):
+    def action_confirm(self):
         for record in self:
             vals = {}
             if record.checkin_partner_ids.filtered(lambda c: c.state == "onboard"):
                 vals.update({"state": "onboard"})
             else:
                 vals.update({"state": "confirm"})
-            record.write(vals)
+            record.with_context(action_confirm=True).write(vals)
             record.reservation_line_ids.update({"cancel_discount": 0})
             # Unlink penalty service if exist
             record.service_ids.filtered(lambda s: s.is_cancel_penalty).unlink()
@@ -2319,9 +2323,10 @@ class PmsReservation(models.Model):
                 record.with_context(action_cancel=True).state = "cancel"
                 record._check_cancel_penalty()
                 record.cancel_datetime = fields.Datetime.now()
-                if all(
+                # If all reservations in the folio are cancelled, cancel the folio
+                if not (
                     record.folio_id.reservation_ids.filtered(
-                        lambda r: r.state == "cancel"
+                        lambda r: r.state != "cancel"
                     )
                 ):
                     record.folio_id.action_cancel()
@@ -2447,7 +2452,7 @@ class PmsReservation(models.Model):
             record.checkin_partner_ids.filtered(
                 lambda check: check.state == "onboard"
             ).action_undo_onboard()
-            record.state = "confirm"
+            record.action_confirm()
         return True
 
     def action_checkin_partner_view(self):

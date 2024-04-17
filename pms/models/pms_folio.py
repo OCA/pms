@@ -814,6 +814,7 @@ class PmsFolio(models.Model):
         "reservation_ids.reservation_line_ids.cancel_discount",
         "reservation_ids.reservation_line_ids.default_invoice_to",
         "reservation_ids.tax_ids",
+        "reservation_ids.state",
     )
     def _compute_sale_line_ids(self):
         for folio in self.filtered(lambda f: isinstance(f.id, int)):
@@ -1658,7 +1659,7 @@ class PmsFolio(models.Model):
         )
 
         if self.env.context.get("confirm_all_reservations"):
-            self.reservation_ids.confirm()
+            self.reservation_ids.action_confirm()
 
         return True
 
@@ -1809,10 +1810,10 @@ class PmsFolio(models.Model):
         }
 
     def _message_post_after_hook(self, message, msg_vals):
-        res = super(PmsFolio, self)._message_post_after_hook(message, msg_vals)
+        res = super(PmsFolio, self).sudo()._message_post_after_hook(message, msg_vals)
         for folio in self:
             for follower in folio.message_follower_ids:
-                follower.unlink()
+                follower.sudo().unlink()
         return res
 
     def action_view_invoice(self):
@@ -1954,6 +1955,17 @@ class PmsFolio(models.Model):
                     month_day,
                 )
         if invoice_date:
+            if (
+                self.company_id.period_lock_date
+                and invoice_date < self.company_id.period_lock_date
+                and not self.user_has_groups("account.group_account_manager")
+            ):
+                raise UserError(
+                    _(
+                        "The period to create this invoice is locked. "
+                        "Please contact your administrator to unlock it."
+                    )
+                )
             if invoice_date < datetime.date.today() and not self._context.get(
                 "autoinvoice"
             ):
@@ -2017,7 +2029,7 @@ class PmsFolio(models.Model):
                 lambda m: m.amount_total < 0
             ).action_switch_invoice_into_refund_credit_note()
         for move in moves:
-            move.message_post_with_view(
+            move.sudo().message_post_with_view(
                 "mail.message_origin_link",
                 values={
                     "self": move,
@@ -2168,7 +2180,7 @@ class PmsFolio(models.Model):
             "origin_reference": folio.external_reference,
         }
         pay = self.env["account.payment"].create(vals)
-        pay.message_post_with_view(
+        pay.sudo().message_post_with_view(
             "mail.message_origin_link",
             values={
                 "self": pay,
@@ -2211,7 +2223,7 @@ class PmsFolio(models.Model):
             or folio.pms_property_id.email_formatted,
         )
         for reservation in folio.reservation_ids:
-            reservation.message_post(
+            reservation.sudo().message_post(
                 body=_(
                     """Payment: <b>%s</b> by <b>%s</b>""",
                     amount,
@@ -2260,7 +2272,7 @@ class PmsFolio(models.Model):
             "state": "draft",
         }
         pay = self.env["account.payment"].create(vals)
-        pay.message_post_with_view(
+        pay.sudo().message_post_with_view(
             "mail.message_origin_link",
             values={
                 "self": pay,
@@ -2298,7 +2310,7 @@ class PmsFolio(models.Model):
             or folio.pms_property_id.email_formatted,
         )
         for reservation in folio.reservation_ids:
-            reservation.message_post(
+            reservation.sudo().message_post(
                 body=_(
                     """Refund: <b>%s</b> by <b>%s</b>""",
                     amount,

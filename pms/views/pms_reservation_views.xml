@@ -18,7 +18,7 @@
                     <field name="to_assign" invisible="1" />
                     <field name="check_adults" invisible="1" />
                     <button
-                        name="confirm"
+                        name="action_confirm"
                         string="Confirm"
                         class="oe_highlight"
                         type="object"
