@@ -1017,7 +1017,12 @@ class FolioSaleLine(models.Model):
                                 )
                             )
                 for line in self.filtered(
-                    lambda l: not l.display_type and l.move_id.state == "draft"
+                    lambda l: not l.display_type
+                    and not (
+                        l.invoice_lines.filtered(
+                            lambda inv_line: inv_line.move_id.state == "draft"
+                        )
+                    )
                 ):
                     draft_moves |= line.invoice_lines.move_id
                     mapped_fields = self._get_mapped_move_line_fields()
