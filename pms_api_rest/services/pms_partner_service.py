@@ -196,19 +196,27 @@ class PmsPartnerService(Component):
                 .filtered(lambda x: x.checkout)
                 .mapped("checkout")
             )
-            doc_number = False
+            doc_record = False
             document_number = False
             document_type = False
             document_support_number = False
+            document_country_id = False
+            document_expedition_date = False
             if partner.id_numbers:
-                doc_number = partner.id_numbers[0]
-            if doc_number:
-                if doc_number.name:
-                    document_number = doc_number.name
-                if doc_number.category_id:
-                    document_type = doc_number.category_id.id
-                if doc_number.support_number:
-                    document_support_number = doc_number.support_number
+                doc_record = partner.id_numbers[0]
+            if doc_record:
+                if doc_record.name:
+                    document_number = doc_record.name
+                if doc_record.category_id:
+                    document_type = doc_record.category_id.id
+                if doc_record.support_number:
+                    document_support_number = doc_record.support_number
+                if doc_record.country_id:
+                    document_country_id = doc_record.country_id.id
+                if doc_record.valid_from:
+                    document_expedition_date = datetime.combine(
+                        doc_record.valid_from, datetime.min.time()
+                    ).isoformat()
             result_partners.append(
                 PmsPartnerInfo(
                     id=partner.id,
@@ -260,7 +268,9 @@ class PmsPartnerService(Component):
                     documentSupportNumber=document_support_number
                     if document_support_number
                     else None,
-                    documentCountryId=doc_number.country_id.id if doc_number.country_id else None,
+                    documentCountryId=document_country_id
+                    if document_country_id
+                    else None,
                     vatNumber=partner.vat
                     if partner.vat
                     else partner.aeat_identification
@@ -271,10 +281,8 @@ class PmsPartnerService(Component):
                     else partner.aeat_identification_type
                     if partner.aeat_identification_type
                     else None,
-                    documentExpeditionDate=datetime.combine(
-                        doc_number.valid_from, datetime.min.time()
-                    ).isoformat()
-                    if doc_number and doc_number.valid_from
+                    documentExpeditionDate=document_expedition_date
+                    if document_expedition_date
                     else None,
                     comment=partner.comment if partner.comment else None,
                     language=partner.lang if partner.lang else None,
@@ -506,7 +514,7 @@ class PmsPartnerService(Component):
         )
         partners = []
         if partner:
-            doc_number = partner.id_numbers.filtered(
+            doc_record = partner.id_numbers.filtered(
                 lambda doc: doc.category_id.id == doc_type.id
             )
             PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
@@ -520,14 +528,14 @@ class PmsPartnerService(Component):
                     email=partner.email or None,
                     mobile=partner.mobile or None,
                     documentType=doc_type.id or None,
-                    documentNumber=doc_number.name or None,
+                    documentNumber=doc_record.name or None,
                     documentExpeditionDate=datetime.combine(
-                        doc_number.valid_from, datetime.min.time()
+                        doc_record.valid_from, datetime.min.time()
                     ).isoformat()
-                    if doc_number.valid_from
+                    if doc_record.valid_from
                     else None,
-                    documentSupportNumber=doc_number.support_number or None,
-                    documentCountryId=doc_number.country_id.id or None,
+                    documentSupportNumber=doc_record.support_number or None,
+                    documentCountryId=doc_record.country_id.id or None,
                     gender=partner.gender or None,
                     birthdate=datetime.combine(
                         partner.birthdate_date, datetime.min.time()
