@@ -1011,14 +1011,14 @@ class PmsReservation(models.Model):
                     if (reservation.adults and line.adults) or (
                         reservation.children and line.children
                     ):
-                        res = {
+                        data = {
                             "product_id": line.product_id.id,
                             "is_board_service": True,
                             "folio_id": reservation.folio_id.id,
                             "reservation_id": reservation.id,
                             "board_service_line_id": line.id,
                         }
-                        board_services.append((0, False, res))
+                        board_services.append((0, False, data))
                 reservation.service_ids -= old_board_lines
                 reservation.service_ids = board_services
             elif old_board_lines:
@@ -2153,7 +2153,29 @@ class PmsReservation(models.Model):
                     vals.get("reservation_line_ids")
                     and any(
                         [
-                            ("date" in line[2] or "price" in line[2])
+                            (
+                                "date" in line[2]
+                                and (
+                                    datetime.datetime.strptime(
+                                        line[2]["date"], "%Y-%m-%d"
+                                    ).date()
+                                    != self.env["pms.reservation.line"]
+                                    .browse(line[1])
+                                    .date
+                                )
+                            )
+                            or (
+                                "price" in line[2]
+                                and (
+                                    round(line[2]["price"], 2)
+                                    != round(
+                                        self.env["pms.reservation.line"]
+                                        .browse(line[1])
+                                        .price,
+                                        2,
+                                    )
+                                )
+                            )
                             for line in vals.get("reservation_line_ids")
                             if line[0] == 1
                         ]

@@ -587,6 +587,10 @@
                                             widget="many2many_tags"
                                             optional="show"
                                         />
+                                        <field
+                                            name="board_service_line_id"
+                                            invisible="1"
+                                        />
                                         <field name="price_subtotal" optional="hide" />
                                         <field name="price_tax" optional="hide" />
                                         <field name="discount" />
