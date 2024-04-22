@@ -1,3 +1,6 @@
+from datetime import date, datetime
+
+from dateutil.relativedelta import relativedelta
 from regula.documentreader.webclient import (
     DocumentReaderApi,
     ProcessParams,
@@ -6,19 +9,14 @@ from regula.documentreader.webclient import (
     Scenario,
     TextFieldType,
 )
-from datetime import date, datetime
-from dateutil.relativedelta import relativedelta
 
 from odoo import fields, models
-
 
 
 class PmsProperty(models.Model):
     _inherit = "pms.property"
 
-    ocr_checkin_supplier = fields.Selection(
-        selection_add=["regula", "Regula"]
-    )
+    ocr_checkin_supplier = fields.Selection(selection_add=[("regula", "Regula")])
 
     def _regula_document_process(self, image_base_64_front, image_base_64_back=False):
         ocr_regula_url = (
@@ -58,16 +56,16 @@ class PmsProperty(models.Model):
                 )
                 pms_ocr_checkin_result = dict()
                 if country_id:
-                    pms_ocr_checkin_result['nationality'] = country_id
+                    pms_ocr_checkin_result["nationality"] = country_id
                 if firstname:
-                    pms_ocr_checkin_result['firstname'] = firstname
+                    pms_ocr_checkin_result["firstname"] = firstname
                 if lastname:
-                    pms_ocr_checkin_result['lastname'] = lastname
+                    pms_ocr_checkin_result["lastname"] = lastname
                 if lastname2:
-                    pms_ocr_checkin_result['lastname2'] = lastname2
+                    pms_ocr_checkin_result["lastname2"] = lastname2
                 gender = response.text.get_field(TextFieldType.SEX)
                 if gender and gender.value != "":
-                    pms_ocr_checkin_result['gender'] = (
+                    pms_ocr_checkin_result["gender"] = (
                         "male"
                         if gender.value == "M"
                         else "female"
@@ -76,7 +74,7 @@ class PmsProperty(models.Model):
                     )
                 date_of_birth = response.text.get_field(TextFieldType.DATE_OF_BIRTH)
                 if date_of_birth and date_of_birth.value != "":
-                    pms_ocr_checkin_result['birthdate'] = (
+                    pms_ocr_checkin_result["birthdate"] = (
                         datetime.strptime(
                             date_of_birth.value.replace("-", "/"), "%Y/%m/%d"
                         )
@@ -93,7 +91,7 @@ class PmsProperty(models.Model):
                     and document_class_code.value != ""
                     and document_class_code.value == "P"
                 ):
-                    pms_ocr_checkin_result['documentType'] = (
+                    pms_ocr_checkin_result["documentType"] = (
                         self.env["res.partner.id_category"]
                         .search([("code", "=", "P")])
                         .id
@@ -108,11 +106,11 @@ class PmsProperty(models.Model):
                         age,
                         date_of_birth,
                     )
-                    pms_ocr_checkin_result['documentExpeditionDate'] = date_of_issue
+                    pms_ocr_checkin_result["documentExpeditionDate"] = date_of_issue
                 elif date_of_issue and date_of_issue.value != "":
-                    pms_ocr_checkin_result['documentExpeditionDate'] = (
-                        date_of_issue.value.replace("-", "/")
-                    )
+                    pms_ocr_checkin_result[
+                        "documentExpeditionDate"
+                    ] = date_of_issue.value.replace("-", "/")
                 support_number, document_number = self._proccess_document_number(
                     id_country_spain,
                     country_id,
@@ -121,9 +119,9 @@ class PmsProperty(models.Model):
                     response.text.get_field(TextFieldType.PERSONAL_NUMBER),
                 )
                 if support_number:
-                    pms_ocr_checkin_result['documentSupportNumber'] = support_number
+                    pms_ocr_checkin_result["documentSupportNumber"] = support_number
                 if document_number:
-                    pms_ocr_checkin_result['documentNumber'] = document_number
+                    pms_ocr_checkin_result["documentNumber"] = document_number
                 address_street, address_city, address_area = self._process_address(
                     id_country_spain,
                     country_id,
@@ -133,11 +131,11 @@ class PmsProperty(models.Model):
                     response.text.get_field(TextFieldType.ADDRESS),
                 )
                 if address_street:
-                    pms_ocr_checkin_result['residenceStreet'] = address_street
+                    pms_ocr_checkin_result["residenceStreet"] = address_street
                 if address_city:
-                    pms_ocr_checkin_result['residenceCity'] = address_city
+                    pms_ocr_checkin_result["residenceCity"] = address_city
                 if address_area:
-                    pms_ocr_checkin_result['countryState'] = address_area
+                    pms_ocr_checkin_result["countryState"] = address_area
         return pms_ocr_checkin_result
 
     def _process_nationality(

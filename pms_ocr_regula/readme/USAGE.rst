@@ -1,1 +1,1 @@
-Set api key regula and url parameters of the OCR service and activate the is_used_regula field in pms_property
+Set api key klippa and url parameters of the OCR service and select regula provider ocr in pms_property

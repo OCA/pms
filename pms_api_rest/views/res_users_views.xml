@@ -18,7 +18,7 @@
                             domain="['&amp;',('model_id', '=', 'pms.availability.plan.rule'), ('name', 'in', ('min_stay', 'max_stay', 'quota',  'max_stay_arrival', 'closed_arrival', 'closed', 'closed_departure', 'min_stay_arrival', 'max_avail'))]"
                         />
                     </group>
-                    <group string="Clien API configuration">
+                    <group string="Client API configuration">
                         <field
                             name="pms_api_client"
                             string="PMS API Client"
