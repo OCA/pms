@@ -1810,7 +1810,7 @@ class PmsFolio(models.Model):
         }
 
     def _message_post_after_hook(self, message, msg_vals):
-        res = super(PmsFolio, self).sudo()._message_post_after_hook(message, msg_vals)
+        res = super(PmsFolio, self)._message_post_after_hook(message, msg_vals)
         for folio in self:
             for follower in folio.message_follower_ids:
                 follower.sudo().unlink()
