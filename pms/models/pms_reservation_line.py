@@ -440,7 +440,10 @@ class PmsReservationLine(models.Model):
                     ).ids
                     if (
                         record.occupies_availability
-                        and not self.env.context.get("avoid_availability_check", False)
+                        and not (
+                            self.env.context.get("avoid_availability_check", False)
+                            or self.env.context.get("force_overbooking", False)
+                        )
                         and record.room_id.id
                         in avail.get_rooms_not_avail(
                             checkin=record.date,
@@ -475,10 +478,10 @@ class PmsReservationLine(models.Model):
             discount = first_discount + cancel_discount
             line.price_day_total = line.price - discount
 
-    @api.depends("room_id", "avail_id", "avail_id.real_avail", "occupies_availability")
+    @api.depends("room_id", "state", "is_reselling")
     def _compute_overbooking(self):
         for record in self.filtered("room_id"):
-            if record.occupies_availability:
+            if record.state != "cancel" and not record.is_reselling:
                 record_id = (
                     record.id
                     if isinstance(record, int)
@@ -495,8 +498,8 @@ class PmsReservationLine(models.Model):
                     ]
                 ):
                     record.overbooking = True
-            else:
-                record.overbooking = False
+                else:
+                    record.overbooking = False
 
     @api.model_create_multi
     def create(self, vals_list):
