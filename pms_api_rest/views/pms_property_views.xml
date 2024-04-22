@@ -91,7 +91,10 @@
                 </group>
             </xpath>
             <xpath expr="//field[@name='default_departure_hour']" position="after">
-                <group string="OTAs API Configuration">
+                <group string="OCR Supplier Configuration">
+                    <field name="ocr_checkin_supplier" />
+                </group>
+                <group string="OTAs API Configuration" colspan="8">
                     <field name="ota_property_settings_ids">
                         <tree name="OTAs" editable="bottom">
                             <field name="pms_property_id" invisible="1" />
