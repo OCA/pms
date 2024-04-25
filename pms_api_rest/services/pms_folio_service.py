@@ -764,11 +764,15 @@ class PmsFolioService(Component):
                         skip_compute_service_ids=False,
                         force_write_blocked=True if external_app else False,
                     )._compute_board_service_room_id()
+                if reservation.stateCode == "cancel":
+                    reservation.action_cancel()
             pms_folio_info.transactions = self.normalize_payments_structure(
                 pms_folio_info, folio
             )
             if pms_folio_info.transactions:
                 self.compute_transactions(folio, pms_folio_info.transactions)
+            if pms_folio_info.state == "cancel":
+                folio.action_cancel()
             # REVIEW: analyze how to integrate the sending of mails from the API
             # with the configuration of the automatic mails pms
             # &
@@ -840,7 +844,7 @@ class PmsFolioService(Component):
             if not external_app:
                 raise ValidationError(_("Error creating folio from API: %s") % e)
             else:
-                return False
+                return 0
 
     def compute_transactions(self, folio, transactions):
         for transaction in transactions:
@@ -849,6 +853,18 @@ class PmsFolioService(Component):
                 reference += transaction.reference
             else:
                 raise ValidationError(_("The transaction reference is required"))
+            journal = self.env["account.journal"].search(
+                [("id", "=", transaction.journalId)]
+            )
+            if not journal:
+                ota_conf = self.env["ota.property.settings"].search(
+                    [
+                        ("pms_property_id", "=", folio.pms_property_id.id),
+                        ("agency_id", "=", self.env.user.partner_id.id),
+                    ]
+                )
+                if ota_conf:
+                    journal = ota_conf.pms_api_payment_journal_id
             proposed_transaction = self.env["account.payment"].search(
                 [
                     ("pms_property_id", "=", folio.pms_property_id.id),
@@ -856,6 +872,8 @@ class PmsFolioService(Component):
                     ("folio_ids", "in", folio.id),
                     ("ref", "ilike", reference),
                     ("state", "=", "posted"),
+                    ("create_uid", "=", self.env.user.id),
+                    ("journal_id", "=", journal.id),
                 ]
             )
             if (
@@ -867,18 +885,6 @@ class PmsFolioService(Component):
                     proposed_transaction.amount = transaction.amount
                     proposed_transaction.action_post()
                 else:
-                    journal = self.env["account.journal"].search(
-                        [("id", "=", transaction.journalId)]
-                    )
-                    if not journal:
-                        ota_conf = self.env["ota.property.settings"].search(
-                            [
-                                ("pms_property_id", "=", folio.pms_property_id.id),
-                                ("agency_id", "=", self.env.user.partner_id.id),
-                            ]
-                        )
-                        if ota_conf:
-                            journal = ota_conf.pms_api_payment_journal_id
                     if transaction.transactionType == "inbound":
                         folio.do_payment(
                             journal,
@@ -1116,6 +1122,8 @@ class PmsFolioService(Component):
             else False,
             "auto_delete": False,
         }
+        if pms_mail_info.bodyMail:
+            email_values.update({"body": pms_mail_info.bodyMail})
         if pms_mail_info.mailType == "confirm":
             template = folio.pms_property_id.property_confirmed_template
             res_id = folio.id
@@ -1400,7 +1408,7 @@ class PmsFolioService(Component):
                         lambda l: l.sequence > seq and l.display_type != "line_section"
                     ).mapped("qty_to_invoice")
                 )
-        return False
+        return 0
 
     @restapi.method(
         [
@@ -1540,15 +1548,17 @@ class PmsFolioService(Component):
         if sale_channel_id:
             return sale_channel_id
         if not agency_id and external_app:
-            # TODO change by configuration user api in the future
-            return (
-                self.env["pms.sale.channel"]
+            channel_origin_id = (
+                self.env.user.partner_id.sale_channel_id.id
+                if self.env.user.partner_id.sale_channel_id
+                else self.env["pms.sale.channel"]
                 .search(
                     [("channel_type", "=", "direct"), ("is_on_line", "=", True)],
                     limit=1,
                 )
                 .id
             )
+            return channel_origin_id
         agency = self.env["res.partner"].browse(agency_id)
         if agency:
             return agency.sale_channel_id.id
@@ -1666,7 +1676,7 @@ class PmsFolioService(Component):
             if not external_app:
                 raise ValidationError(_("Error updating folio from API: %s") % e)
             else:
-                return False
+                return 0
 
     @restapi.method(
         [
@@ -1737,7 +1747,7 @@ class PmsFolioService(Component):
             if not external_app:
                 raise ValidationError(_("Error updating folio from API: %s") % e)
             else:
-                return False
+                return 0
 
     def update_folio_values(self, folio, pms_folio_info):
         external_app = self.env.user.pms_api_client
@@ -1745,7 +1755,7 @@ class PmsFolioService(Component):
         if pms_folio_info.state == "cancel" and folio.state != "cancel":
             draft_invoices = folio.invoice_ids.filtered(lambda i: i.state == "draft")
             if draft_invoices:
-                draft_invoices.action_cancel()
+                draft_invoices.button_cancel()
             folio.action_cancel()
             return folio.id
         # if (
@@ -1898,7 +1908,7 @@ class PmsFolioService(Component):
             ):
                 journal = ota_conf.pms_api_payment_journal_id
                 pmsTransactionInfo = self.env.datamodels["pms.transaction.info"]
-                pms_folio_infotransactions = [
+                pms_folio_info.transactions = [
                     pmsTransactionInfo(
                         journalId=journal.id,
                         transactionType="inbound",
@@ -2000,9 +2010,13 @@ class PmsFolioService(Component):
             if info_reservation.reservationLines:
                 # The service price is included in day price when it is a board service (external api)
                 board_day_price = 0
-                if external_app and vals.get("board_service_room_id"):
+                if external_app and info_reservation.boardServiceId:
                     board = self.env["pms.board.service.room.type"].browse(
-                        vals["board_service_room_id"]
+                        self.get_board_service_room_type_id(
+                            info_reservation.boardServiceId,
+                            info_reservation.roomTypeId,
+                            folio.pms_property_id.id,
+                        )
                     )
                     if info_reservation.adults:
                         board_day_price += (
