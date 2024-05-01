@@ -3,7 +3,7 @@
         <record id="document_type_dni" model="res.partner.id_category">
             <field name="name">DNI</field>
             <field name="code">D</field>
-            <field name="country_ids" eval="[(6, 0, [ref('base.es')])]"/>
+            <field name="country_ids" eval="[(6, 0, [ref('base.es')])]" />
             <field name="priority">10</field>
             <field name="validation_code">
 letters = {
@@ -48,7 +48,7 @@ else:
             <field name="name">Spanish Residence permit</field>
             <field name="code">N</field>
             <field name="priority">30</field>
-            <field name="country_ids" eval="[(6, 0, [ref('base.es')])]"/>
+            <field name="country_ids" eval="[(6, 0, [ref('base.es')])]" />
             <field name="validation_code">
 permit_first_letter=id_number.name[0:1]
 permit_last_letter = id_number.name[
@@ -76,9 +76,9 @@ else:
             <field name="aeat_identification_type">05</field>
         </record>
         <record
-            id="pms.document_type_european_residence"
-            model="res.partner.id_category"
-        >
+        id="pms.document_type_european_residence"
+        model="res.partner.id_category"
+    >
             <field name="aeat_identification_type">05</field>
         </record>
         <record id="pms.document_type_passport" model="res.partner.id_category">
@@ -88,9 +88,9 @@ else:
             <field name="aeat_identification_type">06</field>
         </record>
         <record
-            id="pms.document_type_identification_document"
-            model="res.partner.id_category"
-        >
+        id="pms.document_type_identification_document"
+        model="res.partner.id_category"
+    >
             <field name="aeat_identification_type">06</field>
         </record>
         <record id="base.es" model="res.country">
