@@ -1,12 +1,10 @@
 import base64
 import datetime
-import io
 import json
 import logging
 import re
 import time
 
-import PyPDF2
 import requests
 from bs4 import BeautifulSoup as bs
 from dateutil.relativedelta import relativedelta
@@ -247,9 +245,7 @@ class TravellerReport(models.TransientModel):
                 "/e-hotel/hospederia/generarInformeFichero"
             )
 
-            post_receipt_acknowledgment_route2 = (
-                "/e-hotel/hospederia/pdfInformeFichero"
-            )
+            post_receipt_acknowledgment_route2 = "/e-hotel/hospederia/pdfInformeFichero"
             logout_route = "/e-hotel/execute_logout"
             target_date = self.date_target or fields.date.today()
             session = requests.session()
@@ -316,7 +312,9 @@ class TravellerReport(models.TransientModel):
                 verify=False,
                 data={
                     "jsonHiddenComunes": "",
-                    "ficheroJ": json.loads(upload_result.content.decode('latin-1'))['ficheroJ'],
+                    "ficheroJ": json.loads(upload_result.content.decode("latin-1"))[
+                        "ficheroJ"
+                    ],
                     "_csrf": token,
                 },
             )
