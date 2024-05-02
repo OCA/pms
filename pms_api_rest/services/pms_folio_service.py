@@ -105,7 +105,6 @@ class PmsFolioService(Component):
         order_field = "write_date desc"
         if folio_search_param.last:
             order_field = "create_date desc"
-
         if folio_search_param.dateTo and folio_search_param.dateFrom:
             date_from = fields.Date.from_string(folio_search_param.dateFrom)
             date_to = fields.Date.from_string(folio_search_param.dateTo)
@@ -239,6 +238,11 @@ class PmsFolioService(Component):
             elif folio_search_param.filterByState == "cancelled":
                 subdomains = [
                     [("state", "=", "cancel")],
+                ]
+                domain_filter.append(expression.AND(subdomains))
+            elif folio_search_param.filterByState == "overbooking":
+                subdomains = [
+                    [("overbooking", "=", True)],
                 ]
                 domain_filter.append(expression.AND(subdomains))
         if domain_filter:
