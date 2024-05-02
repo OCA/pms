@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-12 14:11+0000\n"
-"PO-Revision-Date: 2024-03-04 15:36+0000\n"
-"Last-Translator: Ivorra78 <informatica@totmaterial.es>\n"
+"PO-Revision-Date: 2024-05-02 19:36+0000\n"
+"Last-Translator: Darío Lodeiros <dario@aloxa.eu>\n"
 "Language-Team: \n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -3170,7 +3170,7 @@ msgstr "Comprobar adultos"
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__checkin
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_split_join_swap_wizard__checkin
 msgid "Check In"
-msgstr "Registro de Entrada"
+msgstr "Entrada"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__checkout
@@ -3223,7 +3223,7 @@ msgstr "Horas del Check-in"
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__checkin
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation
 msgid "Checkin"
-msgstr "Checkin"
+msgstr "Entrada"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__pending_checkin_data
@@ -6674,7 +6674,7 @@ msgstr "Lenguaje"
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__last_checkout
 msgid "Last Folio Checkout"
-msgstr "Última Comprobación de Folio"
+msgstr "Checkout del folio"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_account_bank_statement____last_update
@@ -6868,27 +6868,27 @@ msgstr "Tarde"
 #: model:product.product,name:pms.pms_service_late_checkout
 #: model:product.template,name:pms.pms_service_late_checkout_product_template
 msgid "Late Check-out"
-msgstr "Registro de salida tardío"
+msgstr "Late Check out"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 msgid "Late Payment"
-msgstr "Retraso en el pago"
+msgstr "Pago por cancelación fuera de plazo"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule__apply_on_late
 msgid "Late apply on"
-msgstr "Aplicar Late"
+msgstr "Aplicar penalización"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule__days_late
 msgid "Late first days"
-msgstr "Primeros días Late"
+msgstr "Primeros días de la penalización"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 msgid "Lates and NoShows"
-msgstr "Lates y NoShows"
+msgstr "Cancelación fuera de plazo y No Shows"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__last_time_entries_checked
@@ -7451,7 +7451,7 @@ msgstr "¡Sin Registros!"
 #: model:ir.model.fields.selection,name:pms.selection__pms_reservation__cancelled_reason__noshow
 #: model_terms:ir.ui.view,arch_db:pms.pms_cancelation_rule_form
 msgid "No Show"
-msgstr "No hay Espectáculo"
+msgstr "No Show"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule__apply_on_noshow
