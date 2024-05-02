@@ -17,6 +17,7 @@ class PmsProperty(models.Model):
             ("policia_nacional", "Policía Nacional"),
             ("ertxaintxa", "Ertxaintxa (soon)"),
             ("mossos", "Mossos_d'esquadra (soon)"),
+            ("SES", "SES"),
         ],
         string="Institution",
         help="Institution to send daily guest data.",
