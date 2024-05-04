@@ -12,6 +12,7 @@
     "depends": [
         "pms_api_rest",
     ],
+    "external_dependencies": {"python": ["thefuzz", "geopy"]},
     "data": [
         "data/pms_ocr_klippa_data.xml",
         "views/res_partner_id_category_views.xml",
