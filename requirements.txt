@@ -1,9 +1,11 @@
 # generated from manifests external_dependencies
 bs4
+geopy
 jose
 jwt
 marshmallow
 pycountry
 regula.documentreader.webclient
 simplejson
+thefuzz
 xlrd
