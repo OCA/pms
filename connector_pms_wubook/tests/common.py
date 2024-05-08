@@ -48,7 +48,8 @@ class TestWubookConnector(SavepointComponentCase):
                 ],
             }
         )
-        # TODO: make it work with other user than root (__system__) - see setUpClass of TestWubookConnector
+        # TODO: make it work with other user than root (__system__)
+        #  - see setUpClass of TestWubookConnector
         cls.user1 = lambda self, pms_property: cls.env.ref("base.user_root")
 
         backend_type_values1 = {

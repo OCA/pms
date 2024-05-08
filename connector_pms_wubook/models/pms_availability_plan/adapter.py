@@ -176,7 +176,7 @@ class ChannelWubookPmsAvailabilityPlanAdapter(Component):
 
         # plan values
         if "name" in values:
-            params = self._prepare_parameters(
+            self._prepare_parameters(
                 {"id": _id, **{k: values[k] for k in values if k in {"name"}}},
                 ["id", "name"],
             )

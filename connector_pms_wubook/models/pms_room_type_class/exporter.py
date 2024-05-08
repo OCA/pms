@@ -26,6 +26,7 @@ class ChannelWubookPmsRoomTypeClassExporter(Component):
     _apply_on = "channel.wubook.pms.room.type.class"
 
     def _has_to_skip(self):
+        # flake8: noqa: B950
         return any(
             [
                 self.binding.default_code
