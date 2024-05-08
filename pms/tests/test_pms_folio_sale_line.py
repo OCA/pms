@@ -67,6 +67,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "pms_board_service_id": cls.board_service_test.id,
                 "product_id": cls.product_test1.id,
                 "amount": 8,
+                "adults": True,
             }
         )
         cls.board_service_room_type = cls.env["pms.board.service.room.type"].create(

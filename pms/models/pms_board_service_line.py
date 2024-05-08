@@ -1,6 +1,7 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class PmsBoardServiceLine(models.Model):
@@ -123,3 +124,9 @@ class PmsBoardServiceLine(models.Model):
                 }
             )
         return super(PmsBoardServiceLine, self).write(vals)
+
+    @api.constrains("adults", "children")
+    def _check_adults_children(self):
+        for record in self:
+            if not record.adults and not record.children:
+                raise ValidationError(_("Adults or Children must be checked"))

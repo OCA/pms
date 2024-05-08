@@ -488,6 +488,7 @@ class TestPmsFolioInvoice(TestPms):
                 "product_id": self.product1.id,
                 "pms_board_service_id": self.board_service1.id,
                 "amount": 10,
+                "adults": True,
             }
         )
 
@@ -545,6 +546,7 @@ class TestPmsFolioInvoice(TestPms):
                 "product_id": self.product1.id,
                 "pms_board_service_id": self.board_service1.id,
                 "amount": 10,
+                "adults": True,
             }
         )
 
@@ -603,6 +605,7 @@ class TestPmsFolioInvoice(TestPms):
                 "product_id": self.product1.id,
                 "pms_board_service_id": self.board_service1.id,
                 "amount": 10,
+                "adults": True,
             }
         )
 
@@ -759,6 +762,7 @@ class TestPmsFolioInvoice(TestPms):
                 "product_id": self.product1.id,
                 "pms_board_service_id": self.board_service1.id,
                 "amount": 10,
+                "adults": True,
             }
         )
 
@@ -862,6 +866,7 @@ class TestPmsFolioInvoice(TestPms):
                 "product_id": self.product1.id,
                 "pms_board_service_id": self.board_service1.id,
                 "amount": 10,
+                "adults": True,
             }
         )
 

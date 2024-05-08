@@ -813,6 +813,7 @@ class TestPmsWizardMassiveChanges(TestPms):
             {
                 "product_id": service_breakfast.id,
                 "pms_board_service_id": board_service_only_breakfast.id,
+                "adults": True,
             }
         )
         date_from = fields.date.today()
@@ -890,6 +891,7 @@ class TestPmsWizardMassiveChanges(TestPms):
             {
                 "product_id": service_breakfast.id,
                 "pms_board_service_id": board_service_only_breakfast.id,
+                "adults": True,
             }
         )
         date_from = fields.date.today()
@@ -991,18 +993,21 @@ class TestPmsWizardMassiveChanges(TestPms):
             {
                 "product_id": service_breakfast.id,
                 "pms_board_service_id": board_service_only_breakfast.id,
+                "adults": True,
             }
         )
         self.env["pms.board.service.line"].create(
             {
                 "product_id": service_breakfast.id,
                 "pms_board_service_id": board_service_half_board.id,
+                "adults": True,
             }
         )
         self.env["pms.board.service.line"].create(
             {
                 "product_id": service_dinner.id,
                 "pms_board_service_id": board_service_half_board.id,
+                "adults": True,
             }
         )
         date_from = fields.date.today()
@@ -1114,18 +1119,21 @@ class TestPmsWizardMassiveChanges(TestPms):
             {
                 "product_id": service_breakfast.id,
                 "pms_board_service_id": board_service_only_breakfast.id,
+                "adults": True,
             }
         )
         self.env["pms.board.service.line"].create(
             {
                 "product_id": service_breakfast.id,
                 "pms_board_service_id": board_service_half_board.id,
+                "adults": True,
             }
         )
         self.env["pms.board.service.line"].create(
             {
                 "product_id": service_dinner.id,
                 "pms_board_service_id": board_service_half_board.id,
+                "adults": True,
             }
         )
         date_from = fields.date.today()
