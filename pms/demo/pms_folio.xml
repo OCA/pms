@@ -15,7 +15,6 @@
                     'checkin': (DateTime.today() + timedelta(days=14)),
                     'checkout': (DateTime.today() + timedelta(days=16)),
                     'adults': 2,
-                    'state': 'confirm',
                     'board_service_room_id': ref('pms_board_service_room_eco_half_board'),
                     'partner_requests': 'Vegan breakfast',
                     })]"
@@ -23,6 +22,12 @@
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_eco_01'))]"
+        />
+        </function>
         <record id="pms_folio_sngx3" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_10" />
             <field name="user_id" ref="base.user_admin" />
@@ -41,7 +46,6 @@
                     'checkin': (DateTime.today() + timedelta(days=14)),
                     'checkout': (DateTime.today() + timedelta(days=16)),
                     'adults': 1,
-                    'state': 'confirm',
                     'partner_requests': 'Quite room.'
                     }),
                     (0, 0, {
@@ -50,7 +54,6 @@
                     'checkin': (DateTime.today() + timedelta(days=14)),
                     'checkout': (DateTime.today() + timedelta(days=16)),
                     'adults': 1,
-                    'state': 'confirm',
                     'partner_requests': 'Quite room.'
                     }),
                     (0, 0, {
@@ -63,6 +66,12 @@
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_sngx3'))]"
+        />
+        </function>
         <record id="pms_folio_trp_01" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_12" />
             <field name="user_id" ref="base.user_admin" />
@@ -178,13 +187,18 @@
                     'checkout': (DateTime.today() + timedelta(days=16)),
                     'adults': 1,
                     'children':1,
-                    'state': 'confirm',
                     'board_service_room_id': ref('pms_board_service_room_double_half_board'),
                     'partner_requests': 'Vegan food.'
 
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_dbl_01'))]"
+        />
+        </function>
         <record id="pms_folio_trp_02" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_4" />
             <field name="user_id" ref="base.user_admin" />
@@ -198,11 +212,16 @@
                     'checkin': (DateTime.today() + timedelta(days=15)),
                     'checkout': (DateTime.today() + timedelta(days=16)),
                     'adults': 1,
-                    'state': 'confirm',
                     'board_service_room_id': ref('pms_board_service_room_triple_full_board'),
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_trp_02'))]"
+        />
+        </function>
         <record id="pms_folio_cnf_01" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_12" />
             <field name="user_id" ref="base.user_demo" />
@@ -220,11 +239,16 @@
                     'checkin': (DateTime.today() + timedelta(days=15)),
                     'checkout': (DateTime.today() + timedelta(days=16)),
                     'adults': 10,
-                    'state': 'confirm',
                     'partner_requests': '10 bottles of water, 10 notebooks and 10 pens.'
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_cnf_01'))]"
+        />
+        </function>
         <record id="pms_folio_out_01" model="pms.folio">
             <field name="partner_id" ref="main_pms_property" />
             <field name="user_id" ref="base.user_admin" />
@@ -242,13 +266,18 @@
                     'checkin': (DateTime.today() + timedelta(days=16)),
                     'checkout': (DateTime.today() + timedelta(days=17)),
                     'adults': 1,
-                    'state': 'confirm',
                     'reservation_type': 'out',
                     'closure_reason_id': ref('pms_room_closure_reason_maintenance'),
                     'out_service_description': 'Change of lighting',
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_out_01'))]"
+        />
+        </function>
         <record id="pms_folio_trp_03" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_12" />
             <field name="user_id" ref="base.user_demo" />
@@ -289,7 +318,6 @@
                     'checkin': (DateTime.today() + timedelta(days=17)),
                     'checkout': (DateTime.today() + timedelta(days=18)),
                     'adults': 2,
-                    'state': 'confirm',
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -297,7 +325,6 @@
                     'checkin': (DateTime.today() + timedelta(days=17)),
                     'checkout': (DateTime.today() + timedelta(days=18)),
                     'adults': 1,
-                    'state': 'confirm',
                     'sale_channel_origin_id': ref('pms.main_pms_sale_channel_door')
                     }),
                     (0, 0, {
@@ -306,7 +333,6 @@
                     'checkin': (DateTime.today() + timedelta(days=17)),
                     'checkout': (DateTime.today() + timedelta(days=18)),
                     'adults': 1,
-                    'state': 'confirm',
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -314,7 +340,6 @@
                     'checkin': (DateTime.today() + timedelta(days=17)),
                     'checkout': (DateTime.today() + timedelta(days=18)),
                     'adults': 1,
-                    'state': 'confirm',
                     'sale_channel_origin_id': ref('pms.main_pms_sale_channel_mail')
                     }),
                     (0, 0, {
@@ -323,7 +348,6 @@
                     'checkin': (DateTime.today() + timedelta(days=17)),
                     'checkout': (DateTime.today() + timedelta(days=18)),
                     'adults': 2,
-                    'state': 'confirm',
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -331,7 +355,6 @@
                     'checkin': (DateTime.today() + timedelta(days=17)),
                     'checkout': (DateTime.today() + timedelta(days=18)),
                     'adults': 2,
-                    'state': 'confirm',
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -339,7 +362,6 @@
                     'checkin': (DateTime.today() + timedelta(days=17)),
                     'checkout': (DateTime.today() + timedelta(days=18)),
                     'adults': 3,
-                    'state': 'confirm',
                     'sale_channel_origin_id': ref('pms.main_pms_sale_channel_mail')
                     }),
                     (0, 0, {
@@ -348,10 +370,15 @@
                     'checkin': (DateTime.today() + timedelta(days=17)),
                     'checkout': (DateTime.today() + timedelta(days=18)),
                     'adults': 1,
-                    'state': 'confirm',
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_eco_sngx3_dblx2_trp_cnf'))]"
+        />
+        </function>
         <record id="pms_folio_eco_02" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_1" />
             <field name="user_id" ref="base.user_demo" />
@@ -370,7 +397,6 @@
                     'checkin': (DateTime.today() + timedelta(days=19)),
                     'checkout': (DateTime.today() + timedelta(days=20)),
                     'adults': 2,
-                    'state': 'confirm',
                     'partner_requests': '2 extra towels needed.'
                     }), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -378,17 +404,21 @@
                     'checkin': (DateTime.today() + timedelta(days=19)),
                     'checkout': (DateTime.today() + timedelta(days=20)),
                     'adults': 2,
-                    'state': 'confirm',
                     }), (0, 0, {
                     'pricelist_id': ref('product.list0'),
                     'preferred_room_id': ref('pms_room_parking_01'),
                     'checkin': (DateTime.today() + timedelta(days=19)),
                     'checkout': (DateTime.today() + timedelta(days=20)),
                     'adults': 1,
-                    'state': 'confirm',
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_eco_02'))]"
+        />
+        </function>
         <record id="pms_folio_sng_out_01" model="pms.folio">
             <field name="partner_id" ref="main_pms_property" />
             <field name="user_id" ref="base.user_admin" />
@@ -403,13 +433,18 @@
                     'checkin': (DateTime.today() + timedelta(days=19)),
                     'checkout': (DateTime.today() + timedelta(days=20)),
                     'adults': 1,
-                    'state': 'confirm',
                     'reservation_type': 'out',
                     'closure_reason_id': ref('pms_room_closure_reason_vip_privacy'),
                     'out_service_description': 'Room next to noisy guests.',
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_sng_out_01'))]"
+        />
+        </function>
         <record id="pms_folio_sngx2_trp" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_10" />
             <field name="user_id" ref="base.user_demo" />
@@ -428,7 +463,6 @@
                     'checkin': (DateTime.today() + timedelta(days=19)),
                     'checkout': (DateTime.today() + timedelta(days=20)),
                     'adults': 1,
-                    'state': 'confirm',
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -436,7 +470,6 @@
                     'checkin': (DateTime.today() + timedelta(days=19)),
                     'checkout': (DateTime.today() + timedelta(days=20)),
                     'adults': 1,
-                    'state': 'confirm',
                     'sale_channel_origin_id': ref('pms.main_pms_sale_channel_door'),
                     }),
                     (0, 0, {
@@ -445,11 +478,16 @@
                     'checkin': (DateTime.today() + timedelta(days=19)),
                     'checkout': (DateTime.today() + timedelta(days=20)),
                     'adults': 3,
-                    'state': 'confirm',
                     'partner_requests': '1 extra towel.'
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_sngx2_trp'))]"
+        />
+        </function>
         <record id="pms_folio_dblx2_01" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_33" />
             <field name="user_id" ref="base.user_admin" />
@@ -468,7 +506,6 @@
                     'checkin': (DateTime.today() + timedelta(days=19)),
                     'checkout': (DateTime.today() + timedelta(days=20)),
                     'adults': 2,
-                    'state': 'confirm',
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -479,8 +516,13 @@
                     'sale_channel_origin_id': ref('pms.main_pms_sale_channel_door'),
                     })]"
         />
-
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_dblx2_01'))]"
+        />
+        </function>
         <record id="pms_folio_cnf_02" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_main2" />
             <field name="user_id" ref="base.user_demo" />
@@ -494,11 +536,16 @@
                     'checkin': (DateTime.today() + timedelta(days=19)),
                     'checkout': (DateTime.today() + timedelta(days=21)),
                     'adults': 1,
-                    'state': 'confirm',
                     'partner_requests': 'Smart screen, projector and sound system.'
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_cnf_02'))]"
+        />
+        </function>
         <record id="pms_folio_trp_04" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_32" />
             <field name="user_id" ref="base.user_admin" />
@@ -532,7 +579,6 @@
                     'checkout': (DateTime.today() + timedelta(days=22)),
                     'adults': 1,
                     'children': 1,
-                    'state': 'confirm',
                     'arrival_hour': '12:00',
                     'departure_hour': '12:30',
                     'board_service_room_id': ref('pms_board_service_room_double_half_board'),
@@ -540,6 +586,12 @@
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_dbl_02'))]"
+        />
+        </function>
         <record id="pms_folio_cnf_03" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_12" />
             <field name="user_id" ref="base.user_admin" />
@@ -558,11 +610,16 @@
                     'checkin': (DateTime.today() + timedelta(days=21)),
                     'checkout': (DateTime.today() + timedelta(days=22)),
                     'adults': 1,
-                    'state': 'confirm',
                     'closure_reason_id': ref('pms_room_closure_reason_vip_privacy'),
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_cnf_03'))]"
+        />
+        </function>
 <!--        <record id="pms_folio_cnf_04" model="pms.folio">-->
 <!--            <field name="partner_id" ref="base.res_partner_18" />-->
 <!--            <field name="user_id" ref="base.user_demo" />-->
@@ -602,7 +659,6 @@
                     'checkin': (DateTime.today() + timedelta(days=23)),
                     'checkout': (DateTime.today() + timedelta(days=24)),
                     'adults': 1,
-                    'state': 'confirm',
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -610,7 +666,6 @@
                     'checkin': (DateTime.today() + timedelta(days=23)),
                     'checkout': (DateTime.today() + timedelta(days=24)),
                     'adults': 1,
-                    'state': 'confirm',
                     'board_service_room_id': ref('pms_board_service_room_single_half_board'),
                     }),
                     (0, 0, {
@@ -619,7 +674,6 @@
                     'checkin': (DateTime.today() + timedelta(days=23)),
                     'checkout': (DateTime.today() + timedelta(days=24)),
                     'adults': 1,
-                    'state': 'confirm',
                     'board_service_room_id': ref('pms_board_service_room_single_breakfast'),
                     'sale_channel_origin_id': ref('pms.main_pms_sale_channel_phone')
                     }),
@@ -629,12 +683,17 @@
                     'checkin': (DateTime.today() + timedelta(days=23)),
                     'checkout': (DateTime.today() + timedelta(days=24)),
                     'adults': 1,
-                    'state': 'confirm',
                     'board_service_room_id': ref('pms_board_service_room_single_full_board'),
                     'sale_channel_origin_id': ref('pms.main_pms_sale_channel_phone')
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_eco_sngx3'))]"
+        />
+        </function>
         <record id="pms_folio_dblx2_trp" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_30" />
             <field name="user_id" ref="base.user_demo" />
@@ -651,7 +710,6 @@
                     'checkout': (DateTime.today() + timedelta(days=24)),
                     'adults': 1,
                     'children': 1,
-                    'state': 'confirm',
                     'partner_requests': '1 extra towel needed.'
                     }),
                     (0, 0, {
@@ -661,7 +719,6 @@
                     'checkout': (DateTime.today() + timedelta(days=24)),
                     'adults': 1,
                     'children': 1,
-                    'state': 'confirm',
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -670,12 +727,17 @@
                     'checkout': (DateTime.today() + timedelta(days=24)),
                     'adults': 2,
                     'children': 1,
-                    'state': 'confirm',
                     'board_service_room_id': ref('pms_board_service_room_triple_full_board'),
                     'sale_channel_origin_id': ref('main_pms_sale_channel_mail')
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_dblx2_trp'))]"
+        />
+        </function>
         <record id="pms_folio_sngx2" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_25" />
             <field name="user_id" ref="base.user_admin" />
@@ -691,7 +753,6 @@
                     'checkin': (DateTime.today() + timedelta(days=24)),
                     'checkout': (DateTime.today() + timedelta(days=25)),
                     'adults': 1,
-                    'state': 'confirm',
                     'arrival_hour': '17:00',
                     'departure_hour': '12:15',
                     'board_service_room_id': ref('pms_board_service_room_single_full_board'),
@@ -702,13 +763,18 @@
                     'checkin': (DateTime.today() + timedelta(days=24)),
                     'checkout': (DateTime.today() + timedelta(days=25)),
                     'adults': 1,
-                    'state': 'confirm',
                     'arrival_hour': '16:00',
                     'departure_hour': '11:15',
                     'board_service_room_id': ref('pms_board_service_room_single_full_board'),
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_sngx2'))]"
+        />
+        </function>
         <record id="pms_folio_dblx2_02" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_32" />
             <field name="user_id" ref="base.user_admin" />
@@ -728,7 +794,6 @@
                     'checkin': (DateTime.today() + timedelta(days=24)),
                     'checkout': (DateTime.today() + timedelta(days=25)),
                     'adults': 1,
-                    'state': 'confirm',
                     'arrival_hour': '17:00',
                     'departure_hour': '12:15',
                     'board_service_room_id': ref('pms_board_service_room_double_half_board'),
@@ -740,12 +805,17 @@
                     'checkin': (DateTime.today() + timedelta(days=24)),
                     'checkout': (DateTime.today() + timedelta(days=25)),
                     'adults': 1,
-                    'state': 'confirm',
                     'arrival_hour': '16:00',
                     'departure_hour': '11:15',
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_dblx2_02'))]"
+        />
+        </function>
         <record id="pms_folio_cnf_05" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_10" />
             <field name="user_id" ref="base.user_demo" />
@@ -763,12 +833,17 @@
                     'checkin': (DateTime.today() + timedelta(days=24)),
                     'checkout': (DateTime.today() + timedelta(days=25)),
                     'adults': 1,
-                    'state': 'confirm',
                     'arrival_hour': '09:00',
                     'departure_hour': '12:00',
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_cnf_05'))]"
+        />
+        </function>
         <record id="pms_folio_eco_03" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_4" />
             <field name="user_id" ref="base.user_demo" />
@@ -783,12 +858,17 @@
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=32)),
                     'adults': 1,
-                    'state': 'confirm',
                     'board_service_room_id': ref('pms_board_service_room_eco_full_board'),
                     'partner_requests': 'Vegan food.'
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_eco_03'))]"
+        />
+        </function>
         <record id="pms_folio_sng_01" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_27" />
             <field name="user_id" ref="base.user_demo" />
@@ -807,11 +887,16 @@
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=32)),
                     'adults': 1,
-                    'state': 'confirm',
                     'board_service_room_id': ref('pms_board_service_room_single_half_board'),
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_sng_01'))]"
+        />
+        </function>
         <record id="pms_folio_sng_02" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_12" />
             <field name="user_id" ref="base.user_demo" />
@@ -829,12 +914,17 @@
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=32)),
                     'adults': 1,
-                    'state': 'confirm',
                     'board_service_room_id': ref('pms_board_service_room_single_full_board'),
                     'partner_requests': 'picnic for 1st lunch'
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_sng_02'))]"
+        />
+        </function>
         <record id="pms_folio_dblx2_03" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_27" />
             <field name="user_id" ref="base.user_demo" />
@@ -853,7 +943,6 @@
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=31)),
                     'adults': 2,
-                    'state': 'confirm',
                     'board_service_room_id': ref('pms_board_service_room_double_half_board'),
                     }),
                     (0, 0, {
@@ -862,11 +951,16 @@
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=32)),
                     'adults': 2,
-                    'state': 'confirm',
                     'board_service_room_id': ref('pms_board_service_room_double_half_board'),
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_dblx2_03'))]"
+        />
+        </function>
         <record id="pms_folio_trp_05" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_17" />
             <field name="user_id" ref="base.user_demo" />
@@ -902,11 +996,16 @@
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=26)),
                     'adults': 1,
-                    'state': 'confirm',
                     'closure_reason_id': ref('pms_room_closure_reason_vip_privacy'),
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_cnf_06'))]"
+        />
+        </function>
         <record id="pms_folio_trp_06" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_25" />
             <field name="user_id" ref="base.user_demo" />
@@ -947,8 +1046,13 @@
                     'checkout': (DateTime.today() + timedelta(days=30)),
                     'adults': 1,
                     'children':1,
-                    'state': 'confirm',
                     })]"
         />
         </record>
+        <function model="pms.reservation" name="action_confirm">
+            <value
+            model="pms.reservation"
+            search="[('folio_id', '=', ref('pms_folio_trp_07'))]"
+        />
+        </function>
 </odoo>
