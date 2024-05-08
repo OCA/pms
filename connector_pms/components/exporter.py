@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 
 class ChannelExporter(AbstractComponent):
-    """ Base exporter for Channel """
+    """Base exporter for Channel"""
 
     _name = "channel.exporter"
     _inherit = "generic.exporter.custom"
@@ -27,7 +27,7 @@ class ChannelBatchExporter(AbstractComponent):
     _inherit = "base.exporter"
 
     def run(self, domain=None):
-        """ Run the batch synchronization """
+        """Run the batch synchronization"""
         if not domain:
             domain = []
         relation_model = self.binder_for().unwrap_model()
@@ -43,7 +43,7 @@ class ChannelBatchExporter(AbstractComponent):
 
 
 class ChannelDirectBatchExporter(AbstractComponent):
-    """ Import the records directly, without delaying the jobs. """
+    """Import the records directly, without delaying the jobs."""
 
     _name = "channel.direct.batch.exporter"
     _inherit = "channel.batch.exporter"
@@ -51,12 +51,12 @@ class ChannelDirectBatchExporter(AbstractComponent):
     _usage = "direct.batch.exporter"
 
     def _export_record(self, relation):
-        """ export the record directly """
+        """export the record directly"""
         self.model.export_record(self.backend_record, relation)
 
 
 class ChannelDelayedBatchExporter(AbstractComponent):
-    """ Delay import of the records """
+    """Delay import of the records"""
 
     _name = "channel.delayed.batch.exporter"
     _inherit = "channel.batch.exporter"
@@ -64,6 +64,6 @@ class ChannelDelayedBatchExporter(AbstractComponent):
     _usage = "delayed.batch.exporter"
 
     def _export_record(self, relation, job_options=None):
-        """ Delay the export of the records"""
+        """Delay the export of the records"""
         delayable = self.model.with_delay(**job_options or {})
         delayable.export_record(self.backend_record, relation)

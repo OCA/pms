@@ -42,7 +42,7 @@
         <field name="name">channel.backend.type.tree</field>
         <field name="model">channel.backend.type</field>
         <field name="arch" type="xml">
-            <tree string="PMS Backend Type">
+            <tree>
                 <field name="name" />
                 <field name="model_type_id" />
                 <button

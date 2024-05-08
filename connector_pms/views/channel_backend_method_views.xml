@@ -26,7 +26,7 @@
         <field name="name">channel.backend.method.tree</field>
         <field name="model">channel.backend.method</field>
         <field name="arch" type="xml">
-            <tree string="PMS Channel Backend Method">
+            <tree>
                 <field name="backend_type_id" />
                 <field name="name" />
                 <field name="max_calls" />
