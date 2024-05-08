@@ -30,7 +30,8 @@ class ChannelWubookPmsRoomTypeBoardServiceMapperExport(Component):
         return {
             external_id: {
                 "dtype": 2,
-                "value": record.amount * record.pms_room_type_id.get_room_type_capacity(
+                "value": record.amount
+                * record.pms_room_type_id.get_room_type_capacity(
                     pms_property_id=record.pms_property_id.id
                 ),
             }

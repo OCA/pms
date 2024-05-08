@@ -28,6 +28,7 @@ class ChannelWubookPmsPropertyAvailabilityChildBinderMapperExport(Component):
     def skip_item(self, map_record):
         # TODO: filter this on get_all_items, creating a hook on the mapper
         #   to allow filtering them overriding the hook
+        # flake8: noqa: B950
         return any(
             [
                 map_record.source.room_type_id.class_id.default_code

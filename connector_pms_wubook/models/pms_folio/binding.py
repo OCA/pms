@@ -37,7 +37,7 @@ class ChannelWubookPmsFolioBinding(models.Model):
 
     @api.model
     def import_data(self, backend_id, date_from, date_to, mark):
-        """ Prepare the batch import of Folios from Channel """
+        """Prepare the batch import of Folios from Channel"""
         domain = []
         if date_from and date_to:
             domain += [

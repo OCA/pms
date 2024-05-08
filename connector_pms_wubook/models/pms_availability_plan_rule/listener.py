@@ -12,7 +12,8 @@
 #     _apply_on = "pms.availability.plan.rule"
 #
 #     def _data(self, record):
-#         return f"{record.availability_plan_id.name} - {record.room_type_id.name} - {record.date}"
+#         return f"{record.availability_plan_id.name} - {record.room_type_id.name} " \
+#                f"- {record.date}"
 #
 #     @skip_if(
 #         lambda self, record, **kwargs: self.no_connector_export(record)
@@ -40,4 +41,5 @@
 #     _apply_on = "channel.wubook.pms.availability.plan.rule"
 #
 #     def _data(self, record):
-#         return f"{record.availability_plan_id.name} - {record.room_type_id.name} - {record.date}"
+#         return f"{record.availability_plan_id.name} - {record.room_type_id.name} " \
+#                f"- {record.date}"

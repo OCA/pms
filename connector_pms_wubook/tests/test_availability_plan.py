@@ -1,6 +1,5 @@
 # Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import datetime
 import logging
 
 from odoo.tests.common import tagged
@@ -31,27 +30,25 @@ class TestPmsAvailabilityPlan(common.TestWubookConnector):
         with backend1.work_on("channel.wubook.pms.room.type") as work:
             adapter = work.component(usage="backend.adapter")
 
-        avail_values = adapter._exec("get_channels_info", pms_property=False)
-        print(avail_values)
+        adapter._exec("get_channels_info", pms_property=False)
 
         return
 
-        with backend1.work_on("channel.wubook.pms.availability.plan") as work:
-            adapter = work.component(usage="backend.adapter")
-
+        # with backend1.work_on("channel.wubook.pms.availability.plan") as work:
+        #     adapter = work.component(usage="backend.adapter")
+        #
         # values = adapter._exec("rplan_rplans")
         # print(values)
-
-        values = adapter.search_read(
-            [
-                ("date", ">", datetime.date(2021, 7, 1)),
-                ("date", "<", datetime.date(2021, 7, 7)),
-            ]
-        )
-        print("------", values)
-
-        return
-
+        #
+        # values = adapter.search_read(
+        #     [
+        #         ("date", ">", datetime.date(2021, 7, 1)),
+        #         ("date", "<", datetime.date(2021, 7, 7)),
+        #     ]
+        # )
+        #
+        # return
+        #
         # with backend1.work_on("channel.wubook.pms.room.type") as work:
         #     adapter = work.component(usage="backend.adapter")
         #
@@ -59,30 +56,29 @@ class TestPmsAvailabilityPlan(common.TestWubookConnector):
         # print(avail_values)
         #
         # return
-
-        with backend1.work_on("channel.wubook.pms.folio") as work:
-            adapter = work.component(usage="backend.adapter")
-
-        values = adapter.read("1624299403")
-        print("---------", values)
-
-        return
-
-        plan = self.env["pms.availability.plan"].search([("name", "=", "Plan1")])
-        room = self.env["pms.room.type"].search([("default_code", "=", "QUIN")])
-
-        self.env["pms.availability.plan.rule"].create(
-            {
-                "availability_plan_id": plan.id,
-                "room_type_id": room.id,
-                "pms_property_id": property1.id,
-                "date": datetime.date(2020, 6, 25),
-            }
-        )
-
-        return
-
-        # with backend1.work_on("channel.wubook.pms.room.type") as work:
+        #
+        # with backend1.work_on("channel.wubook.pms.folio") as work:
+        #     adapter = work.component(usage="backend.adapter")
+        #
+        # adapter.read("1624299403")
+        #
+        # return
+        #
+        # plan = self.env["pms.availability.plan"].search([("name", "=", "Plan1")])
+        # room = self.env["pms.room.type"].search([("default_code", "=", "QUIN")])
+        #
+        # self.env["pms.availability.plan.rule"].create(
+        #     {
+        #         "availability_plan_id": plan.id,
+        #         "room_type_id": room.id,
+        #         "pms_property_id": property1.id,
+        #         "date": datetime.date(2020, 6, 25),
+        #     }
+        # )
+        #
+        # return
+        #
+        # # with backend1.work_on("channel.wubook.pms.room.type") as work:
         #     adapter = work.component(usage="backend.adapter")
         #
         # avail_values = adapter._exec("get_channels_info")
@@ -95,9 +91,13 @@ class TestPmsAvailabilityPlan(common.TestWubookConnector):
         # # res = adapter.search_read([
         # #     ('shortname', '=', 'c1')
         # # ])
-        # rooms = [478465, 478468, 478469, 478470, 478471, 478473, 478474, 478477, 501774, 478478, 478480, 477968, 501773,
-        #   478485, 478486, 478487, 478488, 478489, 510620, 510621, 510622, 510624, 510625, 510626, 503764, 478434,
-        #   478435, 478437, 478457, 478460, 478461]
+        # rooms = [
+        #     478465, 478468, 478469, 478470, 478471, 478473, 478474,
+        #     478477, 501774, 478478, 478480, 477968, 501773, 478485,
+        #     478486, 478487, 478488, 478489, 510620, 510621, 510622,
+        #     510624, 510625, 510626, 503764, 478434, 478435, 478437,
+        #     478457, 478460, 478461
+        # ]
         # kw_params = {
         #     'date_from': '18/06/2021',
         #     'date_to': '16/06/2021',
@@ -139,7 +139,10 @@ class TestPmsAvailabilityPlan(common.TestWubookConnector):
         #
         # res = adapter.search_read(
         #     [
-        #         ("name", "in", ("test95K", "test90K", "test119", "test109", "test101", "test8", "test4")),
+        #         (
+        #           "name", "in", ("test95K", "test90K", "test119",
+        #           "test109", "test101", "test8", "test4"
+        #         )),
         #         ("date", ">", datetime.datetime(2021, 6, 1)),
         #         ("date", "<", datetime.datetime(2021, 6, 5)),
         #         # ('id_room', 'in', [503764]),
@@ -157,6 +160,6 @@ class TestPmsAvailabilityPlan(common.TestWubookConnector):
 
         # backend1.export_availability_plans()
         # backend1.export_room_types()
-        backend1.import_room_types()
-
-        return
+        # backend1.import_room_types()
+        #
+        # return

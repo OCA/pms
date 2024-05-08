@@ -9,6 +9,7 @@ from odoo.addons.component.core import Component
 
 # TODO: use these connector exception on every adapter
 from odoo.addons.connector.exception import ManyIDSInBackend
+from odoo.addons.connector_pms.components.adapter import ChannelAdapterError
 
 
 class ChannelWubookProductPricelistAdapter(Component):
@@ -264,7 +265,7 @@ class ChannelWubookProductPricelistAdapter(Component):
             items_by_room.setdefault(item["rid"], []).append(item)
 
         items_by_dates = {}
-        for rid, items in items_by_room.items():
+        for _rid, items in items_by_room.items():
             chunks = split_consecutive(items)
             for ch in chunks:
                 key = tuple([x["date"] for x in ch])

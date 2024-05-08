@@ -17,9 +17,9 @@ class ChannelWubookPmsBoardServiceAdapter(Component):
     def create(self, values):
         raise ChannelAdapterError(
             _(
-                "Create operation is not supported on Board Service by Wubook. Values: %s. "
-                "Probably the cause is a wrong mapping of Board Services on Wubook backend type"
-                % (values,)
+                "Create operation is not supported on Board Service "
+                "by Wubook. Values: %s. Probably the cause is a wrong "
+                "mapping of Board Services on Wubook backend type" % (values,)
             )
         )
 
@@ -46,9 +46,9 @@ class ChannelWubookPmsBoardServiceAdapter(Component):
     def write(self, _id, values):
         raise ChannelAdapterError(
             _(
-                "Write operation is not supported on Board Service by Wubook. Id: %i, Values: %s. "
-                "Probably the cause is a wrong mapping of Board Services on Wubook backend type"
-                % (_id, values)
+                "Write operation is not supported on Board Service by Wubook. "
+                "Id: %i, Values: %s. Probably the cause is a wrong mapping of "
+                "Board Services on Wubook backend type" % (_id, values)
             )
         )
 

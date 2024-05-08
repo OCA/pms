@@ -21,7 +21,8 @@ class ChannelWubookListener(AbstractComponent):
     # @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     # def on_record_create(self, record, fields=None):
     #     print(
-    #         "-------------------------- (%s)(%s) LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL model listener create %s"
+    #         "-------------------------- (%s)(%s) LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+    #         model listener create %s"
     #         % (
     #             self.env.context.get("saved_from_parent"),
     #             record.env.context.get("saved_from_parent"),
@@ -33,7 +34,8 @@ class ChannelWubookListener(AbstractComponent):
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
         # print(
-        #     "-------------------------- (%s)(%s) LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL model listener write %s"
+        #     "-------------------------- (%s)(%s) LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+        #     model listener write %s"
         #     % (
         #         self.env.context.get("saved_from_parent"),
         #         record.env.context.get("saved_from_parent"),
@@ -55,7 +57,8 @@ class ChannelWubookListener(AbstractComponent):
 #     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
 #     def on_record_create(self, record, fields=None):
 #         print(
-#             "-------------------------- (%s)(%s) LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL binding listener create %s"
+#             "-------------------------- (%s)(%s) LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+#             binding listener create %s"
 #             % (
 #                 self.env.context.get("saved_from_parent"),
 #                 record.env.context.get("saved_from_parent"),
@@ -68,7 +71,8 @@ class ChannelWubookListener(AbstractComponent):
 #     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
 #     def on_record_write(self, record, fields=None):
 #         print(
-#             "-------------------------- (%s)(%s) LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL binding listener write %s"
+#             "-------------------------- (%s)(%s) LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+#             binding listener write %s"
 #             % (
 #                 self.env.context.get("saved_from_parent"),
 #                 record.env.context.get("saved_from_parent"),

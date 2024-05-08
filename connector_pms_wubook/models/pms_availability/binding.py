@@ -74,7 +74,8 @@ class ChannelWubookPmsAvailabilityBinding(models.Model):
                         else:
                             raise ValidationError(
                                 _(
-                                    "More than one rule found, you need to specify the rule in the context"
+                                    "More than one rule found, you need to"
+                                    " specify the rule in the context"
                                 )
                             )
                     if record.sale_avail != sale_avail:

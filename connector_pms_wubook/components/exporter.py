@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 
 class ChannelWubookExporter(AbstractComponent):
-    """ Wubook exporter for Channel """
+    """Wubook exporter for Channel"""
 
     _name = "channel.wubook.exporter"
     _inherit = ["channel.exporter", "base.channel.wubook.connector"]
@@ -28,14 +28,14 @@ class ChannelWubookBatchExporter(AbstractComponent):
 
 
 class ChannelWubookDirectBatchExporter(AbstractComponent):
-    """ Import the records directly, without delaying the jobs. """
+    """Import the records directly, without delaying the jobs."""
 
     _name = "channel.wubook.direct.batch.exporter"
     _inherit = "channel.direct.batch.exporter"
 
 
 class ChannelWubookDelayedBatchExporter(AbstractComponent):
-    """ Delay import of the records """
+    """Delay import of the records"""
 
     _name = "channel.wubook.delayed.batch.exporter"
     _inherit = "channel.delayed.batch.exporter"

@@ -1,11 +1,10 @@
 # Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, api, fields, models
-from odoo.exceptions import MissingError, ValidationError
-
 from psycopg2.extensions import AsIs
 
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 AUTO_EXPORT_FIELDS = [
     "no_ota",
@@ -99,7 +98,8 @@ class ChannelWubookPmsAvailabilityPlanRuleBinding(models.Model):
         cr = self._cr
         if any([field in vals for field in AUTO_EXPORT_FIELDS]):
             query = (
-                'UPDATE "channel_wubook_pms_availability_plan_rule" SET "actual_write_date"=%s WHERE id IN %%s'
+                'UPDATE "channel_wubook_pms_availability_plan_rule" '
+                'SET "actual_write_date"=%s WHERE id IN %%s'
                 % (AsIs("(now() at time zone 'UTC')"))
             )
             for sub_ids in cr.split_for_in_conditions(set(self.ids)):

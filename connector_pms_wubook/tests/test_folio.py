@@ -1,6 +1,5 @@
 # Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import datetime
 import json
 import logging
 
@@ -21,30 +20,31 @@ class TestPmsFolio(common.TestWubookConnector):
                 "user_id": self.user1(property1).id,
                 "pms_property_id": property1.id,
                 "backend_type_id": self.backend_type1.parent_id.id,
-                # **self.fake_credentials,
+                **self.fake_credentials,
                 **self.test_credentials,
             }
         )
 
-        # with backend1.work_on("channel.wubook.pms.folio") as work:
-        #     adapter = work.component(usage="backend.adapter")
+        with backend1.work_on("channel.wubook.pms.folio") as work:
+            adapter = work.component(usage="backend.adapter")
 
-        #### fetch_bookings_codes
-        # params = adapter._prepare_parameters(
-        #     {
-        #         'dfrom': '01/05/2021',
-        #         'dto': '10/06/2021',
-        #         'oncreated': 0,
-        #     },
-        #     ['dfrom', 'dto'], ["oncreated"]
-        # )
-        # values = adapter._exec("fetch_bookings_codes", *params)
+        # fetch_bookings_codes
+        params = adapter._prepare_parameters(
+            {
+                "dfrom": "01/05/2021",
+                "dto": "10/06/2021",
+                "oncreated": 0,
+            },
+            ["dfrom", "dto"],
+            ["oncreated"],
+        )
+        values = adapter._exec("fetch_bookings_codes", *params)
         # print(values)
-        # with open("wubook_fetch_bookings_codes.json", "w") as f:
-        #     json.dump(values, f)
-        # return
+        with open("wubook_fetch_bookings_codes.json", "w") as f:
+            json.dump(values, f)
+        return
 
-        ### fetch_bookings
+        # fetch_bookings
         # params = adapter._prepare_parameters(
         #     {
         #         'dfrom': '01/05/2021',
@@ -58,8 +58,8 @@ class TestPmsFolio(common.TestWubookConnector):
         # with open("wubook_fetch_bookings.json", "w") as f:
         #     json.dump(values, f)
         # return
-
-        ### fetch_booking
+        #
+        # fetch_booking
         # params = adapter._prepare_parameters(
         #     {
         #         'rcode': '1618172780',
@@ -71,8 +71,8 @@ class TestPmsFolio(common.TestWubookConnector):
         # with open("wubook_fetch_booking.json", "w") as f:
         #     json.dump(values, f)
         # return
-
-        ### fetch_new_bookings
+        #
+        # fetch_new_bookings
         # params = adapter._prepare_parameters(
         #     {
         #         'mark': 0,
@@ -84,10 +84,10 @@ class TestPmsFolio(common.TestWubookConnector):
         # with open("wubook_fetch_new_bookings.json", "w") as f:
         #     json.dump(values, f)
         # return
-
-        ### mark_bookings
+        #
+        # mark_bookings
         # return
-
+        #
         # with backend1.work_on("channel.wubook.pms.room.type.class") as work:
         #     adapter = work.component(usage="backend.adapter")
         #
@@ -95,57 +95,57 @@ class TestPmsFolio(common.TestWubookConnector):
         #
         # print("---------", f)
         # return
-
+        #
         # with backend.work_on("channel.wubook.pms.room.type") as work:
         #     adapter = work.component(usage="backend.adapter")
-
+        #
         # res = adapter.read(501773)
         # print(res, len(res))
-
+        #
         # res = adapter.search_read([
-        #     #('rtype', 'in', [1, 3])
+        #     ('rtype', 'in', [1, 3])
         #     ('id', '=', 501773)
-        #     #('id', '!=', 501773)
-        #     #('shortname', '=', 'TRP')
+        #     ('id', '!=', 501773)
+        #     ('shortname', '=', 'TRP')
         # ])
         # print(res, len(res))
         #
         # return
-
-        backend1.folio_date_arrival_from = datetime.date(2021, 6, 3)
-        backend1.folio_date_arrival_to = datetime.date(2021, 6, 10)
-        backend1.folio_mark = False
-
-        backend1.import_folios()
-
-        return
         #
-        # # self.env.cr.commit()
+        # backend1.folio_date_arrival_from = datetime.date(2021, 6, 3)
+        # backend1.folio_date_arrival_to = datetime.date(2021, 6, 10)
+        # backend1.folio_mark = False
+        #
+        # backend1.import_folios()
         #
         # return
-
+        #
+        # self.env.cr.commit()
+        #
+        # return
+        #
         # folio = self.env["pms.folio"].create(
         #     {
-        #         #"pricelist_id": record.pricelist_id.id,
-        #         #"partner_id": record.partner_id.id,
-        #         #"pms_property_id": record.pms_property_id.id,
+        #         "pricelist_id": record.pricelist_id.id,
+        #         "partner_id": record.partner_id.id,
+        #         "pms_property_id": record.pms_property_id.id,
         #         'mobile': 'yyyyyyyyyyyyyyyy',
         #         'reservation_ids': [
         #             (0, 0, {
         #                 'checkin': datetime.datetime(2021, 4, 25),
         #                 'checkout': datetime.datetime(2021, 4, 29),
         #                 "room_type_id": self.env.ref('pms.pms_room_type_3').id,
-        #                 #"partner_id": record.partner_id.id,
-        #                 #"pricelist_id": record.pricelist_id.id,
-        #                 #"pms_property_id": folio.pms_property_id.id,
+        #                 "partner_id": record.partner_id.id,
+        #                 "pricelist_id": record.pricelist_id.id,
+        #                 "pms_property_id": folio.pms_property_id.id,
         #             }),
         #             (0, 0, {
         #                 'checkin': datetime.datetime(2021, 4, 25),
         #                 'checkout': datetime.datetime(2021, 4, 29),
         #                 "room_type_id": self.env.ref('pms.pms_room_type_1').id,
-        #                 # "partner_id": record.partner_id.id,
-        #                 # "pricelist_id": record.pricelist_id.id,
-        #                 # "pms_property_id": folio.pms_property_id.id,
+        #                 "partner_id": record.partner_id.id,
+        #                 "pricelist_id": record.pricelist_id.id,
+        #                 "pms_property_id": folio.pms_property_id.id,
         #             })
         #         ]
         #     }
@@ -156,47 +156,39 @@ class TestPmsFolio(common.TestWubookConnector):
         # self.env.cr.commit()
         # return
         # -----------------------------------
-
+        #
         # self.env["channel.wubook.pms.room.type.class"].import_data(backend)
         # self.env["channel.wubook.pms.room.type"].import_data(backend)
-
+        #
         # self.env["channel.wubook.pms.room.type"].import_data(backend,
-        # #     datetime.date(2021,2,14), datetime.date(2021,2,15), None, None)
+        # datetime.date(2021,2,14), datetime.date(2021,2,15), None, None)
         # with open("wubook_reservation.json", 'r') as f:
         #     a = json.load(f)
-
+        #
         # print(a)
-
-        with backend1.work_on("channel.wubook.pms.folio") as work:
-            adapter = work.component(usage="backend.adapter")
-
-        res = adapter.search_read(
-            [
-                ("date_arrival", ">", datetime.date(2021, 6, 3)),
-                ("date_arrival", "<", datetime.date(2021, 6, 10)),
-                # ('mark', '=', True),
-                # ('men', '>=', 17),
-                # ('men', '<', 120),
-            ]
-        )
-
-        for r in res:
-            print(" ****************************+")
-            # b = {x:r[x] for x in ('date_received', 'date_arrival', 'date_departure')}
-            # print(b)
-            for k, v in r.items():
-                print("   {}: {}".format(k, v))
-        print("-----------", len(res))
-
-        def conv(v):
-            if isinstance(v, datetime.date):
-                return v.strftime("%d/%m/%Y")
-
-        with open("wubook_folio.json", "w") as f:
-            json.dump(res, f, default=conv)
-
-        return
-
+        #
+        # with backend1.work_on("channel.wubook.pms.folio") as work:
+        #     adapter = work.component(usage="backend.adapter")
+        #
+        # res = adapter.search_read(
+        #     [
+        #         ("date_arrival", ">", datetime.date(2021, 6, 3)),
+        #         ("date_arrival", "<", datetime.date(2021, 6, 10)),
+        #         # ('mark', '=', True),
+        #         # ('men', '>=', 17),
+        #         # ('men', '<', 120),
+        #     ]
+        # )
+        #
+        # def conv(v):
+        #     if isinstance(v, datetime.date):
+        #         return v.strftime("%d/%m/%Y")
+        #
+        # with open("wubook_folio.json", "w") as f:
+        #     json.dump(res, f, default=conv)
+        #
+        # return
+        #
         # res = adapter.search_read(
         #     [
         #         ("arrival_dfrom", "=", datetime.datetime(2021, 3, 23)),
@@ -205,28 +197,28 @@ class TestPmsFolio(common.TestWubookConnector):
         #     ]
         # )
         # print(res, len(res))
-
+        #
         # res = adapter.search_read([
         #     ('reservation_code', 'in', [1616404933,1614274186]),
         # ])
         # print(res, len(res))
-
+        #
         # res = adapter.create({'name': 'test8'})
-
+        #
         # res = adapter.search_read([('id', '=', 85448)])
         # res = adapter.search_read([('id', 'in', (85448,85447,))])
         # res = adapter.search_read([])
         # for r in res:
         #     adapter.delete(r['id'])
         #     print(r)
-
+        #
         # res = adapter.search_read([
         #     # ('id', '=', 85448),
         #     ('dfrom', '=', datetime.date(2021, 3, 25)),
         #     ('dto', '=', datetime.date(2021, 3, 27))
         # ])
         # print("vvvvvvvvvvvvvvv", res)
-
+        #
         # res = adapter.create({
         #     'name': 'test119',
         #     'items': [
@@ -248,94 +240,90 @@ class TestPmsFolio(common.TestWubookConnector):
         #     ('dto', '=', datetime.date(2021, 3, 27))
         # ])
         # print("vvvvvvvvvvvvvvv", res)
-
-        return
-        res = adapter.create(
-            {
-                "name": "test99K",
-                "items": [
-                    {
-                        "room_id": 477968,
-                        "date": datetime.date(2021, 2, 24),
-                        "closed": 1,
-                        "max_stay": 8,
-                        "min_stay_arrival": 9,
-                    },
-                    {
-                        "room_id": 477968,
-                        "date": datetime.date(2021, 2, 26),
-                        "closed": 1,
-                        "max_stay": 18,
-                        "min_stay_arrival": 89,
-                    },
-                    {
-                        "room_id": 477968,
-                        "date": datetime.date(2021, 2, 28),
-                        "closed": 1,
-                        "max_stay": 178,
-                        "min_stay_arrival": 879,
-                    },
-                    {
-                        "room_id": 477968,
-                        "date": datetime.date(2021, 3, 28),
-                        "closed": 0,
-                        "max_stay": 23,
-                        "min_stay_arrival": 9,
-                    },
-                ],
-            }
-        )
-
-        print("XXXXXXXXXXXX", res)
-
-        return
-        res = adapter.write(
-            86122,
-            {
-                "name": "test101-renamed2",
-                "items": [
-                    {
-                        "room_id": 477968,
-                        "date": datetime.date(2021, 3, 24),
-                        "closed": 1,
-                        "max_stay": 8,
-                        "min_stay_arrival": 9,
-                        "no_ota": 1,
-                        "avail": 11,
-                    },
-                    {
-                        "room_id": 477968,
-                        "date": datetime.date(2021, 3, 26),
-                        "closed": 1,
-                        "max_stay": 18,
-                        "min_stay_arrival": 89,
-                        "avail": 13,
-                    },
-                    {
-                        "room_id": 477968,
-                        "date": datetime.date(2021, 3, 28),
-                        "closed": 1,
-                        "max_stay": 178,
-                        "min_stay_arrival": 879,
-                    },
-                ],
-            },
-        )
-
-        res = adapter.search_read(
-            [
-                ("id", "=", 86122),
-                # ('name', '=', 'test119'),
-                ("dfrom", "=", datetime.date(2021, 3, 24)),
-                ("dto", "=", datetime.date(2021, 3, 28)),
-            ]
-        )
-        print("vvvvvvvvvvvvvvv", res)
-
-        return
-
+        #
+        # return
+        # res = adapter.create(
+        #     {
+        #         "name": "test99K",
+        #         "items": [
+        #             {
+        #                 "room_id": 477968,
+        #                 "date": datetime.date(2021, 2, 24),
+        #                 "closed": 1,
+        #                 "max_stay": 8,
+        #                 "min_stay_arrival": 9,
+        #             },
+        #             {
+        #                 "room_id": 477968,
+        #                 "date": datetime.date(2021, 2, 26),
+        #                 "closed": 1,
+        #                 "max_stay": 18,
+        #                 "min_stay_arrival": 89,
+        #             },
+        #             {
+        #                 "room_id": 477968,
+        #                 "date": datetime.date(2021, 2, 28),
+        #                 "closed": 1,
+        #                 "max_stay": 178,
+        #                 "min_stay_arrival": 879,
+        #             },
+        #             {
+        #                 "room_id": 477968,
+        #                 "date": datetime.date(2021, 3, 28),
+        #                 "closed": 0,
+        #                 "max_stay": 23,
+        #                 "min_stay_arrival": 9,
+        #             },
+        #         ],
+        #     }
+        # )
+        #
+        # return
+        # res = adapter.write(
+        #     86122,
+        #     {
+        #         "name": "test101-renamed2",
+        #         "items": [
+        #             {
+        #                 "room_id": 477968,
+        #                 "date": datetime.date(2021, 3, 24),
+        #                 "closed": 1,
+        #                 "max_stay": 8,
+        #                 "min_stay_arrival": 9,
+        #                 "no_ota": 1,
+        #                 "avail": 11,
+        #             },
+        #             {
+        #                 "room_id": 477968,
+        #                 "date": datetime.date(2021, 3, 26),
+        #                 "closed": 1,
+        #                 "max_stay": 18,
+        #                 "min_stay_arrival": 89,
+        #                 "avail": 13,
+        #             },
+        #             {
+        #                 "room_id": 477968,
+        #                 "date": datetime.date(2021, 3, 28),
+        #                 "closed": 1,
+        #                 "max_stay": 178,
+        #                 "min_stay_arrival": 879,
+        #             },
+        #         ],
+        #     },
+        # )
+        #
+        # res = adapter.search_read(
+        #     [
+        #         ("id", "=", 86122),
+        #         # ('name', '=', 'test119'),
+        #         ("dfrom", "=", datetime.date(2021, 3, 24)),
+        #         ("dto", "=", datetime.date(2021, 3, 28)),
+        #     ]
+        # )
+        # return
+        #
         # ---------------------------------------------
-
+        #
         # with backend.work_on("channel.wubook.product.pricelist") as work:
         #     binding_model = work.model
         #
@@ -349,9 +337,9 @@ class TestPmsFolio(common.TestWubookConnector):
         # a = 1
         #
         # return
-
+        #
         # ---------------------------------------------
-
+        #
         # parent = self.env["channel.wubook.product.pricelist"].create({
         #     'name': 'child',
         #     'backend_id': backend.id,
@@ -373,9 +361,9 @@ class TestPmsFolio(common.TestWubookConnector):
         #       parent.item_ids, parent.item_ids.compute_price,
         #       parent.item_ids.pricelist_id.name)
         #
-        # # child.write({
-        # #     'name': 'uu',
-        # # })
+        # child.write({
+        #     'name': 'uu',
+        # })
         # parent.write({
         #     'name': 'uu',
         #     'sequence': 66,
@@ -394,100 +382,96 @@ class TestPmsFolio(common.TestWubookConnector):
         #       parent.item_ids.pricelist_id.name, parent.sequence)
         #
         # return
-
+        #
         # with backend.work_on("channel.wubook.pms.room.type") as work:
         #     adapter = work.component(usage="backend.adapter")
         #     print(adapter.search_read([('shortname', '=', 'H217')]))
-
-        with backend.work_on("channel.wubook.product.pricelist") as work:
-            adapter = work.component(usage="backend.adapter")
-            print("----------------__", adapter)
-            # res = adapter.create({'name': 'TEST55'})
-            res = adapter.search_read([])
-            print("**", res)
-            # res = adapter.search_read([('id', '=', 178429)])
-            # res = adapter.search_read([('id', 'in', [178429, 178424,178428,])])
-            # res = adapter.search_read([('name', '=', 'TEST55')])
-            # res = adapter.search_read([
-            #     #('id', 'in', [178429, 178424, 178428]),
-            #     #('dfrom', '=', datetime.date(2021, 2, 1)),
-            #     #('dto', '=', datetime.date(2021, 2, 2)),
-            #     #('rooms', 'in', [478457, 478459]),
-            #     # ('rr', '=', 6565)
-            #     ('vpid', '=', 178428)
-            # ])
-            # res = adapter.read(178428)
-            # print("******", res)
-
-            # res = adapter.write(178538, {
-            #     'name': 'vT445',
-            #     'items': [{
-            #         'type': 'pricelist',
-            #         'variation': 11,
-            #         'variation_type': 2
-            #     }]
-            # })
-            # print("************", res)
-
-            # test de rooms
-            res = adapter.write(
-                178538,
-                {
-                    "name": "vT445",
-                    "items": [
-                        {"type": "virtual", "variation": 11, "variation_type": 2}
-                    ],
-                },
-            )
-            print("************", res)
-
-            res = adapter.search_read([("id", "=", 178538)])
-            print("******", res)
-
-            # res = adapter.create({
-            #     'name': 'T445',
-            #     'items': [{
-            #         'type': 'pricelist',
-            #         'variation': 10,
-            #         'variation_type': -1,
-            #     }]
-            # })
-            # print("******", res)
-
-            # res = adapter.search_read([])
-            # print("**", res)
-            #
-            # res = adapter.write(178428, {
-            #     'variation': 66,
-            #     'variation_type': -1
-            # })
-            # print("**", res)
-            #
-            #
-            # res = adapter.search_read([])
-            # print("**", res)
-            # res = adapter.delete(177581)
-            # print(res)
-            # res = adapter.search_read([('name', '=', 'TEST55'), ('vpid', '!=', False)])
-            # print("**", res)
-            # res = adapter.write(178427, {'name':'test11'})
-            # print("**", res)
-            # res = adapter.write(178429, {
-            #     'rack': {str(477968): [63, 64, 65, 66, 67, 68, 69]}
-            # })
-            # res = adapter.write(178429, {
-            #     'rack': {str(477968): [63, 64, 65, 66, 67, 68, 69]}
-            # })
-            # res = adapter.write(178427, {'name':'test11'})
-            # print("**", res)
-
-            # res = adapter.search_read([])
-            # print("**", res)
-
+        #
+        # with backend.work_on("channel.wubook.product.pricelist") as work:
+        #     adapter = work.component(usage="backend.adapter")
+        #     res = adapter.create({'name': 'TEST55'})
+        #     res = adapter.search_read([])
+        #     res = adapter.search_read([('id', '=', 178429)])
+        #     res = adapter.search_read([('id', 'in', [178429, 178424,178428,])])
+        #     res = adapter.search_read([('name', '=', 'TEST55')])
+        #     res = adapter.search_read([
+        #         #('id', 'in', [178429, 178424, 178428]),
+        #         #('dfrom', '=', datetime.date(2021, 2, 1)),
+        #         #('dto', '=', datetime.date(2021, 2, 2)),
+        #         #('rooms', 'in', [478457, 478459]),
+        #         # ('rr', '=', 6565)
+        #         ('vpid', '=', 178428)
+        #     ])
+        #     res = adapter.read(178428)
+        #     print("******", res)
+        #
+        #     res = adapter.write(178538, {
+        #         'name': 'vT445',
+        #         'items': [{
+        #             'type': 'pricelist',
+        #             'variation': 11,
+        #             'variation_type': 2
+        #         }]
+        #     })
+        #     print("************", res)
+        #
+        #     test de rooms
+        #     res = adapter.write(
+        #         178538,
+        #         {
+        #             "name": "vT445",
+        #             "items": [
+        #                 {"type": "virtual", "variation": 11, "variation_type": 2}
+        #             ],
+        #         },
+        #     )
+        #
+        #     res = adapter.search_read([("id", "=", 178538)])
+        #
+        #     res = adapter.create({
+        #         'name': 'T445',
+        #         'items': [{
+        #             'type': 'pricelist',
+        #             'variation': 10,
+        #             'variation_type': -1,
+        #         }]
+        #     })
+        #     print("******", res)
+        #
+        #     res = adapter.search_read([])
+        #     print("**", res)
+        #
+        #     res = adapter.write(178428, {
+        #         'variation': 66,
+        #         'variation_type': -1
+        #     })
+        #     print("**", res)
+        #
+        #
+        #     res = adapter.search_read([])
+        #     print("**", res)
+        #     res = adapter.delete(177581)
+        #     print(res)
+        #     res = adapter.search_read([('name', '=', 'TEST55'), ('vpid', '!=', False)])
+        #     print("**", res)
+        #     res = adapter.write(178427, {'name':'test11'})
+        #     print("**", res)
+        #     res = adapter.write(178429, {
+        #         'rack': {str(477968): [63, 64, 65, 66, 67, 68, 69]}
+        #     })
+        #     res = adapter.write(178429, {
+        #         'rack': {str(477968): [63, 64, 65, 66, 67, 68, 69]}
+        #     })
+        #     res = adapter.write(178427, {'name':'test11'})
+        #     print("**", res)
+        #
+        #     res = adapter.search_read([])
+        #     print("**", res)
+        #
         # with backend.work_on("channel.wubook.product.pricelist.item") as work:
         #     adapter = work.component(usage="backend.adapter")
         #
-        #     # res = adapter.search_read([])
+        #     res = adapter.search_read([])
         #
         #     dfrom = datetime.datetime(2021, 1, 1)
         #     dto = datetime.datetime(2021, 2, 8)
@@ -500,39 +484,41 @@ class TestPmsFolio(common.TestWubookConnector):
         #         #('rr', '=', 6565)
         #     ])
         #     print("*", res)
-
-        return
-
-        r1 = self.env["pms.room.type"].create(
-            {
-                "name": "Room type r1",
-                "list_price": 1.0,
-                "default_code": "H217",
-                "pms_property_ids": [(6, 0, [self.ref("pms.main_pms_property")])],
-                "company_id": False,
-            }
-        )
-
-        with backend.work_on("channel.wubook.pms.room.type") as work:
-            # adapter = work.component(usage="backend.adapter")
-            # external_data = adapter.search_read([('shortname', '=', 'H217')])
-            # print(external_data)
-            #
-            # mapper = work.component(usage="import.mapper")
-            # map_vals = mapper.map_record(external_data[0])
-            # vals = map_vals.values(for_create=True, fields=['shortname', 'name'])
-            # print(vals)
-
-            mapper = work.component(usage="export.mapper")
-            t = work.model.create(
-                {
-                    "odoo_id": r1.id,
-                    "backend_id": backend.id,
-                }
-            )
-            map_vals = mapper.map_record(t)
-            vals = map_vals.values(for_create=True)  # , fields=['shortname', 'name'])
-            # print(vals)
+        #
+        # return
+        #
+        # r1 = self.env["pms.room.type"].create(
+        #     {
+        #         "name": "Room type r1",
+        #         "list_price": 1.0,
+        #         "default_code": "H217",
+        #         "pms_property_ids": [(6, 0, [self.ref("pms.main_pms_property")])],
+        #         "company_id": False,
+        #     }
+        # )
+        #
+        # with backend.work_on("channel.wubook.pms.room.type") as work:
+        #     adapter = work.component(usage="backend.adapter")
+        #     external_data = adapter.search_read([('shortname', '=', 'H217')])
+        #     print(external_data)
+        #
+        #     mapper = work.component(usage="import.mapper")
+        #     map_vals = mapper.map_record(external_data[0])
+        #     vals = map_vals.values(for_create=True, fields=['shortname', 'name'])
+        #     print(vals)
+        #
+        #     mapper = work.component(usage="export.mapper")
+        #     t = work.model.create(
+        #         {
+        #             "odoo_id": r1.id,
+        #             "backend_id": backend.id,
+        #         }
+        #     )
+        #     map_vals = mapper.map_record(t)
+        #     vals = map_vals.values(for_create=True)  # , fields=['shortname', 'name'])
+        #     print(vals)
+        #
+        #
 
 
 # class TestWubookConnectorProductPricelistImport(common.TestWubookConnector):

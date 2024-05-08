@@ -3,11 +3,11 @@
 from psycopg2.extensions import AsIs
 
 from odoo import api, fields, models
-from odoo.exceptions import MissingError
 
 AUTO_EXPORT_FIELDS = [
     "fixed_price",
 ]
+
 
 class ProductPricelistItem(models.Model):
     _inherit = "product.pricelist.item"
@@ -50,7 +50,8 @@ class ProductPricelistItem(models.Model):
         cr = self._cr
         if any([field in vals for field in AUTO_EXPORT_FIELDS]):
             query = (
-                'UPDATE "channel_wubook_product_pricelist_item" SET "actual_write_date"=%s WHERE odoo_id IN %%s'
+                'UPDATE "channel_wubook_product_pricelist_item" '
+                'SET "actual_write_date"=%s WHERE odoo_id IN %%s'
                 % (AsIs("(now() at time zone 'UTC')"))
             )
             for sub_ids in cr.split_for_in_conditions(set(self.ids)):

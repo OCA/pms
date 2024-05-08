@@ -68,8 +68,8 @@ class ChannelWubookPmsFolioImporter(Component):
         # Pre payment Folio
         if binding.payment_gateway_fee > 0:
             # REVIEW: If the agency has configured invoice the agency manually,
-            # and a payment from the agency enters, we preset in the folio invoice the agency to true
-            # (p.e. Expedia Collect)
+            # and a payment from the agency enters, we preset in the folio
+            # invoice the agency to true (p.e. Expedia Collect)
             if folio.agency_id and folio.agency_id.invoice_to_agency == "manual":
                 folio.invoice_to_agency = True
             # Wubook Pre payment
@@ -109,15 +109,17 @@ class ChannelWubookPmsFolioImporter(Component):
                             ota_payments[1:].action_cancel()
                         folio.sudo().message_post(
                             body=_(
-                                "The amount of the payment has been updated to %s by OTA modification"
+                                "The amount of the payment has been updated"
+                                " to %s by OTA modification"
                                 % binding.payment_gateway_fee
                             ),
                             subtype_id=self.env.ref("mail.mt_note").id,
                             email_from=self.env.user.partner_id.email_formatted
                             or folio.pms_property_id.email_formatted,
                         )
-            # We omit those payments from agencies that that have already been registered in previous imports,
-            # that the total of the folio is zero, or that do not have a journal configured
+            # We omit those payments from agencies that that have already
+            # been registered in previous imports, that the total of the
+            # folio is zero, or that do not have a journal configured
             if (
                 not folio.payment_ids.filtered(lambda p: p.state == "posted")
                 and folio.amount_total > 0
@@ -152,7 +154,8 @@ class ChannelWubookPmsFolioImporter(Component):
             ]
         )
         query = (
-            'UPDATE "channel_wubook_pms_availability" SET "actual_write_date"=%s WHERE id IN %%s'
+            'UPDATE "channel_wubook_pms_availability" '
+            'SET "actual_write_date"=%s WHERE id IN %%s'
             % (AsIs("(now() at time zone 'UTC')"),)
         )
         cr = self.env.cr
