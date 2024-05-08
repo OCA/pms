@@ -2217,10 +2217,8 @@ class TestPmsReservations(TestPms):
             }
         )
 
-        reservation.state = "cancel"
-
-        with self.assertRaises(UserError):
-            reservation.action_cancel()
+        with self.assertRaises(ValidationError):
+            reservation.state = "cancel"
 
     @freeze_time("2012-01-14")
     def test_cancelation_reason_noshow(self):
@@ -3743,6 +3741,7 @@ class TestPmsReservations(TestPms):
                 "pms_board_service_id": self.board_service_test.id,
                 "product_id": self.product_test1.id,
                 "amount": 8,
+                "adults": True,
             }
         )
         self.board_service_room_type = self.env["pms.board.service.room.type"].create(
