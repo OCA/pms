@@ -103,13 +103,14 @@ class BinderCustom(AbstractComponent):
         return binding
 
     def _check_domain(self, domain):
-        for field, _, value in domain:
+        for field, _r, value in domain:
             if isinstance(value, (list, tuple)):
                 for e in value:
                     if isinstance(e, (tuple, list, set, dict)):
                         raise ValidationError(
                             _(
-                                "Wrong domain value type '%s' on value '%s' of field '%s'"
+                                "Wrong domain value type '%s' "
+                                "on value '%s' of field '%s'"
                             )
                             % (type(e), e, field)
                         )

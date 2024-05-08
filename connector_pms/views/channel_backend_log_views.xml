@@ -30,7 +30,7 @@
         <field name="name">channel.backend.log.tree</field>
         <field name="model">channel.backend.log</field>
         <field name="arch" type="xml">
-            <tree string="PMS Channel Backend Log">
+            <tree>
                 <field name="backend_id" />
                 <field name="timestamp" />
                 <field name="method_id" />

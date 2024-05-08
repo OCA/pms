@@ -49,7 +49,7 @@
         <field name="name">channel.backend.tree</field>
         <field name="model">channel.backend</field>
         <field name="arch" type="xml">
-            <tree string="PMS Backend">
+            <tree>
                 <field name="name" />
                 <field name="backend_type_id" />
                 <field name="pms_property_id" />
