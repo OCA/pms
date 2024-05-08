@@ -3,7 +3,8 @@
 
 from odoo.addons.component.core import Component
 from odoo.addons.connector.components.mapper import mapping
-from odoo.addons.connector_pms_wubook.models.pms_reservation.mapper_import import (
+
+from ...models.pms_reservation.mapper_import import (
     get_board_service_room_type,
     get_room_type,
 )

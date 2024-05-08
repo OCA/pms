@@ -88,7 +88,8 @@ class PmsRoomTypeAvailabilityRule(models.Model):
         cr = self._cr
         if any([field in vals for field in AUTO_EXPORT_FIELDS]):
             query = (
-                'UPDATE "channel_wubook_pms_availability_plan_rule" SET "actual_write_date"=%s WHERE odoo_id IN %%s'
+                'UPDATE "channel_wubook_pms_availability_plan_rule" '
+                'SET "actual_write_date"=%s WHERE odoo_id IN %%s'
                 % (AsIs("(now() at time zone 'UTC')"))
             )
             for sub_ids in cr.split_for_in_conditions(set(self.ids)):

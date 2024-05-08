@@ -31,6 +31,7 @@ class ChannelWubookPmsAvailabilityPlanChildBinderMapperExport(Component):
     _apply_on = "channel.wubook.pms.availability.plan.rule"
 
     def skip_item(self, map_record):
+        # flake8: noqa: B950
         return any(
             [
                 map_record.source.room_type_id.class_id.default_code

@@ -38,6 +38,7 @@ class ChannelWubookPmsRoomTypeExporter(Component):
             self._export_dependency(board_service, "channel.wubook.pms.board.service")
 
     def _has_to_skip(self):
+        # flake8: noqa: B950
         return any(
             [
                 self.binding.class_id.default_code

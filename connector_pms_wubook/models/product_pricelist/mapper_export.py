@@ -49,6 +49,7 @@ class ChannelWubookProductPricelistChildBinderMapperExport(Component):
             raise ValidationError(
                 _("Consumption dates must be the same on daily standard pricelists")
             )
+        # flake8: noqa: B950
         return any(
             [
                 map_record.source.wubook_item_type == "standard"

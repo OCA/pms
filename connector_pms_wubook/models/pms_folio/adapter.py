@@ -7,9 +7,8 @@ from odoo.exceptions import ValidationError
 
 from odoo.addons.component.core import Component
 from odoo.addons.connector_pms.components.adapter import ChannelAdapterError
-from odoo.addons.connector_pms_wubook.models.pms_reservation.mapper_import import (
-    get_room_type,
-)
+
+from ...models.pms_reservation.mapper_import import get_room_type
 
 
 class ChannelWubookPmsFolioAdapter(Component):

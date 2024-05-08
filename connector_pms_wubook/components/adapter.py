@@ -13,6 +13,7 @@ from odoo.addons.connector_pms.components.adapter import ChannelAdapterError
 _logger = logging.getLogger(__name__)
 
 # TODO: move this auxiliary class to a library or connector_pms adapter
+# flake8: noqa=C901
 class ChannelCallControl:
     # https://tdocs.wubook.net/wired/policies.html#anti-flood-policies
     def __init__(self, obj, funcname, args):
@@ -99,7 +100,8 @@ class ChannelWubookAdapter(AbstractComponent):
         func = getattr(s, funcname)
         try:
             _logger.info(
-                f"Request to Wubook: {self.model._name}.{funcname}({', '.join(map(repr, args))})"
+                f"Request to Wubook: {self.model._name}.{funcname}"
+                f"({', '.join(map(repr, args))})"
             )
             try:
                 data = func(token, *args)

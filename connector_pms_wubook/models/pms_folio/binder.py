@@ -15,5 +15,5 @@ class ChannelWubookPmsFolioBinder(Component):
 
     def _get_internal_record_alt(self, model_name, values):
         binder = self.component(usage="binder")
-        record = binder.to_internal(values['reservation_origin_code'])
+        record = binder.to_internal(values["reservation_origin_code"])
         return record.odoo_id
