@@ -20,7 +20,6 @@
         # "email_template_qweb",
         "sale",
         "multi_pms_properties",
-        "partner_identification",
         "partner_firstname",
         "partner_second_lastname",
         "partner_contact_gender",
