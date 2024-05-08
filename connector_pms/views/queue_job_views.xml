@@ -29,10 +29,15 @@
         <field name="inherit_id" ref="queue_job.view_queue_job_search" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='result']" position="after">
-                <filter name="pms_property_id"/>
+                <filter name="pms_property_id" />
             </xpath>
             <xpath expr="//filter[@name='group_by_channel']" position="after">
-                <filter name="group_by_property" string="Property" domain="[]" context="{'group_by':'pms_property_id'}"/>
+                <filter
+                    name="group_by_property"
+                    string="Property"
+                    domain="[]"
+                    context="{'group_by':'pms_property_id'}"
+                />
             </xpath>
         </field>
     </record>

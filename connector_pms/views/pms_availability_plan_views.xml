@@ -11,15 +11,15 @@
             eval="[(4, ref('connector.group_connector_manager'))]"
         />
         <field name="arch" type="xml">
-            <field name="rule_ids" position="replace">
+            <xpath expr="//field[@name='rule_ids']" position="after">
                 <notebook>
-                    <page name="rules" string="Rules">
-                        <field name="rule_ids" nolabel="1" />
-                    </page>
+                    <page name="rules" string="Rules" />
                     <page string="Connectors" name="connector" />
                 </notebook>
-
-            </field>
+            </xpath>
+            <page name="rules" position="inside">
+                <field name="rule_ids" position="move" />
+            </page>
         </field>
     </record>
 </odoo>

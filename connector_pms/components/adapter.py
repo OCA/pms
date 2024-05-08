@@ -12,10 +12,10 @@ class ChannelAdapter(AbstractComponent):
     _name = "channel.adapter"
     _inherit = "base.backend.adapter.crud"
 
-    def chunks(self, l, n):
+    def chunks(self, lst, n):
         """Yield successive n-sized chunks from lst."""
-        for i in range(0, len(l), n):
-            yield l[i : i + n]
+        for i in range(0, len(lst), n):
+            yield lst[i : i + n]
 
     def _filter(self, values, domain=None):
         # TODO support for domains with 'or' clauses
@@ -23,30 +23,23 @@ class ChannelAdapter(AbstractComponent):
         if not domain:
             return values
 
+        operations = {
+            "=": lambda x, y: x != y,
+            "!=": lambda x, y: x == y,
+            ">": lambda x, y: x <= y,
+            "<": lambda x, y: x >= y,
+            ">=": lambda x, y: x < y,
+            "<=": lambda x, y: x > y,
+        }
+
         values_filtered = []
         for record in values:
             for elem in domain:
                 k, op, v = elem
                 if k not in record:
                     raise ValidationError(_("Key %s does not exist") % k)
-                if op == "=":
-                    if record[k] != v:
-                        break
-                elif op == "!=":
-                    if record[k] == v:
-                        break
-                elif op == ">":
-                    if record[k] <= v:
-                        break
-                elif op == "<":
-                    if record[k] >= v:
-                        break
-                elif op == ">=":
-                    if record[k] < v:
-                        break
-                elif op == "<=":
-                    if record[k] > v:
-                        break
+                if operations[op](record[k], v):
+                    break
                 elif op == "in":
                     if not isinstance(v, (tuple, list)):
                         raise ValidationError(
