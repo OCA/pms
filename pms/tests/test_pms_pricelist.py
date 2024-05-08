@@ -73,6 +73,7 @@ class TestPmsPricelist(TestPms):
             {
                 "product_id": cls.product1.id,
                 "pms_board_service_id": cls.board_service1.id,
+                "adults": True,
             }
         )
 

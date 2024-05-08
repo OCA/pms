@@ -758,7 +758,7 @@ class TestPmsBookingEngine(TestPms):
         self.board_service_test = self.env["pms.board.service"].create(
             {
                 "name": "Test Board Service",
-                "default_code": "TPS",
+                "default_code": "TBS",
             }
         )
         self.env["pms.board.service.line"].create(
@@ -766,6 +766,7 @@ class TestPmsBookingEngine(TestPms):
                 "pms_board_service_id": self.board_service_test.id,
                 "product_id": self.product_test1.id,
                 "amount": 8,
+                "adults": True,
             }
         )
         self.board_service_room_type = self.env["pms.board.service.room.type"].create(
@@ -844,7 +845,7 @@ class TestPmsBookingEngine(TestPms):
         self.board_service_test = self.env["pms.board.service"].create(
             {
                 "name": "Test Board Service",
-                "default_code": "TPS",
+                "default_code": "TBS",
             }
         )
         self.env["pms.board.service.line"].create(
@@ -852,6 +853,7 @@ class TestPmsBookingEngine(TestPms):
                 "pms_board_service_id": self.board_service_test.id,
                 "product_id": self.product_test1.id,
                 "amount": 8,
+                "adults": True,
             }
         )
         self.board_service_room_type = self.env["pms.board.service.room.type"].create(
