@@ -58,6 +58,7 @@ class TestProductTemplate(TestPms):
             {
                 "product_id": product.id,
                 "pms_board_service_id": self.board_service.id,
+                "adults": True,
             }
         )
         board_service_room_type = self.env["pms.board.service.room.type"].create(
@@ -105,6 +106,7 @@ class TestProductTemplate(TestPms):
             {
                 "product_id": product.id,
                 "pms_board_service_id": self.board_service.id,
+                "adults": True,
             }
         )
         board_service_room_type = self.env["pms.board.service.room.type"].create(
@@ -153,6 +155,7 @@ class TestProductTemplate(TestPms):
             {
                 "product_id": product.id,
                 "pms_board_service_id": self.board_service.id,
+                "adults": True,
             }
         )
         board_service_room_type = self.env["pms.board.service.room.type"].create(
@@ -203,6 +206,7 @@ class TestProductTemplate(TestPms):
             {
                 "product_id": product.id,
                 "pms_board_service_id": self.board_service.id,
+                "adults": True,
             }
         )
         board_service_room_type = self.env["pms.board.service.room.type"].create(
@@ -256,6 +260,7 @@ class TestProductTemplate(TestPms):
             {
                 "product_id": product.id,
                 "pms_board_service_id": self.board_service.id,
+                "adults": True,
             }
         )
         board_service_room_type = self.env["pms.board.service.room.type"].create(

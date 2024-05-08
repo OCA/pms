@@ -280,6 +280,7 @@ class TestPmsMultiproperty(TestPms):
                 {
                     "product_id": product1.id,
                     "pms_board_service_id": board_service1.id,
+                    "adults": True,
                 }
             )
 
@@ -315,6 +316,7 @@ class TestPmsMultiproperty(TestPms):
                 {
                     "product_id": product1.id,
                     "pms_board_service_id": board_service1.id,
+                    "adults": True,
                 }
             )
 
@@ -349,6 +351,7 @@ class TestPmsMultiproperty(TestPms):
                     "product_id": product1.id,
                     "pms_board_service_id": board_service1.id,
                     "pms_property_ids": [pms_property2.id],
+                    "adults": True,
                 }
             )
 
