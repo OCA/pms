@@ -1227,17 +1227,17 @@ class TestPmsFolioSaleLine(TestPms):
     def test_no_sale_lines_staff_reservation(self):
         """
         Check that the sale_line_ids of a folio whose reservation
-        is of type 'staff' are not created.
+        is of type 'staff' are created with price 0.
         -----
         A reservation is created with the reservation_type field
         with value 'staff'. Then it is verified that the
         sale_line_ids of the folio created with the creation of
-        the reservation are equal to False.
+        the reservation have price 0.
         """
         # ARRANGE
         self.partner1 = self.env["res.partner"].create({"name": "Alberto"})
         checkin = fields.date.today()
-        checkout = fields.date.today() + datetime.timedelta(days=3)
+        checkout = fields.date.today() + datetime.timedelta(days=1)
         # ACT
         reservation = self.env["pms.reservation"].create(
             {
@@ -1249,12 +1249,14 @@ class TestPmsFolioSaleLine(TestPms):
                 "pricelist_id": self.pricelist1.id,
                 "reservation_type": "staff",
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
+                "adults": 1,
             }
         )
         # ASSERT
-        self.assertFalse(
-            reservation.folio_id.sale_line_ids,
-            "Folio sale lines should not be generated for a staff type reservation ",
+        self.assertEqual(
+            reservation.folio_id.sale_line_ids.mapped("price_unit")[0],
+            0,
+            "Staff folio sale lines should have price 0",
         )
 
     def test_no_sale_lines_out_reservation(self):

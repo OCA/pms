@@ -79,6 +79,7 @@ class TestProductTemplate(TestPms):
                 "partner_id": self.partner.id,
                 "board_service_room_id": board_service_room_type.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
+                "adults": 2,
             }
         )
         # ASSERT
@@ -127,6 +128,7 @@ class TestProductTemplate(TestPms):
                 "partner_id": self.partner.id,
                 "board_service_room_id": board_service_room_type.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
+                "adults": 2,
             }
         )
         # ASSERT

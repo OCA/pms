@@ -111,6 +111,7 @@ class TestPmsService(TestPms):
                 "pricelist_id": self.pricelist1.id,
                 "board_service_room_id": self.board_service_room_type1.id,
                 "sale_channel_origin_id": self.sale_channel_door.id,
+                "adults": 2,
             }
         )
         # ASSERT
@@ -248,19 +249,20 @@ class TestPmsService(TestPms):
                 "pricelist_id": self.pricelist1.id,
                 "board_service_room_id": self.board_service_room_type1.id,
                 "sale_channel_origin_id": self.sale_channel_door.id,
+                "adults": 2,
             }
         )
         # ACT
         self.reservation.service_ids.sale_channel_origin_id = self.sale_channel_phone
 
         sale_channel_ids = [
-            self.reservation.folio_id.sale_channel_ids.ids,
-            self.reservation.sale_channel_ids.ids,
+            self.reservation.folio_id.sale_channel_ids,
+            self.reservation.sale_channel_ids,
         ]
 
         expected_sale_channel_ids = [
-            self.sale_channel_door.id,
-            self.sale_channel_phone.id,
+            self.sale_channel_door,
+            self.sale_channel_phone,
         ]
         # ASSERT
         for sale_channel in sale_channel_ids:
@@ -329,6 +331,7 @@ class TestPmsService(TestPms):
                 "pricelist_id": self.pricelist1.id,
                 "board_service_room_id": self.board_service_room_type1.id,
                 "sale_channel_origin_id": self.sale_channel_door.id,
+                "adults": 2,
             }
         )
         # ACT
