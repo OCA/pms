@@ -678,9 +678,8 @@ class TestPmsCheckinPartner(TestPms):
         PmsReservation.auto_arrival_delayed()
 
         departure_delayed_reservations = folio_1.reservation_ids.filtered(
-            lambda r: r.state == "departure_delayed"
+            lambda r: r.state == "arrival_delayed"
         )
-
         # ASSERT
         self.assertEqual(
             len(departure_delayed_reservations),
