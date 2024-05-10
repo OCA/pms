@@ -10,7 +10,6 @@
     "license": "AGPL-3",
     "depends": [
         "l10n_es_aeat_sii_oca",
-        "l10n_es_aeat_partner_identification",
         "pms",
     ],
     "data": ["data/pms_data.xml"],
