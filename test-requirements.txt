@@ -1,0 +1,1 @@
+odoo13-addon-l10n_es_aeat_partner_identification @ git+https://github.com/OCA/survey.git@refs/pull/2520/head#subdirectory=setup/l10n_es_aeat_partner_identification
