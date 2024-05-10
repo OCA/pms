@@ -29,6 +29,7 @@
         # "partner_identification_unique_by_category",
         "queue_job",
         "web_timeline",
+        "partner_identification",
     ],
     "data": [
         "security/pms_security.xml",
