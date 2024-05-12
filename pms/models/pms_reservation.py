@@ -2132,13 +2132,22 @@ class PmsReservation(models.Model):
             vals["reservation_type"] = (
                 folio.reservation_type if folio.reservation_type else "normal"
             )
+        # Avoid send state field in vals, with the propouse to
+        # use action_confirm or action_cancel methods
+        reservation_state = False
+        if "state" in vals:
+            reservation_state = vals["state"]
+            vals.pop("state")
         record = super(PmsReservation, self).create(vals)
         record._check_capacity()
-        if record.preconfirm and record.state == "draft":
+        if (
+            record.preconfirm and record.state == "draft"
+        ) or reservation_state == "confirm":
             record.action_confirm()
+        elif reservation_state == "cancel":
+            record.action_cancel()
 
         record._check_services(vals)
-
         return record
 
     def write(self, vals):
