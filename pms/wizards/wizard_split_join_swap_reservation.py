@@ -112,6 +112,7 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
                 ]:
                     domain_lines = [
                         ("occupies_availability", "=", True),
+                        ("overbooking", "=", False),
                         (
                             "pms_property_id",
                             "=",
