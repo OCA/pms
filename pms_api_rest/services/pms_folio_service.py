@@ -1634,6 +1634,16 @@ class PmsFolioService(Component):
             if not folio or len(folio) > 1:
                 raise MissingError(_("Folio not found"))
             self.update_folio_values(folio, pms_folio_info)
+            # Force update availability
+            mapped_room_types = folio.reservation_ids.mapped("room_type_id")
+            date_from = min(folio.reservation_ids.mapped("checkin"))
+            date_to = max(folio.reservation_ids.mapped("checkout"))
+            self.force_api_update_avail(
+                pms_property_id=pms_folio_info.pmsPropertyId,
+                room_type_ids=mapped_room_types.ids,
+                date_from=date_from,
+                date_to=date_to,
+            )
             self.env["pms.api.log"].sudo().create(
                 {
                     "pms_property_id": pms_folio_info.pmsPropertyId,
@@ -1704,6 +1714,16 @@ class PmsFolioService(Component):
             if not folio:
                 raise MissingError(_("Folio not found"))
             self.update_folio_values(folio, pms_folio_info)
+            # Force update availability
+            mapped_room_types = folio.reservation_ids.mapped("room_type_id")
+            date_from = min(folio.reservation_ids.mapped("checkin"))
+            date_to = max(folio.reservation_ids.mapped("checkout"))
+            self.force_api_update_avail(
+                pms_property_id=pms_folio_info.pmsPropertyId,
+                room_type_ids=mapped_room_types.ids,
+                date_from=date_from,
+                date_to=date_to,
+            )
             self.env["pms.api.log"].sudo().create(
                 {
                     "pms_property_id": pms_folio_info.pmsPropertyId,
@@ -1845,16 +1865,6 @@ class PmsFolioService(Component):
         )
         if pms_folio_info.transactions:
             self.compute_transactions(folio, pms_folio_info.transactions)
-        # Force update availability
-        mapped_room_types = folio.reservation_ids.mapped("room_type_id")
-        date_from = min(folio.reservation_ids.mapped("checkin"))
-        date_to = max(folio.reservation_ids.mapped("checkout"))
-        self.force_api_update_avail(
-            pms_property_id=pms_folio_info.pmsPropertyId,
-            room_type_ids=mapped_room_types.ids,
-            date_from=date_from,
-            date_to=date_to,
-        )
 
     def normalize_payments_structure(self, pms_folio_info, folio):
         """
@@ -1892,6 +1902,25 @@ class PmsFolioService(Component):
                     ("agency_id", "=", pms_folio_info.agencyId),
                 ]
             )
+            # Compute amount total like the sum of the price in reservation lines
+            # and the sum of the price in service lines in the pms_folio_info
+            amount_total = 0
+            for reservation in pms_folio_info.reservations:
+                amount_total += sum(
+                    [
+                        line.price - (line.price * ((line.discount or 0.0) * 0.01))
+                        for line in reservation.reservationLines
+                        if line.price
+                    ]
+                )
+                amount_total += sum(
+                    [
+                        service.priceUnit * service.quantity
+                        for service in reservation.services
+                        if service.priceUnit and service.quantity
+                    ]
+                )
+
             # TODO: Review where to input the data to identify payments,
             # as partnerRequest in the reservation doesn't seem like the best location.
             if (
@@ -1912,7 +1941,7 @@ class PmsFolioService(Component):
                     pmsTransactionInfo(
                         journalId=journal.id,
                         transactionType="inbound",
-                        amount=round(folio.amount_total, 2),
+                        amount=round(amount_total, 2),
                         date=fields.Date.today().strftime("%Y-%m-%d"),
                         reference=pms_folio_info.externalReference,
                     )
@@ -2096,6 +2125,18 @@ class PmsFolioService(Component):
                             },
                         )
                     )
+            else:
+                cmds.append(
+                    (
+                        0,
+                        False,
+                        {
+                            "date": line.date,
+                            "price": line.price - board_day_price,
+                            "discount": line.discount or 0,
+                        },
+                    )
+                )
         return cmds
 
     def wrapper_reservation_services(self, info_services, services=False):
