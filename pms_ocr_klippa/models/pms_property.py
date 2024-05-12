@@ -70,7 +70,9 @@ class PmsProperty(models.Model):
                 mapped_data["document_type"] = self._get_document_type(
                     klippa_type=value,
                     country_id=self._get_country_id(
-                        document_data.get("document_country_id", False)
+                        document_data.get("issuing_country").get("value")
+                        if document_data.get("issuing_country")
+                        else False
                     ),
                 )
             elif key == "personal_number" and value:
@@ -88,7 +90,9 @@ class PmsProperty(models.Model):
                     document_class_code=self._get_document_type(
                         klippa_type=document_data.get("document_class_code", False),
                         country_id=self._get_country_id(
-                            document_data.get("document_country_id", False)
+                            document_data.get("issuing_country").get("value")
+                            if document_data.get("issuing_country")
+                            else False
                         ),
                     ),
                     date_of_expiry=value,
@@ -222,6 +226,27 @@ class PmsProperty(models.Model):
             mapped_data["country_id"] = country_record
         if "postcode" in value:
             mapped_data["zip"] = value["postcode"]
+            zip_code = self.env["res.city.zip"].search(
+                [
+                    ("name", "=", value["postcode"]),
+                ]
+            )
+            if zip_code:
+                mapped_data["residence_city"] = (
+                    zip_code.city_id.name
+                    if not mapped_data.get("residence_city", False)
+                    else mapped_data["residence_city"]
+                )
+                mapped_data["residence_state_id"] = (
+                    zip_code.city_id.state_id.id
+                    if not mapped_data.get("residence_state_id", False)
+                    else mapped_data["residence_state_id"]
+                )
+                mapped_data["country_id"] = (
+                    zip_code.city_id.state_id.country_id.id
+                    if not mapped_data.get("country_id", False)
+                    else mapped_data["country_id"]
+                )
 
         address_data_dict = {
             "zip": mapped_data.get("zip") or None,
@@ -242,38 +267,64 @@ class PmsProperty(models.Model):
                 language="en",
             )
             if not location:
-                search_address_str = f"{mapped_data.get('residence_city', '')}, {mapped_data.get('zip', '')}, {mapped_data.get('country_id', '')}"
-                location = geolocator.geocode(
-                    search_address_str,
-                    addressdetails=True,
-                    timeout=5,
-                    language="en",
-                )
+                street_words = street_name.split(" ")
+                street_words = [word for word in street_words if len(word) > 2]
+                while street_words and not location:
+                    street_name = " ".join(street_words)
+                    search_address_str = f"{street_name}, {mapped_data.get('residence_city', '')}, {mapped_data.get('zip', '')}, {mapped_data.get('country_id', '')}"
+                    location = geolocator.geocode(
+                        search_address_str,
+                        addressdetails=True,
+                        timeout=5,
+                        language="en",
+                    )
+                    street_words.pop(0)
             if location:
                 if not mapped_data.get("zip", False):
                     mapped_data["zip"] = location.raw.get("address", {}).get(
                         "postcode", False
                     )
+                    if mapped_data["zip"]:
+                        zip_code = self.env["res.city.zip"].search(
+                            [("name", "=", mapped_data["zip"])]
+                        )
+                        if zip_code:
+                            mapped_data["residence_city"] = zip_code.city_id.name
+                            mapped_data["country_state"] = zip_code.city_id.state_id.id
+                            mapped_data[
+                                "country_id"
+                            ] = zip_code.city_id.state_id.country_id.id
                 if not mapped_data.get("country_id", False):
                     country_match_name = process.extractOne(
                         location.raw.get("address", {}).get("country", False),
-                        self.env["res.country"].search([]).mapped("name"),
+                        self.env["res.country"]
+                        .with_context(lang="en_US")
+                        .search([])
+                        .mapped("name"),
                     )
                     if country_match_name[1] >= 90:
-                        country_record = self.env["res.country"].search(
-                            [("name", "=", country_match_name[0])]
+                        country_record = (
+                            self.env["res.country"]
+                            .with_context(lang="en_US")
+                            .search([("name", "=", country_match_name[0])])
                         )
                         mapped_data["country_id"] = country_record.id
                 if not mapped_data.get("country_state", False):
-                    country_state_record = process.extractOne(
-                        location.raw.get("address", {}).get("province", False),
-                        self.env["res.country.state"].search([]).mapped("name"),
+                    state_name = (
+                        location.raw.get("address", {}).get("prorvince")
+                        if location.raw.get("address", {}).get("province")
+                        else location.raw.get("address", {}).get("state")
                     )
-                    if country_state_record[1] >= 90:
-                        country_state = self.env["res.country.state"].search(
-                            [("name", "=", country_state_record[0])]
+                    if state_name:
+                        country_state_record = process.extractOne(
+                            state_name,
+                            self.env["res.country.state"].search([]).mapped("name"),
                         )
-                        mapped_data["country_state"] = country_state.id
+                        if country_state_record[1] >= 90:
+                            country_state = self.env["res.country.state"].search(
+                                [("name", "=", country_state_record[0])]
+                            )
+                            mapped_data["country_state"] = country_state.id
                 if not mapped_data.get("residence_city", False):
                     mapped_data["residence_city"] = location.raw.get("address", {}).get(
                         "city", False
