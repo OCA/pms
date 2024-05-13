@@ -1906,20 +1906,22 @@ class PmsFolioService(Component):
             # and the sum of the price in service lines in the pms_folio_info
             amount_total = 0
             for reservation in pms_folio_info.reservations:
-                amount_total += sum(
-                    [
-                        line.price - (line.price * ((line.discount or 0.0) * 0.01))
-                        for line in reservation.reservationLines
-                        if line.price
-                    ]
-                )
-                amount_total += sum(
-                    [
-                        service.priceUnit * service.quantity
-                        for service in reservation.services
-                        if service.priceUnit and service.quantity
-                    ]
-                )
+                if reservation.reservationLines:
+                    amount_total += sum(
+                        [
+                            line.price - (line.price * ((line.discount or 0.0) * 0.01))
+                            for line in reservation.reservationLines
+                            if line.price
+                        ]
+                    )
+                if reservation.services:
+                    amount_total += sum(
+                        [
+                            service.priceUnit * service.quantity
+                            for service in reservation.services
+                            if service.priceUnit and service.quantity
+                        ]
+                    )
 
             # TODO: Review where to input the data to identify payments,
             # as partnerRequest in the reservation doesn't seem like the best location.
