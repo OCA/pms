@@ -3,13 +3,14 @@ from datetime import date, datetime
 
 import requests
 from dateutil.relativedelta import relativedelta
-from geopy.geocoders import Nominatim
 from thefuzz import process
 
 from odoo import _, fields, models
 from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
+
+NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 
 
 class PmsProperty(models.Model):
@@ -52,6 +53,18 @@ class PmsProperty(models.Model):
             raise ValidationError(_("Error calling Klippa OCR API"))
         document_data = json_data["data"]["parsed"]
         mapped_data = {}
+        found_partner = False
+        if document_data.get("personal_number", False):
+            found_partner = (
+                self.env["res.partner.id_number"]
+                .search(
+                    [
+                        ("name", "=", document_data["personal_number"]["value"]),
+                    ],
+                    limit=1,
+                )
+                .partner_id
+            )
         for key, dict_value in document_data.items():
             if dict_value and isinstance(dict_value, dict):
                 value = dict_value.get("value", False)
@@ -168,10 +181,8 @@ class PmsProperty(models.Model):
                 lambda r: country_id in r.country_ids.ids
             )
         if not document_type_id:
-            document_type_id = document_type_ids.filtered(lambda r: not r.country_ids)[
-                0
-            ]
-        return document_type_id
+            document_type_id = document_type_ids[0]
+        return document_type_id[0]
 
     def _get_country_id(self, country_code):
         return (
@@ -217,10 +228,10 @@ class PmsProperty(models.Model):
                     domain + [("name", "=", candidates[0])]
                 )
                 mapped_data["residence_state_id"] = country_state.id
-                if not country_record:
+                if not country_record and country_state:
                     mapped_data["country_id"] = country_state.country_id.id
             else:
-                mapped_data["residence_state_id"] = None
+                mapped_data["residence_state_id"] = False
         if "country" in value and not mapped_data.get("country_id", False):
             country_record = self._get_country_id(value["country"])
             mapped_data["country_id"] = country_record
@@ -258,30 +269,44 @@ class PmsProperty(models.Model):
         # If we have one ore more values in address_data_dict, but not all,
         # we try to complete the address
         if any(address_data_dict.values()) and not all(address_data_dict.values()):
-            geolocator = Nominatim(user_agent="roomdoo_pms")
-            search_address_str = f"{street_name}, {mapped_data.get('residence_city', '')}, {mapped_data.get('zip', '')}, {mapped_data.get('country_id', '')}"
-            location = geolocator.geocode(
-                search_address_str,
-                addressdetails=True,
-                timeout=5,
-                language="en",
-            )
-            if not location:
+            params = {
+                "format": "json",
+                "addressdetails": 1,
+                "language": "en",
+                "timeout": 5,
+                "limit": 1,
+            }
+            if address_data_dict.get("zip"):
+                params["postalcode"] = address_data_dict["zip"]
+            if address_data_dict.get("country_id"):
+                params["country"] = (
+                    self.env["res.country"].browse(address_data_dict["country_id"]).name
+                )
+            if address_data_dict.get("countryState"):
+                params["state"] = (
+                    self.env["res.country.state"]
+                    .browse(address_data_dict["countryState"])
+                    .name
+                )
+            if address_data_dict.get("residence_city"):
+                params["city"] = address_data_dict["residence_city"]
+            if street_name:
+                # Clean street name with mains words
                 street_words = street_name.split(" ")
-                street_words = [word for word in street_words if len(word) > 2]
-                while street_words and not location:
-                    street_name = " ".join(street_words)
-                    search_address_str = f"{street_name}, {mapped_data.get('residence_city', '')}, {mapped_data.get('zip', '')}, {mapped_data.get('country_id', '')}"
-                    location = geolocator.geocode(
-                        search_address_str,
-                        addressdetails=True,
-                        timeout=5,
-                        language="en",
-                    )
-                    street_words.pop(0)
-            if location:
+                params["street"] = " ".join(
+                    [word for word in street_words if len(word) > 2]
+                )
+            location = requests.get(NOMINATIM_URL, params=params)
+            if not location.json() or location.status_code != 200:
+                # If not found address, pop the street to try again
+                if street_name:
+                    params.pop("street")
+                    location = requests.get(NOMINATIM_URL, params=params)
+            if location.json() and location.status_code == 200:
+                location = location.json()[0]
+                _logger.info(location)
                 if not mapped_data.get("zip", False):
-                    mapped_data["zip"] = location.raw.get("address", {}).get(
+                    mapped_data["zip"] = location.get("address", {}).get(
                         "postcode", False
                     )
                     if mapped_data["zip"]:
@@ -295,25 +320,39 @@ class PmsProperty(models.Model):
                                 "country_id"
                             ] = zip_code.city_id.state_id.country_id.id
                 if not mapped_data.get("country_id", False):
-                    country_match_name = process.extractOne(
-                        location.raw.get("address", {}).get("country", False),
-                        self.env["res.country"]
-                        .with_context(lang="en_US")
-                        .search([])
-                        .mapped("name"),
+                    country_record = self.env["res.country"].search(
+                        [
+                            (
+                                "code",
+                                "=",
+                                location.get("address", {})
+                                .get("country_code", False)
+                                .upper(),
+                            )
+                        ]
                     )
-                    if country_match_name[1] >= 90:
-                        country_record = (
+                    if not country_record and location.get("address", {}).get(
+                        "country", False
+                    ):
+                        country_match = process.extractOne(
+                            location.get("address", {}).get("country", False),
                             self.env["res.country"]
                             .with_context(lang="en_US")
-                            .search([("name", "=", country_match_name[0])])
+                            .search([])
+                            .mapped("name"),
                         )
-                        mapped_data["country_id"] = country_record.id
+                        if country_match[1] >= 90:
+                            country_record = (
+                                self.env["res.country"]
+                                .with_context(lang="en_US")
+                                .search([("name", "=", country_match_name[0])])
+                            )
+                    mapped_data["country_id"] = country_record.id
                 if not mapped_data.get("country_state", False):
                     state_name = (
-                        location.raw.get("address", {}).get("prorvince")
-                        if location.raw.get("address", {}).get("province")
-                        else location.raw.get("address", {}).get("state")
+                        location.get("address", {}).get("province")
+                        if location.get("address", {}).get("province")
+                        else location.get("address", {}).get("state")
                     )
                     if state_name:
                         country_state_record = process.extractOne(
@@ -326,11 +365,11 @@ class PmsProperty(models.Model):
                             )
                             mapped_data["country_state"] = country_state.id
                 if not mapped_data.get("residence_city", False):
-                    mapped_data["residence_city"] = location.raw.get("address", {}).get(
+                    mapped_data["residence_city"] = location.get("address", {}).get(
                         "city", False
                     )
                 if not mapped_data.get("residence_street", False):
-                    mapped_data["residence_street"] = location.raw.get(
-                        "address", {}
-                    ).get("road", False)
+                    mapped_data["residence_street"] = location.get("address", {}).get(
+                        "road", False
+                    )
         return mapped_data
