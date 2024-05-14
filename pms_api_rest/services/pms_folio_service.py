@@ -1773,7 +1773,7 @@ class PmsFolioService(Component):
         external_app = self.env.user.pms_api_client
         folio_vals = {}
         if pms_folio_info.state == "cancel" and folio.state != "cancel":
-            draft_invoices = folio.invoice_ids.filtered(lambda i: i.state == "draft")
+            draft_invoices = folio.move_ids.filtered(lambda i: i.state == "draft")
             if draft_invoices:
                 draft_invoices.button_cancel()
             folio.action_cancel()
