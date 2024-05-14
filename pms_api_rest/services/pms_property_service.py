@@ -199,6 +199,38 @@ class PmsPropertyService(Component):
         [
             (
                 [
+                    "/ine-report",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.report.search.param", is_list=False),
+        output_param=Datamodel("pms.report", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def ine_report(self, pms_report_search_param):
+        pms_property_id = pms_report_search_param.pmsPropertyId
+        date_from = fields.Date.from_string(pms_report_search_param.dateFrom)
+        date_to = fields.Date.from_string(pms_report_search_param.dateTo)
+        report_wizard = self.env["pms.ine.wizard"].create(
+            {
+                "start_date": date_from,
+                "end_date": date_to,
+                "pms_property_id": pms_property_id,
+            }
+        )
+        report_wizard.ine_generate_xml()
+        # file_name is INE_<date_from_MONTH>_<date_from_YEAR>.xml
+        file_name = (
+            "INE_" + date_from.strftime("%m") + "_" + date_from.strftime("%Y") + ".xml"
+        )
+        PmsResponse = self.env.datamodels["pms.report"]
+        return PmsResponse(fileName=file_name, binary=report_wizard.txt_binary)
+
+    @restapi.method(
+        [
+            (
+                [
                     "/traveller-report",
                 ],
                 "GET",
