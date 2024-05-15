@@ -185,6 +185,8 @@ class PmsProperty(models.Model):
         return document_type_id[0]
 
     def _get_country_id(self, country_code):
+        if not country_code:
+            return False
         return (
             self.env["res.country"]
             .search([("code_alpha3", "=", country_code)], limit=1)
@@ -227,11 +229,11 @@ class PmsProperty(models.Model):
                 country_state = self.env["res.country.state"].search(
                     domain + [("name", "=", candidates[0])]
                 )
-                mapped_data["residence_state_id"] = country_state.id
+                mapped_data["country_state"] = country_state.id
                 if not country_record and country_state:
                     mapped_data["country_id"] = country_state.country_id.id
             else:
-                mapped_data["residence_state_id"] = False
+                mapped_data["country_state"] = False
         if "country" in value and not mapped_data.get("country_id", False):
             country_record = self._get_country_id(value["country"])
             mapped_data["country_id"] = country_record
@@ -248,10 +250,10 @@ class PmsProperty(models.Model):
                     if not mapped_data.get("residence_city", False)
                     else mapped_data["residence_city"]
                 )
-                mapped_data["residence_state_id"] = (
+                mapped_data["country_state"] = (
                     zip_code.city_id.state_id.id
-                    if not mapped_data.get("residence_state_id", False)
-                    else mapped_data["residence_state_id"]
+                    if not mapped_data.get("country_state", False)
+                    else mapped_data["country_state"]
                 )
                 mapped_data["country_id"] = (
                     zip_code.city_id.state_id.country_id.id
@@ -345,7 +347,7 @@ class PmsProperty(models.Model):
                             country_record = (
                                 self.env["res.country"]
                                 .with_context(lang="en_US")
-                                .search([("name", "=", country_match_name[0])])
+                                .search([("name", "=", country_match[0])])
                             )
                     mapped_data["country_id"] = country_record.id
                 if not mapped_data.get("country_state", False):
