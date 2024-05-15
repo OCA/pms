@@ -223,7 +223,7 @@ class PmsProperty(models.Model):
                 value["province"],
                 self.env["res.country.state"].search(domain).mapped("name"),
             )
-            if candidates[1] >= 90:
+            if candidates and candidates[1] >= 90:
                 country_state = self.env["res.country.state"].search(
                     domain + [("name", "=", candidates[0])]
                 )
