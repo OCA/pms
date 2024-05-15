@@ -405,11 +405,7 @@ class PmsReservationLine(models.Model):
     @api.depends("reservation_id.state", "is_reselling")
     def _compute_occupies_availability(self):
         for line in self:
-            if (
-                line.reservation_id.state == "cancel"
-                or line.overbooking
-                or line.is_reselling
-            ):
+            if line.reservation_id.state == "cancel" or line.is_reselling:
                 line.occupies_availability = False
             else:
                 line.occupies_availability = True
