@@ -1845,7 +1845,8 @@ class PmsFolioService(Component):
                             reservations_vals.pop(reservations_vals.index(val))
                         if val[2].get("state") == "confirm":
                             self.env["pms.reservation"].with_context(
-                                force_write_blocked=True
+                                force_write_blocked=True,
+                                force_overbooking=True if external_app else False,
                             ).browse(val[1]).action_confirm()
                             # delete from reservations_vals the field state
                             val[2].pop("state")
