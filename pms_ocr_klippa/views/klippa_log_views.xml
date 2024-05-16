@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="klippa_log_tree" model="ir.ui.view">
+        <field name="name">klippa.log.tree</field>
+        <field name="model">klippa.log</field>
+        <field name="arch" type="xml">
+            <tree string="Klippa Log">
+                <field name="pms_property_id" />
+                <field name="create_date" />
+                <field name="klippa_status" />
+                <field name="final_status" />
+                <field name="request_id" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="klippa_log_form" model="ir.ui.view">
+        <field name="name">klippa.log.form</field>
+        <field name="model">klippa.log</field>
+        <field name="arch" type="xml">
+            <form string="Klippa Log">
+                <sheet>
+                    <group>
+                        <field name="pms_property_id" />
+                        <field name="create_date" />
+                        <field name="klippa_status" />
+                        <field name="final_status" />
+                        <field name="request_id" />
+                    </group>
+                    <notebook>
+                        <page string="Klippa Response">
+                            <field name="klippa response" />
+                        </page>
+                        <page string="Service Response">
+                            <field name="service_response" />
+                        </page>
+                        <page string="Front Imgage">
+                            <field name="image_base64_front" />
+                        </page>
+                        <page string="Back Image">
+                            <field name="image_base64_back" />
+                        </page>
+                        <page
+                            string="Error"
+                            attrs="{'invisible': [('error', '=', False)]}"
+                        >
+                            <field name="error" />
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="klippa_log_search" model="ir.ui.view">
+        <field name="name">klippa.log.search</field>
+        <field name="model">klippa.log</field>
+        <field name="arch" type="xml">
+            <search string="Klippa Log">
+                <field name="pms_property_id" />
+                <field name="create_date" />
+                <field name="klippa_status" />
+                <field name="final_status" />
+            </search>
+        </field>
+    </record>
+
+    <record id="klippa_log_pivot" model="ir.ui.view">
+        <field name="name">klippa.log.pivot</field>
+        <field name="model">klippa.log</field>
+        <field name="arch" type="xml">
+            <pivot string="Klippa Log">
+                <field name="pms_property_id" type="col" />
+                <field name="create_date" type="col" interval="day" />
+            </pivot>
+        </field>
+    </record>
+
+    <record id="klippa_log_graph" model="ir.ui.view">
+        <field name="name">klippa.log.graph</field>
+        <field name="model">klippa.log</field>
+        <field name="arch" type="xml">
+            <graph string="Klippa Log">
+                <field name="pms_property_id" />
+                <field name="create_date" />
+            </graph>
+        </field>
+    </record>
+
+    <record id="klippa_log_action" model="ir.actions.act_window">
+        <field name="name">Klippa Log</field>
+        <field name="res_model">klippa.log</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+    </record>
+
+    <menuitem
+        id="klippa_log_menu"
+        name="Klippa Log"
+        action="klippa_log_action"
+        parent="base.menu_administration"
+        sequence="120"
+    />
+
+</odoo>
