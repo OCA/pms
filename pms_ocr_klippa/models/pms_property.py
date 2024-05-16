@@ -20,38 +20,88 @@ class PmsProperty(models.Model):
 
     # flake8: noqa: C901
     def _klippa_document_process(self, image_base_64_front, image_base_64_back=False):
-        ocr_klippa_url = (
-            self.env["ir.config_parameter"].sudo().get_param("ocr_klippa_url")
-        )
-        ocr_klippa_api_key = (
-            self.env["ir.config_parameter"].sudo().get_param("ocr_klippa_api_key")
-        )
-        document = []
-        if image_base_64_front:
-            document.append(image_base_64_front)
-        if image_base_64_back:
-            document.append(image_base_64_back)
-        if not document:
-            raise ValidationError(_("No document image found"))
+        try:
+            ocr_klippa_url = (
+                self.env["ir.config_parameter"].sudo().get_param("ocr_klippa_url")
+            )
+            ocr_klippa_api_key = (
+                self.env["ir.config_parameter"].sudo().get_param("ocr_klippa_api_key")
+            )
+            document = []
+            if image_base_64_front:
+                document.append(image_base_64_front)
+            if image_base_64_back:
+                document.append(image_base_64_back)
+            if not document:
+                raise ValidationError(_("No document image found"))
 
-        headers = {
-            "X-Auth-Key": ocr_klippa_api_key,
-            "Content-Type": "application/json",
-        }
-        payload = {
-            "document": document,
-        }
+            headers = {
+                "X-Auth-Key": ocr_klippa_api_key,
+                "Content-Type": "application/json",
+            }
+            payload = {
+                "document": document,
+            }
+            log_data = {
+                "pms_property_id": self.id,
+                "image_base64_front": image_base_64_front,
+                "image_base64_back": image_base_64_back,
+                "request_datetime": datetime.now(),
+                "endpoint": ocr_klippa_url,
+                "request_size": len(image_base_64_front) + len(image_base_64_back),
+                "request_headers": str(headers),
+            }
 
-        # Call Klippa OCR API
-        result = requests.post(
-            ocr_klippa_url,
-            headers=headers,
-            json=payload,
-        )
-        json_data = result.json()
-        if json_data.get("result") != "success":
-            raise ValidationError(_("Error calling Klippa OCR API"))
-        document_data = json_data["data"]["parsed"]
+            # Call Klippa OCR API
+            result = requests.post(
+                ocr_klippa_url,
+                headers=headers,
+                json=payload,
+            )
+            json_data = result.json()
+            log_data.extend(
+                {
+                    "klippa_response": json_data,
+                    "klippa_status": json_data.get("result", "error"),
+                    "response_datetime": datetime.now(),
+                    "response_size": len(str(json_data)),
+                    "request_duration": (
+                        datetime.now() - log_data["request_datetime"]
+                    ).seconds,
+                }
+            )
+            if json_data.get("result") != "success":
+                raise ValidationError(_("Error calling Klippa OCR API"))
+            document_data = json_data["data"]["parsed"]
+            init_mapped_datetime = datetime.now()
+            mapped_data = self._map_klippa_data(document_data)
+            log_data.extend(
+                {
+                    "service_response": mapped_data,
+                    "mapped_duration": (datetime.now() - init_mapped_datetime).seconds,
+                    "total_duration": (
+                        datetime.now() - log_data["request_datetime"]
+                    ).seconds,
+                    "final_status": "success",
+                }
+            )
+            self.env["klippa.log"].sudo().create(log_data)
+            return mapped_data
+        except Exception as e:
+            log_data.extend(
+                {
+                    "error": str(e),
+                    "final_status": "error",
+                    "total_duration": (
+                        datetime.now() - log_data["request_datetime"]
+                    ).seconds,
+                }
+            )
+            self.env["klippa.log"].sudo().create(log_data)
+            _logger.error(e)
+            raise ValidationError(_("Error processing Klippa document"))
+
+    def _map_klippa_data(self, document_data):
         mapped_data = {}
         found_partner = False
         if document_data.get("personal_number", False):
@@ -225,7 +275,7 @@ class PmsProperty(models.Model):
                 value["province"],
                 self.env["res.country.state"].search(domain).mapped("name"),
             )
-            if candidates and candidates[1] >= 90:
+            if candidates[1] >= 90:
                 country_state = self.env["res.country.state"].search(
                     domain + [("name", "=", candidates[0])]
                 )
