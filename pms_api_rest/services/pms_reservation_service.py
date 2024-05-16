@@ -660,6 +660,8 @@ class PmsReservationService(Component):
         ):
             checkin_partner.action_on_board()
             return checkin_partner.id
+        if not pms_checkin_partner_info.originInputData:
+            pms_checkin_partner_info.originInputData = checkin_partner.origin_input_data
         checkin_partner.write(
             self.mapping_checkin_partner_values(
                 pms_checkin_partner_info,
