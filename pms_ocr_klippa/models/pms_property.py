@@ -42,13 +42,16 @@ class PmsProperty(models.Model):
             payload = {
                 "document": document,
             }
+            request_size = (len(image_base_64_front) if image_base_64_front else 0) + (
+                len(image_base_64_back) if image_base_64_back else 0
+            )
             log_data = {
                 "pms_property_id": self.id,
                 "image_base64_front": image_base_64_front,
                 "image_base64_back": image_base_64_back,
                 "request_datetime": datetime.now(),
                 "endpoint": ocr_klippa_url,
-                "request_size": len(image_base_64_front) + len(image_base_64_back),
+                "request_size": request_size,
                 "request_headers": str(headers),
             }
 
@@ -59,7 +62,7 @@ class PmsProperty(models.Model):
                 json=payload,
             )
             json_data = result.json()
-            log_data.extend(
+            log_data.update(
                 {
                     "klippa_response": json_data,
                     "klippa_status": json_data.get("result", "error"),
@@ -68,6 +71,7 @@ class PmsProperty(models.Model):
                     "request_duration": (
                         datetime.now() - log_data["request_datetime"]
                     ).seconds,
+                    "request_id": json_data.get("request_id", False),
                 }
             )
             if json_data.get("result") != "success":
@@ -75,7 +79,7 @@ class PmsProperty(models.Model):
             document_data = json_data["data"]["parsed"]
             init_mapped_datetime = datetime.now()
             mapped_data = self._map_klippa_data(document_data)
-            log_data.extend(
+            log_data.update(
                 {
                     "service_response": mapped_data,
                     "mapped_duration": (datetime.now() - init_mapped_datetime).seconds,
@@ -88,7 +92,7 @@ class PmsProperty(models.Model):
             self.env["klippa.log"].sudo().create(log_data)
             return mapped_data
         except Exception as e:
-            log_data.extend(
+            log_data.update(
                 {
                     "error": str(e),
                     "final_status": "error",

@@ -29,7 +29,7 @@
                     </group>
                     <notebook>
                         <page string="Klippa Response">
-                            <field name="klippa response" />
+                            <field name="klippa_response" />
                         </page>
                         <page string="Service Response">
                             <field name="service_response" />
