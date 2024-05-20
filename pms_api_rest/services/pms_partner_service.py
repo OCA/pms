@@ -495,6 +495,96 @@ class PmsPartnerService(Component):
         [
             (
                 [
+                    "/vat_number/<string:vat_number>/",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.partner.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def get_partner_by_vat_number(self, vat_number):
+        partner = self.env["res.partner"].search(
+            [
+                "|",
+                ("vat", "ilike", vat_number),
+                ("aeat_identification", "ilike", vat_number)
+             ], limit=1
+        )
+        PmsPartnerService = self.env.datamodels["pms.partner.info"]
+        if not partner:
+            return PmsPartnerService()
+        return PmsPartnerService(
+            id=partner.id,
+            name=partner.name if partner.name else None,
+            firstname=partner.firstname if partner.firstname else None,
+            lastname=partner.lastname if partner.lastname else None,
+            lastname2=partner.lastname2 if partner.lastname2 else None,
+            email=partner.email if partner.email else None,
+            mobile=partner.mobile if partner.mobile else None,
+            phone=partner.phone if partner.phone else None,
+            documentType=partner.id_numbers[0].category_id.id
+            if partner.id_numbers
+            else None,
+            documentNumber=partner.id_numbers[0].name
+            if partner.id_numbers
+            else None,
+            documentExpeditionDate=datetime.combine(
+                partner.id_numbers[0].valid_from, datetime.min.time()
+            ).isoformat()
+            if partner.id_numbers
+            else None,
+            documentSupportNumber=partner.id_numbers[0].support_number
+            if partner.id_numbers
+            else None,
+            documentCountryId=partner.id_numbers[0].country_id.id
+            if partner.id_numbers
+            else None,
+            gender=partner.gender if partner.gender else None,
+            birthdate=datetime.combine(
+                partner.birthdate_date, datetime.min.time()
+            ).isoformat()
+            if partner.birthdate_date
+            else None,
+            age=partner.age if partner.age else None,
+            residenceStreet=partner.residence_street if partner.residence_street else None,
+            residenceStreet2=partner.residence_street2 if partner.residence_street2 else None,
+            residenceCity=partner.residence_city if partner.residence_city else None,
+            residenceZip=partner.residence_zip if partner.residence_zip else None,
+            nationality=partner.nationality_id.id if partner.nationality_id else None,
+            residenceStateId=partner.residence_state_id.id if partner.residence_state_id else None,
+            isAgency=partner.is_agency,
+            isCompany=partner.is_company,
+            street=partner.street if partner.street else None,
+            street2=partner.street2 if partner.street2 else None,
+            zip=partner.zip if partner.zip else None,
+            city=partner.city if partner.city else None,
+            stateId=partner.state_id.id if partner.state_id else None,
+            countryId=partner.country_id.id if partner.country_id else None,
+            residenceCountryId=partner.residence_country_id.id if partner.residence_country_id else None,
+            vatNumber=partner.vat if partner.vat else partner.aeat_identification if partner.aeat_identification else None,
+            vatDocumentType="02" if partner.vat else partner.aeat_identification_type if partner.aeat_identification_type else None,
+            comment=partner.comment if partner.comment else None,
+            language=partner.lang if partner.lang else None,
+            userId=partner.user_id if partner.user_id else None,
+            paymentTerms=partner.property_payment_term_id if partner.property_payment_term_id else None,
+            salesReference=partner.ref if partner.ref else None,
+            pricelistId=partner.property_product_pricelist
+            if partner.property_product_pricelist
+            else None,
+            saleChannelId=partner.sale_channel_id if partner.sale_channel_id else None,
+            commission=partner.default_commission if partner.default_commission else None,
+            invoicingPolicy=partner.invoicing_policy if partner.invoicing_policy else None,
+            daysAutoInvoice=partner.margin_days_autoinvoice if partner.margin_days_autoinvoice else None,
+            invoicingMonthDay=partner.invoicing_month_day if partner.invoicing_month_day else None,
+            invoiceToAgency=partner.invoice_to_agency if partner.invoice_to_agency else None,
+            tagIds=partner.category_id.ids if partner.category_id else [],
+        )
+
+    @restapi.method(
+        [
+            (
+                [
                     "/<string:documentType>/<string:documentNumber>",
                 ],
                 "GET",
@@ -503,7 +593,7 @@ class PmsPartnerService(Component):
         output_param=Datamodel("pms.partner.info", is_list=True),
         auth="jwt_api_pms",
     )
-    def get_partner_by_doc_number(self, document_type, document_number):
+    def get_checkin_partner_by_partner_doc_number(self, document_type, document_number):
         doc_type = self.env["res.partner.id_category"].search(
             [("id", "=", document_type)]
         )
