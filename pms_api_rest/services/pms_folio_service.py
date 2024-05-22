@@ -769,7 +769,7 @@ class PmsFolioService(Component):
                         force_write_blocked=True if external_app else False,
                     )._compute_board_service_room_id()
                 if reservation.stateCode == "cancel":
-                    reservation.action_cancel()
+                    reservation_record.action_cancel()
             pms_folio_info.transactions = self.normalize_payments_structure(
                 pms_folio_info, folio
             )
