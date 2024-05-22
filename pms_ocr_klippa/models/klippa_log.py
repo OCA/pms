@@ -29,8 +29,8 @@ class KlippaLog(models.Model):
         help="Response",
     )
     klippa_status = fields.Char(
-        string="Status",
-        help="Status",
+        string="Klippa Status",
+        help="Klippa Status",
     )
     request_datetime = fields.Datetime(
         string="Request Date",
@@ -83,6 +83,14 @@ class KlippaLog(models.Model):
     error = fields.Text(
         string="Error",
         help="Error",
+    )
+    nominatim_status = fields.Char(
+        string="Nominatim Status",
+        help="Nominatim Status",
+    )
+    nominatim_response = fields.Text(
+        string="Nominatim Response",
+        help="Nominatim Response",
     )
 
     def clean_log_data(self, offset=60):
