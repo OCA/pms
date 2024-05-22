@@ -483,7 +483,7 @@ class PmsReservationService(Component):
                 PmsServiceInfo(
                     id=service.id,
                     reservationId=service.reservation_id,
-                    name=service.name,
+                    name=service.name or service.product_id.name,
                     productId=service.product_id.id,
                     quantity=service.product_qty,
                     priceTotal=round(service.price_total, 2),
