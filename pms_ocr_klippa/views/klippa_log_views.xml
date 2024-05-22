@@ -27,12 +27,20 @@
                         <field name="final_status" />
                         <field name="request_id" />
                     </group>
+                    <group>
+                        <field name="request_duration" widget="float_time" />
+                        <field name="mapped_duration" widget="float_time" />
+                    </group>
                     <notebook>
                         <page string="Klippa Response">
                             <field name="klippa_response" />
                         </page>
                         <page string="Service Response">
                             <field name="service_response" />
+                        </page>
+                        <page string="Nominatim Response">
+                            <field name="nominatim_status" />
+                            <field name="nominatim_response" />
                         </page>
                         <page string="Front Imgage">
                             <field name="image_base64_front" />
