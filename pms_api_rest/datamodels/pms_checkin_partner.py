@@ -31,3 +31,4 @@ class PmsCheckinPartnerInfo(Datamodel):
     checkinPartnerState = fields.String(required=False, allow_none=True)
     actionOnBoard = fields.Boolean(required=False, allow_none=True)
     originInputData = fields.String(required=False, allow_none=True)
+    signature = fields.String(required=False, allow_none=True)
