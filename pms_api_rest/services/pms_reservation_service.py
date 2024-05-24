@@ -1,4 +1,6 @@
 import base64
+import os
+import tempfile
 from datetime import datetime, timedelta
 
 from odoo import _, fields
@@ -625,6 +627,9 @@ class PmsReservationService(Component):
                         if checkin_partner.residence_country_id
                         else None,
                         checkinPartnerState=checkin_partner.state,
+                        signature=checkin_partner.signature
+                        if checkin_partner.signature
+                        else None,
                     )
                 )
         return checkin_partners
@@ -926,6 +931,18 @@ class PmsReservationService(Component):
             vals.update({"birthdate_date": birthdate})
         else:
             vals.update({"birthdate_date": False})
+        if pms_checkin_partner_info.signature:
+            with tempfile.NamedTemporaryFile(delete=False) as f:
+                f.write(base64.b64decode(pms_checkin_partner_info.signature))
+                temp_path = f.name
+
+            with open(temp_path, "rb") as f:
+                signature_image = f.read()
+            os.unlink(temp_path)
+
+            vals.update({"signature": base64.b64encode(signature_image)})
+        else:
+            vals.update({"signature": False})
         return vals
 
     @restapi.method(
