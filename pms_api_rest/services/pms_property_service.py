@@ -1,4 +1,5 @@
 import base64
+import re
 
 from odoo import fields
 
@@ -35,17 +36,30 @@ class PmsPropertyService(Component):
             domain,
         ):
             state_name = False
+            ine_category = False
+            privacy_policy = False
+            tokens_to_replace = re.compile("<.*?>")
+            if prop.company_id.privacy_policy:
+                privacy_policy = re.sub(
+                    tokens_to_replace, "", prop.company_id.privacy_policy
+                )
             if prop.state_id:
                 state_name = (
                     self.env["res.country.state"]
                     .search([("id", "=", prop.state_id.id)])
                     .name
                 )
+            if prop.ine_category_id:
+                ine_category = (
+                    prop.ine_category_id.category
+                    + " ("
+                    + prop.ine_category_id.type
+                    + ")"
+                )
             result_properties.append(
                 PmsPropertyInfo(
                     id=prop.id,
                     name=prop.name,
-                    stateName=state_name if state_name else None,
                     defaultPricelistId=prop.default_pricelist_id.id,
                     colorOptionConfig=prop.color_option_config,
                     preReservationColor=prop.pre_reservation_color,
@@ -65,6 +79,16 @@ class PmsPropertyService(Component):
                     hotelImageUrl=url_image_pms_api_rest(
                         "pms.property", prop.id, "hotel_image_pms_api_rest"
                     ),
+                    street=prop.street if prop.street else None,
+                    street2=prop.street2 if prop.street2 else None,
+                    zip=prop.zip if prop.zip else None,
+                    city=prop.city if prop.city else None,
+                    stateName=state_name if state_name else None,
+                    ineCategory=ine_category if ine_category else None,
+                    cardexWarning=prop.cardex_warning if prop.cardex_warning else None,
+                    companyPrivacyPolicy=privacy_policy
+                    if prop.company_id.privacy_policy
+                    else None,
                 )
             )
         return result_properties
@@ -88,6 +112,25 @@ class PmsPropertyService(Component):
         if not pms_property:
             pass
         else:
+            state_name = False
+            ine_category = False
+            if pms_property.state_id:
+                state_name = (
+                    self.env["res.country.state"]
+                    .search([("id", "=", pms_property.state_id.id)])
+                    .name
+                )
+            if pms_property.ine_category_id:
+                ine_category = (
+                    pms_property.ine_category_id.category
+                    + " ("
+                    + pms_property.ine_category_id.type
+                    + ")"
+                )
+            tokens_to_replace = re.compile("<.*?>")
+            privacy_policy = re.sub(
+                tokens_to_replace, "", pms_property.company_id.privacy_policy
+            )
             res = PmsPropertyInfo(
                 id=pms_property.id,
                 name=pms_property.name,
@@ -104,6 +147,18 @@ class PmsPropertyService(Component):
                 toAssignReservationColor=pms_property.to_assign_reservation_color,
                 pendingPaymentReservationColor=pms_property.pending_payment_reservation_color,
                 language=pms_property.lang,
+                street=pms_property.street if pms_property.street else None,
+                street2=pms_property.street2 if pms_property.street2 else None,
+                zip=pms_property.zip if pms_property.zip else None,
+                city=pms_property.city if pms_property.city else None,
+                stateName=state_name if state_name else None,
+                ineCategory=ine_category if ine_category else None,
+                cardexWarning=pms_property.cardex_warning
+                if pms_property.cardex_warning
+                else None,
+                companyPrivacyPolicy=privacy_policy
+                if pms_property.company_id.privacy_policy
+                else None,
             )
 
         return res
