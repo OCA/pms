@@ -286,6 +286,17 @@ class PmsCheckinPartner(models.Model):
         string="Partner relationship", help="Family relationship between travelers"
     )
 
+    signature = fields.Image(
+        string="Signature",
+        help="Signature of the guest",
+    )
+
+    sign_on = fields.Datetime(
+        string="Sign on",
+        help="Date and time of the signature",
+        compute="_compute_sign_on",
+    )
+
     @api.depends("partner_id")
     def _compute_document_number(self):
         for record in self:
@@ -604,6 +615,14 @@ class PmsCheckinPartner(models.Model):
                     record.partner_incongruences = False
             else:
                 record.partner_incongruences = False
+
+    @api.depends("signature")
+    def _compute_sign_on(self):
+        for record in self:
+            if record.signature:
+                record.sign_on = datetime.now()
+            else:
+                record.sign_on = False
 
     def _compute_access_url(self):
         super(PmsCheckinPartner, self)._compute_access_url()
