@@ -116,6 +116,8 @@
                             <field name="folio_id" />
                             <field name="identifier" />
                             <field name="partner_relationship" />
+                            <field name="signature" />
+                            <field name="sign_on" />
                             <field name="pms_property_id" invisible="1" />
                         </group>
                     </group>
