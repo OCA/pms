@@ -35,7 +35,6 @@ class PmsPropertyInfo(Datamodel):
     street2 = fields.String(required=False, allow_none=True)
     zip = fields.String(required=False, allow_none=True)
     city = fields.String(required=False, allow_none=True)
-    stateName = fields.Integer(required=False, allow_none=True)
     ineCategory = fields.String(required=False, allow_none=True)
     cardexWarning = fields.String(required=False, allow_none=True)
     companyPrivacyPolicy = fields.String(required=False, allow_none=True)
