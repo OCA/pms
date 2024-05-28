@@ -454,7 +454,8 @@ class PmsCheckinPartner(models.Model):
                 elif any(
                     not getattr(record, field)
                     for field in record._checkin_mandatory_fields(
-                        country=record.document_country_id
+                        residence_country=record.residence_country_id,
+                        document_type=record.document_type,
                     )
                 ):
                     record.state = "draft"
@@ -814,7 +815,7 @@ class PmsCheckinPartner(models.Model):
         return manual_fields
 
     @api.model
-    def _checkin_mandatory_fields(self, country=False ):
+    def _checkin_mandatory_fields(self, residence_country=False, document_type=False):
         mandatory_fields = [
             "name",
         ]
@@ -887,7 +888,10 @@ class PmsCheckinPartner(models.Model):
                 raise ValidationError(_("Its too late to checkin"))
 
             if any(
-                not getattr(record, field) for field in self._checkin_mandatory_fields()
+                not getattr(record, field) for field in self._checkin_mandatory_fields(
+                    residence_country=record.residence_country_id,
+                    document_type=record.document_type,
+                )
             ):
                 raise ValidationError(_("Personal data is missing for check-in"))
             vals = {
