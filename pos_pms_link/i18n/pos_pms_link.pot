@@ -6,11 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-02 09:32+0000\n"
-"PO-Revision-Date: 2023-05-02 09:32+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -21,38 +18,38 @@ msgstr ""
 #: code:addons/pos_pms_link/static/src/js/Screens/ReservationListScreen/ReservationDetailsEdit.js:0
 #, python-format
 msgid "A Customer Name Is Required"
-msgstr "Se requiere el nombre de cliente"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/xml/Screens/ReservationListScreen/ReservationListScreen.xml:0
 #, python-format
 msgid "Adults"
-msgstr "Adultos"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/xml/Screens/ReservationListScreen/ReservationDetailsEdit.xml:0
 #, python-format
 msgid "Adults:"
-msgstr "Adultos:"
+msgstr ""
 
 #. module: pos_pms_link
 #: model_terms:ir.ui.view,arch_db:pos_pms_link.pos_config_view_form
 msgid "Allow pay on reservations"
-msgstr "Permitir pagar contra reserva"
+msgstr ""
 
 #. module: pos_pms_link
 #: model_terms:ir.ui.view,arch_db:pos_pms_link.pos_config_view_form
 msgid "Allowed properties"
-msgstr "Hoteles permitidos"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/js/Screens/ReservationListScreen/ReservationListScreen.js:0
 #, python-format
 msgid "Change Reservation"
-msgstr "Cambiar reserva"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
@@ -87,28 +84,28 @@ msgstr ""
 #: code:addons/pos_pms_link/static/src/xml/Screens/ReservationListScreen/ReservationListScreen.xml:0
 #, python-format
 msgid "Children"
-msgstr "Niños"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/xml/Screens/ReservationListScreen/ReservationDetailsEdit.xml:0
 #, python-format
 msgid "Children:"
-msgstr "Niños:"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/js/Screens/ReservationListScreen/ReservationListScreen.js:0
 #, python-format
 msgid "Deselect Reservation"
-msgstr "Deshacer selección de reserva"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/xml/Screens/ReservationListScreen/ReservationListScreen.xml:0
 #, python-format
 msgid "Discard"
-msgstr "Descartar"
+msgstr ""
 
 #. module: pos_pms_link
 #: model:ir.model.fields,field_description:pos_pms_link.field_pms_reservation__display_name
@@ -122,7 +119,7 @@ msgstr "Descartar"
 #: model:ir.model.fields,field_description:pos_pms_link.field_product_pricelist__display_name
 #: model:ir.model.fields,field_description:pos_pms_link.field_product_pricelist_item__display_name
 msgid "Display Name"
-msgstr "Nombre"
+msgstr ""
 
 #. module: pos_pms_link
 #: model:ir.model.fields,field_description:pos_pms_link.field_pms_reservation__id
@@ -136,14 +133,14 @@ msgstr "Nombre"
 #: model:ir.model.fields,field_description:pos_pms_link.field_product_pricelist__id
 #: model:ir.model.fields,field_description:pos_pms_link.field_product_pricelist_item__id
 msgid "ID"
-msgstr "Identificación"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/xml/Screens/ReservationListScreen/ReservationDetailsEdit.xml:0
 #, python-format
 msgid "Internal comment:"
-msgstr "Comentario interno:"
+msgstr ""
 
 #. module: pos_pms_link
 #: model:ir.model.fields,field_description:pos_pms_link.field_pms_reservation____last_update
@@ -157,28 +154,28 @@ msgstr "Comentario interno:"
 #: model:ir.model.fields,field_description:pos_pms_link.field_product_pricelist____last_update
 #: model:ir.model.fields,field_description:pos_pms_link.field_product_pricelist_item____last_update
 msgid "Last Modified on"
-msgstr "Última modificación en"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/xml/Screens/ReservationListScreen/ReservationDetailsEdit.xml:0
 #, python-format
 msgid "Lines"
-msgstr "Líneas"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/xml/Screens/ReservationListScreen/ReservationListScreen.xml:0
 #, python-format
 msgid "Name"
-msgstr "Nombre"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/xml/Screens/ReservationListScreen/ReservationDetailsEdit.xml:0
 #, python-format
 msgid "Name:"
-msgstr "Nombre:"
+msgstr ""
 
 #. module: pos_pms_link
 #: model:ir.model.fields,field_description:pos_pms_link.field_pos_order_line__pms_service_line_id
@@ -198,61 +195,61 @@ msgstr ""
 #. module: pos_pms_link
 #: model:ir.model.fields,field_description:pos_pms_link.field_pos_order__paid_on_reservation
 msgid "Paid on reservation"
-msgstr "Pagado contra reserva"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/xml/Screens/ReservationListScreen/ReservationListScreen.xml:0
 #, python-format
 msgid "Partner name"
-msgstr "Cliente"
+msgstr ""
 
 #. module: pos_pms_link
 #: model:ir.model.fields,field_description:pos_pms_link.field_pos_config__pay_on_reservation
 msgid "Pay on reservation"
-msgstr "Pagar contra reserva"
+msgstr ""
 
 #. module: pos_pms_link
 #: model:ir.model.fields,field_description:pos_pms_link.field_pos_config__pay_on_reservation_method_id
 msgid "Pay on reservation method"
-msgstr "Método de pago contra reserva"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/js/Screens/PaymentScreen/PaymentScreen.js:0
 #, python-format
 msgid "Pay order with reservation ?"
-msgstr "Pagar pedido contra reserva?"
+msgstr ""
 
 #. module: pos_pms_link
 #: model:ir.model,name:pos_pms_link.model_pos_config
 msgid "Point of Sale Configuration"
-msgstr "Configuración del TPV"
+msgstr ""
 
 #. module: pos_pms_link
 #: model:ir.model,name:pos_pms_link.model_pos_order_line
 msgid "Point of Sale Order Lines"
-msgstr "Líneas de Orden de Punto de Venta"
+msgstr ""
 
 #. module: pos_pms_link
 #: model:ir.model,name:pos_pms_link.model_pos_order
 msgid "Point of Sale Orders"
-msgstr "Pedidos del TPV"
+msgstr ""
 
 #. module: pos_pms_link
 #: model:ir.model,name:pos_pms_link.model_pos_payment
 msgid "Point of Sale Payments"
-msgstr "Pagos en puntos de venta"
+msgstr ""
 
 #. module: pos_pms_link
 #: model:ir.model,name:pos_pms_link.model_pos_session
 msgid "Point of Sale Session"
-msgstr "Sesión TPV"
+msgstr ""
 
 #. module: pos_pms_link
 #: model:ir.model,name:pos_pms_link.model_product_pricelist
 msgid "Pricelist"
-msgstr "Tarifa"
+msgstr ""
 
 #. module: pos_pms_link
 #: model:ir.model,name:pos_pms_link.model_product_pricelist_item
@@ -265,92 +262,90 @@ msgstr ""
 #: model:ir.model,name:pos_pms_link.model_pms_reservation
 #, python-format
 msgid "Reservation"
-msgstr "Reserva"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/xml/ReservationSelectionButton.xml:0
 #, python-format
 msgid "Reservation #"
-msgstr "Reserva #"
+msgstr ""
 
 #. module: pos_pms_link
 #: model:ir.model.fields,field_description:pos_pms_link.field_pos_config__reservation_allowed_propertie_ids
 msgid "Reservation allowed properties"
-msgstr "Reservas de hoteles permitidas"
+msgstr ""
 
 #. module: pos_pms_link
 #: code:addons/pos_pms_link/models/pos_order.py:0
 #, python-format
 msgid "Reservation does not exists."
-msgstr "La reserva no existe."
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/xml/Screens/ReservationListScreen/ReservationListScreen.xml:0
 #, python-format
 msgid "Room"
-msgstr "Habitación"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/xml/Screens/ReservationListScreen/ReservationListScreen.xml:0
 #, python-format
 msgid "Search Reservations"
-msgstr "Buscar reservas"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/xml/Screens/ReservationListScreen/ReservationDetailsEdit.xml:0
 #, python-format
 msgid "Service"
-msgstr "Servicio"
+msgstr ""
 
 #. module: pos_pms_link
 #: model:ir.model,name:pos_pms_link.model_pms_service_line
 msgid "Service by day"
-msgstr "Servicio por día"
+msgstr ""
 
 #. module: pos_pms_link
 #: model:ir.model,name:pos_pms_link.model_pms_service
 msgid "Services and its charges"
-msgstr "Servicios y sus cargos"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/xml/Screens/ReservationListScreen/ReservationDetailsEdit.xml:0
 #, python-format
 msgid "Services:"
-msgstr "Servicios:"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/js/Screens/ReservationListScreen/ReservationListScreen.js:0
 #, python-format
 msgid "Set Reservation"
-msgstr "Seleccionar reserva"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/xml/Screens/ReceiptScreen/OrderReceipt.xml:0
 #, python-format
 msgid "Signature:"
-msgstr "Firma:"
+msgstr ""
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/js/Screens/PaymentScreen/PaymentScreen.js:0
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "This operation will add all the products in the order to the reservation. "
 "RESERVATION:  PARTNER :  ROOM: "
 msgstr ""
-"Esta operación añadirá todos los productos del pedido a la reserva. RESERVA: "
-"name CLIENTE : partner_name HABITACIONES: rooms"
 
 #. module: pos_pms_link
 #. openerp-web
 #: code:addons/pos_pms_link/static/src/xml/Screens/ReservationListScreen/ReservationLine.xml:0
 #, python-format
 msgid "VIEW"
-msgstr "VER"
+msgstr ""
