@@ -6,21 +6,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2024-03-04 21:35+0000\n"
-"Last-Translator: Ivorra78 <informatica@totmaterial.es>\n"
-"Language-Team: none\n"
-"Language: es\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.17\n"
+"Plural-Forms: \n"
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__allowed_housekeeper_ids
-#, fuzzy
 msgid "Allowed Housekeepers"
-msgstr "Filtros para el mantenimiento de la casa"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_hr_employee__allowed_pre_assigned_room_ids
@@ -54,20 +50,18 @@ msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__child_ids
-#, fuzzy
 msgid "Child Task Types"
-msgstr "Tipo de tarea"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__child_ids
-#, fuzzy
 msgid "Child Tasks"
-msgstr "Tarea de Hoy"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_room__housekeeping_state__clean
 msgid "Clean"
-msgstr "Limpio"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__cleaning_comments
@@ -79,14 +73,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__create_uid
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__create_uid
 msgid "Created by"
-msgstr "Creado por"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_cancellation_type__create_date
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__create_date
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__create_date
 msgid "Created on"
-msgstr "Creado el"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__task_date
@@ -118,9 +112,8 @@ msgstr ""
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_cancellation_type__description
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__description
-#, fuzzy
 msgid "Description"
-msgstr "Reserva"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_room__housekeeping_state__dirty
@@ -134,17 +127,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__display_name
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_room__display_name
 msgid "Display Name"
-msgstr "Mostrar Nombre"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping_task__state__done
 msgid "Done"
-msgstr "Realizado/a"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model,name:pms_housekeeping.model_hr_employee
 msgid "Employee"
-msgstr "Empleado/a"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__is_empty
@@ -155,47 +148,41 @@ msgstr ""
 #: model:ir.actions.server,name:pms_housekeeping.generate_tasks_ir_actions_server
 #: model:ir.cron,cron_name:pms_housekeeping.generate_tasks
 #: model:ir.cron,name:pms_housekeeping.generate_tasks
-#, fuzzy
 msgid "Generate Housekeeping Tasks"
-msgstr "Tareas Domésticas"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:hr.job,name:pms_housekeeping.housekeeping_job_id
-#, fuzzy
 msgid "Housekeeper"
-msgstr "Mantenimiento de la casa"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__housekeeper_ids
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__housekeeper_ids
-#, fuzzy
 msgid "Housekeepers"
-msgstr "Mantenimiento de la casa"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.ui.menu,name:pms_housekeeping.menu_action_pms_housekeeping
 msgid "Housekeeping"
-msgstr "Mantenimiento de la casa"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_room__housekeeping_state
-#, fuzzy
 msgid "Housekeeping State"
-msgstr "Tareas domésticas"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.actions.act_window,name:pms_housekeeping.action_pms_housekeeping_task
 #: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_housekeeping_task_form
-#, fuzzy
 msgid "Housekeeping Task"
-msgstr "Tareas Domésticas"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.actions.act_window,name:pms_housekeeping.action_pms_housekeeping_task_type
 #: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_housekeeping_task_type_form
-#, fuzzy
 msgid "Housekeeping Task Type"
-msgstr "Tareas Domésticas"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_hr_employee__id
@@ -204,12 +191,12 @@ msgstr "Tareas Domésticas"
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__id
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_room__id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping_task__state__in_progress
 msgid "In Progress"
-msgstr "En Proceso"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,help:pms_housekeeping.field_pms_housekeeping_task__child_ids
@@ -228,9 +215,8 @@ msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__is_inspection
-#, fuzzy
 msgid "Inspection"
-msgstr "Inspeccionar"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__is_automated
@@ -249,9 +235,8 @@ msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__in_progress_allowed
-#, fuzzy
 msgid "Is In Progress Allowed"
-msgstr "En Proceso"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__to_do_allowed
@@ -275,21 +260,21 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type____last_update
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_room____last_update
 msgid "Last Modified on"
-msgstr "Última Modificación el"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_cancellation_type__write_uid
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__write_uid
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__write_uid
 msgid "Last Updated by"
-msgstr "Última Actualización por"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_cancellation_type__write_date
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__write_date
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__write_date
 msgid "Last Updated on"
-msgstr "Última Actualización el"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_housekeeping_task_form
@@ -298,9 +283,8 @@ msgstr ""
 
 #. module: pms_housekeeping
 #: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_housekeeping_task_form
-#, fuzzy
 msgid "Mark as In Progress"
-msgstr "En Proceso"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_housekeeping_task_form
@@ -316,9 +300,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_cancellation_type__name
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__name
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__name
-#, fuzzy
 msgid "Name"
-msgstr "Nombre de Tarea"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__is_overnight
@@ -327,9 +310,8 @@ msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__parent_state
-#, fuzzy
 msgid "Parent State"
-msgstr "Etapa de la Tarea"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__parent_id
@@ -338,9 +320,8 @@ msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__parent_id
-#, fuzzy
 msgid "Parent Task Type"
-msgstr "Tipo de tarea"
+msgstr ""
 
 #. module: pms_housekeeping
 #: code:addons/pms_housekeeping/models/pms_housekeeping_task.py:0
@@ -373,17 +354,17 @@ msgstr ""
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__pms_property_ids
 msgid "Properties"
-msgstr "Propiedades"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model,name:pms_housekeeping.model_pms_room
 msgid "Property Room"
-msgstr "Habitación de la Propiedad"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__room_id
 msgid "Room"
-msgstr "Habitación"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,help:pms_housekeeping.field_hr_employee__allowed_pre_assigned_room_ids
@@ -397,9 +378,8 @@ msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__state
-#, fuzzy
 msgid "State"
-msgstr "Etapa de la Tarea"
+msgstr ""
 
 #. module: pms_housekeeping
 #: code:addons/pms_housekeeping/models/pms_housekeeping_task.py:0
@@ -409,21 +389,18 @@ msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__task_type_id
-#, fuzzy
 msgid "Task Type"
-msgstr "Tipo de tarea"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.ui.menu,name:pms_housekeeping.menu_action_pms_housekeeping_view_task_type
-#, fuzzy
 msgid "Task Types"
-msgstr "Tipo de tarea"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.ui.menu,name:pms_housekeeping.menu_action_pms_housekeeping_view_task
-#, fuzzy
 msgid "Tasks"
-msgstr "Tarea"
+msgstr ""
 
 #. module: pms_housekeeping
 #: code:addons/pms_housekeeping/models/pms_housekeeping_task.py:0
@@ -447,13 +424,12 @@ msgstr ""
 #. module: pms_housekeeping
 #: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping_task__state__to_do
 msgid "To Do"
-msgstr "Para Hacer"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_room__housekeeping_state__to_inspect
-#, fuzzy
 msgid "To Inspect"
-msgstr "Inspeccionar"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model,name:pms_housekeeping.model_pms_housekeeping_cancellation_type
@@ -462,145 +438,10 @@ msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model,name:pms_housekeeping.model_pms_housekeeping_task
-#, fuzzy
 msgid "pms.housekeeping.task"
-msgstr "Tareas domésticas"
+msgstr ""
 
 #. module: pms_housekeeping
 #: model:ir.model,name:pms_housekeeping.model_pms_housekeeping_task_type
-#, fuzzy
 msgid "pms.housekeeping.task.type"
-msgstr "Tareas domésticas"
-
-#~ msgid "<span class=\"fa fa-ellipsis-v\" title=\"menu\"/>"
-#~ msgstr "<span class=\"fa fa-ellipsis-v\" title=\"menu\"/>"
-
-#~ msgid "<span class=\"fa fa-plus-square\" title=\"Add all today tasks\"/>"
-#~ msgstr "<span class=\"fa fa-plus-square\" title=\"Add all today tasks\"/>"
-
-#~ msgid "Active"
-#~ msgstr "Activo"
-
-#~ msgid "Add the housekeeping tasks"
-#~ msgstr "Añadir las tareas domésticas"
-
-#~ msgid "Automatic add all today housekeeping tasks"
-#~ msgstr "Añadir automáticamente todas las tareas domésticas de hoy"
-
-#~ msgid "Clean Status"
-#~ msgstr "Estado de limpieza"
-
-#~ msgid "Clean date"
-#~ msgstr "Fecha de limpieza"
-
-#~ msgid "Clean type"
-#~ msgstr "Tipo de limpieza"
-
-#~ msgid "Clean type and status"
-#~ msgstr "Tipo y estado de limpieza"
-
-#~ msgid "Cleaning employee assigned by default"
-#~ msgstr "Empleado de limpieza asignado por defecto"
-
-#~ msgid "Color Index"
-#~ msgstr "Índice de Color"
-
-#~ msgid "Default employee"
-#~ msgstr "Empleado por defecto"
-
-#~ msgid "Default:"
-#~ msgstr "Predeterminado:"
-
-#~ msgid "Delete"
-#~ msgstr "Borrar"
-
-#~ msgid "Don't disturb"
-#~ msgstr "No molestar"
-
-#~ msgid "Dont disturb"
-#~ msgstr "No molestar"
-
-#~ msgid "Draft"
-#~ msgstr "Borrador"
-
-#~ msgid "Edit"
-#~ msgstr "Editar"
-
-#~ msgid "Employee assigned by default"
-#~ msgstr "Empleado asignado por defecto"
-
-#~ msgid "Employee image"
-#~ msgstr "Imagen del empleado"
-
-#~ msgid "Employee picture"
-#~ msgstr "Tareas de Hoy"
-
-#~ msgid "Exit"
-#~ msgstr "Salida"
-
-#~ msgid "Full clean"
-#~ msgstr "Limpieza completa"
-
-#~ msgid "House Keeping Tasks"
-#~ msgstr "Tareas de Mantenimiento del Hogar"
-
-#~ msgid "HouseKeeping"
-#~ msgstr "Mantenimiento de la casa"
-
-#~ msgid "HouseKeeping Tasks"
-#~ msgstr "Tareas Domésticas"
-
-#~ msgid "Inspected"
-#~ msgstr "Inspeccionado"
-
-#~ msgid "Internal Notes"
-#~ msgstr "Notas Internas"
-
-#~ msgid "Lost and Found"
-#~ msgstr "Perdidos y Encontrados"
-
-#~ msgid "Occupied"
-#~ msgstr "Ocupado"
-
-#~ msgid "Picked up"
-#~ msgstr "Recogido"
-
-#~ msgid ""
-#~ "Properties with access to the element; if not set, all properties can "
-#~ "access"
-#~ msgstr ""
-#~ "Propiedades con acceso al elemento; si no se establece, todas las "
-#~ "propiedades pueden acceder"
-
-#~ msgid "Property Ubications"
-#~ msgstr "Ubicaciones de la Propiedad"
-
-#~ msgid "Review"
-#~ msgstr "Revisión"
-
-#~ msgid "Room Rack"
-#~ msgstr "Estantería de Habitación"
-
-#~ msgid "Room type"
-#~ msgstr "Tipo de habitación"
-
-#~ msgid "Soft clean"
-#~ msgstr "Limpieza suave"
-
-#~ msgid "Staff"
-#~ msgstr "Personal"
-
-#~ msgid "Task Lines"
-#~ msgstr "Líneas de Tarea"
-
-#~ msgid "Task end at"
-#~ msgstr "Fin de la tarea en"
-
-#~ msgid "Task start at"
-#~ msgstr "Inicio de la tarea en"
-
-#~ msgid "Tasks History"
-#~ msgstr "Historial de Tareas"
-
-#~ msgid "Ubication"
-#~ msgstr "Ubicación"
+msgstr ""
