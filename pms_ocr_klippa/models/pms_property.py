@@ -320,10 +320,11 @@ class PmsProperty(models.Model):
 
     def _get_surnames(self, origin_surname):
         # If origin surname has two or more surnames
-        if " " in origin_surname:
-            return origin_surname.split(" ")
-        else:
-            return [origin_surname, ""]
+        # Get the last word like lastname2 and the rest like lastname
+        surnames = origin_surname.split(" ")
+        if len(surnames) > 1:
+            return (" ".join(surnames[:-1]), surnames[-1])
+        return (origin_surname, False)
 
     def _complete_residence_address(self, value, mapped_data):
         """
