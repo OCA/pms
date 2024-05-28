@@ -26,6 +26,24 @@ msgid "%s does not have the INE Code configured"
 msgstr "%s no tiene configurado el Código INE"
 
 #. module: pms_l10n_es
+#: model:mail.template,body_html:pms_l10n_es.notification_send_error_travel_report_email
+msgid ""
+"<div>\n"
+"                    There was an error sending the traveler report\n"
+"                </div>\n"
+"            "
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:mail.template,body_html:pms_l10n_es.notification_send_success_travel_report_email
+msgid ""
+"<div>\n"
+"                    Traveler report sent successfully\n"
+"                </div>\n"
+"            "
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.actions.server,name:pms_l10n_es.autosend_traveller_report_ir_actions_server
 #: model:ir.cron,cron_name:pms_l10n_es.autosend_traveller_report
 #: model:ir.cron,name:pms_l10n_es.autosend_traveller_report
@@ -41,6 +59,11 @@ msgstr "Camas disponibles excluidas las supletorias"
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category__category
 msgid "Category"
 msgstr "Categoría"
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__target_date
+msgid "Checkins Date"
+msgstr ""
 
 #. module: pms_l10n_es
 #: code:addons/pms_l10n_es/models/pms_property.py:0
@@ -69,26 +92,8 @@ msgstr "Contacto"
 #. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
-msgid "Could last files sent"
-msgstr "Podrían enviarse los últimos archivos"
-
-#. module: pms_l10n_es
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#, python-format
-msgid "Could not get last file sent"
-msgstr "No se ha podido enviar el último archivo"
-
-#. module: pms_l10n_es
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#, python-format
 msgid "Could not get next file name to send."
 msgstr "No se ha podido enviar el siguiente nombre de archivo."
-
-#. module: pms_l10n_es
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#, python-format
-msgid "Could not get property_info."
-msgstr "No se ha podido obtener property_info."
 
 #. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
@@ -139,11 +144,6 @@ msgid "Date"
 msgstr "Fecha"
 
 #. module: pms_l10n_es
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__date
-msgid "Date and time"
-msgstr "Fecha y hora"
-
-#. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__file_incidencies_from_institution
 msgid "Detailed file"
 msgstr "Ficha detallada"
@@ -168,14 +168,10 @@ msgid "Display Name"
 msgstr "Mostrar Nombre"
 
 #. module: pms_l10n_es
-#: model_terms:ir.ui.view,arch_db:pms_l10n_es.inherit_pms_l10n_es_portal_my_precheckin_detail
-msgid "Doc. Number"
-msgstr "Doc. Número"
-
-#. module: pms_l10n_es
-#: model_terms:ir.ui.view,arch_db:pms_l10n_es.inherit_pms_l10n_es_portal_my_precheckin_detail
-msgid "Doc. Type"
-msgstr "Doc. Tipo"
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#, python-format
+msgid "Error in file sended"
+msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__error_sending_data
@@ -185,8 +181,21 @@ msgstr "Error al enviar datos"
 #. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
-msgid "Errors (check the pdf file)."
-msgstr "Errores (consulte el archivo pdf)."
+msgid "Error sending file: %s"
+msgstr ""
+
+#. module: pms_l10n_es
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#, python-format
+msgid "Error!"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:mail.template,subject:pms_l10n_es.notification_send_error_travel_report_email
+msgid ""
+"Error: ${object.pms_property_id.name}, ${object.target_date} Error sending "
+"the Traveler report"
+msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_property__institution__ertxaintxa
@@ -363,6 +372,7 @@ msgstr "Mensaje de Registro"
 
 #. module: pms_l10n_es
 #: model:ir.ui.menu,name:pms_l10n_es.menu_open_pms_log_institution_traveller_report_form_tree
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_log_institution_traveller_report_view_search
 msgid "Log institution traveller report"
 msgstr "Informe del viajero de la institución de registro"
 
@@ -414,6 +424,7 @@ msgstr "Previsualizar archivo"
 #. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_pms_property
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__pms_property_id
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__pms_property_id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__pms_property_id
 msgid "Property"
 msgstr "Propiedad"
@@ -422,11 +433,6 @@ msgstr "Propiedad"
 #: model:ir.model,name:pms_l10n_es.model_pms_room
 msgid "Property Room"
 msgstr "Habitación de la Propiedad"
-
-#. module: pms_l10n_es
-#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_log_institution_traveller_report_view_tree
-msgid "Property Ubications"
-msgstr "Ubicaciones de la Propiedad"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__adr
@@ -452,9 +458,9 @@ msgid "Report of daily sending files of travellers to institutions."
 msgstr "Informe de envío diario de expedientes de viajeros a instituciones."
 
 #. module: pms_l10n_es
-#: model_terms:ir.ui.view,arch_db:pms_l10n_es.inherit_pms_l10n_es_portal_my_precheckin_detail
-msgid "Select an option"
-msgstr "Seleccione una opción"
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__date
+msgid "Send Date"
+msgstr ""
 
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.traveller_report_wizard
@@ -480,6 +486,18 @@ msgstr "¡Enviado con éxito!"
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_log_institution_traveller_report_view_tree
 msgid "Size"
 msgstr "Tamaño"
+
+#. module: pms_l10n_es
+#: model:res.partner.id_category,name:pms_l10n_es.document_type_spanish_residence
+msgid "Spanish Residence permit"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:mail.template,subject:pms_l10n_es.notification_send_success_travel_report_email
+msgid ""
+"Succes: ${object.pms_property_id.name}, ${object.target_date} Traveler "
+"report sent successfully"
+msgstr ""
 
 #. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
@@ -526,8 +544,8 @@ msgstr "El nombre de la empresa no está establecido."
 #, python-format
 msgid "The following guests have no residence nationality set :%s."
 msgstr ""
-"Los siguientes huéspedes no tienen establecida la nacionalidad de residencia "
-":%s."
+"Los siguientes huéspedes no tienen establecida la nacionalidad de "
+"residencia :%s."
 
 #. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
@@ -539,7 +557,8 @@ msgstr "Los siguientes invitados españoles no tienen estado establecido :%s."
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest information sending settings is not complete."
-msgstr "La configuración de envío de información de invitados no está completa."
+msgstr ""
+"La configuración de envío de información de invitados no está completa."
 
 #. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
@@ -666,6 +685,37 @@ msgstr "Usuario facilitado por la institución para enviar los datos."
 #: model:ir.model,name:pms_l10n_es.model_pms_ine_wizard
 msgid "Wizard to generate statistical info."
 msgstr "Asistente para generar información estadística."
+
+#, python-format
+#~ msgid "Could last files sent"
+#~ msgstr "Podrían enviarse los últimos archivos"
+
+#, python-format
+#~ msgid "Could not get last file sent"
+#~ msgstr "No se ha podido enviar el último archivo"
+
+#, python-format
+#~ msgid "Could not get property_info."
+#~ msgstr "No se ha podido obtener property_info."
+
+#~ msgid "Date and time"
+#~ msgstr "Fecha y hora"
+
+#~ msgid "Doc. Number"
+#~ msgstr "Doc. Número"
+
+#~ msgid "Doc. Type"
+#~ msgstr "Doc. Tipo"
+
+#, python-format
+#~ msgid "Errors (check the pdf file)."
+#~ msgstr "Errores (consulte el archivo pdf)."
+
+#~ msgid "Property Ubications"
+#~ msgstr "Ubicaciones de la Propiedad"
+
+#~ msgid "Select an option"
+#~ msgstr "Seleccione una opción"
 
 #, fuzzy
 #~ msgid "First Name"
