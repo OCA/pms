@@ -34,10 +34,8 @@ class PmsCheckinPartner(models.Model):
                     record.support_number = False
 
     @api.model
-    def _checkin_mandatory_fields(self, country=False, depends=False):
-        mandatory_fields = super(PmsCheckinPartner, self)._checkin_mandatory_fields(
-            depends
-        )
+    def _checkin_mandatory_fields(self, country=False):
+        mandatory_fields = super(PmsCheckinPartner, self)._checkin_mandatory_fields()
         mandatory_fields.extend(
             [
                 "birthdate_date",
@@ -48,7 +46,7 @@ class PmsCheckinPartner(models.Model):
                 "nationality_id",
             ]
         )
-        if depends or (country and country.code == CODE_SPAIN):
+        if country and country.code == CODE_SPAIN:
             mandatory_fields.extend(
                 [
                     "residence_state_id",
@@ -59,7 +57,7 @@ class PmsCheckinPartner(models.Model):
         return mandatory_fields
 
     @api.model
-    def _checkin_manual_fields(self, country=False, depends=False):
-        manual_fields = super(PmsCheckinPartner, self)._checkin_manual_fields(depends)
+    def _checkin_manual_fields(self, country=False):
+        manual_fields = super(PmsCheckinPartner, self)._checkin_manual_fields()
         manual_fields.extend(["support_number"])
         return manual_fields
