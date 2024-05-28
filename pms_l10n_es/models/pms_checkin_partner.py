@@ -1,5 +1,4 @@
 import logging
-import re
 
 from odoo import api, fields, models
 
@@ -64,40 +63,3 @@ class PmsCheckinPartner(models.Model):
         manual_fields = super(PmsCheckinPartner, self)._checkin_manual_fields(depends)
         manual_fields.extend(["support_number"])
         return manual_fields
-
-    def _get_partner_by_document(self, document_number, document_type):
-        # if not find partner by documents (super method) then search by
-        # partner fields, VAT, or aeat_identification equivalent
-        partner = super(PmsCheckinPartner, self)._get_partner_by_document(
-            document_number, document_type
-        )
-        document_number = re.sub(r"[^a-zA-Z0-9]", "", document_number).upper()
-        if not partner and document_number and document_type:
-            search_field_name = False
-            if document_type.aeat_identification_type in ["03", "05", "06"]:
-                search_field_name = "aeat_identification"
-                search_comparison = "="
-            elif document_type.aeat_identification_type in ["02", "04"]:
-                # If we have a NIF, we search by VAT (with or without country code)
-                search_field_name = "vat"
-                search_comparison = "=like"
-                document_number = "%" + document_number
-            if search_field_name:
-                partner = self.env["res.partner"].search(
-                    [
-                        ("is_company", "=", False),
-                        ("is_agency", "=", False),
-                        (search_field_name, search_comparison, document_number),
-                    ],
-                    limit=1,
-                )
-                if (
-                    partner
-                    and partner.vat
-                    and len(partner.vat) - len(document_number) > 2
-                ):
-                    # The country code length is 2, so if the difference is greater than 2
-                    # the partner is not the same
-                    # TODO: this method need pass country code to search
-                    partner = False
-        return partner
