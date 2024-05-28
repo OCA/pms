@@ -20,6 +20,24 @@ msgid "%s does not have the INE Code configured"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:mail.template,body_html:pms_l10n_es.notification_send_error_travel_report_email
+msgid ""
+"<div>\n"
+"                    There was an error sending the traveler report\n"
+"                </div>\n"
+"            "
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:mail.template,body_html:pms_l10n_es.notification_send_success_travel_report_email
+msgid ""
+"<div>\n"
+"                    Traveler report sent successfully\n"
+"                </div>\n"
+"            "
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.actions.server,name:pms_l10n_es.autosend_traveller_report_ir_actions_server
 #: model:ir.cron,cron_name:pms_l10n_es.autosend_traveller_report
 #: model:ir.cron,name:pms_l10n_es.autosend_traveller_report
@@ -34,6 +52,11 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category__category
 msgid "Category"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__target_date
+msgid "Checkins Date"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -65,27 +88,8 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#, python-format
-msgid "Could last files sent"
-msgstr ""
-
-#. module: pms_l10n_es
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#, python-format
-msgid "Could not get last file sent"
-msgstr ""
-
-#. module: pms_l10n_es
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "Could not get next file name to send."
-msgstr ""
-
-#. module: pms_l10n_es
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#, python-format
-msgid "Could not get property_info."
 msgstr ""
 
 #. module: pms_l10n_es
@@ -137,11 +141,6 @@ msgid "Date"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__date
-msgid "Date and time"
-msgstr ""
-
-#. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__file_incidencies_from_institution
 msgid "Detailed file"
 msgstr ""
@@ -166,13 +165,9 @@ msgid "Display Name"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model_terms:ir.ui.view,arch_db:pms_l10n_es.inherit_pms_l10n_es_portal_my_precheckin_detail
-msgid "Doc. Number"
-msgstr ""
-
-#. module: pms_l10n_es
-#: model_terms:ir.ui.view,arch_db:pms_l10n_es.inherit_pms_l10n_es_portal_my_precheckin_detail
-msgid "Doc. Type"
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#, python-format
+msgid "Error in file sended"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -183,7 +178,20 @@ msgstr ""
 #. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
-msgid "Errors (check the pdf file)."
+msgid "Error sending file: %s"
+msgstr ""
+
+#. module: pms_l10n_es
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#, python-format
+msgid "Error!"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:mail.template,subject:pms_l10n_es.notification_send_error_travel_report_email
+msgid ""
+"Error: ${object.pms_property_id.name}, ${object.target_date} Error sending "
+"the Traveler report"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -359,6 +367,7 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.ui.menu,name:pms_l10n_es.menu_open_pms_log_institution_traveller_report_form_tree
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_log_institution_traveller_report_view_search
 msgid "Log institution traveller report"
 msgstr ""
 
@@ -410,6 +419,7 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_pms_property
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__pms_property_id
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__pms_property_id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__pms_property_id
 msgid "Property"
 msgstr ""
@@ -417,11 +427,6 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_pms_room
 msgid "Property Room"
-msgstr ""
-
-#. module: pms_l10n_es
-#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_log_institution_traveller_report_view_tree
-msgid "Property Ubications"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -446,8 +451,8 @@ msgid "Report of daily sending files of travellers to institutions."
 msgstr ""
 
 #. module: pms_l10n_es
-#: model_terms:ir.ui.view,arch_db:pms_l10n_es.inherit_pms_l10n_es_portal_my_precheckin_detail
-msgid "Select an option"
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__date
+msgid "Send Date"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -464,7 +469,6 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "Sent succesfully!"
 msgstr ""
@@ -475,8 +479,18 @@ msgid "Size"
 msgstr ""
 
 #. module: pms_l10n_es
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#: model:res.partner.id_category,name:pms_l10n_es.document_type_spanish_residence
+msgid "Spanish Residence permit"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:mail.template,subject:pms_l10n_es.notification_send_success_travel_report_email
+msgid ""
+"Succes: ${object.pms_property_id.name}, ${object.target_date} Traveler "
+"report sent successfully"
+msgstr ""
+
+#. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
