@@ -15,11 +15,12 @@ odoo.define("pms.AbstractWebClient", function (require) {
                     ? utils.get_cookie("pms_pids")
                     : String(current_pms_property_id);
             }
-            var statePmsPropertyIDS = _.map(state.pms_pids.split(","), function (
-                pms_pid
-            ) {
-                return parseInt(pms_pid, 10);
-            });
+            var statePmsPropertyIDS = _.map(
+                state.pms_pids.split(","),
+                function (pms_pid) {
+                    return parseInt(pms_pid, 10);
+                }
+            );
             var userPmsPropertyIDS = _.map(
                 session.user_pms_properties.allowed_pms_properties,
                 function (pms_property) {
