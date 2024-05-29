@@ -869,7 +869,8 @@ class PmsCheckinPartner(models.Model):
                 raise ValidationError(_("Its too late to checkin"))
 
             if any(
-                not getattr(record, field) for field in self._checkin_mandatory_fields(
+                not getattr(record, field)
+                for field in self._checkin_mandatory_fields(
                     residence_country=record.residence_country_id,
                     document_type=record.document_type,
                 )
