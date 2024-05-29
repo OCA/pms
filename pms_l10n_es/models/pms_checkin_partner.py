@@ -4,7 +4,7 @@ from odoo import api, fields, models
 
 CODE_SPAIN = "ES"
 CODE_NIF = "D"
-CODE_NIE = 'N'
+CODE_NIE = "N"
 
 _logger = logging.getLogger(__name__)
 
@@ -37,7 +37,9 @@ class PmsCheckinPartner(models.Model):
 
     @api.model
     def _checkin_mandatory_fields(self, residence_country=False, document_type=False):
-        mandatory_fields = super(PmsCheckinPartner, self)._checkin_mandatory_fields(residence_country, document_type)
+        mandatory_fields = super(PmsCheckinPartner, self)._checkin_mandatory_fields(
+            residence_country, document_type
+        )
         mandatory_fields.extend(
             [
                 "birthdate_date",
