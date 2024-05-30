@@ -1,3 +1,4 @@
+import base64
 from datetime import datetime
 
 from odoo import _, fields
@@ -431,6 +432,51 @@ class PmsInvoiceService(Component):
             bodyMail=values["body"],
             subject=values["subject"],
         )
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/send-mail-print-invoices",
+                ],
+                "POST",
+            )
+        ],
+        input_param=Datamodel("pms.account.send.search.param", is_list=False),
+        output_param=Datamodel("pms.report", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def send_mail_print_invoices(self, account_send_search_param):
+        invoices = self.env["account.move"].browse(account_send_search_param.invoiceIds)
+        template = self.env.ref(
+            "account.email_template_edi_invoice", raise_if_not_found=False
+        )
+        PmsResponse = self.env.datamodels["pms.report"]
+        base64_encoded_str = None
+
+        for invoice in invoices:
+            if account_send_search_param.isEmail:
+                email_values = {
+                    "email_from": invoice.pms_property_id.email
+                    if invoice.pms_property_id.email
+                    else False,
+                    "auto_delete": False,
+                    "partner_ids": account_send_search_param.partnerIds
+                    if account_send_search_param.partnerIds
+                    else False,
+                    "recipient_ids": account_send_search_param.partnerIds
+                    if account_send_search_param.partnerIds
+                    else False,
+                    "email_to": account_send_search_param.emailAddresses,
+                }
+                template.send_mail(
+                    invoice.id, force_send=True, email_values=email_values
+                )
+        if account_send_search_param.isPrint:
+            invoice_report = self.env.ref("account.account_invoices")
+            pdf_content, _ = invoice_report._render_qweb_pdf(invoices.ids)
+            base64_encoded_str = base64.b64encode(pdf_content)
+        return PmsResponse(binary=base64_encoded_str)
 
     @restapi.method(
         [
