@@ -52,3 +52,12 @@ class PmsInvoiceResults(Datamodel):
     invoices = fields.List(NestedModel("pms.invoice.info"))
     total = fields.Float(required=False, allow_none=True)
     totalInvoices = fields.Integer(required=False, allow_none=True)
+
+
+class PmsAccountSendSearchParam(Datamodel):
+    _name = "pms.account.send.search.param"
+    invoiceIds = fields.List(fields.Integer(), required=False, allow_none=True)
+    partnerIds = fields.List(fields.Integer(), required=False, allow_none=True)
+    emailAddresses = fields.List(fields.String(), required=False, allow_none=True)
+    isEmail = fields.Boolean(required=False, allow_none=True)
+    isPrint = fields.Boolean(required=False, allow_none=True)
