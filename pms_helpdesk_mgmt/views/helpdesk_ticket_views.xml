@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="helpdesk_ticket_view_search" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.view.search</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk_mgmt.helpdesk_ticket_view_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="company_id" />
+                <field name="property_id" />
+                <field name="room_id" />
+            </xpath>
+            <xpath expr="//filter[@name='group_partner']" position="after">
+                <filter
+                    string="Company"
+                    name="group_company"
+                    domain="[]"
+                    context="{'group_by':'company_id'}"
+                />
+                <filter
+                    string="Property"
+                    name="group_property"
+                    domain="[]"
+                    context="{'group_by':'property_id'}"
+                />
+                <filter
+                    string="Room"
+                    name="group_room"
+                    domain="[]"
+                    context="{'group_by':'room_id'}"
+                />
+            </xpath>
+        </field>
+    </record>
+    <!-- View Ticket Tree -->
+    <record id="ticket_view_tree" model="ir.ui.view">
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk_mgmt.ticket_view_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='number']" position="after">
+                <field name="company_id" />
+                <field name="property_id" />
+                <field name="room_id" />
+            </xpath>
+        </field>
+    </record>
+    <!-- View Form Ticket -->
+    <record id="ticket_view_form" model="ir.ui.view">
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk_mgmt.ticket_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='number']" position="before">
+                <div class="custom_icon_group" />
+            </xpath>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="property_id" options="{'no_create': True}" />
+                <field
+                    name="room_id"
+                    options="{'no_create': True}"
+                    attrs="{'invisible': [('property_id', '=', False)]}"
+                />
+            </xpath>
+            <xpath expr="//field[@name='partner_lang']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='sequence']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+    <!-- View Form Category -->
+    <record id="view_helpdesk_pms_category_form" model="ir.ui.view">
+        <field name="model">helpdesk.ticket.category</field>
+        <field name="inherit_id" ref="helpdesk_mgmt.view_helpdesk_category_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
