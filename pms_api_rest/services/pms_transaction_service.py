@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 
+import werkzeug.exceptions
 import pytz
 
 from odoo import _, fields
@@ -35,6 +36,7 @@ class PmsTransactionService(Component):
         auth="jwt_api_pms",
     )
     def get_transactions(self, pms_transactions_search_param):
+        order_by_param = False;
         result_transactions = []
         domain_fields = [
             ("state", "=", "posted"),
@@ -127,9 +129,13 @@ class PmsTransactionService(Component):
                 0,
             )
             amount_result = total_inbound - total_outbound
+        if pms_transactions_search_param.orderBy:
+            order_by_param = self._get_mapped_order_by_field(
+                pms_transactions_search_param.orderBy
+            ) + (" desc" if pms_transactions_search_param.orderDesc else " asc")
         transactions = self.env["account.payment"].search(
             domain,
-            order=pms_transactions_search_param.orderBy,
+            order=order_by_param if order_by_param else False,
             limit=pms_transactions_search_param.limit,
             offset=pms_transactions_search_param.offset,
         )
@@ -710,3 +716,16 @@ class PmsTransactionService(Component):
                 limit=1,
             )
         )
+
+    def _get_mapped_order_by_field(self, field):
+        if field == "name":
+            result = "name"
+        elif field == "date":
+            result = "date"
+        elif field == "reference":
+            result = "ref"
+        elif field == "amount":
+            result = "amount"
+        else:
+            raise werkzeug.exceptions.MethodNotAllowed(description="Field not allowed")
+        return result
