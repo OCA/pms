@@ -1,6 +1,8 @@
 import base64
 from datetime import datetime
 
+import werkzeug.exceptions
+
 from odoo import _, fields
 from odoo.exceptions import UserError
 from odoo.osv import expression
@@ -30,6 +32,7 @@ class PmsInvoiceService(Component):
         auth="jwt_api_pms",
     )
     def get_invoices(self, pms_invoice_search_param):
+        order_by_param = False
         result_invoices = []
 
         domain = []
@@ -92,11 +95,15 @@ class PmsInvoiceService(Component):
         PmsInvoiceInfo = self.env.datamodels["pms.invoice.info"]
         PmsInvoiceLineInfo = self.env.datamodels["pms.invoice.line.info"]
         total_invoices = self.env["account.move"].search_count(domain)
+        if pms_invoice_search_param.orderBy:
+            order_by_param = self._get_mapped_order_by_field(
+                pms_invoice_search_param.orderBy
+            ) + (" desc" if pms_invoice_search_param.orderDesc else " asc")
         amount_total = sum(
             self.env["account.move"]
             .search(
                 domain,
-                order=pms_invoice_search_param.orderBy,
+                order=order_by_param if order_by_param else False,
                 limit=pms_invoice_search_param.limit,
                 offset=pms_invoice_search_param.offset,
             )
@@ -104,7 +111,7 @@ class PmsInvoiceService(Component):
         )
         for invoice in self.env["account.move"].search(
             domain,
-            order=pms_invoice_search_param.orderBy,
+            order=order_by_param if order_by_param else False,
             limit=pms_invoice_search_param.limit,
             offset=pms_invoice_search_param.offset,
         ):
@@ -593,3 +600,16 @@ class PmsInvoiceService(Component):
                 ][0]
             cmd_invoice_lines.extend(new_invoice_lines)
         return cmd_invoice_lines
+
+    def _get_mapped_order_by_field(self, field):
+        if field == "name":
+            result = "name"
+        elif field == "ref":
+            result = "ref"
+        elif field == "date":
+            result = "invoice_date"
+        elif field == "amount":
+            result = "amount_total"
+        else:
+            raise werkzeug.exceptions.MethodNotAllowed(description="Field not allowed")
+        return result
