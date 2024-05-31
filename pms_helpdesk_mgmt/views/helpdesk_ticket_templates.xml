@@ -10,8 +10,8 @@
     </template>
     <template
         id="portal_my_tickets"
-        inherit_id="helpdesk_mgmt.portal_my_tickets"
-        name="My tickets"
+        inherit_id="helpdesk_mgmt.portal_ticket_list"
+        name="Tickets List"
     >
         <xpath expr="//tr/th[position()=3]" position="after">
             <th>Property</th>
@@ -40,7 +40,7 @@
             <div><strong>Room:</strong>
             <span t-field="ticket.sudo().room_id.name" /></div>
         </xpath>
-        <xpath expr="//t[@t-esc='ticket.category_id.name']" position="after">
+        <xpath expr="//span[@t-field='ticket.category_id']" position="after">
             <div><strong>Tag:</strong>
             <span t-field="ticket.sudo().tag_ids" /></div>
         </xpath>
