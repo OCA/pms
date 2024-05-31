@@ -10,9 +10,12 @@
     "Consultores Hoteleros Integrales, "
     "Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/pms",
-    "category": "After-Sales",
-    "depends": ["base", "web", "helpdesk_mgmt"],
-    "data": ["views/helpdesk_ticket_views.xml"],
+    "category": "After-Sales/Pms",
+    "depends": ["base", "web", "helpdesk_mgmt", "pms"],
+    "data": [
+        "views/helpdesk_ticket_views.xml",
+        "views/helpdesk_ticket_templates.xml",
+    ],
     "qweb": ["static/src/xml/*.xml"],
     "application": True,
     "installable": True,

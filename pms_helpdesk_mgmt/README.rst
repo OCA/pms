@@ -3,7 +3,7 @@ Helpdesk Management with PMS
 ============================
 
 
-This is a custom Odoo module that extends the Helpdesk functionality to include Project Management System (PMS) features.
+This is a custom Odoo module that extends the Helpdesk functionality to include Property Management System (PMS) features.
 
 Features
 --------
@@ -17,7 +17,7 @@ Installation
 
    .. code-block:: bash
 
-      git clone https://github.com/IrluiDev/helpdesk.git
+      git clone https://github.com/IrluiDev/pms.git
 
 2. Restart your Odoo server.
 

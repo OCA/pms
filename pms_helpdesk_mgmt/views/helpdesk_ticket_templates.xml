@@ -6,10 +6,6 @@
                 rel="stylesheet"
                 href="/helpdesk_mgmt_pms/static/src/scss/helpdesk_mgmt_pms.scss"
             />
-            <script
-                type="text/javascript"
-                src="/helpdesk_mgmt_pms/static/src/js/helpdesk_mgmt_pms.js"
-            />
         </xpath>
     </template>
     <template
@@ -17,7 +13,7 @@
         inherit_id="helpdesk_mgmt.portal_my_tickets"
         name="My tickets"
     >
-        <xpath expr="//tr[hasclass('active')]/th[position()=3]" position="after">
+        <xpath expr="//tr/th[position()=3]" position="after">
             <th>Property</th>
             <th>Room</th>
         </xpath>
