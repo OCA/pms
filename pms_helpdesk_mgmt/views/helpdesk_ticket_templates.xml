@@ -4,7 +4,7 @@
         <xpath expr="." position="inside">
             <link
                 rel="stylesheet"
-                href="/helpdesk_mgmt_pms/static/src/scss/helpdesk_mgmt_pms.scss"
+                href="/pms_helpdesk_mgmt/static/src/scss/helpdesk_mgmt_pms.scss"
             />
         </xpath>
     </template>
