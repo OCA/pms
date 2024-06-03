@@ -11,7 +11,7 @@
     "Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/pms",
     "category": "After-Sales/Pms",
-    "depends": ["base", "web", "helpdesk_mgmt", "pms"],
+    "depends": ["base", "web", "helpdesk_mgmt", "pms", "portal"],
     "data": [
         "views/helpdesk_ticket_views.xml",
         "views/helpdesk_ticket_templates.xml",

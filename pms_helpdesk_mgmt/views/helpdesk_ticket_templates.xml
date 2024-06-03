@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <template id="assets_backend" inherit_id="web.assets_backend">
-        <xpath expr="." position="inside">
-            <link
-                rel="stylesheet"
-                href="/pms_helpdesk_mgmt/static/src/scss/helpdesk_mgmt_pms.scss"
-            />
-        </xpath>
-    </template>
     <template
         id="portal_my_tickets"
         inherit_id="helpdesk_mgmt.portal_ticket_list"
@@ -51,6 +43,9 @@
         inherit_id="helpdesk_mgmt.portal_create_ticket"
         name="Create Ticket"
     >
+        <xpath expr="//h1[@class='text-center']" position="after">
+            <i class="fa fa-pencil-square" />
+        </xpath>
         <xpath
             expr="//div[@class='col-md-7 col-sm-8']/select[@id='category']/.."
             position="after"
