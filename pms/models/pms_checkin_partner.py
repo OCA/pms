@@ -894,11 +894,7 @@ class PmsCheckinPartner(models.Model):
                     document_type=record.document_type,
                 )
             ):
-                for _field in self._checkin_mandatory_fields(
-                    residence_country=record.residence_country_id,
-                    document_type=record.document_type,
-                ):
-                    raise ValidationError(_("Personal data is missing for check-in"))
+                raise ValidationError(_("Personal data is missing for check-in"))
             vals = {
                 "state": "onboard",
                 "arrival": fields.Datetime.now(),
