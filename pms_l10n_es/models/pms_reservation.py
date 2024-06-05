@@ -9,40 +9,16 @@ class PmsReservation(models.Model):
         comodel_name="pms.ses.comunication",
         inverse_name="reservation_id",
     )
-    last_ses_reservation_comunication_id = fields.Integer(
-        string="Last SES Reservation Comunication ID",
-        compute="_compute_last_reservation_ses_comunication_id",
-    )
-    last_ses_travellers_report_comunication_id = fields.Integer(
-        string="Last SES Travellers Report Comunication ID",
-        compute="_compute_last_travellers_report_ses_comunication_id",
+    is_ses = fields.Boolean(
+        string="Is SES",
+        readonly=True,
+        compute="_compute_is_ses",
     )
 
-    @api.depends("ses_comunication_ids")
-    def _compute_last_reservation_ses_comunication_id(self):
+    @api.depends("pms_property_id")
+    def _compute_is_ses(self):
         for record in self:
-            record.last_ses_reservation_comunication_id = False
-            for comunication in record.ses_comunication_ids.sorted(
-                key=lambda x: x.id, reverse=True
-            ):
-                if comunication.entity == "RH":
-                    record.last_ses_reservation_comunication_id = (
-                        comunication.comunication_id
-                    )
-                    break
-
-    @api.depends("ses_comunication_ids")
-    def _compute_last_travellers_report_ses_comunication_id(self):
-        for record in self:
-            record.last_ses_reservation_comunication_id = False
-            for comunication in record.ses_comunication_ids.sorted(
-                key=lambda x: x.id, reverse=True
-            ):
-                if comunication.entity == "PV":
-                    record.last_ses_reservation_comunication_id = (
-                        comunication.comunication_id
-                    )
-                    break
+            record.is_ses = record.pms_property_id.institution == "ses"
 
     @api.model
     def create_comunication(self, reservation_id, operation, entity):

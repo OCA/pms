@@ -9,15 +9,17 @@
                 <page
                     string="SES Comunications"
                     name="property_general"
-                    attrs="{'invisible': [('institution','!=','ses')]}"
+                    attrs="{'invisible': [('is_ses','!=',True),'|',('is_ses','=',True),('ses_comunication_ids','!=',False)]}"
                 >
+                    <field name="is_ses" invisible="1" />
                     <field name="ses_comunication_ids">
                         <tree string="Comunicaciones">
                             <field name="reservation_id" />
                             <field name="comunication_id" />
                             <field name="operation" />
                             <field name="entity" />
-                            <field name="date_time" />
+                            <field name="notification_time" />
+                            <field name="processing_time" />
                             <field name="state" />
                             <field name="processing_result" />
                         </tree>

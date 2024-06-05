@@ -29,11 +29,15 @@ class PmsSesComunication(models.Model):
         selection=[("RH", "Reservation"), ("PV", "Traveller report")],
         required=True,
     )
-    date_time = fields.Datetime(
-        string="Date and Time",
+    notification_time = fields.Datetime(
+        string="When the notification is sent to SES",
         help="Date and time of the comunication",
-        default=fields.Datetime.now(),
     )
+    processing_time = fields.Datetime(
+        string="When the system gets the state of the notification",
+        help="Date and time of the comunication",
+    )
+
     state = fields.Selection(
         string="State",
         help="State of the comunication",
