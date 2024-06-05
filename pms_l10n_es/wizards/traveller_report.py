@@ -26,6 +26,7 @@ CODE_DNI = "D"
 CODE_NIE = "N"
 # Disable insecure request warnings
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+_logger = logging.getLogger(__name__)
 
 
 def string_to_zip_to_base64(string_data):
@@ -38,7 +39,7 @@ def string_to_zip_to_base64(string_data):
         zip_base64 = base64.b64encode(zip_data)
         return zip_base64.decode()
     except Exception as e:
-        print(f"Error string to ZIP to Base64: {e}")
+        _logger.error("Error while converting string to ZIP to Base64: %s" % e)
         return None
 
 
@@ -1026,7 +1027,7 @@ class TravellerReport(models.TransientModel):
         return batch_number
 
     def send_pending_reservation_notifications(self):
-        for record in self:
+        for _record in self:
             for comunication in self.env["pms.ses.comunication"].search(
                 [
                     ("state", "=", "to_send"),
@@ -1043,11 +1044,11 @@ class TravellerReport(models.TransientModel):
                     else:
                         comunication.state = "processed"
                 except Exception as e:
-                    print(e)
-                    comunication.state = 'error_sending'
+                    comunication.state = "error_sending"
+                    comunication.error_message = str(e)
 
     def process_sent_comunications(self):
-        for record in self:
+        for _record in self:
             for comunication in self.env["pms.ses.comunication"].search(
                 [
                     ("state", "=", "to_process"),
@@ -1067,7 +1068,8 @@ class TravellerReport(models.TransientModel):
                     "Content-Type": "text/xml; charset=utf-8",
                 }
                 var_xml_get_batch = f"""
-                    <con:lotes xmlns:con="http://www.neg.hospedajes.mir.es/consultarComunicacion">
+                    <con:lotes
+                    xmlns:con="http://www.neg.hospedajes.mir.es/consultarComunicacion">
                         <con:lote>{comunication.comunication_id}</con:lote>
                     </con:lotes>
                 """
@@ -1080,7 +1082,9 @@ class TravellerReport(models.TransientModel):
                                 <com:comunicacionRequest>
                                     <peticion>
                                         <cabecera>
-                                            <codigoArrendador>{pms_property.institution_property_id}</codigoArrendador>
+                                            <codigoArrendador>
+                                                {pms_property.institution_property_id}
+                                            </codigoArrendador>
                                             <aplicacion>Roomdoo</aplicacion>
                                             <tipoOperacion>C</tipoOperacion>
                                         </cabecera>
@@ -1105,4 +1109,3 @@ class TravellerReport(models.TransientModel):
                     comunication.processing_result = error or "ok"
                 except Exception:
                     comunication.state = "error_processing"
-

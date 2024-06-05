@@ -894,7 +894,7 @@ class PmsCheckinPartner(models.Model):
                     document_type=record.document_type,
                 )
             ):
-                for field in self._checkin_mandatory_fields(
+                for _field in self._checkin_mandatory_fields(
                     residence_country=record.residence_country_id,
                     document_type=record.document_type,
                 ):

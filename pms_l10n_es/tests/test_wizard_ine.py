@@ -507,7 +507,6 @@ class TestWizardINE(TestPms):
             {
                 "partner_id": self.partner_russia_1.id,
                 "reservation_id": self.reservation_1.id,
-
             }
         )
         self.checkin_partner_r3_1 = self.env["pms.checkin.partner"].create(

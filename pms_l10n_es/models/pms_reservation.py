@@ -43,6 +43,7 @@ class PmsReservation(models.Model):
                         comunication.comunication_id
                     )
                     break
+
     @api.model
     def create_comunication(self, reservation_id, operation, entity):
         self.env["pms.ses.comunication"].create(
@@ -100,16 +101,16 @@ class PmsReservation(models.Model):
                             vals["state"] == "cancel"
                             and last_comunication.operation == "A"
                         ):
-                            self.create_comunication(record.id, "B", 'RH')
+                            self.create_comunication(record.id, "B", "RH")
                         elif (
                             vals["state"] != "cancel"
                             and last_comunication.operation == "B"
                         ):
-                            self.create_comunication(record.id, "A", 'RH')
+                            self.create_comunication(record.id, "A", "RH")
                     elif check_changed:
                         if last_comunication.operation == "A":
-                            self.create_comunication(record.id, "B", 'RH')
-                        self.create_comunication(record.id, "A", 'RH')
+                            self.create_comunication(record.id, "B", "RH")
+                        self.create_comunication(record.id, "A", "RH")
 
         return super(PmsReservation, self).write(vals)
 

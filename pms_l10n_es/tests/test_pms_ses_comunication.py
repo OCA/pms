@@ -152,7 +152,7 @@ class TestPmsSesComunication(TestPms):
             }
         )
         # ACT & ASSERT
-        for index, update_operation in enumerate(update_operations):
+        for _index, update_operation in enumerate(update_operations):
             with self.subTest(k=update_operation):
                 reservation.write(update_operation)
                 last_notification_operations = (
@@ -201,7 +201,7 @@ class TestPmsSesComunication(TestPms):
         )
         reservation_comunications.state = "to_process"
         # ACT & ASSERT
-        for index, update_operation in enumerate(update_operations):
+        for _index, update_operation in enumerate(update_operations):
             with self.subTest(k=update_operation):
                 reservation.write(update_operation)
                 reservation_comunications = (
