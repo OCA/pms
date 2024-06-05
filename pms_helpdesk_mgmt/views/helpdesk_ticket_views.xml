@@ -9,6 +9,7 @@
                 <field name="company_id" />
                 <field name="property_id" />
                 <field name="room_id" />
+                <field name="category_id" />
             </xpath>
             <xpath expr="//filter[@name='group_partner']" position="after">
                 <filter
@@ -28,6 +29,12 @@
                     name="group_room"
                     domain="[]"
                     context="{'group_by':'room_id'}"
+                />
+                <filter
+                    string="Category"
+                    name="group_category"
+                    domain="[]"
+                    context="{'group_by':'category_id'}"
                 />
             </xpath>
         </field>
@@ -125,10 +132,11 @@
         <field name="model">helpdesk.ticket</field>
         <field name="inherit_id" ref="helpdesk_mgmt.ticket_view_tree" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='number']" position="after">
-                <field name="company_id" />
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="category_id" />
                 <field name="property_id" />
                 <field name="room_id" />
+                <field name="tag_ids" widget="many2many_tags" />
             </xpath>
         </field>
     </record>
