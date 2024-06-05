@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_pms_reservation_from_pms_l110n_es" model="ir.ui.view">
+        <field name="name">Rerservation Form l10n_es</field>
+        <field name="model">pms.reservation</field>
+        <field name="inherit_id" ref="pms.pms_reservation_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='reservation_type']" position="after">
+                <field name="ses_comunication_ids">
+                    <tree string="Comunicaciones">
+                        <field name="reservation_id" />
+                        <field name="comunication_id" />
+                        <field name="operation" />
+                        <field name="entity" />
+                        <field name="date_time" />
+                        <field name="state" />
+                        <field name="processing_result" />
+                    </tree>
+                </field>
+            </xpath>
+        </field>
+    </record>
+</odoo>

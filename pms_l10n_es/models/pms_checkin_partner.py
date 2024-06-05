@@ -61,13 +61,13 @@ class PmsCheckinPartner(models.Model):
                     "residence_state_id",
                 ]
             )
-        if document_type and document_type.aeat_identification_type == CODE_NIF:
+        if document_type.code and document_type.code == CODE_NIF:
             mandatory_fields.extend(
                 [
                     "lastname2",
                 ]
             )
-        if document_type and document_type in [CODE_NIF, CODE_NIE]:
+        if document_type and document_type.code in [CODE_NIF, CODE_NIE]:
             mandatory_fields.extend(
                 [
                     "support_number",

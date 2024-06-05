@@ -1,19 +1,45 @@
 import base64
+import csv
 import datetime
+import io
 import json
 import logging
 import re
 import time
+import xml.etree.cElementTree as ET
+import zipfile
 
 import requests
 from bs4 import BeautifulSoup as bs
 from dateutil.relativedelta import relativedelta
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from odoo import _, api, fields, models
 from odoo.exceptions import MissingError, ValidationError
 from odoo.modules.module import get_module_resource
 
 _logger = logging.getLogger(__name__)
+
+CODE_SPAIN = "ES"
+CODE_PASSPORT = "P"
+CODE_DNI = "D"
+CODE_NIE = "N"
+# Disable insecure request warnings
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+
+def string_to_zip_to_base64(string_data):
+    try:
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+            zip_file.writestr("data.xml", string_data.encode("utf-8"))
+        zip_buffer.seek(0)
+        zip_data = zip_buffer.read()
+        zip_base64 = base64.b64encode(zip_data)
+        return zip_base64.decode()
+    except Exception as e:
+        print(f"Error string to ZIP to Base64: {e}")
+        return None
 
 
 class TravellerReport(models.TransientModel):
@@ -22,16 +48,61 @@ class TravellerReport(models.TransientModel):
 
     txt_filename = fields.Text()
     txt_binary = fields.Binary(string="File Download")
-    txt_message = fields.Char(string="File Preview")
+    txt_message = fields.Char(
+        string="File Preview",
+        readonly=True,
+        store=True,
+        compute="_compute_txt_message",
+    )
     date_target = fields.Date(
         string="Date", required=True, default=lambda self: fields.Date.today()
     )
+    date_from = fields.Date(
+        string="From",
+        required=True,
+        default=lambda self: fields.Date.today(),
+    )
+    date_to = fields.Date(
+        string="To",
+        required=True,
+        default=lambda self: fields.Date.today() + relativedelta(days=1),
+    )
+
     pms_property_id = fields.Many2one(
         comodel_name="pms.property",
         string="Property",
         required=True,
         default=lambda self: self.env.user.get_active_property_ids()[0],
     )
+
+    is_ses = fields.Boolean(
+        string="Is SES",
+        readonly=True,
+        compute="_compute_is_ses",
+    )
+
+    report_type = fields.Selection(
+        string="Report Type",
+        required=True,
+        default="reservations",
+        help="Report type (reservation/traveller report)",
+        selection=[
+            ("reservations", "Reservations Report"),
+            ("travellers", "Travellers Report"),
+        ],
+    )
+
+    @api.depends(
+        "pms_property_id", "date_target", "date_from", "date_to", "report_type"
+    )
+    def _compute_txt_message(self):
+        for record in self:
+            record.txt_message = False
+
+    @api.depends("pms_property_id.institution")
+    def _compute_is_ses(self):
+        for record in self:
+            record.is_ses = record.pms_property_id.institution == "ses"
 
     def generate_file_from_user_action(self):
         pms_property = self.env["pms.property"].search(
@@ -45,22 +116,64 @@ class TravellerReport(models.TransientModel):
             or not pms_property.institution_password
         ):
             raise ValidationError(
-                _("The guest information sending settings is not property updated.")
+                _("The guest information sending settings is not property set up.")
             )
 
+        content = False
         # build content
-        content = self.generate_checkin_list(
-            pms_property_id=pms_property.id,
-            date_target=self.date_target,
-        )
+        if self.is_ses:
+            if self.report_type == "travellers":
+                content = self.generate_ses_travellers_list(
+                    pms_property_id=pms_property.id,
+                    date_target=self.date_target,
+                )
+            elif self.report_type == "reservations":
+                content = self.generate_ses_reservation_list(
+                    pms_property_id=pms_property.id,
+                    date_from=self.date_from,
+                    date_to=self.date_to,
+                )
+        else:
+            content = self.generate_checkin_list(
+                pms_property_id=pms_property.id,
+                date_target=self.date_target,
+            )
 
         if content:
-            self.txt_filename = pms_property.institution_property_id + ".999"
+            if self.is_ses:
+                if self.report_type == "travellers":
+                    self.txt_filename = (
+                        pms_property.institution_property_id
+                        + "-"
+                        + self.date_target.strftime("%Y%m%d")
+                    )
+                else:
+                    self.txt_filename = (
+                        pms_property.institution_property_id
+                        + "-"
+                        + self.date_from.strftime("%Y%m%d")
+                        + "-"
+                        + self.date_to.strftime("%Y%m%d")
+                    )
+                self.txt_filename = self.txt_filename + ".xml"
+
+            else:
+                self.txt_filename = (
+                    pms_property.institution_property_id
+                    + "-"
+                    + self.date_target.strftime("%Y%m%d")
+                    + ".999"
+                )
+
             self.txt_binary = base64.b64encode(str.encode(content))
             self.txt_message = content
 
         return {
-            "name": _("Traveller Report"),
+            "name": _(
+                "Travellers Report"
+                if self.report_type == "travellers" or not self.is_ses
+                else "Reservations Report"
+            ),
             "res_id": self.id,
             "res_model": "traveller.report.wizard",
             "target": "new",
@@ -450,3 +563,546 @@ class TravellerReport(models.TransientModel):
             if prop.institution:
                 self.send_file_institution(pms_property=prop, offset=offset)
                 time.sleep(0.5)
+
+    # SES RESERVATIONS
+    def generate_ses_reservation_list(self, pms_property_id, date_from, date_to):
+        reservation_ids = (
+            self.env["pms.reservation"]
+            .search(
+                [
+                    ("pms_property_id", "=", pms_property_id),
+                    ("state", "!=", "cancel"),
+                    ("reservation_type", "!=", "out"),
+                    "|",
+                    ("date_order", ">=", date_from),
+                    ("date_order", "<=", date_to),
+                ]
+            )
+            .mapped("id")
+        )
+        return self.generate_xml_reservations(reservation_ids)
+
+    def generate_xml_reservation(self, solicitud, reservation_id):
+        reservation = self.env["pms.reservation"].browse(reservation_id)
+
+        if not reservation.pms_property_id.institution_property_id:
+            raise ValidationError(
+                _("The property does not have an institution property id.")
+            )
+
+        # SOLICITUD > COMUNICACION
+        comunicacion = ET.SubElement(solicitud, "comunicacion")
+
+        # SOLICITUD > COMUNICACION > ESTABLECIMIENTO
+        establecimiento = ET.SubElement(comunicacion, "establecimiento")
+
+        # SOLICITUD > COMUNICACION > ESTABLECIMIENTO > CODIGO
+        ET.SubElement(
+            establecimiento, "codigo"
+        ).text = reservation.pms_property_id.institution_property_id
+
+        # SOLICITUD > COMUNICACION > CONTRATO
+        contrato = ET.SubElement(comunicacion, "contrato")
+
+        # SOLICITUD > COMUNICACION > CONTRATO > REFERENCIA
+        ET.SubElement(contrato, "referencia").text = reservation.name
+
+        # SOLICITUD > COMUNICACION > CONTRATO > FECHA CONTRATO
+        ET.SubElement(contrato, "fechaContrato").text = str(reservation.date_order)[
+            0:10
+        ]
+
+        # SOLICITUD > COMUNICACION > CONTRATO > FECHA ENTRADA
+        ET.SubElement(contrato, "fechaEntrada").text = (
+            str(reservation.checkin)[0:10] + "T00:00:00"
+        )
+
+        # SOLICITUD > COMUNICACION > CONTRATO > FECHA SALIDA
+        ET.SubElement(contrato, "fechaSalida").text = (
+            str(reservation.checkout)[0:10] + "T00:00:00"
+        )
+
+        # SOLICITUD > COMUNICACION > CONTRATO > NUM PERSONAS
+        ET.SubElement(contrato, "numPersonas").text = str(reservation.adults)
+
+        # SOLICITUD > COMUNICACION > CONTRATO > PAGO
+        pago = ET.SubElement(contrato, "pago")
+
+        # SOLICITUD > COMUNICACION > CONTRATO > PAGO > TIPO PAGO
+        # paymentw not cancelled or draft
+        payments = reservation.folio_id.payment_ids.filtered(
+            lambda x: x.state == "posted"
+        )
+        if payments:
+            payment = payments[0]
+            if payment.journal_id.type == "cash":
+                ET.SubElement(pago, "tipoPago").text = "EFECT"
+            else:
+                ET.SubElement(pago, "tipoPago").text = "PLATF"
+        else:
+            ET.SubElement(pago, "tipoPago").text = "DESTI"
+
+        # SOLICITUD > COMUNICACION > PERSONA
+        persona = ET.SubElement(comunicacion, "persona")
+
+        # SOLICITUD > COMUNICACION > PERSONA > ROL
+        ET.SubElement(persona, "rol").text = "TI"
+
+        # SOLICITUD > COMUNICACION > PERSONA > NOMBRE
+        if reservation.partner_id.firstname:
+            ET.SubElement(persona, "nombre").text = reservation.partner_id.firstname
+        elif reservation.partner_name:
+            ET.SubElement(persona, "nombre").text = reservation.partner_name.split(" ")[
+                0
+            ]
+        else:
+            raise ValidationError(_("The reservation does not have a name."))
+
+        # SOLICITUD > COMUNICACION > PERSONA > APELLIDO1
+        if reservation.partner_id.lastname:
+            ET.SubElement(persona, "apellido1").text = reservation.partner_id.lastname
+        elif reservation.partner_name and len(reservation.partner_name.split(" ")) > 1:
+            ET.SubElement(persona, "apellido1").text = reservation.partner_name.split(
+                " "
+            )[1]
+        else:
+            ET.SubElement(persona, "apellido1").text = "No aplica"
+
+        # SOLICITUD > COMUNICACION > PERSONA > TELEFONO
+        if reservation.partner_id.mobile:
+            ET.SubElement(persona, "telefono").text = reservation.partner_id.mobile
+        elif reservation.partner_id.phone:
+            ET.SubElement(persona, "telefono").text = reservation.partner_id.phone
+            # SOLICITUD > COMUNICACION > PERSONA > EMAIL
+        elif reservation.partner_id.email:
+            ET.SubElement(persona, "correo").text = reservation.partner_id.email
+        elif reservation.pms_property_id.email:
+            ET.SubElement(persona, "correo").text = reservation.pms_property_id.email
+        else:
+            raise ValidationError(
+                _(
+                    "The reservation does not have a phone or email "
+                    "or set a default property email."
+                )
+            )
+
+    def generate_xml_reservations(self, reservation_ids):
+        if not reservation_ids:
+            raise ValidationError(_("Theres's no reservation to generate the XML"))
+
+        # SOLICITUD
+        solicitud = ET.Element("solicitud")
+        for reservation_id in reservation_ids:
+            ET.SubElement(
+                solicitud,
+                self.generate_xml_reservation(solicitud, reservation_id),
+            )
+        xml_str = ET.tostring(solicitud, encoding="unicode")
+
+        xml_str = (
+            '<ns2:peticion xmlns:ns2="http://www.neg.hospedajes.mir.es/altaReservaHospedaje">'
+            + xml_str
+            + "</ns2:peticion>"
+        )
+        return xml_str
+
+    # SES RESERFVATIONS TRAVELLER REPORT
+    def generate_ses_travellers_list(self, pms_property_id, date_target):
+        reservation_ids = (
+            self.env["pms.reservation"]
+            .search(
+                [
+                    ("pms_property_id", "=", pms_property_id),
+                    ("checkin", "=", date_target),
+                ]
+            )
+            .mapped("id")
+        )
+        return self.generate_xml_reservations_travellers_report(reservation_ids)
+
+    def generate_xml_reservation_travellers_report(self, solicitud, reservation_id):
+
+        reservation = self.env["pms.reservation"].browse(reservation_id)
+
+        # SOLICITUD -> COMUNICACION
+        comunicacion = ET.SubElement(solicitud, "comunicacion")
+
+        # SOLICITUD -> COMUNICACION -> CONTRATO
+        contrato = ET.SubElement(comunicacion, "contrato")
+
+        # SOLICITUD -> COMUNICACION -> CONTRATO -> REFERENCIA
+        ET.SubElement(contrato, "referencia").text = reservation.name
+
+        # SOLICITUD -> COMUNICACION -> CONTRATO -> FECHA CONTRATO
+        ET.SubElement(contrato, "fechaContrato").text = str(reservation.date_order)[
+            0:10
+        ]
+
+        # SOLICITUD -> COMUNICACION -> CONTRATO -> FECHA ENTRADA
+        ET.SubElement(contrato, "fechaEntrada").text = (
+            str(reservation.checkin)[0:10] + "T00:00:00"
+        )
+
+        # SOLICITUD -> COMUNICACION -> CONTRATO -> FECHA SALIDA
+        ET.SubElement(contrato, "fechaSalida").text = (
+            str(reservation.checkout)[0:10] + "T00:00:00"
+        )
+
+        # SOLICITUD -> COMUNICACION -> CONTRATO -> NUM PERSONAS
+        ET.SubElement(contrato, "numPersonas").text = str(reservation.adults)
+
+        # SOLICITUD -> COMUNICACION -> CONTRATO -> PAGO
+        pago = ET.SubElement(contrato, "pago")
+
+        # SOLICITUD > COMUNICACION > CONTRATO > PAGO > TIPO PAGO
+        # paymentw not cancelled or draft
+        payments = reservation.folio_id.payment_ids.filtered(
+            lambda x: x.state == "posted"
+        )
+        if payments:
+            payment = payments[0]
+            if payment.journal_id.type == "cash":
+                ET.SubElement(pago, "tipoPago").text = "EFECT"
+            else:
+                ET.SubElement(pago, "tipoPago").text = "PLATF"
+        else:
+            ET.SubElement(pago, "tipoPago").text = "DESTI"
+
+        for checkin_partner in reservation.checkin_partner_ids.filtered(
+            lambda x: x.state == "onboard"
+        ):
+            # SOLICITUD -> COMUNICACION -> PERSONA
+            persona = ET.SubElement(comunicacion, "persona")
+
+            # SOLICITUD -> COMUNICACION -> PERSONA -> ROL
+            ET.SubElement(persona, "rol").text = (
+                "TI"
+                if checkin_partner.partner_id.id == reservation.partner_id.id
+                else "VI"
+            )
+
+            # SOLICITUD -> COMUNICACION -> PERSONA -> NOMBRE
+            if checkin_partner.firstname:
+                ET.SubElement(persona, "nombre").text = checkin_partner.firstname
+            else:
+                raise ValidationError(_("The guest does not have a name."))
+
+            # SOLICITUD -> COMUNICACION -> PERSONA -> APELLIDO1
+            if checkin_partner.lastname:
+                ET.SubElement(persona, "apellido1").text = checkin_partner.lastname
+            else:
+                raise ValidationError(_("The guest does not have a lastname."))
+
+            # SOLICITUD -> COMUNICACION -> PERSONA -> TIPO DOCUMENTO
+            if checkin_partner.document_type.code:
+                if checkin_partner.document_type.code == CODE_DNI:
+                    document_type = "NIF"
+                elif checkin_partner.document_type.code == CODE_NIE:
+                    document_type = "NIE"
+                elif checkin_partner.document_type.code == CODE_PASSPORT:
+                    document_type = "PAS"
+                else:
+                    document_type = "OTRO"
+                ET.SubElement(persona, "tipoDocumento").text = document_type
+            else:
+                raise ValidationError(_("The guest does not have a document type."))
+
+            # SOLICITUD -> COMUNICACION -> PERSONA -> SEGUNDO APELLIDO2
+            if checkin_partner.document_type.code == CODE_DNI:
+                if checkin_partner.partner_id.lastname2:
+                    ET.SubElement(
+                        persona, "apellido2"
+                    ).text = checkin_partner.partner_id.lastname2
+                else:
+                    raise ValidationError(
+                        _("The guest does not have a second lastname.")
+                    )
+
+            # SOLICITUD -> COMUNICACION -> PERSONA -> NUMERO DOCUMENTO
+            if checkin_partner.document_number:
+                ET.SubElement(
+                    persona, "numeroDocumento"
+                ).text = checkin_partner.document_number
+            else:
+                raise ValidationError(_("The guest does not have a document number."))
+
+            # SOLICITUD -> COMUNICACION -> PERSONA -> NUMERO DE SOPORTE
+            if (
+                checkin_partner.document_type.code == CODE_DNI
+                or checkin_partner.document_type.code == CODE_NIE
+            ):
+                if checkin_partner.support_number:
+                    ET.SubElement(
+                        persona, "soporteDocumento"
+                    ).text = checkin_partner.support_number
+                else:
+                    raise ValidationError(
+                        _("The guest does not have a support number.")
+                    )
+
+            # SOLICITUD -> COMUNICACION -> PERSONA -> FECHA NACIMIENTO
+            if checkin_partner.birthdate_date:
+                ET.SubElement(persona, "fechaNacimiento").text = str(
+                    checkin_partner.birthdate_date
+                )[0:10]
+            else:
+                raise ValidationError(_("The guest does not have a birthdate."))
+
+            # SOLICITUD -> COMUNICACION -> PERSONA -> DIRECCION
+            direccion = ET.SubElement(persona, "direccion")
+
+            # SOLICITUD -> COMUNICACION -> PERSONA -> DIRECCION -> DIRECCION
+            if checkin_partner.residence_street:
+                ET.SubElement(
+                    direccion, "direccion"
+                ).text = checkin_partner.residence_street
+            else:
+                raise ValidationError(_("The guest does not have a street."))
+
+            # SOLICITUD -> COMUNICACION -> PERSONA -> DIRECCION -> MUNICIPIO (INE) / LOCALIDAD
+            if checkin_partner.residence_country_id.code == CODE_SPAIN:
+                with open(
+                    get_module_resource(
+                        "pms_l10n_es",
+                        "data/",
+                        "pms.ine.zip.municipality.ine.relation.csv",
+                    ),
+                    "r",
+                    newline="",
+                ) as f:
+                    lector = csv.reader(f)
+                    for fila in lector:
+                        if checkin_partner.residence_zip in fila[0]:
+                            ET.SubElement(direccion, "codigoMunicipio").text = fila[1]
+                            break
+            else:
+                if checkin_partner.residence_city:
+                    # SOLICITUD -> COMUNICACION -> PERSONA -> DIRECCION -> LOCALIDAD
+                    ET.SubElement(
+                        direccion, "nombreMunicipio"
+                    ).text = checkin_partner.residence_city
+                else:
+                    raise ValidationError(_("The guest does not have a city."))
+
+            # SOLICITUD -> COMUNICACION -> PERSONA -> DIRECCION -> CP
+            if checkin_partner.residence_zip:
+                ET.SubElement(direccion, "cp").text = checkin_partner.residence_zip
+            else:
+                raise ValidationError(_("The guest does not have a zip code."))
+
+            # SOLICITUD -> COMUNICACION -> PERSONA -> DIRECCION -> PAIS
+            if checkin_partner.residence_country_id:
+                ET.SubElement(
+                    direccion, "pais"
+                ).text = checkin_partner.residence_country_id.code_alpha3
+            else:
+                raise ValidationError(_("The guest does not have a country."))
+
+            # SOLICITUD -> COMUNICACION -> PERSONA -> TELEFONO
+            if checkin_partner.reservation_id.partner_id.mobile:
+                ET.SubElement(persona, "telefono").text = checkin_partner.mobile
+            elif checkin_partner.reservation_id.partner_id.phone:
+                ET.SubElement(persona, "telefono").text = checkin_partner.phone
+            # SOLICITUD -> COMUNICACION -> PERSONA -> EMAIL
+            elif checkin_partner.reservation_id.partner_id.email:
+                ET.SubElement(persona, "correo").text = checkin_partner.email
+            elif checkin_partner.reservation_id.email:
+                ET.SubElement(
+                    persona, "correo"
+                ).text = checkin_partner.reservation_id.email
+            elif checkin_partner.reservation_id.pms_property_id.email:
+                ET.SubElement(
+                    persona, "correo"
+                ).text = checkin_partner.reservation_id.pms_property_id.email
+            else:
+                raise ValidationError(
+                    _("The guest does not have a contact method (mail or phone)")
+                )
+
+    def generate_xml_reservations_travellers_report(self, reservation_ids):
+        if not reservation_ids:
+            raise ValidationError(_("Theres's no reservation to generate the XML"))
+
+        if (
+            len(
+                self.env["pms.reservation"]
+                .browse(reservation_ids)
+                .mapped("pms_property_id")
+            )
+            > 1
+        ):
+            raise ValidationError(_("The reservations must be from the same property."))
+        if not any(
+            state == "onboard"
+            for state in self.env["pms.reservation"]
+            .browse(reservation_ids)
+            .mapped("checkin_partner_ids")
+            .mapped("state")
+        ):
+            raise ValidationError(
+                _("There are no guests to generate the travellers report.")
+            )
+
+        # SOLICITUD
+        solicitud = ET.Element("solicitud")
+
+        pms_property = (
+            self.env["pms.reservation"].browse(reservation_ids[0]).pms_property_id
+        )
+
+        if not pms_property.institution_property_id:
+            raise ValidationError(
+                _("The property does not have an institution property id.")
+            )
+
+        # SOLICITUD -> CODIGO ESTABLECIMIENTO
+        ET.SubElement(
+            solicitud, "codigoEstablecimiento"
+        ).text = pms_property.institution_property_id
+
+        for reservation_id in reservation_ids:
+            ET.SubElement(
+                solicitud,
+                self.generate_xml_reservation_travellers_report(
+                    solicitud, reservation_id
+                ),
+            )
+        xml_str = ET.tostring(solicitud, encoding="unicode")
+
+        xml_str = (
+            '<ns2:peticion xmlns:ns2="http://www.neg.hospedajes.mir.es/altaParteHospedaje">'
+            + xml_str
+            + "</ns2:peticion>"
+        )
+        return xml_str
+
+    @api.model
+    def send_comunication_ses(self, reservation_record, entity, operation_type):
+        user = reservation_record.pms_property_id.institution_user
+        password = reservation_record.pms_property_id.institution_password
+        ses_url = reservation_record.pms_property_id.ses_url
+
+        user_and_password_base64 = "Basic " + base64.b64encode(
+            bytes(user + ":" + password, "utf-8")
+        ).decode("utf-8")
+
+        headers = {
+            "Authorization": user_and_password_base64,
+            "Content-Type": "text/xml; charset=utf-8",
+        }
+        lessor_id = reservation_record.pms_property_id.institution_lessor_id
+        if entity == "RH":
+            data = self.generate_xml_reservations([reservation_record.id])
+        elif entity == "PV":
+            data = self.generate_xml_reservation_travellers_report(
+                [reservation_record.id]
+            )
+        data = string_to_zip_to_base64(data)
+
+        payload = f"""
+            <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                xmlns:com="http://www.soap.servicios.hospedajes.mir.es/comunicacion">
+                <soapenv:Header/>
+                <soapenv:Body>
+                    <com:comunicacionRequest>
+                        <peticion>
+                            <cabecera>
+                                <codigoArrendador>{lessor_id}</codigoArrendador>
+                                <aplicacion>Roomdoo</aplicacion>
+                                <tipoOperacion>{operation_type}</tipoOperacion>
+                                <tipoComunicacion>{entity}</tipoComunicacion>
+                            </cabecera>
+                            <solicitud>{data}</solicitud>
+                        </peticion>
+                    </com:comunicacionRequest>
+                </soapenv:Body>
+            </soapenv:Envelope>
+            """
+        soap_response = requests.request(
+            "POST", ses_url, headers=headers, data=payload, verify=False
+        )
+        root = ET.fromstring(soap_response.text)
+        batch_number = root.find(".//lote").text
+        return batch_number
+
+    def send_pending_reservation_notifications(self):
+        for record in self:
+            for comunication in self.env["pms.ses.comunication"].search(
+                [
+                    ("state", "=", "to_send"),
+                ]
+            ):
+                try:
+                    comunication.comunication_id = self.send_comunication_ses(
+                        comunication.reservation_id,
+                        comunication.entity,
+                        comunication.operation,
+                    )
+                    if comunication.operation == "A":
+                        comunication.state = "to_process"
+                    else:
+                        comunication.state = "processed"
+                except Exception as e:
+                    print(e)
+                    comunication.state = 'error_sending'
+
+    def process_sent_comunications(self):
+        for record in self:
+            for comunication in self.env["pms.ses.comunication"].search(
+                [
+                    ("state", "=", "to_process"),
+                    ("operation", "!=", "B"),
+                ]
+            ):
+                pms_property = comunication.reservation_id.pms_property_id
+                user = pms_property.institution_user
+                password = pms_property.institution_password
+
+                user_and_password_base64 = "Basic " + base64.b64encode(
+                    bytes(user + ":" + password, "utf-8")
+                ).decode("utf-8")
+
+                headers = {
+                    "Authorization": user_and_password_base64,
+                    "Content-Type": "text/xml; charset=utf-8",
+                }
+                var_xml_get_batch = f"""
+                    <con:lotes xmlns:con="http://www.neg.hospedajes.mir.es/consultarComunicacion">
+                        <con:lote>{comunication.comunication_id}</con:lote>
+                    </con:lotes>
+                """
+                data = string_to_zip_to_base64(var_xml_get_batch)
+                payload = f"""
+                    <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                        xmlns:com="http://www.soap.servicios.hospedajes.mir.es/comunicacion">
+                            <soapenv:Header/>
+                            <soapenv:Body>
+                                <com:comunicacionRequest>
+                                    <peticion>
+                                        <cabecera>
+                                            <codigoArrendador>{pms_property.institution_property_id}</codigoArrendador>
+                                            <aplicacion>Roomdoo</aplicacion>
+                                            <tipoOperacion>C</tipoOperacion>
+                                        </cabecera>
+                                        <solicitud>{data}</solicitud>
+                                    </peticion>
+                                </com:comunicacionRequest>
+                            </soapenv:Body>
+                        </soapenv:Envelope>
+                    """
+                try:
+
+                    soap_response = requests.request(
+                        "POST",
+                        pms_property.ses_url,
+                        headers=headers,
+                        data=payload,
+                        verify=False,
+                    )
+                    root = ET.fromstring(soap_response.text)
+                    error = root.find(".//error")
+                    comunication.state = "processed"
+                    comunication.processing_result = error or "ok"
+                except Exception:
+                    comunication.state = "error_processing"
+
