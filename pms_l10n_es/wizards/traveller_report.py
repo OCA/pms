@@ -955,7 +955,7 @@ class TravellerReport(models.TransientModel):
             data = self.generate_xml_reservation_travellers_report(
                 [comunication.reservation_id.id]
             )
-        comunication.xml_content = data
+        comunication.xml_content_sent = data
         data = string_to_zip_to_base64(data)
 
         payload = f"""
@@ -977,7 +977,7 @@ class TravellerReport(models.TransientModel):
                 </soapenv:Body>
             </soapenv:Envelope>
             """
-        comunication.soap_content = payload
+        comunication.soap_content_sent = payload
         try:
             comunication.notification_time = fields.Datetime.now()
             soap_response = requests.request(
@@ -985,6 +985,7 @@ class TravellerReport(models.TransientModel):
             )
             root = ET.fromstring(soap_response.text)
             batch_number = root.find(".//lote").text
+            # TODO: check result operation code and logic to save the error
             if comunication.operation == "A":
                 comunication.state = "to_process"
             else:
@@ -1034,6 +1035,7 @@ class TravellerReport(models.TransientModel):
                         <con:lote>{comunication.comunication_id}</con:lote>
                     </con:lotes>
                 """
+                comunication.xml_content_process = var_xml_get_batch
                 data = string_to_zip_to_base64(var_xml_get_batch)
                 payload = f"""
                     <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
@@ -1043,9 +1045,9 @@ class TravellerReport(models.TransientModel):
                                 <com:comunicacionRequest>
                                     <peticion>
                                         <cabecera>
-                                            <codigoArrendador>
-                                                {pms_property.institution_property_id}
-                                            </codigoArrendador>
+                                            <codigoArrendador>{
+                                                pms_property.institution_lessor_id
+                                            }</codigoArrendador>
                                             <aplicacion>Roomdoo</aplicacion>
                                             <tipoOperacion>C</tipoOperacion>
                                         </cabecera>
@@ -1055,6 +1057,7 @@ class TravellerReport(models.TransientModel):
                             </soapenv:Body>
                         </soapenv:Envelope>
                     """
+                comunication.soap_content_process = payload
                 try:
                     comunication.processing_time = fields.Datetime.now()
                     soap_response = requests.request(
@@ -1066,6 +1069,7 @@ class TravellerReport(models.TransientModel):
                     )
                     root = ET.fromstring(soap_response.text)
                     error = root.find(".//error")
+                    # TODO: check result operation code and logic to save the error
                     comunication.state = "processed"
                     comunication.processing_result = error or "ok"
                     return

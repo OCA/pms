@@ -15,8 +15,11 @@
                         <field name="processing_time" />
                         <field name="state" />
                         <field name="processing_result" />
-                        <field name="soap_content" widget="CopyClipboardChar" />
-                        <field name="xml_content" widget="CopyClipboardChar" />
+                        <field name="xml_content_sent" widget="CopyClipboardChar" />
+                        <field name="soap_content_sent" widget="CopyClipboardChar" />
+
+                        <field name="xml_content_process" widget="CopyClipboardChar" />
+                        <field name="soap_content_process" widget="CopyClipboardChar" />
                     </group>
                 </sheet>
             </form>

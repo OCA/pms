@@ -55,11 +55,19 @@ class PmsSesComunication(models.Model):
         string="Processing Result",
         help="Notification processing result",
     )
-    xml_content = fields.Text(
-        string="XML Content",
+    xml_content_sent = fields.Text(
+        string="XML Content Sent",
         help="XML content of the comunication",
     )
-    soap_content = fields.Text(
-        string="SOAP Content",
+    soap_content_sent = fields.Text(
+        string="SOAP Content Sent",
+        help="SOAP content of the comunication",
+    )
+    xml_content_process = fields.Text(
+        string="XML Content Process",
+        help="XML content of the comunication",
+    )
+    soap_content_process = fields.Text(
+        string="SOAP Content Process",
         help="SOAP content of the comunication",
     )
