@@ -6,7 +6,7 @@ class PmsSesComunication(models.Model):
     _name = "pms.ses.comunication"
     _description = "SES Comunication"
     reservation_id = fields.Many2one(
-        string="Reservation Reference",
+        string="Reservation",
         help="Reservation related to this comunication",
         index=True,
         required=True,
@@ -30,11 +30,11 @@ class PmsSesComunication(models.Model):
         required=True,
     )
     notification_time = fields.Datetime(
-        string="When the notification is sent to SES",
+        string="Notification time",
         help="Date and time of the comunication",
     )
     processing_time = fields.Datetime(
-        string="When the system gets the state of the notification",
+        string="Processing time",
         help="Date and time of the comunication",
     )
 
@@ -54,4 +54,12 @@ class PmsSesComunication(models.Model):
     processing_result = fields.Text(
         string="Processing Result",
         help="Notification processing result",
+    )
+    xml_content = fields.Text(
+        string="XML Content",
+        help="XML content of the comunication",
+    )
+    soap_content = fields.Text(
+        string="SOAP Content",
+        help="SOAP content of the comunication",
     )

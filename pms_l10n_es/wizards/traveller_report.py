@@ -26,21 +26,237 @@ CODE_DNI = "D"
 CODE_NIE = "N"
 # Disable insecure request warnings
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-_logger = logging.getLogger(__name__)
 
 
 def string_to_zip_to_base64(string_data):
-    try:
-        zip_buffer = io.BytesIO()
-        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
-            zip_file.writestr("data.xml", string_data.encode("utf-8"))
-        zip_buffer.seek(0)
-        zip_data = zip_buffer.read()
-        zip_base64 = base64.b64encode(zip_data)
-        return zip_base64.decode()
-    except Exception as e:
-        _logger.error("Error while converting string to ZIP to Base64: %s" % e)
-        return None
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+        zip_file.writestr("data.xml", string_data.encode("utf-8"))
+    zip_buffer.seek(0)
+    zip_data = zip_buffer.read()
+    zip_base64 = base64.b64encode(zip_data)
+    return zip_base64.decode()
+
+
+def ses_xml_payment_elements(contrato, reservation):
+    pago = ET.SubElement(contrato, "pago")
+    payments = reservation.folio_id.payment_ids.filtered(lambda x: x.state == "posted")
+    tipo_pago = "DESTI"
+    if payments:
+        payment = payments[0]
+        tipo_pago = "EFECT" if payment.journal_id.type == "cash" else "PLATF"
+    ET.SubElement(pago, "tipoPago").text = tipo_pago
+
+
+def ses_xml_contract_elements(comunicacion, reservation):
+    contrato = ET.SubElement(comunicacion, "contrato")
+    ET.SubElement(contrato, "referencia").text = reservation.name
+    ET.SubElement(contrato, "fechaContrato").text = str(reservation.date_order)[:10]
+    ET.SubElement(
+        contrato, "fechaEntrada"
+    ).text = f"{str(reservation.checkin)[:10]}T00:00:00"
+    ET.SubElement(
+        contrato, "fechaSalida"
+    ).text = f"{str(reservation.checkout)[:10]}T00:00:00"
+    ET.SubElement(contrato, "numPersonas").text = str(reservation.adults)
+    ses_xml_payment_elements(contrato, reservation)
+
+
+def ses_xml_text_element_and_validate(parent, tag, text, error_message):
+    if text:
+        ET.SubElement(parent, tag).text = text
+    else:
+        raise ValidationError(error_message)
+
+
+def ses_xml_map_document_type(code):
+    if code == CODE_DNI:
+        return "NIF"
+    elif code == CODE_NIE:
+        return "NIE"
+    elif code == CODE_PASSPORT:
+        return "PAS"
+    else:
+        return "OTRO"
+
+
+def ses_xml_person_names_elements(persona, reservation, checkin_partner):
+    if reservation:
+        name = False
+        if reservation.partner_id.firstname:
+            name = reservation.partner_id.firstname
+        elif reservation.partner_name:
+            name = reservation.partner_name.split(" ")[0]
+        ses_xml_text_element_and_validate(
+            persona,
+            "nombre",
+            name,
+            _("The reservation does not have a name."),
+        )
+
+        if reservation.partner_id.lastname:
+            firstname = reservation.partner_id.lastname
+        elif reservation.partner_name and len(reservation.partner_name.split(" ")) > 1:
+            firstname = reservation.partner_name.split(" ")[1]
+        else:
+            firstname = "No aplica"
+        ET.SubElement(persona, "apellido1").text = firstname
+
+    elif checkin_partner:
+        ses_xml_text_element_and_validate(
+            persona,
+            "nombre",
+            checkin_partner.firstname,
+            _("The guest does not have a name."),
+        )
+        ses_xml_text_element_and_validate(
+            persona,
+            "apellido1",
+            checkin_partner.lastname,
+            _("The guest does not have a lastname."),
+        )
+
+        if checkin_partner.document_type.code == CODE_DNI:
+            ses_xml_text_element_and_validate(
+                persona,
+                "apellido2",
+                checkin_partner.partner_id.lastname2,
+                _("The guest does not have a second lastname."),
+            )
+
+
+def ses_xml_person_personal_info_elements(persona, checkin_partner):
+    ET.SubElement(persona, "rol").text = (
+        "TI"
+        if checkin_partner.partner_id.id == checkin_partner.reservation_id.partner_id.id
+        else "VI"
+    )
+
+    ses_xml_person_names_elements(
+        persona, reservation=False, checkin_partner=checkin_partner
+    )
+    ses_xml_text_element_and_validate(
+        persona,
+        "fechaNacimiento",
+        str(checkin_partner.birthdate_date)[:10],
+        _("The guest does not have a birthdate."),
+    )
+
+    if checkin_partner.document_type.code:
+        document_type = ses_xml_map_document_type(checkin_partner.document_type.code)
+        ET.SubElement(persona, "tipoDocumento").text = document_type
+    else:
+        raise ValidationError(_("The guest does not have a document type."))
+
+    ses_xml_text_element_and_validate(
+        persona,
+        "numeroDocumento",
+        checkin_partner.document_number,
+        _("The guest does not have a document number."),
+    )
+
+    if checkin_partner.document_type.code in [CODE_DNI, CODE_NIE]:
+        ses_xml_text_element_and_validate(
+            persona,
+            "soporteDocumento",
+            checkin_partner.support_number,
+            _("The guest does not have a support number."),
+        )
+
+
+def ses_xml_municipality_code(residence_zip):
+    with open(
+        get_module_resource(
+            "pms_l10n_es", "data/", "pms.ine.zip.municipality.ine.relation.csv"
+        ),
+        "r",
+        newline="",
+    ) as f:
+        lector = csv.reader(f)
+        for fila in lector:
+            if residence_zip in fila[0]:
+                return fila[1]
+    raise ValidationError(_("The guest does not have a valid zip code."))
+
+
+def ses_xml_person_address_elements(persona, checkin_partner):
+    direccion = ET.SubElement(persona, "direccion")
+    ses_xml_text_element_and_validate(
+        direccion,
+        "direccion",
+        checkin_partner.residence_street,
+        _("The guest does not have a street."),
+    )
+
+    if checkin_partner.residence_country_id.code == CODE_SPAIN:
+        municipio_code = ses_xml_municipality_code(checkin_partner.residence_zip)
+        if municipio_code:
+            ET.SubElement(direccion, "codigoMunicipio").text = municipio_code
+    else:
+        ses_xml_text_element_and_validate(
+            direccion,
+            "nombreMunicipio",
+            checkin_partner.residence_city,
+            _("The guest does not have a city."),
+        )
+
+    ses_xml_text_element_and_validate(
+        direccion,
+        "cp",
+        checkin_partner.residence_zip,
+        _("The guest does not have a zip code."),
+    )
+    ses_xml_text_element_and_validate(
+        direccion,
+        "pais",
+        checkin_partner.residence_country_id.code_alpha3,
+        _("The guest does not have a country."),
+    )
+
+
+def ses_xml_person_contact_elements(persona, reservation, checkin_partner=False):
+    partner = reservation.partner_id
+    contact_methods = []
+    if checkin_partner:
+        contact_methods.extend(
+            [
+                checkin_partner.mobile,
+                checkin_partner.phone,
+                checkin_partner.email,
+            ]
+        )
+    contact_methods.extend(
+        [
+            partner.mobile,
+            partner.phone,
+            partner.email,
+            reservation.email,
+            reservation.pms_property_id.partner_id.email,
+            reservation.pms_property_id.partner_id.phone,
+        ]
+    )
+
+    for contact in contact_methods:
+        if contact:
+            tag = "telefono" if "@" not in contact else "correo"
+            ET.SubElement(persona, tag).text = contact
+            break
+    else:
+        raise ValidationError(
+            _(
+                "The guest/reservation partner and property does not "
+                "have a contact method (mail or phone)"
+            )
+        )
+
+
+def ses_xml_person_elements(comunicacion, checkin_partner):
+    persona = ET.SubElement(comunicacion, "persona")
+    ses_xml_person_personal_info_elements(persona, checkin_partner)
+    ses_xml_person_address_elements(persona, checkin_partner)
+    ses_xml_person_contact_elements(
+        persona, checkin_partner.reservation_id, checkin_partner
+    )
 
 
 class TravellerReport(models.TransientModel):
@@ -603,45 +819,7 @@ class TravellerReport(models.TransientModel):
         ).text = reservation.pms_property_id.institution_property_id
 
         # SOLICITUD > COMUNICACION > CONTRATO
-        contrato = ET.SubElement(comunicacion, "contrato")
-
-        # SOLICITUD > COMUNICACION > CONTRATO > REFERENCIA
-        ET.SubElement(contrato, "referencia").text = reservation.name
-
-        # SOLICITUD > COMUNICACION > CONTRATO > FECHA CONTRATO
-        ET.SubElement(contrato, "fechaContrato").text = str(reservation.date_order)[
-            0:10
-        ]
-
-        # SOLICITUD > COMUNICACION > CONTRATO > FECHA ENTRADA
-        ET.SubElement(contrato, "fechaEntrada").text = (
-            str(reservation.checkin)[0:10] + "T00:00:00"
-        )
-
-        # SOLICITUD > COMUNICACION > CONTRATO > FECHA SALIDA
-        ET.SubElement(contrato, "fechaSalida").text = (
-            str(reservation.checkout)[0:10] + "T00:00:00"
-        )
-
-        # SOLICITUD > COMUNICACION > CONTRATO > NUM PERSONAS
-        ET.SubElement(contrato, "numPersonas").text = str(reservation.adults)
-
-        # SOLICITUD > COMUNICACION > CONTRATO > PAGO
-        pago = ET.SubElement(contrato, "pago")
-
-        # SOLICITUD > COMUNICACION > CONTRATO > PAGO > TIPO PAGO
-        # paymentw not cancelled or draft
-        payments = reservation.folio_id.payment_ids.filtered(
-            lambda x: x.state == "posted"
-        )
-        if payments:
-            payment = payments[0]
-            if payment.journal_id.type == "cash":
-                ET.SubElement(pago, "tipoPago").text = "EFECT"
-            else:
-                ET.SubElement(pago, "tipoPago").text = "PLATF"
-        else:
-            ET.SubElement(pago, "tipoPago").text = "DESTI"
+        ses_xml_contract_elements(comunicacion, reservation)
 
         # SOLICITUD > COMUNICACION > PERSONA
         persona = ET.SubElement(comunicacion, "persona")
@@ -650,42 +828,8 @@ class TravellerReport(models.TransientModel):
         ET.SubElement(persona, "rol").text = "TI"
 
         # SOLICITUD > COMUNICACION > PERSONA > NOMBRE
-        if reservation.partner_id.firstname:
-            ET.SubElement(persona, "nombre").text = reservation.partner_id.firstname
-        elif reservation.partner_name:
-            ET.SubElement(persona, "nombre").text = reservation.partner_name.split(" ")[
-                0
-            ]
-        else:
-            raise ValidationError(_("The reservation does not have a name."))
-
-        # SOLICITUD > COMUNICACION > PERSONA > APELLIDO1
-        if reservation.partner_id.lastname:
-            ET.SubElement(persona, "apellido1").text = reservation.partner_id.lastname
-        elif reservation.partner_name and len(reservation.partner_name.split(" ")) > 1:
-            ET.SubElement(persona, "apellido1").text = reservation.partner_name.split(
-                " "
-            )[1]
-        else:
-            ET.SubElement(persona, "apellido1").text = "No aplica"
-
-        # SOLICITUD > COMUNICACION > PERSONA > TELEFONO
-        if reservation.partner_id.mobile:
-            ET.SubElement(persona, "telefono").text = reservation.partner_id.mobile
-        elif reservation.partner_id.phone:
-            ET.SubElement(persona, "telefono").text = reservation.partner_id.phone
-            # SOLICITUD > COMUNICACION > PERSONA > EMAIL
-        elif reservation.partner_id.email:
-            ET.SubElement(persona, "correo").text = reservation.partner_id.email
-        elif reservation.pms_property_id.email:
-            ET.SubElement(persona, "correo").text = reservation.pms_property_id.email
-        else:
-            raise ValidationError(
-                _(
-                    "The reservation does not have a phone or email "
-                    "or set a default property email."
-                )
-            )
+        ses_xml_person_names_elements(persona, reservation, checkin_partner=None)
+        ses_xml_person_contact_elements(persona, reservation)
 
     def generate_xml_reservations(self, reservation_ids):
         if not reservation_ids:
@@ -707,7 +851,7 @@ class TravellerReport(models.TransientModel):
         )
         return xml_str
 
-    # SES RESERFVATIONS TRAVELLER REPORT
+    # SES RESERVATIONS TRAVELLER REPORT
     def generate_ses_travellers_list(self, pms_property_id, date_target):
         reservation_ids = (
             self.env["pms.reservation"]
@@ -722,203 +866,14 @@ class TravellerReport(models.TransientModel):
         return self.generate_xml_reservations_travellers_report(reservation_ids)
 
     def generate_xml_reservation_travellers_report(self, solicitud, reservation_id):
-
         reservation = self.env["pms.reservation"].browse(reservation_id)
-
-        # SOLICITUD -> COMUNICACION
         comunicacion = ET.SubElement(solicitud, "comunicacion")
-
-        # SOLICITUD -> COMUNICACION -> CONTRATO
-        contrato = ET.SubElement(comunicacion, "contrato")
-
-        # SOLICITUD -> COMUNICACION -> CONTRATO -> REFERENCIA
-        ET.SubElement(contrato, "referencia").text = reservation.name
-
-        # SOLICITUD -> COMUNICACION -> CONTRATO -> FECHA CONTRATO
-        ET.SubElement(contrato, "fechaContrato").text = str(reservation.date_order)[
-            0:10
-        ]
-
-        # SOLICITUD -> COMUNICACION -> CONTRATO -> FECHA ENTRADA
-        ET.SubElement(contrato, "fechaEntrada").text = (
-            str(reservation.checkin)[0:10] + "T00:00:00"
-        )
-
-        # SOLICITUD -> COMUNICACION -> CONTRATO -> FECHA SALIDA
-        ET.SubElement(contrato, "fechaSalida").text = (
-            str(reservation.checkout)[0:10] + "T00:00:00"
-        )
-
-        # SOLICITUD -> COMUNICACION -> CONTRATO -> NUM PERSONAS
-        ET.SubElement(contrato, "numPersonas").text = str(reservation.adults)
-
-        # SOLICITUD -> COMUNICACION -> CONTRATO -> PAGO
-        pago = ET.SubElement(contrato, "pago")
-
-        # SOLICITUD > COMUNICACION > CONTRATO > PAGO > TIPO PAGO
-        # paymentw not cancelled or draft
-        payments = reservation.folio_id.payment_ids.filtered(
-            lambda x: x.state == "posted"
-        )
-        if payments:
-            payment = payments[0]
-            if payment.journal_id.type == "cash":
-                ET.SubElement(pago, "tipoPago").text = "EFECT"
-            else:
-                ET.SubElement(pago, "tipoPago").text = "PLATF"
-        else:
-            ET.SubElement(pago, "tipoPago").text = "DESTI"
+        ses_xml_contract_elements(comunicacion, reservation)
 
         for checkin_partner in reservation.checkin_partner_ids.filtered(
             lambda x: x.state == "onboard"
         ):
-            # SOLICITUD -> COMUNICACION -> PERSONA
-            persona = ET.SubElement(comunicacion, "persona")
-
-            # SOLICITUD -> COMUNICACION -> PERSONA -> ROL
-            ET.SubElement(persona, "rol").text = (
-                "TI"
-                if checkin_partner.partner_id.id == reservation.partner_id.id
-                else "VI"
-            )
-
-            # SOLICITUD -> COMUNICACION -> PERSONA -> NOMBRE
-            if checkin_partner.firstname:
-                ET.SubElement(persona, "nombre").text = checkin_partner.firstname
-            else:
-                raise ValidationError(_("The guest does not have a name."))
-
-            # SOLICITUD -> COMUNICACION -> PERSONA -> APELLIDO1
-            if checkin_partner.lastname:
-                ET.SubElement(persona, "apellido1").text = checkin_partner.lastname
-            else:
-                raise ValidationError(_("The guest does not have a lastname."))
-
-            # SOLICITUD -> COMUNICACION -> PERSONA -> TIPO DOCUMENTO
-            if checkin_partner.document_type.code:
-                if checkin_partner.document_type.code == CODE_DNI:
-                    document_type = "NIF"
-                elif checkin_partner.document_type.code == CODE_NIE:
-                    document_type = "NIE"
-                elif checkin_partner.document_type.code == CODE_PASSPORT:
-                    document_type = "PAS"
-                else:
-                    document_type = "OTRO"
-                ET.SubElement(persona, "tipoDocumento").text = document_type
-            else:
-                raise ValidationError(_("The guest does not have a document type."))
-
-            # SOLICITUD -> COMUNICACION -> PERSONA -> SEGUNDO APELLIDO2
-            if checkin_partner.document_type.code == CODE_DNI:
-                if checkin_partner.partner_id.lastname2:
-                    ET.SubElement(
-                        persona, "apellido2"
-                    ).text = checkin_partner.partner_id.lastname2
-                else:
-                    raise ValidationError(
-                        _("The guest does not have a second lastname.")
-                    )
-
-            # SOLICITUD -> COMUNICACION -> PERSONA -> NUMERO DOCUMENTO
-            if checkin_partner.document_number:
-                ET.SubElement(
-                    persona, "numeroDocumento"
-                ).text = checkin_partner.document_number
-            else:
-                raise ValidationError(_("The guest does not have a document number."))
-
-            # SOLICITUD -> COMUNICACION -> PERSONA -> NUMERO DE SOPORTE
-            if (
-                checkin_partner.document_type.code == CODE_DNI
-                or checkin_partner.document_type.code == CODE_NIE
-            ):
-                if checkin_partner.support_number:
-                    ET.SubElement(
-                        persona, "soporteDocumento"
-                    ).text = checkin_partner.support_number
-                else:
-                    raise ValidationError(
-                        _("The guest does not have a support number.")
-                    )
-
-            # SOLICITUD -> COMUNICACION -> PERSONA -> FECHA NACIMIENTO
-            if checkin_partner.birthdate_date:
-                ET.SubElement(persona, "fechaNacimiento").text = str(
-                    checkin_partner.birthdate_date
-                )[0:10]
-            else:
-                raise ValidationError(_("The guest does not have a birthdate."))
-
-            # SOLICITUD -> COMUNICACION -> PERSONA -> DIRECCION
-            direccion = ET.SubElement(persona, "direccion")
-
-            # SOLICITUD -> COMUNICACION -> PERSONA -> DIRECCION -> DIRECCION
-            if checkin_partner.residence_street:
-                ET.SubElement(
-                    direccion, "direccion"
-                ).text = checkin_partner.residence_street
-            else:
-                raise ValidationError(_("The guest does not have a street."))
-
-            # SOLICITUD -> COMUNICACION -> PERSONA -> DIRECCION -> MUNICIPIO (INE) / LOCALIDAD
-            if checkin_partner.residence_country_id.code == CODE_SPAIN:
-                with open(
-                    get_module_resource(
-                        "pms_l10n_es",
-                        "data/",
-                        "pms.ine.zip.municipality.ine.relation.csv",
-                    ),
-                    "r",
-                    newline="",
-                ) as f:
-                    lector = csv.reader(f)
-                    for fila in lector:
-                        if checkin_partner.residence_zip in fila[0]:
-                            ET.SubElement(direccion, "codigoMunicipio").text = fila[1]
-                            break
-            else:
-                if checkin_partner.residence_city:
-                    # SOLICITUD -> COMUNICACION -> PERSONA -> DIRECCION -> LOCALIDAD
-                    ET.SubElement(
-                        direccion, "nombreMunicipio"
-                    ).text = checkin_partner.residence_city
-                else:
-                    raise ValidationError(_("The guest does not have a city."))
-
-            # SOLICITUD -> COMUNICACION -> PERSONA -> DIRECCION -> CP
-            if checkin_partner.residence_zip:
-                ET.SubElement(direccion, "cp").text = checkin_partner.residence_zip
-            else:
-                raise ValidationError(_("The guest does not have a zip code."))
-
-            # SOLICITUD -> COMUNICACION -> PERSONA -> DIRECCION -> PAIS
-            if checkin_partner.residence_country_id:
-                ET.SubElement(
-                    direccion, "pais"
-                ).text = checkin_partner.residence_country_id.code_alpha3
-            else:
-                raise ValidationError(_("The guest does not have a country."))
-
-            # SOLICITUD -> COMUNICACION -> PERSONA -> TELEFONO
-            if checkin_partner.reservation_id.partner_id.mobile:
-                ET.SubElement(persona, "telefono").text = checkin_partner.mobile
-            elif checkin_partner.reservation_id.partner_id.phone:
-                ET.SubElement(persona, "telefono").text = checkin_partner.phone
-            # SOLICITUD -> COMUNICACION -> PERSONA -> EMAIL
-            elif checkin_partner.reservation_id.partner_id.email:
-                ET.SubElement(persona, "correo").text = checkin_partner.email
-            elif checkin_partner.reservation_id.email:
-                ET.SubElement(
-                    persona, "correo"
-                ).text = checkin_partner.reservation_id.email
-            elif checkin_partner.reservation_id.pms_property_id.email:
-                ET.SubElement(
-                    persona, "correo"
-                ).text = checkin_partner.reservation_id.pms_property_id.email
-            else:
-                raise ValidationError(
-                    _("The guest does not have a contact method (mail or phone)")
-                )
+            ses_xml_person_elements(comunicacion, checkin_partner)
 
     def generate_xml_reservations_travellers_report(self, reservation_ids):
         if not reservation_ids:
@@ -978,10 +933,12 @@ class TravellerReport(models.TransientModel):
         return xml_str
 
     @api.model
-    def send_comunication_ses(self, reservation_record, entity, operation_type):
-        user = reservation_record.pms_property_id.institution_user
-        password = reservation_record.pms_property_id.institution_password
-        ses_url = reservation_record.pms_property_id.ses_url
+    def send_comunication_ses(self, comunication):
+
+        data = False
+        user = comunication.reservation_id.pms_property_id.institution_user
+        password = comunication.reservation_id.pms_property_id.institution_password
+        ses_url = comunication.reservation_id.pms_property_id.ses_url
 
         user_and_password_base64 = "Basic " + base64.b64encode(
             bytes(user + ":" + password, "utf-8")
@@ -991,13 +948,14 @@ class TravellerReport(models.TransientModel):
             "Authorization": user_and_password_base64,
             "Content-Type": "text/xml; charset=utf-8",
         }
-        lessor_id = reservation_record.pms_property_id.institution_lessor_id
-        if entity == "RH":
-            data = self.generate_xml_reservations([reservation_record.id])
-        elif entity == "PV":
+        lessor_id = comunication.reservation_id.pms_property_id.institution_lessor_id
+        if comunication.entity == "RH":
+            data = self.generate_xml_reservations([comunication.reservation_id.id])
+        elif comunication.entity == "PV":
             data = self.generate_xml_reservation_travellers_report(
-                [reservation_record.id]
+                [comunication.reservation_id.id]
             )
+        comunication.xml_content = data
         data = string_to_zip_to_base64(data)
 
         payload = f"""
@@ -1010,8 +968,8 @@ class TravellerReport(models.TransientModel):
                             <cabecera>
                                 <codigoArrendador>{lessor_id}</codigoArrendador>
                                 <aplicacion>Roomdoo</aplicacion>
-                                <tipoOperacion>{operation_type}</tipoOperacion>
-                                <tipoComunicacion>{entity}</tipoComunicacion>
+                                <tipoOperacion>{comunication.operation}</tipoOperacion>
+                                <tipoComunicacion>{comunication.entity}</tipoComunicacion>
                             </cabecera>
                             <solicitud>{data}</solicitud>
                         </peticion>
@@ -1019,12 +977,27 @@ class TravellerReport(models.TransientModel):
                 </soapenv:Body>
             </soapenv:Envelope>
             """
-        soap_response = requests.request(
-            "POST", ses_url, headers=headers, data=payload, verify=False
-        )
-        root = ET.fromstring(soap_response.text)
-        batch_number = root.find(".//lote").text
-        return batch_number
+        comunication.soap_content = payload
+        try:
+            comunication.notification_time = fields.Datetime.now()
+            soap_response = requests.request(
+                "POST", ses_url, headers=headers, data=payload, verify=False
+            )
+            root = ET.fromstring(soap_response.text)
+            batch_number = root.find(".//lote").text
+            if comunication.operation == "A":
+                comunication.state = "to_process"
+            else:
+                comunication.state = "processed"
+            comunication.comunication_id = batch_number
+            return
+        except requests.exceptions.ConnectionError:
+            comunication.processing_result = "Cannot establish the connection."
+        except requests.exceptions.Timeout:
+            comunication.processing_result = "The request took too long to complete."
+        except requests.exceptions.RequestException as e:
+            comunication.processing_result = f"Error in the request: {e}"
+        comunication.state = "error_sending"
 
     def send_pending_reservation_notifications(self):
         for _record in self:
@@ -1033,19 +1006,7 @@ class TravellerReport(models.TransientModel):
                     ("state", "=", "to_send"),
                 ]
             ):
-                try:
-                    comunication.comunication_id = self.send_comunication_ses(
-                        comunication.reservation_id,
-                        comunication.entity,
-                        comunication.operation,
-                    )
-                    if comunication.operation == "A":
-                        comunication.state = "to_process"
-                    else:
-                        comunication.state = "processed"
-                except Exception as e:
-                    comunication.state = "error_sending"
-                    comunication.error_message = str(e)
+                self.send_comunication_ses(comunication)
 
     def process_sent_comunications(self):
         for _record in self:
@@ -1095,7 +1056,7 @@ class TravellerReport(models.TransientModel):
                         </soapenv:Envelope>
                     """
                 try:
-
+                    comunication.processing_time = fields.Datetime.now()
                     soap_response = requests.request(
                         "POST",
                         pms_property.ses_url,
@@ -1107,5 +1068,13 @@ class TravellerReport(models.TransientModel):
                     error = root.find(".//error")
                     comunication.state = "processed"
                     comunication.processing_result = error or "ok"
-                except Exception:
-                    comunication.state = "error_processing"
+                    return
+                except requests.exceptions.ConnectionError:
+                    comunication.processing_result = "Cannot establish the connection."
+                except requests.exceptions.Timeout:
+                    comunication.processing_result = (
+                        "The request took too long to complete."
+                    )
+                except requests.exceptions.RequestException as e:
+                    comunication.processing_result = f"Error in the request: {e}"
+                comunication.state = "error_processing"
