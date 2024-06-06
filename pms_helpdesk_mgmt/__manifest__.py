@@ -18,6 +18,7 @@
         "views/helpdesk_ticket_team_views.xml",
     ],
     "qweb": ["static/src/xml/*.xml"],
+    "demo": ["demo/helpdesk_demo.xml"],
     "application": True,
     "installable": True,
     "auto_install": True,

@@ -1,0 +1,242 @@
+<?xml version="1.0" ?>
+<odoo noupdate="1">
+    <!-- User Demo -->
+    <!-- <record id="base.user_demo" model="res.users">
+        <field name="groups_id" eval="[(4,ref('group_helpdesk_user'))]" />
+    </record> -->
+    <!-- Categories -->
+    <record id="helpdesk_mgmt.helpdesk_category_1" model="helpdesk.ticket.category">
+        <field eval="&quot;IT Software&quot;" name="name" />
+        <field eval="&quot;1&quot;" name="active" />
+        <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_2" />
+    </record>
+    <record id="helpdesk_mgmt.helpdesk_category_2" model="helpdesk.ticket.category">
+        <field eval="&quot;Internet&quot;" name="name" />
+        <field eval="&quot;1&quot;" name="active" />
+        <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_2" />
+    </record>
+    <record id="helpdesk_mgmt.helpdesk_category_3" model="helpdesk.ticket.category">
+        <field eval="&quot;PC Printers&quot;" name="name" />
+        <field eval="&quot;1&quot;" name="active" />
+        <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_2" />
+    </record>
+    <record id="helpdesk_category_4" model="helpdesk.ticket.category">
+        <field eval="&quot;Odoo&quot;" name="name" />
+        <field eval="&quot;1&quot;" name="active" />
+        <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_2" />
+    </record>
+        <record id="helpdesk_category_5" model="helpdesk.ticket.category">
+        <field eval="&quot;Access Control&quot;" name="name" />
+        <field eval="&quot;1&quot;" name="active" />
+        <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_2" />
+    </record>
+    <record id="helpdesk_category_6" model="helpdesk.ticket.category">
+        <field eval="&quot;Roomdoo&quot;" name="name" />
+        <field eval="&quot;1&quot;" name="active" />
+        <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_2" />
+    </record>
+    <record id="helpdesk_category_7" model="helpdesk.ticket.category">
+        <field eval="&quot;Masonry Carpentry&quot;" name="name" />
+        <field eval="&quot;1&quot;" name="active" />
+        <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_1" />
+    </record>
+    <record id="helpdesk_category_8" model="helpdesk.ticket.category">
+        <field eval="&quot;Energy&quot;" name="name" />
+        <field eval="&quot;1&quot;" name="active" />
+        <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_1" />
+    </record>
+    <record id="helpdesk_category_9" model="helpdesk.ticket.category">
+        <field eval="&quot;Plumbing&quot;" name="name" />
+        <field eval="&quot;1&quot;" name="active" />
+        <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_1" />
+    </record>
+    <record id="helpdesk_category_10" model="helpdesk.ticket.category">
+        <field eval="&quot;Heating&quot;" name="name" />
+        <field eval="&quot;1&quot;" name="active" />
+        <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_1" />
+    </record>
+    <record id="helpdesk_category_11" model="helpdesk.ticket.category">
+        <field eval="&quot;Products&quot;" name="name" />
+        <field eval="&quot;1&quot;" name="active" />
+        <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_1" />
+    </record>
+    <!-- Mail aliases -->
+    <record id="mail_alias_1" model="mail.alias">
+        <field eval="&quot;Secound Alias for tickets&quot;" name="alias_name" />
+        <field ref="model_helpdesk_ticket" name="alias_model_id" />
+    </record>
+    <!-- Teams -->
+    <record id="helpdesk_mgmt.helpdesk_team_1" model="helpdesk.ticket.team">
+        <field eval="&quot;Procurement&quot;" name="name" />
+        <field
+            name="user_ids"
+            eval="[(6,0,[ref('base.user_root'), ref('base.user_demo')])]"
+        />
+        <field eval="&quot;1&quot;" name="active" />
+        <field
+            name="category_ids"
+            eval="[(6,0,[ref('helpdesk_category_5'), ref('helpdesk_category_6'), ref('helpdesk_category_7'),
+                ref('helpdesk_category_8')])]"
+        />
+        <field name="alias_id" ref="mail_alias_1" />
+    </record>
+    <record id="helpdesk_mgmt.helpdesk_team_2" model="helpdesk.ticket.team">
+        <field eval="&quot;IT Software&quot;" name="name" />
+        <field
+            name="category_ids"
+            eval="[(6,0,[ref('helpdesk_mgmt.helpdesk_category_1'),
+                    ref('helpdesk_mgmt.helpdesk_category_2'),
+                    ref('helpdesk_mgmt.helpdesk_category_3'),
+                    ref('helpdesk_category_4'),
+                    ref('helpdesk_category_9'),
+                    ref('helpdesk_category_10'),
+                    ref('helpdesk_category_11')])]"
+        />
+    </record>
+    <record id="helpdesk_mgmt.helpdesk_team_3" model="helpdesk.ticket.team" />
+    <!-- <record id="helpdesk_mgmt.helpdesk_team_4" model="helpdesk.ticket.team" /> -->
+    <!-- Tags -->
+    <record id="helpdesk_mgmt.helpdesk_tag_1" model="helpdesk.ticket.tag">
+        <field eval="&quot;Coffe Shop&quot;" name="name" />
+        <field eval="&quot;1&quot;" name="color" />
+        <field eval="&quot;1&quot;" name="active" />
+    </record>
+    <record id="helpdesk_mgmt.helpdesk_tag_2" model="helpdesk.ticket.tag">
+        <field eval="&quot;Room Zone&quot;" name="name" />
+        <field eval="&quot;2&quot;" name="color" />
+        <field eval="&quot;1&quot;" name="active" />
+    </record>
+    <record id="helpdesk_mgmt.helpdesk_tag_3" model="helpdesk.ticket.tag">
+        <field eval="&quot;Parking Zone&quot;" name="name" />
+        <field eval="&quot;3&quot;" name="color" />
+        <field eval="&quot;1&quot;" name="active" />
+    </record>
+    <record id="helpdesk_tag_4" model="helpdesk.ticket.tag">
+        <field eval="&quot;Elevator Zone&quot;" name="name" />
+        <field eval="&quot;1&quot;" name="color" />
+        <field eval="&quot;1&quot;" name="active" />
+    </record>
+    <record id="helpdesk_tag_5" model="helpdesk.ticket.tag">
+        <field eval="&quot;Air Conditioning Zone&quot;" name="name" />
+        <field eval="&quot;2&quot;" name="color" />
+        <field eval="&quot;1&quot;" name="active" />
+    </record>
+    <record id="helpdesk_tag_6" model="helpdesk.ticket.tag">
+        <field eval="&quot;Reception Zone&quot;" name="name" />
+        <field eval="&quot;3&quot;" name="color" />
+        <field eval="&quot;1&quot;" name="active" />
+    </record>
+    <record id="helpdesk_tag_7" model="helpdesk.ticket.tag">
+        <field eval="&quot;Other Common Areas&quot;" name="name" />
+        <field eval="&quot;2&quot;" name="color" />
+        <field eval="&quot;1&quot;" name="active" />
+    </record>
+    <record id="helpdesk_tag_8" model="helpdesk.ticket.tag">
+        <field eval="&quot;Meeting Room Zone&quot;" name="name" />
+        <field eval="&quot;3&quot;" name="color" />
+        <field eval="&quot;1&quot;" name="active" />
+    </record>
+    <!-- Tickets -->
+    <!-- <record id="helpdesk_mgmt.helpdesk_ticket_5" model="helpdesk.ticket">
+        <field name="team_id" ref="helpdesk_mgmt.helpdesk_team_1" />
+        <field name="category_id" ref="helpdesk_category_11" />
+        <field name="property_id" ref="pms.property_1" />
+        <field name="room_id" ref="pms.pms_room_4" />
+    </record> -->
+            <!-- <record id="helpdesk_mgmt.helpdesk_ticket_1" model="helpdesk.ticket">
+            <field name="team_id" ref="helpdesk_mgmt.helpdesk_team_2" />
+            <field name="project_id" ref="project_1" />
+            <field name="task_id" ref="project_task_1" />
+            <field name="planned_hours" eval="5" />
+        </record>
+    <record id="helpdesk_ticket_2" model="helpdesk.ticket">
+        <field eval="&quot;Damaged Products&quot;" name="name" />
+        <field eval="&quot;Damaged Products&quot;" name="description" />
+        <field eval="&quot;Alison Hardwell&quot;" name="partner_name" />
+        <field eval="&quot;0&quot;" name="priority" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="stage_id" ref="helpdesk_ticket_stage_new" />
+        <field name="channel_id" ref="helpdesk_ticket_channel_web" />
+        <field name="partner_id" ref="base.res_partner_2" />
+        <field name="team_id" ref="helpdesk_team_1" />
+        <field name="category_id" ref="helpdesk_ticket_category_11" />
+        <field name="property_id" ref="pms_property_1" />
+        <field name="property_id" ref="pms_room_1" />
+    </record>
+    <record id="helpdesk_ticket_3" model="helpdesk.ticket">
+        <field eval="&quot;Problems in the bathroom&quot;" name="name" />
+        <field eval="&quot;Problems in the bathroom&quot;" name="description" />
+        <field eval="&quot;Jaime Bajozano&quot;" name="partner_name" />
+        <field eval="&quot;contact@tecsas.fr&quot;" name="partner_email" />
+        <field eval="&quot;2&quot;" name="priority" />
+        <field eval="[(6,0,[ref('helpdesk_tag_2')])]" name="tag_ids" />
+        <field name="user_id" ref="base.user_root" />
+        <field name="stage_id" ref="helpdesk_ticket_stage_new" />
+        <field name="channel_id" ref="helpdesk_ticket_channel_other" />
+        <field name="partner_id" ref="base.res_partner_18" />
+        <field name="team_id" ref="helpdesk_team_1" />
+        <field name="category_id" ref="helpdesk_ticket_category_9" />
+        <field name="property_id" ref="pms_property_1" />
+        <field name="property_id" ref="pms_room_3" />
+    </record>
+    <record id="helpdesk_ticket_4" model="helpdesk.ticket">
+        <field eval="&quot;Product quality not maintained&quot;" name="name" />
+        <field eval="&quot;Product quality not maintained&quot;" name="description" />
+        <field eval="&quot;Jamie Mads&quot;" name="partner_name" />
+        <field eval="&quot;2&quot;" name="priority" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="stage_id" ref="helpdesk_ticket_stage_in_progress" />
+        <field eval="[(6,0,[ref('helpdesk_tag_1')])]" name="tag_ids" />
+        <field name="partner_id" ref="base.res_partner_10" />
+        <field name="team_id" ref="helpdesk_team_1" />
+        <field name="channel_id" ref="helpdesk_ticket_channel_phone" />
+        <field name="category_id" ref="helpdesk_ticket_category_9" />
+        <field name="property_id" ref="pms_property_1" />
+        <field name="property_id" ref="pms_room_5" />
+    </record>
+    <record id="helpdesk_ticket_5" model="helpdesk.ticket">
+        <field eval="&quot;Battery PC does not charge&quot;" name="name" />
+        <field eval="&quot;Battery PC does not charge&quot;" name="description" />
+        <field eval="&quot;3&quot;" name="priority" />
+        <field name="user_id" ref="base.user_root" />
+        <field name="partner_id" ref="base.res_partner_12" />
+        <field eval="[(6,0,[ref('helpdesk_tag_6')])]" name="tag_ids" />
+        <field name="team_id" ref="helpdesk_team_2" />
+        <field name="stage_id" ref="helpdesk_ticket_stage_in_progress" />
+        <field name="category_id" ref="helpdesk_ticket_category_1" />
+        <field name="property_id" ref="pms_property_1" />
+        <field name="property_id" ref="pms_room_6" />
+    </record>
+    <record id="helpdesk_ticket_6" model="helpdesk.ticket">
+        <field
+            eval="&quot;Problem with the energy&quot;"
+            name="name"
+        />
+        <field
+            eval="&quot;Problem with the energy&quot;"
+            name="description"
+        />
+        <field eval="&quot;1&quot;" name="priority" />
+        <field eval="[(6,0,[ref('helpdesk_tag_7')])]" name="tag_ids" />
+        <field name="user_id" ref="base.user_root" />
+        <field name="stage_id" ref="helpdesk_ticket_stage_awaiting" />
+        <field name="partner_id" ref="base.res_partner_12" />
+        <field name="team_id" ref="helpdesk_team_1" />
+        <field name="category_id" ref="helpdesk_ticket_category_8" />
+        <field name="property_id" ref="pms_property_1" />
+        <field name="property_id" ref="pms_room_11" />
+    </record>
+    <record id="helpdesk_ticket_7" model="helpdesk.ticket">
+        <field eval="&quot;Roomdoo Problems&quot;" name="name" />
+        <field eval="&quot;Roomdoo Problems&quot;" name="description" />
+        <field eval="&quot;1&quot;" name="priority" />
+        <field eval="[(6,0,[ref('helpdesk_tag_6')])]" name="tag_ids" />
+        <field name="user_id" ref="base.user_root" />
+        <field name="stage_id" ref="helpdesk_ticket_stage_done" />
+        <field name="partner_id" ref="base.res_partner_2" />
+        <field name="team_id" ref="helpdesk_team_1" />
+        <field name="category_id" ref="helpdesk_ticket_category_6" />
+        <field name="property_id" ref="pms_property_1" />
+        <field name="property_id" ref="pms_room_8" />
+    </record> -->
+</odoo>
