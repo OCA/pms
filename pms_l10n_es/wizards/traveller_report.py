@@ -951,7 +951,7 @@ class TravellerReport(models.TransientModel):
         if communication.entity == "RH":
             data = self.generate_xml_reservations([communication.reservation_id.id])
         elif communication.entity == "PV":
-            data = self.generate_xml_reservation_travellers_report(
+            data = self.generate_xml_reservations_travellers_report(
                 [communication.reservation_id.id]
             )
         communication.communication_xml = data
@@ -1003,89 +1003,112 @@ class TravellerReport(models.TransientModel):
             communication.processing_result = f"Error in the request: {e}"
         communication.state = "error_sending"
 
-    def send_pending_reservation_notifications(self):
-        for _record in self:
-            for communication in self.env["pms.ses.communication"].search(
-                [
-                    ("state", "=", "to_send"),
-                ]
-            ):
-                self.send_communication_ses(communication)
-
+    @api.model
     def process_sent_communications(self):
-        for _record in self:
-            for communication in self.env["pms.ses.communication"].search(
-                [
-                    ("state", "=", "to_process"),
-                    ("operation", "!=", "B"),
-                ]
-            ):
-                pms_property = communication.reservation_id.pms_property_id
-                user = pms_property.institution_user
-                password = pms_property.institution_password
+        for communication in self.env["pms.ses.communication"].search(
+            [
+                ("state", "=", "to_process"),
+                ("operation", "!=", "B"),
+            ]
+        ):
+            pms_property = communication.reservation_id.pms_property_id
+            user = pms_property.institution_user
+            password = pms_property.institution_password
 
-                user_and_password_base64 = "Basic " + base64.b64encode(
-                    bytes(user + ":" + password, "utf-8")
-                ).decode("utf-8")
+            user_and_password_base64 = "Basic " + base64.b64encode(
+                bytes(user + ":" + password, "utf-8")
+            ).decode("utf-8")
 
-                headers = {
-                    "Authorization": user_and_password_base64,
-                    "Content-Type": "text/xml; charset=utf-8",
-                }
-                var_xml_get_batch = f"""
-                    <con:lotes
-                    xmlns:con="http://www.neg.hospedajes.mir.es/consultarComunicacion">
-                        <con:lote>{communication.communication_id}</con:lote>
-                    </con:lotes>
+            headers = {
+                "Authorization": user_and_password_base64,
+                "Content-Type": "text/xml; charset=utf-8",
+            }
+            var_xml_get_batch = f"""
+                <con:lotes
+                xmlns:con="http://www.neg.hospedajes.mir.es/consultarComunicacion">
+                    <con:lote>{communication.communication_id}</con:lote>
+                </con:lotes>
+            """
+            communication.query_status_xml = var_xml_get_batch
+            data = string_to_zip_to_base64(var_xml_get_batch)
+            payload = f"""
+                <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                    xmlns:com="http://www.soap.servicios.hospedajes.mir.es/comunicacion">
+                        <soapenv:Header/>
+                        <soapenv:Body>
+                            <com:comunicacionRequest>
+                                <peticion>
+                                    <cabecera>
+                                        <codigoArrendador>{
+                                            pms_property.institution_lessor_id
+                                        }</codigoArrendador>
+                                        <aplicacion>Roomdoo</aplicacion>
+                                        <tipoOperacion>C</tipoOperacion>
+                                    </cabecera>
+                                    <solicitud>{data}</solicitud>
+                                </peticion>
+                            </com:comunicacionRequest>
+                        </soapenv:Body>
+                    </soapenv:Envelope>
                 """
-                communication.query_status_xml = var_xml_get_batch
-                data = string_to_zip_to_base64(var_xml_get_batch)
-                payload = f"""
-                    <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
-                        xmlns:com="http://www.soap.servicios.hospedajes.mir.es/comunicacion">
-                            <soapenv:Header/>
-                            <soapenv:Body>
-                                <com:comunicacionRequest>
-                                    <peticion>
-                                        <cabecera>
-                                            <codigoArrendador>{
-                                                pms_property.institution_lessor_id
-                                            }</codigoArrendador>
-                                            <aplicacion>Roomdoo</aplicacion>
-                                            <tipoOperacion>C</tipoOperacion>
-                                        </cabecera>
-                                        <solicitud>{data}</solicitud>
-                                    </peticion>
-                                </com:comunicacionRequest>
-                            </soapenv:Body>
-                        </soapenv:Envelope>
-                    """
-                communication.query_status_soap = payload
-                try:
-                    communication.query_status_time = fields.Datetime.now()
-                    soap_response = requests.request(
-                        "POST",
-                        pms_property.ses_url,
-                        headers=headers,
-                        data=payload,
-                        verify=False,
-                    )
-                    root = ET.fromstring(soap_response.text)
-                    communication.processing_result = root.find(".//descripcion").text
-                    communication.response_communication_soap = soap_response.text
-                    result_code = root.find(".//codigo").text
-                    communication.response_query_status_soap = soap_response.text
-                    if result_code == "0":
-                        communication.state = "processed"
-                    else:
-                        communication.state = "error_processing"
-                    return
-                except requests.exceptions.ConnectionError:
-                    communication.processing_result = "Cannot establish the connection."
-                except requests.exceptions.Timeout:
-                    communication.processing_result = (
-                        "The request took too long to complete."
-                    )
-                except requests.exceptions.RequestException as e:
-                    communication.processing_result = f"Error in the request: {e}"
-                communication.state = "error_processing"
+            communication.query_status_soap = payload
+            try:
+                communication.query_status_time = fields.Datetime.now()
+                soap_response = requests.request(
+                    "POST",
+                    pms_property.ses_url,
+                    headers=headers,
+                    data=payload,
+                    verify=False,
+                )
+                root = ET.fromstring(soap_response.text)
+                communication.processing_result = root.find(".//descripcion").text
+                communication.response_communication_soap = soap_response.text
+                result_code = root.find(".//codigo").text
+                communication.response_query_status_soap = soap_response.text
+                if result_code == "0":
+                    communication.state = "processed"
+                else:
+                    communication.state = "error_processing"
+                return
+            except requests.exceptions.ConnectionError:
+                communication.processing_result = "Cannot establish the connection."
+            except requests.exceptions.Timeout:
+                communication.processing_result = (
+                    "The request took too long to complete."
+                )
+            except requests.exceptions.RequestException as e:
+                communication.processing_result = f"Error in the request: {e}"
+            communication.state = "error_processing"
+
+    @api.model
+    def send_pending_reservation_notifications(self):
+        for communication in self.env["pms.ses.communication"].search(
+            [
+                ("state", "=", "to_send"),
+            ]
+        ):
+            self.send_communication_ses(communication)
+
+    @api.model
+    def create_pending_notifications_traveller_report(self):
+        domain = [
+            ("state", "=", "onboard"),
+            ("checkin", "=", fields.Datetime.today().date()),
+            ("pms_property_id.institution", "=", "ses"),
+        ]
+        for reservation in (
+            self.env["pms.reservation"]
+            .search(domain)
+            .filtered(
+                lambda x: any(
+                    state == "onboard"
+                    for state in x.checkin_partner_ids.mapped("state")
+                )
+            )
+        ):
+            self.env["pms.reservation"].create_communication(
+                reservation.id,
+                "A",
+                "PV",
+            )

@@ -81,23 +81,6 @@ class PmsReservation(models.Model):
                     self.create_communication(reservation.id, "B", "RH")
                 self.create_communication(reservation.id, "A", "RH")
 
-    def create_notifications_traveller_report(self):
-        for record in self:
-            if (
-                record.pms_property_id.institution == "ses"
-                and record.state == "onboard"
-                and record.checkin == fields.Datetime.today().date()
-                and any(
-                    state == "onboard"
-                    for state in record.checkin_partner_ids.mapped("state")
-                )
-            ):
-                self.create_communication(
-                    record.id,
-                    "A",
-                    "PV",
-                )
-
     def write(self, vals):
         for record in self:
             if record.pms_property_id.institution == "ses":

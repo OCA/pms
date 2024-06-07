@@ -42,13 +42,13 @@ class PmsSesCommunication(models.Model):
         string="State",
         help="State of the communication",
         default="to_send",
+        required=True,
         selection=[
             ("to_send", "Pending Notification"),
-            ("error_sending", "Error Sending"),
             ("to_process", "Pending Processing"),
+            ("error_sending", "Error Sending"),
             ("error_processing", "Error Processing"),
             ("processed", "Processed"),
-            ("error", "Error"),
         ],
     )
     sending_result = fields.Text(

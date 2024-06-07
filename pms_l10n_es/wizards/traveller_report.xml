@@ -76,22 +76,7 @@
                                 ('is_ses', '=', True),
                                 ]}"
                         />
-                        <button
-                            name="send_pending_reservation_notifications"
-                            class="btn btn-primary btn-sm"
-                            type="object"
-                            string="Send SES reservation notifications"
-                            attrs="{'invisible': [('is_ses', '=', False)]}"
-                        />
-                    </div>
-                    <div class="col-3">
-                        <button
-                            name="process_sent_communications"
-                            class="btn btn-primary btn-sm"
-                            type="object"
-                            string="Process sent communications"
-                            attrs="{'invisible': [('is_ses', '=', False)]}"
-                        />
+
                     </div>
                 </div>
             </form>
