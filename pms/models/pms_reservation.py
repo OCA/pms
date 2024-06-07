@@ -2117,7 +2117,8 @@ class PmsReservation(models.Model):
         else:
             raise ValidationError(
                 _(
-                    "The Property and Sale Channel Origin are mandatory in the reservation"
+                    "The Property, Sale Channel Origin "
+                    "and name / partner name / agency are mandatory in the reservation"
                 )
             )
         if vals.get("name", _("New")) == _("New") or "name" not in vals:

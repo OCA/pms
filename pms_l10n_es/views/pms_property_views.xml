@@ -18,7 +18,12 @@
                     <div class="col-6">
                         <group name="property_data">
                             <field name="institution" />
+                            <field name="institution_lessor_id" />
                             <field name="institution_property_id" />
+                            <field
+                                name="ses_url"
+                                attrs="{'invisible': [('institution','!=','ses')]}"
+                            />
                         </group>
                     </div>
                     <div class="col-6 px-0">
@@ -31,6 +36,7 @@
                             class="btn btn-primary btn-sm"
                             type="object"
                             string="Test user/password"
+                            attrs="{'invisible': [('institution','=','ses')]}"
                         />
                     </div>
                 </div>
