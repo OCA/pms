@@ -3,6 +3,8 @@ import logging
 from odoo import api, fields, models
 
 CODE_SPAIN = "ES"
+CODE_NIF = "D"
+CODE_NIE = "N"
 
 _logger = logging.getLogger(__name__)
 
@@ -34,9 +36,9 @@ class PmsCheckinPartner(models.Model):
                     record.support_number = False
 
     @api.model
-    def _checkin_mandatory_fields(self, country=False, depends=False):
+    def _checkin_mandatory_fields(self, residence_country=False, document_type=False):
         mandatory_fields = super(PmsCheckinPartner, self)._checkin_mandatory_fields(
-            depends
+            residence_country, document_type
         )
         mandatory_fields.extend(
             [
@@ -46,20 +48,35 @@ class PmsCheckinPartner(models.Model):
                 "document_type",
                 "document_expedition_date",
                 "nationality_id",
+                "residence_street",
+                "residence_city",
+                "residence_country_id",
+                "residence_zip",
             ]
         )
-        if depends or (country and country.code == CODE_SPAIN):
+
+        if residence_country and residence_country.code == CODE_SPAIN:
             mandatory_fields.extend(
                 [
                     "residence_state_id",
-                    "residence_street",
-                    "residence_city",
+                ]
+            )
+        if document_type.code and document_type.code == CODE_NIF:
+            mandatory_fields.extend(
+                [
+                    "lastname2",
+                ]
+            )
+        if document_type and document_type.code in [CODE_NIF, CODE_NIE]:
+            mandatory_fields.extend(
+                [
+                    "support_number",
                 ]
             )
         return mandatory_fields
 
     @api.model
-    def _checkin_manual_fields(self, country=False, depends=False):
-        manual_fields = super(PmsCheckinPartner, self)._checkin_manual_fields(depends)
+    def _checkin_manual_fields(self, country=False):
+        manual_fields = super(PmsCheckinPartner, self)._checkin_manual_fields()
         manual_fields.extend(["support_number"])
         return manual_fields

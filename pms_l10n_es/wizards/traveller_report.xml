@@ -9,10 +9,40 @@
                 <div class="row">
                     <div class="col-12">
                         <group>
+                            <field name="is_ses" invisible="1" />
                             <field name="pms_property_id" />
-                            <field name="date_target" />
+                            <field
+                                name="report_type"
+                                attrs="{'invisible': [('is_ses', '=', False)]}"
+                            />
+                            <field
+                                name="date_target"
+                                attrs="{'invisible': [('is_ses', '=', True), ('report_type', '=', 'reservations')]}"
+                            />
+                            <field
+                                name="date_from"
+                                attrs="{'invisible': [
+                                '|',
+                                '&amp;',
+                                ('is_ses', '=', True),
+                                ('report_type', '=', 'travellers'),
+                                ('is_ses', '=', False),
+                                ]}"
+                            />
+                            <field
+                                name="date_to"
+                                attrs="{'invisible': [
+                                '|',
+                                '&amp;',
+                                ('is_ses', '=', True),
+                                ('report_type', '=', 'travellers'),
+                                ('is_ses', '=', False),
+                                ]}"
+                            />
                         </group>
-                        <group attrs="{'invisible': [('txt_message','=',False)]}">
+                        <group
+                            attrs="{'invisible': ['|', ('txt_message','=',False), ('is_ses', '=', True)]}"
+                        >
                             <field name="txt_message" readonly="1" />
                         </group>
                         <group attrs="{'invisible': [('txt_message','=',False)]}">
@@ -25,26 +55,30 @@
                     </div>
 
                 </div>
-                    <div class="row ">
-                        <div class="col-3">
-                            <button
+                <div class="row ">
+                    <div class="col-3">
+                        <button
                             name="generate_file_from_user_action"
                             class="btn btn-primary btn-sm"
                             type="object"
-                            string="Preview file"
+                            string="Generate file"
                         />
-                        </div>
-                        <div class="col-3">
-                            <button
+                    </div>
+                    <div class="col-3">
+                        <button
                             name="send_file_institution"
                             class="btn btn-primary btn-sm"
                             type="object"
                             string="Send file"
-                            attrs="{'invisible': [('txt_message','=',False)]}"
+                            attrs="{'invisible': [
+                                '|',
+                                ('txt_message','=',False),
+                                ('is_ses', '=', True),
+                                ]}"
                         />
-                        </div>
+
                     </div>
-                <footer />
+                </div>
             </form>
         </field>
     </record>
