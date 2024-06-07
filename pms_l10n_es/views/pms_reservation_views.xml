@@ -18,6 +18,7 @@
                             <field name="communication_id" />
                             <field name="operation" />
                             <field name="entity" />
+                            <field name="create_date" />
                             <field name="communication_time" />
                             <field name="query_status_time" />
                             <field name="state" />
