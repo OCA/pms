@@ -983,11 +983,11 @@ class TravellerReport(models.TransientModel):
                 "POST", ses_url, headers=headers, data=payload, verify=False
             )
             root = ET.fromstring(soap_response.text)
-            communication.communication_id = root.find(".//lote").text
             communication.sending_result = root.find(".//descripcion").text
             communication.response_communication_soap = soap_response.text
             result_code = root.find(".//codigo").text
             if result_code == "0":
+                communication.communication_id = root.find(".//lote").text
                 if communication.operation == "A":
                     communication.state = "to_process"
                 else:
@@ -1067,9 +1067,17 @@ class TravellerReport(models.TransientModel):
                 result_code = root.find(".//codigo").text
                 communication.response_query_status_soap = soap_response.text
                 if result_code == "0":
-                    communication.state = "processed"
+                    result_status = root.find(".//codigoEstado").text
+                    if result_status == "1":
+                        communication.state = "processed"
+                    # validation errors
+                    elif result_status not in ["4", "5"]:
+                        communication.state = "error_processing"
+                        communication.processing_result = root.find(".//error").text
+                # request errors
                 else:
                     communication.state = "error_processing"
+                    communication.processing_result = root.find(".//descripcion").text
                 return
             except requests.exceptions.ConnectionError:
                 communication.processing_result = "Cannot establish the connection."
@@ -1079,7 +1087,7 @@ class TravellerReport(models.TransientModel):
                 )
             except requests.exceptions.RequestException as e:
                 communication.processing_result = f"Error in the request: {e}"
-            communication.state = "error_processing"
+            communication.processing_result = "Request error"
 
     @api.model
     def send_pending_reservation_notifications(self):
