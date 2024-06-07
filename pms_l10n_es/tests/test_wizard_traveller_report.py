@@ -124,6 +124,9 @@ class TestWizardTravellerReport(TestPms):
                 "reservation_id": self.reservation_1.id,
                 "firstname": "John",
                 "lastname": "Doe",
+                "residence_street": "Test street 1",
+                "residence_city": "Test city",
+                "residence_zip": "08001",
             }
         )
         # Create reservation 2
@@ -144,6 +147,9 @@ class TestWizardTravellerReport(TestPms):
                 "reservation_id": self.reservation_2.id,
                 "firstname": "Martha",
                 "lastname": "Stewart",
+                "residence_street": "Test street 1",
+                "residence_city": "Test city",
+                "residence_zip": "08001",
             }
         )
         # checkin partners on board
@@ -188,6 +194,9 @@ class TestWizardTravellerReport(TestPms):
                 "firstname": "John",
                 "lastname": "Doe",
                 "nationality_id": self.country_italy.id,
+                "residence_street": "Test street 1",
+                "residence_city": "Test city",
+                "residence_zip": "08001",
             }
         )
         # Create reservation 2
@@ -208,6 +217,9 @@ class TestWizardTravellerReport(TestPms):
                 "reservation_id": self.reservation_2.id,
                 "firstname": "Martha",
                 "lastname": "Stewart",
+                "residence_street": "Test street 1",
+                "residence_city": "Test city",
+                "residence_zip": "08001",
             }
         )
         # checkin partners on board

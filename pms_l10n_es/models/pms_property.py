@@ -17,6 +17,7 @@ class PmsProperty(models.Model):
             ("policia_nacional", "Policía Nacional"),
             ("ertxaintxa", "Ertxaintxa (soon)"),
             ("mossos", "Mossos_d'esquadra (soon)"),
+            ("ses", "SES"),
         ],
         string="Institution",
         help="Institution to send daily guest data.",
@@ -26,6 +27,10 @@ class PmsProperty(models.Model):
         string="Institution property id",
         help="Id provided by institution to send data from property.",
     )
+    ses_url = fields.Char(
+        string="SES URL",
+        help="URL to send the data to SES",
+    )
     institution_user = fields.Char(
         string="Institution user", help="User provided by institution to send the data."
     )
@@ -33,6 +38,11 @@ class PmsProperty(models.Model):
         string="Institution password",
         help="Password provided by institution to send the data.",
     )
+    institution_lessor_id = fields.Char(
+        string="Institution lessor id",
+        help="Id provided by institution to send data from lessor.",
+    )
+
     ine_tourism_number = fields.Char(
         "Tourism number",
         help="Registration number in the Ministry of Tourism. Used for INE statistics.",
