@@ -46,6 +46,10 @@ class PmsReservationShortInfo(Datamodel):
     segmentationId = fields.Integer(required=False, allow_none=True)
     isOverNightRoom = fields.Boolean(required=False, allow_none=True)
     lastUpdateFrom = fields.String(required=False, allow_none=True)
+    createDate = fields.String(required=False, allow_none=True)
+    partnerId = fields.Integer(required=False, allow_none=True)
+
+
 
 
 class PmsReservationInfo(Datamodel):
@@ -54,6 +58,7 @@ class PmsReservationInfo(Datamodel):
     name = fields.String(required=False, allow_none=True)
     folioId = fields.Integer(required=False, allow_none=True)
     folioSequence = fields.Integer(required=False, allow_none=True)
+    partnerId = fields.Integer(required=False, allow_none=True)
     partnerName = fields.String(required=False, allow_none=True)
     boardServiceId = fields.Integer(required=False, allow_none=True)
     boardServices = fields.List(
