@@ -3,10 +3,10 @@ from odoo import api, fields, models
 
 class PmsReservation(models.Model):
     _inherit = "pms.reservation"
-    ses_comunication_ids = fields.One2many(
-        string="SES Comunications",
-        help="Comunications related to this reservation",
-        comodel_name="pms.ses.comunication",
+    ses_communication_ids = fields.One2many(
+        string="SES Communications",
+        help="Communications related to this reservation",
+        comodel_name="pms.ses.communication",
         inverse_name="reservation_id",
     )
     is_ses = fields.Boolean(
@@ -21,8 +21,8 @@ class PmsReservation(models.Model):
             record.is_ses = record.pms_property_id.institution == "ses"
 
     @api.model
-    def create_comunication(self, reservation_id, operation, entity):
-        self.env["pms.ses.comunication"].create(
+    def create_communication(self, reservation_id, operation, entity):
+        self.env["pms.ses.communication"].create(
             {
                 "reservation_id": reservation_id,
                 "operation": operation,
@@ -34,11 +34,11 @@ class PmsReservation(models.Model):
     def create(self, vals):
         reservation = super(PmsReservation, self).create(vals)
         if reservation.pms_property_id.institution == "ses":
-            self.create_comunication(reservation.id, "A", "RH")
+            self.create_communication(reservation.id, "A", "RH")
         return reservation
 
     @api.model
-    def create_comunication_after_update_reservation(self, reservation, vals):
+    def create_communication_after_update_reservation(self, reservation, vals):
         state_changed = "state" in vals and (
             (vals["state"] != "cancel" and reservation.state == "cancel")
             or (vals["state"] == "cancel" and reservation.state != "cancel")
@@ -53,7 +53,7 @@ class PmsReservation(models.Model):
 
         if state_changed or check_changed:
             # delete all pending notifications
-            self.env["pms.ses.comunication"].search(
+            self.env["pms.ses.communication"].search(
                 [
                     ("reservation_id", "=", reservation.id),
                     ("state", "=", "to_send"),
@@ -62,7 +62,7 @@ class PmsReservation(models.Model):
             ).unlink()
 
             # last communication
-            last_comunication = self.env["pms.ses.comunication"].search(
+            last_communication = self.env["pms.ses.communication"].search(
                 [
                     ("reservation_id", "=", reservation.id),
                     ("entity", "=", "RH"),
@@ -72,14 +72,14 @@ class PmsReservation(models.Model):
             )
 
             if state_changed:
-                if vals["state"] == "cancel" and last_comunication.operation == "A":
-                    self.create_comunication(reservation.id, "B", "RH")
-                elif vals["state"] != "cancel" and last_comunication.operation == "B":
-                    self.create_comunication(reservation.id, "A", "RH")
+                if vals["state"] == "cancel" and last_communication.operation == "A":
+                    self.create_communication(reservation.id, "B", "RH")
+                elif vals["state"] != "cancel" and last_communication.operation == "B":
+                    self.create_communication(reservation.id, "A", "RH")
             elif check_changed:
-                if last_comunication.operation == "A":
-                    self.create_comunication(reservation.id, "B", "RH")
-                self.create_comunication(reservation.id, "A", "RH")
+                if last_communication.operation == "A":
+                    self.create_communication(reservation.id, "B", "RH")
+                self.create_communication(reservation.id, "A", "RH")
 
     def create_notifications_traveller_report(self):
         for record in self:
@@ -92,7 +92,7 @@ class PmsReservation(models.Model):
                     for state in record.checkin_partner_ids.mapped("state")
                 )
             ):
-                self.create_comunication(
+                self.create_communication(
                     record.id,
                     "A",
                     "PV",
@@ -101,5 +101,5 @@ class PmsReservation(models.Model):
     def write(self, vals):
         for record in self:
             if record.pms_property_id.institution == "ses":
-                self.create_comunication_after_update_reservation(record, vals)
+                self.create_communication_after_update_reservation(record, vals)
         return super(PmsReservation, self).write(vals)

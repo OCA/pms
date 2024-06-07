@@ -86,10 +86,10 @@
                     </div>
                     <div class="col-3">
                         <button
-                            name="process_sent_comunications"
+                            name="process_sent_communications"
                             class="btn btn-primary btn-sm"
                             type="object"
-                            string="Process sent comunications"
+                            string="Process sent communications"
                             attrs="{'invisible': [('is_ses', '=', False)]}"
                         />
                     </div>

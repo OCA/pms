@@ -4,7 +4,7 @@ from odoo.tools.safe_eval import datetime
 from .common import TestPms
 
 
-class TestPmsSesComunication(TestPms):
+class TestPmsSesCommunication(TestPms):
     def setUp(self):
         super().setUp()
         self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
@@ -47,7 +47,7 @@ class TestPmsSesComunication(TestPms):
             }
         )
         # ASSERT
-        last_notification = self.env["pms.ses.comunication"].search(
+        last_notification = self.env["pms.ses.communication"].search(
             [
                 ("reservation_id", "=", reservation.id),
             ]
@@ -75,7 +75,7 @@ class TestPmsSesComunication(TestPms):
         # ACT
         reservation.action_cancel()
         # ASSERT
-        last_notifications = self.env["pms.ses.comunication"].search(
+        last_notifications = self.env["pms.ses.communication"].search(
             [
                 ("reservation_id", "=", reservation.id),
             ],
@@ -100,7 +100,7 @@ class TestPmsSesComunication(TestPms):
                 "partner_name": "Test reservation",
             }
         )
-        notification_after_create_reservation = self.env["pms.ses.comunication"].search(
+        notification_after_create_reservation = self.env["pms.ses.communication"].search(
             [
                 ("reservation_id", "=", reservation.id),
                 ("operation", "=", "A"),
@@ -111,7 +111,7 @@ class TestPmsSesComunication(TestPms):
         reservation.action_cancel()
         # ASSERT
         last_notifications = (
-            self.env["pms.ses.comunication"]
+            self.env["pms.ses.communication"]
             .search(
                 [
                     ("reservation_id", "=", reservation.id),
@@ -156,7 +156,7 @@ class TestPmsSesComunication(TestPms):
             with self.subTest(k=update_operation):
                 reservation.write(update_operation)
                 last_notification_operations = (
-                    self.env["pms.ses.comunication"]
+                    self.env["pms.ses.communication"]
                     .search(
                         [
                             ("reservation_id", "=", reservation.id),
@@ -196,16 +196,16 @@ class TestPmsSesComunication(TestPms):
                 "partner_name": "Test reservation",
             }
         )
-        reservation_comunications = self.env["pms.ses.comunication"].search(
+        reservation_communications = self.env["pms.ses.communication"].search(
             [("reservation_id", "=", reservation.id)]
         )
-        reservation_comunications.state = "to_process"
+        reservation_communications.state = "to_process"
         # ACT & ASSERT
         for _index, update_operation in enumerate(update_operations):
             with self.subTest(k=update_operation):
                 reservation.write(update_operation)
-                reservation_comunications = (
-                    self.env["pms.ses.comunication"]
+                reservation_communications = (
+                    self.env["pms.ses.communication"]
                     .search(
                         [
                             ("reservation_id", "=", reservation.id),
@@ -216,7 +216,7 @@ class TestPmsSesComunication(TestPms):
                 )
                 self.assertEqual(
                     ["A", "B", "A"],
-                    reservation_comunications,
+                    reservation_communications,
                     "Update adults should create 2 notifications with operations A and B",
                 )
 
@@ -265,9 +265,9 @@ class TestPmsSesComunication(TestPms):
         )
         checkin_partner.action_on_board()
         # ACT
-        reservation.create_notifications_traveller_report_and_send()
+        reservation.create_notifications_traveller_report()
         # ASSERT
-        last_notification = self.env["pms.ses.comunication"].search(
+        last_notification = self.env["pms.ses.communication"].search(
             [
                 ("reservation_id", "=", reservation.id),
                 ("operation", "=", "A"),

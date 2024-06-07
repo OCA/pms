@@ -933,12 +933,11 @@ class TravellerReport(models.TransientModel):
         return xml_str
 
     @api.model
-    def send_comunication_ses(self, comunication):
-
+    def send_communication_ses(self, communication):
         data = False
-        user = comunication.reservation_id.pms_property_id.institution_user
-        password = comunication.reservation_id.pms_property_id.institution_password
-        ses_url = comunication.reservation_id.pms_property_id.ses_url
+        user = communication.reservation_id.pms_property_id.institution_user
+        password = communication.reservation_id.pms_property_id.institution_password
+        ses_url = communication.reservation_id.pms_property_id.ses_url
 
         user_and_password_base64 = "Basic " + base64.b64encode(
             bytes(user + ":" + password, "utf-8")
@@ -948,14 +947,14 @@ class TravellerReport(models.TransientModel):
             "Authorization": user_and_password_base64,
             "Content-Type": "text/xml; charset=utf-8",
         }
-        lessor_id = comunication.reservation_id.pms_property_id.institution_lessor_id
-        if comunication.entity == "RH":
-            data = self.generate_xml_reservations([comunication.reservation_id.id])
-        elif comunication.entity == "PV":
+        lessor_id = communication.reservation_id.pms_property_id.institution_lessor_id
+        if communication.entity == "RH":
+            data = self.generate_xml_reservations([communication.reservation_id.id])
+        elif communication.entity == "PV":
             data = self.generate_xml_reservation_travellers_report(
-                [comunication.reservation_id.id]
+                [communication.reservation_id.id]
             )
-        comunication.xml_content_sent = data
+        communication.communication_xml = data
         data = string_to_zip_to_base64(data)
 
         payload = f"""
@@ -968,8 +967,8 @@ class TravellerReport(models.TransientModel):
                             <cabecera>
                                 <codigoArrendador>{lessor_id}</codigoArrendador>
                                 <aplicacion>Roomdoo</aplicacion>
-                                <tipoOperacion>{comunication.operation}</tipoOperacion>
-                                <tipoComunicacion>{comunication.entity}</tipoComunicacion>
+                                <tipoOperacion>{communication.operation}</tipoOperacion>
+                                <tipoComunicacion>{communication.entity}</tipoComunicacion>
                             </cabecera>
                             <solicitud>{data}</solicitud>
                         </peticion>
@@ -977,47 +976,48 @@ class TravellerReport(models.TransientModel):
                 </soapenv:Body>
             </soapenv:Envelope>
             """
-        comunication.soap_content_sent = payload
+        communication.communication_soap = payload
         try:
-            comunication.notification_time = fields.Datetime.now()
+            communication.communication_time = fields.Datetime.now()
             soap_response = requests.request(
                 "POST", ses_url, headers=headers, data=payload, verify=False
             )
             root = ET.fromstring(soap_response.text)
             batch_number = root.find(".//lote").text
             # TODO: check result operation code and logic to save the error
-            if comunication.operation == "A":
-                comunication.state = "to_process"
+            if communication.operation == "A":
+                communication.state = "to_process"
             else:
-                comunication.state = "processed"
-            comunication.comunication_id = batch_number
+                communication.state = "processed"
+            communication.communication_id = batch_number
+            communication.response_communication_soap = soap_response.text
             return
         except requests.exceptions.ConnectionError:
-            comunication.processing_result = "Cannot establish the connection."
+            communication.processing_result = "Cannot establish the connection."
         except requests.exceptions.Timeout:
-            comunication.processing_result = "The request took too long to complete."
+            communication.processing_result = "The request took too long to complete."
         except requests.exceptions.RequestException as e:
-            comunication.processing_result = f"Error in the request: {e}"
-        comunication.state = "error_sending"
+            communication.processing_result = f"Error in the request: {e}"
+        communication.state = "error_sending"
 
     def send_pending_reservation_notifications(self):
         for _record in self:
-            for comunication in self.env["pms.ses.comunication"].search(
+            for communication in self.env["pms.ses.communication"].search(
                 [
                     ("state", "=", "to_send"),
                 ]
             ):
-                self.send_comunication_ses(comunication)
+                self.send_communication_ses(communication)
 
-    def process_sent_comunications(self):
+    def process_sent_communications(self):
         for _record in self:
-            for comunication in self.env["pms.ses.comunication"].search(
+            for communication in self.env["pms.ses.communication"].search(
                 [
                     ("state", "=", "to_process"),
                     ("operation", "!=", "B"),
                 ]
             ):
-                pms_property = comunication.reservation_id.pms_property_id
+                pms_property = communication.reservation_id.pms_property_id
                 user = pms_property.institution_user
                 password = pms_property.institution_password
 
@@ -1032,10 +1032,10 @@ class TravellerReport(models.TransientModel):
                 var_xml_get_batch = f"""
                     <con:lotes
                     xmlns:con="http://www.neg.hospedajes.mir.es/consultarComunicacion">
-                        <con:lote>{comunication.comunication_id}</con:lote>
+                        <con:lote>{communication.communication_id}</con:lote>
                     </con:lotes>
                 """
-                comunication.xml_content_process = var_xml_get_batch
+                communication.query_status_xml = var_xml_get_batch
                 data = string_to_zip_to_base64(var_xml_get_batch)
                 payload = f"""
                     <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
@@ -1057,9 +1057,9 @@ class TravellerReport(models.TransientModel):
                             </soapenv:Body>
                         </soapenv:Envelope>
                     """
-                comunication.soap_content_process = payload
+                communication.query_status_soap = payload
                 try:
-                    comunication.processing_time = fields.Datetime.now()
+                    communication.query_status_time = fields.Datetime.now()
                     soap_response = requests.request(
                         "POST",
                         pms_property.ses_url,
@@ -1069,16 +1069,16 @@ class TravellerReport(models.TransientModel):
                     )
                     root = ET.fromstring(soap_response.text)
                     error = root.find(".//error")
-                    # TODO: check result operation code and logic to save the error
-                    comunication.state = "processed"
-                    comunication.processing_result = error or "ok"
+                    communication.response_query_status_soap = soap_response.text
+                    communication.state = "processed"
+                    communication.processing_result = error or "ok"
                     return
                 except requests.exceptions.ConnectionError:
-                    comunication.processing_result = "Cannot establish the connection."
+                    communication.processing_result = "Cannot establish the connection."
                 except requests.exceptions.Timeout:
-                    comunication.processing_result = (
+                    communication.processing_result = (
                         "The request took too long to complete."
                     )
                 except requests.exceptions.RequestException as e:
-                    comunication.processing_result = f"Error in the request: {e}"
-                comunication.state = "error_processing"
+                    communication.processing_result = f"Error in the request: {e}"
+                communication.state = "error_processing"

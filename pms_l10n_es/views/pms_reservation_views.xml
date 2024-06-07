@@ -7,19 +7,19 @@
         <field name="arch" type="xml">
             <xpath expr="//page[@name='others']" position="before">
                 <page
-                    string="SES Comunications"
+                    string="SES Communications"
                     name="property_general"
-                    attrs="{'invisible': [('is_ses','!=',True),'|',('is_ses','=',True),('ses_comunication_ids','!=',False)]}"
+                    attrs="{'invisible': [('is_ses','!=',True),'|',('is_ses','=',True),('ses_communication_ids','!=',False)]}"
                 >
                     <field name="is_ses" invisible="1" />
-                    <field name="ses_comunication_ids">
+                    <field name="ses_communication_ids">
                         <tree string="Comunicaciones">
                             <field name="reservation_id" />
-                            <field name="comunication_id" />
+                            <field name="communication_id" />
                             <field name="operation" />
                             <field name="entity" />
-                            <field name="notification_time" />
-                            <field name="processing_time" />
+                            <field name="communication_time" />
+                            <field name="query_status_time" />
                             <field name="state" />
                             <field name="processing_result" />
                         </tree>
