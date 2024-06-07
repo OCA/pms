@@ -384,6 +384,9 @@ class PmsFolioService(Component):
                         if reservation.service_ids
                         else 0,
                         "overbooking": reservation.overbooking,
+                        "partnerId": reservation.partner_id.id
+                        if reservation.partner_id
+                        else None,
                         "isReselling": any(
                             line.is_reselling
                             for line in reservation.reservation_line_ids
@@ -650,6 +653,9 @@ class PmsFolioService(Component):
                             if reservation.segmentation_ids
                             else None,
                             isOverNightRoom=reservation.overnight_room,
+                            partnerId=reservation.partner_id.id
+                            if reservation.partner_id
+                            else None,
                         )
                     )
 
@@ -1428,8 +1434,6 @@ class PmsFolioService(Component):
         # - date format is in invoice_info but dont save
         # - invoice comment is in invoice_info but dont save
         lines_to_invoice_dict = dict()
-        if not invoice_info.partnerId:
-            raise MissingError(_("For manual invoice, partner is required"))
         for item in invoice_info.saleLines:
             if item.qtyToInvoice:
                 lines_to_invoice_dict[item.id] = item.qtyToInvoice

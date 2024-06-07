@@ -41,3 +41,4 @@ class PmsPropertyInfo(Datamodel):
     isOCRAvailable = fields.Boolean(required=True, allow_none=False)
     canDownloadIneReport = fields.Boolean(required=True, allow_none=False)
     companyName = fields.String(required=False, allow_none=True)
+    maxAmountSimplifiedInvoice = fields.Float(required=False, allow_none=True)

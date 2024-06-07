@@ -86,6 +86,7 @@ class PmsReservationService(Component):
                 name=reservation.name,
                 folioId=reservation.folio_id.id,
                 folioSequence=reservation.folio_sequence,
+                partnerId=reservation.partner_id.id if reservation.partner_id else None,
                 partnerName=reservation.partner_name or None,
                 boardServiceId=reservation.board_service_room_id.id
                 if reservation.board_service_room_id
@@ -600,6 +601,7 @@ class PmsReservationService(Component):
                     PmsCheckinPartnerInfo(
                         id=checkin_partner.id,
                         reservationId=checkin_partner.reservation_id.id,
+                        partnerId=checkin_partner.partner_id.id if checkin_partner.partner_id else None,
                         name=checkin_partner.name if checkin_partner.name else "",
                         firstname=checkin_partner.firstname
                         if checkin_partner.firstname
@@ -768,6 +770,7 @@ class PmsReservationService(Component):
                         name=reservation.name,
                         folioId=reservation.folio_id.id,
                         folioSequence=reservation.folio_sequence,
+                        partnerId=reservation.partner_id.id if reservation.partner_id else None,
                         partnerName=reservation.partner_name or None,
                         boardServiceId=reservation.board_service_room_id.id
                         if reservation.board_service_room_id
