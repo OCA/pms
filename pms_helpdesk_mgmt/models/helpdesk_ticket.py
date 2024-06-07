@@ -9,7 +9,7 @@ class PmsHelpdeskTicket(models.Model):
 
     _inherit = "helpdesk.ticket"
 
-    property_id = fields.Many2one(
+    pms_property_id = fields.Many2one(
         comodel_name="pms.property",
         string="Property",
         domain="[('company_id', '=', company_id)]",
@@ -18,7 +18,7 @@ class PmsHelpdeskTicket(models.Model):
     room_id = fields.Many2one(
         comodel_name="pms.room",
         string="Room",
-        domain="[('pms_property_id', '=', property_id)]",
+        domain="[('pms_property_id', '=', pms_property_id)]",
         help="The room associated with this ticket",
         widget="many2one_tags",
     )
@@ -32,17 +32,17 @@ class PmsHelpdeskTicket(models.Model):
                 .search([("user_ids", "=", self.env.user.id)])
             )
             property_ids = properties.ids if properties else []
-            return {"domain": {"property_id": [("id", "in", property_ids)]}}
+            return {"domain": {"pms_property_id": [("id", "in", property_ids)]}}
         else:
-            return {"domain": {"property_id": []}}
+            return {"domain": {"pms_property_id": []}}
 
-    @api.depends("property_id")
+    @api.depends("pms_property_id")
     def _onchange_property_id(self):
-        if self.property_id:
+        if self.pms_property_id:
             rooms = (
                 self.env["pms.room"]
                 .sudo()
-                .search([("pms_property_id", "=", self.property_id.id)])
+                .search([("pms_property_id", "=", self.pms_property_id.id)])
             )
             room_ids = rooms.ids if rooms else []
             return {"domain": {"room_id": [("id", "in", room_ids)]}}

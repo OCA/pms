@@ -11,7 +11,7 @@
         </xpath>
         <xpath expr="//tr/td[position()=3]" position="after">
             <td>
-                <span t-field="ticket.property_id.name" />
+                <span t-field="ticket.pms_property_id.name" />
             </td>
             <td>
                 <span t-field="ticket.room_id.name" />
@@ -28,7 +28,7 @@
         </xpath>
         <xpath expr="//span[@t-field='ticket.create_date']" position="after">
             <div><strong>Property:</strong>
-            <span t-field="ticket.sudo().property_id.name" /></div>
+            <span t-field="ticket.sudo().pms_property_id.name" /></div>
             <div><strong>Room:</strong>
             <span t-field="ticket.sudo().room_id.name" /></div>
         </xpath>
@@ -51,7 +51,7 @@
             position="after"
         >
             <div class="col-md-7 col-sm-8">
-                <label for="property_id">Company:</label>
+                <label for="pms_property_id">Company:</label>
                 <select
                     class="form-control"
                     id="company_id"
@@ -67,11 +67,11 @@
                 </select>
             </div>
             <div class="col-md-7 col-sm-8">
-                <label for="property_id">Property:</label>
+                <label for="pms_property_id">Property:</label>
                 <select
                     class="form-control"
-                    id="property_id"
-                    name="property_id"
+                    id="pms_property_id"
+                    name="pms_property_id"
                     required="required"
                     t-attf-widget="many2one_tags"
                     t-attf-domain="[('user_ids', 'in', [user.id])]"
@@ -89,7 +89,7 @@
                     id="room_id"
                     name="room_id"
                     t-attf-widget="many2one_tags"
-                    t-attf-domain="[('pms_property_id', '=', parseInt($('#property_id').val()))]"
+                    t-attf-domain="[('pms_property_id', '=', parseInt($('#pms_property_id').val()))]"
                 >
                     <option value="" />
                     <t t-foreach="rooms" t-as="room">

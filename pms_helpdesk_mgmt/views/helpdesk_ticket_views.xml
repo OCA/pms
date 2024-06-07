@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
                 <field name="company_id" />
-                <field name="property_id" />
+                <field name="pms_property_id" />
                 <field name="room_id" />
                 <field name="category_id" />
             </xpath>
@@ -22,7 +22,7 @@
                     string="Property"
                     name="group_property"
                     domain="[]"
-                    context="{'group_by':'property_id'}"
+                    context="{'group_by':'pms_property_id'}"
                 />
                 <filter
                     string="Room"
@@ -66,7 +66,7 @@
                         />
                     </svg>
                     <span class="text-dark bg-warning rounded">
-                        <field name="property_id" />
+                        <field name="pms_property_id" />
                     </span>
                 </div>
                 <div class="text-warning">
@@ -134,7 +134,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
                 <field name="category_id" />
-                <field name="property_id" />
+                <field name="pms_property_id" />
                 <field name="room_id" />
                 <field name="tag_ids" widget="many2many_tags" />
             </xpath>
@@ -153,11 +153,11 @@
                 </div>
             </xpath>
             <xpath expr="//field[@name='company_id']" position="after">
-                <field name="property_id" options="{'no_create': True}" />
+                <field name="pms_property_id" options="{'no_create': True}" />
                 <field
                     name="room_id"
                     options="{'no_create': True}"
-                    attrs="{'invisible': [('property_id', '=', False)]}"
+                    attrs="{'invisible': [('pms_property_id', '=', False)]}"
                 />
             </xpath>
             <xpath expr="//field[@name='partner_lang']" position="attributes">

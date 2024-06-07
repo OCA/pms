@@ -145,7 +145,7 @@
         <field eval="&quot;Roomdoo Problems&quot;" name="description" />
         <field name="team_id" ref="helpdesk_mgmt.helpdesk_team_2" />
         <field name="category_id" ref="helpdesk_mgmt.helpdesk_category_1" />
-        <field name="property_id" ref="pms.san_carlos_property" />
+        <field name="pms_property_id" ref="pms.san_carlos_property" />
         <field eval="[(6,0,[ref('helpdesk_tag_6')])]" name="tag_ids" />
     </record>
     <record id="helpdesk_mgmt.helpdesk_ticket_2" model="helpdesk.ticket">
@@ -159,7 +159,7 @@
         />
         <field name="team_id" ref="helpdesk_mgmt.helpdesk_team_1" />
         <field name="category_id" ref="helpdesk_category_7" />
-        <field name="property_id" ref="pms.san_carlos_property" />
+        <field name="pms_property_id" ref="pms.san_carlos_property" />
         <field eval="[(6,0,[ref('helpdesk_mgmt.helpdesk_tag_1')])]" name="tag_ids" />
     </record>
     <record id="helpdesk_mgmt.helpdesk_ticket_3" model="helpdesk.ticket">
@@ -167,7 +167,7 @@
         <field eval="&quot;A pillow is missing&quot;" name="description" />
         <field name="team_id" ref="helpdesk_mgmt.helpdesk_team_1" />
         <field name="category_id" ref="helpdesk_category_11" />
-        <field name="property_id" ref="pms.main_pms_property" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
         <field eval="[(6,0,[ref('helpdesk_mgmt.helpdesk_tag_2')])]" name="tag_ids" />
     </record>
     <record id="helpdesk_mgmt.helpdesk_ticket_4" model="helpdesk.ticket">
@@ -178,7 +178,7 @@
         />
         <field name="team_id" ref="helpdesk_mgmt.helpdesk_team_2" />
         <field name="category_id" ref="helpdesk_category_7" />
-        <field name="property_id" ref="pms.main_pms_property" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
         <field name="room_id" ref="pms.pms_room_conference_01" />
         <field eval="[(6,0,[ref('helpdesk_mgmt.helpdesk_tag_2')])]" name="tag_ids" />
     </record>
@@ -187,7 +187,7 @@
         <field eval="&quot;Mails are not received&quot;" name="description" />
         <field name="team_id" ref="helpdesk_mgmt.helpdesk_team_2" />
         <field name="category_id" ref="helpdesk_mgmt.helpdesk_category_2" />
-        <field name="property_id" ref="pms.main_pms_property" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
         <field eval="[(6,0,[ref('helpdesk_tag_6')])]" name="tag_ids" />
     </record>
     <record id="helpdesk_mgmt.helpdesk_ticket_6" model="helpdesk.ticket">
@@ -201,7 +201,7 @@
         />
         <field name="team_id" ref="helpdesk_mgmt.helpdesk_team_1" />
         <field name="category_id" ref="helpdesk_category_5" />
-        <field name="property_id" ref="pms.main_pms_property" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
         <field name="room_id" ref="pms.pms_room_quadruple_04" />
         <field eval="[(6,0,[ref('helpdesk_mgmt.helpdesk_tag_2')])]" name="tag_ids" />
     </record>
@@ -210,7 +210,7 @@
         <field eval="&quot;Changing a light bulb&quot;" name="description" />
         <field name="team_id" ref="helpdesk_mgmt.helpdesk_team_1" />
         <field name="category_id" ref="helpdesk_mgmt.helpdesk_category_1" />
-        <field name="property_id" ref="pms.san_carlos_property" />
+        <field name="pms_property_id" ref="pms.san_carlos_property" />
         <field eval="[(6,0,[ref('helpdesk_tag_6')])]" name="tag_ids" />
     </record>
 </odoo>

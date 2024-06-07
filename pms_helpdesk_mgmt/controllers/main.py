@@ -57,7 +57,7 @@ class CustomHelpdeskTicketController(HelpdeskTicketController):
         vals.update(
             {
                 "company_id": company.id,
-                "property_id": request.params.get("property_id"),
+                "pms_property_id": request.params.get("pms_property_id"),
                 "room_id": request.params.get("room_id"),
                 "tag_ids": [request.params.get("tag_ids")],
             }
