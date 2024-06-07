@@ -267,7 +267,9 @@ class TestPmsSesCommunication(TestPms):
         )
         checkin_partner.action_on_board()
         # ACT
-        reservation.create_notifications_traveller_report()
+        self.env[
+            "traveller.report.wizard"
+        ].create_pending_notifications_traveller_report()
         # ASSERT
         last_notification = self.env["pms.ses.communication"].search(
             [
