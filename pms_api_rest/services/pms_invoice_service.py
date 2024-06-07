@@ -429,8 +429,6 @@ class PmsInvoiceService(Component):
     )
     def create_invoice(self, pms_invoice_info):
         if pms_invoice_info.originDownPaymentId:
-            if not pms_invoice_info.partnerId:
-                raise UserError(_("For manual invoice, partner is required"))
             payment = self.env["account.payment"].browse(
                 pms_invoice_info.originDownPaymentId
             )

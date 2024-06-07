@@ -94,6 +94,9 @@ class PmsPropertyService(Component):
                     if (prop.ine_tourism_number and prop.ine_category_id)
                     else False,
                     companyName=prop.company_id.name,
+                    maxAmountSimplifiedInvoice=prop.max_amount_simplified_invoice
+                    if prop.max_amount_simplified_invoice
+                    else None,
                 )
             )
         return result_properties
@@ -168,6 +171,9 @@ class PmsPropertyService(Component):
                 canDownloadIneReport=True
                 if (pms_property.ine_tourism_number and pms_property.ine_category_id)
                 else False,
+                maxAmountSimplifiedInvoice=pms_property.max_amount_simplified_invoice
+                if pms_property.max_amount_simplified_invoice
+                else None,
             )
 
         return res
