@@ -167,7 +167,7 @@ def ses_xml_person_personal_info_elements(persona, checkin_partner):
 def ses_xml_municipality_code(residence_zip):
     with open(
         get_module_resource(
-            "pms_l10n_es", "data/", "pms.ine.zip.municipality.ine.relation.csv"
+            "pms_l10n_es", "static/src/", "pms.ine.zip.municipality.ine.relation.csv"
         ),
         "r",
         newline="",

@@ -17,11 +17,17 @@
                         <field name="processing_result" />
                         <field name="communication_xml" widget="CopyClipboardChar" />
                         <field name="communication_soap" widget="CopyClipboardChar" />
-                        <field name="response_communication_soap" widget="CopyClipboardChar" />
+                        <field
+                            name="response_communication_soap"
+                            widget="CopyClipboardChar"
+                        />
 
                         <field name="query_status_xml" widget="CopyClipboardChar" />
                         <field name="query_status_soap" widget="CopyClipboardChar" />
-                        <field name="response_query_status_soap" widget="CopyClipboardChar" />
+                        <field
+                            name="response_query_status_soap"
+                            widget="CopyClipboardChar"
+                        />
                     </group>
                 </sheet>
             </form>

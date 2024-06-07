@@ -100,7 +100,9 @@ class TestPmsSesCommunication(TestPms):
                 "partner_name": "Test reservation",
             }
         )
-        notification_after_create_reservation = self.env["pms.ses.communication"].search(
+        notification_after_create_reservation = self.env[
+            "pms.ses.communication"
+        ].search(
             [
                 ("reservation_id", "=", reservation.id),
                 ("operation", "=", "A"),
