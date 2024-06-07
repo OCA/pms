@@ -983,14 +983,17 @@ class TravellerReport(models.TransientModel):
                 "POST", ses_url, headers=headers, data=payload, verify=False
             )
             root = ET.fromstring(soap_response.text)
-            batch_number = root.find(".//lote").text
-            # TODO: check result operation code and logic to save the error
-            if communication.operation == "A":
-                communication.state = "to_process"
-            else:
-                communication.state = "processed"
-            communication.communication_id = batch_number
+            communication.communication_id = root.find(".//lote").text
+            communication.sending_result = root.find(".//descripcion").text
             communication.response_communication_soap = soap_response.text
+            result_code = root.find(".//codigo").text
+            if result_code == "0":
+                if communication.operation == "A":
+                    communication.state = "to_process"
+                else:
+                    communication.state = "processed"
+            else:
+                communication.state = "error_sending"
             return
         except requests.exceptions.ConnectionError:
             communication.processing_result = "Cannot establish the connection."
@@ -1068,10 +1071,14 @@ class TravellerReport(models.TransientModel):
                         verify=False,
                     )
                     root = ET.fromstring(soap_response.text)
-                    error = root.find(".//error")
+                    communication.processing_result = root.find(".//descripcion").text
+                    communication.response_communication_soap = soap_response.text
+                    result_code = root.find(".//codigo").text
                     communication.response_query_status_soap = soap_response.text
-                    communication.state = "processed"
-                    communication.processing_result = error or "ok"
+                    if result_code == "0":
+                        communication.state = "processed"
+                    else:
+                        communication.state = "error_processing"
                     return
                 except requests.exceptions.ConnectionError:
                     communication.processing_result = "Cannot establish the connection."

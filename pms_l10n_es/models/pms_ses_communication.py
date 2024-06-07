@@ -51,6 +51,10 @@ class PmsSesCommunication(models.Model):
             ("error", "Error"),
         ],
     )
+    sending_result = fields.Text(
+        string="Sending Result",
+        help="Notification sending result",
+    )
     processing_result = fields.Text(
         string="Processing Result",
         help="Notification processing result",

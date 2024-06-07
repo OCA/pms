@@ -11,18 +11,22 @@
                         <field name="communication_id" />
                         <field name="operation" />
                         <field name="entity" />
+                        <!-- times -->
                         <field name="create_date" />
                         <field name="communication_time" />
                         <field name="query_status_time" />
+                        <!-- results -->
                         <field name="state" />
+                        <field name="sending_result" />
                         <field name="processing_result" />
+                        <!-- communication soap, xml (request) & soap (response) -->
                         <field name="communication_xml" widget="CopyClipboardChar" />
                         <field name="communication_soap" widget="CopyClipboardChar" />
                         <field
                             name="response_communication_soap"
                             widget="CopyClipboardChar"
                         />
-
+                        <!-- processing soap, xml (request) & soap (response) -->
                         <field name="query_status_xml" widget="CopyClipboardChar" />
                         <field name="query_status_soap" widget="CopyClipboardChar" />
                         <field
@@ -43,10 +47,13 @@
                 <field name="communication_id" />
                 <field name="operation" />
                 <field name="entity" />
+                <!-- times -->
                 <field name="create_date" />
                 <field name="communication_time" />
                 <field name="query_status_time" />
+                <!-- results -->
                 <field name="state" />
+                <field name="sending_result" />
                 <field name="processing_result" />
             </tree>
         </field>
@@ -57,7 +64,9 @@
         <field name="model">pms.ses.communication</field>
         <field name="arch" type="xml">
             <search string="Log SES Communications">
+                <field name="communication_id" />
                 <field name="reservation_id" />
+                <!-- times -->
                 <field name="create_date" />
                 <field name="communication_time" />
                 <field name="query_status_time" />
