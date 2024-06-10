@@ -15,7 +15,6 @@
             <field
             name="nextcall"
             eval="(datetime.now(pytz.timezone('UTC')) + timedelta(days=1)).strftime('%Y-%m-%d 00:05:00')"
-
         />
             <field name="code">model.send_file_institution_async()</field>
         </record>
