@@ -652,7 +652,7 @@ class TestWizardINE(TestPms):
             },
         }
         # ACT
-        nationalities = self.env["pms.ine.wizard"].ine_nationalities(
+        nationalities = self.env["pms.ine.wizard"].ine_countries(
             start_date, end_date, self.pms_property1.id
         )
         # ASSERT
@@ -778,7 +778,7 @@ class TestWizardINE(TestPms):
             }
         }
         # ACT
-        nationalities = self.env["pms.ine.wizard"].ine_nationalities(
+        nationalities = self.env["pms.ine.wizard"].ine_countries(
             start_date, end_date, self.pms_property1.id
         )
         # ASSERT
@@ -910,7 +910,7 @@ class TestWizardINE(TestPms):
             },
         }
         # ACT
-        nationalities = self.env["pms.ine.wizard"].ine_nationalities(
+        nationalities = self.env["pms.ine.wizard"].ine_countries(
             start_date, end_date, self.pms_property1.id
         )
         # ASSERT
@@ -956,7 +956,7 @@ class TestWizardINE(TestPms):
             ValidationError,
             msg="Cannot generate INE if some checkin partner has no nationality",
         ):
-            self.env["pms.ine.wizard"].ine_nationalities(
+            self.env["pms.ine.wizard"].ine_countries(
                 start_date, end_date, self.pms_property1.id
             )
 
@@ -1042,6 +1042,6 @@ class TestWizardINE(TestPms):
             ValidationError,
             msg="Cannot generate INE if some checkin partner from Spain has no nationality",
         ):
-            self.env["pms.ine.wizard"].ine_nationalities(
+            self.env["pms.ine.wizard"].ine_countries(
                 start_date, end_date, self.pms_property1.id
             )
