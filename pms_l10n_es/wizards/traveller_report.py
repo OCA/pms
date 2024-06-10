@@ -12,7 +12,6 @@ import zipfile
 import requests
 from bs4 import BeautifulSoup as bs
 from dateutil.relativedelta import relativedelta
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from odoo import _, api, fields, models
 from odoo.exceptions import MissingError, ValidationError
@@ -34,7 +33,7 @@ CREATE_OPERATION_CODE = "A"
 DELETE_OPERATION_CODE = "B"
 
 # Disable insecure request warnings
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+# requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 def _string_to_zip_to_base64(string_data):
@@ -304,15 +303,21 @@ def _handle_request_exception(communication, e):
     if isinstance(e, requests.exceptions.RequestException):
         if isinstance(e, requests.exceptions.ConnectionError):
             if communication.state == "to_send":
-                communication.sending_result = "Cannot establish the connection."
-            else:
-                communication.processing_result = "Cannot establish the connection."
-        elif isinstance(e, requests.exceptions.Timeout):
-            if communication.state == "to_send":
-                communication.sending_result = "The request took too long to complete."
+                communication.sending_result = (
+                    f"Cannot establish the connection. ({e.args})"
+                )
             else:
                 communication.processing_result = (
-                    "The request took too long to complete."
+                    f"Cannot establish the connection. ({e.args})"
+                )
+        elif isinstance(e, requests.exceptions.Timeout):
+            if communication.state == "to_send":
+                communication.sending_result = (
+                    f"The request took too long to complete. ({e.args})"
+                )
+            else:
+                communication.processing_result = (
+                    f"The request took too long to complete. ({e.args})"
                 )
         else:
             if communication.state == "to_send":
@@ -1027,9 +1032,7 @@ class TravellerReport(models.TransientModel):
                     communication.reservation_id.pms_property_id.ses_url,
                     headers=_get_auth_headers(communication),
                     data=payload,
-                    verify=get_module_resource(
-                        "pms_l10n_es", "static", "PRE_SGSICS.SES.MIR.ES.cer"
-                    ),
+                    verify=get_module_resource("pms_l10n_es", "static", "ses_cert.pem"),
                 )
                 root = ET.fromstring(soap_response.text)
                 communication.sending_result = root.find(".//descripcion").text
@@ -1077,9 +1080,7 @@ class TravellerReport(models.TransientModel):
                     communication.reservation_id.pms_property_id.ses_url,
                     headers=_get_auth_headers(communication),
                     data=payload,
-                    verify=get_module_resource(
-                        "pms_l10n_es", "static", "PRE_SGSICS.SES.MIR.ES.cer"
-                    ),
+                    verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
                 )
                 root = ET.fromstring(soap_response.text)
                 communication.response_communication_soap = soap_response.text
