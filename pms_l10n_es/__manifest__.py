@@ -30,7 +30,6 @@
     "data": [
         "data/res.country.state.csv",
         "data/pms.ine.tourism.type.category.csv",
-        # "data/pms.ine.zip.municipality.ine.relation.csv",
         "data/cron_jobs.xml",
         "data/pms_data.xml",
         "data/queue_data.xml",
