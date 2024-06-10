@@ -1027,7 +1027,9 @@ class TravellerReport(models.TransientModel):
                     communication.reservation_id.pms_property_id.ses_url,
                     headers=_get_auth_headers(communication),
                     data=payload,
-                    verify=False,
+                    verify=get_module_resource(
+                        "pms_l10n_es", "static", "PRE_SGSICS.SES.MIR.ES.cer"
+                    ),
                 )
                 root = ET.fromstring(soap_response.text)
                 communication.sending_result = root.find(".//descripcion").text
@@ -1075,7 +1077,9 @@ class TravellerReport(models.TransientModel):
                     communication.reservation_id.pms_property_id.ses_url,
                     headers=_get_auth_headers(communication),
                     data=payload,
-                    verify=False,
+                    verify=get_module_resource(
+                        "pms_l10n_es", "static", "PRE_SGSICS.SES.MIR.ES.cer"
+                    ),
                 )
                 root = ET.fromstring(soap_response.text)
                 communication.response_communication_soap = soap_response.text
