@@ -1,6 +1,7 @@
 import base64
 import calendar
 import datetime
+import math
 import xml.etree.cElementTree as ET
 
 from odoo import _, api, fields, models
@@ -239,18 +240,18 @@ class WizardIne(models.TransientModel):
 
             for entry in read_group_result:
                 if not entry["residence_country_id"]:
-                    guests_with_no_nationality = self.env["pms.checkin.partner"].search(
-                        entry["__domain"]
-                    )
-                    guests_with_no_nationality = (
-                        str(guests_with_no_nationality.mapped("name"))
+                    guests_with_no_residence_country = self.env[
+                        "pms.checkin.partner"
+                    ].search(entry["__domain"])
+                    guests_with_no_residence_country = (
+                        str(guests_with_no_residence_country.mapped("name"))
                         .replace("[", "")
                         .replace("]", "")
                     )
                     raise ValidationError(
                         _(
-                            "The following guests have no residence nationality set :%s.",
-                            guests_with_no_nationality,
+                            "The following guests have no residence country set :%s.",
+                            guests_with_no_residence_country,
                         )
                     )
                 # get residence_country_id from group set read_group results
@@ -739,8 +740,21 @@ class WizardIne(models.TransientModel):
         # so at least I will feel that the effort made some sense :)
 
         total_percent = sum([val for val in percents.values()])
+        sum_percentages = 0
         for group in total_groups_domains.keys():
             percents[group] = round(percents[group] * 100 / (total_percent or 1), 2)
+            sum_percentages += percents[group]
+
+        if sum_percentages < 100:
+            for group in total_groups_domains.keys():
+                if percents[group] > 0:
+                    percents[group] += math.ceil((100 - sum_percentages) * 100) / 100
+                    break
+        elif sum_percentages > 100:
+            for group in total_groups_domains.keys():
+                if percents[group] > 0:
+                    percents[group] -= math.ceil((sum_percentages - 100) * 100) / 100
+                    break
 
         ET.SubElement(prices_tag, "ADR_TOUROPERADOR_TRADICIONAL").text = str(
             adrs["tour_operator_offline"]
