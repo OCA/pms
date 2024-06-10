@@ -30,6 +30,7 @@ XML_OK = "1"
 XML_PROCESSING = "4"
 XML_PENDING = "5"
 
+CREATE_OPERATION_CODE = "A"
 DELETE_OPERATION_CODE = "B"
 
 # Disable insecure request warnings
@@ -995,12 +996,14 @@ class TravellerReport(models.TransientModel):
 
     @api.model
     def ses_send_communications(self, entity):
+
         for communication in self.env["pms.ses.communication"].search(
             [
                 ("state", "=", "to_send"),
                 ("entity", "=", entity),
             ]
         ):
+
             data = False
             if communication.entity == "RH":
                 data = self.generate_xml_reservations([communication.reservation_id.id])
@@ -1032,7 +1035,7 @@ class TravellerReport(models.TransientModel):
                 result_code = root.find(".//codigo").text
                 if result_code == REQUEST_CODE_OK:
                     communication.communication_id = root.find(".//lote").text
-                    if communication.operation == "A":
+                    if communication.operation == CREATE_OPERATION_CODE:
                         communication.state = "to_process"
                     else:
                         communication.state = "processed"
@@ -1125,6 +1128,6 @@ class TravellerReport(models.TransientModel):
             ).unlink()
             self.env["pms.reservation"].create_communication(
                 reservation.id,
-                "A",
+                CREATE_OPERATION_CODE,
                 "PV",
             )
