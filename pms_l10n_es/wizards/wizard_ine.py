@@ -200,7 +200,7 @@ class WizardIne(models.TransientModel):
         return rooms
 
     @api.model
-    def ine_nationalities(self, start_date, end_date, pms_property_id):
+    def ine_countries(self, start_date, end_date, pms_property_id):
         """
         Returns a dictionary:
         {
@@ -266,11 +266,11 @@ class WizardIne(models.TransientModel):
                     num = entry["__count"]
 
                     # update/create dicts for countries & dates and set num. arrivals
-                    if not nationalities.get(residence_country_id_code):
-                        nationalities[residence_country_id_code] = dict()
-                    if not nationalities[residence_country_id_code].get(date):
-                        nationalities[residence_country_id_code][date] = dict()
-                    nationalities[residence_country_id_code][date][type_of_entry] = num
+                    if not countries.get(residence_country_id_code):
+                        countries[residence_country_id_code] = dict()
+                    if not countries[residence_country_id_code].get(date):
+                        countries[residence_country_id_code][date] = dict()
+                    countries[residence_country_id_code][date][type_of_entry] = num
                 else:
                     # arrivals grouped by state_id (Spain "provincias")
                     read_by_arrivals_spain = self.env["pms.checkin.partner"].read_group(
@@ -312,20 +312,18 @@ class WizardIne(models.TransientModel):
                         num_spain = entry_from_spain["__count"]
 
                         # update/create dicts for states & dates and set num. arrivals
-                        if not nationalities.get(CODE_SPAIN):
-                            nationalities[CODE_SPAIN] = dict()
+                        if not countries.get(CODE_SPAIN):
+                            countries[CODE_SPAIN] = dict()
 
-                        if not nationalities[CODE_SPAIN].get(ine_code):
-                            nationalities[CODE_SPAIN][ine_code] = dict()
+                        if not countries[CODE_SPAIN].get(ine_code):
+                            countries[CODE_SPAIN][ine_code] = dict()
 
-                        if not nationalities[CODE_SPAIN][ine_code].get(date):
-                            nationalities[CODE_SPAIN][ine_code][date] = dict()
-                        nationalities[CODE_SPAIN][ine_code][date][
-                            type_of_entry
-                        ] = num_spain
+                        if not countries[CODE_SPAIN][ine_code].get(date):
+                            countries[CODE_SPAIN][ine_code][date] = dict()
+                        countries[CODE_SPAIN][ine_code][date][type_of_entry] = num_spain
 
         # result object
-        nationalities = dict()
+        countries = dict()
 
         # iterate days between start_date and end_date
         for p_date in [
@@ -393,7 +391,7 @@ class WizardIne(models.TransientModel):
                 p_date, "pernoctations", read_by_pernoctations
             )
 
-        return nationalities
+        return countries
 
     def ine_calculate_adr(self, start_date, end_date, domain=False):
         """
@@ -575,10 +573,10 @@ class WizardIne(models.TransientModel):
         # INE XML -> GUESTS
         accommodation_tag = ET.SubElement(survey_tag, "ALOJAMIENTO")
 
-        nationalities = self.ine_nationalities(
+        countries = self.ine_countries(
             self.start_date, self.end_date, self.pms_property_id.id
         )
-        for key_country, value_country in nationalities.items():
+        for key_country, value_country in countries.items():
 
             country = self.env["res.country"].search([("code", "=", key_country)])
 
