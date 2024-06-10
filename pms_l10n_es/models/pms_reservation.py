@@ -1,5 +1,7 @@
 from odoo import api, fields, models
 
+from ..wizards.traveller_report import CREATE_OPERATION_CODE, DELETE_OPERATION_CODE
+
 
 class PmsReservation(models.Model):
     _inherit = "pms.reservation"
@@ -34,7 +36,7 @@ class PmsReservation(models.Model):
     def create(self, vals):
         reservation = super(PmsReservation, self).create(vals)
         if reservation.pms_property_id.institution == "ses":
-            self.create_communication(reservation.id, "A", "RH")
+            self.create_communication(reservation.id, CREATE_OPERATION_CODE, "RH")
         return reservation
 
     @api.model
@@ -72,14 +74,26 @@ class PmsReservation(models.Model):
             )
 
             if state_changed:
-                if vals["state"] == "cancel" and last_communication.operation == "A":
-                    self.create_communication(reservation.id, "B", "RH")
-                elif vals["state"] != "cancel" and last_communication.operation == "B":
-                    self.create_communication(reservation.id, "A", "RH")
+                if (
+                    vals["state"] == "cancel"
+                    and last_communication.operation == CREATE_OPERATION_CODE
+                ):
+                    self.create_communication(
+                        reservation.id, DELETE_OPERATION_CODE, "RH"
+                    )
+                elif (
+                    vals["state"] != "cancel"
+                    and last_communication.operation == DELETE_OPERATION_CODE
+                ):
+                    self.create_communication(
+                        reservation.id, CREATE_OPERATION_CODE, "RH"
+                    )
             elif check_changed:
-                if last_communication.operation == "A":
-                    self.create_communication(reservation.id, "B", "RH")
-                self.create_communication(reservation.id, "A", "RH")
+                if last_communication.operation == CREATE_OPERATION_CODE:
+                    self.create_communication(
+                        reservation.id, DELETE_OPERATION_CODE, "RH"
+                    )
+                self.create_communication(reservation.id, CREATE_OPERATION_CODE, "RH")
 
     def write(self, vals):
         for record in self:
