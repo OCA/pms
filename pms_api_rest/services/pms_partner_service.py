@@ -579,7 +579,7 @@ class PmsPartnerService(Component):
             document_type.validate_id_number(id_number)
         except ValidationError as e:
             error_mens = str(e)
-        if document_type.aeat_identification_type in ["02", "04"]:
+        if document_type.code == 'D':
             Partner = self.env["res.partner"]
             error = not Partner.simple_vat_check(
                 country_code=country.code,
