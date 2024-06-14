@@ -175,6 +175,7 @@ class PmsInvoiceService(Component):
                     if invoice.origin_agency_id
                     else None,
                     ref=invoice.ref if invoice.ref else None,
+                    narration=invoice.narration if invoice.narration else None,
                     pmsPropertyId=invoice.pms_property_id
                     if invoice.pms_property_id
                     else None,
