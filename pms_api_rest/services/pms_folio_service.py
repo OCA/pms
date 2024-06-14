@@ -1304,6 +1304,7 @@ class PmsFolioService(Component):
                             isReversed=move.payment_state == "reversed",
                             isDownPaymentInvoice=move._is_downpayment(),
                             isSimplifiedInvoice=move.journal_id.is_simplified_invoice,
+                            narration=move.narration if move.narration else None,
                         )
                     )
         return invoices
