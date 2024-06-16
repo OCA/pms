@@ -1127,7 +1127,12 @@ class PmsFolioService(Component):
             "auto_delete": False,
         }
         if pms_mail_info.bodyMail:
-            email_values.update({"body": pms_mail_info.bodyMail})
+            email_values.update(
+                {
+                    "body": pms_mail_info.bodyMail,
+                    "body_html": pms_mail_info.bodyMail,
+                }
+            )
         if pms_mail_info.mailType == "confirm":
             template = folio.pms_property_id.property_confirmed_template
             res_id = folio.id
