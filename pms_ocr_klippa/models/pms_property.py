@@ -139,7 +139,7 @@ class PmsProperty(models.Model):
             )
             self.env["klippa.log"].sudo().create(log_data)
             _logger.error(e)
-            raise ValidationError(_("Error processing Klippa document"))
+            return {}
 
     def _map_klippa_data(self, document_data):
         mapped_data = {}
