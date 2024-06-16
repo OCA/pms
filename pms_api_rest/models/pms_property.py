@@ -586,11 +586,11 @@ class PmsProperty(models.Model):
         if isinstance(date_from, str):
             date_from = datetime.datetime.strptime(date_from, "%Y-%m-%d").date()
             if date_from < datetime.datetime.today().date():
-                raise ValidationError(_("Invalid date from"))
+                date_from = datetime.datetime.today().date()
         if isinstance(date_to, str):
             date_to = datetime.datetime.strptime(date_to, "%Y-%m-%d").date()
             if date_to <= date_from:
-                raise ValidationError(_("Invalid date to"))
+                date_to = date_from
         for client in clients:
             if not pms_property_codes:
                 pms_properties = client.pms_property_ids
