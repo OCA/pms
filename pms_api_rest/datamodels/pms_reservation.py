@@ -32,6 +32,7 @@ class PmsReservationShortInfo(Datamodel):
     overbooking = fields.Boolean(required=False, allow_none=True)
     isBlocked = fields.Boolean(required=False, allow_none=True)
     reservationType = fields.String(required=False, allow_none=True)
+    segmentationId = fields.Integer(required=False, allow_none=True)
 
 
 
