@@ -566,6 +566,9 @@ class PmsFolioService(Component):
                             overbooking=reservation.overbooking,
                             isBlocked=reservation.blocked,
                             reservationType=reservation.reservation_type,
+                            segmentationId=reservation.segmentation_ids[0].id
+                            if reservation.segmentation_ids
+                            else None,
                         )
                     )
 
@@ -1427,6 +1430,94 @@ class PmsFolioService(Component):
                     ).mapped("qty_to_invoice")
                 )
         return 0
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:folio_id>/checkin-partners",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.checkin.partner.info", is_list=True),
+        auth="jwt_api_pms",
+    )
+    def get_folio_checkin_partners(self, folio_id):
+        folio = self.env["pms.folio"].browse(folio_id)
+        checkin_partners = []
+        if folio:
+            PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
+            for checkin_partner in folio.checkin_partner_ids:
+                checkin_partners.append(
+                    PmsCheckinPartnerInfo(
+                        id=checkin_partner.id,
+                        reservationId=checkin_partner.reservation_id.id,
+                        name=checkin_partner.name if checkin_partner.name else "",
+                        firstname=checkin_partner.firstname
+                        if checkin_partner.firstname
+                        else None,
+                        lastname=checkin_partner.lastname
+                        if checkin_partner.lastname
+                        else None,
+                        lastname2=checkin_partner.lastname2
+                        if checkin_partner.lastname2
+                        else None,
+                        email=checkin_partner.email if checkin_partner.email else "",
+                        mobile=checkin_partner.mobile if checkin_partner.mobile else "",
+                        documentType=checkin_partner.document_type.id
+                        if checkin_partner.document_type
+                        else None,
+                        documentNumber=checkin_partner.document_number
+                        if checkin_partner.document_number
+                        else None,
+                        documentExpeditionDate=datetime.combine(
+                            checkin_partner.document_expedition_date,
+                            datetime.min.time(),
+                        ).isoformat()
+                        if checkin_partner.document_expedition_date
+                        else None,
+                        documentSupportNumber=checkin_partner.support_number
+                        if checkin_partner.support_number
+                        else None,
+                        documentCountryId=checkin_partner.document_country_id.id
+                        if checkin_partner.document_country_id
+                        else None,
+                        gender=checkin_partner.gender if checkin_partner.gender else "",
+                        birthdate=datetime.combine(
+                            checkin_partner.birthdate_date, datetime.min.time()
+                        ).isoformat()
+                        if checkin_partner.birthdate_date
+                        else None,
+                        residenceStreet=checkin_partner.residence_street
+                        if checkin_partner.residence_street
+                        else None,
+                        zip=checkin_partner.residence_zip
+                        if checkin_partner.residence_zip
+                        else None,
+                        residenceCity=checkin_partner.residence_city
+                        if checkin_partner.residence_city
+                        else None,
+                        nationality=checkin_partner.nationality_id.id
+                        if checkin_partner.nationality_id
+                        else None,
+                        countryState=checkin_partner.residence_state_id.id
+                        if checkin_partner.residence_state_id
+                        else None,
+                        countryStateName=checkin_partner.residence_state_id.name
+                        if checkin_partner.residence_state_id
+                        else None,
+                        countryId=checkin_partner.residence_country_id.id
+                        if checkin_partner.residence_country_id
+                        else None,
+                        checkinPartnerState=checkin_partner.state,
+                        signature=checkin_partner.signature
+                        if checkin_partner.signature
+                        else None,
+                    )
+                )
+        return checkin_partners
+
 
     @restapi.method(
         [
