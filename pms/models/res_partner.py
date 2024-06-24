@@ -32,6 +32,18 @@ class ResPartner(models.Model):
         index=True,
     )
     default_commission = fields.Integer(string="Commission", help="Default commission")
+    commission_type = fields.Selection(
+        selection=[
+            ("included", "Commission Included in Price"),
+            ("subtract", "Commission Subtracts from Price"),
+        ],
+        string="Commission Type",
+        help="""
+        If select subtract commission, for automatic import of reservations,
+        the commission is calculated as price - (price * commission / 100)
+        """,
+        default="included",
+    )
     apply_pricelist = fields.Boolean(
         help="Indicates if agency pricelist is applied to his reservations",
     )
