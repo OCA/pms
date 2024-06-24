@@ -594,6 +594,9 @@ class PmsFolioService(Component):
             pms_folio_info.reservations, key=lambda x: x.checkout
         ).checkout
         try:
+            agency = False
+            if pms_folio_info.agencyId:
+                agency = self.env["res.partner"].browse(pms_folio_info.agencyId)
             if pms_folio_info.reservationType == "out":
                 vals = {
                     "pms_property_id": pms_folio_info.pmsPropertyId,
@@ -606,9 +609,7 @@ class PmsFolioService(Component):
             else:
                 vals = {
                     "pms_property_id": pms_folio_info.pmsPropertyId,
-                    "agency_id": pms_folio_info.agencyId
-                    if pms_folio_info.agencyId
-                    else False,
+                    "agency_id": agency.id,
                     "sale_channel_origin_id": self.get_channel_origin_id(
                         pms_folio_info.saleChannelId, pms_folio_info.agencyId
                     ),
@@ -645,6 +646,9 @@ class PmsFolioService(Component):
                         )
             folio = self.env["pms.folio"].create(vals)
             for reservation in pms_folio_info.reservations:
+                commision_percent_to_deduct = 0
+                if external_app and agency and agency.commission_type == "substract":
+                    commision_percent_to_deduct = agency.commission
                 vals = {
                     "folio_id": folio.id,
                     "room_type_id": reservation.roomTypeId,
@@ -694,13 +698,16 @@ class PmsFolioService(Component):
                                 * reservation.children
                             )
                     for reservationLine in reservation.reservationLines:
+                        price = reservationLine.price - (
+                            commision_percent_to_deduct * reservationLine.price / 100
+                        )
                         vals_lines.append(
                             (
                                 0,
                                 0,
                                 {
                                     "date": reservationLine.date,
-                                    "price": reservationLine.price - board_day_price,
+                                    "price": price - board_day_price,
                                     "discount": reservationLine.discount,
                                 },
                             )
@@ -1971,6 +1978,10 @@ class PmsFolioService(Component):
         external_app = self.env.user.pms_api_client
         cmds = []
         saved_reservations = folio.reservation_ids
+        agency = self.env["res.partner"].browse(folio.agency_id)
+        commision_percent_to_deduct = 0
+        if external_app and agency and agency.commission_type == "subtract":
+            commision_percent_to_deduct = agency.commission
         for info_reservation in info_reservations:
             # Search a reservation in saved_reservations whose sum of night amounts is equal
             # to the sum of night amounts of info_reservation, and dates equal,
@@ -2085,6 +2096,7 @@ class PmsFolioService(Component):
                     reservation=info_reservation,
                     board_day_price=board_day_price,
                     proposed_reservation=proposed_reservation,
+                    commission_percent_to_deduct=commision_percent_to_deduct,
                 )
                 if reservation_lines_cmds:
                     vals.update({"reservation_line_ids": reservation_lines_cmds})
@@ -2106,7 +2118,11 @@ class PmsFolioService(Component):
         return cmds
 
     def wrapper_reservation_lines(
-        self, reservation, board_day_price=0, proposed_reservation=False
+        self,
+        reservation,
+        board_day_price=0,
+        proposed_reservation=False,
+        commission_percent_to_deduct=0,
     ):
         cmds = []
         for line in reservation.reservationLines:
@@ -2115,6 +2131,7 @@ class PmsFolioService(Component):
                 proposed_line = proposed_reservation.reservation_line_ids.filtered(
                     lambda l: l.date == datetime.strptime(line.date, "%Y-%m-%d").date()
                 )
+                line.price -= commission_percent_to_deduct * proposed_line.price / 100
                 if proposed_line:
                     vals = {}
                     if round(proposed_line.price, 2) != round(
