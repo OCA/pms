@@ -570,3 +570,10 @@ class PmsReservationLine(models.Model):
             )
             if duplicated:
                 raise ValidationError(_("Duplicated reservation line date"))
+
+    @api.constrains("date")
+    def _check_past_reservations(self):
+        for record in self:
+            if record.pms_property_id.block_create_past_reservations:
+                if record.date < fields.Date.today():
+                    raise ValidationError(_("You can't create past reservations"))

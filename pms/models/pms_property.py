@@ -237,6 +237,11 @@ class PmsProperty(models.Model):
         string="Image in checkin",
         default=get_default_logo(),
     )
+    block_create_past_reservations = fields.Boolean(
+        string="Block Create Past Reservations",
+        help="Block the creation of reservations in the past",
+        default=False,
+    )
 
     @api.depends_context(
         "checkin",
