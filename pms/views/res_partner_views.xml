@@ -82,6 +82,7 @@
                             name="sale_channel_id"
                             options="{'no_create': True,'no_open': True}"
                         />
+                        <field name="commission_type" />
                         <field name="default_commission" />
                         <!--  <label for="price_discount"/>
                           <div class="o_row">
