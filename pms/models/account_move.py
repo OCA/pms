@@ -282,8 +282,19 @@ class AccountMove(models.Model):
                     payments=to_propose, invoice=move
                 )
                 if to_reconcile:
-                    (pay_term_lines + to_reconcile).reconcile()
-
+                    try:
+                        (pay_term_lines + to_reconcile).reconcile()
+                    except Exception as e:
+                        message = (
+                            _(
+                                """
+                            An error occurred while reconciling
+                            the invoice with the payments: %s
+                            """
+                            )
+                            % str(e)
+                        )
+                        move.message_post(body=message)
         return True
 
     def _post(self, soft=True):
