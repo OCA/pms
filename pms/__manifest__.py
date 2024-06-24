@@ -94,6 +94,7 @@
         "views/precheckin_portal_templates.xml",
         "wizards/wizard_massive_changes.xml",
         "wizards/wizard_advanced_filters.xml",
+        "wizards/folio_payment_link_views.xml",
         "views/payment_transaction_views.xml",
         "views/account_move_line_views.xml",
         "report/proforma_report_templates.xml",
