@@ -74,6 +74,9 @@
                             >
                                 <field name="default_pricelist_id" required="True" />
                             </group>
+                            <group string="Reservation">
+                                <field name="block_create_past_reservations" />
+                            </group>
                             <group string="Timezone">
                                 <field name="tz" widget="timezone_mismatch" />
                             </group>
