@@ -31,7 +31,12 @@ class ProductTemplate(models.Model):
     consumed_on = fields.Selection(
         string="Consumed",
         help="Indicates when the product is consumed",
-        selection=[("before", "Before night"), ("after", "After night")],
+        selection=[
+            ("before", "All before night"),
+            ("after", "All after night"),
+            ("checkin", "Only first day"),
+            ("checkout", "Only last day"),
+        ],
         default="before",
     )
     daily_limit = fields.Integer(
