@@ -249,11 +249,15 @@ class ChannelWubookPmsFolioAdapter(Component):
 
             channel_data = value.get("channel_data")
             id_channel = value["id_channel"]
+            backend_type = self.backend_record.backend_type_id.child_id
+            ota = backend_type.ota_ids.filtered(lambda r: r.wubook_ota == id_channel)
+            agency = False
+            if ota:
+                agency = ota.agency_id
             # TODO: Add tax_included field in Agencies with True/False/Automatic options
             vat_included = (
                 channel_data.get("vat_included", True) if id_channel != 2 else True
             )
-
             customer_notes = value.pop("customer_notes")
             reservations = []
 
@@ -310,6 +314,7 @@ class ChannelWubookPmsFolioAdapter(Component):
                             or 0,
                             "board_included": id_channel != 0,
                             "vat_included": vat_included,
+                            "agency_id": agency.id if agency else False,
                         }
                     )
 
