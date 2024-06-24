@@ -346,7 +346,7 @@ class PmsService(models.Model):
                         continue
                     product = service.product_id
                     consumed_on = product.consumed_on
-                    if product.per_day:
+                    if product.per_day and consumed_on in ("before", "after"):
                         lines = []
                         day_qty = service._service_day_qty()
                         days_diff = (reservation.checkout - reservation.checkin).days
@@ -406,13 +406,18 @@ class PmsService(models.Model):
                         service.service_line_ids = lines
                     else:
                         if not service.service_line_ids:
+                            target_date = (
+                                reservation.checkin
+                                if consumed_on == "checkin"
+                                else reservation.checkout
+                            )
                             price_unit = service._get_price_unit_line()
                             service.service_line_ids = [
                                 (
                                     0,
                                     False,
                                     {
-                                        "date": fields.Date.today(),
+                                        "date": target_date,
                                         "day_qty": day_qty,
                                         "price_unit": price_unit,
                                     },

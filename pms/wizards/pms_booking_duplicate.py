@@ -343,9 +343,7 @@ class BookingDuplicate(models.TransientModel):
                                     "price_unit": ser_line.price_unit,
                                     "discount": ser_line.discount,
                                     "date": ser_line.date
-                                    + datetime.timedelta(days=displacement_days)
-                                    if service.per_day
-                                    else fields.Date.today(),
+                                    + datetime.timedelta(days=displacement_days),
                                 },
                             )
                         )
