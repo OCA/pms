@@ -29,6 +29,10 @@ class ChannelWubookPmsReservationLineMapperImport(Component):
         vat_included = record["vat_included"]
         # By default, taxes are included in the price
         # if not included, we need handle the price
+        commision_percent_to_deduct = 0
+        agency = self.env["res.partner"].browse(record["agency_id"])
+        if agency and agency.commission_type == "subtract":
+            commision_percent_to_deduct = agency.commission
         if not vat_included:
             product = room_type.product_id
             company = self.backend_record.pms_property_id.company_id
@@ -37,6 +41,8 @@ class ChannelWubookPmsReservationLineMapperImport(Component):
                 price_unit=price, product=product, handle_price_include=vat_included
             )
             price = taxes_vals["total_included"]
+        if commision_percent_to_deduct:
+            price -= price * commision_percent_to_deduct / 100
         if record["board"] and record["board_included"]:
             board_service_room = get_board_service_room_type(
                 self, room_type, record["board"]
