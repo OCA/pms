@@ -218,7 +218,13 @@ class PmsProperty(models.Model):
         default=get_default_logo(),
     )
     analytic_account_id = fields.Many2one(
-        comodel_name="account.analytic.account", readonly=True, copy=False
+        comodel_name="account.analytic.account",
+        readonly=True,
+        copy=False,
+    )
+    block_create_past_reservations = fields.Boolean(
+        help="Block the creation of reservations in the past",
+        default=False,
     )
 
     @api.depends_context(
