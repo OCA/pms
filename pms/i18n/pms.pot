@@ -14,6 +14,16 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: pms
+#: code:addons/pms/models/account_move.py:0
+#, python-format
+msgid ""
+"\n"
+"                            An error occurred while reconciling\n"
+"                            the invoice with the payments: %s\n"
+"                            "
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid ""
@@ -70,6 +80,17 @@ msgid ""
 "            - Current Month: Downpayment invoice will be created automatically\n"
 "                only for reservations with checkout date past of current month\n"
 "            "
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__commission_type
+#: model:ir.model.fields,help:pms.field_res_partner__commission_type
+#: model:ir.model.fields,help:pms.field_res_users__commission_type
+msgid ""
+"\n"
+"        If select subtract commission, for automatic import of reservations,\n"
+"        the commission is calculated as price - (price * commission / 100)\n"
+"        "
 msgstr ""
 
 #. module: pms
@@ -1322,11 +1343,6 @@ msgid "Aeat Identification"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__product_template__consumed_on__after
-msgid "After night"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__age
 msgid "Age"
 msgstr ""
@@ -1364,6 +1380,16 @@ msgstr ""
 #: model:ir.model.fields.selection,name:pms.selection__pms_cancelation_rule__apply_on_late__all
 #: model:ir.model.fields.selection,name:pms.selection__pms_cancelation_rule__apply_on_noshow__all
 msgid "All Days"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__product_template__consumed_on__after
+msgid "All after night"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__product_template__consumed_on__before
+msgid "All before night"
 msgstr ""
 
 #. module: pms
@@ -2048,11 +2074,6 @@ msgid "Barcode"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__product_template__consumed_on__before
-msgid "Before night"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_advance_payment_inv__bill_rooms
 #: model:ir.model.fields,help:pms.field_folio_advance_payment_inv__bill_rooms
 msgid "Bill Rooms"
@@ -2091,6 +2112,16 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__is_blacklisted
 msgid "Blacklist"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__block_create_past_reservations
+msgid "Block Create Past Reservations"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__block_create_past_reservations
+msgid "Block the creation of reservations in the past"
 msgstr ""
 
 #. module: pms
@@ -2883,6 +2914,23 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Commission Amount"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__res_partner__commission_type__included
+msgid "Commission Included in Price"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__res_partner__commission_type__subtract
+msgid "Commission Subtracts from Price"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__commission_type
+#: model:ir.model.fields,field_description:pms.field_res_partner__commission_type
+#: model:ir.model.fields,field_description:pms.field_res_users__commission_type
+msgid "Commission Type"
 msgstr ""
 
 #. module: pms
@@ -3844,6 +3892,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_ir_pms_property__display_name
 #: model:ir.model.fields,field_description:pms.field_mail_compose_message__display_name
 #: model:ir.model.fields,field_description:pms.field_payment_acquirer__display_name
+#: model:ir.model.fields,field_description:pms.field_payment_link_wizard__display_name
 #: model:ir.model.fields,field_description:pms.field_payment_transaction__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__display_name
@@ -4790,6 +4839,16 @@ msgid "General Information"
 msgstr ""
 
 #. module: pms
+#: model:ir.model,name:pms.model_payment_link_wizard
+msgid "Generate Sales Payment Link"
+msgstr ""
+
+#. module: pms
+#: model:ir.actions.act_window,name:pms.action_folio_generate_link
+msgid "Generate a Payment Link"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_availability_plan_rule__quota
 #: model:ir.model.fields,help:pms.field_pms_massive_changes_wizard__quota
 msgid "Generic Quota assigned."
@@ -4988,6 +5047,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_ir_pms_property__id
 #: model:ir.model.fields,field_description:pms.field_mail_compose_message__id
 #: model:ir.model.fields,field_description:pms.field_payment_acquirer__id
+#: model:ir.model.fields,field_description:pms.field_payment_link_wizard__id
 #: model:ir.model.fields,field_description:pms.field_payment_transaction__id
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard__id
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__id
@@ -6064,6 +6124,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_ir_pms_property____last_update
 #: model:ir.model.fields,field_description:pms.field_mail_compose_message____last_update
 #: model:ir.model.fields,field_description:pms.field_payment_acquirer____last_update
+#: model:ir.model.fields,field_description:pms.field_payment_link_wizard____last_update
 #: model:ir.model.fields,field_description:pms.field_payment_transaction____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_amenity____last_update
@@ -7205,6 +7266,16 @@ msgstr ""
 #: code:addons/pms/models/pms_board_service_room_type.py:0
 #, python-format
 msgid "Only can set one default board service"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__product_template__consumed_on__checkin
+msgid "Only first day"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__product_template__consumed_on__checkout
+msgid "Only last day"
 msgstr ""
 
 #. module: pms
@@ -8800,6 +8871,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_split_join_swap_wizard__reservation_id
 #: model:ir.model.fields,field_description:pms.field_pms_service_line__reservation_id
 #: model:ir.model.fields,field_description:pms.field_pms_several_partners_wizard__reservation_id
+#: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 #: model_terms:ir.ui.view,arch_db:pms.reservation_wizard
 msgid "Reservation"
@@ -12085,6 +12157,12 @@ msgstr ""
 msgid ""
 "You can not create a new folio because there are rooms already occupied.\n"
 "                    Please, check the rooms marked in red and try again."
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_reservation_line.py:0
+#, python-format
+msgid "You can't create past reservations"
 msgstr ""
 
 #. module: pms
