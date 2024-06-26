@@ -170,7 +170,8 @@ class PmsCheckinPartnerService(Component):
                     .search(
                         [
                             ("code", "=", guest.customFields.get("province")),
-                        ]
+                        ],
+                        limit=1,
                     )
                     .id
                 )
@@ -180,7 +181,8 @@ class PmsCheckinPartnerService(Component):
                     .search(
                         [
                             ("code_alpha3", "=", guest.customFields.get("country")),
-                        ]
+                        ],
+                        limit=1,
                     )
                     .id
                 )
