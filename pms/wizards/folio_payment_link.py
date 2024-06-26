@@ -35,14 +35,14 @@ class FolioPaymentLink(models.TransientModel):
                 folio = self.env["pms.folio"].browse(payment_link.res_id)
                 acquirer = self.env["payment.acquirer"].search(
                     [
-                        ("pms_property_ids", "in", folio.property_id.id),
+                        ("pms_property_ids", "in", folio.pms_property_id.id),
                     ],
                     limit=1,
                 )
                 record = self.env[payment_link.res_model].browse(payment_link.res_id)
                 payment_link.link = (
                     "%s/website_payment/pay?reference=%s&amount=%s&currency_id=%s"
-                    "&acquirer_id=%s&partner_id=%s&folio_id=%s&company_id=%s"
+                    "&acquirer_id=%s&folio_id=%s&company_id=%s"
                     "&access_token=%s"
                 ) % (
                     record.get_base_url(),
@@ -50,10 +50,11 @@ class FolioPaymentLink(models.TransientModel):
                     payment_link.pending_amount,
                     payment_link.currency_id.id,
                     acquirer.id if acquirer else None,
-                    payment_link.partner_id.id if payment_link.partner_id else None,
                     payment_link.res_id,
                     payment_link.company_id.id,
                     payment_link.access_token,
                 )
+                if payment_link.partner_id:
+                    payment_link.link += "&partner_id=%s" % payment_link.partner_id.id
             else:
                 super(FolioPaymentLink, payment_link)._generate_link()
