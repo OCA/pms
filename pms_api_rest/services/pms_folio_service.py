@@ -647,7 +647,7 @@ class PmsFolioService(Component):
             folio = self.env["pms.folio"].create(vals)
             for reservation in pms_folio_info.reservations:
                 commision_percent_to_deduct = 0
-                if external_app and agency and agency.commission_type == "substract":
+                if external_app and agency and agency.commission_type == "subtract":
                     commision_percent_to_deduct = agency.commission
                 vals = {
                     "folio_id": folio.id,
@@ -666,6 +666,7 @@ class PmsFolioService(Component):
                     "children": reservation.children,
                     "preconfirm": pms_folio_info.preconfirm,
                     "blocked": True if external_app else False,
+                    "partner_requests": reservation.partnerRequests or "",
                 }
                 if reservation.reservationLines:
                     vals_lines = []
@@ -2048,6 +2049,13 @@ class PmsFolioService(Component):
                     != info_reservation.preferredRoomId
                 ):
                     vals.update({"preferred_room_id": info_reservation.preferredRoomId})
+            if info_reservation.partnerRequests:
+                if (
+                    new_res
+                    or proposed_reservation.partner_requests
+                    != info_reservation.partnerRequests
+                ):
+                    vals.update({"partner_requests": info_reservation.partnerRequests})
             if info_reservation.adults:
                 if new_res or proposed_reservation.adults != info_reservation.adults:
                     vals.update({"adults": info_reservation.adults})
