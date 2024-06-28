@@ -1,4 +1,5 @@
 import logging
+import traceback
 from datetime import date, datetime
 
 import requests
@@ -130,7 +131,7 @@ class PmsProperty(models.Model):
         except Exception as e:
             log_data.update(
                 {
-                    "error": str(e),
+                    "error": traceback.format_exc(),
                     "final_status": "error",
                     "total_duration": (
                         datetime.now() - log_data["request_datetime"]
@@ -296,14 +297,21 @@ class PmsProperty(models.Model):
                     ("klippa_code", "=", klippa_type),
                     ("country_ids", "=", False),
                 ],
-                limit=1,
             )
         elif not document_type:
             document_type = self.env["res.partner.id_category"].search(
                 [
                     ("klippa_code", "=", klippa_type),
                 ],
-                limit=1,
+            )
+        if len(document_type) > 1:
+            # Try find document type by klippa_subtype_code, if not found, get the first
+            document_subtype = document_type.filtered(
+                lambda dt: dt.klippa_subtype_code
+                == document_data.get("document_subtype").get("value")
+            )
+            document_type = (
+                document_subtype[0] if document_subtype else document_type[0]
             )
         if not document_type:
             document_type = self.env.ref("pms.document_type_identification_document")
@@ -353,7 +361,7 @@ class PmsProperty(models.Model):
             )
             if candidates[1] >= 90:
                 country_state = self.env["res.country.state"].search(
-                    domain + [("name", "=", candidates[0])]
+                    domain + [("name", "=", candidates[0])], limit=1
                 )
                 mapped_data["country_state"] = country_state.id
                 if not country_record and country_state:
@@ -500,7 +508,7 @@ class PmsProperty(models.Model):
                     )
                     if country_state_record[1] >= 90:
                         country_state = self.env["res.country.state"].search(
-                            [("name", "=", country_state_record[0])]
+                            [("name", "=", country_state_record[0])], limit=1
                         )
                         mapped_data["country_state"] = country_state.id
             if not mapped_data.get("residence_city", False):
@@ -515,6 +523,10 @@ class PmsProperty(models.Model):
 
     def _complete_mapped_from_partner(self, document, mapped_data):
         for key, field in CHECKIN_FIELDS.items():
-            if not mapped_data.get(key, False) and document.mapped(field)[0]:
+            if (
+                not mapped_data.get(key, False)
+                and document.mapped(field)
+                and document.mapped(field)[0]
+            ):
                 mapped_data[key] = document.mapped(field)[0]
         return mapped_data
