@@ -4,7 +4,11 @@
         <field name="name">klippa.log.tree</field>
         <field name="model">klippa.log</field>
         <field name="arch" type="xml">
-            <tree string="Klippa Log">
+            <tree
+                string="Klippa Log"
+                create="false"
+                decoration-danger="final_status == 'error'"
+            >
                 <field name="pms_property_id" />
                 <field name="create_date" />
                 <field name="klippa_status" />
