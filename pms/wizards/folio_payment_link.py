@@ -36,25 +36,34 @@ class FolioPaymentLink(models.TransientModel):
                 acquirer = self.env["payment.acquirer"].search(
                     [
                         ("pms_property_ids", "in", folio.pms_property_id.id),
+                        ("state", "=", "enabled"),
                     ],
                     limit=1,
                 )
-                record = self.env[payment_link.res_model].browse(payment_link.res_id)
-                payment_link.link = (
-                    "%s/website_payment/pay?reference=%s&amount=%s&currency_id=%s"
-                    "&acquirer_id=%s&folio_id=%s&company_id=%s"
-                    "&access_token=%s"
-                ) % (
-                    record.get_base_url(),
-                    urls.url_quote_plus(payment_link.description),
-                    payment_link.pending_amount,
-                    payment_link.currency_id.id,
-                    acquirer.id if acquirer else None,
-                    payment_link.res_id,
-                    payment_link.company_id.id,
-                    payment_link.access_token,
-                )
-                if payment_link.partner_id:
-                    payment_link.link += "&partner_id=%s" % payment_link.partner_id.id
+                if acquirer:
+                    record = self.env[payment_link.res_model].browse(
+                        payment_link.res_id
+                    )
+                    payment_link.link = (
+                        "%s/website_payment/pay?reference=%s&amount=%s&currency_id=%s"
+                        "&folio_id=%s&company_id=%s"
+                        "&access_token=%s"
+                    ) % (
+                        record.get_base_url(),
+                        urls.url_quote_plus(payment_link.description),
+                        payment_link.amount,
+                        payment_link.currency_id.id,
+                        payment_link.res_id,
+                        payment_link.company_id.id,
+                        payment_link.access_token,
+                    )
+                    if acquirer:
+                        payment_link.link += "&acquirer_id=%s" % acquirer.id
+                    if payment_link.partner_id:
+                        payment_link.link += (
+                            "&partner_id=%s" % payment_link.partner_id.id
+                        )
+                else:
+                    payment_link.link = False
             else:
                 super(FolioPaymentLink, payment_link)._generate_link()
