@@ -10634,7 +10634,9 @@ msgstr ""
 #. module: pms
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
-msgid "The Property and Sale Channel Origin are mandatory in the reservation"
+msgid ""
+"The Property, Sale Channel Origin and name / partner name / agency are "
+"mandatory in the reservation"
 msgstr ""
 
 #. module: pms
