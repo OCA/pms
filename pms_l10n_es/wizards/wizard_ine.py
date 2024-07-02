@@ -1,6 +1,7 @@
 import base64
 import calendar
 import datetime
+import math
 import xml.etree.cElementTree as ET
 
 from odoo import _, api, fields, models
@@ -200,7 +201,7 @@ class WizardIne(models.TransientModel):
         return rooms
 
     @api.model
-    def ine_nationalities(self, start_date, end_date, pms_property_id):
+    def ine_countries(self, start_date, end_date, pms_property_id):
         """
         Returns a dictionary:
         {
@@ -238,39 +239,39 @@ class WizardIne(models.TransientModel):
             """
 
             for entry in read_group_result:
-                if not entry["nationality_id"]:
-                    guests_with_no_nationality = self.env["pms.checkin.partner"].search(
-                        entry["__domain"]
-                    )
-                    guests_with_no_nationality = (
-                        str(guests_with_no_nationality.mapped("name"))
+                if not entry["residence_country_id"]:
+                    guests_with_no_residence_country = self.env[
+                        "pms.checkin.partner"
+                    ].search(entry["__domain"])
+                    guests_with_no_residence_country = (
+                        str(guests_with_no_residence_country.mapped("name"))
                         .replace("[", "")
                         .replace("]", "")
                     )
                     raise ValidationError(
                         _(
-                            "The following guests have no residence nationality set :%s.",
-                            guests_with_no_nationality,
+                            "The following guests have no residence country set :%s.",
+                            guests_with_no_residence_country,
                         )
                     )
-                # get nationality_id from group set read_group results
-                nationality_id_code = (
+                # get residence_country_id from group set read_group results
+                residence_country_id_code = (
                     self.env["res.country"]
-                    .search([("id", "=", entry["nationality_id"][0])])
+                    .search([("id", "=", entry["residence_country_id"][0])])
                     .code
                 )
                 # all countries except Spain
-                if nationality_id_code != CODE_SPAIN:
+                if residence_country_id_code != CODE_SPAIN:
 
                     # get count of each result
                     num = entry["__count"]
 
                     # update/create dicts for countries & dates and set num. arrivals
-                    if not nationalities.get(nationality_id_code):
-                        nationalities[nationality_id_code] = dict()
-                    if not nationalities[nationality_id_code].get(date):
-                        nationalities[nationality_id_code][date] = dict()
-                    nationalities[nationality_id_code][date][type_of_entry] = num
+                    if not countries.get(residence_country_id_code):
+                        countries[residence_country_id_code] = dict()
+                    if not countries[residence_country_id_code].get(date):
+                        countries[residence_country_id_code][date] = dict()
+                    countries[residence_country_id_code][date][type_of_entry] = num
                 else:
                     # arrivals grouped by state_id (Spain "provincias")
                     read_by_arrivals_spain = self.env["pms.checkin.partner"].read_group(
@@ -312,20 +313,18 @@ class WizardIne(models.TransientModel):
                         num_spain = entry_from_spain["__count"]
 
                         # update/create dicts for states & dates and set num. arrivals
-                        if not nationalities.get(CODE_SPAIN):
-                            nationalities[CODE_SPAIN] = dict()
+                        if not countries.get(CODE_SPAIN):
+                            countries[CODE_SPAIN] = dict()
 
-                        if not nationalities[CODE_SPAIN].get(ine_code):
-                            nationalities[CODE_SPAIN][ine_code] = dict()
+                        if not countries[CODE_SPAIN].get(ine_code):
+                            countries[CODE_SPAIN][ine_code] = dict()
 
-                        if not nationalities[CODE_SPAIN][ine_code].get(date):
-                            nationalities[CODE_SPAIN][ine_code][date] = dict()
-                        nationalities[CODE_SPAIN][ine_code][date][
-                            type_of_entry
-                        ] = num_spain
+                        if not countries[CODE_SPAIN][ine_code].get(date):
+                            countries[CODE_SPAIN][ine_code][date] = dict()
+                        countries[CODE_SPAIN][ine_code][date][type_of_entry] = num_spain
 
         # result object
-        nationalities = dict()
+        countries = dict()
 
         # iterate days between start_date and end_date
         for p_date in [
@@ -351,36 +350,36 @@ class WizardIne(models.TransientModel):
             # arrivals
             arrivals = hosts.filtered(lambda x: x.reservation_id.checkin == p_date)
 
-            # arrivals grouped by nationality_id
+            # arrivals grouped by residence_country_id
             read_by_arrivals = self.env["pms.checkin.partner"].read_group(
                 [("id", "in", arrivals.ids)],
-                ["nationality_id"],
-                ["nationality_id"],
-                orderby="nationality_id",
+                ["residence_country_id"],
+                ["residence_country_id"],
+                orderby="residence_country_id",
                 lazy=False,
             )
 
             # departures
             departures = hosts.filtered(lambda x: x.reservation_id.checkout == p_date)
 
-            # departures grouped by nationality_id
+            # departures grouped by residence_country_id
             read_by_departures = self.env["pms.checkin.partner"].read_group(
                 [("id", "in", departures.ids)],
-                ["nationality_id"],
-                ["nationality_id"],
-                orderby="nationality_id",
+                ["residence_country_id"],
+                ["residence_country_id"],
+                orderby="residence_country_id",
                 lazy=False,
             )
 
             # pernoctations
             pernoctations = hosts - departures
 
-            # pernoctations grouped by nationality_id
+            # pernoctations grouped by residence_country_id
             read_by_pernoctations = self.env["pms.checkin.partner"].read_group(
                 [("id", "in", pernoctations.ids)],
-                ["nationality_id"],
-                ["nationality_id"],
-                orderby="nationality_id",
+                ["residence_country_id"],
+                ["residence_country_id"],
+                orderby="residence_country_id",
                 lazy=False,
             )
             ine_add_arrivals_departures_pernoctations(
@@ -393,7 +392,7 @@ class WizardIne(models.TransientModel):
                 p_date, "pernoctations", read_by_pernoctations
             )
 
-        return nationalities
+        return countries
 
     def ine_calculate_adr(self, start_date, end_date, domain=False):
         """
@@ -575,10 +574,10 @@ class WizardIne(models.TransientModel):
         # INE XML -> GUESTS
         accommodation_tag = ET.SubElement(survey_tag, "ALOJAMIENTO")
 
-        nationalities = self.ine_nationalities(
+        countries = self.ine_countries(
             self.start_date, self.end_date, self.pms_property_id.id
         )
-        for key_country, value_country in nationalities.items():
+        for key_country, value_country in countries.items():
 
             country = self.env["res.country"].search([("code", "=", key_country)])
 
@@ -741,8 +740,21 @@ class WizardIne(models.TransientModel):
         # so at least I will feel that the effort made some sense :)
 
         total_percent = sum([val for val in percents.values()])
+        sum_percentages = 0
         for group in total_groups_domains.keys():
             percents[group] = round(percents[group] * 100 / (total_percent or 1), 2)
+            sum_percentages += percents[group]
+
+        if sum_percentages < 100:
+            for group in total_groups_domains.keys():
+                if percents[group] > 0:
+                    percents[group] += math.ceil((100 - sum_percentages) * 100) / 100
+                    break
+        elif sum_percentages > 100:
+            for group in total_groups_domains.keys():
+                if percents[group] > 0:
+                    percents[group] -= math.ceil((sum_percentages - 100) * 100) / 100
+                    break
 
         ET.SubElement(prices_tag, "ADR_TOUROPERADOR_TRADICIONAL").text = str(
             adrs["tour_operator_offline"]

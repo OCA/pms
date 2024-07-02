@@ -250,6 +250,9 @@ class TestWizardINE(TestPms):
             {
                 "partner_id": self.partner_1.id,
                 "reservation_id": self.reservation_1.id,
+                "residence_street": "Test street 1",
+                "residence_city": "Test city",
+                "residence_zip": "08001",
             }
         )
 
@@ -257,6 +260,9 @@ class TestWizardINE(TestPms):
             {
                 "partner_id": self.partner_2.id,
                 "reservation_id": self.reservation_1.id,
+                "residence_street": "Test street 1",
+                "residence_city": "Test city",
+                "residence_zip": "08001",
             }
         )
         # Create reservation 2
@@ -275,12 +281,18 @@ class TestWizardINE(TestPms):
             {
                 "partner_id": self.partner_3.id,
                 "reservation_id": self.reservation_2.id,
+                "residence_street": "Test street 1",
+                "residence_city": "Test city",
+                "residence_zip": "08001",
             }
         )
         self.checkin4 = self.env["pms.checkin.partner"].create(
             {
                 "partner_id": self.partner_4.id,
                 "reservation_id": self.reservation_2.id,
+                "residence_street": "Test street 1",
+                "residence_city": "Test city",
+                "residence_zip": "08001",
             }
         )
         # Create reservation 3
@@ -299,6 +311,9 @@ class TestWizardINE(TestPms):
             {
                 "partner_id": self.partner_5.id,
                 "reservation_id": self.reservation_3.id,
+                "residence_street": "Test street 1",
+                "residence_city": "Test city",
+                "residence_zip": "08001",
             }
         )
         # Create reservation property 2
@@ -317,6 +332,9 @@ class TestWizardINE(TestPms):
             {
                 "partner_id": self.partner_5.id,
                 "reservation_id": self.reservation_property_2.id,
+                "residence_street": "Test street 1",
+                "residence_city": "Test city",
+                "residence_zip": "08001",
             }
         )
 
@@ -350,6 +368,9 @@ class TestWizardINE(TestPms):
             {
                 "partner_id": self.partner_6.id,
                 "reservation_id": self.reservation_4.id,
+                "residence_street": "Test street 1",
+                "residence_city": "Test city",
+                "residence_zip": "08001",
             }
         )
 
@@ -357,6 +378,9 @@ class TestWizardINE(TestPms):
             {
                 "partner_id": self.partner_7.id,
                 "reservation_id": self.reservation_4.id,
+                "residence_street": "Test street 1",
+                "residence_city": "Test city",
+                "residence_zip": "08001",
             }
         )
         # checkin partners on board
@@ -387,6 +411,9 @@ class TestWizardINE(TestPms):
                 "residence_country_id": self.country_russia.id,
                 "birthdate_date": "2000-06-25",
                 "gender": "male",
+                "residence_street": "Test street 1",
+                "residence_city": "Test city",
+                "residence_zip": "08001",
             }
         )
         self.partner_russia_2 = self.env["res.partner"].create(
@@ -397,6 +424,9 @@ class TestWizardINE(TestPms):
                 "residence_country_id": self.country_russia.id,
                 "birthdate_date": "2000-06-25",
                 "gender": "male",
+                "residence_street": "Test street 1",
+                "residence_city": "Test city",
+                "residence_zip": "08001",
             }
         )
         self.partner_russia_3 = self.env["res.partner"].create(
@@ -407,6 +437,9 @@ class TestWizardINE(TestPms):
                 "residence_country_id": self.country_russia.id,
                 "birthdate_date": "2000-06-25",
                 "gender": "male",
+                "residence_street": "Test street 1",
+                "residence_city": "Test city",
+                "residence_zip": "08001",
             }
         )
         # Create document for 3 checkin partners (russia)
@@ -619,7 +652,7 @@ class TestWizardINE(TestPms):
             },
         }
         # ACT
-        nationalities = self.env["pms.ine.wizard"].ine_nationalities(
+        nationalities = self.env["pms.ine.wizard"].ine_countries(
             start_date, end_date, self.pms_property1.id
         )
         # ASSERT
@@ -670,38 +703,38 @@ class TestWizardINE(TestPms):
             [("name", "=", "Pontevedra")]
         )
 
-        self.checkin1.nationality_id = country_spain
-        self.partner_1.nationality_id = country_spain
+        self.checkin1.residence_country_id = country_spain
+        self.partner_1.residence_country_id = country_spain
         self.checkin1.residence_state_id = state_ourense
         self.partner_1.residence_state_id = state_ourense
 
-        self.checkin2.nationality_id = country_spain
-        self.partner_2.nationality_id = country_spain
+        self.checkin2.residence_country_id = country_spain
+        self.partner_2.residence_country_id = country_spain
         self.checkin2.residence_state_id = state_pontevedra
         self.partner_2.residence_state_id = state_pontevedra
 
-        self.checkin3.nationality_id = country_spain
-        self.partner_3.nationality_id = country_spain
+        self.checkin3.residence_country_id = country_spain
+        self.partner_3.residence_country_id = country_spain
         self.checkin3.residence_state_id = state_ourense
         self.partner_3.residence_state_id = state_ourense
 
-        self.checkin4.nationality_id = country_spain
-        self.partner_4.nationality_id = country_spain
+        self.checkin4.residence_country_id = country_spain
+        self.partner_4.residence_country_id = country_spain
         self.checkin4.residence_state_id = state_ourense
         self.partner_4.residence_state_id = state_ourense
 
-        self.checkin5.nationality_id = country_spain
-        self.partner_5.nationality_id = country_spain
+        self.checkin5.residence_country_id = country_spain
+        self.partner_5.residence_country_id = country_spain
         self.checkin5.residence_state_id = state_madrid
         self.partner_5.residence_state_id = state_madrid
 
-        self.checkin6.nationality_id = country_spain
-        self.partner_6.nationality_id = country_spain
+        self.checkin6.residence_country_id = country_spain
+        self.partner_6.residence_country_id = country_spain
         self.checkin6.residence_state_id = state_madrid
         self.partner_6.residence_state_id = state_madrid
 
-        self.checkin7.nationality_id = country_spain
-        self.partner_7.nationality_id = country_spain
+        self.checkin7.residence_country_id = country_spain
+        self.partner_7.residence_country_id = country_spain
         self.checkin7.residence_state_id = state_madrid
         self.partner_7.residence_state_id = state_madrid
 
@@ -745,7 +778,7 @@ class TestWizardINE(TestPms):
             }
         }
         # ACT
-        nationalities = self.env["pms.ine.wizard"].ine_nationalities(
+        nationalities = self.env["pms.ine.wizard"].ine_countries(
             start_date, end_date, self.pms_property1.id
         )
         # ASSERT
@@ -877,7 +910,7 @@ class TestWizardINE(TestPms):
             },
         }
         # ACT
-        nationalities = self.env["pms.ine.wizard"].ine_nationalities(
+        nationalities = self.env["pms.ine.wizard"].ine_countries(
             start_date, end_date, self.pms_property1.id
         )
         # ASSERT
@@ -914,7 +947,7 @@ class TestWizardINE(TestPms):
         """
         # ARRANGE
         self.ideal_scenario()
-        self.reservation_1.checkin_partner_ids[1].nationality_id = False
+        self.reservation_1.checkin_partner_ids[1].residence_country_id = False
         start_date = datetime.date(2021, 2, 1)
         end_date = datetime.date(2021, 2, 4)
 
@@ -923,7 +956,7 @@ class TestWizardINE(TestPms):
             ValidationError,
             msg="Cannot generate INE if some checkin partner has no nationality",
         ):
-            self.env["pms.ine.wizard"].ine_nationalities(
+            self.env["pms.ine.wizard"].ine_countries(
                 start_date, end_date, self.pms_property1.id
             )
 
@@ -969,38 +1002,38 @@ class TestWizardINE(TestPms):
             [("name", "=", "Ourense (Orense)")]
         )
 
-        self.checkin1.nationality_id = country_spain
-        self.partner_1.nationality_id = country_spain
+        self.checkin1.residence_country_id = country_spain
+        self.partner_1.residence_country_id = country_spain
         self.checkin1.residence_state_id = state_ourense
         self.partner_1.residence_state_id = state_ourense
 
-        self.checkin2.nationality_id = country_spain
-        self.partner_2.nationality_id = country_spain
+        self.checkin2.residence_country_id = country_spain
+        self.partner_2.residence_country_id = country_spain
         self.checkin2.residence_state_id = False
         self.partner_2.residence_state_id = False
 
-        self.checkin3.nationality_id = country_spain
-        self.partner_3.nationality_id = country_spain
+        self.checkin3.residence_country_id = country_spain
+        self.partner_3.residence_country_id = country_spain
         self.checkin3.residence_state_id = state_ourense
         self.partner_3.residence_state_id = state_ourense
 
-        self.checkin4.nationality_id = country_spain
-        self.partner_4.nationality_id = country_spain
+        self.checkin4.residence_country_id = country_spain
+        self.partner_4.residence_country_id = country_spain
         self.checkin4.residence_state_id = state_ourense
         self.partner_4.residence_state_id = state_ourense
 
-        self.checkin5.nationality_id = country_spain
-        self.partner_5.nationality_id = country_spain
+        self.checkin5.residence_country_id = country_spain
+        self.partner_5.residence_country_id = country_spain
         self.checkin5.residence_state_id = state_madrid
         self.partner_5.residence_state_id = state_madrid
 
-        self.checkin6.nationality_id = country_spain
-        self.partner_6.nationality_id = country_spain
+        self.checkin6.residence_country_id = country_spain
+        self.partner_6.residence_country_id = country_spain
         self.checkin6.residence_state_id = state_madrid
         self.partner_6.residence_state_id = state_madrid
 
-        self.checkin7.nationality_id = country_spain
-        self.partner_7.nationality_id = country_spain
+        self.checkin7.residence_country_id = country_spain
+        self.partner_7.residence_country_id = country_spain
         self.checkin7.residence_state_id = state_madrid
         self.partner_7.residence_state_id = state_madrid
 
@@ -1009,6 +1042,6 @@ class TestWizardINE(TestPms):
             ValidationError,
             msg="Cannot generate INE if some checkin partner from Spain has no nationality",
         ):
-            self.env["pms.ine.wizard"].ine_nationalities(
+            self.env["pms.ine.wizard"].ine_countries(
                 start_date, end_date, self.pms_property1.id
             )
