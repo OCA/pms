@@ -612,7 +612,7 @@ class PmsFolioService(Component):
             else:
                 vals = {
                     "pms_property_id": pms_folio_info.pmsPropertyId,
-                    "agency_id": agency.id,
+                    "agency_id": agency.id if agency else False,
                     "sale_channel_origin_id": self.get_channel_origin_id(
                         pms_folio_info.saleChannelId, pms_folio_info.agencyId
                     ),
