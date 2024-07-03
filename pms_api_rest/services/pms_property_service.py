@@ -90,7 +90,9 @@ class PmsPropertyService(Component):
                     companyPrivacyPolicy=privacy_policy
                     if prop.company_id.privacy_policy
                     else None,
-                    canDownloadIneReport=prop.ine_tourism_number and prop.ine_category_id,
+                    canDownloadIneReport=True
+                    if (prop.ine_tourism_number and prop.ine_category_id)
+                    else False,
                 )
             )
         return result_properties
@@ -162,7 +164,9 @@ class PmsPropertyService(Component):
                 if pms_property.company_id.privacy_policy
                 else None,
                 isUsedOCR=True if pms_property.ocr_checkin_supplier else False,
-                canDownloadIneReport=pms_property.ine_tourism_number and pms_property.ine_category_id,
+                canDownloadIneReport=True
+                if (pms_property.ine_tourism_number and pms_property.ine_category_id)
+                else False,
             )
 
         return res
