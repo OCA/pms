@@ -132,6 +132,26 @@ class PmsFolioService(Component):
             folio_ids = [x[0] for x in self.env.cr.fetchall()]
             domain_fields.append(("folio_id", "in", folio_ids))
 
+        if folio_search_param.createDateFrom and folio_search_param.createDateTo:
+            domain_fields.append(
+                (
+                    "create_date",
+                    ">=",
+                    datetime.strptime(
+                        folio_search_param.createDateFrom, "%Y-%m-%d %H:%M:%S"
+                    ),
+                )
+            )
+            domain_fields.append(
+                (
+                    "create_date",
+                    "<=",
+                    datetime.strptime(
+                        folio_search_param.createDateTo, "%Y-%m-%d %H:%M:%S"
+                    ),
+                )
+            )
+
         domain_filter = list()
         if folio_search_param.last:
             domain_filter.append([("checkin", ">=", fields.Date.today())])
@@ -342,6 +362,7 @@ class PmsFolioService(Component):
                     firstCheckin=str(folio.first_checkin),
                     lastCheckout=str(folio.last_checkout),
                     createHour=folio.create_date.strftime("%H:%M"),
+                    createDate=folio.create_date.isoformat(),
                 )
             )
         return result_folios
@@ -1517,7 +1538,6 @@ class PmsFolioService(Component):
                     )
                 )
         return checkin_partners
-
 
     @restapi.method(
         [

@@ -682,7 +682,7 @@ class PmsReservationService(Component):
                 "GET",
             )
         ],
-        input_param=Datamodel("pms.search.param", is_list=False),
+        input_param=Datamodel("pms.reservation.search.param", is_list=False),
         output_param=Datamodel("pms.reservation.info", is_list=True),
         auth="jwt_api_pms",
     )
@@ -696,6 +696,26 @@ class PmsReservationService(Component):
             domain.append(("checkin", ">=", fields.Date.today()))
         if pms_search_param.ids:
             domain.append(("id", "in", pms_search_param.ids))
+        if pms_search_param.createDateFrom and pms_search_param.createDateTo:
+            domain.append(
+                (
+                    "create_date",
+                    ">=",
+                    datetime.strptime(
+                        pms_search_param.createDateFrom, "%Y-%m-%d %H:%M:%S"
+                    ),
+                )
+            )
+            domain.append(
+                (
+                    "create_date",
+                    "<=",
+                    datetime.strptime(
+                        pms_search_param.createDateTo, "%Y-%m-%d %H:%M:%S"
+                    ),
+                )
+            )
+
         reservations = self.env["pms.reservation"].search(domain)
         PmsReservationInfo = self.env.datamodels["pms.reservation.info"]
         if not reservations:

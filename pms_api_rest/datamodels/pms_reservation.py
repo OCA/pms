@@ -4,6 +4,14 @@ from odoo.addons.datamodel.core import Datamodel
 from odoo.addons.datamodel.fields import NestedModel
 
 
+class PmsReservationSearchParam(Datamodel):
+    _name = "pms.reservation.search.param"
+    _inherit = "pms.rest.metadata"
+    toAssign = fields.Boolean(required=False, allow_none=True)
+    createDateFrom = fields.String(required=False, allow_none=True)
+    createDateTo = fields.String(required=False, allow_none=True)
+
+
 class PmsReservationShortInfo(Datamodel):
     _name = "pms.reservation.short.info"
     id = fields.Integer(required=False, allow_none=True)
@@ -33,7 +41,7 @@ class PmsReservationShortInfo(Datamodel):
     isBlocked = fields.Boolean(required=False, allow_none=True)
     reservationType = fields.String(required=False, allow_none=True)
     segmentationId = fields.Integer(required=False, allow_none=True)
-
+    createDate = fields.String(required=False, allow_none=True)
 
 
 class PmsReservationInfo(Datamodel):
