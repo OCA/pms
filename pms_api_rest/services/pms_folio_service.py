@@ -596,6 +596,7 @@ class PmsFolioService(Component):
                             segmentationId=reservation.segmentation_ids[0].id
                             if reservation.segmentation_ids
                             else None,
+                            isOverNightRoom=reservation.overnight_room
                         )
                     )
 
