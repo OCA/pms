@@ -43,7 +43,8 @@ class PmsReservationShortInfo(Datamodel):
     isBlocked = fields.Boolean(required=False, allow_none=True)
     reservationType = fields.String(required=False, allow_none=True)
     segmentationId = fields.Integer(required=False, allow_none=True)
-    createDate = fields.String(required=False, allow_none=True)
+    isOverNightRoom = fields.Boolean(required=False, allow_none=True)
+
 
 
 class PmsReservationInfo(Datamodel):
