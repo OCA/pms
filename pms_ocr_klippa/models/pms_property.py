@@ -160,6 +160,9 @@ class PmsProperty(models.Model):
             elif key == "document_type" and value:
                 mapped_data["document_type"] = self._get_document_type(
                     klippa_type=value,
+                    klippa_subtype=document_data.get("document_subtype").get("value")
+                    if document_data.get("document_subtype")
+                    else False,
                     country_id=self._get_country_id(
                         document_data.get("issuing_country").get("value")
                         if document_data.get("issuing_country")
@@ -182,6 +185,11 @@ class PmsProperty(models.Model):
                 mapped_data["document_expedition_date"] = self._calc_expedition_date(
                     document_class_code=self._get_document_type(
                         klippa_type=document_data.get("document_class_code", False),
+                        klippa_subtype=document_data.get("document_subtype").get(
+                            "value"
+                        )
+                        if document_data.get("document_subtype")
+                        else False,
                         country_id=self._get_country_id(
                             document_data.get("issuing_country").get("value")
                             if document_data.get("issuing_country")
@@ -280,7 +288,7 @@ class PmsProperty(models.Model):
             key_personal_number = "document_number"
         return (key_document_number, key_personal_number)
 
-    def _get_document_type(self, klippa_type, country_id):
+    def _get_document_type(self, klippa_type, klippa_subtype=False, country_id=False):
         # If we hace the issuing country, and document type is configured in the system
         # to be used with the country, we use the country to get the document type
         # If have issuing country and not found document type, we search a document type
@@ -304,11 +312,10 @@ class PmsProperty(models.Model):
                     ("klippa_code", "=", klippa_type),
                 ],
             )
-        if len(document_type) > 1:
+        if len(document_type) > 1 and klippa_subtype:
             # Try find document type by klippa_subtype_code, if not found, get the first
             document_subtype = document_type.filtered(
-                lambda dt: dt.klippa_subtype_code
-                == document_data.get("document_subtype").get("value")
+                lambda dt: dt.klippa_subtype_code == klippa_subtype
             )
             document_type = (
                 document_subtype[0] if document_subtype else document_type[0]
