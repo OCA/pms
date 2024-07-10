@@ -189,6 +189,17 @@ class PmsReservationService(Component):
             reservation_vals.update({"checkin": reservation_data.checkin})
         if reservation_data.checkout:
             reservation_vals.update({"checkout": reservation_data.checkout})
+        if reservation_data.partnerName:
+            reservation_vals.update({"partner_name": reservation_data.partnerName})
+        if reservation_data.partnerEmail:
+            reservation_vals.update({"email": reservation_data.partnerEmail})
+        if reservation_data.partnerPhone:
+            reservation_vals.update({"mobile": reservation_data.partnerPhone})
+        if reservation_data.partnerId:
+            if reservation_data.partnerId != 0:
+                reservation_vals.update({"partner_id": reservation_data.partnerId})
+            else:
+                reservation_vals.update({"partner_id": False})
 
         return reservation_vals
 
