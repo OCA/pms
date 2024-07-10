@@ -115,6 +115,10 @@ class PmsReservationInfo(Datamodel):
     createdBy = fields.String(required=False, allow_none=True)
     isBlocked = fields.Boolean(required=False, allow_none=True)
 
+    partnerId = fields.Integer(required=False, allow_none=True)
+    partnerEmail = fields.String(required=False, allow_none=True)
+    partnerPhone = fields.String(required=False, allow_none=True)
+
     # TODO: Refact
     # messages = fields.List(fields.Dict(required=False, allow_none=True))
 
