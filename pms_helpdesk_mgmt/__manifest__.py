@@ -15,10 +15,13 @@
     "data": [
         "views/helpdesk_ticket_views.xml",
         "views/helpdesk_ticket_templates.xml",
-        "views/helpdesk_ticket_team_views.xml",
     ],
-    "qweb": ["static/src/xml/*.xml"],
     "demo": ["demo/helpdesk_demo.xml"],
+    "assets": {
+        "web.assets_frontend": [
+            "pms_helpdesk_mgmt/static/src/js/hotel_on_company.js",
+        ],
+    },
     "application": True,
     "installable": True,
     "auto_install": True,

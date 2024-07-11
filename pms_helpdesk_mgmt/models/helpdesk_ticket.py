@@ -23,20 +23,25 @@ class PmsHelpdeskTicket(models.Model):
         widget="many2one_tags",
     )
 
-    @api.depends("company_id")
+    @api.onchange("company_id")
     def _onchange_company_id(self):
         if self.company_id:
             properties = (
                 self.env["pms.property"]
                 .sudo()
-                .search([("user_ids", "=", self.env.user.id)])
+                .search(
+                    [
+                        ("user_ids", "in", [self.env.user.id]),
+                        ("company_id", "=", self.company_id.id),
+                    ]
+                )
             )
             property_ids = properties.ids if properties else []
             return {"domain": {"pms_property_id": [("id", "in", property_ids)]}}
         else:
             return {"domain": {"pms_property_id": []}}
 
-    @api.depends("pms_property_id")
+    @api.onchange("pms_property_id")
     def _onchange_property_id(self):
         if self.pms_property_id:
             rooms = (

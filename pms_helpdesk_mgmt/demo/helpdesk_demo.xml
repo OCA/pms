@@ -9,23 +9,28 @@
         <field eval="&quot;IT Software&quot;" name="name" />
         <field eval="&quot;1&quot;" name="active" />
         <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_2" />
+        <field name="default_company_id" eval="False" />
     </record>
     <record id="helpdesk_mgmt.helpdesk_category_2" model="helpdesk.ticket.category">
         <field eval="&quot;Internet&quot;" name="name" />
         <field eval="&quot;1&quot;" name="active" />
         <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_2" />
+        <field name="default_company_id" eval="False" />
     </record>
     <record id="helpdesk_mgmt.helpdesk_category_3" model="helpdesk.ticket.category">
         <field eval="&quot;PC Printers&quot;" name="name" />
         <field eval="&quot;1&quot;" name="active" />
         <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_2" />
+        <field name="default_company_id" eval="False" />
     </record>
     <record id="helpdesk_category_4" model="helpdesk.ticket.category">
         <field eval="&quot;Odoo&quot;" name="name" />
         <field eval="&quot;1&quot;" name="active" />
         <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_2" />
+        <field name="default_company_id" eval="False" />
     </record>
         <record id="helpdesk_category_5" model="helpdesk.ticket.category">
+        <field name="default_company_id" eval="False" />
         <field eval="&quot;Access Control&quot;" name="name" />
         <field eval="&quot;1&quot;" name="active" />
         <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_2" />
@@ -34,31 +39,37 @@
         <field eval="&quot;Roomdoo&quot;" name="name" />
         <field eval="&quot;1&quot;" name="active" />
         <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_2" />
+        <field name="default_company_id" eval="False" />
     </record>
     <record id="helpdesk_category_7" model="helpdesk.ticket.category">
         <field eval="&quot;Masonry Carpentry&quot;" name="name" />
         <field eval="&quot;1&quot;" name="active" />
         <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_1" />
+        <field name="default_company_id" eval="False" />
     </record>
     <record id="helpdesk_category_8" model="helpdesk.ticket.category">
         <field eval="&quot;Energy&quot;" name="name" />
         <field eval="&quot;1&quot;" name="active" />
         <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_1" />
+        <field name="default_company_id" eval="False" />
     </record>
     <record id="helpdesk_category_9" model="helpdesk.ticket.category">
         <field eval="&quot;Plumbing&quot;" name="name" />
         <field eval="&quot;1&quot;" name="active" />
         <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_1" />
+        <field name="default_company_id" eval="False" />
     </record>
     <record id="helpdesk_category_10" model="helpdesk.ticket.category">
         <field eval="&quot;Heating&quot;" name="name" />
         <field eval="&quot;1&quot;" name="active" />
         <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_1" />
+        <field name="default_company_id" eval="False" />
     </record>
     <record id="helpdesk_category_11" model="helpdesk.ticket.category">
         <field eval="&quot;Products&quot;" name="name" />
         <field eval="&quot;1&quot;" name="active" />
         <field name="default_team_id" ref="helpdesk_mgmt.helpdesk_team_1" />
+        <field name="default_company_id" eval="False" />
     </record>
     <!-- Mail aliases -->
     <record id="mail_alias_1" model="mail.alias">
@@ -72,6 +83,7 @@
             name="user_ids"
             eval="[(6,0,[ref('base.user_root'), ref('base.user_demo')])]"
         />
+        <field name="default_company_id" eval="False" />
         <field eval="&quot;1&quot;" name="active" />
         <field
             name="category_ids"
@@ -86,6 +98,7 @@
     </record>
     <record id="helpdesk_mgmt.helpdesk_team_2" model="helpdesk.ticket.team">
         <field eval="&quot;IT Software&quot;" name="name" />
+        <field name="default_company_id" eval="False" />
         <field
             name="category_ids"
             eval="[(6,0,[ref('helpdesk_mgmt.helpdesk_category_1'),

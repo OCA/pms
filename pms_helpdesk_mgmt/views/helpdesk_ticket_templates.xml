@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <template id="assets_frontend" inherit_id="web.assets_frontend">
+        <xpath expr="." position="inside">
+            <script
+                src="pms_helpdesk_mgmt/static/src/js/hotel_on_company.js"
+                type="text/javascript"
+            />
+        </xpath>
+    </template>
     <template
         id="portal_my_tickets"
         inherit_id="helpdesk_mgmt.portal_ticket_list"
@@ -23,9 +31,6 @@
         inherit_id="helpdesk_mgmt.portal_helpdesk_ticket_page"
         name="Ticket Portal Template"
     >
-        <xpath expr="//span[@t-field='ticket.name']" position="before">
-            <i class="fa fa-comments-o" />
-        </xpath>
         <xpath expr="//span[@t-field='ticket.create_date']" position="after">
             <div><strong>Property:</strong>
             <span t-field="ticket.sudo().pms_property_id.name" /></div>
@@ -43,9 +48,6 @@
         inherit_id="helpdesk_mgmt.portal_create_ticket"
         name="Create Ticket"
     >
-        <xpath expr="//h1[@class='text-center']" position="after">
-            <i class="fa fa-pencil-square" />
-        </xpath>
         <xpath
             expr="//div[@class='col-md-7 col-sm-8']/select[@id='category']/.."
             position="after"
@@ -74,10 +76,10 @@
                     name="pms_property_id"
                     required="required"
                     t-attf-widget="many2one_tags"
-                    t-attf-domain="[('user_ids', 'in', [user.id])]"
+                    t-attf-domain="[('user_ids', 'in', [user.id]), ('company_id', '=', company_id)]"
                 >
                     <option value="">Select a Property</option>
-                    <t t-foreach="propertys" t-as="property">
+                    <t t-foreach="properties" t-as="property">
                         <option t-attf-value="#{property.id}">
                             <t t-esc="property.name" />
                         </option>

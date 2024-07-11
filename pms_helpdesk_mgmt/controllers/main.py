@@ -13,24 +13,43 @@ _logger = logging.getLogger(__name__)
 
 
 class CustomHelpdeskTicketController(HelpdeskTicketController):
+    @http.route("/get_properties", type="json", auth="user")
+    def get_properties(self, company_id):
+        properties = (
+            request.env["pms.property"]
+            .sudo()
+            .search([("company_id", "=", int(company_id))])
+        )
+        properties_data = [{"id": prop.id, "name": prop.name} for prop in properties]
+        return {"properties": properties_data}
+
+    @http.route("/get_rooms", type="json", auth="user")
+    def get_rooms(self, property_id):
+        rooms = (
+            request.env["pms.room"]
+            .sudo()
+            .search([("pms_property_id", "=", int(property_id))])
+        )
+        rooms_data = [{"id": room.id, "name": room.name} for room in rooms]
+        return {"rooms": rooms_data}
+
     @http.route("/new/ticket", type="http", auth="user", website=True)
     def create_new_ticket(self, **kw):
         response = super().create_new_ticket(**kw)
         user = request.env.user
         user_belongs_to_group = user.has_group(
             "helpdesk_mgmt.group_helpdesk_user_team"
-            or "helpdesk_mgmt.group_helpdesk_manager"
-        )
+        ) or user.has_group("helpdesk_mgmt.group_helpdesk_manager")
         assigned_companies = user.company_ids
         company = request.env.company
         tag_model = http.request.env["helpdesk.ticket.tag"]
         tags = tag_model.with_company(company.id).search([("active", "=", True)])
         property_model = http.request.env["pms.property"]
-        propertys = property_model.sudo().search(
+        properties = property_model.sudo().search(
             [("user_ids", "in", [http.request.env.user.id])]
         )
         all_room_ids = [
-            room_id for property in propertys for room_id in property.room_ids.ids
+            room_id for property in properties for room_id in property.room_ids.ids
         ]
         room_model = http.request.env["pms.room"]
         rooms = room_model.sudo().search([("id", "in", all_room_ids)])
@@ -38,7 +57,7 @@ class CustomHelpdeskTicketController(HelpdeskTicketController):
             {
                 "user_belongs_to_group": user_belongs_to_group,
                 "companies": assigned_companies,
-                "propertys": propertys,
+                "properties": properties,
                 "rooms": rooms,
                 "tags": tags,
             }
