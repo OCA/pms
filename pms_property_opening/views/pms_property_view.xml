@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="pms_property_opening_form" model="ir.ui.view">
+        <field name="name">pms.property.opening.form</field>
+        <field name="model">pms.property</field>
+        <field name="inherit_id" ref="pms.pms_property_views_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='property_general']" position="inside">
+                <sheet>
+                    <div class="container">
+                        <div class="o_horizontal_separator">Property Opening</div>
+                        <div class="o_row">
+                            <div class="o_col-8">
+                                <group>
+                                    <field name="open_date" />
+                                </group>
+                            </div>
+                        </div>
+                    </div>
+                </sheet>
+            </xpath>
+        </field>
+    </record>
+</odoo>
