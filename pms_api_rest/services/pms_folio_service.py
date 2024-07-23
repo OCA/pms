@@ -5,13 +5,14 @@ from datetime import datetime, timedelta
 import pytz
 
 from odoo import _, fields
-from odoo.exceptions import MissingError, ValidationError
+from odoo.exceptions import AccessError, MissingError, ValidationError
 from odoo.osv import expression
 from odoo.tools import get_lang
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
+from odoo.addons.portal.controllers.portal import CustomerPortal
 
 from ..pms_api_rest_utils import url_image_pms_api_rest
 
@@ -23,6 +24,184 @@ class PmsFolioService(Component):
     _name = "pms.folio.service"
     _usage = "folios"
     _collection = "pms.services"
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<string:api_rest_id>/precheckin/<string:token>",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.folio.public.info", is_list=False),
+        auth="public",
+    )
+    def get_folio_public_info(self, api_rest_id, token):
+        # variable initialization
+        folio_room_types_description_list = list()
+        folio_room_types_description_result = ""
+        folio_checkin_partner_names = list()
+        folio_portal_link = ""
+        folio_payment_link = ""
+        reservations = list()
+        num_checkins = 0
+
+        # check if the folio exists
+        folio_record = (
+            self.env["pms.folio"]
+            .sudo()
+            .search(
+                [
+                    ("api_rest_id", "=", api_rest_id),
+                ],
+            )
+        )
+        if not folio_record:
+            raise MissingError(_("Folio not found"))
+
+        # check if the folio is accessible
+        try:
+            record_folio = CustomerPortal._document_check_access(
+                self,
+                "pms.folio",
+                folio_record.id,
+                access_token=token,
+            )
+        except AccessError:
+            raise MissingError(_("Folio not found"))
+
+        # generate payment link
+        wizard_payment_link = (
+            self.env["payment.link.wizard"]
+            .with_context(
+                active_id=folio_record.id,
+                active_model="pms.folio",
+            )
+            .sudo()
+            .create({})
+        )
+        wizard_payment_link._generate_link()
+        if wizard_payment_link.link:
+            folio_payment_link = wizard_payment_link.link
+
+        # iterate reservations
+        for reservation in record_folio.reservation_ids.filtered(
+            lambda x: x.state != "cancel"
+            and x.reservation_type != "out"
+            and x.overnight_room
+        ):
+            reservation_checkin_partner_names = []
+
+            num_checkins += len(reservation.checkin_partner_ids)
+            folio_room_types_description_list.append(reservation.room_type_id.name)
+
+            # if reservation token is not set, generate it
+            if not reservation.access_token:
+                reservation.access_token = reservation._portal_ensure_token()
+
+            # if reservation api_rest_id is not set, generate it
+            if not reservation.api_rest_id:
+                reservation._generate_api_rest_id()
+
+            # build the reservation public url
+            reservation_public_url = (
+                self.env["ir.config_parameter"].sudo().get_param("web.base.url")
+                + "/reservations/"
+                + reservation.api_rest_id
+                + "/precheckin/"
+                + reservation.access_token
+            )
+
+            # iterate checkin partner names completed
+            for checkin_partner in reservation.checkin_partner_ids:
+                is_mandatory_fields = True
+                for field in self.env[
+                    "pms.checkin.partner"
+                ]._checkin_mandatory_fields():
+                    if not getattr(checkin_partner, field):
+                        is_mandatory_fields = False
+                        break
+                if is_mandatory_fields:
+                    reservation_checkin_partner_names.append(checkin_partner.firstname)
+                    folio_checkin_partner_names.append(checkin_partner.firstname)
+
+            # append reservation public info
+            reservations.append(
+                self.env.datamodels["pms.reservation.public.info"](
+                    roomTypeName=reservation.room_type_id.name,
+                    checkinNamesCompleted=reservation_checkin_partner_names,
+                    accessToken=reservation.access_token,
+                    apiRestId=reservation.api_rest_id,
+                    nights=reservation.nights,
+                    checkin=datetime.combine(
+                        reservation.checkin, datetime.min.time()
+                    ).isoformat(),
+                    checkout=datetime.combine(
+                        reservation.checkout, datetime.min.time()
+                    ).isoformat(),
+                    adults=reservation.adults,
+                    children=reservation.children,
+                )
+            )
+
+        # build folio room types description (including quantity)
+        for name in record_folio.reservation_ids.filtered(
+            lambda x: x.state != "cancel"
+        ).mapped("room_type_id.name"):
+            folio_room_types_description_result += (
+                str(
+                    len(
+                        list(
+                            filter(
+                                (lambda x: x == name), folio_room_types_description_list
+                            )
+                        )
+                    )
+                )
+                + " "
+                + name
+                + ", "
+            )
+
+        # folio portal link
+        if record_folio.get_portal_url():
+            folio_portal_link = (
+                self.env["ir.config_parameter"].sudo().get_param("web.base.url")
+                + record_folio.get_portal_url()
+            )
+
+        return self.env.datamodels["pms.folio.public.info"](
+            pmsPropertyName=record_folio.pms_property_id.name,
+            pmsPropertyStreet=record_folio.pms_property_id.street,
+            pmsPropertyCity=record_folio.pms_property_id.city,
+            pmsPropertyState=record_folio.pms_property_id.state_id.name
+            if record_folio.pms_property_id.state_id
+            else "",
+            pmsPropertyPhoneNumber=record_folio.pms_property_id.phone,
+            pmsPropertyLogo=url_image_pms_api_rest(
+                "pms.property",
+                record_folio.pms_property_id.id,
+                "logo",
+            ),
+            pmsPropertyImage=url_image_pms_api_rest(
+                "pms.property",
+                record_folio.pms_property_id.id,
+                "hotel_image_pms_api_rest",
+            ),
+            pmsPropertyIsOCRAvailable=True
+            if record_folio.pms_property_id.ocr_checkin_supplier
+            else False,
+            folioPartnerName=record_folio.partner_name,
+            folioReference=record_folio.name,
+            folioRoomTypesDescription=folio_room_types_description_result.rstrip(", "),
+            folioPendingAmount=record_folio.pending_amount,
+            folioPaymentLink=folio_payment_link,
+            folioPortalLink=folio_portal_link,
+            folioNumCheckins=num_checkins,
+            folioCheckinNamesCompleted=folio_checkin_partner_names,
+            reservations=reservations,
+        )
 
     @restapi.method(
         [
