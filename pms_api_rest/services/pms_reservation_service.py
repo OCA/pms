@@ -1,16 +1,19 @@
 import base64
 import os
+import re
 import tempfile
 from datetime import datetime, timedelta
 
 from odoo import _, fields
-from odoo.exceptions import MissingError
+from odoo.exceptions import AccessError, MissingError
 from odoo.osv import expression
 from odoo.tools.safe_eval import safe_eval
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
+from odoo.addons.pms_api_rest.pms_api_rest_utils import url_image_pms_api_rest
+from odoo.addons.portal.controllers.portal import CustomerPortal
 
 
 class PmsReservationService(Component):
@@ -22,6 +25,356 @@ class PmsReservationService(Component):
     # ------------------------------------------------------------------------------------
     # HEAD RESERVATION--------------------------------------------------------------------
     # ------------------------------------------------------------------------------------
+    @restapi.method(
+        [
+            (
+                [
+                    "/<string:api_rest_id>/precheckin/<string:token>",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.folio.public.info", is_list=False),
+        auth="public",
+    )
+    def get_reservation_public_info(self, api_rest_id, token):
+        # variable initialization
+        folio_room_types_description_list = list()
+        folio_checkin_partner_names = list()
+        num_checkins = 0
+
+        # check if the folio exists
+        reservation_record = (
+            self.env["pms.reservation"]
+            .sudo()
+            .search(
+                [
+                    ("api_rest_id", "=", api_rest_id),
+                ],
+            )
+        )
+        if not reservation_record:
+            raise MissingError(_("Reservation not found"))
+
+        # check if the reservation is accessible
+        try:
+            reservation_record = CustomerPortal._document_check_access(
+                self,
+                "pms.reservation",
+                reservation_record.id,
+                access_token=token,
+            )
+        except AccessError:
+            raise MissingError(_("Reservation not found"))
+
+        reservation_checkin_partner_names = []
+        reservation_checkin_partners = []
+        num_checkins += len(reservation_record.checkin_partner_ids)
+        folio_room_types_description_list.append(reservation_record.room_type_id.name)
+
+        # iterate checkin partner names completed
+        for checkin_partner in reservation_record.checkin_partner_ids:
+            if not checkin_partner.api_rest_id:
+                checkin_partner._generate_api_rest_id()
+            reservation_checkin_partners.append(
+                self.env.datamodels["pms.checkin.partner.info"](
+                    # TODO pms.checkin.partner-> api_rest_id instead of id
+                    id=checkin_partner.id,
+                    # apiRestId=checkin_partner.api_rest_id,
+                    checkinPartnerState=checkin_partner.state,
+                )
+            )
+            is_mandatory_fields = True
+            for field in self.env["pms.checkin.partner"]._checkin_mandatory_fields():
+                if not getattr(checkin_partner, field):
+                    is_mandatory_fields = False
+                    break
+            if is_mandatory_fields:
+                reservation_checkin_partner_names.append(checkin_partner.firstname)
+                folio_checkin_partner_names.append(checkin_partner.firstname)
+
+        # append reservation public info
+        reservations = [
+            self.env.datamodels["pms.reservation.public.info"](
+                roomTypeName=reservation_record.room_type_id.name,
+                checkinNamesCompleted=reservation_checkin_partner_names,
+                nights=reservation_record.nights,
+                checkin=datetime.combine(
+                    reservation_record.checkin, datetime.min.time()
+                ).isoformat(),
+                checkout=datetime.combine(
+                    reservation_record.checkout, datetime.min.time()
+                ).isoformat(),
+                adults=reservation_record.adults,
+                children=reservation_record.children,
+                reservationReference=reservation_record.name,
+                checkinPartners=reservation_checkin_partners,
+                reservationAmount=reservation_record.price_total,
+            )
+        ]
+
+        return self.env.datamodels["pms.folio.public.info"](
+            pmsPropertyName=reservation_record.pms_property_id.name,
+            pmsPropertyStreet=reservation_record.pms_property_id.street,
+            pmsPropertyCity=reservation_record.pms_property_id.city,
+            pmsPropertyState=reservation_record.pms_property_id.state_id.name,
+            pmsPropertyPhoneNumber=reservation_record.pms_property_id.phone,
+            pmsPropertyLogo=url_image_pms_api_rest(
+                "pms.property",
+                reservation_record.pms_property_id.id,
+                "logo",
+            ),
+            pmsPropertyImage=url_image_pms_api_rest(
+                "pms.property",
+                reservation_record.pms_property_id.id,
+                "hotel_image_pms_api_rest",
+            ),
+            pmsPropertyIsOCRAvailable=True
+            if reservation_record.pms_property_id.ocr_checkin_supplier
+            else False,
+            pmsPropertyId=reservation_record.pms_property_id.id,
+            folioPartnerName=reservation_record.folio_id.partner_name,
+            reservations=reservations,
+            cardexWarning=reservation_record.pms_property_id.cardex_warning
+            if reservation_record.pms_property_id.cardex_warning
+            else "",
+        )
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<string:api_rest_id>/precheckin-reservation/<string:token>"
+                    "/partner/<string:documentType>/<string:documentNumber>",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.partner.info", is_list=True),
+        auth="public",
+    )
+    def get_checkin_partner_by_doc_number(
+        self, api_rest_id, token, document_type, document_number
+    ):
+        reservation_record = (
+            self.env["pms.reservation"]
+            .sudo()
+            .search(
+                [
+                    ("api_rest_id", "=", api_rest_id),
+                ],
+            )
+        )
+        if not reservation_record:
+            raise MissingError(_("Folio not found"))
+        # check if the reservation is accessible
+        try:
+            CustomerPortal._document_check_access(
+                self,
+                "pms.reservation",
+                reservation_record.id,
+                access_token=token,
+            )
+        except AccessError:
+            raise MissingError(_("Reservation not found"))
+
+        doc_type = (
+            self.env["res.partner.id_category"]
+            .sudo()
+            .search([("id", "=", document_type)])
+        )
+        # Clean Document number
+        document_number = re.sub(r"[^a-zA-Z0-9]", "", document_number).upper()
+        partner = (
+            self.env["pms.checkin.partner"]
+            .sudo()
+            ._get_partner_by_document(document_number, doc_type)
+        )
+        partners = []
+        if partner:
+            doc_record = partner.id_numbers.filtered(
+                lambda doc: doc.category_id.id == doc_type.id
+            )
+            PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
+            if not partner.api_rest_id:
+                partner._generate_api_rest_id(partner)
+
+            document_numbers_in_reservation = (
+                reservation_record.checkin_partner_ids.filtered(
+                    lambda x: x.document_type.id == doc_type.id
+                    and x.document_number == document_number
+                )
+            )
+
+            partners.append(
+                PmsCheckinPartnerInfo(
+                    # partner id
+                    partnerApiRestId=partner.api_rest_id or None,
+                    # names
+                    firstname="#" if partner.firstname else None,
+                    lastname="#" if partner.lastname else None,
+                    lastname2="#" if partner.lastname2 else None,
+                    # contact
+                    email="#" if partner.email else None,
+                    mobile="#" if partner.mobile else None,
+                    # document info
+                    documentCountryId=doc_record.country_id.id
+                    if doc_record.country_id.id
+                    else None,
+                    documentType=doc_type.id if doc_type.id else None,
+                    documentNumber="#" if doc_record.name else None,
+                    documentExpeditionDate=datetime.utcfromtimestamp(0).isoformat()
+                    if doc_record.valid_from
+                    else None,
+                    documentSupportNumber="#" if doc_record.support_number else None,
+                    # personal info
+                    gender="#" if partner.gender else None,
+                    birthdate=datetime.utcfromtimestamp(0).isoformat()
+                    if partner.birthdate_date
+                    else None,
+                    # nationality
+                    nationality=-1 if partner.nationality_id.id else None,
+                    # residence info
+                    countryId=partner.residence_country_id
+                    if partner.residence_country_id
+                    else None,
+                    residenceStreet="#" if partner.residence_street else None,
+                    zip="#" if partner.residence_zip else None,
+                    residenceCity="#" if partner.residence_city else None,
+                    countryState=-1 if partner.residence_state_id.id else None,
+                    # is already in reservation
+                    isAlreadyInReservation=True
+                    if document_numbers_in_reservation
+                    else False,
+                )
+            )
+        return partners
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<string:api_rest_id>/precheckin-reservation/<string:token>"
+                    "/checkin-partners/<int:checkin_partner_api_rest_id>",
+                ],
+                "PATCH",
+            )
+        ],
+        input_param=Datamodel("pms.checkin.partner.info", is_list=False),
+        auth="public",
+    )
+    def patch_checkin_partner(
+        self, api_rest_id, token, checkin_partner_api_rest_id, pms_checkin_partner_info
+    ):
+        reservation_record = (
+            self.env["pms.reservation"]
+            .sudo()
+            .search(
+                [
+                    ("api_rest_id", "=", api_rest_id),
+                ],
+            )
+        )
+        if not reservation_record:
+            raise MissingError(_("Folio not found"))
+        # check if the reservation is accessible
+        try:
+            CustomerPortal._document_check_access(
+                self,
+                "pms.reservation",
+                reservation_record.id,
+                access_token=token,
+            )
+        except AccessError:
+            raise MissingError(_("Reservation not found"))
+
+        partner = False
+        # search checkin partner by id
+        checkin_partner_record = (
+            self.env["pms.checkin.partner"].sudo().browse(checkin_partner_api_rest_id)
+        )
+        if pms_checkin_partner_info.partnerApiRestId:
+            # search partner by api_rest_id
+            partner = (
+                self.env["res.partner"]
+                .sudo()
+                .search(
+                    [
+                        ("api_rest_id", "=", pms_checkin_partner_info.partnerApiRestId),
+                    ],
+                )
+            )
+
+        # partner
+        if partner:
+            checkin_partner_record.partner_id = partner.id
+        # document info
+        if pms_checkin_partner_info.documentCountryId:
+            checkin_partner_record.document_country_id = (
+                pms_checkin_partner_info.documentCountryId
+            )
+        if (
+            pms_checkin_partner_info.documentNumber
+            and pms_checkin_partner_info.documentType
+        ):
+            checkin_partner_record.write(
+                {
+                    "document_type": pms_checkin_partner_info.documentType,
+                    "document_number": pms_checkin_partner_info.documentNumber,
+                }
+            )
+        if pms_checkin_partner_info.documentExpeditionDate:
+            checkin_partner_record.document_expedition_date = (
+                pms_checkin_partner_info.documentExpeditionDate
+            )
+        if pms_checkin_partner_info.documentSupportNumber:
+            checkin_partner_record.support_number = (
+                pms_checkin_partner_info.documentSupportNumber
+            )
+        # name
+        if pms_checkin_partner_info.firstname:
+            checkin_partner_record.firstname = pms_checkin_partner_info.firstname
+        if pms_checkin_partner_info.lastname:
+            checkin_partner_record.lastname = pms_checkin_partner_info.lastname
+        if pms_checkin_partner_info.lastname2:
+            checkin_partner_record.lastname2 = pms_checkin_partner_info.lastname2
+        # personal info
+        if pms_checkin_partner_info.birthdate:
+            checkin_partner_record.birthdate_date = pms_checkin_partner_info.birthdate
+        if pms_checkin_partner_info.gender:
+            checkin_partner_record.gender = pms_checkin_partner_info.gender
+        # nationality
+        if pms_checkin_partner_info.nationality:
+            checkin_partner_record.nationality_id = pms_checkin_partner_info.nationality
+        # residence info
+        if pms_checkin_partner_info.countryId:
+            checkin_partner_record.residence_country_id = (
+                pms_checkin_partner_info.countryId
+            )
+        if pms_checkin_partner_info.zip:
+            checkin_partner_record.residence_zip = pms_checkin_partner_info.zip
+        if pms_checkin_partner_info.residenceCity:
+            checkin_partner_record.residence_city = (
+                pms_checkin_partner_info.residenceCity
+            )
+        if pms_checkin_partner_info.countryState:
+            checkin_partner_record.residence_state_id = (
+                pms_checkin_partner_info.countryState
+            )
+        if pms_checkin_partner_info.residenceStreet:
+            checkin_partner_record.residence_street = (
+                pms_checkin_partner_info.residenceStreet
+            )
+        # contact
+        if pms_checkin_partner_info.email:
+            checkin_partner_record.email = pms_checkin_partner_info.email
+        if pms_checkin_partner_info.mobile:
+            checkin_partner_record.mobile = pms_checkin_partner_info.mobile
+        # signature
+        if pms_checkin_partner_info.signature:
+            checkin_partner_record.signature = pms_checkin_partner_info.signature
+
+        print(pms_checkin_partner_info)
 
     @restapi.method(
         [

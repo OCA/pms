@@ -1,8 +1,8 @@
 import logging
 from datetime import datetime
 
-import werkzeug.exceptions
 import pytz
+import werkzeug.exceptions
 
 from odoo import _, fields
 from odoo.exceptions import UserError, ValidationError
@@ -36,7 +36,7 @@ class PmsTransactionService(Component):
         auth="jwt_api_pms",
     )
     def get_transactions(self, pms_transactions_search_param):
-        order_by_param = False;
+        order_by_param = False
         result_transactions = []
         domain_fields = [
             ("state", "=", "posted"),

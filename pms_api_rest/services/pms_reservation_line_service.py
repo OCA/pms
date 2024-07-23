@@ -68,13 +68,21 @@ class PmsReservationLineService(Component):
             and pms_reservation_lines_search_param.dateTo
             and pms_reservation_lines_search_param.pmsPropertyId
         ):
-            date_from = datetime.strptime(pms_reservation_lines_search_param.dateFrom, "%Y-%m-%d").date()
-            date_to = datetime.strptime(pms_reservation_lines_search_param.dateTo, "%Y-%m-%d").date()
+            date_from = datetime.strptime(
+                pms_reservation_lines_search_param.dateFrom, "%Y-%m-%d"
+            ).date()
+            date_to = datetime.strptime(
+                pms_reservation_lines_search_param.dateTo, "%Y-%m-%d"
+            ).date()
 
             domain = [
                 ("date", ">=", date_from),
                 ("date", "<", date_to),
-                ("pms_property_id", "=", pms_reservation_lines_search_param.pmsPropertyId)
+                (
+                    "pms_property_id",
+                    "=",
+                    pms_reservation_lines_search_param.pmsPropertyId,
+                ),
             ]
             PmsReservationLineInfo = self.env.datamodels["pms.reservation.line.info"]
             for reservation_line in self.env["pms.reservation.line"].search(domain):

@@ -76,7 +76,7 @@ class PmsPropertyService(Component):
                     simpleInColor=prop.simple_in_color,
                     simpleFutureColor=prop.simple_future_color,
                     language=prop.lang,
-                    isUsedOCR=True if prop.ocr_checkin_supplier else False,
+                    isOCRAvailable=True if prop.ocr_checkin_supplier else False,
                     hotelImageUrl=url_image_pms_api_rest(
                         "pms.property", prop.id, "hotel_image_pms_api_rest"
                     ),

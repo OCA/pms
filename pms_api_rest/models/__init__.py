@@ -9,3 +9,5 @@ from . import ota_property_settings
 from . import pms_api_log
 from . import pms_folio
 from . import pms_checkin_partner
+from . import pms_reservation
+from . import res_partner
