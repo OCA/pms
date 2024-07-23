@@ -105,10 +105,27 @@ class PmsReservationInfo(Datamodel):
         NestedModel("pms.service.info"), required=False, allow_none=True
     )
     partnerRequests = fields.String(required=False, allow_none=True)
-    nights = fields.Integer(required=False, allow_none=True)
     isReselling = fields.Boolean(required=False, allow_none=True)
     createdBy = fields.String(required=False, allow_none=True)
     isBlocked = fields.Boolean(required=False, allow_none=True)
 
     # TODO: Refact
     # messages = fields.List(fields.Dict(required=False, allow_none=True))
+
+
+class PmsReservationPublicInfo(Datamodel):
+    _name = "pms.reservation.public.info"
+    roomTypeName = fields.String(required=False, allow_none=True)
+    reservationReference = fields.String(required=False, allow_none=True)
+    checkinNamesCompleted = fields.List(fields.String(required=False, allow_none=True))
+    accessToken = fields.String(required=False, allow_none=True)
+    apiRestId = fields.String(required=False, allow_none=True)
+    nights = fields.Integer(required=False, allow_none=True)
+    checkin = fields.String(required=False, allow_none=True)
+    checkout = fields.String(required=False, allow_none=True)
+    adults = fields.Integer(required=False, allow_none=True)
+    children = fields.Integer(required=False, allow_none=True)
+    reservationAmount = fields.Float(required=False, allow_none=True)
+    checkinPartners = fields.List(
+        NestedModel("pms.checkin.partner.info"), required=False, allow_none=False
+    )

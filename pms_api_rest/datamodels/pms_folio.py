@@ -83,3 +83,31 @@ class PmsFolioShortInfo(Datamodel):
     lastCheckout = fields.String(required=False, allow_none=True)
     createDate = fields.String(required=False, allow_none=True)
     createHour = fields.String(required=False, allow_none=True)
+
+
+class PmsFolioPublicInfo(Datamodel):
+    _name = "pms.folio.public.info"
+
+    pmsPropertyName = fields.String(required=False, allow_none=True)
+    pmsPropertyStreet = fields.String(required=False, allow_none=True)
+    pmsPropertyCity = fields.String(required=False, allow_none=True)
+    pmsPropertyState = fields.String(required=False, allow_none=True)
+    pmsPropertyPhoneNumber = fields.String(required=False, allow_none=True)
+    pmsPropertyLogo = fields.String(required=False, allow_none=True)
+    pmsPropertyImage = fields.String(required=False, allow_none=True)
+    pmsPropertyIsOCRAvailable = fields.Boolean(required=False, allow_none=True)
+    pmsPropertyId = fields.Integer(required=False, allow_none=True)
+    folioPartnerName = fields.String(required=False, allow_none=True)
+    folioRoomTypesDescription = fields.String(required=False, allow_none=True)
+    folioReference = fields.String(required=False, allow_none=True)
+    folioPaymentLink = fields.String(required=False, allow_none=True)
+    folioPortalLink = fields.String(required=False, allow_none=True)
+    folioPendingAmount = fields.Float(required=False, allow_none=True)
+    folioNumCheckins = fields.Integer(required=False, allow_none=True)
+    folioCheckinNamesCompleted = fields.List(
+        fields.String(required=False, allow_none=True)
+    )
+    reservations = fields.List(
+        NestedModel("pms.reservation.public.info"), required=True, allow_none=False
+    )
+    cardexWarning = fields.String(required=False, allow_none=True)
