@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="inherit_pms_reservation_view_form">
+        <field name="name">pms.reservation.form</field>
+        <field name="model">pms.reservation</field>
+        <field name="inherit_id" ref="pms.pms_reservation_view_form" />
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath
+                expr="//page[@name='others']/div/div[2]/group[field[@name='partner_requests']]"
+                position="after"
+            >
+                 <group>
+                    <field name="api_rest_id" />
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

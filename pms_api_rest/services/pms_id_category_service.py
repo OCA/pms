@@ -19,7 +19,7 @@ class PmsIdCategoryService(Component):
             )
         ],
         output_param=Datamodel("pms.id.category.info", is_list=True),
-        auth="jwt_api_pms",
+        auth="public",
     )
     def get_id_categories(self):
         result_id_categories = []
@@ -27,6 +27,7 @@ class PmsIdCategoryService(Component):
         for id_category in (
             self.env["res.partner.id_category"]
             .with_context(lang=self.env.user.lang)
+            .sudo()
             .search([], order="priority asc")
         ):
             result_id_categories.append(
