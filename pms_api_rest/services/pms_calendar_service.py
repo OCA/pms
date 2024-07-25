@@ -297,10 +297,14 @@ class PmsCalendarService(Component):
                     WHERE r.active = true AND r.pms_property_id = %s) r_rt_rtc
                     ) dr
                     LEFT OUTER JOIN (
-                                SELECT id, state, price_day_total, room_id, date, reservation_id
-                                FROM pms_reservation_line
-                                WHERE pms_property_id = %s AND state != 'cancel'
-                                AND occupies_availability = true AND date <= %s
+                                SELECT l.id, l.state, l.price_day_total,
+                                l.room_id, l.date, l.reservation_id
+                                FROM pms_reservation_line l
+                                INNER JOIN pms_reservation r ON r.id = l.reservation_id
+                                WHERE l.pms_property_id = %s AND l.state != 'cancel'
+                                AND l.occupies_availability = true AND l.date <= %s
+                                AND l.reservation_id = r.id
+                                AND r.overbooking = false
                     ) l ON l.room_id = dr.room_id AND l.date = dr.date
                     LEFT OUTER JOIN (SELECT date, room_type_id, min_stay, min_stay_arrival,
                             max_stay, max_stay_arrival, closed, closed_departure, closed_arrival
@@ -565,12 +569,14 @@ class PmsCalendarService(Component):
             -
             (
                 SELECT COUNT(1)
-                FROM pms_reservation_line
-                WHERE date = d.date
-                AND pms_property_id = %s
-                AND state != 'cancel'
-                AND occupies_availability = true
-                AND room_id IN %s
+                FROM pms_reservation_line l
+                INNER JOIN pms_reservation r  ON r.id = l.reservation_id
+                WHERE l.date = d.date
+                AND l.pms_property_id = %s
+                AND l.state != 'cancel'
+                AND l.occupies_availability = true
+                AND l.room_id IN %s
+                AND r.overbooking = false
             ) free_rooms,
             CEIL((
                 SELECT COUNT(1)
@@ -582,6 +588,7 @@ class PmsCalendarService(Component):
                 AND l.state != 'cancel'
                 AND l.room_id IN %s
                 AND l.date = d.date
+                AND r.overbooking = false
             ) * 100.00 / tr.num_total_rooms) occupancy_rate
             FROM (
                     SELECT (CURRENT_DATE + date) date
