@@ -310,8 +310,7 @@ class ChannelWubookPmsFolioAdapter(Component):
                             "room_id": room_id,
                             "board": board,
                             "occupancy": occupancies_d.get(room_id) or 1,
-                            "occupancy_children": occupancies_d_children.get(room_id)
-                            or 0,
+                            "children": occupancies_d_children.get(room_id) or 0,
                             "board_included": id_channel != 0,
                             "vat_included": vat_included,
                             "agency_id": agency.id if agency else False,
