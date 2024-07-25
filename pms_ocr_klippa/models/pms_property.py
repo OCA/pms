@@ -21,14 +21,14 @@ CHECKIN_FIELDS = {
     "lastname2": "partner_id.lastname2",
     "gender": "partner_id.gender",
     "birthdate": "partner_id.birthdate_date",
-    "document_type": "document_type_id.id",
-    "document_expedition_date": "document_expedition_date",
-    "document_support_number": "document_support_number",
+    "document_type": "category_id.id",
+    "document_expedition_date": "valid_from",
+    "document_support_number": "support_number",
     "document_number": "name",
     "residence_street": "partner_id.residence_street",
     "residence_city": "partner_id.residence_city",
     "country_state": "partner_id.residence_state_id.id",
-    "document_country_id": "document_country_id",
+    "document_country_id": "country_id.id",
     "zip": "partner_id.zip",
 }
 
