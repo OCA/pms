@@ -672,7 +672,7 @@ class PmsFolioService(Component):
             for reservation in pms_folio_info.reservations:
                 commision_percent_to_deduct = 0
                 if external_app and agency and agency.commission_type == "subtract":
-                    commision_percent_to_deduct = agency.commission
+                    commision_percent_to_deduct = agency.default_commission
                 vals = {
                     "folio_id": folio.id,
                     "room_type_id": reservation.roomTypeId,
@@ -2091,10 +2091,10 @@ class PmsFolioService(Component):
         external_app = self.env.user.pms_api_client
         cmds = []
         saved_reservations = folio.reservation_ids
-        agency = self.env["res.partner"].browse(folio.agency_id)
+        agency = folio.agency_id
         commision_percent_to_deduct = 0
         if external_app and agency and agency.commission_type == "subtract":
-            commision_percent_to_deduct = agency.commission
+            commision_percent_to_deduct = agency.default_commission
         for info_reservation in info_reservations:
             # Search a reservation in saved_reservations whose sum of night amounts is equal
             # to the sum of night amounts of info_reservation, and dates equal,
