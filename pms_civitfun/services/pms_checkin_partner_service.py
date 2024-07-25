@@ -114,6 +114,11 @@ class PmsCheckinPartnerService(Component):
         """
         Transform a checkin partner into a civitfun.checkin.partner.info datamodel
         """
+        document_country_code = (
+            guest.customFields.get("documentCountry")
+            if guest.customFields.get("documentCountry")
+            else guest.nationality
+        )
         checkin_vals = {
             "email": guest.email,
             "firstname": guest.name,
@@ -126,7 +131,15 @@ class PmsCheckinPartnerService(Component):
                     ("code_alpha3", "=", guest.nationality),
                 ]
             ),
-            "document_type": self._get_mapped_document_type(guest.documentType),
+            "document_type": self._get_mapped_document_type(
+                document_type=guest.documentType,
+                document_country_code=document_country_code,
+            ),
+            "document_country_id": self.env["res.country"].search(
+                [
+                    ("code_alpha3", "=", document_country_code),
+                ]
+            ),
             "document_number": guest.documentNumber,
             "document_expedition_date": guest.expeditionDate.strftime(FORMAT_DATE),
             # "assigned_room": guest.assignedRoom,
@@ -220,8 +233,8 @@ class PmsCheckinPartnerService(Component):
             return "female"
         return "other"
 
-    def _get_mapped_document_type(self, document_type):
-        document_category = (
+    def _get_mapped_document_type(self, document_type, document_country_code):
+        document_categories = (
             self.env["res.partner.id_category"]
             .sudo()
             .search(
@@ -230,8 +243,20 @@ class PmsCheckinPartnerService(Component):
                 ]
             )
         )
-        if not document_category:
+        if len(document_categories) > 1:
+            document_category = document_categories.filtered(
+                lambda x: document_country_code in x.mapped("country_ids.code_alpha3")
+            )
+            if not document_category:
+                document_category = document_categories.filtered(
+                    lambda x: not x.country_ids
+                )
+            if not document_category:
+                document_category = document_categories[0]
+        elif not document_categories:
             raise MissingError(
                 _("Document type not found, please check the pms configuration")
             )
+        else:
+            document_category = document_categories[0]
         return document_category
