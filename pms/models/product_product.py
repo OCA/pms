@@ -18,10 +18,11 @@ class ProductProduct(models.Model):
         compute="_compute_room_type_id",
     )
 
-    @api.depends_context("consumption_date")
+    @api.depends_context("consumption_date", "board_service_line_id")
     def _compute_product_price(self):
         super(ProductProduct, self)._compute_product_price()
 
+    @api.depends_context("consumption_date", "board_service_line_id")
     def _compute_board_price(self):
         pms_property_id = (
             self.env.context.get("property")
@@ -29,22 +30,29 @@ class ProductProduct(models.Model):
         )
         for record in self:
             if self._context.get("board_service"):
-                record.board_price = (
-                    self.env["pms.board.service.room.type.line"]
-                    .search(
-                        [
-                            (
-                                "pms_board_service_room_type_id",
-                                "=",
-                                self._context.get("board_service"),
-                            ),
-                            ("product_id", "=", record.id),
-                            ("pms_property_id", "=", pms_property_id),
-                        ],
-                        limit=1,
+                if self._context.get("board_service_line_id"):
+                    record.board_price = (
+                        self.env["pms.board.service.room.type.line"]
+                        .browse(self._context.get("board_service_line_id"))
+                        .amount
                     )
-                    .amount
-                )
+                else:
+                    record.board_price = (
+                        self.env["pms.board.service.room.type.line"]
+                        .search(
+                            [
+                                (
+                                    "pms_board_service_room_type_id",
+                                    "=",
+                                    self._context.get("board_service"),
+                                ),
+                                ("product_id", "=", record.id),
+                                ("pms_property_id", "=", pms_property_id),
+                            ],
+                            limit=1,
+                        )
+                        .amount
+                    )
             else:
                 record.board_price = False
 
