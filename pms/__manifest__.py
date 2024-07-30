@@ -107,6 +107,7 @@
         "views/res_partner_id_category_views.xml",
         "views/res_partner_id_number_views.xml",
         "views/res_country_views.xml",
+        "views/pms_information_view.xml",
     ],
     "demo": [
         "demo/pms_master_data_no_update.xml",

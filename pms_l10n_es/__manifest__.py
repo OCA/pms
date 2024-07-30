@@ -44,6 +44,7 @@
         "views/res_partner_id_number_view.xml",
         "views/pms_checkin_partner_views.xml",
         "views/pms_reservation_views.xml",
+        "views/pms_tourist_room.xml",
         "wizards/traveller_report.xml",
         "wizards/wizard_ine.xml",
         "reports/invoice.xml",
