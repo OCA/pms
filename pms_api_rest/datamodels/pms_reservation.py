@@ -6,10 +6,12 @@ from odoo.addons.datamodel.fields import NestedModel
 
 class PmsReservationSearchParam(Datamodel):
     _name = "pms.reservation.search.param"
-    _inherit = "pms.search.param"
+    _inherit = "pms.rest.metadata"
+    pmsPropertyId = fields.Integer(required=True, allow_none=True)
     toAssign = fields.Boolean(required=False, allow_none=True)
     createDateFrom = fields.String(required=False, allow_none=True)
     createDateTo = fields.String(required=False, allow_none=True)
+    ids = fields.List(fields.Integer(), required=False)
 
 
 class PmsReservationShortInfo(Datamodel):
