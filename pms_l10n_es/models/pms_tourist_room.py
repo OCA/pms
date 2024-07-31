@@ -19,9 +19,8 @@ class PmsProperty(models.Model):
 
     @api.depends("room_ids")
     def _compute_total_rooms(self):
-        target_rooms = self.env["pms.room"].search([("pms_property_id", "=", self.id)])
-        self.total_tourist_rooms = len(target_rooms)
-        return self.total_tourist_rooms
+        for record in self:
+            record.total_tourist_rooms = len(record.room_ids)
 
     @api.constrains("total_tourist_rooms")
     def _check_total_tourism_rooms(self):
@@ -33,10 +32,5 @@ class PmsProperty(models.Model):
                     )
                 )
 
-    @api.model
     def _get_default_total_rooms(self):
-        target_rooms = self.env["pms.room"].search([("pms_property_id", "=", self.id)])
-        if target_rooms:
-            self.total_tourist_rooms = len(target_rooms)
-            return self.total_tourist_rooms
-        return 0
+        return len(self.room_ids)
