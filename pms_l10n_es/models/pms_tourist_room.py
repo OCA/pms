@@ -32,5 +32,6 @@ class PmsProperty(models.Model):
                     )
                 )
 
+    @api.model
     def _get_default_total_rooms(self):
         return len(self.room_ids)
