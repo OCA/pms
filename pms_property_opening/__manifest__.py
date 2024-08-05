@@ -9,7 +9,7 @@
     "summary": """ Information regarding the opening of property """,
     "author": "Irlui Ramirez,José Luis Algara,Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/pms",
-    "depends": ["base", "pms", "pms_data_bi"],
+    "depends": ["base", "pms"],
     "data": [
         "views/pms_property_view.xml",
     ],
