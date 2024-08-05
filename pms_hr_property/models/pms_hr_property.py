@@ -14,18 +14,6 @@ class PmsHrProperty(models.Model):
         compute="_compute_employee_ids",
     )
 
-    # @api.depends('employee_ids')
-    # def _compute_employee_ids(self):
-    #     specific_job_names = ['Regional Manager','Revenue Manager', 'TAZ', 'TMZ']
-    #     for record in self:
-    #         specific_jobs = self.env['hr.job'].search([('name', 'in', specific_job_names)])
-    #         specific_job_ids = specific_jobs.ids
-    #         employees = self.env['hr.employee'].search([
-    #             ('property_ids', 'in', record.id),
-    #             ('job_id', 'in', specific_job_ids)
-    #         ])
-    #         record.employee_ids = employees
-
     @api.depends("employee_ids")
     def _compute_employee_ids(self):
         for record in self:
