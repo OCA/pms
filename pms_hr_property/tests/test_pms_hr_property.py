@@ -6,48 +6,125 @@ class TestPmsHrProperty(TransactionCase):
         super(TestPmsHrProperty, self).setUp()
         self.PmsProperty = self.env["pms.property"]
         self.HrEmployee = self.env["hr.employee"]
-        self.HrJob = self.env["hr.job"]
+        self.Company = self.env["res.company"]
 
-        # Create jobs
-        self.job_regional_manager = self.HrJob.create({"name": "Regional Manager"})
-        self.job_revenue_manager = self.HrJob.create({"name": "Revenue Manager"})
-        self.job_taz = self.HrJob.create({"name": "TAZ"})
-        self.job_tmz = self.HrJob.create({"name": "TMZ"})
-
-        # Create employees
-        self.employee_1 = self.HrEmployee.create(
-            {"name": "Employee 1", "job_id": self.job_regional_manager.id}
-        )
-        self.employee_2 = self.HrEmployee.create(
-            {"name": "Employee 2", "job_id": self.job_revenue_manager.id}
-        )
-        self.employee_3 = self.HrEmployee.create(
-            {"name": "Employee 3", "job_id": self.job_taz.id}
-        )
-        self.employee_4 = self.HrEmployee.create(
-            {"name": "Employee 4", "job_id": self.job_tmz.id}
+        # Crear empresa
+        self.company1 = self.Company.create(
+            {
+                "name": "Company 1",
+            }
         )
 
-        # Create property
-        self.property = self.PmsProperty.create({"name": "Test Property"})
+        # Crear propiedad
+        self.property1 = self.PmsProperty.create(
+            {
+                "name": "Property 1",
+                "company_id": self.company1.id,
+            }
+        )
 
-        # Assign employees to property
-        self.employee_1.write({"property_ids": [(4, self.property.id)]})
-        self.employee_2.write({"property_ids": [(4, self.property.id)]})
-        self.employee_3.write({"property_ids": [(4, self.property.id)]})
-        self.employee_4.write({"property_ids": [(4, self.property.id)]})
+        # Crear usuarios
+        user_dict = {
+            "name": "User 1",
+            "login": "tua@example.com",
+            "password": "base-test-passwd",
+        }
+        self.user_test = self.env["res.users"].create(user_dict)
 
-    def test_assigned_employees(self):
-        """Test that the employees are correctly assigned to the property"""
-        self.property._compute_employee_ids()
+        user_dict2 = {
+            "name": "User 2",
+            "login": "user2@example.com",
+            "password": "base-test-passwd",
+        }
+        self.user_test2 = self.env["res.users"].create(user_dict2)
 
-        assigned_employees = self.property.employee_ids
+        # Crear empleados
+        employee_dict = {
+            "name": "Employee 1",
+            "user_id": self.user_test.id,
+            "address_id": self.user_test.partner_id.id,
+        }
+        self.employee = self.env["hr.employee"].create(employee_dict)
+
+        employee_dict2 = {
+            "name": "Employee 2",
+            "user_id": self.user_test2.id,
+            "address_id": self.user_test2.partner_id.id,
+        }
+        self.employee2 = self.env["hr.employee"].create(employee_dict2)
+
+        # Asignar la propiedad al empleado
+        self.employee.write({"property_ids": [(4, self.property1.id)]})
+
+    def test_compute_employee_ids(self):
+        """Verifica que el método _compute_employee_ids
+        calcule correctamente el campo employee_ids"""
+
+        # Forzar el cálculo del campo employee_ids en property1
+        self.property1._compute_employee_ids()
+
+        # Obtener el campo calculado para property1
+        assigned_employees = self.property1.employee_ids
+
+        # Empleados esperados (los asignados a property1)
         expected_employees = self.HrEmployee.search(
-            [("property_ids", "in", self.property.id)]
+            [("property_ids", "in", self.property1.id)]
         )
 
+        # Comprobar que el campo calculado coincide con los empleados esperados
         self.assertEqual(
-            assigned_employees,
-            expected_employees,
-            "The assigned employees do not match the expected employees.",
+            sorted(assigned_employees.ids),
+            sorted(expected_employees.ids),
+            "Property 1 no coincide con los empleados esperados.",
+        )
+
+    def test_no_employees_assigned(self):
+        """Verifica el comportamiento si no hay empleados asignados a una propiedad"""
+
+        # Eliminar la asignación de property1 a employee
+        self.employee.write({"property_ids": [(5, self.property1.id)]})
+
+        # Forzar el cálculo del campo employee_ids en property1
+        self.property1._compute_employee_ids()
+
+        # Obtener el campo calculado para property1
+        assigned_employees = self.property1.employee_ids
+
+        # Comprobar que no haya empleados asignados a property1
+        self.assertEqual(
+            len(assigned_employees),
+            0,
+            "Se esperaba que no hubiera empleados asignados a la propiedad 1.",
+        )
+
+    def test_multiple_properties(self):
+        """Verifica que los empleados se asignen correctamente a múltiples propiedades"""
+
+        # Crear otra propiedad
+        self.property2 = self.PmsProperty.create(
+            {
+                "name": "Property 2",
+                "company_id": self.company1.id,
+            }
+        )
+
+        # Asignar la propiedad 2 a el empleado 2
+        self.employee2.write({"property_ids": [(4, self.property2.id)]})
+
+        # Forzar el cálculo del campo employee_ids en property2
+        self.property2._compute_employee_ids()
+
+        # Obtener el campo calculado para property2
+        assigned_employees = self.property2.employee_ids
+
+        # Empleado esperado (asignado a property2)
+        expected_employees = self.HrEmployee.search(
+            [("property_ids", "in", self.property2.id)]
+        )
+
+        # Comprobar que el campo calculado coincide con los empleados esperados
+        self.assertEqual(
+            sorted(assigned_employees.ids),
+            sorted(expected_employees.ids),
+            "employee_ids calculado para la propiedad 2 no coincide con los empleados.",
         )
