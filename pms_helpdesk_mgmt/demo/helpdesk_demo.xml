@@ -116,41 +116,49 @@
         <field eval="&quot;Coffe Shop&quot;" name="name" />
         <field eval="&quot;1&quot;" name="color" />
         <field eval="&quot;1&quot;" name="active" />
+        <field eval="&quot;&quot;" name="company_id" />
     </record>
     <record id="helpdesk_mgmt.helpdesk_tag_2" model="helpdesk.ticket.tag">
         <field eval="&quot;Room Zone&quot;" name="name" />
         <field eval="&quot;2&quot;" name="color" />
         <field eval="&quot;1&quot;" name="active" />
+        <field eval="&quot;&quot;" name="company_id" />
     </record>
     <record id="helpdesk_mgmt.helpdesk_tag_3" model="helpdesk.ticket.tag">
         <field eval="&quot;Parking Zone&quot;" name="name" />
         <field eval="&quot;3&quot;" name="color" />
         <field eval="&quot;1&quot;" name="active" />
+        <field eval="&quot;&quot;" name="company_id" />
     </record>
     <record id="helpdesk_tag_4" model="helpdesk.ticket.tag">
         <field eval="&quot;Elevator Zone&quot;" name="name" />
         <field eval="&quot;1&quot;" name="color" />
         <field eval="&quot;1&quot;" name="active" />
+        <field eval="&quot;&quot;" name="company_id" />
     </record>
     <record id="helpdesk_tag_5" model="helpdesk.ticket.tag">
         <field eval="&quot;Air Conditioning Zone&quot;" name="name" />
         <field eval="&quot;2&quot;" name="color" />
         <field eval="&quot;1&quot;" name="active" />
+        <field eval="&quot;&quot;" name="company_id" />
     </record>
     <record id="helpdesk_tag_6" model="helpdesk.ticket.tag">
         <field eval="&quot;Reception Zone&quot;" name="name" />
         <field eval="&quot;3&quot;" name="color" />
         <field eval="&quot;1&quot;" name="active" />
+        <field eval="&quot;&quot;" name="company_id" />
     </record>
     <record id="helpdesk_tag_7" model="helpdesk.ticket.tag">
         <field eval="&quot;Other Common Areas&quot;" name="name" />
         <field eval="&quot;2&quot;" name="color" />
         <field eval="&quot;1&quot;" name="active" />
+        <field eval="&quot;&quot;" name="company_id" />
     </record>
     <record id="helpdesk_tag_8" model="helpdesk.ticket.tag">
         <field eval="&quot;Meeting Room Zone&quot;" name="name" />
         <field eval="&quot;3&quot;" name="color" />
         <field eval="&quot;1&quot;" name="active" />
+        <field eval="&quot;&quot;" name="company_id" />
     </record>
     <!-- Tickets -->
     <record id="helpdesk_mgmt.helpdesk_ticket_1" model="helpdesk.ticket">
