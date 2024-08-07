@@ -2,8 +2,8 @@
     <record id="view_res_config_settings_form" model="ir.ui.view">
         <field name="name">res.config.settings.view.form.pms</field>
         <field name="model">res.config.settings</field>
-        <field name="priority" eval="40"/>
-        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="priority" eval="40" />
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('settings')]" position="inside">
                 <app
@@ -12,9 +12,13 @@
                     data-key="pms_base"
                     groups="pms_base.group_pms_manager"
                 >
-                    <block class="row mt16" id="characteristics" title="Property Information">
+                    <block
+                        class="row mt16"
+                        id="characteristics"
+                        title="Property Information"
+                    >
                         <setting class="col-xs-12 col-md-6">
-                            <label for="pms_uom" string="Area (UoM)"/>
+                            <label for="pms_uom" string="Area (UoM)" />
                             <div class="text-muted">
                                 Define your unit of measure when entering area
                             </div>
@@ -29,7 +33,7 @@
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
-                            <field name="group_pms_show_amenity"/>
+                            <field name="group_pms_show_amenity" />
                             <label
                                 for="group_pms_show_amenity"
                                 string="Show Amenities"
@@ -39,14 +43,14 @@
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
-                            <field name="group_pms_show_room"/>
-                            <label for="group_pms_show_room" string="Show Rooms"/>
+                            <field name="group_pms_show_room" />
+                            <label for="group_pms_show_room" string="Show Rooms" />
                             <div class="text-muted">
                                 Manage rooms of your properties
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
-                            <field name="group_pms_show_service"/>
+                            <field name="group_pms_show_service" />
                             <label
                                 for="group_pms_show_service"
                                 string="Show Services"
@@ -57,29 +61,29 @@
 
                         </setting>
                         <setting class="col-xs-12 col-md-6">
-                            <field name="group_pms_show_team"/>
-                            <label for="group_pms_show_team" string="Show Teams"/>
+                            <field name="group_pms_show_team" />
+                            <label for="group_pms_show_team" string="Show Teams" />
                             <div class="text-muted">
                                 Split your properties by Team
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
-                            <field name="module_pms_project"/>
-                            <label for="module_pms_project"/>
+                            <field name="module_pms_project" />
+                            <label for="module_pms_project" />
                             <div class="text-muted">
                                 Link projects and tasks to your properties
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
-                            <field name="module_pms_purchase"/>
-                            <label for="module_pms_purchase"/>
+                            <field name="module_pms_purchase" />
+                            <label for="module_pms_purchase" />
                             <div class="text-muted">
                                 Link purchases to your properties
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
-                            <field name="module_pms_stock"/>
-                            <label for="module_pms_stock"/>
+                            <field name="module_pms_stock" />
+                            <label for="module_pms_stock" />
                             <div class="text-muted">
                                 Link a property to a stock location
                             </div>
@@ -87,7 +91,7 @@
                     </block>
                     <block class="row mt16" id="account" title="accounting">
                         <setting class="col-xs-12 col-md-6">
-                            <field name="module_pms_account"/>
+                            <field name="module_pms_account" />
                             <label
                                 for="module_pms_account"
                                 string="Manage Accounting"
@@ -97,7 +101,7 @@
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
-                            <field name="module_pms_account_asset"/>
+                            <field name="module_pms_account_asset" />
                             <label
                                 for="module_pms_account_asset"
                                 string="Manage Depreciation and Amortization"
@@ -107,7 +111,7 @@
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
-                            <field name="module_pms_contract"/>
+                            <field name="module_pms_contract" />
                             <label
                                 for="module_pms_contract"
                                 string="Manage Contracts"
@@ -119,31 +123,28 @@
                     </block>
                     <block class="row mt16" id="sale" title="Reservations">
                         <setting class="col-xs-12 col-md-6">
-                            <field name="module_pms_sale"/>
-                            <label
-                                for="module_pms_sale"
-                                string="Manage Reservations"
-                            />
+                            <field name="module_pms_sale" />
+                            <label for="module_pms_sale" string="Manage Reservations" />
                             <div class="text-muted">
                                 Manage reservations
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
-                            <field name="module_pms_crm"/>
-                            <label for="module_pms_crm" string="CRM"/>
+                            <field name="module_pms_crm" />
+                            <label for="module_pms_crm" string="CRM" />
                             <div class="text-muted">
                                 Link your leads to a property
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
-                            <field name="module_pms_website"/>
-                            <label for="module_pms_website" string="Website"/>
+                            <field name="module_pms_website" />
+                            <label for="module_pms_website" string="Website" />
                             <div class="text-muted">
                                 Publish your properties on your website
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
-                            <field name="module_pms_website_sale"/>
+                            <field name="module_pms_website_sale" />
                             <label
                                 for="module_pms_website_sale"
                                 string="Online reservation"
@@ -155,7 +156,7 @@
                     </block>
                     <block class="row mt16" id="connect" title="Integrations">
                         <setting class="col-xs-12 col-md-6">
-                            <field name="module_connector_guesty"/>
+                            <field name="module_connector_guesty" />
                             <label
                                 for="module_connector_guesty"
                                 string="Connect with Guesty"
@@ -165,7 +166,7 @@
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
-                            <field name="module_connector_wubook"/>
+                            <field name="module_connector_wubook" />
                             <label
                                 for="module_connector_wubook"
                                 string="Connect with Wubook"

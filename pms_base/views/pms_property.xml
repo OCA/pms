@@ -13,7 +13,7 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-users"
-                            invisible="childs_property_count = 0"
+                            invisible="childs_property_count == 0"
                         >
                             <field
                                 name="childs_property_count"
