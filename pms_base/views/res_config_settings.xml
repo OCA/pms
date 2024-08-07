@@ -5,11 +5,11 @@
         <field name="priority" eval="40" />
         <field name="inherit_id" ref="base.res_config_settings_view_form" />
         <field name="arch" type="xml">
-            <xpath expr="//div[hasclass('settings')]" position="inside">
+            <xpath expr="//form" position="inside">
                 <app
                     data-string="Property Management System"
                     string="Properties"
-                    data-key="pms_base"
+                    name="pms_base"
                     groups="pms_base.group_pms_manager"
                 >
                     <block
