@@ -89,7 +89,7 @@
                             </div>
                         </setting>
                     </block>
-                    <block class="row mt16" id="account" title="accounting">
+                    <block class="row mt16" id="account" title="Accounting">
                         <setting class="col-xs-12 col-md-6">
                             <field name="module_pms_account" />
                             <label
