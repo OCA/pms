@@ -5,7 +5,7 @@
 {
     "name": "Property Management System",
     "summary": "Manage properties",
-    "version": "14.0.1.1.1",
+    "version": "17.0.1.0.0",
     "development_status": "Beta",
     "category": "Generic Modules/Property Management System",
     "website": "https://github.com/OCA/pms",

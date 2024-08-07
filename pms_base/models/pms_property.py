@@ -266,7 +266,8 @@ class PmsProperty(models.Model):
         vals.update({"is_property": True})
         return super(PmsProperty, self).create(vals)
 
-    def name_get(self):
+    @api.depends("name", "ref")
+    def _compute_display_name(self):
         # Prefetch the fields used by the `name_get`, so `browse` doesn't fetch other fields
         self.browse(self.ids).read(["name", "ref"])
         return [

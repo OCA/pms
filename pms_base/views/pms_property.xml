@@ -13,7 +13,7 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-users"
-                            attrs="{'invisible': [('childs_property_count', '=', 0)]}"
+                            invisible="childs_property_count = 0"
                         >
                             <field
                                 name="childs_property_count"
@@ -304,8 +304,8 @@
         <field name="name">Properties</field>
         <field name="res_model">pms.property</field>
         <field name="view_mode">kanban,tree,form</field>
-        <field name="context">{'default_team_id': active_id}</field>
-        <field name="domain">[('team_id', '=', active_id)]</field>
+        <field name="context">{'default_team_id': id}</field>
+        <field name="domain">[('team_id', '=', id)]</field>
     </record>
 
 </odoo>
