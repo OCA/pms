@@ -13,8 +13,8 @@ class PMSStage(models.Model):
         default_team_id = self.env.context.get("default_team_id")
         return [default_team_id] if default_team_id else None
 
-    name = fields.Char(string="Name", required=True, translate=True)
-    sequence = fields.Integer("Sequence", default=1)
+    name = fields.Char(required=True, translate=True)
+    sequence = fields.Integer(default=1)
     fold = fields.Boolean(
         "Folded in Kanban",
         help="This stage is folded in the kanban view when "
@@ -39,7 +39,7 @@ class PMSStage(models.Model):
     custom_color = fields.Char(
         "Color Code", default="#FFFFFF", help="Use Hex Code only Ex:-#FFFFFF"
     )
-    active = fields.Boolean(string="Active", default=True)
+    active = fields.Boolean(default=True)
 
     @api.constrains("custom_color")
     def _check_custom_color_hex_code(self):

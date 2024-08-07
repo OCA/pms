@@ -236,7 +236,7 @@
         <field name="name">pms.property.tree</field>
         <field name="model">pms.property</field>
         <field name="arch" type="xml">
-            <tree string="Properties">
+            <tree name="Properties">
                 <field name="active" invisible="1" />
                 <field name="ref" />
                 <field name="name" />

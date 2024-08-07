@@ -10,8 +10,8 @@ class PmsRoomType(models.Model):
     _name = "pms.room.type"
     _description = "Room Type"
 
-    name = fields.Char(string="Name", required=True, translate=True)
-    sequence = fields.Integer(string="Sequence", default=0)
+    name = fields.Char(required=True, translate=True)
+    sequence = fields.Integer(default=0)
     icon = fields.Char(
         string="Website Icon", help="Set Icon name from https://fontawesome.com/"
     )

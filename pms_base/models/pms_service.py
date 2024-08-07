@@ -18,11 +18,8 @@ class PmsService(models.Model):
         ondelete="restrict",
         domain="[('type', '=', 'service')]",
     )
-    active = fields.Boolean(
-        string="Active", help="Determines if service is active", default=True
-    )
+    active = fields.Boolean(help="Determines if service is active", default=True)
     sequence = fields.Integer(
-        string="Sequence",
         help="Field used to change the position of the rooms in tree view."
         "Changing the position changes the sequence",
         default=0,

@@ -12,11 +12,8 @@ class PmsRoom(models.Model):
     _order = "sequence, type_id, name"
 
     name = fields.Char(string="Room Name", help="Room Name", required=True)
-    active = fields.Boolean(
-        string="Active", help="Determines if room is active", default=True
-    )
+    active = fields.Boolean(help="Determines if room is active", default=True)
     sequence = fields.Integer(
-        string="Sequence",
         help="Field used to change the position of the rooms in tree view."
         "Changing the position changes the sequence",
         default=0,
@@ -35,9 +32,9 @@ class PmsRoom(models.Model):
         ondelete="restrict",
     )
     capacity = fields.Integer(
-        string="Capacity", help="The maximum number of people that can occupy a room"
+        help="The maximum number of people that can occupy a room"
     )
-    area = fields.Float(string="Area")
+    area = fields.Float()
     _sql_constraints = [
         (
             "room_property_unique",

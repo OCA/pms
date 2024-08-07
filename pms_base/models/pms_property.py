@@ -73,9 +73,8 @@ class PmsProperty(models.Model):
         default=lambda self: self.env.user.tz or "UTC",
         selection=_tz_get,
     )
-    area = fields.Float(string="Area")
+    area = fields.Float()
     heating = fields.Selection(
-        string="Heating",
         selection=[
             ("tankless_gas", "Gas (Tankless)"),
             ("boiler_gas", "Gas Boiler"),
@@ -88,31 +87,17 @@ class PmsProperty(models.Model):
         "Children Count", compute="_compute_childs_property"
     )
     floors_num = fields.Integer(string="Floor")
-    unit_floor = fields.Integer(string="Unit Floor")
-    balcony = fields.Boolean(string="Balcony", compute="_compute_balcony", store=True)
-    laundry_room = fields.Boolean(
-        string="Laundry Room", compute="_compute_laundry_room", store=True
-    )
-    parking_lot = fields.Boolean(
-        string="Parking Lot", compute="_compute_parking_lot", store=True
-    )
-    pets = fields.Boolean(string="Pets", compute="_compute_pets", store=True)
-    terrace = fields.Boolean(string="Terrace", compute="_compute_terrace", store=True)
-    qty_half_bathroom = fields.Integer(
-        string="Qty Half Bathroom", compute="_compute_qty_half_bathroom", store=True
-    )
-    qty_living_room = fields.Integer(
-        string="Qty Living Room", compute="_compute_qty_living_room", store=True
-    )
-    qty_dining_room = fields.Integer(
-        string="Qty Dining Room", compute="_compute_qty_dining_room", store=True
-    )
-    qty_kitchen = fields.Integer(
-        string="Qty Kitchen", compute="_compute_qty_kitchen", store=True
-    )
-    qty_bedroom = fields.Integer(
-        string="Qty Bedroom", compute="_compute_qty_bedroom", store=True
-    )
+    unit_floor = fields.Integer()
+    balcony = fields.Boolean(compute="_compute_balcony", store=True)
+    laundry_room = fields.Boolean(compute="_compute_laundry_room", store=True)
+    parking_lot = fields.Boolean(compute="_compute_parking_lot", store=True)
+    pets = fields.Boolean(compute="_compute_pets", store=True)
+    terrace = fields.Boolean(compute="_compute_terrace", store=True)
+    qty_half_bathroom = fields.Integer(compute="_compute_qty_half_bathroom", store=True)
+    qty_living_room = fields.Integer(compute="_compute_qty_living_room", store=True)
+    qty_dining_room = fields.Integer(compute="_compute_qty_dining_room", store=True)
+    qty_kitchen = fields.Integer(compute="_compute_qty_kitchen", store=True)
+    qty_bedroom = fields.Integer(compute="_compute_qty_bedroom", store=True)
 
     @api.depends("property_child_ids")
     def _compute_childs_property(self):
@@ -130,7 +115,11 @@ class PmsProperty(models.Model):
             type_id = self.env.ref(
                 "pms_base.pms_room_type_balcony", raise_if_not_found=False
             )
-            balcony = len(rec.room_ids.filtered(lambda x: x.type_id == type_id))
+            balcony = len(
+                rec.room_ids.filtered(
+                    lambda x, balcony_type_id=type_id: x.type_id == balcony_type_id
+                )
+            )
             if balcony:
                 rec.balcony = True
             else:
@@ -146,10 +135,16 @@ class PmsProperty(models.Model):
                 "pms_base.pms_amenity_type_3", raise_if_not_found=False
             )
             room_count_laundry = len(
-                rec.room_ids.filtered(lambda x: x.type_id == room_type_id)
+                rec.room_ids.filtered(
+                    lambda x, room_laundry_type_id=room_type_id: x.type_id
+                    == room_laundry_type_id
+                )
             )
             amenity_count_laundry = len(
-                rec.amenity_ids.filtered(lambda x: x.type_id == amenity_type_id)
+                rec.amenity_ids.filtered(
+                    lambda x, amenity_3_type_id=amenity_type_id: x.type_id
+                    == amenity_3_type_id
+                )
             )
             if room_count_laundry or amenity_count_laundry:
                 rec.laundry_room = True
@@ -166,10 +161,16 @@ class PmsProperty(models.Model):
                 "pms_base.pms_amenity_type_4", raise_if_not_found=False
             )
             room_count_parking = len(
-                rec.room_ids.filtered(lambda x: x.type_id == room_type_id)
+                rec.room_ids.filtered(
+                    lambda x, room_parking_type_id=room_type_id: x.type_id
+                    == room_parking_type_id
+                )
             )
             amenity_count_parking = len(
-                rec.amenity_ids.filtered(lambda x: x.type_id == amenity_type_id)
+                rec.amenity_ids.filtered(
+                    lambda x, amenity_4_type_id=amenity_type_id: x.type_id
+                    == amenity_4_type_id
+                )
             )
             if room_count_parking or amenity_count_parking:
                 rec.parking_lot = True
@@ -186,10 +187,16 @@ class PmsProperty(models.Model):
                 "pms_base.pms_amenity_type_5", raise_if_not_found=False
             )
             room_count_pets = len(
-                rec.room_ids.filtered(lambda x: x.type_id == room_type_id)
+                rec.room_ids.filtered(
+                    lambda x, room_pets_type_id=room_type_id: x.type_id
+                    == room_pets_type_id
+                )
             )
             amenity_count_pets = len(
-                rec.amenity_ids.filtered(lambda x: x.type_id == amenity_type_id)
+                rec.amenity_ids.filtered(
+                    lambda x, amenity_5_type_id=amenity_type_id: x.type_id
+                    == amenity_5_type_id
+                )
             )
             if room_count_pets or amenity_count_pets:
                 rec.pets = True
@@ -202,7 +209,11 @@ class PmsProperty(models.Model):
             type_id = self.env.ref(
                 "pms_base.pms_room_type_patio", raise_if_not_found=False
             )
-            terrace = len(rec.room_ids.filtered(lambda x: x.type_id == type_id))
+            terrace = len(
+                rec.room_ids.filtered(
+                    lambda x, patio_type_id=type_id: x.type_id == patio_type_id
+                )
+            )
             if terrace:
                 rec.terrace = True
             else:
@@ -215,7 +226,9 @@ class PmsProperty(models.Model):
                 "pms_base.pms_room_type_half_bath", raise_if_not_found=False
             )
             rec.qty_half_bathroom = len(
-                rec.room_ids.filtered(lambda x: x.type_id == type_id)
+                rec.room_ids.filtered(
+                    lambda x, bath_type_id=type_id: x.type_id == bath_type_id
+                )
             )
 
     @api.depends("room_ids")
@@ -225,7 +238,9 @@ class PmsProperty(models.Model):
                 "pms_base.pms_room_type_living", raise_if_not_found=False
             )
             rec.qty_living_room = len(
-                rec.room_ids.filtered(lambda x: x.type_id == type_id)
+                rec.room_ids.filtered(
+                    lambda x, living_type_id=type_id: x.type_id == living_type_id
+                )
             )
 
     @api.depends("room_ids")
@@ -235,7 +250,9 @@ class PmsProperty(models.Model):
                 "pms_base.pms_room_type_dining", raise_if_not_found=False
             )
             rec.qty_dining_room = len(
-                rec.room_ids.filtered(lambda x: x.type_id == type_id)
+                rec.room_ids.filtered(
+                    lambda x, dining_type_id=type_id: x.type_id == dining_type_id
+                )
             )
 
     @api.depends("room_ids")
@@ -244,7 +261,11 @@ class PmsProperty(models.Model):
             type_id = self.env.ref(
                 "pms_base.pms_room_type_kitchen", raise_if_not_found=False
             )
-            rec.qty_kitchen = len(rec.room_ids.filtered(lambda x: x.type_id == type_id))
+            rec.qty_kitchen = len(
+                rec.room_ids.filtered(
+                    lambda x, kitchen_type_id=type_id: x.type_id == kitchen_type_id
+                )
+            )
 
     @api.depends("room_ids")
     def _compute_qty_bedroom(self):
@@ -252,7 +273,11 @@ class PmsProperty(models.Model):
             type_id = self.env.ref(
                 "pms_base.pms_room_type_bed", raise_if_not_found=False
             )
-            rec.qty_bedroom = len(rec.room_ids.filtered(lambda x: x.type_id == type_id))
+            rec.qty_bedroom = len(
+                rec.room_ids.filtered(
+                    lambda x, bed_type_id=type_id: x.type_id == bed_type_id
+                )
+            )
 
     def action_view_childs_property_list(self):
         action = self.env["ir.actions.actions"]._for_xml_id(
@@ -264,16 +289,17 @@ class PmsProperty(models.Model):
     @api.model
     def create(self, vals):
         vals.update({"is_property": True})
-        return super(PmsProperty, self).create(vals)
+        return super().create(vals)
 
     @api.depends("name", "ref")
     def _compute_display_name(self):
-        # Prefetch the fields used by the `name_get`, so `browse` doesn't fetch other fields
+        # Prefetch the fields used by the `name_get`, so `browse`
+        # doesn't fetch other fields
         self.browse(self.ids).read(["name", "ref"])
         return [
             (
                 property.id,
-                "%s%s" % (property.ref and "[%s] " % property.ref or "", property.name),
+                f"{property.ref and f'[{property.ref}] ' or ''}{property.name}",
             )
             for property in self
         ]

@@ -28,7 +28,7 @@
         <field name="name">pms.room.type.tree</field>
         <field name="model">pms.room.type</field>
         <field name="arch" type="xml">
-            <tree string="Room Types">
+            <tree name="Room Types">
                 <field name="sequence" widget="handle" />
                 <field name="name" />
             </tree>

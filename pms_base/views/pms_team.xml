@@ -43,7 +43,7 @@
         <field name="name">pms.team.view.tree</field>
         <field name="model">pms.team</field>
         <field name="arch" type="xml">
-            <tree string="Teams">
+            <tree name="Teams">
                 <field name="sequence" widget="handle" groups="base.group_no_one" />
                 <field name="name" />
                 <field name="description" />

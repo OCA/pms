@@ -28,7 +28,7 @@
         <field name="name">pms.amenity.type.tree</field>
         <field name="model">pms.amenity.type</field>
         <field name="arch" type="xml">
-            <tree string="Amenity Types">
+            <tree name="Amenity Types">
                 <field name="name" />
             </tree>
         </field>

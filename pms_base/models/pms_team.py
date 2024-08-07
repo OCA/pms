@@ -26,9 +26,7 @@ class PMSTeam(models.Model):
     property_count = fields.Integer(
         compute="_compute_property_count", string="Properties Count"
     )
-    sequence = fields.Integer(
-        "Sequence", default=1, help="Used to sort teams. Lower is better."
-    )
+    sequence = fields.Integer(default=1, help="Used to sort teams. Lower is better.")
     company_id = fields.Many2one(
         "res.company",
         string="Company",

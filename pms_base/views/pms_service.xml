@@ -67,7 +67,7 @@
         <field name="name">pms.service.tree</field>
         <field name="model">pms.service</field>
         <field name="arch" type="xml">
-            <tree string="Services">
+            <tree name="Services">
                 <field name="sequence" widget="handle" />
                 <field name="property_id" />
                 <field name="name" />

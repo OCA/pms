@@ -5,7 +5,7 @@
         <field name="name">Tags</field>
         <field name="model">pms.tag</field>
         <field name="arch" type="xml">
-            <tree string="Tags">
+            <tree name="Tags">
                 <field name="full_name" />
                 <field name="company_id" groups="base.group_multi_company" />
             </tree>

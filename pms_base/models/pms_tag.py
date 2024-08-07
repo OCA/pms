@@ -10,10 +10,10 @@ class PmsTag(models.Model):
     _name = "pms.tag"
     _description = "PMS Tag"
 
-    name = fields.Char(string="Name", required=True, translate=True)
+    name = fields.Char(required=True, translate=True)
     parent_id = fields.Many2one("pms.tag", string="Parent")
     color = fields.Integer("Color Index", default=10)
-    full_name = fields.Char(string="Full Name", compute="_compute_full_name")
+    full_name = fields.Char(compute="_compute_full_name")
     company_id = fields.Many2one(
         "res.company",
         string="Company",

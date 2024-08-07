@@ -44,7 +44,7 @@
         <field name="name">pms.stage.view.tree</field>
         <field name="model">pms.stage</field>
         <field name="arch" type="xml">
-            <tree string="Stages">
+            <tree name="Stages">
                 <field name="sequence" widget="handle" />
                 <field name="name" />
                 <field name="stage_type" />
