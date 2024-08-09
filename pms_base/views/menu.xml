@@ -1,0 +1,152 @@
+<odoo>
+
+    <!-- Menu Items -->
+    <menuitem
+        id="menu_root"
+        name="Properties"
+        sequence="20"
+        groups="pms_base.group_pms_user"
+        web_icon="pms_base,static/description/icon.png"
+    />
+
+    <!-- Master Dashboard Menu -->
+    <menuitem
+        id="menu_board"
+        name="Dashboard"
+        parent="pms_base.menu_root"
+        sequence="10"
+    />
+
+    <menuitem
+        id="menu_board_pms_team"
+        name="Teams"
+        action="pms_base.action_pms_team"
+        parent="pms_base.menu_board"
+        sequence="10"
+    />
+
+    <!-- Master Operations Menu -->
+    <menuitem
+        id="menu_operations"
+        name="Operations"
+        parent="pms_base.menu_root"
+        sequence="20"
+    />
+
+    <!-- Master Data Menu -->
+    <menuitem
+        id="menu_data"
+        name="Master Data"
+        parent="pms_base.menu_root"
+        sequence="30"
+    />
+    <menuitem
+        id="menu_pms_data_property"
+        name="Properties"
+        parent="pms_base.menu_data"
+        sequence="10"
+        action="action_pms_property"
+    />
+    <menuitem
+        id="menu_pms_data_room"
+        name="Rooms"
+        parent="pms_base.menu_data"
+        sequence="20"
+        action="action_pms_room"
+        groups="pms_base.group_pms_show_room"
+    />
+    <menuitem
+        id="menu_pms_data_amenity"
+        name="Amenities"
+        parent="pms_base.menu_data"
+        sequence="30"
+        action="action_pms_amenity"
+        groups="pms_base.group_pms_show_amenity"
+    />
+    <menuitem
+        id="menu_pms_data_service"
+        name="Services"
+        parent="pms_base.menu_data"
+        sequence="40"
+        action="action_pms_service"
+        groups="pms_base.group_pms_show_service"
+    />
+    <menuitem
+        id="menu_pms_data_product"
+        name="Products"
+        parent="pms_base.menu_data"
+        sequence="50"
+        action="product.product_template_action"
+        groups="pms_base.group_pms_show_service"
+    />
+
+    <!-- Reporting Menu -->
+    <menuitem
+        id="menu_report"
+        name="Reporting"
+        parent="pms_base.menu_root"
+        sequence="50"
+        groups="pms_base.group_pms_manager"
+    />
+
+    <!-- Configuration Menu -->
+    <menuitem
+        id="menu_config"
+        name="Configuration"
+        parent="pms_base.menu_root"
+        sequence="90"
+        groups="pms_base.group_pms_manager"
+    />
+    <menuitem
+        id="menu_pms_config_settings"
+        name="Settings"
+        parent="pms_base.menu_config"
+        sequence="0"
+        action="action_pms_config"
+    />
+    <menuitem
+        id="menu_config_stage"
+        name="Stages"
+        parent="pms_base.menu_config"
+        sequence="3"
+        action="action_pms_stage"
+    />
+    <menuitem
+        id="menu_config_tag"
+        name="Tags"
+        parent="pms_base.menu_config"
+        sequence="5"
+        action="action_pms_tag"
+    />
+    <menuitem
+        id="menu_config_team"
+        name="Teams"
+        parent="pms_base.menu_config"
+        sequence="8"
+        action="action_pms_team"
+        groups="pms_base.group_pms_show_team"
+    />
+    <menuitem
+        id="menu_config_property"
+        name="Properties"
+        parent="pms_base.menu_config"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_pms_config_property_room_type"
+        name="Room Types"
+        parent="pms_base.menu_config_property"
+        sequence="10"
+        action="action_pms_room_type"
+        groups="pms_base.group_pms_show_room"
+    />
+    <menuitem
+        id="menu_pms_config_property_amenity_type"
+        name="Amenity Types"
+        parent="pms_base.menu_config_property"
+        sequence="20"
+        action="action_pms_amenity_type"
+        groups="pms_base.group_pms_show_amenity"
+    />
+
+</odoo>

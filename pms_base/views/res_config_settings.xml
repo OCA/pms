@@ -1,0 +1,153 @@
+<odoo>
+    <record id="view_res_config_settings_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.pms</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="40" />
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app
+                    data-string="Property Management System"
+                    string="Properties"
+                    name="pms_base"
+                    groups="pms_base.group_pms_manager"
+                >
+                    <block
+                        class="row mt16"
+                        id="characteristics"
+                        title="Property Information"
+                    >
+                        <setting class="col-xs-12 col-md-6">
+                            <label for="pms_uom" string="Area (UoM)" />
+                            <div class="text-muted">
+                                Define your unit of measure when entering area
+                            </div>
+                            <div class="content-group">
+                                <div class="mt16">
+                                    <field
+                                        name="pms_uom"
+                                        class="o_light_label"
+                                        widget="radio"
+                                    />
+                                </div>
+                            </div>
+                        </setting>
+                        <setting class="col-xs-12 col-md-6">
+                            <field name="group_pms_show_amenity" />
+                            <div class="text-muted">
+                                Manage amenities related to your properties
+                            </div>
+                        </setting>
+                        <setting class="col-xs-12 col-md-6">
+                            <field name="group_pms_show_room" />
+                            <div class="text-muted">
+                                Manage rooms of your properties
+                            </div>
+                        </setting>
+                        <setting class="col-xs-12 col-md-6">
+                            <field name="group_pms_show_service" />
+                            <div class="text-muted">
+                                Manage services available at your properties
+                            </div>
+
+                        </setting>
+                        <setting class="col-xs-12 col-md-6">
+                            <field name="group_pms_show_team" />
+                            <div class="text-muted">
+                                Split your properties by Team
+                            </div>
+                        </setting>
+                        <setting class="col-xs-12 col-md-6">
+                            <field name="module_pms_project" />
+                            <div class="text-muted">
+                                Link projects and tasks to your properties
+                            </div>
+                        </setting>
+                        <setting class="col-xs-12 col-md-6">
+                            <field name="module_pms_purchase" />
+                            <div class="text-muted">
+                                Link purchases to your properties
+                            </div>
+                        </setting>
+                        <setting class="col-xs-12 col-md-6">
+                            <field name="module_pms_stock" />
+                            <div class="text-muted">
+                                Link a property to a stock location
+                            </div>
+                        </setting>
+                    </block>
+                    <block class="row mt16" id="account" title="Accounting">
+                        <setting class="col-xs-12 col-md-6">
+                            <field name="module_pms_account" />
+                            <div class="text-muted">
+                                Manage accounting related information
+                            </div>
+                        </setting>
+                        <setting class="col-xs-12 col-md-6">
+                            <field name="module_pms_account_asset" />
+                            <div class="text-muted">
+                                Manage assets related to your properties
+                            </div>
+                        </setting>
+                        <setting class="col-xs-12 col-md-6">
+                            <field name="module_pms_contract" />
+                            <div class="text-muted">
+                                Manage utility contracts and others recurring invoices/bills
+                            </div>
+                        </setting>
+                    </block>
+                    <block class="row mt16" id="sale" title="Reservations">
+                        <setting class="col-xs-12 col-md-6">
+                            <field name="module_pms_sale" />
+                            <div class="text-muted">
+                                Manage reservations
+                            </div>
+                        </setting>
+                        <setting class="col-xs-12 col-md-6">
+                            <field name="module_pms_crm" />
+                            <div class="text-muted">
+                                Link your leads to a property
+                            </div>
+                        </setting>
+                        <setting class="col-xs-12 col-md-6">
+                            <field name="module_pms_website" />
+                            <div class="text-muted">
+                                Publish your properties on your website
+                            </div>
+                        </setting>
+                        <setting class="col-xs-12 col-md-6">
+                            <field name="module_pms_website_sale" />
+                            <div class="text-muted">
+                                Allow customers to book reservations online
+                            </div>
+                        </setting>
+                    </block>
+                    <block class="row mt16" id="connect" title="Integrations">
+                        <setting class="col-xs-12 col-md-6">
+                            <field name="module_connector_guesty" />
+                            <div class="text-muted">
+                                Publish properties to https://guesty.com and get reservations
+                            </div>
+                        </setting>
+                        <setting class="col-xs-12 col-md-6">
+                            <field name="module_connector_wubook" />
+                            <div class="text-muted">
+                                Publish properties to https://wubook.com and get reservations
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_pms_config" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'pms_base'}</field>
+    </record>
+
+</odoo>

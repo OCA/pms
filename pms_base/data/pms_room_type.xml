@@ -1,0 +1,98 @@
+<odoo>
+
+    <record id="pms_room_type_0" model="pms.room.type">
+        <field name="name">Economic</field>
+    </record>
+
+    <record id="pms_room_type_1" model="pms.room.type">
+        <field name="name">Single</field>
+    </record>
+
+    <record id="pms_room_type_2" model="pms.room.type">
+        <field name="name">Double</field>
+    </record>
+
+    <record id="pms_room_type_3" model="pms.room.type">
+        <field name="name">Triple</field>
+    </record>
+
+    <record id="pms_room_type_4" model="pms.room.type">
+        <field name="name">Conference Room</field>
+    </record>
+
+    <record id="pms_room_type_bath" model="pms.room.type">
+        <field name="name">Bathroom</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="pms_room_type_bed" model="pms.room.type">
+        <field name="name">Bedroom</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="pms_room_type_kitchen" model="pms.room.type">
+        <field name="name">Kitchen</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="pms_room_type_living" model="pms.room.type">
+        <field name="name">Livingroom</field>
+        <field name="sequence">40</field>
+    </record>
+
+    <record id="pms_room_type_dining" model="pms.room.type">
+        <field name="name">Diningroom</field>
+        <field name="sequence">50</field>
+    </record>
+
+    <record id="pms_room_type_play" model="pms.room.type">
+        <field name="name">Playroom</field>
+        <field name="sequence">60</field>
+    </record>
+
+    <record id="pms_room_type_patio" model="pms.room.type">
+        <field name="name">Terrace/Patio</field>
+        <field name="sequence">64</field>
+    </record>
+
+    <record id="pms_room_type_balcony" model="pms.room.type">
+        <field name="name">Balcony</field>
+        <field name="sequence">67</field>
+    </record>
+
+    <record id="pms_room_type_hall" model="pms.room.type">
+        <field name="name">Hall</field>
+        <field name="sequence">70</field>
+    </record>
+
+    <record id="pms_room_type_garage" model="pms.room.type">
+        <field name="name">Garage</field>
+        <field name="sequence">80</field>
+    </record>
+
+    <record id="pms_room_type_basement" model="pms.room.type">
+        <field name="name">Basement</field>
+        <field name="sequence">90</field>
+    </record>
+
+    <record id="pms_room_type_laundry" model="pms.room.type">
+        <field name="name">Laundry Room</field>
+        <field name="sequence">100</field>
+    </record>
+
+    <record id="pms_room_type_parking_lot" model="pms.room.type">
+        <field name="name">Parking Lot</field>
+        <field name="sequence">110</field>
+    </record>
+
+    <record id="pms_room_type_pets" model="pms.room.type">
+        <field name="name">Pets</field>
+        <field name="sequence">120</field>
+    </record>
+
+    <record id="pms_room_type_half_bath" model="pms.room.type">
+        <field name="name">Half Bathroom</field>
+        <field name="sequence">130</field>
+    </record>
+
+</odoo>
