@@ -304,8 +304,8 @@
         <field name="name">Properties</field>
         <field name="res_model">pms.property</field>
         <field name="view_mode">kanban,tree,form</field>
-        <field name="context">{'default_team_id': id}</field>
-        <field name="domain">[('team_id', '=', id)]</field>
+        <field name="context">{'default_team[_id': active_id}</field>
+        <field name="domain">[('team_id', '=', active_id)]</field>
     </record>
 
 </odoo>

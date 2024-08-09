@@ -34,27 +34,18 @@
                         </setting>
                         <setting class="col-xs-12 col-md-6">
                             <field name="group_pms_show_amenity" />
-                            <label
-                                for="group_pms_show_amenity"
-                                string="Show Amenities"
-                            />
                             <div class="text-muted">
                                 Manage amenities related to your properties
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
                             <field name="group_pms_show_room" />
-                            <label for="group_pms_show_room" string="Show Rooms" />
                             <div class="text-muted">
                                 Manage rooms of your properties
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
                             <field name="group_pms_show_service" />
-                            <label
-                                for="group_pms_show_service"
-                                string="Show Services"
-                            />
                             <div class="text-muted">
                                 Manage services available at your properties
                             </div>
@@ -62,28 +53,24 @@
                         </setting>
                         <setting class="col-xs-12 col-md-6">
                             <field name="group_pms_show_team" />
-                            <label for="group_pms_show_team" string="Show Teams" />
                             <div class="text-muted">
                                 Split your properties by Team
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
                             <field name="module_pms_project" />
-                            <label for="module_pms_project" />
                             <div class="text-muted">
                                 Link projects and tasks to your properties
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
                             <field name="module_pms_purchase" />
-                            <label for="module_pms_purchase" />
                             <div class="text-muted">
                                 Link purchases to your properties
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
                             <field name="module_pms_stock" />
-                            <label for="module_pms_stock" />
                             <div class="text-muted">
                                 Link a property to a stock location
                             </div>
@@ -92,30 +79,18 @@
                     <block class="row mt16" id="account" title="Accounting">
                         <setting class="col-xs-12 col-md-6">
                             <field name="module_pms_account" />
-                            <label
-                                for="module_pms_account"
-                                string="Manage Accounting"
-                            />
                             <div class="text-muted">
                                 Manage accounting related information
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
                             <field name="module_pms_account_asset" />
-                            <label
-                                for="module_pms_account_asset"
-                                string="Manage Depreciation and Amortization"
-                            />
                             <div class="text-muted">
                                 Manage assets related to your properties
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
                             <field name="module_pms_contract" />
-                            <label
-                                for="module_pms_contract"
-                                string="Manage Contracts"
-                            />
                             <div class="text-muted">
                                 Manage utility contracts and others recurring invoices/bills
                             </div>
@@ -124,31 +99,24 @@
                     <block class="row mt16" id="sale" title="Reservations">
                         <setting class="col-xs-12 col-md-6">
                             <field name="module_pms_sale" />
-                            <label for="module_pms_sale" string="Manage Reservations" />
                             <div class="text-muted">
                                 Manage reservations
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
                             <field name="module_pms_crm" />
-                            <label for="module_pms_crm" string="CRM" />
                             <div class="text-muted">
                                 Link your leads to a property
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
                             <field name="module_pms_website" />
-                            <label for="module_pms_website" string="Website" />
                             <div class="text-muted">
                                 Publish your properties on your website
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
                             <field name="module_pms_website_sale" />
-                            <label
-                                for="module_pms_website_sale"
-                                string="Online reservation"
-                            />
                             <div class="text-muted">
                                 Allow customers to book reservations online
                             </div>
@@ -157,20 +125,12 @@
                     <block class="row mt16" id="connect" title="Integrations">
                         <setting class="col-xs-12 col-md-6">
                             <field name="module_connector_guesty" />
-                            <label
-                                for="module_connector_guesty"
-                                string="Connect with Guesty"
-                            />
                             <div class="text-muted">
                                 Publish properties to https://guesty.com and get reservations
                             </div>
                         </setting>
                         <setting class="col-xs-12 col-md-6">
                             <field name="module_connector_wubook" />
-                            <label
-                                for="module_connector_wubook"
-                                string="Connect with Wubook"
-                            />
                             <div class="text-muted">
                                 Publish properties to https://wubook.com and get reservations
                             </div>

@@ -99,6 +99,8 @@ class PmsProperty(models.Model):
     qty_kitchen = fields.Integer(compute="_compute_qty_kitchen", store=True)
     qty_bedroom = fields.Integer(compute="_compute_qty_bedroom", store=True)
 
+    display_name = fields.Char(compute='_compute_display_name')
+
     @api.depends("property_child_ids")
     def _compute_childs_property(self):
         for rec in self:
@@ -293,16 +295,8 @@ class PmsProperty(models.Model):
 
     @api.depends("name", "ref")
     def _compute_display_name(self):
-        # Prefetch the fields used by the `name_get`, so `browse`
-        # doesn't fetch other fields
-        self.browse(self.ids).read(["name", "ref"])
-        return [
-            (
-                property.id,
-                f"{property.ref and f'[{property.ref}] ' or ''}{property.name}",
-            )
-            for property in self
-        ]
+        for property in self:
+            property.display_name = f"{property.ref and f'[{property.ref}] ' or ''}{property.name or ''}"
 
     @api.model
     def _name_search(
