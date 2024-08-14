@@ -843,11 +843,7 @@ class PmsProperty(models.Model):
                             )
                             folio.sudo().message_post(body=mens)
                             raise ValidationError(mens)
-                    for downpayment in downpayments.filtered(
-                        lambda d: d.default_invoice_to == invoice.partner_id
-                    ):
-                        # If the downpayment invoice partner is the same that the
-                        # folio partner, we include the downpayment in the normal invoice
+                    for downpayment in downpayments:
                         invoice_down_payment_vals = downpayment._prepare_invoice_line(
                             sequence=max(invoice.invoice_line_ids.mapped("sequence"))
                             + 1,

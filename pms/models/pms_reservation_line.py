@@ -128,18 +128,6 @@ class PmsReservationLine(models.Model):
         index=True,
         check_pms_properties=True,
     )
-    default_invoice_to = fields.Many2one(
-        string="Invoice to",
-        help="""Indicates the contact to which this line will be
-        billed by default, if it is not established,
-        a guest or the generic contact will be used instead""",
-        readonly=False,
-        store=True,
-        compute="_compute_default_invoice_to",
-        comodel_name="res.partner",
-        index=True,
-        ondelete="restrict",
-    )
 
     is_reselling = fields.Boolean(
         string="Reselling",
@@ -520,19 +508,6 @@ class PmsReservationLine(models.Model):
                 pms_property_id=reservation.pms_property_id.id,
             )
         return records
-
-    @api.depends("sale_channel_id", "reservation_id.agency_id")
-    def _compute_default_invoice_to(self):
-        for record in self:
-            agency = record.reservation_id.agency_id
-            if (
-                agency
-                and agency.invoice_to_agency == "always"
-                and agency.sale_channel_id == record.sale_channel_id
-            ):
-                record.default_invoice_to = agency
-            elif not record.default_invoice_to:
-                record.default_invoice_to = False
 
     def write(self, vals):
         if not self.env.context.get("force_write_blocked") and (

@@ -690,8 +690,6 @@ class PmsFolio(models.Model):
                     for down_payment in down_payments:
                         # If the down payment is not for the current partner, skip it
                         # it will be managed manually or by the automatic invoice cron
-                        if down_payment.default_invoice_to.id != group["partner_id"]:
-                            continue
                         invoice_item_sequence += 1
                         invoice_down_payment_vals = down_payment._prepare_invoice_line(
                             sequence=invoice_item_sequence
@@ -722,25 +720,12 @@ class PmsFolio(models.Model):
                 }
             )
         else:
-            partners = lines_to_invoice.mapped("default_invoice_to")
-            for partner in partners:
-                groups_invoice_lines.append(
-                    {
-                        "partner_id": partner.id,
-                        "lines": lines_to_invoice.filtered(
-                            lambda l: l.default_invoice_to == partner
-                        ),
-                    }
-                )
-            if any(not line.default_invoice_to for line in lines_to_invoice):
-                groups_invoice_lines.append(
-                    {
-                        "partner_id": self.env.ref("pms.various_pms_partner").id,
-                        "lines": lines_to_invoice.filtered(
-                            lambda l: not l.default_invoice_to
-                        ),
-                    }
-                )
+            groups_invoice_lines.append(
+                {
+                    "partner_id": self.env.ref("pms.various_pms_partner").id,
+                    "lines": lines_to_invoice,
+                }
+            )
         return groups_invoice_lines
 
     def _get_tax_amount_by_group(self):
@@ -802,7 +787,6 @@ class PmsFolio(models.Model):
         "reservation_ids",
         "service_ids",
         "service_ids.reservation_id",
-        "service_ids.default_invoice_to",
         "service_ids.service_line_ids.price_day_total",
         "service_ids.service_line_ids.discount",
         "service_ids.service_line_ids.cancel_discount",
@@ -812,7 +796,6 @@ class PmsFolio(models.Model):
         "reservation_ids.reservation_line_ids.price",
         "reservation_ids.reservation_line_ids.discount",
         "reservation_ids.reservation_line_ids.cancel_discount",
-        "reservation_ids.reservation_line_ids.default_invoice_to",
         "reservation_ids.tax_ids",
         "reservation_ids.state",
     )
@@ -2433,8 +2416,8 @@ class PmsFolio(models.Model):
                 ("reservation_id", "=", reservation.id),
                 ("cancel_discount", "<", 100),
             ],
-            ["price", "discount", "cancel_discount", "default_invoice_to"],
-            ["price", "discount", "cancel_discount", "default_invoice_to"],
+            ["price", "discount", "cancel_discount"],
+            ["price", "discount", "cancel_discount"],
             lazy=False,
         )
         current_sale_line_ids = reservation.sale_line_ids.filtered(
@@ -2449,16 +2432,12 @@ class PmsFolio(models.Model):
             final_discount = self.concat_discounts(
                 item["discount"], item["cancel_discount"]
             )
-            partner_invoice = lines_to.mapped("default_invoice_to")
             if current_sale_line_ids and index <= (len(current_sale_line_ids) - 1):
                 current = {
                     "price_unit": item["price"],
                     "discount": final_discount,
                     "reservation_line_ids": [(6, 0, lines_to.ids)],
                     "sequence": sequence,
-                    "default_invoice_to": partner_invoice[0].id
-                    if partner_invoice
-                    else current_sale_line_ids[index].default_invoice_to,
                 }
                 sale_reservation_vals.append(
                     (1, current_sale_line_ids[index].id, current)
@@ -2473,9 +2452,6 @@ class PmsFolio(models.Model):
                     "tax_ids": [(6, 0, reservation.tax_ids.ids)],
                     "reservation_line_ids": [(6, 0, lines_to.ids)],
                     "sequence": sequence,
-                    "default_invoice_to": partner_invoice[0].id
-                    if partner_invoice
-                    else False,
                 }
                 sale_reservation_vals.append((0, 0, new))
         folio_sale_lines_to_remove = []
@@ -2498,8 +2474,8 @@ class PmsFolio(models.Model):
                     ("service_id", "=", service.id),
                     ("cancel_discount", "<", 100),
                 ],
-                ["price_unit", "discount", "cancel_discount", "default_invoice_to"],
-                ["price_unit", "discount", "cancel_discount", "default_invoice_to"],
+                ["price_unit", "discount", "cancel_discount"],
+                ["price_unit", "discount", "cancel_discount"],
                 lazy=False,
             )
             current_sale_service_ids = reservation.sale_line_ids.filtered(
@@ -2513,7 +2489,6 @@ class PmsFolio(models.Model):
                 final_discount = self.concat_discounts(
                     item["discount"], item["cancel_discount"]
                 )
-                partner_invoice = lines_to.mapped("default_invoice_to")
                 if current_sale_service_ids and index <= (
                     len(current_sale_service_ids) - 1
                 ):
@@ -2522,9 +2497,6 @@ class PmsFolio(models.Model):
                         "discount": final_discount,
                         "service_line_ids": [(6, 0, lines_to.ids)],
                         "sequence": sequence,
-                        "default_invoice_to": partner_invoice[0].id
-                        if partner_invoice
-                        else current_sale_service_ids[index].default_invoice_to,
                     }
                     sale_service_vals.append(
                         (1, current_sale_service_ids[index].id, current)
@@ -2540,9 +2512,6 @@ class PmsFolio(models.Model):
                         "product_id": service.product_id.id,
                         "tax_ids": [(6, 0, service.tax_ids.ids)],
                         "sequence": sequence,
-                        "default_invoice_to": partner_invoice[0].id
-                        if partner_invoice
-                        else False,
                     }
                     sale_service_vals.append((0, 0, new))
                 sequence = sequence + 1

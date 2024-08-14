@@ -502,7 +502,6 @@
                                     <field name="price_day_total" />
                                     <field name="cancel_discount" invisible="1" />
                                     <field name="sale_channel_id" />
-                                    <field name="default_invoice_to" />
                                     <field
                                         name="is_reselling"
                                         attrs="{'column_invisible': [('parent.is_reselling','=', False)]}"
@@ -571,10 +570,6 @@
                                             force_save="1"
                                         />
                                         <field name="sale_channel_origin_id" />
-                                        <field
-                                            name="default_invoice_to"
-                                            optional="hide"
-                                        />
                                         <button
                                             type="object"
                                             class="oe_stat_button"

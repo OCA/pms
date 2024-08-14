@@ -205,18 +205,7 @@ class PmsService(models.Model):
         """,
         default=False,
     )
-    default_invoice_to = fields.Many2one(
-        string="Invoice to",
-        help="""Indicates the contact to which this line will be
-        billed by default, if it is not established,
-        a guest or the generic contact will be used instead""",
-        readonly=False,
-        store=True,
-        index=True,
-        compute="_compute_default_invoice_to",
-        comodel_name="res.partner",
-        ondelete="restrict",
-    )
+
     is_cancel_penalty = fields.Boolean(
         string="Is Cancel Penalty",
         help="Indicates if the service is a cancel penalty",
@@ -464,19 +453,6 @@ class PmsService(models.Model):
             for line in record.service_line_ids:
                 line.discount = record.discount
                 line.cancel_discount = 0
-
-    @api.depends("sale_channel_origin_id", "folio_id.agency_id")
-    def _compute_default_invoice_to(self):
-        for record in self:
-            agency = record.folio_id.agency_id
-            if (
-                agency
-                and agency.invoice_to_agency == "always"
-                and agency.sale_channel_id == record.sale_channel_origin_id
-            ):
-                record.default_invoice_to = agency
-            elif not record.default_invoice_to:
-                record.default_invoice_to = False
 
     def _compute_is_cancel_penalty(self):
         for record in self:
