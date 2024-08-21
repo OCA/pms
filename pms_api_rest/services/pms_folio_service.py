@@ -249,10 +249,12 @@ class PmsFolioService(Component):
                 ]
                 domain_filter.append(expression.AND(subdomains))
             elif folio_search_param.filterByState == "toAssign":
+                # this domain should be the same as notification service for unassigned reservations
                 subdomains = [
                     [("to_assign", "=", True)],
                     [("state", "in", ("draft", "confirm", "arrival_delayed"))],
                     [("reservation_type", "!=", "out")],
+                    [("checkin", ">=", fields.Date.today())],
                 ]
                 domain_filter.append(expression.AND(subdomains))
             elif folio_search_param.filterByState == "cancelled":
