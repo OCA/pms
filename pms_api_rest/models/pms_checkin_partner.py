@@ -17,19 +17,3 @@ class PmsCheckinPartner(models.Model):
         ],
         string="Origin Input Data",
     )
-
-    api_rest_id = fields.Char(string="API Rest ID", help="API Rest ID")
-
-    @api.model
-    def create(self, vals):
-        result = super(PmsCheckinPartner, self).create(vals)
-        self._generate_api_rest_id(result)
-        return result
-
-    @api.model
-    def _generate_api_rest_id(self, reservation_record):
-        if not reservation_record.api_rest_id:
-            timestamp = int(time.time() * 1000)
-            new_uuid = uuid.uuid4()
-            unique_uuid = f"{new_uuid}_{timestamp}"
-            reservation_record.api_rest_id = unique_uuid

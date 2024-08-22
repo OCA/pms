@@ -71,7 +71,7 @@ class PmsOcr(Component):
         [
             (
                 [
-                    "/<string:api_rest_id>/precheckin-reservation/<string:token>",
+                    "/<int:reservation_id>/precheckin-reservation/<string:token>",
                 ],
                 "POST",
             )
@@ -80,23 +80,19 @@ class PmsOcr(Component):
         output_param=Datamodel("pms.ocr.checkin.result", is_list=False),
         auth="public",
     )
-    def process_ocr_document_public(self, api_rest_id, token, input_param):
-        # check if the folio exists
+    def process_ocr_document_public(self, reservation_id, token, input_param):
+        # check if the reservation exists
         reservation_record = (
             self.env["pms.reservation"]
             .sudo()
-            .search(
-                [
-                    ("api_rest_id", "=", api_rest_id),
-                ],
-            )
+            .browse(reservation_id)
         )
-        if not reservation_record:
+        if not reservation_record.exists():
             raise MissingError(_("Reservation not found"))
 
         # check if the reservation is accessible
         try:
-            reservation_record = CustomerPortal._document_check_access(
+            CustomerPortal._document_check_access(
                 self,
                 "pms.reservation",
                 reservation_record.id,
