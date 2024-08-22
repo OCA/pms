@@ -29,7 +29,7 @@ class PmsReservationService(Component):
         [
             (
                 [
-                    "/<string:api_rest_id>/precheckin/<string:token>",
+                    "/<int:reservation_id>/precheckin/<string:token>",
                 ],
                 "GET",
             )
@@ -37,7 +37,7 @@ class PmsReservationService(Component):
         output_param=Datamodel("pms.folio.public.info", is_list=False),
         auth="public",
     )
-    def get_reservation_public_info(self, api_rest_id, token):
+    def get_reservation_public_info(self, reservation_id, token):
         # variable initialization
         folio_room_types_description_list = list()
         folio_checkin_partner_names = list()
@@ -47,13 +47,9 @@ class PmsReservationService(Component):
         reservation_record = (
             self.env["pms.reservation"]
             .sudo()
-            .search(
-                [
-                    ("api_rest_id", "=", api_rest_id),
-                ],
-            )
+            .browse(reservation_id)
         )
-        if not reservation_record:
+        if not reservation_record.exists():
             raise MissingError(_("Reservation not found"))
 
         # check if the reservation is accessible
@@ -61,7 +57,7 @@ class PmsReservationService(Component):
             reservation_record = CustomerPortal._document_check_access(
                 self,
                 "pms.reservation",
-                reservation_record.id,
+                reservation_id,
                 access_token=token,
             )
         except AccessError:
@@ -74,13 +70,9 @@ class PmsReservationService(Component):
 
         # iterate checkin partner names completed
         for checkin_partner in reservation_record.checkin_partner_ids:
-            if not checkin_partner.api_rest_id:
-                checkin_partner._generate_api_rest_id()
             reservation_checkin_partners.append(
                 self.env.datamodels["pms.checkin.partner.info"](
-                    # TODO pms.checkin.partner-> api_rest_id instead of id
                     id=checkin_partner.id,
-                    # apiRestId=checkin_partner.api_rest_id,
                     checkinPartnerState=checkin_partner.state,
                 )
             )
@@ -144,7 +136,7 @@ class PmsReservationService(Component):
         [
             (
                 [
-                    "/<string:api_rest_id>/precheckin-reservation/<string:token>"
+                    "/<int:reservation_id>/precheckin-reservation/<string:token>"
                     "/partner/<string:documentType>/<string:documentNumber>",
                 ],
                 "GET",
@@ -154,16 +146,12 @@ class PmsReservationService(Component):
         auth="public",
     )
     def get_checkin_partner_by_doc_number(
-        self, api_rest_id, token, document_type, document_number
+        self, reservation_id, token, document_type, document_number
     ):
         reservation_record = (
             self.env["pms.reservation"]
             .sudo()
-            .search(
-                [
-                    ("api_rest_id", "=", api_rest_id),
-                ],
-            )
+            .browse(reservation_id)
         )
         if not reservation_record:
             raise MissingError(_("Folio not found"))
@@ -196,8 +184,6 @@ class PmsReservationService(Component):
                 lambda doc: doc.category_id.id == doc_type.id
             )
             PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
-            if not partner.api_rest_id:
-                partner._generate_api_rest_id(partner)
 
             document_numbers_in_reservation = (
                 reservation_record.checkin_partner_ids.filtered(
@@ -209,7 +195,7 @@ class PmsReservationService(Component):
             partners.append(
                 PmsCheckinPartnerInfo(
                     # partner id
-                    partnerApiRestId=partner.api_rest_id or None,
+                    id=partner.id,
                     # names
                     firstname="#" if partner.firstname else None,
                     lastname="#" if partner.lastname else None,
@@ -254,8 +240,8 @@ class PmsReservationService(Component):
         [
             (
                 [
-                    "/<string:api_rest_id>/precheckin-reservation/<string:token>"
-                    "/checkin-partners/<int:checkin_partner_api_rest_id>",
+                    "/<int:reservation_id>/precheckin-reservation/<string:token>"
+                    "/checkin-partners/<int:checkin_partner_id>",
                 ],
                 "PATCH",
             )
@@ -264,16 +250,12 @@ class PmsReservationService(Component):
         auth="public",
     )
     def patch_checkin_partner(
-        self, api_rest_id, token, checkin_partner_api_rest_id, pms_checkin_partner_info
+        self, reservation_id, token, checkin_partner_id, pms_checkin_partner_info
     ):
         reservation_record = (
             self.env["pms.reservation"]
             .sudo()
-            .search(
-                [
-                    ("api_rest_id", "=", api_rest_id),
-                ],
-            )
+            .browse(reservation_id)
         )
         if not reservation_record:
             raise MissingError(_("Folio not found"))
@@ -288,26 +270,22 @@ class PmsReservationService(Component):
         except AccessError:
             raise MissingError(_("Reservation not found"))
 
-        partner = False
+        partner_record = False
         # search checkin partner by id
         checkin_partner_record = (
-            self.env["pms.checkin.partner"].sudo().browse(checkin_partner_api_rest_id)
+            self.env["pms.checkin.partner"].sudo().browse(checkin_partner_id)
         )
-        if pms_checkin_partner_info.partnerApiRestId:
+        if pms_checkin_partner_info.partnerId:
             # search partner by api_rest_id
-            partner = (
+            partner_record = (
                 self.env["res.partner"]
                 .sudo()
-                .search(
-                    [
-                        ("api_rest_id", "=", pms_checkin_partner_info.partnerApiRestId),
-                    ],
-                )
+                .browse(pms_checkin_partner_info.partnerId)
             )
 
         # partner
-        if partner:
-            checkin_partner_record.partner_id = partner.id
+        if partner_record:
+            checkin_partner_record.partner_id = partner_record.id
         # document info
         if pms_checkin_partner_info.documentCountryId:
             checkin_partner_record.document_country_id = (
@@ -373,8 +351,6 @@ class PmsReservationService(Component):
         # signature
         if pms_checkin_partner_info.signature:
             checkin_partner_record.signature = pms_checkin_partner_info.signature
-
-        print(pms_checkin_partner_info)
 
     @restapi.method(
         [

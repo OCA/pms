@@ -16,18 +16,3 @@ class PmsFolio(models.Model):
         column1="folio_ids",
         column2="pms_api_log_ids",
     )
-
-    @api.model
-    def create(self, vals):
-        result = super(PmsFolio, self).create(vals)
-        if not result.api_rest_id:
-            self._generate_api_rest_id(result)
-        return result
-
-    @api.model
-    def _generate_api_rest_id(self, folio_record):
-        if not folio_record.api_rest_id:
-            timestamp = int(time.time() * 1000)
-            new_uuid = uuid.uuid4()
-            unique_uuid = f"{new_uuid}_{timestamp}"
-            folio_record.api_rest_id = unique_uuid

@@ -29,7 +29,7 @@ class PmsFolioService(Component):
         [
             (
                 [
-                    "/<string:api_rest_id>/precheckin/<string:token>",
+                    "/<int:folio_id>/precheckin/<string:token>",
                 ],
                 "GET",
             )
@@ -37,7 +37,7 @@ class PmsFolioService(Component):
         output_param=Datamodel("pms.folio.public.info", is_list=False),
         auth="public",
     )
-    def get_folio_public_info(self, api_rest_id, token):
+    def get_folio_public_info(self, folio_id, token):
         # variable initialization
         folio_room_types_description_list = list()
         folio_room_types_description_result = ""
@@ -51,13 +51,9 @@ class PmsFolioService(Component):
         folio_record = (
             self.env["pms.folio"]
             .sudo()
-            .search(
-                [
-                    ("api_rest_id", "=", api_rest_id),
-                ],
-            )
+            .browse(folio_id)
         )
-        if not folio_record:
+        if not folio_record.exists():
             raise MissingError(_("Folio not found"))
 
         # check if the folio is accessible
@@ -100,15 +96,11 @@ class PmsFolioService(Component):
             if not reservation.access_token:
                 reservation.access_token = reservation._portal_ensure_token()
 
-            # if reservation api_rest_id is not set, generate it
-            if not reservation.api_rest_id:
-                reservation._generate_api_rest_id()
-
             # build the reservation public url
             reservation_public_url = (
                 self.env["ir.config_parameter"].sudo().get_param("web.base.url")
                 + "/reservations/"
-                + reservation.api_rest_id
+                + str(reservation.id)
                 + "/precheckin/"
                 + reservation.access_token
             )
@@ -129,10 +121,10 @@ class PmsFolioService(Component):
             # append reservation public info
             reservations.append(
                 self.env.datamodels["pms.reservation.public.info"](
+                    id=reservation.id,
                     roomTypeName=reservation.room_type_id.name,
                     checkinNamesCompleted=reservation_checkin_partner_names,
                     accessToken=reservation.access_token,
-                    apiRestId=reservation.api_rest_id,
                     nights=reservation.nights,
                     checkin=datetime.combine(
                         reservation.checkin, datetime.min.time()
