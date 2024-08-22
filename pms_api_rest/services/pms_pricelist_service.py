@@ -85,6 +85,36 @@ class PmsPricelistService(Component):
         [
             (
                 [
+                    "/restricted/<int:pricelist_id>",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.pricelist.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def get_pricelist(self, pricelist_id, **args):
+        pricelist = self.env["product.pricelist"].sudo().browse(pricelist_id)
+        if not pricelist:
+            raise MissingError(_("Pricelist not found"))
+        PmsPricelistInfo = self.env.datamodels["pms.pricelist.info"]
+        return PmsPricelistInfo(
+            id=pricelist.id,
+            name=pricelist.name,
+            cancelationRuleId=pricelist.cancelation_rule_id.id
+            if pricelist.cancelation_rule_id
+            else None,
+            defaultAvailabilityPlanId=pricelist.availability_plan_id.id
+            if pricelist.availability_plan_id
+            else None,
+            pmsPropertyIds=pricelist.pms_property_ids.ids,
+            saleChannelIds=pricelist.pms_sale_channel_ids.ids,
+        )
+
+    @restapi.method(
+        [
+            (
+                [
                     "/<int:pricelist_id>/pricelist-items",
                 ],
                 "GET",
@@ -106,10 +136,8 @@ class PmsPricelistService(Component):
         ).date()
         count_nights = (date_to - date_from).days + 1
         target_dates = [date_from + timedelta(days=x) for x in range(count_nights)]
-        record_pricelist = self.env["product.pricelist"].search(
-            [("id", "=", pricelist_id)]
-        )
-        if not record_pricelist:
+        record_pricelist = self.env["product.pricelist"].sudo.browse(pricelist_id)
+        if not record_pricelist.exists():
             raise MissingError
         rooms = (
             self.env["pms.room"]
