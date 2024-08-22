@@ -6,9 +6,7 @@ from odoo.addons.datamodel.core import Datamodel
 class PmsCheckinPartnerInfo(Datamodel):
     _name = "pms.checkin.partner.info"
     id = fields.Integer(required=False, allow_none=True)
-    apiRestId = fields.String(required=False, allow_none=True)
     partnerId = fields.Integer(required=False, allow_none=True)
-    partnerApiRestId = fields.String(required=False, allow_none=True)
     reservationId = fields.Integer(required=False, allow_none=True)
     name = fields.String(required=False, allow_none=True)
     firstname = fields.String(required=False, allow_none=True)
