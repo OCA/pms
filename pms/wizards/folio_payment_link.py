@@ -63,6 +63,8 @@ class FolioPaymentLink(models.TransientModel):
                         payment_link.link += (
                             "&partner_id=%s" % payment_link.partner_id.id
                         )
+                    if not acquirer or acquirer.state != "enabled":
+                        payment_link.link = False
                 else:
                     payment_link.link = False
             else:
