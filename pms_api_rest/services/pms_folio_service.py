@@ -536,6 +536,11 @@ class PmsFolioService(Component):
                 for reservation in sorted(
                     folio.reservation_ids, key=lambda r: r.folio_sequence
                 ):
+                    reservation_room_type_class_id = (
+                        self.env["pms.room.type.class"]
+                        .with_context(active_test=False)  # TODO: idk why we need this with browse
+                        .browse(reservation.room_type_id.sudo().class_id.id)
+                    )
                     reservations.append(
                         PmsReservationShortInfo(
                             id=reservation.id,
@@ -551,8 +556,8 @@ class PmsFolioService(Component):
                             roomTypeId=reservation.room_type_id.id
                             if reservation.room_type_id
                             else None,
-                            roomTypeClassId=reservation.room_type_id.class_id.id
-                            if reservation.room_type_id
+                            roomTypeClassId=reservation_room_type_class_id
+                            if reservation_room_type_class_id
                             else None,
                             preferredRoomId=reservation.preferred_room_id.id
                             if reservation.preferred_room_id
