@@ -82,3 +82,28 @@ class PmsProductService(Component):
             )
         else:
             raise MissingError(_("Product not found"))
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/restricted/<int:product_id>",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.product.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def get_product(self, product_id, product_search_param):
+        product = self.env["product.product"].sudo().browse(product_id)
+        if product.exists() and product.sale_ok:
+            PmsProductInfo = self.env.datamodels["pms.product.info"]
+            return PmsProductInfo(
+                id=product.id,
+                name=product.name,
+                perDay=product.per_day,
+                perPerson=product.per_person,
+            )
+        else:
+            raise MissingError(_("Product not found"))

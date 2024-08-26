@@ -1,6 +1,7 @@
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
+from odoo.exceptions import MissingError
 
 
 class PmsRoomTypeService(Component):
@@ -67,3 +68,35 @@ class PmsRoomTypeService(Component):
                 )
             )
         return result_rooms
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/restricted/<int:room_type_id>",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.room.type.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def get_restricted_room_type(self, room_type_id):
+        room_type_record = self.env["pms.room.type"].sudo().browse(
+            room_type_id
+        )
+        if room_type_record.exists():
+            PmsRoomTypeInfo = self.env.datamodels["pms.room.type.info"]
+            return PmsRoomTypeInfo(
+                id=room_type_record.id,
+                name=room_type_record.name,
+                pmsPropertyIds=room_type_record.pms_property_ids.mapped("id"),
+                defaultCode=room_type_record.default_code,
+                price=round(room_type_record.list_price, 2),
+                minPrice=room_type_record.min_price,
+                classId=room_type_record.class_id,
+                defaultMaxAvail=room_type_record.default_max_avail,
+                defaultQuota=room_type_record.default_quota,
+            )
+        else:
+            raise MissingError("Room Type Class not found")
