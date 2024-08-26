@@ -1154,7 +1154,7 @@ class PmsReservationService(Component):
                 "('reservation_type', 'in', ['normal', 'staff'])"
                 "]",
                 "filtered": "lambda r: r.count_alternative_free_rooms",
-                "text": f"Parece que ha entrado una reserva sin haber disponibilidad para {reservation.room_type_id.name}.",
+                "text": f"Parece que ha entrado una reserva sin haber disponibilidad para {reservation.sudo().room_type_id.name}.",
                 "priority": 100,
             },
             {
