@@ -305,7 +305,7 @@ class PmsFolioService(Component):
                         "roomTypeId": reservation.room_type_id.id
                         if reservation.room_type_id
                         else None,
-                        "roomTypeClassId": reservation.room_type_id.class_id.id
+                        "roomTypeClassId": reservation.room_type_id.sudo().class_id.id
                         if reservation.room_type_id
                         else None,
                         "folioSequence": reservation.folio_sequence,
@@ -538,7 +538,6 @@ class PmsFolioService(Component):
                 ):
                     reservation_room_type_class_id = (
                         self.env["pms.room.type.class"]
-                        .with_context(active_test=False)  # TODO: idk why we need this with browse
                         .browse(reservation.room_type_id.sudo().class_id.id)
                     )
                     reservations.append(
