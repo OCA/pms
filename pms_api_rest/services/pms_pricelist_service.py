@@ -95,21 +95,22 @@ class PmsPricelistService(Component):
     )
     def get_pricelist(self, pricelist_id, **args):
         pricelist = self.env["product.pricelist"].sudo().browse(pricelist_id)
-        if not pricelist:
+        if pricelist.exists():
+            PmsPricelistInfo = self.env.datamodels["pms.pricelist.info"]
+            return PmsPricelistInfo(
+                id=pricelist.id,
+                name=pricelist.name,
+                cancelationRuleId=pricelist.cancelation_rule_id.id
+                if pricelist.cancelation_rule_id
+                else None,
+                defaultAvailabilityPlanId=pricelist.availability_plan_id.id
+                if pricelist.availability_plan_id
+                else None,
+                pmsPropertyIds=pricelist.pms_property_ids.ids,
+                saleChannelIds=pricelist.pms_sale_channel_ids.ids,
+            )
+        else:
             raise MissingError(_("Pricelist not found"))
-        PmsPricelistInfo = self.env.datamodels["pms.pricelist.info"]
-        return PmsPricelistInfo(
-            id=pricelist.id,
-            name=pricelist.name,
-            cancelationRuleId=pricelist.cancelation_rule_id.id
-            if pricelist.cancelation_rule_id
-            else None,
-            defaultAvailabilityPlanId=pricelist.availability_plan_id.id
-            if pricelist.availability_plan_id
-            else None,
-            pmsPropertyIds=pricelist.pms_property_ids.ids,
-            saleChannelIds=pricelist.pms_sale_channel_ids.ids,
-        )
 
     @restapi.method(
         [
