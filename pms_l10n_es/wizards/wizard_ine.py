@@ -1,7 +1,6 @@
 import base64
 import calendar
 import datetime
-import math
 import xml.etree.cElementTree as ET
 
 from odoo import _, api, fields, models
@@ -748,12 +747,12 @@ class WizardIne(models.TransientModel):
         if sum_percentages < 100:
             for group in total_groups_domains.keys():
                 if percents[group] > 0:
-                    percents[group] += math.ceil((100 - sum_percentages) * 100) / 100
+                    percents[group] += round(((100 - sum_percentages) * 100) / 100, 2)
                     break
         elif sum_percentages > 100:
             for group in total_groups_domains.keys():
                 if percents[group] > 0:
-                    percents[group] -= math.ceil((sum_percentages - 100) * 100) / 100
+                    percents[group] -= round(((sum_percentages - 100) * 100) / 100, 2)
                     break
 
         ET.SubElement(prices_tag, "ADR_TOUROPERADOR_TRADICIONAL").text = str(
