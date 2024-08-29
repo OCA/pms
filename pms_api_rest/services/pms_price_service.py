@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from odoo import _, fields
-from odoo.exceptions import MissingError
+from odoo.exceptions import MissingError, ValidationError
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
@@ -28,24 +28,33 @@ class PmsPriceService(Component):
         auth="jwt_api_pms",
     )
     def get_prices(self, prices_search_param):
-        product = room_type = board_service = False
+        product = room_type = board_service_room_type = False
+
         if prices_search_param.roomTypeId:
             room_type = self.env["pms.room.type"].search(
                 [("id", "=", prices_search_param.roomTypeId)]
-            )
-        elif prices_search_param.productId and prices_search_param.boardServiceId:
-            product = self.env["product.product"].search(
-                [("id", "=", prices_search_param.productId)]
-            )
-            board_service = self.env["pms.board.service.room.type"].search(
-                [("id", "=", prices_search_param.boardServiceId)]
             )
         elif prices_search_param.productId:
             product = self.env["product.product"].search(
                 [("id", "=", prices_search_param.productId)]
             )
         elif prices_search_param.boardServiceId:
-            board_service = self.env["pms.board.service.room.type"].search(
+            if prices_search_param.isAdults and prices_search_param.isChildren:
+                raise ValidationError(
+                    _(
+                        "It is not allowed to filter by adults and children simultaneously"
+                    )
+                )
+            if not prices_search_param.isAdults and not prices_search_param.isChildren:
+                raise ValidationError(
+                    _(
+                        """
+                    It is necessary to indicate whether
+                    the board service is for adults or children.
+                    """
+                    )
+                )
+            board_service_room_type = self.env["pms.board.service.room.type"].search(
                 [("id", "=", prices_search_param.boardServiceId)]
             )
         else:
@@ -60,7 +69,7 @@ class PmsPriceService(Component):
             for x in range(0, (date_to - date_from).days + 1)
         ]
         for price_date in dates:
-            if board_service:
+            if board_service_room_type:
                 result_prices.append(
                     PmsPriceInfo(
                         date=datetime.combine(
@@ -68,13 +77,15 @@ class PmsPriceService(Component):
                         ).isoformat(),
                         price=round(
                             self._get_board_service_price(
-                                board_service=board_service,
+                                board_service=board_service_room_type,
+                                board_type="adults"
+                                if prices_search_param.isAdults
+                                else "children",
                                 pms_property_id=prices_search_param.pmsPropertyId,
                                 pricelist_id=prices_search_param.pricelistId,
                                 partner_id=prices_search_param.partnerId,
                                 product_qty=prices_search_param.productQty,
                                 date_consumption=price_date,
-                                product_id=product.id if product else False,
                             ),
                             2,
                         ),
@@ -110,6 +121,7 @@ class PmsPriceService(Component):
         product_qty=False,
         date_consumption=False,
         board_service_id=False,
+        board_service_line_id=False,
     ):
         pms_property = self.env["pms.property"].browse(pms_property_id)
         product_context = dict(
@@ -122,8 +134,8 @@ class PmsPriceService(Component):
         )
         if date_consumption:
             product_context["consumption_date"] = date_consumption
-        if board_service_id:
-            product_context["board_service"] = board_service_id
+        if board_service_line_id:
+            product_context["board_service_line_id"] = board_service_line_id
         product = product.with_context(product_context)
         return self.env["account.tax"]._fix_tax_included_price_company(
             self.env["product.product"]._pms_get_display_price(
@@ -141,26 +153,26 @@ class PmsPriceService(Component):
     def _get_board_service_price(
         self,
         board_service,
+        board_type,
         pms_property_id,
         pricelist_id=False,
         partner_id=False,
         product_qty=False,
         date_consumption=False,
-        product_id=False,
     ):
         price = 0
-        if product_id:
-            products = self.env["product.product"].browse(product_id)
-        else:
-            products = board_service.board_service_line_ids.mapped("product_id")
-        for product in products:
+        lines = board_service.board_service_line_ids.filtered(
+            lambda l: l.adults if board_type == "adults" else l.children
+        )
+        for line in lines:
             price += self._get_product_price(
-                product=product,
+                product=line.product_id,
                 pms_property_id=pms_property_id,
                 pricelist_id=pricelist_id,
                 partner_id=partner_id,
                 product_qty=product_qty or 1,
                 date_consumption=date_consumption,
                 board_service_id=board_service.id,
+                board_service_line_ids=line.id,
             )
         return price
