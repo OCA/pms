@@ -14,6 +14,8 @@ class PmsPriceSearchParam(Datamodel):
     productId = fields.Integer(required=False, allow_none=True)
     productQty = fields.Integer(required=False, allow_none=True)
     partnerId = fields.Integer(required=False, allow_none=True)
+    isAdults = fields.Boolean(required=False, allow_none=True)
+    isChildren = fields.Boolean(required=False, allow_none=True)
 
 
 class PmsPriceInfo(Datamodel):

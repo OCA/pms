@@ -15,3 +15,5 @@ class PmsBoardServiceLineInfo(Datamodel):
     boardServiceId = fields.Integer(required=True, allow_none=False)
     productId = fields.Integer(required=True, allow_none=False)
     amount = fields.Float(required=False, allow_none=False)
+    isAdults = fields.Boolean(required=False, allow_none=False)
+    isChildren = fields.Boolean(required=False, allow_none=False)
