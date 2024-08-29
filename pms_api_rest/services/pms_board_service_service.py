@@ -53,9 +53,7 @@ class PmsBoardServiceService(Component):
                     roomTypeId=board_service.pms_room_type_id.id,
                     amount=round(board_service.amount, 2),
                     boardServiceId=board_service.pms_board_service_id,
-                    productIds=board_service.board_service_line_ids.mapped(
-                        "product_id.id"
-                    ),
+                    boardServiceLineIds=board_service.board_service_line_ids.ids,
                 )
             )
         if external_app:
@@ -74,7 +72,7 @@ class PmsBoardServiceService(Component):
                         roomTypeId=room_type_id,
                         amount=0,
                         boardServiceId=0,
-                        productIds=[],
+                        boardServiceLineIds=[],
                     )
                 )
         return result_board_services
@@ -102,7 +100,7 @@ class PmsBoardServiceService(Component):
                 name=board_service.pms_board_service_id.display_name,
                 roomTypeId=board_service.pms_room_type_id.id,
                 amount=round(board_service.amount),
-                productIds=board_service.board_service_line_ids.mapped("product_id.id"),
+                boardServiceLineIds=board_service.board_service_line_ids.ids,
             )
         else:
             raise MissingError(_("Board Service not found"))
@@ -130,17 +128,19 @@ class PmsBoardServiceService(Component):
                 ]
             )
         result_board_service_lines = []
-        PmsBoardServiceInfo = self.env.datamodels["pms.board.service.line.info"]
+        PmsBoardServiceLineInfo = self.env.datamodels["pms.board.service.line.info"]
         for line in self.env["pms.board.service.room.type.line"].search(
             domain,
         ):
             result_board_service_lines.append(
-                PmsBoardServiceInfo(
+                PmsBoardServiceLineInfo(
                     id=line.id,
                     name=line.pms_board_service_room_type_id.display_name,
                     boardServiceId=line.pms_board_service_room_type_id.id,
                     productId=line.product_id.id,
                     amount=round(line.amount, 2),
+                    isAdults=line.adults,
+                    isChildren=line.children,
                 )
             )
         return result_board_service_lines
