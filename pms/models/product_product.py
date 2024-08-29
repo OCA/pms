@@ -25,34 +25,13 @@ class ProductProduct(models.Model):
 
     @api.depends_context("consumption_date", "board_service_line_id")
     def _compute_board_price(self):
-        pms_property_id = (
-            self.env.context.get("property") or self.env.user.pms_property_ids.ids
-        )
         for record in self:
-            if self._context.get("board_service"):
-                if self._context.get("board_service_line_id"):
-                    record.board_price = (
-                        self.env["pms.board.service.room.type.line"]
-                        .browse(self._context.get("board_service_line_id"))
-                        .amount
-                    )
-                else:
-                    record.board_price = (
-                        self.env["pms.board.service.room.type.line"]
-                        .search(
-                            [
-                                (
-                                    "pms_board_service_room_type_id",
-                                    "=",
-                                    self._context.get("board_service"),
-                                ),
-                                ("product_id", "=", record.id),
-                                ("pms_property_id", "=", pms_property_id),
-                            ],
-                            limit=1,
-                        )
-                        .amount
-                    )
+            if self._context.get("board_service_line_id"):
+                record.board_price = (
+                    self.env["pms.board.service.room.type.line"]
+                    .browse(self._context.get("board_service_line_id"))
+                    .amount
+                )
             else:
                 record.board_price = False
 
@@ -75,7 +54,7 @@ class ProductProduct(models.Model):
     def price_compute(
         self, price_type, uom=False, currency=False, company=None, date=False
     ):
-        if self._context.get("board_service"):
+        if self._context.get("board_service_line_id"):
             price_type = "board_price"
         return super(ProductProduct, self).price_compute(
             price_type, uom, currency, company, date
