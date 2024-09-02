@@ -618,6 +618,23 @@ class PmsFolioService(Component):
             pms_folio_info.reservations, key=lambda x: x.checkout
         ).checkout
         try:
+            if pms_folio_info.externalReference:
+                # If folio exists (external_reference + pms_property_id)
+                # ignore the creation of the folio and log the payload with "duplicate" mensaje
+                folio = self.env["pms.folio"].search(
+                    [
+                        ("external_reference", "=", pms_folio_info.externalReference),
+                        ("pms_property_id", "=", pms_folio_info.pmsPropertyId),
+                        ("agency_id", "=", pms_folio_info.agencyId),
+                    ]
+                )
+                if folio:
+                    _logger.info(
+                        "Folio with external reference %s and property %s already exists",
+                        pms_folio_info.externalReference,
+                        pms_folio_info.pmsPropertyId,
+                    )
+                    raise ValidationError(_("Folio already exists"))
             agency = False
             if pms_folio_info.agencyId:
                 agency = self.env["res.partner"].browse(pms_folio_info.agencyId)
@@ -1758,6 +1775,7 @@ class PmsFolioService(Component):
                 [
                     ("external_reference", "ilike", external_reference),
                     ("pms_property_id", "=", pms_folio_info.pmsPropertyId),
+                    ("agency_id", "=", pms_folio_info.agencyId),
                 ]
             )
             if not folio or len(folio) > 1:
