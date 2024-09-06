@@ -323,7 +323,8 @@ def _handle_request_exception(communication, e):
             if communication.state == "to_send":
                 communication.sending_result = f"Request error: {e}"
             else:
-                communication.processing_result = f"Request error: {e}"
+                communication.processing_result = f"Request error: {e}"    else:
+        communication.sending_result = f"Unexpected error: {e}"
 
 
 class TravellerReport(models.TransientModel):
@@ -1027,6 +1028,24 @@ class TravellerReport(models.TransientModel):
             communication.communication_soap = payload
             communication.communication_time = fields.Datetime.now()
             try:
+                data = False
+                if communication.entity == "RH":
+                    data = self.generate_xml_reservations([communication.reservation_id.id])
+                elif communication.entity == "PV":
+                    data = self.generate_xml_reservations_travellers_report(
+                        [communication.reservation_id.id]
+                    )
+                communication.communication_xml = data
+                data = _string_to_zip_to_base64(data)
+                payload = _generate_payload(
+                    communication.reservation_id.pms_property_id.institution_lessor_id,
+                    communication.operation,
+                    communication.entity,
+                    data,
+                )
+                communication.communication_soap = payload
+                communication.communication_time = fields.Datetime.now()
+
                 soap_response = requests.request(
                     "POST",
                     communication.reservation_id.pms_property_id.ses_url,
@@ -1048,6 +1067,8 @@ class TravellerReport(models.TransientModel):
                     communication.state = "error_sending"
 
             except requests.exceptions.RequestException as e:
+                _handle_request_exception(communication, e)
+            except Exception as e:
                 _handle_request_exception(communication, e)
 
     @api.model
@@ -1075,6 +1096,23 @@ class TravellerReport(models.TransientModel):
             communication.query_status_soap = payload
             communication.query_status_time = fields.Datetime.now()
             try:
+                var_xml_get_batch = f"""
+                    <con:lotes
+                    xmlns:con="http://www.neg.hospedajes.mir.es/consultarComunicacion">
+                        <con:lote>{communication.communication_id}</con:lote>
+                    </con:lotes>
+                """
+                communication.query_status_xml = var_xml_get_batch
+                data = _string_to_zip_to_base64(var_xml_get_batch)
+                payload = _generate_payload(
+                    communication.reservation_id.pms_property_id.institution_lessor_id,
+                    "C",
+                    "",
+                    data,
+                )
+                communication.query_status_soap = payload
+                communication.query_status_time = fields.Datetime.now()
+
                 soap_response = requests.request(
                     "POST",
                     communication.reservation_id.pms_property_id.ses_url,
@@ -1104,6 +1142,8 @@ class TravellerReport(models.TransientModel):
                     communication.state = "error_processing"
                     communication.processing_result = root.find(".//descripcion").text
             except requests.exceptions.RequestException as e:
+                _handle_request_exception(communication, e)
+            except Exception as e:
                 _handle_request_exception(communication, e)
 
     @api.model
@@ -1136,3 +1176,4 @@ class TravellerReport(models.TransientModel):
                 CREATE_OPERATION_CODE,
                 "PV",
             )
+

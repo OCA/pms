@@ -84,6 +84,7 @@ class PmsReservation(models.Model):
                 elif (
                     vals["state"] != "cancel"
                     and last_communication.operation == DELETE_OPERATION_CODE
+                    or not last_communication
                 ):
                     self.create_communication(
                         reservation.id, CREATE_OPERATION_CODE, "RH"
@@ -100,3 +101,4 @@ class PmsReservation(models.Model):
             if record.pms_property_id.institution == "ses":
                 self.create_communication_after_update_reservation(record, vals)
         return super(PmsReservation, self).write(vals)
+
