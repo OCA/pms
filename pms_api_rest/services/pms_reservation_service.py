@@ -516,6 +516,9 @@ class PmsReservationService(Component):
                     isBoardService=service.is_board_service,
                     serviceLines=service_lines,
                     isCancelPenalty=service.is_cancel_penalty,
+                    boardServiceLineId=service.board_service_line_id.id
+                    if service.board_service_line_id
+                    else None,
                 )
             )
         return result_services

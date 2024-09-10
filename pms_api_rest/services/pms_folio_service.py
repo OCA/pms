@@ -835,6 +835,7 @@ class PmsFolioService(Component):
                                 "product_id": service.productId,
                                 "reservation_id": reservation_record.id,
                                 "is_board_service": service.isBoardService,
+                                "board_service_line_id": service.boardServiceLineId,
                                 "service_line_ids": [
                                     (
                                         0,
