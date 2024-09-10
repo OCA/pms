@@ -173,6 +173,6 @@ class PmsPriceService(Component):
                 product_qty=product_qty or 1,
                 date_consumption=date_consumption,
                 board_service_id=board_service.id,
-                board_service_line_ids=line.id,
+                board_service_line_id=line.id,
             )
         return price

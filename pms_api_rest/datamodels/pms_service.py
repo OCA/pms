@@ -19,3 +19,4 @@ class PmsServiceInfo(Datamodel):
     serviceLines = fields.List(NestedModel("pms.service.line.info"))
     priceUnit = fields.Float(required=False, allow_none=True)
     isCancelPenalty = fields.Boolean(required=False, allow_none=True)
+    boardServiceLineId = fields.Integer(required=False, allow_none=True)
