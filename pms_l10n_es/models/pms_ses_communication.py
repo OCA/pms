@@ -44,6 +44,7 @@ class PmsSesCommunication(models.Model):
         default="to_send",
         required=True,
         selection=[
+            ("incomplete", "Incomplete checkin data"),
             ("to_send", "Pending Notification"),
             ("to_process", "Pending Processing"),
             ("error_sending", "Error Sending"),
@@ -51,6 +52,7 @@ class PmsSesCommunication(models.Model):
             ("processed", "Processed"),
         ],
     )
+
     sending_result = fields.Text(
         string="Sending Result",
         help="Notification sending result",

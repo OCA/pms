@@ -90,25 +90,25 @@ def _ses_xml_map_document_type(code):
 
 def _ses_xml_person_names_elements(persona, reservation, checkin_partner):
     if reservation:
-        name = False
+        ses_firstname = False
         if reservation.partner_id.firstname:
-            name = reservation.partner_id.firstname
+            ses_firstname = reservation.partner_id.firstname
         elif reservation.partner_name:
-            name = reservation.partner_name.split(" ")[0]
+            ses_firstname = reservation.partner_name.split(" ")[0]
         _ses_xml_text_element_and_validate(
             persona,
             "nombre",
-            name,
+            ses_firstname,
             _("The reservation does not have a name."),
         )
 
         if reservation.partner_id.lastname:
-            firstname = reservation.partner_id.lastname
+            ses_lastname = reservation.partner_id.lastname
         elif reservation.partner_name and len(reservation.partner_name.split(" ")) > 1:
-            firstname = reservation.partner_name.split(" ")[1]
+            ses_lastname = reservation.partner_name.replace("  ", " ").split(" ")[1]
         else:
-            firstname = "No aplica"
-        ET.SubElement(persona, "apellido1").text = firstname
+            ses_lastname = "No aplica"
+        ET.SubElement(persona, "apellido1").text = ses_lastname
 
     elif checkin_partner:
         _ses_xml_text_element_and_validate(
@@ -242,7 +242,12 @@ def _ses_xml_person_contact_elements(persona, reservation, checkin_partner=False
 
     for contact in contact_methods:
         if contact:
-            tag = "telefono" if "@" not in contact else "correo"
+            if "@" in contact:
+                tag = "correo"
+                contact = contact[0:50]
+            else:
+                tag = "telefono"
+                contact = contact[0:20]
             ET.SubElement(persona, tag).text = contact
             break
     else:
@@ -323,7 +328,8 @@ def _handle_request_exception(communication, e):
             if communication.state == "to_send":
                 communication.sending_result = f"Request error: {e}"
             else:
-                communication.processing_result = f"Request error: {e}"    else:
+                communication.processing_result = f"Request error: {e}"
+    else:
         communication.sending_result = f"Unexpected error: {e}"
 
 
