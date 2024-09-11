@@ -32,8 +32,17 @@ XML_PENDING = "5"
 CREATE_OPERATION_CODE = "A"
 DELETE_OPERATION_CODE = "B"
 
+
 # Disable insecure request warnings
 # requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+
+def clean_string_ses(string):
+    clean_string = re.sub(r"[^a-zA-Z0-9\s]", "", string).upper()
+
+    clean_string = " ".join(clean_string.split())
+
+    return clean_string
 
 
 def _string_to_zip_to_base64(string_data):
@@ -56,7 +65,7 @@ def _ses_xml_payment_elements(contrato, reservation):
     ET.SubElement(pago, "tipoPago").text = tipo_pago
 
 
-def _ses_xml_contract_elements(comunicacion, reservation):
+def _ses_xml_contract_elements(comunicacion, reservation, people=False):
     contrato = ET.SubElement(comunicacion, "contrato")
     ET.SubElement(contrato, "referencia").text = reservation.name
     ET.SubElement(contrato, "fechaContrato").text = str(reservation.date_order)[:10]
@@ -66,7 +75,10 @@ def _ses_xml_contract_elements(comunicacion, reservation):
     ET.SubElement(
         contrato, "fechaSalida"
     ).text = f"{str(reservation.checkout)[:10]}T00:00:00"
-    ET.SubElement(contrato, "numPersonas").text = str(reservation.adults)
+    if people:
+        ET.SubElement(contrato, "numPersonas").text = str(people)
+    else:
+        ET.SubElement(contrato, "numPersonas").text = str(reservation.adults)
     _ses_xml_payment_elements(contrato, reservation)
 
 
@@ -92,9 +104,9 @@ def _ses_xml_person_names_elements(persona, reservation, checkin_partner):
     if reservation:
         ses_firstname = False
         if reservation.partner_id.firstname:
-            ses_firstname = reservation.partner_id.firstname
+            ses_firstname = clean_string_ses(reservation.partner_id.firstname)
         elif reservation.partner_name:
-            ses_firstname = reservation.partner_name.split(" ")[0]
+            ses_firstname = clean_string_ses(reservation.partner_name).split(" ")[0]
         _ses_xml_text_element_and_validate(
             persona,
             "nombre",
@@ -103,9 +115,9 @@ def _ses_xml_person_names_elements(persona, reservation, checkin_partner):
         )
 
         if reservation.partner_id.lastname:
-            ses_lastname = reservation.partner_id.lastname
+            ses_lastname = clean_string_ses(reservation.partner_id.lastname)
         elif reservation.partner_name and len(reservation.partner_name.split(" ")) > 1:
-            ses_lastname = reservation.partner_name.replace("  ", " ").split(" ")[1]
+            ses_lastname = clean_string_ses(reservation.partner_name).split(" ")[1]
         else:
             ses_lastname = "No aplica"
         ET.SubElement(persona, "apellido1").text = ses_lastname
@@ -114,13 +126,13 @@ def _ses_xml_person_names_elements(persona, reservation, checkin_partner):
         _ses_xml_text_element_and_validate(
             persona,
             "nombre",
-            checkin_partner.firstname,
+            clean_string_ses(checkin_partner.firstname),
             _("The guest does not have a name."),
         )
         _ses_xml_text_element_and_validate(
             persona,
             "apellido1",
-            checkin_partner.lastname,
+            clean_string_ses(checkin_partner.lastname),
             _("The guest does not have a lastname."),
         )
 
@@ -128,7 +140,7 @@ def _ses_xml_person_names_elements(persona, reservation, checkin_partner):
             _ses_xml_text_element_and_validate(
                 persona,
                 "apellido2",
-                checkin_partner.partner_id.lastname2,
+                clean_string_ses(checkin_partner.partner_id.lastname2),
                 _("The guest does not have a second lastname."),
             )
 
@@ -758,8 +770,9 @@ class TravellerReport(models.TransientModel):
             )
 
     def send_file_institution(self, pms_property=False, offset=0, date_target=False):
+        called_from_user = False
+        log = False
         try:
-            called_from_user = False
             if not pms_property:
                 called_from_user = True
                 pms_property = self.env["pms.property"].search(
@@ -939,21 +952,23 @@ class TravellerReport(models.TransientModel):
         )
         return self.generate_xml_reservations_travellers_report(reservation_ids)
 
-    def generate_xml_reservation_travellers_report(self, solicitud, reservation_id):
+    def generate_xml_reservation_travellers_report(
+        self, solicitud, reservation_id, people=False
+    ):
         reservation = self.env["pms.reservation"].browse(reservation_id)
         comunicacion = ET.SubElement(solicitud, "comunicacion")
-        _ses_xml_contract_elements(comunicacion, reservation)
-
+        _ses_xml_contract_elements(comunicacion, reservation, people)
         for checkin_partner in reservation.checkin_partner_ids.filtered(
             lambda x: x.state == "onboard"
         ):
             _ses_xml_person_elements(comunicacion, checkin_partner)
 
-    def generate_xml_reservations_travellers_report(self, reservation_ids):
+    def generate_xml_reservations_travellers_report(
+        self, reservation_ids, ignore_some_not_onboard=False
+    ):
         if not reservation_ids:
             raise ValidationError(_("Theres's no reservation to generate the XML"))
-
-        if (
+        elif (
             len(
                 self.env["pms.reservation"]
                 .browse(reservation_ids)
@@ -962,49 +977,64 @@ class TravellerReport(models.TransientModel):
             > 1
         ):
             raise ValidationError(_("The reservations must be from the same property."))
-        if not any(
-            state == "onboard"
+        elif all(
+            state != "onboard"
             for state in self.env["pms.reservation"]
             .browse(reservation_ids)
             .mapped("checkin_partner_ids")
             .mapped("state")
         ):
-            raise ValidationError(
-                _("There are no guests to generate the travellers report.")
+            raise ValidationError(_("There are no guests onboard."))
+        elif not ignore_some_not_onboard and any(
+            state != "onboard"
+            for state in self.env["pms.reservation"]
+            .browse(reservation_ids)
+            .mapped("checkin_partner_ids")
+            .mapped("state")
+        ):
+            raise ValidationError(_("There are some guests not onboard."))
+        else:
+            # SOLICITUD
+            solicitud = ET.Element("solicitud")
+            pms_property = (
+                self.env["pms.reservation"].browse(reservation_ids[0]).pms_property_id
             )
-
-        # SOLICITUD
-        solicitud = ET.Element("solicitud")
-
-        pms_property = (
-            self.env["pms.reservation"].browse(reservation_ids[0]).pms_property_id
-        )
-
-        if not pms_property.institution_property_id:
-            raise ValidationError(
-                _("The property does not have an institution property id.")
-            )
-
-        # SOLICITUD -> CODIGO ESTABLECIMIENTO
-        ET.SubElement(
-            solicitud, "codigoEstablecimiento"
-        ).text = pms_property.institution_property_id
-
-        for reservation_id in reservation_ids:
+            if not pms_property.institution_property_id:
+                raise ValidationError(
+                    _("The property does not have an institution property id.")
+                )
+            # SOLICITUD -> CODIGO ESTABLECIMIENTO
             ET.SubElement(
-                solicitud,
-                self.generate_xml_reservation_travellers_report(
-                    solicitud, reservation_id
-                ),
+                solicitud, "codigoEstablecimiento"
+            ).text = pms_property.institution_property_id
+            for reservation_id in reservation_ids:
+                if ignore_some_not_onboard:
+                    num_people_on_board = len(
+                        self.env["pms.reservation"]
+                        .browse(reservation_id)
+                        .checkin_partner_ids.filtered(lambda x: x.state == "onboard")
+                    )
+                    ET.SubElement(
+                        solicitud,
+                        self.generate_xml_reservation_travellers_report(
+                            solicitud, reservation_id, people=num_people_on_board
+                        ),
+                    )
+                else:
+                    ET.SubElement(
+                        solicitud,
+                        self.generate_xml_reservation_travellers_report(
+                            solicitud,
+                            reservation_id,
+                        ),
+                    )
+            xml_str = ET.tostring(solicitud, encoding="unicode")
+            xml_str = (
+                '<ns2:peticion xmlns:ns2="http://www.neg.hospedajes.mir.es/altaParteHospedaje">'
+                + xml_str
+                + "</ns2:peticion>"
             )
-        xml_str = ET.tostring(solicitud, encoding="unicode")
-
-        xml_str = (
-            '<ns2:peticion xmlns:ns2="http://www.neg.hospedajes.mir.es/altaParteHospedaje">'
-            + xml_str
-            + "</ns2:peticion>"
-        )
-        return xml_str
+            return xml_str
 
     @api.model
     def ses_send_communications(self, entity):
@@ -1015,32 +1045,34 @@ class TravellerReport(models.TransientModel):
                 ("entity", "=", entity),
             ]
         ):
-
             data = False
-            if communication.entity == "RH":
-                data = self.generate_xml_reservations([communication.reservation_id.id])
-            elif communication.entity == "PV":
-                data = self.generate_xml_reservations_travellers_report(
-                    [communication.reservation_id.id]
-                )
-            communication.communication_xml = data
-            data = _string_to_zip_to_base64(data)
-            payload = _generate_payload(
-                communication.reservation_id.pms_property_id.institution_lessor_id,
-                communication.operation,
-                communication.entity,
-                data,
-            )
-            communication.communication_soap = payload
-            communication.communication_time = fields.Datetime.now()
             try:
-                data = False
-                if communication.entity == "RH":
-                    data = self.generate_xml_reservations([communication.reservation_id.id])
-                elif communication.entity == "PV":
-                    data = self.generate_xml_reservations_travellers_report(
-                        [communication.reservation_id.id]
+                if communication.operation == DELETE_OPERATION_CODE:
+                    communication_to_cancel = self.env["pms.ses.communication"].search(
+                        [
+                            ("reservation_id", "=", communication.reservation_id.id),
+                            ("state", "!=", "to_send"),
+                            ("entity", "=", communication.entity),
+                            ("operation", "=", CREATE_OPERATION_CODE),
+                        ]
                     )
+                    data = (
+                        "<anul:comunicaciones "
+                        'xmlns:anul="http://www.neg.hospedajes.mir.es/anularComunicacion">'
+                        + "<anul:codigoComunicacion>"
+                        + communication_to_cancel.communication_id
+                        + "</anul:codigoComunicacion>"
+                        + "</anul:comunicaciones>"
+                    )
+                elif communication.operation == CREATE_OPERATION_CODE:
+                    if communication.entity == "RH":
+                        data = self.generate_xml_reservations(
+                            [communication.reservation_id.id]
+                        )
+                    elif communication.entity == "PV":
+                        data = self.generate_xml_reservations_travellers_report(
+                            [communication.reservation_id.id]
+                        )
                 communication.communication_xml = data
                 data = _string_to_zip_to_base64(data)
                 payload = _generate_payload(
@@ -1057,7 +1089,7 @@ class TravellerReport(models.TransientModel):
                     communication.reservation_id.pms_property_id.ses_url,
                     headers=_get_auth_headers(communication),
                     data=payload,
-                    verify=get_module_resource("pms_l10n_es", "static", "ses_cert.pem"),
+                    verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
                 )
                 root = ET.fromstring(soap_response.text)
                 communication.sending_result = root.find(".//descripcion").text
@@ -1078,6 +1110,70 @@ class TravellerReport(models.TransientModel):
                 _handle_request_exception(communication, e)
 
     @api.model
+    def ses_send_incomplete_traveller_reports(
+        self, hours_after_first_checkin_to_inform
+    ):
+        # iterate through incomplete communications
+        for communication in self.env["pms.ses.communication"].search(
+            [
+                ("state", "=", "incomplete"),
+                ("entity", "=", "PV"),
+            ]
+        ):
+            try:
+                if (
+                    fields.Datetime.now() - communication.create_date
+                ).hours > hours_after_first_checkin_to_inform:
+                    # add a note to the reservation
+                    communication.reservation_id.sudo().message_post(
+                        body=_(
+                            "There was't enough guests in the reservation when data "
+                            "was sent to SES. Sent to SES with onboard guests"
+                        )
+                    )
+                    data = self.generate_xml_reservations_travellers_report(
+                        [communication.reservation_id.id],
+                        ignore_some_not_onboard=True,
+                    )
+                    communication.communication_xml = data
+                    data = _string_to_zip_to_base64(data)
+                    payload = _generate_payload(
+                        communication.reservation_id.pms_property_id.institution_lessor_id,
+                        communication.operation,
+                        communication.entity,
+                        data,
+                    )
+                    communication.communication_soap = payload
+                    communication.communication_time = fields.Datetime.now()
+
+                    soap_response = requests.request(
+                        "POST",
+                        communication.reservation_id.pms_property_id.ses_url,
+                        headers=_get_auth_headers(communication),
+                        data=payload,
+                        verify=get_module_resource(
+                            "pms_l10n_es", "static", "ses_cert.pem"
+                        ),
+                    )
+                    root = ET.fromstring(soap_response.text)
+                    communication.sending_result = root.find(".//descripcion").text
+                    communication.response_communication_soap = soap_response.text
+                    result_code = root.find(".//codigo").text
+                    if result_code == REQUEST_CODE_OK:
+                        communication.communication_id = root.find(".//lote").text
+                        if communication.operation == CREATE_OPERATION_CODE:
+                            communication.state = "to_process"
+                        else:
+                            communication.state = "processed"
+                    else:
+                        communication.state = "error_sending"
+
+            except requests.exceptions.RequestException as e:
+                _handle_request_exception(communication, e)
+            except Exception as e:
+                _handle_request_exception(communication, e)
+
+    @api.model
     def ses_process_communications(self):
         for communication in self.env["pms.ses.communication"].search(
             [
@@ -1085,22 +1181,6 @@ class TravellerReport(models.TransientModel):
                 ("operation", "!=", DELETE_OPERATION_CODE),
             ]
         ):
-            var_xml_get_batch = f"""
-                <con:lotes
-                xmlns:con="http://www.neg.hospedajes.mir.es/consultarComunicacion">
-                    <con:lote>{communication.communication_id}</con:lote>
-                </con:lotes>
-            """
-            communication.query_status_xml = var_xml_get_batch
-            data = _string_to_zip_to_base64(var_xml_get_batch)
-            payload = _generate_payload(
-                communication.reservation_id.pms_property_id.institution_lessor_id,
-                "C",
-                "",
-                data,
-            )
-            communication.query_status_soap = payload
-            communication.query_status_time = fields.Datetime.now()
             try:
                 var_xml_get_batch = f"""
                     <con:lotes
@@ -1182,4 +1262,3 @@ class TravellerReport(models.TransientModel):
                 CREATE_OPERATION_CODE,
                 "PV",
             )
-
