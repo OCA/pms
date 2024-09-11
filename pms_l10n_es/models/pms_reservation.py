@@ -101,4 +101,3 @@ class PmsReservation(models.Model):
             if record.pms_property_id.institution == "ses":
                 self.create_communication_after_update_reservation(record, vals)
         return super(PmsReservation, self).write(vals)
-
