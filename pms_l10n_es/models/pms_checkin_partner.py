@@ -95,7 +95,7 @@ class PmsCheckinPartner(models.Model):
                     "pms.ses.communication"
                 ].search(
                     [
-                        ("reservation_id", "=", record.reservation_id),
+                        ("reservation_id", "=", record.reservation_id.id),
                         ("entity", "=", "PV"),
                         ("operation", "=", CREATE_OPERATION_CODE),
                         ("state", "=", "incomplete"),
@@ -106,7 +106,7 @@ class PmsCheckinPartner(models.Model):
                         "pms.ses.communication"
                     ].create(
                         {
-                            "reservation_id": record.reservation_id,
+                            "reservation_id": record.reservation_id.id,
                             "operation": CREATE_OPERATION_CODE,
                             "entity": "PV",
                             "state": "incomplete",
@@ -116,8 +116,8 @@ class PmsCheckinPartner(models.Model):
                 if (
                     all(
                         [
-                            partner.state == "onboard"
-                            for partner in record.reservation_id.checkin_partner_ids
+                            checkin.state == "onboard"
+                            for checkin in record.reservation_id.checkin_partner_ids
                         ]
                     )
                     and len(record.reservation_id.checkin_partner_ids)
