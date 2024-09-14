@@ -24,22 +24,22 @@ msgid ""
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:ir.actions.server,name:pms_l10n_es.autocreate_traveller_report_com_ir_actions_server
-#: model:ir.cron,cron_name:pms_l10n_es.autocreate_traveller_report_com
-#: model:ir.cron,name:pms_l10n_es.autocreate_traveller_report_com
-msgid ""
-"\n"
-"                SES Automatic Creation Traveller Communications\n"
-"            "
-msgstr ""
-
-#. module: pms_l10n_es
 #: model:ir.actions.server,name:pms_l10n_es.autoprocess_sent_com_ir_actions_server
 #: model:ir.cron,cron_name:pms_l10n_es.autoprocess_sent_com
 #: model:ir.cron,name:pms_l10n_es.autoprocess_sent_com
 msgid ""
 "\n"
 "                SES Automatic Process Sent Communications\n"
+"            "
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.actions.server,name:pms_l10n_es.autosend_incomplete_traveller_report_com_ir_actions_server
+#: model:ir.cron,cron_name:pms_l10n_es.autosend_incomplete_traveller_report_com
+#: model:ir.cron,name:pms_l10n_es.autosend_incomplete_traveller_report_com
+msgid ""
+"\n"
+"                SES Automatic Sending Incomplete Traveller Reports\n"
 "            "
 msgstr ""
 
@@ -418,6 +418,11 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__in_ine
 msgid "In INE"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_ses_communication__state__incomplete
+msgid "Incomplete checkin data"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -1012,7 +1017,21 @@ msgstr ""
 #. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
-msgid "There are no guests to generate the travellers report."
+msgid "There are no guests onboard."
+msgstr ""
+
+#. module: pms_l10n_es
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#, python-format
+msgid "There are some guests not onboard."
+msgstr ""
+
+#. module: pms_l10n_es
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#, python-format
+msgid ""
+"There was't enough guests in the reservation when data was sent to SES. Sent"
+" to SES with onboard guests"
 msgstr ""
 
 #. module: pms_l10n_es
