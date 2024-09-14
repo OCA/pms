@@ -1487,12 +1487,15 @@ class PmsReservation(models.Model):
         "agency_id",
         "reservation_type",
         "out_service_description",
+        "folio_id.partner_name",
     )
     def _compute_partner_name(self):
         for record in self:
             if record.partner_id and record.partner_id != record.agency_id:
                 record.partner_name = record.partner_id.name
-            if record.folio_id and not record.partner_name:
+            if (record.folio_id and not record.partner_name) or (
+                record.folio_id.partner_name != record.partner_name
+            ):
                 record.partner_name = record.folio_id.partner_name
             elif record.agency_id and not record.partner_name:
                 # if the customer not is the agency but we dont know the customer's name,
