@@ -685,6 +685,19 @@ class ResPartner(models.Model):
     #                 )
     #             )
 
+    @api.constrains("residence_state_id", "residence_country_id")
+    def _check_residence_state_id_residence_country_id_consistence(self):
+        for record in self:
+            if record.residence_state_id and record.residence_country_id:
+                if (
+                    record.residence_state_id.country_id
+                    and record.residence_country_id
+                    not in record.residence_state_id.country_id
+                ):
+                    raise ValidationError(
+                        _("State and country of residence do not match")
+                    )
+
     def _search_duplicated(self):
         self.ensure_one()
         partner = False

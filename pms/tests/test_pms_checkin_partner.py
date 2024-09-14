@@ -1558,10 +1558,10 @@ class TestPmsCheckinPartner(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        checkin_partner_id = self.reservation.checkin_partner_ids[0]
+        checkin_partner = self.reservation.checkin_partner_ids[0]
         checkin_partner_vals = {
-            "checkin_partner": checkin_partner_id,
-            "id": checkin_partner_id.id,
+            "checkin_partner": checkin_partner,
+            "id": checkin_partner.id,
             "firstname": "Serafín",
             "lastname": "Rivas",
             "lastname2": "Gonzalez",
@@ -1575,7 +1575,7 @@ class TestPmsCheckinPartner(TestPms):
             "nationality_id": 1,
             "residence_state_id": 1,
         }
-        checkin_partner_id._save_data_from_portal(checkin_partner_vals)
+        checkin_partner._save_data_from_portal(checkin_partner_vals)
         checkin_partner_vals.update(
             {
                 "birthdate_date": datetime.date(1983, 10, 5),
@@ -1615,9 +1615,14 @@ class TestPmsCheckinPartner(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        checkin_partner_id = self.reservation.checkin_partner_ids[0]
-        nationality_id = self.env["res.country"].browse(1)
-        state_id = self.env["res.country.state"].browse(1)
+        checkin_partner = self.reservation.checkin_partner_ids[0]
+        nationality = self.env["res.country"].search(
+            [
+                ("state_ids", "!=", False),
+            ],
+            limit=1,
+        )
+        state = nationality.state_ids[0]
         partner_vals = {
             "firstname": "Paz",
             "lastname": "Valenzuela",
@@ -1627,26 +1632,26 @@ class TestPmsCheckinPartner(TestPms):
             "gender": "female",
             "mobile": "666555444",
             "phone": "123456789",
-            "nationality_id": nationality_id.id,
+            "nationality_id": nationality.id,
             "residence_street": "Calle 123",
             "residence_street2": "Avda. Constitución 123",
             "residence_zip": "15700",
             "residence_city": "City Residence",
-            "residence_country_id": nationality_id.id,
-            "residence_state_id": state_id.id,
+            "residence_country_id": nationality.id,
+            "residence_state_id": state.id,
             # "pms_checkin_partner_ids": checkin_partner_id,
         }
         self.partner_id = self.env["res.partner"].create(partner_vals)
 
         partner_vals.update(
             {
-                "nationality_id": nationality_id,
-                "residence_country_id": nationality_id,
-                "residence_state_id": state_id,
+                "nationality_id": nationality,
+                "residence_country_id": nationality,
+                "residence_state_id": state,
             }
         )
 
-        checkin_partner_id.partner_id = self.partner_id.id
+        checkin_partner.partner_id = self.partner_id.id
         for key in partner_vals:
             if key != "pms_checkin_partner_ids":
                 with self.subTest(k=key):
