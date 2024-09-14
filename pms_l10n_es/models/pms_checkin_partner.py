@@ -2,6 +2,8 @@ import logging
 
 from odoo import api, fields, models
 
+from ..wizards.traveller_report import CREATE_OPERATION_CODE
+
 CODE_SPAIN = "ES"
 CODE_NIF = "D"
 CODE_NIE = "N"
@@ -80,3 +82,47 @@ class PmsCheckinPartner(models.Model):
         manual_fields = super(PmsCheckinPartner, self)._checkin_manual_fields()
         manual_fields.extend(["support_number"])
         return manual_fields
+
+    def write(self, vals):
+        result = super(PmsCheckinPartner, self).write(vals)
+        for record in self:
+            if (
+                "state" in vals
+                and record.reservation_id.pms_property_id.institution == "ses"
+                and record.state == "onboard"
+            ):
+                previous_incomplete_traveller_communication = self.env[
+                    "pms.ses.communication"
+                ].search(
+                    [
+                        ("reservation_id", "=", record.reservation_id.id),
+                        ("entity", "=", "PV"),
+                        ("operation", "=", CREATE_OPERATION_CODE),
+                        ("state", "=", "incomplete"),
+                    ]
+                )
+                if not previous_incomplete_traveller_communication:
+                    previous_incomplete_traveller_communication = self.env[
+                        "pms.ses.communication"
+                    ].create(
+                        {
+                            "reservation_id": record.reservation_id.id,
+                            "operation": CREATE_OPERATION_CODE,
+                            "entity": "PV",
+                            "state": "incomplete",
+                        }
+                    )
+                # check if all checkin partners in the reservation are onboard
+                if (
+                    all(
+                        [
+                            checkin.state == "onboard"
+                            for checkin in record.reservation_id.checkin_partner_ids
+                        ]
+                    )
+                    and len(record.reservation_id.checkin_partner_ids)
+                    == record.reservation_id.adults
+                ):
+                    previous_incomplete_traveller_communication.state = "to_send"
+
+        return result
