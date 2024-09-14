@@ -1,6 +1,7 @@
 import base64
 import calendar
 import datetime
+import math
 import xml.etree.cElementTree as ET
 
 from odoo import _, api, fields, models
@@ -439,8 +440,12 @@ class WizardIne(models.TransientModel):
         domain.extend(total_domain)
         filter_reservations = self.env["pms.reservation.line"].search(domain)
         if len(filter_reservations) > 0:
-            filter_percent = round(
-                len(filter_reservations) * 100 / len(total_reservations), 2
+            filter_percent = len(filter_reservations) * 100 / len(total_reservations)
+            # round to 2 decimals, but if the result is > 0 and < 0.01, return 0.01
+            filter_percent = (
+                math.ceil(filter_percent * 100) / 100
+                if filter_percent < 0.01 and filter_percent > 0
+                else round(filter_percent, 2)
             )
         else:
             filter_percent = 0
@@ -747,12 +752,16 @@ class WizardIne(models.TransientModel):
         if sum_percentages < 100:
             for group in total_groups_domains.keys():
                 if percents[group] > 0:
-                    percents[group] += round(((100 - sum_percentages) * 100) / 100, 2)
+                    percents[group] = round(
+                        percents[group] + ((100 - sum_percentages) * 100) / 100, 2
+                    )
                     break
         elif sum_percentages > 100:
             for group in total_groups_domains.keys():
                 if percents[group] > 0:
-                    percents[group] -= round(((sum_percentages - 100) * 100) / 100, 2)
+                    percents[group] = round(
+                        percents[group] - ((100 - sum_percentages) * 100) / 100, 2
+                    )
                     break
 
         ET.SubElement(prices_tag, "ADR_TOUROPERADOR_TRADICIONAL").text = str(
