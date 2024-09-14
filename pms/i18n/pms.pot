@@ -10237,6 +10237,13 @@ msgid "State"
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/pms_checkin_partner.py:0
+#: code:addons/pms/models/res_partner.py:0
+#, python-format
+msgid "State and country of residence do not match"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_service__invoice_status
 msgid ""
 "State in which the service is with respect to invoices.It can be 'invoiced',"
