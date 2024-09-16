@@ -538,10 +538,9 @@ class PmsFolioService(Component):
                 for reservation in sorted(
                     folio.reservation_ids, key=lambda r: r.folio_sequence
                 ):
-                    reservation_room_type_class_id = (
-                        self.env["pms.room.type.class"]
-                        .browse(reservation.room_type_id.sudo().class_id.id)
-                    )
+                    reservation_room_type_class_id = self.env[
+                        "pms.room.type.class"
+                    ].browse(reservation.room_type_id.sudo().class_id.id)
                     reservations.append(
                         PmsReservationShortInfo(
                             id=reservation.id,
@@ -596,7 +595,7 @@ class PmsFolioService(Component):
                             segmentationId=reservation.segmentation_ids[0].id
                             if reservation.segmentation_ids
                             else None,
-                            isOverNightRoom=reservation.overnight_room
+                            isOverNightRoom=reservation.overnight_room,
                         )
                     )
 
@@ -625,7 +624,7 @@ class PmsFolioService(Component):
             pms_folio_info.reservations, key=lambda x: x.checkout
         ).checkout
         try:
-            if pms_folio_info.externalReference:
+            if pms_folio_info.externalReference and external_app:
                 # If folio exists (external_reference + pms_property_id)
                 # ignore the creation of the folio and log the payload with "duplicate" mensaje
                 folio = self.env["pms.folio"].search(
