@@ -701,7 +701,7 @@ class PmsFolioService(Component):
                     "room_type_id": reservation.roomTypeId,
                     "pms_property_id": pms_folio_info.pmsPropertyId,
                     "pricelist_id": pms_folio_info.pricelistId,
-                    "external_reference": pms_folio_info.externalReference or "normal",
+                    "external_reference": pms_folio_info.externalReference,
                     "board_service_room_id": self.get_board_service_room_type_id(
                         reservation.boardServiceId,
                         reservation.roomTypeId,
