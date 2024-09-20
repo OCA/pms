@@ -11,10 +11,10 @@ class PmsHelpdeskTicket(models.Model):
     _inherit = "helpdesk.ticket"
 
     pms_property_id = fields.Many2one(
-        comodel_name="pms.property",
-        string="Property",
-        domain="[('company_id', '=', company_id)]",
-        help="The property associated with this ticket",
+        'pms.property',
+        string="PMS Property",
+        help="The property linked to this ticket.",
+        required=True,
     )
     room_id = fields.Many2one(
         comodel_name="pms.room",
@@ -24,29 +24,32 @@ class PmsHelpdeskTicket(models.Model):
         widget="many2one_tags",
     )
 
+    @api.model
+    def _get_default_pms_property(self):
+        user = self.env.user
+        active_property_ids = user.get_active_property_ids()
+        if active_property_ids:
+            return active_property_ids[0]  
+        return None
+
     @api.onchange("company_id")
     def _onchange_company_id(self):
         if self.company_id:
             allowed_pms_property_ids = self.env.user.get_active_property_ids()
+            if self.pms_property_id and self.pms_property_id.company_id != self.company_id:
+                self.pms_property_id = False
+
             return {
-                "domain": {"pms_property_id": [("id", "in", allowed_pms_property_ids)]}
+                "domain": {
+                    "pms_property_id": [
+                        ("id", "in", allowed_pms_property_ids),
+                        ("company_id", "=", self.company_id.id),
+                    ]
+                }
             }
         else:
+            self.pms_property_id = False  # Reinicia la propiedad si no hay compañía seleccionada
             return {"domain": {"pms_property_id": []}}
-
-    @api.constrains("company_id", "pms_property_id")
-    def _check_property_company_consistency(self):
-        for record in self:
-            if (
-                record.pms_property_id
-                and record.pms_property_id.company_id != record.company_id
-            ):
-                raise UserError(
-                    _(
-                        "The selected property does not belong to the selected company. "
-                        "Please select a property that belongs to the correct company."
-                    )
-                )
 
     @api.onchange("pms_property_id")
     def _onchange_property_id(self):
@@ -60,3 +63,9 @@ class PmsHelpdeskTicket(models.Model):
             return {"domain": {"room_id": [("id", "in", room_ids)]}}
         else:
             return {"domain": {"room_id": []}}
+
+
+    def write(self, vals):
+        if 'partner_id' not in vals or not vals.get('partner_id'):
+            vals['partner_id'] = self.env.uid 
+        return super(PmsHelpdeskTicket, self).write(vals)

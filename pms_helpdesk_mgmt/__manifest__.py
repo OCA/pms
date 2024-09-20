@@ -15,6 +15,7 @@
     "data": [
         "views/helpdesk_ticket_views.xml",
         "views/helpdesk_ticket_templates.xml",
+        "securitty/helpdesk_security_pms.xml",
     ],
     "demo": ["demo/helpdesk_demo.xml"],
     "assets": {
