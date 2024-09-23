@@ -88,8 +88,23 @@ msgid ""
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__ab
+msgid "Abuelo/a"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__ine_seats
 msgid "Beds available excluding extra beds"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__ba
+msgid "Bisabuelo/a"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__bn
+msgid "Bisnieto/a"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -188,6 +203,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__create_date
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__create_date
 msgid "Created on"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__cd
+msgid "Cuñado/a"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__cy
+msgid "Cónyuge"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -353,6 +378,16 @@ msgstr ""
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.view_property_form_pms_l10n_es
 msgid "Guest information sending settings"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__hr
+msgid "Hermano"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__hj
+msgid "Hijo/a"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -538,6 +573,11 @@ msgid "New communication"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__ni
+msgid "Nieto/a"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__processing_result
 msgid "Notification processing result"
 msgstr ""
@@ -555,6 +595,16 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__operation
 msgid "Operation of the communication"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__ot
+msgid "Otro"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__pm
+msgid "Padre o Madre"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -634,6 +684,11 @@ msgstr ""
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__ine_tourism_number
 msgid ""
 "Registration number in the Ministry of Tourism. Used for INE statistics."
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__ses_related_checkin_partner_id
+msgid "Related checkin partner"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -760,8 +815,18 @@ msgid "Sent succesfully!"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__ses_partners_relationship
+msgid "Ses Partners Relationship"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_log_institution_traveller_report_view_tree
 msgid "Size"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__sb
+msgid "Sobrino/a"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -791,6 +856,11 @@ msgstr ""
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "Successful file sending"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__sg
+msgid "Suegro/a"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -1076,6 +1146,11 @@ msgid "Travellers ReporttravellersReservations Report"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__tu
+msgid "Tutor/a"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__txt_filename
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__txt_filename
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__txt_filename
@@ -1085,6 +1160,11 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category__type
 msgid "Type"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__ti
+msgid "Tío/a"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -1133,4 +1213,9 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__query_status_xml
 msgid "XML query status content communication"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__yn
+msgid "Yerno o Nuera"
 msgstr ""
