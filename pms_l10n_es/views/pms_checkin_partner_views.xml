@@ -8,6 +8,10 @@
             <xpath expr="//field[@name='document_expedition_date']" position="after">
                 <field name="support_number" />
             </xpath>
+            <xpath expr="//field[@name='signature']" position="before">
+                <field name="ses_related_checkin_partner_id" />
+                <field name="ses_partners_relationship" />
+            </xpath>
         </field>
     </record>
 </odoo>
