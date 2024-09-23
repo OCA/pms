@@ -22,6 +22,33 @@ class PmsCheckinPartner(models.Model):
         compute="_compute_support_number",
     )
 
+    ses_partners_relationship = fields.Selection(
+        selection=[
+            ("AB", "Abuelo/a"),
+            ("BA", "Bisabuelo/a"),
+            ("BN", "Bisnieto/a"),
+            ("CD", "Cuñado/a"),
+            ("CY", "Cónyuge"),
+            ("HJ", "Hijo/a"),
+            ("HR", "Hermano"),
+            ("NI", "Nieto/a"),
+            ("PM", "Padre o Madre"),
+            ("SB", "Sobrino/a"),
+            ("SG", "Suegro/a"),
+            ("TI", "Tío/a"),
+            ("YN", "Yerno o Nuera"),
+            ("TU", "Tutor/a"),
+            ("OT", "Otro"),
+        ],
+        required=False,
+    )
+
+    ses_related_checkin_partner_id = fields.Many2one(
+        comodel_name="pms.checkin.partner",
+        string="Related checkin partner",
+        required=False,
+    )
+
     @api.depends("partner_id")
     def _compute_support_number(self):
         for record in self:
