@@ -4327,11 +4327,6 @@ msgid "Extra beds can't be greater than allowed beds for this room"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__partner_relationship
-msgid "Family relationship between travelers"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_checkin_partner__gender__female
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid "Female"
@@ -7636,11 +7631,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__partner_name
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__partner_name
 msgid "Partner name"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__partner_relationship
-msgid "Partner relationship"
 msgstr ""
 
 #. module: pms
