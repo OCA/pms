@@ -138,17 +138,6 @@ class PmsServiceLine(models.Model):
         readonly=False,
         store=True,
     )
-    default_invoice_to = fields.Many2one(
-        string="Invoice to",
-        help="""Indicates the contact to which this line will be
-        billed by default, if it is not established,
-        a guest or the generic contact will be used instead""",
-        comodel_name="res.partner",
-        store=True,
-        index=True,
-        related="service_id.default_invoice_to",
-        ondelete="restrict",
-    )
 
     @api.depends("day_qty", "discount", "price_unit", "tax_ids")
     def _compute_day_amount_service(self):

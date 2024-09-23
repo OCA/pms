@@ -28,7 +28,6 @@
                             force_save="1"
                         />
                         <field name="sale_channel_origin_id" />
-                        <field name="default_invoice_to" />
                     </group>
 
                     <field name="tax_ids" widget="many2many_tags" invisible="1" />
@@ -90,7 +89,6 @@
                     force_save="1"
                 />
                 <field name="sale_channel_origin_id" />
-                <field name="default_invoice_to" />
                 <button
                     type="object"
                     class="oe_stat_button"

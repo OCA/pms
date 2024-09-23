@@ -346,15 +346,6 @@ class FolioSaleLine(models.Model):
         store=True,
         compute="_compute_date_order",
     )
-    default_invoice_to = fields.Many2one(
-        string="Invoice to",
-        help="""Indicates the contact to which this line will be
-        billed by default, if it is not established,
-        a guest or the generic contact will be used instead""",
-        comodel_name="res.partner",
-        ondelete="restrict",
-        index=True,
-    )
     autoinvoice_date = fields.Date(
         string="Autoinvoice Date",
         compute="_compute_autoinvoice_date",
@@ -424,7 +415,6 @@ class FolioSaleLine(models.Model):
                 record.date_order = 0
 
     @api.depends(
-        "default_invoice_to",
         "invoice_status",
         "folio_id.last_checkout",
         "reservation_id.checkout",
@@ -436,7 +426,6 @@ class FolioSaleLine(models.Model):
 
     def _get_to_invoice_date(self):
         self.ensure_one()
-        partner = self.default_invoice_to
         if self.reservation_id:
             last_checkout = self.reservation_id.checkout
         elif self.service_id and self.service_id.reservation_id:
@@ -445,26 +434,14 @@ class FolioSaleLine(models.Model):
             last_checkout = self.folio_id.last_checkout
         if not last_checkout:
             return False
-        invoicing_policy = (
-            self.folio_id.pms_property_id.default_invoicing_policy
-            if not partner or partner.invoicing_policy == "property"
-            else partner.invoicing_policy
-        )
+        invoicing_policy = self.folio_id.pms_property_id.default_invoicing_policy
         if invoicing_policy == "manual":
             return False
         if invoicing_policy == "checkout":
-            margin_days = (
-                self.folio_id.pms_property_id.margin_days_autoinvoice
-                if not partner or partner.invoicing_policy == "property"
-                else partner.margin_days_autoinvoice
-            )
+            margin_days = self.folio_id.pms_property_id.margin_days_autoinvoice
             return last_checkout + timedelta(days=margin_days)
         if invoicing_policy == "month_day":
-            month_day = (
-                self.folio_id.pms_property_id.invoicing_month_day
-                if not partner or partner.invoicing_policy == "property"
-                else partner.invoicing_month_day
-            )
+            month_day = self.folio_id.pms_property_id.invoicing_month_day
             if last_checkout.day <= month_day:
                 return last_checkout.replace(day=month_day)
             else:

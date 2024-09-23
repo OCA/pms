@@ -142,33 +142,27 @@ class ResPartner(models.Model):
         readonly=False,
         store=True,
         index=True,
-        compute="_compute_country_id",
     )
     state_id = fields.Many2one(
         readonly=False,
         store=True,
         index=True,
-        compute="_compute_state_id",
     )
     city = fields.Char(
         readonly=False,
         store=True,
-        compute="_compute_city",
     )
     street = fields.Char(
         readonly=False,
         store=True,
-        compute="_compute_street",
     )
     street2 = fields.Char(
         readonly=False,
         store=True,
-        compute="_compute_street2",
     )
     zip = fields.Char(
         readonly=False,
         store=True,
-        compute="_compute_zip",
     )
     comment = fields.Text(
         tracking=True,
@@ -473,63 +467,6 @@ class ResPartner(models.Model):
                 if last_update_lastname2 and last_update_lastname2[0].lastname2:
                     record.lastname2 = last_update_lastname2[0].lastname2
 
-    @api.depends("id_numbers")
-    def _compute_country_id(self):
-        if hasattr(super(), "_compute_country_id"):
-            super()._compute_country_id()
-        for record in self:
-            if (
-                not record.parent_id
-                and not record.country_id
-                and record.id_numbers
-                and record.id_numbers.country_id
-            ):
-                record.country_id = record.id_numbers[0].country_id
-
-    @api.depends("residence_state_id")
-    def _compute_state_id(self):
-        if hasattr(super(), "_compute_state_id"):
-            super()._compute_state_id()
-        for record in self:
-            if (
-                not record.parent_id
-                and not record.state_id
-                and record.residence_state_id
-            ):
-                record.state_id = record.residence_state_id
-
-    @api.depends("residence_city")
-    def _compute_city(self):
-        if hasattr(super(), "_compute_city"):
-            super()._compute_city()
-        for record in self:
-            if not record.parent_id and not record.city and record.residence_city:
-                record.city = record.residence_city
-
-    @api.depends("residence_street")
-    def _compute_street(self):
-        if hasattr(super(), "_compute_street"):
-            super()._compute_street()
-        for record in self:
-            if not record.parent_id and not record.street and record.residence_street:
-                record.street = record.residence_street
-
-    @api.depends("residence_street2")
-    def _compute_street2(self):
-        if hasattr(super(), "_compute_street2"):
-            super()._compute_street2()
-        for record in self:
-            if not record.parent_id and not record.street2 and record.residence_street2:
-                record.street2 = record.residence_street2
-
-    @api.depends("residence_zip")
-    def _compute_zip(self):
-        if hasattr(super(), "_compute_zip"):
-            super()._compute_zip()
-        for record in self:
-            if not record.parent_id and not record.zip and record.residence_zip:
-                record.zip = record.residence_zip
-
     def _compute_reservations_count(self):
         # Return reservation with partner included in reservation and/or checkin
         pms_reservation_obj = self.env["pms.reservation"]
@@ -670,6 +607,14 @@ class ResPartner(models.Model):
             if not record.is_agency and record.sale_channel_id:
                 record.sale_channel_id = None
 
+    # @api.constrains("vat", "country_id", "parent_id", "user_ids", "aeat_identification_type", "aeat_identification", "id_numbers", "pms_checkin_partner_ids")
+    # def _check_missing_document(self):
+    #     for record in self:
+    #         if not record.vat and not record.parent_id and not record.user_ids and not record.aeat_identification and not record.id_numbers and not record.pms_checkin_partner_ids:
+    #             raise models.ValidationError(
+    #                 _("Partner must have a VAT number or a parent or a user")
+    #             )
+
     # REVIEW: problems with odoo demo data
     # @api.constrains("mobile", "email")
     # def _check_duplicated(self):
@@ -734,74 +679,8 @@ class ResPartner(models.Model):
 
     @api.model
     def create(self, values):
-        check_missing_document = self._check_document_partner_required(values)
-        if check_missing_document:
-            raise ValidationError(_("A document identification is required"))
-
-        return super(ResPartner, self).create(values)
-
-    def write(self, vals):
-        check_missing_document = self._check_document_partner_required(
-            vals, partners=self
-        )
-        if check_missing_document:
-            # REVIEW: Deactivate this check for now, because it can generate problems
-            # with other modules that update technical partner fields
-            _logger.warning(
-                _("Partner without document identification, update vals %s"), vals
-            )
-            # We only check if the vat or document_number is updated
-            if "vat" in vals or "document_number" in vals:
-                raise ValidationError(_("A document identification is required"))
-        return super().write(vals)
-
-    @api.model
-    def _check_document_partner_required(self, vals, partners=False):
-        company_ids = (
-            self.env["res.company"].sudo().search([]).ids
-            if (not partners or any([not partner.company_id for partner in partners]))
-            else partners.mapped("company_id.id")
-        )
-        if not self.env.context.get("avoid_document_restriction") and any(
-            [
-                self.env["res.company"]
-                .sudo()
-                .browse(company_id)
-                .document_partner_required
-                for company_id in company_ids
-            ]
-        ):
-            return self._missing_document(vals, partners)
-        return False
-
-    @api.model
-    def _missing_document(self, vals, partners=False):
-        # If not is a partner contact and not have vat, then return missing document True
-        if (
-            not vals.get("parent_id")
-            or (partners and any([not partner.parent_id for partner in partners]))
-        ) and (
-            vals.get("vat") is False
-            or vals.get("vat") == ""
-            or (
-                "vat" not in vals
-                and (
-                    any([not partner.vat for partner in partners]) if partners else True
-                )
-            )
-            or vals.get("country_id") is False
-            or vals.get("country_id") == ""
-            or (
-                "country_id" not in vals
-                and (
-                    any([not partner.country_id for partner in partners])
-                    if partners
-                    else True
-                )
-            )
-        ):
-            return True
-        return False
+        super(ResPartner, self).create(values)
+        # self._check_missing_document()
 
     @api.constrains("is_agency", "property_product_pricelist")
     def _check_agency_pricelist(self):
