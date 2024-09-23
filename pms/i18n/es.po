@@ -5261,11 +5261,6 @@ msgstr ""
 "para esta habitación."
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__partner_relationship
-msgid "Family relationship between travelers"
-msgstr "Relación familiar entre viajeros"
-
-#. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_checkin_partner__gender__female
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid "Female"
@@ -8693,11 +8688,6 @@ msgstr "País de residencia del socio"
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__partner_name
 msgid "Partner name"
 msgstr "nombre"
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__partner_relationship
-msgid "Partner relationship"
-msgstr "Relación con el socio"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__residence_state_id
@@ -13745,6 +13735,12 @@ msgstr ""
 "independiente,\n"
 "                                puede seleccionarlo en el asistente de "
 "facturación"
+
+#~ msgid "Family relationship between travelers"
+#~ msgstr "Relación familiar entre viajeros"
+
+#~ msgid "Partner relationship"
+#~ msgstr "Relación con el socio"
 
 #, python-format
 #~ msgid ""
