@@ -282,10 +282,6 @@ class PmsCheckinPartner(models.Model):
         inverse_name="checkin_partner_possible_customer_id",
     )
 
-    partner_relationship = fields.Char(
-        string="Partner relationship", help="Family relationship between travelers"
-    )
-
     signature = fields.Image(
         string="Signature",
         help="Signature of the guest",
