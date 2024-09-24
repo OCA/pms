@@ -1,7 +1,4 @@
-import uuid
-
-from odoo import api, fields, models
-from odoo.tools.safe_eval import time
+from odoo import fields, models
 
 
 class PmsCheckinPartner(models.Model):
