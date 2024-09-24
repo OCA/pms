@@ -16,6 +16,24 @@ from odoo.addons.pms_api_rest.pms_api_rest_utils import url_image_pms_api_rest
 from odoo.addons.portal.controllers.portal import CustomerPortal
 
 
+def is_adult(birthdate):
+    if not birthdate:
+        return False
+    today = datetime.now()
+    age = (
+        today.year
+        - birthdate.year
+        - ((today.month, today.day) < (birthdate.month, birthdate.day))
+    )
+    return age >= 18
+
+
+def remove_html_tags(text):
+    pattern = re.compile(r"<.*?>")
+    text_clean = re.sub(pattern, "", text)
+    return text_clean
+
+
 class PmsReservationService(Component):
     _inherit = "base.rest.service"
     _name = "pms.reservation.service"
@@ -25,332 +43,6 @@ class PmsReservationService(Component):
     # ------------------------------------------------------------------------------------
     # HEAD RESERVATION--------------------------------------------------------------------
     # ------------------------------------------------------------------------------------
-    @restapi.method(
-        [
-            (
-                [
-                    "/<int:reservation_id>/precheckin/<string:token>",
-                ],
-                "GET",
-            )
-        ],
-        output_param=Datamodel("pms.folio.public.info", is_list=False),
-        auth="public",
-    )
-    def get_reservation_public_info(self, reservation_id, token):
-        # variable initialization
-        folio_room_types_description_list = list()
-        folio_checkin_partner_names = list()
-        num_checkins = 0
-
-        # check if the folio exists
-        reservation_record = (
-            self.env["pms.reservation"]
-            .sudo()
-            .browse(reservation_id)
-        )
-        if not reservation_record.exists():
-            raise MissingError(_("Reservation not found"))
-
-        # check if the reservation is accessible
-        try:
-            reservation_record = CustomerPortal._document_check_access(
-                self,
-                "pms.reservation",
-                reservation_id,
-                access_token=token,
-            )
-        except AccessError:
-            raise MissingError(_("Reservation not found"))
-
-        reservation_checkin_partner_names = []
-        reservation_checkin_partners = []
-        num_checkins += len(reservation_record.checkin_partner_ids)
-        folio_room_types_description_list.append(reservation_record.room_type_id.name)
-
-        # iterate checkin partner names completed
-        for checkin_partner in reservation_record.checkin_partner_ids:
-            reservation_checkin_partners.append(
-                self.env.datamodels["pms.checkin.partner.info"](
-                    id=checkin_partner.id,
-                    checkinPartnerState=checkin_partner.state,
-                )
-            )
-            is_mandatory_fields = True
-            for field in self.env["pms.checkin.partner"]._checkin_mandatory_fields():
-                if not getattr(checkin_partner, field):
-                    is_mandatory_fields = False
-                    break
-            if is_mandatory_fields:
-                reservation_checkin_partner_names.append(checkin_partner.firstname)
-                folio_checkin_partner_names.append(checkin_partner.firstname)
-
-        # append reservation public info
-        reservations = [
-            self.env.datamodels["pms.reservation.public.info"](
-                roomTypeName=reservation_record.room_type_id.name,
-                checkinNamesCompleted=reservation_checkin_partner_names,
-                nights=reservation_record.nights,
-                checkin=datetime.combine(
-                    reservation_record.checkin, datetime.min.time()
-                ).isoformat(),
-                checkout=datetime.combine(
-                    reservation_record.checkout, datetime.min.time()
-                ).isoformat(),
-                adults=reservation_record.adults,
-                children=reservation_record.children,
-                reservationReference=reservation_record.name,
-                checkinPartners=reservation_checkin_partners,
-                reservationAmount=reservation_record.price_total,
-            )
-        ]
-
-        return self.env.datamodels["pms.folio.public.info"](
-            pmsPropertyName=reservation_record.pms_property_id.name,
-            pmsPropertyStreet=reservation_record.pms_property_id.street,
-            pmsPropertyCity=reservation_record.pms_property_id.city,
-            pmsPropertyState=reservation_record.pms_property_id.state_id.name,
-            pmsPropertyPhoneNumber=reservation_record.pms_property_id.phone,
-            pmsPropertyLogo=url_image_pms_api_rest(
-                "pms.property",
-                reservation_record.pms_property_id.id,
-                "logo",
-            ),
-            pmsPropertyImage=url_image_pms_api_rest(
-                "pms.property",
-                reservation_record.pms_property_id.id,
-                "hotel_image_pms_api_rest",
-            ),
-            pmsPropertyIsOCRAvailable=True
-            if reservation_record.pms_property_id.ocr_checkin_supplier
-            else False,
-            pmsPropertyId=reservation_record.pms_property_id.id,
-            folioPartnerName=reservation_record.folio_id.partner_name,
-            reservations=reservations,
-            cardexWarning=reservation_record.pms_property_id.cardex_warning
-            if reservation_record.pms_property_id.cardex_warning
-            else "",
-        )
-
-    @restapi.method(
-        [
-            (
-                [
-                    "/<int:reservation_id>/precheckin-reservation/<string:token>"
-                    "/partner/<string:documentType>/<string:documentNumber>",
-                ],
-                "GET",
-            )
-        ],
-        output_param=Datamodel("pms.partner.info", is_list=True),
-        auth="public",
-    )
-    def get_checkin_partner_by_doc_number(
-        self, reservation_id, token, document_type, document_number
-    ):
-        reservation_record = (
-            self.env["pms.reservation"]
-            .sudo()
-            .browse(reservation_id)
-        )
-        if not reservation_record:
-            raise MissingError(_("Folio not found"))
-        # check if the reservation is accessible
-        try:
-            CustomerPortal._document_check_access(
-                self,
-                "pms.reservation",
-                reservation_record.id,
-                access_token=token,
-            )
-        except AccessError:
-            raise MissingError(_("Reservation not found"))
-
-        doc_type = (
-            self.env["res.partner.id_category"]
-            .sudo()
-            .search([("id", "=", document_type)])
-        )
-        # Clean Document number
-        document_number = re.sub(r"[^a-zA-Z0-9]", "", document_number).upper()
-        partner = (
-            self.env["pms.checkin.partner"]
-            .sudo()
-            ._get_partner_by_document(document_number, doc_type)
-        )
-        partners = []
-        if partner:
-            doc_record = partner.id_numbers.filtered(
-                lambda doc: doc.category_id.id == doc_type.id
-            )
-            PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
-
-            document_numbers_in_reservation = (
-                reservation_record.checkin_partner_ids.filtered(
-                    lambda x: x.document_type.id == doc_type.id
-                    and x.document_number == document_number
-                )
-            )
-
-            partners.append(
-                PmsCheckinPartnerInfo(
-                    # partner id
-                    id=partner.id,
-                    # names
-                    firstname="#" if partner.firstname else None,
-                    lastname="#" if partner.lastname else None,
-                    lastname2="#" if partner.lastname2 else None,
-                    # contact
-                    email="#" if partner.email else None,
-                    mobile="#" if partner.mobile else None,
-                    # document info
-                    documentCountryId=doc_record.country_id.id
-                    if doc_record.country_id.id
-                    else None,
-                    documentType=doc_type.id if doc_type.id else None,
-                    documentNumber="#" if doc_record.name else None,
-                    documentExpeditionDate=datetime.utcfromtimestamp(0).isoformat()
-                    if doc_record.valid_from
-                    else None,
-                    documentSupportNumber="#" if doc_record.support_number else None,
-                    # personal info
-                    gender="#" if partner.gender else None,
-                    birthdate=datetime.utcfromtimestamp(0).isoformat()
-                    if partner.birthdate_date
-                    else None,
-                    # nationality
-                    nationality=-1 if partner.nationality_id.id else None,
-                    # residence info
-                    countryId=partner.residence_country_id
-                    if partner.residence_country_id
-                    else None,
-                    residenceStreet="#" if partner.residence_street else None,
-                    zip="#" if partner.residence_zip else None,
-                    residenceCity="#" if partner.residence_city else None,
-                    countryState=-1 if partner.residence_state_id.id else None,
-                    # is already in reservation
-                    isAlreadyInReservation=True
-                    if document_numbers_in_reservation
-                    else False,
-                )
-            )
-        return partners
-
-    @restapi.method(
-        [
-            (
-                [
-                    "/<int:reservation_id>/precheckin-reservation/<string:token>"
-                    "/checkin-partners/<int:checkin_partner_id>",
-                ],
-                "PATCH",
-            )
-        ],
-        input_param=Datamodel("pms.checkin.partner.info", is_list=False),
-        auth="public",
-    )
-    def patch_checkin_partner(
-        self, reservation_id, token, checkin_partner_id, pms_checkin_partner_info
-    ):
-        reservation_record = (
-            self.env["pms.reservation"]
-            .sudo()
-            .browse(reservation_id)
-        )
-        if not reservation_record:
-            raise MissingError(_("Folio not found"))
-        # check if the reservation is accessible
-        try:
-            CustomerPortal._document_check_access(
-                self,
-                "pms.reservation",
-                reservation_record.id,
-                access_token=token,
-            )
-        except AccessError:
-            raise MissingError(_("Reservation not found"))
-
-        partner_record = False
-        # search checkin partner by id
-        checkin_partner_record = (
-            self.env["pms.checkin.partner"].sudo().browse(checkin_partner_id)
-        )
-        if pms_checkin_partner_info.partnerId:
-            # search partner by api_rest_id
-            partner_record = (
-                self.env["res.partner"]
-                .sudo()
-                .browse(pms_checkin_partner_info.partnerId)
-            )
-
-        # partner
-        if partner_record:
-            checkin_partner_record.partner_id = partner_record.id
-        # document info
-        if pms_checkin_partner_info.documentCountryId:
-            checkin_partner_record.document_country_id = (
-                pms_checkin_partner_info.documentCountryId
-            )
-        if (
-            pms_checkin_partner_info.documentNumber
-            and pms_checkin_partner_info.documentType
-        ):
-            checkin_partner_record.write(
-                {
-                    "document_type": pms_checkin_partner_info.documentType,
-                    "document_number": pms_checkin_partner_info.documentNumber,
-                }
-            )
-        if pms_checkin_partner_info.documentExpeditionDate:
-            checkin_partner_record.document_expedition_date = (
-                pms_checkin_partner_info.documentExpeditionDate
-            )
-        if pms_checkin_partner_info.documentSupportNumber:
-            checkin_partner_record.support_number = (
-                pms_checkin_partner_info.documentSupportNumber
-            )
-        # name
-        if pms_checkin_partner_info.firstname:
-            checkin_partner_record.firstname = pms_checkin_partner_info.firstname
-        if pms_checkin_partner_info.lastname:
-            checkin_partner_record.lastname = pms_checkin_partner_info.lastname
-        if pms_checkin_partner_info.lastname2:
-            checkin_partner_record.lastname2 = pms_checkin_partner_info.lastname2
-        # personal info
-        if pms_checkin_partner_info.birthdate:
-            checkin_partner_record.birthdate_date = pms_checkin_partner_info.birthdate
-        if pms_checkin_partner_info.gender:
-            checkin_partner_record.gender = pms_checkin_partner_info.gender
-        # nationality
-        if pms_checkin_partner_info.nationality:
-            checkin_partner_record.nationality_id = pms_checkin_partner_info.nationality
-        # residence info
-        if pms_checkin_partner_info.countryId:
-            checkin_partner_record.residence_country_id = (
-                pms_checkin_partner_info.countryId
-            )
-        if pms_checkin_partner_info.zip:
-            checkin_partner_record.residence_zip = pms_checkin_partner_info.zip
-        if pms_checkin_partner_info.residenceCity:
-            checkin_partner_record.residence_city = (
-                pms_checkin_partner_info.residenceCity
-            )
-        if pms_checkin_partner_info.countryState:
-            checkin_partner_record.residence_state_id = (
-                pms_checkin_partner_info.countryState
-            )
-        if pms_checkin_partner_info.residenceStreet:
-            checkin_partner_record.residence_street = (
-                pms_checkin_partner_info.residenceStreet
-            )
-        # contact
-        if pms_checkin_partner_info.email:
-            checkin_partner_record.email = pms_checkin_partner_info.email
-        if pms_checkin_partner_info.mobile:
-            checkin_partner_record.mobile = pms_checkin_partner_info.mobile
-        # signature
-        if pms_checkin_partner_info.signature:
-            checkin_partner_record.signature = pms_checkin_partner_info.signature
 
     @restapi.method(
         [
@@ -978,6 +670,7 @@ class PmsReservationService(Component):
     def write_reservation_checkin_partner(
         self, reservation_id, checkin_partner_id, pms_checkin_partner_info
     ):
+        print(pms_checkin_partner_info)
         checkin_partner = self.env["pms.checkin.partner"].search(
             [("id", "=", checkin_partner_id), ("reservation_id", "=", reservation_id)]
         )
@@ -1297,6 +990,10 @@ class PmsReservationService(Component):
             vals.update({"signature": base64.b64encode(signature_image)})
         else:
             vals.update({"signature": False})
+        if pms_checkin_partner_info.relationship != '':
+            vals.update({"ses_partners_relationship": pms_checkin_partner_info.relationship})
+        if pms_checkin_partner_info.responsibleCheckinPartnerId:
+            vals.update({"ses_related_checkin_partner_id": pms_checkin_partner_info.responsibleCheckinPartnerId})
         return vals
 
     @restapi.method(
@@ -1698,3 +1395,421 @@ class PmsReservationService(Component):
             title="",
             text="",
         )
+
+    # PUBLIC ENDPOINTS
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:reservation_id>/precheckin/<string:token>",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.folio.public.info", is_list=False),
+        auth="public",
+    )
+    def get_reservation_public_info(self, reservation_id, token):
+        # variable initialization
+        folio_room_types_description_list = list()
+        folio_checkin_partner_names = list()
+        num_checkins = 0
+
+        # check if the folio exists
+        reservation_record = self.env["pms.reservation"].sudo().browse(reservation_id)
+        if not reservation_record.exists():
+            raise MissingError(_("Reservation not found"))
+
+        # check if the reservation is accessible
+        try:
+            reservation_record = CustomerPortal._document_check_access(
+                self,
+                "pms.reservation",
+                reservation_id,
+                access_token=token,
+            )
+        except AccessError:
+            raise MissingError(_("Reservation not found"))
+
+        reservation_checkin_partner_names = []
+        reservation_checkin_partners = []
+        num_checkins += len(reservation_record.checkin_partner_ids)
+        folio_room_types_description_list.append(reservation_record.room_type_id.name)
+
+        # iterate checkin partner names completed
+        for checkin_partner in reservation_record.checkin_partner_ids:
+            reservation_checkin_partners.append(
+                self.env.datamodels["pms.checkin.partner.info"](
+                    id=checkin_partner.id,
+                    checkinPartnerState=checkin_partner.state,
+                )
+            )
+            is_mandatory_fields = True
+            for field in self.env["pms.checkin.partner"]._checkin_mandatory_fields():
+                if not getattr(checkin_partner, field):
+                    is_mandatory_fields = False
+                    break
+            if is_mandatory_fields:
+                reservation_checkin_partner_names.append(checkin_partner.firstname)
+                folio_checkin_partner_names.append(checkin_partner.firstname)
+
+        # append reservation public info
+        reservations = [
+            self.env.datamodels["pms.reservation.public.info"](
+                roomTypeName=reservation_record.room_type_id.name,
+                checkinNamesCompleted=reservation_checkin_partner_names,
+                nights=reservation_record.nights,
+                checkin=datetime.combine(
+                    reservation_record.checkin, datetime.min.time()
+                ).isoformat(),
+                checkout=datetime.combine(
+                    reservation_record.checkout, datetime.min.time()
+                ).isoformat(),
+                adults=reservation_record.adults,
+                children=reservation_record.children,
+                reservationReference=reservation_record.name,
+                checkinPartners=reservation_checkin_partners,
+                reservationAmount=reservation_record.price_total,
+            )
+        ]
+        ine_category = ""
+        if reservation_record.pms_property_id.ine_category_id:
+            ine_category = (
+                reservation_record.pms_property_id.ine_category_id.category
+                + " ("
+                + reservation_record.pms_property_id.ine_category_id.type
+                + ")"
+            )
+
+        return self.env.datamodels["pms.folio.public.info"](
+            pmsPropertyName=reservation_record.pms_property_id.name,
+            pmsPropertyStreet=reservation_record.pms_property_id.street,
+            pmsPropertyCity=reservation_record.pms_property_id.city,
+            pmsPropertyZip=reservation_record.pms_property_id.zip,
+            pmsPropertyState=reservation_record.pms_property_id.state_id.name,
+            pmsPropertyPhoneNumber=reservation_record.pms_property_id.phone,
+            pmsPropertyLogo=url_image_pms_api_rest(
+                "pms.property",
+                reservation_record.pms_property_id.id,
+                "logo",
+            ),
+            pmsPropertyIneCategory=ine_category,
+            pmsPropertyImage=url_image_pms_api_rest(
+                "pms.property",
+                reservation_record.pms_property_id.id,
+                "hotel_image_pms_api_rest",
+            ),
+            pmsPropertyIsOCRAvailable=True
+            if reservation_record.pms_property_id.ocr_checkin_supplier
+            else False,
+            pmsPropertyPrivacyPolicy=remove_html_tags(
+                reservation_record.pms_property_id.privacy_policy
+            )
+            if reservation_record.pms_property_id.privacy_policy
+            else "",
+            pmsCompanyName=reservation_record.pms_property_id.company_id.name,
+            pmsPropertyId=reservation_record.pms_property_id.id,
+            folioPartnerName=reservation_record.folio_id.partner_name,
+            reservations=reservations,
+            cardexWarning=reservation_record.pms_property_id.cardex_warning
+            if reservation_record.pms_property_id.cardex_warning
+            else "",
+        )
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:reservation_id>/precheckin-reservation/<string:token>"
+                    "/partner/<string:documentType>/<string:documentNumber>",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.partner.info", is_list=True),
+        auth="public",
+    )
+    def get_checkin_partner_by_doc_number(
+        self, reservation_id, token, document_type, document_number
+    ):
+        reservation_record = self.env["pms.reservation"].sudo().browse(reservation_id)
+        if not reservation_record:
+            raise MissingError(_("Folio not found"))
+        # check if the reservation is accessible
+        try:
+            CustomerPortal._document_check_access(
+                self,
+                "pms.reservation",
+                reservation_record.id,
+                access_token=token,
+            )
+        except AccessError:
+            raise MissingError(_("Reservation not found"))
+
+        doc_type = (
+            self.env["res.partner.id_category"]
+            .sudo()
+            .search([("id", "=", document_type)])
+        )
+        # Clean Document number
+        document_number = re.sub(r"[^a-zA-Z0-9]", "", document_number).upper()
+        partner = (
+            self.env["pms.checkin.partner"]
+            .sudo()
+            ._get_partner_by_document(document_number, doc_type)
+        )
+        partners = []
+        if partner:
+            doc_record = partner.id_numbers.filtered(
+                lambda doc: doc.category_id.id == doc_type.id
+            )
+            PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
+
+            document_numbers_in_reservation = (
+                reservation_record.checkin_partner_ids.filtered(
+                    lambda x: x.document_type.id == doc_type.id
+                    and x.document_number == document_number
+                )
+            )
+
+            partners.append(
+                PmsCheckinPartnerInfo(
+                    # partner id
+                    id=partner.id,
+                    # names
+                    firstname="#" if partner.firstname else None,
+                    lastname="#" if partner.lastname else None,
+                    lastname2="#" if partner.lastname2 else None,
+                    # contact
+                    email="#" if partner.email else None,
+                    mobile="#" if partner.mobile else None,
+                    # document info
+                    documentCountryId=doc_record.country_id.id
+                    if doc_record.country_id.id
+                    else None,
+                    documentType=doc_type.id if doc_type.id else None,
+                    documentNumber="#" if doc_record.name else None,
+                    documentExpeditionDate=datetime.utcfromtimestamp(0).isoformat()
+                    if doc_record.valid_from
+                    else None,
+                    documentSupportNumber="#" if doc_record.support_number else None,
+                    # personal info
+                    gender="#" if partner.gender else None,
+                    birthdate=datetime.utcfromtimestamp(0).isoformat()
+                    if partner.birthdate_date
+                    else None,
+                    # nationality
+                    nationality=-1 if partner.nationality_id.id else None,
+                    # residence info
+                    countryId=partner.residence_country_id
+                    if partner.residence_country_id
+                    else None,
+                    residenceStreet="#" if partner.residence_street else None,
+                    zip="#" if partner.residence_zip else None,
+                    residenceCity="#" if partner.residence_city else None,
+                    countryState=-1 if partner.residence_state_id.id else None,
+                    # is already in reservation
+                    isAlreadyInReservation=True
+                    if document_numbers_in_reservation
+                    else False,
+                )
+            )
+        return partners
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:reservation_id>/precheckin-reservation/<string:token>"
+                    "/checkin-partners/<int:checkin_partner_id>",
+                ],
+                "PATCH",
+            )
+        ],
+        input_param=Datamodel("pms.checkin.partner.info", is_list=False),
+        auth="public",
+    )
+    def patch_checkin_partner(
+        self, reservation_id, token, checkin_partner_id, pms_checkin_partner_info
+    ):
+        reservation_record = self.env["pms.reservation"].sudo().browse(reservation_id)
+        if not reservation_record:
+            raise MissingError(_("Folio not found"))
+        # check if the reservation is accessible
+        try:
+            CustomerPortal._document_check_access(
+                self,
+                "pms.reservation",
+                reservation_record.id,
+                access_token=token,
+            )
+        except AccessError:
+            raise MissingError(_("Reservation not found"))
+
+        partner_record = False
+        # search checkin partner by id
+        checkin_partner_record = (
+            self.env["pms.checkin.partner"].sudo().browse(checkin_partner_id)
+        )
+        if pms_checkin_partner_info.partnerId:
+            # search partner by api_rest_id
+            partner_record = (
+                self.env["res.partner"]
+                .sudo()
+                .browse(pms_checkin_partner_info.partnerId)
+            )
+
+        # partner
+        if partner_record:
+            checkin_partner_record.partner_id = partner_record.id
+        # document info
+        if pms_checkin_partner_info.documentCountryId:
+            checkin_partner_record.document_country_id = (
+                pms_checkin_partner_info.documentCountryId
+            )
+        if (
+            pms_checkin_partner_info.documentNumber
+            and pms_checkin_partner_info.documentType
+        ):
+            checkin_partner_record.write(
+                {
+                    "document_type": pms_checkin_partner_info.documentType,
+                    "document_number": pms_checkin_partner_info.documentNumber,
+                }
+            )
+        if pms_checkin_partner_info.documentExpeditionDate:
+            checkin_partner_record.document_expedition_date = (
+                pms_checkin_partner_info.documentExpeditionDate
+            )
+        if pms_checkin_partner_info.documentSupportNumber:
+            checkin_partner_record.support_number = (
+                pms_checkin_partner_info.documentSupportNumber
+            )
+        # name
+        if pms_checkin_partner_info.firstname:
+            checkin_partner_record.firstname = pms_checkin_partner_info.firstname
+        if pms_checkin_partner_info.lastname:
+            checkin_partner_record.lastname = pms_checkin_partner_info.lastname
+        if pms_checkin_partner_info.lastname2:
+            checkin_partner_record.lastname2 = pms_checkin_partner_info.lastname2
+        # personal info
+        if pms_checkin_partner_info.birthdate:
+            checkin_partner_record.birthdate_date = pms_checkin_partner_info.birthdate
+        if pms_checkin_partner_info.gender:
+            checkin_partner_record.gender = pms_checkin_partner_info.gender
+        # nationality
+        if pms_checkin_partner_info.nationality:
+            checkin_partner_record.nationality_id = pms_checkin_partner_info.nationality
+        # residence info
+        if pms_checkin_partner_info.countryId:
+            checkin_partner_record.residence_country_id = (
+                pms_checkin_partner_info.countryId
+            )
+        if pms_checkin_partner_info.zip:
+            checkin_partner_record.residence_zip = pms_checkin_partner_info.zip
+        if pms_checkin_partner_info.residenceCity:
+            checkin_partner_record.residence_city = (
+                pms_checkin_partner_info.residenceCity
+            )
+        if pms_checkin_partner_info.countryState:
+            checkin_partner_record.residence_state_id = (
+                pms_checkin_partner_info.countryState
+            )
+        if pms_checkin_partner_info.residenceStreet:
+            checkin_partner_record.residence_street = (
+                pms_checkin_partner_info.residenceStreet
+            )
+        # contact
+        if pms_checkin_partner_info.email:
+            checkin_partner_record.email = pms_checkin_partner_info.email
+        if pms_checkin_partner_info.mobile:
+            checkin_partner_record.mobile = pms_checkin_partner_info.mobile
+        # signature
+        if pms_checkin_partner_info.signature:
+            with tempfile.NamedTemporaryFile(delete=False) as f:
+                f.write(base64.b64decode(pms_checkin_partner_info.signature))
+                temp_path = f.name
+
+            with open(temp_path, "rb") as f:
+                signature_image = f.read()
+            os.unlink(temp_path)
+
+            checkin_partner_record.signature = base64.b64encode(signature_image)
+        else:
+            checkin_partner_record.signature = False
+        # legal representative
+        if (
+            pms_checkin_partner_info.documentLegalRepresentative
+            and pms_checkin_partner_info.relationship
+        ):
+            record_checkin_partner_legal_representative = (
+                self.env["pms.checkin.partner"]
+                .sudo()
+                .search(
+                    [
+                        (
+                            "document_number",
+                            "=",
+                            pms_checkin_partner_info.documentLegalRepresentative,
+                        )
+                    ]
+                )
+            )
+            if record_checkin_partner_legal_representative:
+                checkin_partner_record.write(
+                    {
+                        "ses_related_checkin_partner_id": checkin_partner_record.id,
+                        "ses_partners_relationship": pms_checkin_partner_info.relationship,
+                    }
+                )
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:reservation_id>/precheckin/<string:token>/folio-adults",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.checkin.partner.info", is_list=False),
+        auth="public",
+    )
+    def are_there_adults_registered_in_folio(
+        self, reservation_id, token, checkin_partner_search_params
+    ):
+        # check if the reservation exists
+        reservation_record = self.env["pms.reservation"].sudo().browse(reservation_id)
+        if not reservation_record.exists():
+            raise MissingError(_("Reservation not found"))
+
+        # check if the reservation is accessible
+        try:
+            CustomerPortal._document_check_access(
+                self,
+                "pms.reservation",
+                reservation_record.id,
+                access_token=token,
+            )
+        except AccessError:
+            raise MissingError(_("Folio not found"))
+
+        if checkin_partner_search_params.documentNumber:
+            adults = reservation_record.folio_id.checkin_partner_ids.filtered(
+                lambda x: x.document_number
+                == checkin_partner_search_params.documentNumber
+                and is_adult(x.birthdate_date)
+            )
+            if adults:
+                rdo = True
+            else:
+                rdo = False
+        else:
+            adults = reservation_record.folio_id.checkin_partner_ids.filtered(
+                lambda x: is_adult(x.birthdate_date)
+            )
+            if adults:
+                rdo = True
+            else:
+                rdo = False
+        return rdo

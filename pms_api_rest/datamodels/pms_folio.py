@@ -87,14 +87,17 @@ class PmsFolioShortInfo(Datamodel):
 
 class PmsFolioPublicInfo(Datamodel):
     _name = "pms.folio.public.info"
-
+    pmsCompanyName = fields.String(required=False, allow_none=True)
     pmsPropertyName = fields.String(required=False, allow_none=True)
     pmsPropertyStreet = fields.String(required=False, allow_none=True)
     pmsPropertyCity = fields.String(required=False, allow_none=True)
     pmsPropertyState = fields.String(required=False, allow_none=True)
+    pmsPropertyZip = fields.String(required=False, allow_none=True)
     pmsPropertyPhoneNumber = fields.String(required=False, allow_none=True)
     pmsPropertyLogo = fields.String(required=False, allow_none=True)
     pmsPropertyImage = fields.String(required=False, allow_none=True)
+    pmsPropertyIneCategory = fields.String(required=False, allow_none=True)
+    pmsPropertyPrivacyPolicy = fields.String(required=False, allow_none=True)
     pmsPropertyIsOCRAvailable = fields.Boolean(required=False, allow_none=True)
     pmsPropertyId = fields.Integer(required=False, allow_none=True)
     folioPartnerName = fields.String(required=False, allow_none=True)

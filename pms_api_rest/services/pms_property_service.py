@@ -93,6 +93,7 @@ class PmsPropertyService(Component):
                     canDownloadIneReport=True
                     if (prop.ine_tourism_number and prop.ine_category_id)
                     else False,
+                    companyName=prop.company_id.name,
                 )
             )
         return result_properties
