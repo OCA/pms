@@ -46,7 +46,6 @@ class PmsReservationShortInfo(Datamodel):
     isOverNightRoom = fields.Boolean(required=False, allow_none=True)
     lastUpdateFrom = fields.String(required=False, allow_none=True)
 
-
 class PmsReservationInfo(Datamodel):
     _name = "pms.reservation.info"
     id = fields.Integer(required=False, allow_none=True)
@@ -115,7 +114,7 @@ class PmsReservationInfo(Datamodel):
 
 class PmsReservationPublicInfo(Datamodel):
     _name = "pms.reservation.public.info"
-    id=fields.Integer(required=False, allow_none=True)
+    id = fields.Integer(required=False, allow_none=True)
     roomTypeName = fields.String(required=False, allow_none=True)
     reservationReference = fields.String(required=False, allow_none=True)
     checkinNamesCompleted = fields.List(fields.String(required=False, allow_none=True))
