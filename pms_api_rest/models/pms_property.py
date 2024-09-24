@@ -503,7 +503,7 @@ class PmsProperty(models.Model):
         product_context = dict(
             self.env.context,
             date=datetime.datetime.today().date(),
-            pricelist=3,  # self.get_default_pricelist(),
+            pricelist=pricelist.id or pms_property.default_pricelist_id.id,
             uom=product.uom_id.id,
             fiscal_position=False,
             property=pms_property_id,
