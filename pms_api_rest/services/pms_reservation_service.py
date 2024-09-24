@@ -1758,7 +1758,7 @@ class PmsReservationService(Component):
             if record_checkin_partner_legal_representative:
                 checkin_partner_record.write(
                     {
-                        "ses_related_checkin_partner_id": checkin_partner_record.id,
+                        "ses_related_checkin_partner_id": record_checkin_partner_legal_representative.id,
                         "ses_partners_relationship": pms_checkin_partner_info.relationship,
                     }
                 )
