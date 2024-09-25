@@ -4,21 +4,19 @@
         <record id="helpdesk_ticket_property_rule" model="ir.rule">
             <field name="name">Helpdesk Tickets by Property</field>
             <field ref="model_helpdesk_ticket" name="model_id" />
-            <field name="domain_force">[
-                '|', 
-                ('pms_property_id', '=', False), 
-                ('pms_property_id', 'in', user.get_active_property_ids())
-            ]</field>
+            <field name="domain_force">
+                ['|',('pms_property_id','=',False),('pms_property_id', 'in',
+                    user.get_active_property_ids())]
+            </field>
             <field name="groups" eval="[(4, ref('base.group_user'))]" />
         </record>
         <record id="helpdesk_ticket_property_rule_portal" model="ir.rule">
             <field name="name">Helpdesk Tickets by Property</field>
             <field ref="model_helpdesk_ticket" name="model_id" />
-            <field name="domain_force">[
-                '|', 
-                ('pms_property_id', '=', False), 
-                ('pms_property_id', 'in', user.get_active_property_ids())
-            ]</field>
+            <field name="domain_force">
+                ['|',('pms_property_id','=',False),('pms_property_id', 'in',
+                    user.get_active_property_ids())]
+            </field>
             <field name="groups" eval="[(4, ref('base.group_portal'))]" />
         </record>
     </data>

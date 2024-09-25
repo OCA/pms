@@ -8,9 +8,37 @@
             />
         </xpath>
     </template>
-    
+
     <template
-        id="portal_my_tickets"
+        id="portal_my_home_inherited_form"
+        name="Portal My Home : Replace New Ticket Form"
+        inherit_id="helpdesk_mgmt.portal_my_home"
+        priority="40"
+    >
+        <xpath expr="//t[@t-call='portal.portal_docs_entry']" position="attributes">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Tickets</t>
+                <t t-set="url" t-value="'/my/tickets'" />
+                <t t-set="placeholder_count" t-value="ticket_count" />
+            </t>
+        </xpath>
+    </template>
+
+    <template
+        id="portal_my_tickets_inherited"
+        inherit_id="helpdesk_mgmt.portal_my_tickets"
+    >
+        <xpath expr="//t[@t-if='not grouped_tickets']" position="attributes">
+            <t t-if="not grouped_tickets">
+                <div class="alert alert-warning mt8" role="alert">
+                    <p>No tickets found for your properties.</p>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <template
+        id="portal_ticket_list"
         inherit_id="helpdesk_mgmt.portal_ticket_list"
         name="Tickets List"
     >
@@ -20,18 +48,14 @@
         </xpath>
         <xpath expr="//tr/td[position()=3]" position="after">
             <td>
-                <span t-field="ticket.sudo().pms_property_id.name" />
+                <span t-field="ticket.pms_property_id.name" />
             </td>
             <td>
-                <span t-field="ticket.sudo().room_id.name" />
+                <span t-field="ticket.room_id.name" />
             </td>
         </xpath>
-            <xpath expr="//a[contains(@t-attf-href, '/my/ticket')]" position="replace">
-            <a t-attf-href="/my/ticket/#{ticket.id}?{{ keep_query() }}">
-                <span t-field="ticket.name" />
-            </a>
-        </xpath>
     </template>
+
     <template
         id="portal_helpdesk_ticket_page"
         inherit_id="helpdesk_mgmt.portal_helpdesk_ticket_page"
@@ -39,13 +63,13 @@
     >
         <xpath expr="//span[@t-field='ticket.create_date']" position="after">
             <div><strong>Property:</strong>
-            <span t-field="ticket.pms_property_id.name" /></div>
+            <span t-field="ticket.sudo().pms_property_id.name" /></div>
             <div><strong>Room:</strong>
-            <span t-field="ticket.room_id.name" /></div>
+            <span t-field="ticket.sudo().room_id.name" /></div>
         </xpath>
         <xpath expr="//span[@t-field='ticket.category_id']" position="after">
             <div><strong>Tag:</strong>
-            <span t-field="ticket.tag_ids" /></div>
+            <span t-field="ticket.sudo().tag_ids" /></div>
         </xpath>
     </template>
 
@@ -60,20 +84,19 @@
         >
             <div class="col-md-7 col-sm-8">
                 <label for="company_id">Company:</label>
-            <select
-                class="form-control"
-                id="company_id"
-                name="company_id"
-                required="required"
-                t-attf-domain="[('id', 'in', companies_active)]"
-            >
-                <option value="" disabled="disabled">Select a company</option>
-                <t t-foreach="companies" t-as="company">
-                    <option t-att-value="company.id">
-                        <t t-esc="company.name" />
-                    </option>
-                </t>
-            </select>
+                <select
+                    class="form-control"
+                    id="company_id"
+                    name="company_id"
+                    required="required"
+                >
+                    <option value="" disabled="disabled">Select a company</option>
+                    <t t-foreach="companies" t-as="company">
+                        <option t-att-value="company.id">
+                            <t t-esc="company.name" />
+                        </option>
+                    </t>
+                </select>
             </div>
             <div class="col-md-7 col-sm-8">
                 <label for="pms_property_id">Property</label>
