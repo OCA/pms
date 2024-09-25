@@ -1,89 +1,124 @@
-from odoo.http import request
-from odoo.addons.helpdesk_mgmt.controllers.myaccount import CustomerPortalHelpdesk
-from odoo.osv.expression import AND, OR
-from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
-from collections import OrderedDict
 from operator import itemgetter
-from odoo import _, http
-from odoo.exceptions import AccessError, MissingError
+
+from odoo import http
+from odoo.http import request
 from odoo.tools import groupby as groupbyelem
+
+from odoo.addons.helpdesk_mgmt.controllers.myaccount import CustomerPortalHelpdesk
+from odoo.addons.portal.controllers.portal import pager as portal_pager
 
 
 class CustomCustomerPortalHelpdesk(CustomerPortalHelpdesk):
+    def _prepare_home_portal_values(self, counters):
+        values = super(CustomCustomerPortalHelpdesk, self)._prepare_home_portal_values(
+            counters
+        )
+
+        if "ticket_count" in counters:
+            helpdesk_model = request.env["helpdesk.ticket"].sudo()
+            active_property_ids = request.env.user.get_active_property_ids()
+            domain = []
+            if active_property_ids:
+                domain.append(("pms_property_id", "in", active_property_ids))
+
+            ticket_count = (
+                helpdesk_model.search_count(domain)
+                if helpdesk_model.check_access_rights("read", raise_exception=False)
+                else 0
+            )
+            values["ticket_count"] = ticket_count
+
+        return values
+
     @http.route(
         ["/my/tickets", "/my/tickets/page/<int:page>"],
         type="http",
         auth="user",
         website=True,
     )
-    def portal_my_tickets(self, **kw):
-        response = super(CustomCustomerPortalHelpdesk, self).portal_my_tickets(**kw)
-        page = response.qcontext.get('page', 1)
-        HelpdeskTicket = request.env["helpdesk.ticket"].sudo() 
-        
-        # Llamamos al método del padre para obtener los valores de la vista
-        values = super(CustomCustomerPortalHelpdesk, self)._prepare_portal_layout_values()
-        if not HelpdeskTicket.check_access_rights("read", raise_exception=False):
-            return request.redirect("/my")
+    def portal_my_tickets(self, page=1, **kw):
+        response = super(CustomCustomerPortalHelpdesk, self).portal_my_tickets(
+            page=page, **kw
+        )
+        domain = response.qcontext.get("domain", [])
+        response.qcontext.get("sortby")
+        response.qcontext.get("groupby")
+        order = response.qcontext.get("order")
 
-        domain = response.qcontext.get('domain', [])
-        order = response.qcontext.get('order', '')
-        sortby = response.qcontext.get('sortby', {})
-        groupby = response.qcontext.get('groupby', '')
-        
-        active_property_ids = request.env.user.get_active_property_ids() 
+        active_property_ids = request.env.user.get_active_property_ids()
         if active_property_ids:
             domain.append(("pms_property_id", "in", active_property_ids))
-        
-        HelpdeskTicket = request.env["helpdesk.ticket"].sudo() 
+
+        HelpdeskTicket = request.env["helpdesk.ticket"].sudo()
         ticket_count = HelpdeskTicket.search_count(domain)
+
         pager = portal_pager(
             url="/my/tickets",
-            url_args={
-                "date_begin": response.qcontext.get('date_begin', {}),
-                "date_end": response.qcontext.get('date_end', {}),
-                "sortby": sortby,
-                "filterby": response.qcontext.get('filterby', ''),
-                "groupby": groupby,
-                "search": response.qcontext.get('search', ''),
-                "search_in": response.qcontext.get('search_in', ''),
-            },
+            url_args={},
             total=ticket_count,
             page=page,
             step=self._items_per_page,
         )
+
         tickets = HelpdeskTicket.search(
-            domain,
-            order=order,
-            limit=self._items_per_page,
-            offset=pager["offset"],
+            domain, order=order, limit=self._items_per_page, offset=pager["offset"]
         )
         request.session["my_tickets_history"] = tickets.ids[:100]
 
-        group = response.qcontext.get('group', None)
-        grouped_tickets = [tickets] if not group else [
-            request.env["helpdesk.ticket"].concat(*g)
-            for k, g in groupbyelem(tickets, itemgetter(group))
-        ]
-        values.update(
+        group = response.qcontext.get("group", None)
+        if group:
+            grouped_tickets = [
+                HelpdeskTicket.concat(*g)
+                for k, g in groupbyelem(tickets, itemgetter(group))
+            ]
+        else:
+            grouped_tickets = [tickets] if tickets else []
+
+        response.qcontext.update(
             {
-                "date": response.qcontext.get('date_begin', {}),
-                "date_end": response.qcontext.get('date_end', {}),
                 "grouped_tickets": grouped_tickets,
-                "page_name": "ticket",
-                "default_url": "/my/tickets",
                 "pager": pager,
-                "searchbar_sortings": response.qcontext.get('searchbar_sortings', []),
-                "searchbar_groupby": response.qcontext.get('searchbar_groupby', []),
-                "searchbar_inputs": response.qcontext.get('searchbar_inputs', []),
-                "search_in": response.qcontext.get('search_in', ''),
-                "search": response.qcontext.get('search', ''),
-                "sortby": sortby,
-                "groupby": groupby,
-                "searchbar_filters": OrderedDict(sorted(response.qcontext.get('searchbar_filters', {}).items())),
-                "filterby": response.qcontext.get('filterby', ''),
+                "ticket_count": ticket_count,
             }
         )
-        return request.render("helpdesk_mgmt.portal_my_tickets", values)
+        return request.render(
+            "pms_helpdesk_mgmt.portal_my_tickets_inherited", response.qcontext
+        )
 
+    @http.route(
+        ["/my/ticket/<int:ticket_id>"], type="http", auth="public", website=True
+    )
+    def portal_my_ticket(self, ticket_id, access_token=None, **kw):
+        HelpdeskTicket = request.env["helpdesk.ticket"].sudo()
 
+        if access_token:
+            ticket_sudo = HelpdeskTicket.search(
+                [("id", "=", ticket_id), ("access_token", "=", access_token)]
+            )
+        else:
+            ticket_sudo = HelpdeskTicket.search([("id", "=", ticket_id)])
+
+        if not ticket_sudo:
+            return request.redirect("/my")
+
+        for attachment in ticket_sudo.attachment_ids:
+            attachment.generate_access_token()
+
+        values = self._ticket_get_page_view_values(ticket_sudo, access_token, **kw)
+        return request.render("pms_helpdesk_mgmt.portal_helpdesk_ticket_page", values)
+
+    def _ticket_get_page_view_values(self, ticket, access_token, **kwargs):
+        closed_stages = (
+            request.env["helpdesk.ticket.stage"].sudo().search([("closed", "=", True)])
+        )
+
+        values = {
+            "closed_stages": closed_stages,
+            "page_name": "ticket",
+            "ticket": ticket,
+            "user": request.env.user,
+        }
+
+        return self._get_page_view_values(
+            ticket, access_token, values, "my_tickets_history", False, **kwargs
+        )
