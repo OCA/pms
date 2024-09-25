@@ -651,6 +651,12 @@ class PmsReservationService(Component):
                         signature=checkin_partner.signature
                         if checkin_partner.signature
                         else None,
+                        relationship=checkin_partner.ses_partners_relationship
+                        if checkin_partner.ses_partners_relationship
+                        else "",
+                        responsibleCheckinPartnerId=checkin_partner.ses_related_checkin_partner_id.id
+                        if checkin_partner.ses_related_checkin_partner_id
+                        else None,
                     )
                 )
         return checkin_partners
