@@ -1,33 +1,31 @@
+from collections import OrderedDict
 from operator import itemgetter
 
-from odoo import http
+from odoo import _, http
 from odoo.http import request
+from odoo.osv.expression import AND
 from odoo.tools import groupby as groupbyelem
 
 from odoo.addons.helpdesk_mgmt.controllers.myaccount import CustomerPortalHelpdesk
-from odoo.addons.portal.controllers.portal import pager as portal_pager
 
 
 class CustomCustomerPortalHelpdesk(CustomerPortalHelpdesk):
     def _prepare_home_portal_values(self, counters):
+        active_property_ids = request.env.user.get_active_property_ids()
         values = super(CustomCustomerPortalHelpdesk, self)._prepare_home_portal_values(
             counters
         )
-
+        helpdesk_model = request.env["helpdesk.ticket"].sudo()
         if "ticket_count" in counters:
-            helpdesk_model = request.env["helpdesk.ticket"].sudo()
-            active_property_ids = request.env.user.get_active_property_ids()
-            domain = []
-            if active_property_ids:
-                domain.append(("pms_property_id", "in", active_property_ids))
-
-            ticket_count = (
-                helpdesk_model.search_count(domain)
+            values["ticket_count"] = (
+                helpdesk_model.search_count(
+                    [
+                        ("pms_property_id", "in", active_property_ids),
+                    ]
+                )
                 if helpdesk_model.check_access_rights("read", raise_exception=False)
                 else 0
             )
-            values["ticket_count"] = ticket_count
-
         return values
 
     @http.route(
@@ -36,54 +34,112 @@ class CustomCustomerPortalHelpdesk(CustomerPortalHelpdesk):
         auth="user",
         website=True,
     )
-    def portal_my_tickets(self, page=1, **kw):
+    def portal_my_tickets(
+        self,
+        page=1,
+        date_begin=None,
+        date_end=None,
+        sortby=None,
+        filterby=None,
+        search=None,
+        search_in=None,
+        groupby=None,
+        **kw
+    ):
         response = super(CustomCustomerPortalHelpdesk, self).portal_my_tickets(
-            page=page, **kw
+            page=page,
+            date_begin=date_begin,
+            date_end=date_end,
+            sortby=sortby,
+            filterby=filterby,
+            search=search,
+            search_in=search_in,
+            groupby=groupby,
+            **kw
         )
-        domain = response.qcontext.get("domain", [])
-        response.qcontext.get("sortby")
-        response.qcontext.get("groupby")
-        order = response.qcontext.get("order")
-
-        active_property_ids = request.env.user.get_active_property_ids()
-        if active_property_ids:
-            domain.append(("pms_property_id", "in", active_property_ids))
+        values = response.qcontext
 
         HelpdeskTicket = request.env["helpdesk.ticket"].sudo()
-        ticket_count = HelpdeskTicket.search_count(domain)
 
-        pager = portal_pager(
-            url="/my/tickets",
-            url_args={},
-            total=ticket_count,
-            page=page,
-            step=self._items_per_page,
+        active_property_ids = request.env.user.get_active_property_ids()
+        property_ids_active_domain = [("pms_property_id", "in", active_property_ids)]
+
+        searchbar_sortings = dict(
+            sorted(
+                self._ticket_get_searchbar_sortings().items(),
+                key=lambda item: item[1]["sequence"],
+            )
         )
 
-        tickets = HelpdeskTicket.search(
-            domain, order=order, limit=self._items_per_page, offset=pager["offset"]
-        )
+        searchbar_filters = {
+            "all": {"label": _("All"), "domain": []},
+        }
+        for stage in request.env["helpdesk.ticket.stage"].search([]):
+            searchbar_filters[str(stage.id)] = {
+                "label": stage.name,
+                "domain": [("stage_id", "=", stage.id)],
+            }
+
+        searchbar_groupby = self._ticket_get_searchbar_groupby()
+
+        if not sortby:
+            sortby = "date"
+        order = searchbar_sortings[sortby]["order"]
+
+        if not filterby:
+            filterby = "all"
+        domain = searchbar_filters.get(filterby, searchbar_filters.get("all"))["domain"]
+
+        if not groupby:
+            groupby = "none"
+
+        if date_begin and date_end:
+            domain += [
+                ("create_date", ">", date_begin),
+                ("create_date", "<=", date_end),
+            ]
+
+        if search:
+            domain += self._ticket_get_search_domain(search_in, search)
+
+        domain = AND([domain, property_ids_active_domain])
+        tickets = HelpdeskTicket.search(domain, order=order)
+
         request.session["my_tickets_history"] = tickets.ids[:100]
 
-        group = response.qcontext.get("group", None)
+        groupby_mapping = self._ticket_get_groupby_mapping()
+        group = groupby_mapping.get(groupby)
+
         if group:
             grouped_tickets = [
-                HelpdeskTicket.concat(*g)
+                request.env["helpdesk.ticket"].concat(*g)
                 for k, g in groupbyelem(tickets, itemgetter(group))
             ]
+        elif tickets:
+            grouped_tickets = [tickets]
         else:
-            grouped_tickets = [tickets] if tickets else []
+            grouped_tickets = []
 
-        response.qcontext.update(
+        values.update(
             {
+                "date": date_begin,
+                "date_end": date_end,
                 "grouped_tickets": grouped_tickets,
-                "pager": pager,
-                "ticket_count": ticket_count,
+                "page_name": "ticket",
+                "default_url": "/my/tickets",
+                "searchbar_sortings": searchbar_sortings,
+                "searchbar_groupby": searchbar_groupby,
+                "searchbar_inputs": self._ticket_get_searchbar_inputs(),
+                "search_in": search_in,
+                "search": search,
+                "sortby": sortby,
+                "groupby": groupby,
+                "filterby": filterby,
+                "searchbar_filters": OrderedDict(sorted(searchbar_filters.items())),
             }
         )
-        return request.render(
-            "pms_helpdesk_mgmt.portal_my_tickets_inherited", response.qcontext
-        )
+
+        return request.render("pms_helpdesk_mgmt.portal_my_tickets", values)
 
     @http.route(
         ["/my/ticket/<int:ticket_id>"], type="http", auth="public", website=True

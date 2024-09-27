@@ -6,7 +6,7 @@ import logging
 
 import odoo.http as http
 from odoo.http import request
-from odoo.exceptions import UserError, AccessError
+
 from odoo.addons.helpdesk_mgmt.controllers.main import HelpdeskTicketController
 
 _logger = logging.getLogger(__name__)
@@ -18,13 +18,18 @@ class CustomHelpdeskTicketController(HelpdeskTicketController):
         user = request.env.user
         allowed_pms_property_ids = user.get_active_property_ids()
         if allowed_pms_property_ids:
-            properties = request.env['pms.property'].sudo().browse(allowed_pms_property_ids)
-            companies = properties.mapped('company_id')
+            properties = (
+                request.env["pms.property"].sudo().browse(allowed_pms_property_ids)
+            )
+            companies = properties.mapped("company_id")
         else:
-            companies = request.env['res.company'].sudo().search([])  # Si no hay propiedades activas, lista todas las compañías
+            companies = request.env["res.company"].sudo().search([])
 
-        companies_data = [{"id": company.id, "name": company.name} for company in companies]
+        companies_data = [
+            {"id": company.id, "name": company.name} for company in companies
+        ]
         return {"companies": companies_data}
+
     @http.route("/get_properties", type="json", auth="user")
     def get_properties(self, company_id):
         properties = (
@@ -52,13 +57,12 @@ class CustomHelpdeskTicketController(HelpdeskTicketController):
         user_belongs_to_group = user.has_group(
             "helpdesk_mgmt.group_helpdesk_user_team"
         ) or user.has_group("helpdesk_mgmt.group_helpdesk_manager")
-        assigned_companies = user.company_ids
         company = request.env.company
         tag_model = http.request.env["helpdesk.ticket.tag"]
         tags = tag_model.with_company(company.id).search([("active", "=", True)])
         allowed_pms_property_ids = user.get_active_property_ids()
-        properties = request.env['pms.property'].sudo().browse(allowed_pms_property_ids)
-        companies = properties.mapped('company_id')
+        properties = request.env["pms.property"].sudo().browse(allowed_pms_property_ids)
+        companies = properties.mapped("company_id")
         all_room_ids = [
             room_id for property in properties for room_id in property.room_ids.ids
         ]
@@ -93,5 +97,3 @@ class CustomHelpdeskTicketController(HelpdeskTicketController):
             }
         )
         return vals
-
-

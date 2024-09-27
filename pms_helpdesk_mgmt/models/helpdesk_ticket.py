@@ -2,8 +2,7 @@
 # Copyright (C) 2024 Oso Tranquilo <informatica@gmail.com>
 # Copyright (C) 2024 Consultores Hoteleros Integrales <www.aldahotels.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo import api, fields, models
 
 
 class PmsHelpdeskTicket(models.Model):
@@ -11,9 +10,9 @@ class PmsHelpdeskTicket(models.Model):
     _inherit = "helpdesk.ticket"
 
     pms_property_id = fields.Many2one(
-        'pms.property',
-        string="PMS Property",
+        string="Property",
         help="The property linked to this ticket.",
+        comodel_name="pms.property",
         required=True,
     )
     room_id = fields.Many2one(
@@ -29,14 +28,17 @@ class PmsHelpdeskTicket(models.Model):
         user = self.env.user
         active_property_ids = user.get_active_property_ids()
         if active_property_ids:
-            return active_property_ids[0]  
+            return active_property_ids[0]
         return None
 
     @api.onchange("company_id")
     def _onchange_company_id(self):
         if self.company_id:
             allowed_pms_property_ids = self.env.user.get_active_property_ids()
-            if self.pms_property_id and self.pms_property_id.company_id != self.company_id:
+            if (
+                self.pms_property_id
+                and self.pms_property_id.company_id != self.company_id
+            ):
                 self.pms_property_id = False
 
             return {
@@ -48,7 +50,9 @@ class PmsHelpdeskTicket(models.Model):
                 }
             }
         else:
-            self.pms_property_id = False  # Reinicia la propiedad si no hay compañía seleccionada
+            self.pms_property_id = (
+                False  # Reinicia la propiedad si no hay compañía seleccionada
+            )
             return {"domain": {"pms_property_id": []}}
 
     @api.onchange("pms_property_id")
@@ -64,8 +68,7 @@ class PmsHelpdeskTicket(models.Model):
         else:
             return {"domain": {"room_id": []}}
 
-
     def write(self, vals):
-        if 'partner_id' not in vals or not vals.get('partner_id'):
-            vals['partner_id'] = self.env.uid 
+        if "partner_id" not in vals or not vals.get("partner_id"):
+            vals["partner_id"] = self.env.uid
         return super(PmsHelpdeskTicket, self).write(vals)

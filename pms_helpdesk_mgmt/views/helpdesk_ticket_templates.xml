@@ -24,10 +24,7 @@
         </xpath>
     </template>
 
-    <template
-        id="portal_my_tickets_inherited"
-        inherit_id="helpdesk_mgmt.portal_my_tickets"
-    >
+    <template id="portal_my_tickets" inherit_id="helpdesk_mgmt.portal_my_tickets">
         <xpath expr="//t[@t-if='not grouped_tickets']" position="attributes">
             <t t-if="not grouped_tickets">
                 <div class="alert alert-warning mt8" role="alert">
@@ -43,12 +40,14 @@
         name="Tickets List"
     >
         <xpath expr="//tr/th[position()=3]" position="after">
+            <th t-if="groupby =='category'">Title</th>
+            <th t-if="groupby =='stage'">Title</th>
             <th>Property</th>
             <th>Room</th>
         </xpath>
         <xpath expr="//tr/td[position()=3]" position="after">
             <td>
-                <span t-field="ticket.pms_property_id.name" />
+                <span t-esc="ticket.pms_property_id.name" />
             </td>
             <td>
                 <span t-field="ticket.room_id.name" />
