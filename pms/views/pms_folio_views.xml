@@ -333,11 +333,7 @@
                                 name="pricelist_id"
                                 attrs="{'invisible': [('reservation_type', 'not in', 'normal')]}"
                             />
-                            <field
-                                name="company_id"
-                                options="{'no_create': True}"
-                                groups="base.group_multi_company"
-                            />
+                            <field name="company_id" options="{'no_create': True}" />
                             <field
                                 name="reservation_type"
                                 attrs="{'readonly':[('state','not in',('draft'))]}"
@@ -433,14 +429,14 @@
                                         widget="section_and_note_text"
                                         optional="show"
                                     />
-                                    <field
+                                    <!-- <field
                                         name="analytic_tag_ids"
                                         optional="hide"
                                         groups="analytic.group_analytic_tags"
                                         widget="many2many_tags"
                                         options="{'color_field': 'color'}"
                                         domain="['|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"
-                                    />
+                                    /> -->
                                     <field
                                         name="product_uom_qty"
                                         decoration-info="(not display_type and invoice_status == '')"
@@ -468,7 +464,6 @@
                                         name="product_uom"
                                         force_save="1"
                                         string="UoM"
-                                        groups="uom.group_uom"
                                         options='{"no_open": True}'
                                         optional="hide"
                                     />
@@ -691,18 +686,8 @@
                     widget="badge"
                     optional="show"
                 />
-                <field
-                    name="company_id"
-                    groups="base.group_multi_company"
-                    optional="show"
-                    readonly="1"
-                />
-                <field
-                    name="pms_property_id"
-                    groups="base.group_multi_company"
-                    optional="show"
-                    readonly="1"
-                />
+                <field name="company_id" optional="show" readonly="1" />
+                <field name="pms_property_id" optional="show" readonly="1" />
             </tree>
         </field>
     </record>

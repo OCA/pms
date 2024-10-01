@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class AccountAnalyticLine(models.Model):
@@ -15,7 +15,6 @@ class AccountAnalyticLine(models.Model):
         index=True,
     )
 
-    @api.depends("move_id")
     def _compute_pms_property_id(self):
         for rec in self:
             if rec.move_id and rec.move_id.pms_property_id:
@@ -25,7 +24,7 @@ class AccountAnalyticLine(models.Model):
 
 
 class AccountAnalyticDistribution(models.Model):
-    _inherit = "account.analytic.distribution"
+    _inherit = "account.analytic.distribution.model"
 
     pms_property_id = fields.Many2one(
         name="Property",

@@ -479,11 +479,7 @@
                         />
                     </group>
                     <group invisible="1">
-                        <field
-                            name="company_id"
-                            options="{'no_create': True}"
-                            groups="base.group_multi_company"
-                        />
+                        <field name="company_id" options="{'no_create': True}" />
                         <!-- <field name="check_rooms" invisible="1"/> -->
                         <field name="checkin_partner_pending_count" invisible="1" />
                         <!-- <field name="product_uom" string="Rent(UOM)" invisible="1" /> -->
@@ -873,18 +869,8 @@
                     optional="show"
                 />
                 <field name="invoice_status" optional="hide" />
-                <field
-                    name="company_id"
-                    groups="base.group_multi_company"
-                    optional="hide"
-                    readonly="1"
-                />
-                <field
-                    name="pms_property_id"
-                    groups="base.group_multi_company"
-                    optional="show"
-                    readonly="1"
-                />
+                <field name="company_id" optional="hide" readonly="1" />
+                <field name="pms_property_id" optional="show" readonly="1" />
             </tree>
         </field>
     </record>

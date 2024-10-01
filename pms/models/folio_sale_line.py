@@ -283,11 +283,11 @@ class FolioSaleLine(models.Model):
         index=True,
         readonly=False,
     )
-    analytic_tag_ids = fields.Many2many(
-        string="Analytic Tags",
-        comodel_name="account.analytic.tag",
-        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
-    )
+    # analytic_tag_ids = fields.Many2many(
+    #     string="Analytic Tags",
+    #     comodel_name="account.analytic.tag",
+    #     domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
+    # )
     analytic_line_ids = fields.One2many(
         string="Analytic lines",
         comodel_name="account.analytic.line",
@@ -1083,7 +1083,7 @@ class FolioSaleLine(models.Model):
             "price_unit": self.price_unit,
             "tax_ids": [(6, 0, self.tax_ids.ids)],
             "analytic_account_id": self.folio_id.analytic_account_id.id,
-            "analytic_tag_ids": [(6, 0, self.analytic_tag_ids.ids)],
+            # "analytic_tag_ids": [(6, 0, self.analytic_tag_ids.ids)],
             "folio_line_ids": [(6, 0, [self.id])],
             "name_changed_by_user": False,
         }
@@ -1182,7 +1182,7 @@ class FolioSaleLine(models.Model):
             "price_unit",
             "product_uom",
             "tax_ids",
-            "analytic_tag_ids",
+            # "analytic_tag_ids",
             "discount",
         ]
 
@@ -1192,6 +1192,6 @@ class FolioSaleLine(models.Model):
             "price_unit": "price_unit",
             "product_uom": "product_uom_id",
             "tax_ids": "tax_ids",
-            "analytic_tag_ids": "analytic_tag_ids",
+            # "analytic_tag_ids": "analytic_tag_ids",
             "discount": "discount",
         }
