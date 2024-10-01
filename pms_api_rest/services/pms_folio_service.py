@@ -124,12 +124,10 @@ class PmsFolioService(Component):
                 result.append(
                     self.env.datamodels["pms.checkin.partner.info"](
                         id=checkin_partner_record.id,
-                        name=checkin_partner_record.name,
-                        firstname=checkin_partner_record.firstname,
-                        lastname=checkin_partner_record.lastname,
+                        name=checkin_partner_record.name or "",
+                        firstname=checkin_partner_record.firstname or "",
+                        lastname=checkin_partner_record.lastname or "",
                         lastname2=checkin_partner_record.lastname2 or "",
-                        documentType=checkin_partner_record.document_type,
-                        documentNumber=checkin_partner_record.document_number,
                     )
                 )
         return result
