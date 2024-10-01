@@ -5,7 +5,7 @@ from odoo import fields, models
 
 
 class PaymentAcquirer(models.Model):
-    _inherit = "payment.acquirer"
+    _inherit = "payment.provider"
     _check_pms_properties_auto = True
 
     pms_property_ids = fields.Many2many(

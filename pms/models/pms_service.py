@@ -93,11 +93,11 @@ class PmsService(models.Model):
         domain=["|", ("active", "=", False), ("active", "=", True)],
         compute="_compute_tax_ids",
     )
-    analytic_tag_ids = fields.Many2many(
-        string="Analytic Tags",
-        help="",
-        comodel_name="account.analytic.tag",
-    )
+    # analytic_tag_ids = fields.Many2many(
+    #     string="Analytic Tags",
+    #     help="",
+    #     comodel_name="account.analytic.tag",
+    # )
     currency_id = fields.Many2one(
         string="Currency",
         help="The currency used in relation to the folio",

@@ -3,7 +3,8 @@ from odoo.exceptions import AccessError, MissingError
 from odoo.http import request
 
 from odoo.addons.account.controllers.portal import PortalAccount
-from odoo.addons.payment.controllers.portal import PaymentProcessing
+
+# from odoo.addons.payment.controllers.portal import PaymentProcessing
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo.addons.portal.models.portal_mixin import PortalMixin
 
@@ -28,7 +29,7 @@ class PortalFolio(CustomerPortal):
     def _folio_get_page_view_values(self, folio, access_token, **kwargs):
         values = {"folio": folio, "token": access_token}
         payment_inputs = (
-            request.env["payment.acquirer"]
+            request.env["payment.provider"]
             .sudo()
             ._get_available_payment_input(
                 partner=folio.partner_id, company=folio.company_id
@@ -105,7 +106,7 @@ class PortalFolio(CustomerPortal):
         if save_token:
             vals["type"] = "form_save"
         transaction = folio_sudo._create_payment_transaction(vals)
-        PaymentProcessing.add_payment_transaction(transaction)
+        # PaymentProcessing.add_payment_transaction(transaction)
         if not transaction:
             return False
         tx_ids_list = set(request.session.get("__payment_tx_ids__", [])) | set(

@@ -2736,7 +2736,7 @@ class PmsFolio(models.Model):
 
             # Check payment_token/acquirer matching or take the acquirer from token
             if acquirer_id:
-                acquirer = self.env["payment.acquirer"].browse(acquirer_id)
+                acquirer = self.env["payment.provider"].browse(acquirer_id)
                 if payment_token and payment_token.acquirer_id != acquirer:
                     raise ValidationError(
                         _("Invalid token found! Token acquirer %s != %s")
@@ -2757,7 +2757,7 @@ class PmsFolio(models.Model):
             )
 
         if not acquirer:
-            acquirer = self.env["payment.acquirer"].browse(acquirer_id)
+            acquirer = self.env["payment.provider"].browse(acquirer_id)
 
         # Check a journal is set on acquirer.
         if not acquirer.journal_id:
