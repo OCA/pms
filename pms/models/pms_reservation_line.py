@@ -160,7 +160,7 @@ class PmsReservationLine(models.Model):
         if self.reservation_id.pricelist_id.discount_policy == "with_discount":
             return product.with_context(
                 pricelist=self.reservation_id.pricelist_id.id
-            ).price
+            ).standard_price
         product_context = dict(
             self.env.context,
             partner_id=self.reservation_id.partner_id.id,

@@ -78,7 +78,7 @@ class ProductProduct(models.Model):
         pricelist = self.env["product.pricelist"].browse(pricelist_id)
         partner = self.env["res.partner"].browse(partner_id) if partner_id else False
         if pricelist.discount_policy == "with_discount":
-            return product.price
+            return product.standard_price
         final_price, rule_id = pricelist.with_context(
             product._context
         ).get_product_price_rule(product, product_qty or 1.0, partner)
