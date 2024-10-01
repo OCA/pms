@@ -198,7 +198,7 @@ class PmsRoomType(models.Model):
             {
                 "purchase_ok": False,
                 "sale_ok": False,
-                "type": "service",
+                "detailed_type": "service",
             }
         )
         return super().create(vals)
