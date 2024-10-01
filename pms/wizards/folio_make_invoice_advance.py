@@ -189,8 +189,8 @@ class FolioAdvancePaymentInv(models.TransientModel):
                         "product_uom_id": line.product_uom.id,
                         "tax_ids": [(6, 0, line.tax_ids.ids)],
                         "folio_line_ids": [(6, 0, [line.id])],
-                        "analytic_tag_ids": [(6, 0, line.analytic_tag_ids.ids)],
-                        "analytic_account_id": order.analytic_account_id.id or False,
+                        # "analytic_tag_ids": [(6, 0, line.analytic_tag_ids.ids)],
+                        # "analytic_account_id": order.analytic_account_id.id or False,
                     },
                 )
             ],
@@ -219,7 +219,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
         )
         return invoice
 
-    def _prepare_line(self, order, analytic_tag_ids, tax_ids, amount):
+    def _prepare_line(self, order, tax_ids, amount):
         context = {"lang": order.partner_id.lang}
         so_values = {
             "name": self.product_id.name,
@@ -229,7 +229,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
             "discount": 0.0,
             "product_uom": self.product_id.uom_id.id,
             "product_id": self.product_id.id,
-            "analytic_tag_ids": analytic_tag_ids,
+            # "analytic_tag_ids": analytic_tag_ids,
             "tax_ids": [(6, 0, tax_ids)],
             "is_downpayment": True,
             "sequence": order.sale_line_ids
@@ -292,16 +292,14 @@ class FolioAdvancePaymentInv(models.TransientModel):
                     lambda r: not order.company_id or r.company_id == order.company_id
                 )
                 tax_ids = order.fiscal_position_id.map_tax(taxes, self.product_id).ids
-                analytic_tag_ids = []
-                for line in order.sale_line_ids:
-                    analytic_tag_ids = [
-                        (4, analytic_tag.id, None)
-                        for analytic_tag in line.analytic_tag_ids
-                    ]
+                # analytic_tag_ids = []
+                # for line in order.sale_line_ids:
+                #     analytic_tag_ids = [
+                #         (4, analytic_tag.id, None)
+                #         for analytic_tag in line.analytic_tag_ids
+                #     ]
 
-                line_values = self._prepare_line(
-                    order, analytic_tag_ids, tax_ids, amount
-                )
+                line_values = self._prepare_line(order, tax_ids, amount)
                 line = sale_line_obj.sudo().create(line_values)
                 invoices += self._create_invoice(order, line, amount)
         if self._context.get("open_invoices", False):

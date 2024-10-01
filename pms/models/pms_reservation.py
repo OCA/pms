@@ -210,7 +210,7 @@ class PmsReservation(models.Model):
         comodel_name="pms.service",
         inverse_name="reservation_id",
         compute="_compute_service_ids",
-        check_company=True,
+        # check_company=True,
         check_pms_properties=True,
     )
     pricelist_id = fields.Many2one(
@@ -587,14 +587,14 @@ class PmsReservation(models.Model):
         ],
         compute="_compute_invoice_status",
     )
-    analytic_tag_ids = fields.Many2many(
-        string="Analytic Tags",
-        comodel_name="account.analytic.tag",
-        relation="pms_reservation_account_analytic_tag",
-        column1="reservation_id",
-        column2="account_analytic_tag_id",
-        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
-    )
+    # analytic_tag_ids = fields.Many2many(
+    #     string="Analytic Tags",
+    #     comodel_name="account.analytic.tag",
+    #     relation="pms_reservation_account_analytic_tag",
+    #     column1="reservation_id",
+    #     column2="account_analytic_tag_id",
+    #     domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
+    # )
     analytic_line_ids = fields.One2many(
         string="Analytic lines",
         comodel_name="account.analytic.line",
