@@ -461,7 +461,7 @@ class AvailabilityWizard(models.TransientModel):
                 uom=product.uom_id.id,
                 property=pms_property_id,
             )
-            room_type_total_price_per_room += product.price
+            room_type_total_price_per_room += product.standard_price
 
         if board_service_room_id:
             board_service_room = self.env["pms.board.service.room.type"].browse(
