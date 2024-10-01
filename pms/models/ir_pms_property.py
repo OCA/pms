@@ -27,8 +27,7 @@ class IrPmsProperty(models.Model):
     def get_field_value(
         self, pms_property_id, model_name, field_name, record_id, value_type
     ):
-        model_id = self.env["ir.model"].browse(model_name).id
-        model = self.env["ir.model"].search([("model", "=", model_id)])
+        model = self.env["ir.model"].search([("model", "=", model_name)])
         if model:
             field_id = self.env["ir.model.fields"].search(
                 [("name", "=", field_name), ("model_id", "=", model.id)]
@@ -59,8 +58,7 @@ class IrPmsProperty(models.Model):
     def set_field_value(
         self, pms_property_id, model_name, field_name, record_id, value
     ):
-        model_id = self.env["ir.model"].browse(model_name).id
-        model = self.env["ir.model"].search([("model", "=", model_id)])
+        model = self.env["ir.model"].search([("model", "=", model_name)])
         if model:
             field_id = self.env["ir.model.fields"].search(
                 [("name", "=", field_name), ("model_id", "=", model.id)]
