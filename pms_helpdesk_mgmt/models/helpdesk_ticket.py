@@ -23,12 +23,34 @@ class PmsHelpdeskTicket(models.Model):
         widget="many2one_tags",
     )
 
+    allowed_company_ids = fields.Many2many(
+        "res.company", compute="_compute_allowed_company_ids"
+    )
+    allowed_pms_property_ids = fields.Many2many(
+        "pms.property",
+        compute="_compute_allowed_pms_property_ids",
+        string="Allowed Properties",
+    )
+
+    @api.depends("user_id")
+    def _compute_allowed_pms_property_ids(self):
+        for ticket in self:
+            active_property_ids = self.env.context.get(
+                "active_property_ids"
+            ) or self.env.context.get("pms_pids", [])
+            ticket.allowed_pms_property_ids = active_property_ids
+
+    @api.depends("user_id")
+    def _compute_allowed_company_ids(self):
+        for record in self:
+            record.allowed_company_ids = self.env.user.company_ids
+
     @api.model
     def _get_default_pms_property(self):
         user = self.env.user
         active_property_ids = user.get_active_property_ids()
         if active_property_ids:
-            return active_property_ids[0]
+            return active_property_ids
         return None
 
     @api.onchange("company_id")
@@ -50,9 +72,7 @@ class PmsHelpdeskTicket(models.Model):
                 }
             }
         else:
-            self.pms_property_id = (
-                False  # Reinicia la propiedad si no hay compañía seleccionada
-            )
+            self.pms_property_id = False
             return {"domain": {"pms_property_id": []}}
 
     @api.onchange("pms_property_id")
@@ -68,7 +88,37 @@ class PmsHelpdeskTicket(models.Model):
         else:
             return {"domain": {"room_id": []}}
 
+    @api.model
+    def create(self, vals):
+        if "partner_id" not in vals or not vals.get("partner_id"):
+            vals["partner_id"] = self.env.user.partner_id.id
+        return super(PmsHelpdeskTicket, self).create(vals)
+
     def write(self, vals):
         if "partner_id" not in vals or not vals.get("partner_id"):
-            vals["partner_id"] = self.env.uid
+            vals["partner_id"] = self.env.user.partner_id.id
         return super(PmsHelpdeskTicket, self).write(vals)
+
+    @api.model
+    def _search(
+        self,
+        args,
+        offset=0,
+        limit=None,
+        order=None,
+        count=False,
+        access_rights_uid=None,
+    ):
+        active_property_ids = self.env.context.get(
+            "allowed_pms_property_ids"
+        ) or self.env.context.get("pms_pids")
+        if active_property_ids:
+            args = args + [("pms_property_id", "in", active_property_ids)]
+        return super(PmsHelpdeskTicket, self)._search(
+            args,
+            offset=offset,
+            limit=limit,
+            order=order,
+            count=count,
+            access_rights_uid=access_rights_uid,
+        )

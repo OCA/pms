@@ -60,9 +60,12 @@ class CustomCustomerPortalHelpdesk(CustomerPortalHelpdesk):
         values = response.qcontext
 
         HelpdeskTicket = request.env["helpdesk.ticket"].sudo()
-
+        allowed_company_ids = request.env.user.company_ids.ids
         active_property_ids = request.env.user.get_active_property_ids()
-        property_ids_active_domain = [("pms_property_id", "in", active_property_ids)]
+        property_ids_active_domain = [
+            ("pms_property_id", "in", active_property_ids),
+            ("company_id", "in", allowed_company_ids),
+        ]
 
         searchbar_sortings = dict(
             sorted(
