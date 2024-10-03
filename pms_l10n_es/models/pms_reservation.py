@@ -35,7 +35,10 @@ class PmsReservation(models.Model):
     @api.model
     def create(self, vals):
         reservation = super(PmsReservation, self).create(vals)
-        if reservation.pms_property_id.institution == "ses":
+        if (
+            reservation.pms_property_id.institution == "ses"
+            and reservation.reservation_type != "out"
+        ):
             self.create_communication(reservation.id, CREATE_OPERATION_CODE, "RH")
         return reservation
 

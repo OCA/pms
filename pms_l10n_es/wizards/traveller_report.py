@@ -36,9 +36,10 @@ DELETE_OPERATION_CODE = "B"
 # Disable insecure request warnings
 # requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
+
 def replace_multiple_spaces(text: str) -> str:
     # Replace 2 or more consecutive spaces with a single space
-    return re.sub(r'\s{2,}', ' ', text)
+    return re.sub(r"\s{2,}", " ", text)
 
 
 def clean_string_only_letters(string):
@@ -112,12 +113,12 @@ def _ses_xml_person_names_elements(persona, reservation, checkin_partner):
     if reservation:
         ses_firstname = False
         if reservation.partner_id.firstname:
-            ses_firstname = clean_string_only_letters(reservation.partner_id.firstname)[:50]
+            ses_firstname = clean_string_only_letters(reservation.partner_id.firstname)[
+                :50
+            ]
         elif reservation.partner_name:
             ses_firstname = clean_string_only_letters(
-                replace_multiple_spaces(
-                    reservation.partner_name
-                )
+                replace_multiple_spaces(reservation.partner_name)
             ).split(" ")[0][:50]
         _ses_xml_text_element_and_validate(
             persona,
@@ -127,16 +128,15 @@ def _ses_xml_person_names_elements(persona, reservation, checkin_partner):
         )
 
         if reservation.partner_id.lastname:
-            ses_lastname = clean_string_only_letters(reservation.partner_id.lastname)[:50]
-        elif (reservation.partner_name and len(
-            replace_multiple_spaces(
-                reservation.partner_name
-            ).split(" ")) > 1
+            ses_lastname = clean_string_only_letters(reservation.partner_id.lastname)[
+                :50
+            ]
+        elif (
+            reservation.partner_name
+            and len(replace_multiple_spaces(reservation.partner_name).split(" ")) > 1
         ):
             ses_lastname = clean_string_only_letters(
-                replace_multiple_spaces(
-                    reservation.partner_name
-                )
+                replace_multiple_spaces(reservation.partner_name)
             ).split(" ")[1][:50]
         else:
             ses_lastname = "No aplica"
@@ -1142,7 +1142,9 @@ class TravellerReport(models.TransientModel):
         ):
             try:
                 time_difference = fields.Datetime.now() - communication.create_date
-                hours_difference = time_difference.days * 24 + time_difference.seconds // 3600
+                hours_difference = (
+                    time_difference.days * 24 + time_difference.seconds // 3600
+                )
                 if hours_difference > hours_after_first_checkin_to_inform:
                     # add a note to the reservation
                     communication.reservation_id.sudo().message_post(
