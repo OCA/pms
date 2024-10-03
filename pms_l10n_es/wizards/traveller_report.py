@@ -1141,9 +1141,9 @@ class TravellerReport(models.TransientModel):
             ]
         ):
             try:
-                if (
-                    fields.Datetime.now() - communication.create_date
-                ).hours > hours_after_first_checkin_to_inform:
+                time_difference = fields.Datetime.now() - communication.create_date
+                hours_difference = time_difference.days * 24 + time_difference.seconds // 3600
+                if hours_difference > hours_after_first_checkin_to_inform:
                     # add a note to the reservation
                     communication.reservation_id.sudo().message_post(
                         body=_(
