@@ -36,12 +36,20 @@ DELETE_OPERATION_CODE = "B"
 # Disable insecure request warnings
 # requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
+def replace_multiple_spaces(text: str) -> str:
+    # Replace 2 or more consecutive spaces with a single space
+    return re.sub(r'\s{2,}', ' ', text)
 
-def clean_string_ses(string):
-    clean_string = re.sub(r"[^a-zA-Z0-9\s]", "", string).upper()
 
+def clean_string_only_letters(string):
+    clean_string = re.sub(r"[^a-zA-Z\s]", "", string).upper()
     clean_string = " ".join(clean_string.split())
+    return
 
+
+def clean_string_only_numbers_and_letters(string):
+    clean_string = re.sub(r"[^a-zA-Z0-9\s]", "", string).upper()
+    clean_string = " ".join(clean_string.split())
     return clean_string
 
 
@@ -104,9 +112,13 @@ def _ses_xml_person_names_elements(persona, reservation, checkin_partner):
     if reservation:
         ses_firstname = False
         if reservation.partner_id.firstname:
-            ses_firstname = clean_string_ses(reservation.partner_id.firstname)
+            ses_firstname = clean_string_only_letters(reservation.partner_id.firstname)[:50]
         elif reservation.partner_name:
-            ses_firstname = clean_string_ses(reservation.partner_name).split(" ")[0]
+            ses_firstname = clean_string_only_letters(
+                replace_multiple_spaces(
+                    reservation.partner_name
+                )
+            ).split(" ")[0][:50]
         _ses_xml_text_element_and_validate(
             persona,
             "nombre",
@@ -115,9 +127,17 @@ def _ses_xml_person_names_elements(persona, reservation, checkin_partner):
         )
 
         if reservation.partner_id.lastname:
-            ses_lastname = clean_string_ses(reservation.partner_id.lastname)
-        elif reservation.partner_name and len(reservation.partner_name.split(" ")) > 1:
-            ses_lastname = clean_string_ses(reservation.partner_name).split(" ")[1]
+            ses_lastname = clean_string_only_letters(reservation.partner_id.lastname)[:50]
+        elif (reservation.partner_name and len(
+            replace_multiple_spaces(
+                reservation.partner_name
+            ).split(" ")) > 1
+        ):
+            ses_lastname = clean_string_only_letters(
+                replace_multiple_spaces(
+                    reservation.partner_name
+                )
+            ).split(" ")[1][:50]
         else:
             ses_lastname = "No aplica"
         ET.SubElement(persona, "apellido1").text = ses_lastname
@@ -126,13 +146,13 @@ def _ses_xml_person_names_elements(persona, reservation, checkin_partner):
         _ses_xml_text_element_and_validate(
             persona,
             "nombre",
-            clean_string_ses(checkin_partner.firstname),
+            clean_string_only_letters(checkin_partner.firstname)[:50],
             _("The guest does not have a name."),
         )
         _ses_xml_text_element_and_validate(
             persona,
             "apellido1",
-            clean_string_ses(checkin_partner.lastname),
+            clean_string_only_letters(checkin_partner.lastname)[:50],
             _("The guest does not have a lastname."),
         )
 
@@ -140,7 +160,7 @@ def _ses_xml_person_names_elements(persona, reservation, checkin_partner):
             _ses_xml_text_element_and_validate(
                 persona,
                 "apellido2",
-                clean_string_ses(checkin_partner.partner_id.lastname2),
+                clean_string_only_letters(checkin_partner.partner_id.lastname2)[:50],
                 _("The guest does not have a second lastname."),
             )
 
