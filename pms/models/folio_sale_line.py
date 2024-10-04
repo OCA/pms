@@ -1073,7 +1073,6 @@ class FolioSaleLine(models.Model):
         else:
             name = self.name
         res = {
-            "display_type": self.display_type,
             "sequence": self.sequence,
             "name": name,
             "product_id": self.product_id.id,
@@ -1082,11 +1081,13 @@ class FolioSaleLine(models.Model):
             "discount": self.discount,
             "price_unit": self.price_unit,
             "tax_ids": [(6, 0, self.tax_ids.ids)],
-            "analytic_account_id": self.folio_id.analytic_account_id.id,
+            # "analytic_account_id": self.folio_id.analytic_account_id.id,
             # "analytic_tag_ids": [(6, 0, self.analytic_tag_ids.ids)],
             "folio_line_ids": [(6, 0, [self.id])],
             "name_changed_by_user": False,
         }
+        if self.display_type:
+            res["display_type"] = self.display_type
         if optional_values:
             res.update(optional_values)
         if self.display_type:
