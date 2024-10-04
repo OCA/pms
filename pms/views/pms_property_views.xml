@@ -24,46 +24,46 @@
                     <notebook>
                         <page string="General Information" name="property_general">
                             <group>
-                                <div class="o_address_format">
-                                    <field
-                                        name="street"
-                                        placeholder="Street..."
-                                        class="o_address_street"
-                                    />
-                                    <field
-                                        name="street2"
-                                        placeholder="Street 2..."
-                                        class="o_address_street"
-                                    />
-                                    <field
-                                        name="city"
-                                        placeholder="City"
-                                        class="o_address_city"
-                                    />
-                                    <field
-                                        name="state_id"
-                                        class="o_address_state"
-                                        placeholder="State"
-                                    />
-                                    <field
-                                        name="zip"
-                                        placeholder="ZIP"
-                                        class="o_address_zip"
-                                    />
-                                    <field
-                                        name="country_id"
-                                        placeholder="Country"
-                                        class="o_address_country"
-                                    />
-                                </div>
-                            </group>
-                            <group>
-                                <div class="row">
-                                    <div class="col-6">
-                                        <label for="phone" />
-                                        <field name="phone" />
+                                <group>
+                                    <label for="street" string="Address" />
+                                    <div class="o_address_format">
+                                        <field
+                                            name="street"
+                                            placeholder="Street..."
+                                            class="o_address_street"
+                                        />
+                                        <field
+                                            name="street2"
+                                            placeholder="Street 2..."
+                                            class="o_address_street"
+                                        />
+                                        <field
+                                            name="city"
+                                            placeholder="City"
+                                            class="o_address_city"
+                                        />
+                                        <field
+                                            name="state_id"
+                                            class="o_address_state"
+                                            placeholder="State"
+                                        />
+                                        <field
+                                            name="zip"
+                                            placeholder="ZIP"
+                                            class="o_address_zip"
+                                        />
+                                        <field
+                                            name="country_id"
+                                            placeholder="Country"
+                                            class="o_address_country"
+                                        />
                                     </div>
-                                </div>
+                                </group>
+                                <group>
+                                    <field name="phone" />
+                                    <field name="email" />
+                                    <field name="website" />
+                                </group>
                             </group>
                         </page>
                         <page string="Settings" name="property_settings">
@@ -123,47 +123,38 @@
                         </page>
                         <page string="Email Configuration">
                             <group>
-                                <div class="row">
-                                    <div class="col-6">
-                                        <group
-                                            string="Email Templates"
-                                            name="email_templates"
-                                        >
-                                            <field
-                                                string="Confirmation Email"
-                                                name="property_confirmed_template"
-                                            />
-                                            <field
-                                                string="Modification Email"
-                                                name="property_modified_template"
-                                            />
-                                            <field
-                                                string="Cancellation Email"
-                                                name="property_canceled_template"
-                                            />
-                                            <field
-                                                string="Exit Email"
-                                                name="property_exit_template"
-                                            />
-                                        </group>
-                                    </div>
-                                    <div class="col-6">
-                                        <group string="Auto Send Email">
-                                            <field
-                                                name="is_confirmed_auto_mail"
-                                                string="Confirmation Email"
-                                            />
-                                            <field
-                                                name="is_modified_auto_mail"
-                                                string="Modification Email"
-                                            />
-                                            <field
-                                                name="is_canceled_auto_mail"
-                                                string="Cancellation Email"
-                                            />
-                                        </group>
-                                    </div>
-                                </div>
+                                <group string="Email Templates" name="email_templates">
+                                    <field
+                                        string="Confirmation Email"
+                                        name="property_confirmed_template"
+                                    />
+                                    <field
+                                        string="Modification Email"
+                                        name="property_modified_template"
+                                    />
+                                    <field
+                                        string="Cancellation Email"
+                                        name="property_canceled_template"
+                                    />
+                                    <field
+                                        string="Exit Email"
+                                        name="property_exit_template"
+                                    />
+                                </group>
+                                <group string="Auto Send Email">
+                                    <field
+                                        name="is_confirmed_auto_mail"
+                                        string="Confirmation Email"
+                                    />
+                                    <field
+                                        name="is_modified_auto_mail"
+                                        string="Modification Email"
+                                    />
+                                    <field
+                                        name="is_canceled_auto_mail"
+                                        string="Cancellation Email"
+                                    />
+                                </group>
                             </group>
                             <group
                                 string="Mail Information"
