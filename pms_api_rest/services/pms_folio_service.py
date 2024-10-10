@@ -1940,17 +1940,17 @@ class PmsFolioService(Component):
         # ):
         #     for reservation in folio.reservation_ids:
         #         reservation.action_confirm()
-        if (
-            pms_folio_info.internalComment is not None
-            and pms_folio_info.internalComment not in folio.internal_comment
-        ):
-            folio_vals.update(
-                {
-                    "internal_comment": folio.internal_comment
-                    + " "
-                    + pms_folio_info.internalComment
-                }
-            )
+        if pms_folio_info.internalComment is not None:
+            if not folio.internal_comment:
+                folio_vals.update({"internal_comment": pms_folio_info.internalComment})
+            elif pms_folio_info.internalComment not in folio.internal_comment:
+                folio_vals.update(
+                    {
+                        "internal_comment": folio.internal_comment
+                        + " "
+                        + pms_folio_info.internalComment
+                    }
+                )
         if pms_folio_info.partnerId and folio.partner_id.id != pms_folio_info.partnerId:
             folio_vals.update({"partner_id": pms_folio_info.partnerId})
         elif not pms_folio_info.partnerId:
