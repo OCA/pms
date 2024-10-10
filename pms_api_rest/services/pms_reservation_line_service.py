@@ -86,7 +86,6 @@ class PmsReservationLineService(Component):
             ]
             PmsReservationLineInfo = self.env.datamodels["pms.reservation.line.info"]
             for reservation_line in self.env["pms.reservation.line"].search(domain):
-                print(reservation_line.state)
                 result.append(
                     PmsReservationLineInfo(
                         id=reservation_line.id,
