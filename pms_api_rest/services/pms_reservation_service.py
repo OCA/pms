@@ -676,7 +676,6 @@ class PmsReservationService(Component):
     def write_reservation_checkin_partner(
         self, reservation_id, checkin_partner_id, pms_checkin_partner_info
     ):
-        print(pms_checkin_partner_info)
         checkin_partner = self.env["pms.checkin.partner"].search(
             [("id", "=", checkin_partner_id), ("reservation_id", "=", reservation_id)]
         )

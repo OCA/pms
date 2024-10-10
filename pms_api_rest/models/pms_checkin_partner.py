@@ -7,9 +7,11 @@ class PmsCheckinPartner(models.Model):
     origin_input_data = fields.Selection(
         [
             ("wizard", "Wizard"),
+            ("wizard-precheckin", "Wizard-Precheckin"),
             ("form", "Form"),
             ("regular_customer", "Regular Customer"),
             ("ocr", "OCR"),
+            ("ocr-precheckin", "OCR-Precheckin"),
             ("precheckin", "Precheckin"),
         ],
         string="Origin Input Data",
