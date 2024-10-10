@@ -991,9 +991,14 @@ class FolioSaleLine(models.Model):
                         )
                     )
                 # We check that dont modified the protected fields in locked folios
+                # if field is float, we need to round it to compare with the original value
                 if self.filtered(
                     lambda l: any(
-                        values.get(field.name) != getattr(l, field.name)
+                        round(values.get(field.name), 2)
+                        != round(getattr(l, field.name), 2)
+                        if isinstance(values.get(field.name), float)
+                        and isinstance(getattr(l, field.name), float)
+                        else values.get(field.name) != getattr(l, field.name)
                         for field in fields_modified
                     )
                 ):
