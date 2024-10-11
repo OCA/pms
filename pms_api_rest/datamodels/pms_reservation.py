@@ -44,7 +44,7 @@ class PmsReservationShortInfo(Datamodel):
     reservationType = fields.String(required=False, allow_none=True)
     segmentationId = fields.Integer(required=False, allow_none=True)
     isOverNightRoom = fields.Boolean(required=False, allow_none=True)
-
+    lastUpdateFrom = fields.String(required=False, allow_none=True)
 
 
 class PmsReservationInfo(Datamodel):

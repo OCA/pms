@@ -715,6 +715,9 @@ class PmsReservationService(Component):
                     ),
                 )
             )
+        if pms_search_param.lastUpdateFrom:
+            last_update = fields.Datetime.from_string(pms_search_param.lastUpdateFrom)
+            domain.append(("write_date", ">=", last_update))
 
         reservations = self.env["pms.reservation"].search(domain)
         PmsReservationInfo = self.env.datamodels["pms.reservation.info"]
