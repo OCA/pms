@@ -159,6 +159,12 @@ class PmsFolioService(Component):
         if folio_search_param.ids:
             domain_filter.append([("folio_id", "in", folio_search_param.ids)])
 
+        if folio_search_param.lastUpdateFrom:
+            last_update_from = fields.Datetime.from_string(
+                folio_search_param.lastUpdateFrom
+            )
+            domain_filter.append([("write_date", ">=", last_update_from)])
+
         if folio_search_param.filter:
             target = folio_search_param.filter
             if "@" in target:
