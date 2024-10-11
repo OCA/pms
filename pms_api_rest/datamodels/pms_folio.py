@@ -16,6 +16,7 @@ class PmsFolioSearchParam(Datamodel):
     ids = fields.List(fields.Integer(), required=False)
     createDateFrom = fields.String(required=False, allow_none=True)
     createDateTo = fields.String(required=False, allow_none=True)
+    lastUpdateFrom = fields.String(required=False, allow_none=True)
 
 
 class PmsFolioInfo(Datamodel):
