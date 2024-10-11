@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+
+    <t
+        t-name="pos_pms_link.PaymentScreen"
+        t-inherit="point_of_sale.PaymentScreen"
+        t-inherit-mode="extension"
+        owl="1"
+    >
+        <xpath expr="//div[hasclass('paymentmethods')]" position="inside">
+            <div class="button paymentmethod">
+                <div
+                    class="payment-name"
+                    t-if="env.pos.config.pay_on_reservation and currentOrder.paymentlines.length == 0"
+                    t-on-click="selectReservation"
+                >Reservation</div>
+            </div>
+        </xpath>
+    </t>
+
+</templates>

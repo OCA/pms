@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+<template id="assets" name="pos_pms_link assets" inherit_id="point_of_sale.assets">
+    <xpath expr="." position="inside">
+        <script type="text/javascript" src="/pos_pms_link/static/src/js/db.js" />
+        <script type="text/javascript" src="/pos_pms_link/static/src/js/models.js" />
+        <script
+                type="text/javascript"
+                src="/pos_pms_link/static/src/js/ReservationSelectionButton.js"
+            />
+        <script
+                type="text/javascript"
+                src="/pos_pms_link/static/src/js/Screens/ReservationListScreen/ReservationDetailsEdit.js"
+            />
+        <script
+                type="text/javascript"
+                src="/pos_pms_link/static/src/js/Screens/ReservationListScreen/ReservationLine.js"
+            />
+        <script
+                type="text/javascript"
+                src="/pos_pms_link/static/src/js/Screens/ReservationListScreen/ReservationListScreen.js"
+            />
+        <script
+                type="text/javascript"
+                src="/pos_pms_link/static/src/js/Screens/PaymentScreen/PaymentScreen.js"
+            />
+        <script
+                type="text/javascript"
+                src="/pos_pms_link/static/src/js/Screens/ReceiptScreen/OrderReceipt.js"
+            />
+    </xpath>
+
+</template>
+
+</odoo>

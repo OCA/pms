@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="ReservationLine" owl="1">
+        <tr
+            t-attf-class="partner-line {{highlight}}"
+            t-att-data-id="props.reservation.id"
+            t-on-click.stop="() => this.props.onClickReservation(props.reservation)"
+        >
+            <td>
+                <t t-esc="props.reservation.name" />
+                <span t-if="highlight">
+                    <br /><button
+                        class="edit-partner-button"
+                        t-on-click.stop="() => this.props.onClickEdit(props.reservation)"
+                    >VIEW</button>
+                </span>
+            </td>
+            <td>
+                <t t-esc="props.reservation.partner_name" />
+            </td>
+            <td>
+                <t t-esc="props.reservation.rooms" />
+            </td>
+            <td>
+                <t t-esc="props.reservation.checkin" />
+            </td>
+            <td>
+                <t t-esc="props.reservation.checkout" />
+            </td>
+            <td>
+                <t t-esc="props.reservation.adults" />
+            </td>
+            <td>
+                <t t-esc="props.reservation.children" />
+            </td>
+        </tr>
+    </t>
+
+</templates>
