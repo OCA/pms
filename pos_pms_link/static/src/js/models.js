@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 /*
 ##############################################################################
 #    License AGPL-3 - See http://www.gnu.org/licenses/agpl-3.0.html
@@ -20,62 +22,102 @@
 ##############################################################################
 */
 
-odoo.define("pos_pms_link.models", function (require) {
-    "use strict";
+import Registries from "point_of_sale.Registries";
+import {PosGlobalState, Order, Orderline} from "point_of_sale.models";
 
-    var models = require("point_of_sale.models");
-    var utils = require("web.utils");
-    var round_di = utils.round_decimals;
-    var core = require("web.core");
-    const {Gui} = require("point_of_sale.Gui");
-    var QWeb = core.qweb;
-    const session = require("web.session");
+const PosPmsGlobalState = (PosGlobalState) =>
+    class extends PosGlobalState {
+        constructor(obj) {
+            super(obj);
+        }
 
-    var _t = core._t;
+        //@override
+        async _processData(loadedData) {
+            await super._processData(...arguments);
+            if (this.config.pay_on_reservation) {
+                this.reservations = loadedData["pms.reservation"];
+                this.loadPmsReservation();
+                this.addReservations(this.reservations);
+            }
+        }
 
-    var _super_order = models.Order.prototype;
+        loadPmsReservation() {
+            if (this.config.pay_on_reservation) {
+                this.reservations_by_id = {};
+                this.services_by_id = {};
+                for (let reservation of this.reservations) {
+                    this.reservations_by_id[reservation.id] = reservation;
+                    for (let service of reservation.services) {
+                        this.services_by_id[service.id] = service;
+                        service.reservation = reservation;
+                    }
+                }
+            }
+        }
 
-    models.Order = models.Order.extend({
-        initialize: function (attr, options) {
-            _super_order.initialize.apply(this, arguments);
+        async _loadReservations(reservartionIds) {
+            if (reservartionIds.lenght > 0) {
+                var domain = [["id", "in", reservartionIds]];
+                const fetchedReservations = await this.env.services.rpc(
+                    {
+                        model: "pos.session",
+                        method: "get_pos_ui_pms_reservation_by_params",
+                        args: [[odoo.pos_session_id], {domain}],
+                    },
+                    {
+                        timeout: 3000,
+                        shadow: true,
+                    }
+                );
+                this.addReservations(fetchedReservations);
+            }
+        }
+
+        addReservations(reservations) {
+            return this.db.add_reservations(reservations);
+        }
+    };
+
+Registries.Model.extend(PosGlobalState, PosPmsGlobalState);
+
+const PosPmsOrder = (Order) =>
+    class extends Order {
+        constructor(obj, options) {
+            super(obj, options);
             this.paid_on_reservation = this.paid_on_reservation || null;
             this.pms_reservation_id = this.pms_reservation_id || null;
-        },
+        }
 
-        get_paid_on_reservation: function () {
-            var paid_on_reservation = this.paid_on_reservation;
-            return paid_on_reservation;
-        },
+        get_paid_on_reservation() {
+            return this.paid_on_reservation;
+        }
 
-        set_paid_on_reservation: function (value) {
+        set_paid_on_reservation(value) {
             this.paid_on_reservation = value;
-            this.trigger("change", this);
-        },
+        }
 
-        get_pms_reservation_id: function () {
-            var pms_reservation_id = this.pms_reservation_id;
-            return pms_reservation_id;
-        },
+        get_pms_reservation_id() {
+            return this.pms_reservation_id;
+        }
 
-        set_pms_reservation_id: function (value) {
+        set_pms_reservation_id(value) {
             this.pms_reservation_id = value;
-            this.trigger("change", this);
-        },
+        }
 
-        export_as_JSON: function () {
-            var json = _super_order.export_as_JSON.apply(this, arguments);
+        export_as_JSON() {
+            var json = super.export_as_JSON();
             json.paid_on_reservation = this.paid_on_reservation;
             json.pms_reservation_id = this.pms_reservation_id;
             return json;
-        },
+        }
 
-        init_from_JSON: function (json) {
-            _super_order.init_from_JSON.apply(this, arguments);
+        init_from_JSON(json) {
+            super.init_from_JSON(json);
             this.paid_on_reservation = json.paid_on_reservation;
             this.pms_reservation_id = json.pms_reservation_id;
-        },
+        }
 
-        apply_ms_data: function (data) {
+        apply_ms_data(data) {
             if (typeof data.paid_on_reservation !== "undefined") {
                 this.set_paid_on_reservation(data.paid_on_reservation);
             }
@@ -83,9 +125,9 @@ odoo.define("pos_pms_link.models", function (require) {
                 this.set_pms_reservation_id(data.pms_reservation_id);
             }
             this.trigger("change", this);
-        },
+        }
 
-        add_reservation_services: function (reservation) {
+        add_reservation_services(reservation) {
             var self = this;
             var d = new Date();
             var month = d.getMonth() + 1;
@@ -100,10 +142,10 @@ odoo.define("pos_pms_link.models", function (require) {
                 (day < 10 ? "0" : "") +
                 day;
 
-            var service_line_ids =
-                reservation.service_ids.map((x) => x.service_line_ids) || false;
+            var service_lines =
+                reservation.services.map((x) => x.service_lines) || false;
             var today_service_lines = [];
-            _.each(service_line_ids, function (service_array) {
+            _.each(service_lines, function (service_array) {
                 today_service_lines.push(
                     service_array.find((x) => x.date === current_date)
                 );
@@ -112,12 +154,13 @@ odoo.define("pos_pms_link.models", function (require) {
             _.each(today_service_lines, function (service_line_id) {
                 if (service_line_id) {
                     var qty = service_line_id.day_qty;
-                    if (service_line_id.pos_order_line_ids.length > 0) {
-                        _.each(service_line_id.pos_order_line_ids, function (
-                            order_line_id
-                        ) {
-                            qty -= order_line_id.qty;
-                        });
+                    if (service_line_id.pos_order_lines.length > 0) {
+                        _.each(
+                            service_line_id.pos_order_lines,
+                            function (order_line_id) {
+                                qty -= order_line_id.qty;
+                            }
+                        );
                     }
                     if (qty > 0) {
                         var options = {
@@ -130,45 +173,56 @@ odoo.define("pos_pms_link.models", function (require) {
                         );
                         self.pos.get_order().add_product(service_product, options);
                         var last_line = self.pos.get_order().get_last_orderline();
-                        last_line.set_note(
-                            "RESERVATION: " +
-                                reservation.name +
-                                " ROOMS: " +
-                                reservation.rooms
-                        );
-                        var r_service_line_id = reservation.service_ids
-                            .map((x) => x.service_line_ids)[0]
+                        if (last_line) {
+                            last_line.set_note(
+                                "RESERVATION: " +
+                                    reservation.name +
+                                    " ROOMS: " +
+                                    reservation.rooms
+                            );
+                        }
+                        var r_service_line_id = reservation.services
+                            .map((x) => x.service_lines)[0]
                             .find((x) => x.id == service_line_id.id);
-                        if (r_service_line_id.pos_order_line_ids.length == 0) {
-                            r_service_line_id.pos_order_line_ids.push({
+                        if (
+                            r_service_line_id &&
+                            r_service_line_id.pos_order_lines.length == 0
+                        ) {
+                            r_service_line_id.pos_order_lines.push({
                                 id: 0,
                                 qty: parseInt(qty),
                             });
                         } else if (
-                            r_service_line_id.pos_order_line_ids.length == 1 &&
-                            r_service_line_id.pos_order_line_ids[0].id == 0
+                            r_service_line_id &&
+                            r_service_line_id.pos_order_lines.length == 1 &&
+                            r_service_line_id.pos_order_lines[0].id == 0
                         ) {
-                            r_service_line_id.pos_order_line_ids[0].qty = parseInt(qty);
+                            r_service_line_id.pos_order_lines[0].qty = parseInt(qty);
                         } else if (
-                            r_service_line_id.pos_order_line_ids.length == 1 &&
-                            r_service_line_id.pos_order_line_ids[0].id != 0
+                            r_service_line_id &&
+                            r_service_line_id.pos_order_lines.length == 1 &&
+                            r_service_line_id.pos_order_lines[0].id != 0
                         ) {
-                            r_service_line_id.pos_order_line_ids.push({
+                            r_service_line_id.pos_order_lines.push({
                                 id: 0,
                                 qty: parseInt(qty),
                             });
-                        } else if (r_service_line_id.pos_order_line_ids.length > 1) {
+                        } else if (
+                            r_service_line_id &&
+                            r_service_line_id.pos_order_lines.length > 1
+                        ) {
                             var id_in_lines = false;
-                            _.each(r_service_line_id.pos_order_line_ids, function (
-                                pos_line_id
-                            ) {
-                                if (pos_line_id.id == self.id) {
-                                    pos_line_id.qty = parseInt(qty);
-                                    id_in_lines = true;
+                            _.each(
+                                r_service_line_id.pos_order_lines,
+                                function (pos_line_id) {
+                                    if (pos_line_id.id == self.id) {
+                                        pos_line_id.qty = parseInt(qty);
+                                        id_in_lines = true;
+                                    }
                                 }
-                            });
+                            );
                             if (id_in_lines == false) {
-                                r_service_line_id.pos_order_line_ids.push({
+                                r_service_line_id.pos_order_lines.push({
                                     id: self.id,
                                     qty: parseInt(qty),
                                 });
@@ -177,65 +231,64 @@ odoo.define("pos_pms_link.models", function (require) {
                     }
                 }
             });
-        },
+        }
 
-        add_product: function (product, options) {
-            _super_order.add_product.apply(this, arguments);
+        add_product(product, options) {
+            super.add_product(...arguments);
             if (options.pms_service_line_id) {
                 this.selected_orderline.set_pms_service_line_id(
                     options.pms_service_line_id
                 );
             }
-        },
+        }
 
-        export_for_printing: function () {
-            const result = _super_order.export_for_printing.apply(this, arguments);
-            result.paid_on_reservation = this.paid_on_reservation;
-            result.pms_reservation_id = this.pms_reservation_id;
-            return result;
-        },
-    });
+        export_for_printing() {
+            var res = super.export_for_printing();
+            res.paid_on_reservation = this.paid_on_reservation;
+            res.pms_reservation_id = this.pms_reservation_id;
+            return res;
+        }
+    };
 
-    var _super_orderline = models.Orderline.prototype;
+Registries.Model.extend(Order, PosPmsOrder);
 
-    models.Orderline = models.Orderline.extend({
-        initialize: function (attr, options) {
-            _super_orderline.initialize.call(this, attr, options);
+const PosPmsOrderline = (Orderline) =>
+    class extends Orderline {
+        constructor(obj, options) {
+            super(obj, options);
             this.server_id = this.server_id || null;
             this.pms_service_line_id = this.pms_service_line_id || null;
-        },
+        }
 
-        get_pms_service_line_id: function () {
-            var pms_service_line_id = this.pms_service_line_id;
-            return pms_service_line_id;
-        },
+        get_pms_service_line_id() {
+            return this.pms_service_line_id;
+        }
 
-        set_pms_service_line_id: function (value) {
+        set_pms_service_line_id(value) {
             this.pms_service_line_id = value;
-            this.trigger("change", this);
-        },
+        }
 
-        export_as_JSON: function () {
-            var json = _super_orderline.export_as_JSON.apply(this, arguments);
+        export_as_JSON() {
+            var json = super.export_as_JSON();
             json.pms_service_line_id = this.pms_service_line_id;
             return json;
-        },
+        }
 
-        init_from_JSON: function (json) {
-            _super_orderline.init_from_JSON.apply(this, arguments);
+        init_from_JSON(json) {
+            super.init_from_JSON(json);
             this.pms_service_line_id = json.pms_service_line_id;
             this.server_id = json.server_id;
-        },
+        }
 
-        apply_ms_data: function (data) {
+        apply_ms_data(data) {
             if (typeof data.pms_service_line_id !== "undefined") {
                 this.set_pms_service_line_id(data.pms_service_line_id);
             }
             this.trigger("change", this);
-        },
+        }
 
-        set_quantity: function (quantity, keep_price) {
-            _super_orderline.set_quantity.apply(this, arguments);
+        set_quantity(quantity, keep_price) {
+            var res = super.set_quantity(quantity, keep_price);
             var is_real_qty = true;
             if (!quantity || quantity == "remove") {
                 is_real_qty = false;
@@ -243,74 +296,48 @@ odoo.define("pos_pms_link.models", function (require) {
             var self = this;
             if (self.pms_service_line_id) {
                 this.pos.reservations.map(function (x) {
-                    _.each(x.service_ids, function (service) {
-                        _.each(service.service_line_ids, function (line) {
+                    _.each(x.services, function (service) {
+                        _.each(service.service_lines, function (line) {
                             if (line.id == self.pms_service_line_id) {
-                                if (
-                                    line.pos_order_line_ids.length == 0 &&
-                                    is_real_qty
-                                ) {
-                                    line.pos_order_line_ids.push({
+                                // Si no hay líneas de pedido y la cantidad es real, agregamos una nueva
+                                if (line.pos_order_lines.length == 0 && is_real_qty) {
+                                    line.pos_order_lines.push({
                                         id: self.server_id || 0,
                                         qty: parseInt(quantity),
                                     });
-                                } else if (
-                                    line.pos_order_line_ids.length == 1 &&
-                                    line.pos_order_line_ids[0].id == self.server_id
+                                }
+                                // Si ya existe una línea de pedido con el mismo ID
+                                else if (
+                                    line.pos_order_lines.length == 1 &&
+                                    line.pos_order_lines[0].id == self.server_id
                                 ) {
                                     if (is_real_qty) {
-                                        line.pos_order_line_ids[0].qty = parseInt(
-                                            quantity
-                                        );
+                                        // Actualizamos la cantidad
+                                        line.pos_order_lines[0].qty =
+                                            parseInt(quantity);
                                     } else {
-                                        line.pos_order_line_ids.pop(
-                                            line.pos_order_line_ids[0]
-                                        );
+                                        // Eliminamos la línea con splice() en lugar de pop()
+                                        line.pos_order_lines.splice(0, 1);
                                     }
-                                } else if (
-                                    line.pos_order_line_ids.length == 1 &&
-                                    line.pos_order_line_ids[0].id != self.server_id &&
-                                    is_real_qty
-                                ) {
-                                    line.pos_order_line_ids.push({
-                                        id: self.server_id || 0,
-                                        qty: parseInt(quantity),
-                                    });
-                                } else if (line.pos_order_line_ids.length > 1) {
-                                    var id_in_lines = false;
-                                    _.each(line.pos_order_line_ids, function (
-                                        pos_line_id
-                                    ) {
-                                        if (pos_line_id.id == self.server_id) {
-                                            if (is_real_qty) {
-                                                pos_line_id.qty = parseInt(quantity);
-                                            } else {
-                                                line.pos_order_line_ids.pop(
-                                                    pos_line_id
-                                                );
+                                }
+                                // Si hay varias líneas, buscamos por ID y eliminamos correctamente
+                                else if (line.pos_order_lines.length > 1) {
+                                    var index_to_remove = -1;
+                                    _.each(
+                                        line.pos_order_lines,
+                                        function (pos_line_id, index) {
+                                            if (pos_line_id.id == self.server_id) {
+                                                if (is_real_qty) {
+                                                    pos_line_id.qty =
+                                                        parseInt(quantity);
+                                                } else {
+                                                    index_to_remove = index;
+                                                }
                                             }
-                                            id_in_lines = true;
                                         }
-                                    });
-                                    _.each(line.pos_order_line_ids, function (
-                                        pos_line_id
-                                    ) {
-                                        if (pos_line_id.id == 0) {
-                                            if (is_real_qty) {
-                                                pos_line_id.qty = parseInt(quantity);
-                                            } else {
-                                                line.pos_order_line_ids.pop(
-                                                    pos_line_id
-                                                );
-                                            }
-                                            id_in_lines = true;
-                                        }
-                                    });
-                                    if (id_in_lines == false && is_real_qty) {
-                                        line.pos_order_line_ids.push({
-                                            id: self.server_id || 0,
-                                            qty: parseInt(quantity),
-                                        });
+                                    );
+                                    if (index_to_remove !== -1) {
+                                        line.pos_order_lines.splice(index_to_remove, 1);
                                     }
                                 }
                             }
@@ -318,173 +345,8 @@ odoo.define("pos_pms_link.models", function (require) {
                     });
                 });
             }
-        },
-    });
-
-    var _super_posmodel = models.PosModel.prototype;
-
-    models.PosModel = models.PosModel.extend({
-        initialize: function (attr, options) {
-            _super_posmodel.initialize.apply(this, arguments);
-            this.reservations = [];
-        },
-    });
-
-    models.load_models({
-        model: "pms.reservation",
-        fields: [
-            "name",
-            "id",
-            "state",
-            "service_ids",
-            "partner_name",
-            "adults",
-            "children",
-            "checkin",
-            "checkout",
-            "folio_internal_comment",
-            "rooms",
-        ],
-        context: function (self) {
-            var ctx_copy = session.user_context;
-            ctx_copy.pos_user_force = true;
-            return ctx_copy;
-        },
-        domain: function (self) {
-            var d = new Date();
-            var month = d.getMonth() + 1;
-            var day = d.getDate();
-
-            var current_date =
-                d.getFullYear() +
-                "-" +
-                (month < 10 ? "0" : "") +
-                month +
-                "-" +
-                (day < 10 ? "0" : "") +
-                day;
-
-            var domain = [
-                "|",
-                ["state", "=", "onboard"],
-                "&",
-                ["checkout", "=", current_date],
-                ["state", "!=", "cancel"],
-            ];
-            if (self.config_id && self.config.reservation_allowed_propertie_ids)
-                domain.push([
-                    "pms_property_id",
-                    "in",
-                    self.config.reservation_allowed_propertie_ids,
-                ]);
-            return domain;
-        },
-        loaded: function (self, reservations) {
-            self.reservations = reservations;
-            self.db.add_reservations(reservations);
-        },
-    });
-
-    models.load_models({
-        model: "pms.service",
-        fields: ["name", "id", "service_line_ids", "product_id", "reservation_id"],
-        context: function (self) {
-            var ctx_copy = session.user_context;
-            ctx_copy.pos_user_force = true;
-            return ctx_copy;
-        },
-        domain: function (self) {
-            return [["reservation_id", "in", self.reservations.map((x) => x.id)]];
-        },
-        loaded: function (self, services) {
-            self.services = services;
-            var services = [];
-            _.each(self.reservations, function (reservation) {
-                services = [];
-                _.each(reservation.service_ids, function (service_id) {
-                    services.push(self.services.find((x) => x.id === service_id));
-                });
-                reservation.service_ids = services;
-            });
-        },
-    });
-
-    models.load_models({
-        model: "pms.service.line",
-        fields: [
-            "date",
-            "service_id",
-            "id",
-            "product_id",
-            "day_qty",
-            "pos_order_line_ids",
-        ],
-        context: function (self) {
-            var ctx_copy = session.user_context;
-            ctx_copy.pos_user_force = true;
-            return ctx_copy;
-        },
-        domain: function (self) {
-            return [["service_id", "in", self.services.map((x) => x.id)]];
-        },
-        loaded: function (self, service_lines) {
-            self.service_lines = service_lines;
-            var service_lines = [];
-            _.each(self.reservations, function (reservation) {
-                _.each(reservation.service_ids, function (service_id) {
-                    service_lines = [];
-                    _.each(service_id.service_line_ids, function (line_id) {
-                        service_lines.push(
-                            self.service_lines.find((x) => x.id === line_id)
-                        );
-                    });
-                    service_id.service_line_ids = service_lines;
-                });
-            });
-        },
-    });
-
-    models.load_models({
-        model: "pos.order.line",
-        fields: ["qty", "id"],
-        domain: function (self) {
-            var order_line_ids = [];
-            _.each(self.service_lines, function (service_line) {
-                if (service_line.pos_order_line_ids.length > 0) {
-                    _.each(service_line.pos_order_line_ids, function (line_id) {
-                        order_line_ids.push(line_id);
-                    });
-                }
-            });
-            return [["id", "in", order_line_ids]];
-        },
-        loaded: function (self, pos_order_lines) {
-            self.pos_order_lines = pos_order_lines;
-            _.each(self.service_lines, function (service_line) {
-                var order_lines = [];
-                _.each(service_line.pos_order_line_ids, function (order_line) {
-                    order_lines.push(
-                        self.pos_order_lines.find((x) => x.id === order_line)
-                    );
-                });
-                service_line.pos_order_line_ids = order_lines;
-            });
-        },
-    });
-
-    models.PosModel.prototype.models.some(function (model) {
-        if (model.model !== "pos.config" && model.model !== "product.pricelist.item") {
-            return false;
+            return res;
         }
-        const superContext = model.context;
-        model.context = function () {
-            const context = {};
-            if (superContext) {
-                context = superContext.apply(this, arguments);
-            }
-            context.pos_user_force = true;
-            return context;
-        };
-        return true;
-    });
-});
+    };
+
+Registries.Model.extend(Orderline, PosPmsOrderline);

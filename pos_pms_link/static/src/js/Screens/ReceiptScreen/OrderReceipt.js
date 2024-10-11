@@ -1,25 +1,21 @@
-odoo.define("pos_pms_link.OrderReceipt", function (require) {
-    "use strict";
+/** @odoo-module **/
 
-    const OrderReceipt = require("point_of_sale.OrderReceipt");
-    const Registries = require("point_of_sale.Registries");
-    const session = require("web.session");
+import OrderReceipt from "point_of_sale.OrderReceipt";
+import Registries from "point_of_sale.Registries";
 
-    const PosPMSLinkOrderReceipt = (OrderReceipt) =>
-        class extends OrderReceipt {
-            get paid_on_reservation() {
-                return this.receiptEnv.receipt.paid_on_reservation;
-            }
-            get reservation_name() {
-                return (
-                    this.env.pos.db.get_reservation_by_id(
-                        this.receiptEnv.receipt.pms_reservation_id
-                    ).partner_name || ""
-                );
-            }
-        };
+const PosPMSLinkOrderReceipt = (OrderReceipt) =>
+    class extends OrderReceipt {
+        get paid_on_reservation() {
+            return this._receiptEnv.receipt.paid_on_reservation;
+        }
 
-    Registries.Component.extend(OrderReceipt, PosPMSLinkOrderReceipt);
+        get reservation_name() {
+            return (
+                this.env.pos.db.get_reservation_by_id(
+                    this._receiptEnv.receipt.pms_reservation_id
+                ).partner_name || ""
+            );
+        }
+    };
 
-    return OrderReceipt;
-});
+Registries.Component.extend(OrderReceipt, PosPMSLinkOrderReceipt);

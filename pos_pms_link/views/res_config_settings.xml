@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<odoo>
+
+
+    <record id="res_config_settings_view_form_pos_pms" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.pos_pms</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//h2[@name='pos_interface']/../div[1]" position="inside">
+                <div class="col-12 col-lg-6 o_setting_box">
+                    <div class="o_setting_left_pane">
+                        <field name="pos_close_session_allowed" />
+                        <field name="pos_pay_on_reservation" />
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="pos_close_session_allowed" />
+                        <div class="text-muted">
+                            Always allow to close session
+                        </div>
+                        <label for="pos_pay_on_reservation" />
+                        <div class="text-muted">
+                            Allow pay on reservations
+                        </div>
+                        <div
+                            attrs="{'invisible': [('pos_pay_on_reservation', '=', False)]}"
+                        >
+                            <div class="content-group mt16">
+                                <field name="pos_pay_on_reservation_method_id" />
+                            </div>
+
+                            <label for="pos_pay_on_reservation" />
+                            <div class="text-muted">
+                                Allowed properties
+                            </div>
+                            <div class="content-group mt16">
+                                <field
+                                    name="pos_reservation_allowed_propertie_ids"
+                                    widget="many2many_tags"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+            <xpath expr="//div[@id='pos_payment_section']" position="inside">
+                <div
+                    class="col-12 col-lg-6 o_setting_box"
+                    attrs="{'invisible': [('pos_cash_control', '=', False)]}"
+                >
+                    <div class="o_setting_left_pane">
+                        <field name="pos_cash_in_out_allowed" />
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="pos_cash_in_out_allowed" />
+                        <div class="text-muted">
+                            Allow cash in/out operations for all employees
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="col-12 col-lg-6 o_setting_box"
+                    attrs="{'invisible': [('pos_cash_control', '=', False)]}"
+                >
+                    <div class="o_setting_left_pane">
+                        <field name="pos_cash_move_partner" />
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="pos_cash_move_partner" />
+                        <div class="text-muted">
+                            Select partner for cash moves
+                        </div>
+                    </div>
+                </div>
+
+            </xpath>
+        </field>
+    </record>
+</odoo>

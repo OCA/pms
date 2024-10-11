@@ -3,16 +3,16 @@
 
     <t t-name="ReservationLine" owl="1">
         <tr
-            t-attf-class="client-line {{highlight}}"
+            t-attf-class="partner-line {{highlight}}"
             t-att-data-id="props.reservation.id"
-            t-on-click="trigger('click-reservation', {reservation: props.reservation})"
+            t-on-click.stop="() => this.props.onClickReservation(props.reservation)"
         >
             <td>
                 <t t-esc="props.reservation.name" />
                 <span t-if="highlight">
                     <br /><button
-                        class="edit-client-button"
-                        t-on-click.stop="trigger('click-edit')"
+                        class="edit-partner-button"
+                        t-on-click.stop="() => this.props.onClickEdit(props.reservation)"
                     >VIEW</button>
                 </span>
             </td>

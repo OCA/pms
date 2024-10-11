@@ -2,7 +2,7 @@
 <templates id="template" xml:space="preserve">
 
     <t t-name="ReservationSelectionButton" owl="1">
-        <div class="control-button">
+        <div class="control-button" t-on-click="onClick">
             <i class="fa fa-sort" />
             <span> </span>
             <span>Reservation #</span>

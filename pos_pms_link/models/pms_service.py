@@ -36,3 +36,14 @@ class PMSService(models.Model):
             return super(PMSService, self).search_read(
                 domain, fields, offset, limit, order
             )
+
+    @api.model
+    def create_from_ui(self, reservation):
+        """create or modify a reservation from the point of sale ui.
+        reservation contains the reservation's fields."""
+        reservation_id = reservation.pop("id", False)
+        if reservation_id:  # Modifying existing reservation
+            self.browse(reservation_id).write(reservation)
+        else:
+            reservation_id = self.create(reservation).id
+        return reservation_id

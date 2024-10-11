@@ -21,13 +21,19 @@
 import logging
 from collections import defaultdict
 
-from odoo import models
+from odoo import _, fields, models
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
 
 class PosSession(models.Model):
     _inherit = "pos.session"
+
+    def _load_model(self, model):
+        ctx = self.env.context.copy()
+        ctx.update({"pos_user_force": True})
+        return super(PosSession, self.with_context(ctx))._load_model(model)
 
     def _accumulate_amounts(self, data):  # noqa: C901  # too-complex
         res = super(PosSession, self)._accumulate_amounts(data)
@@ -109,9 +115,8 @@ class PosSession(models.Model):
                     value["amount_converted"] = (
                         value["amount_converted"] - sales[element]["amount_converted"]
                     )
-
             if self.config_id.pay_on_reservation_method_id.split_transactions:
-                for element, value in dict(res["split_receivables"]).items():
+                for element, value in dict(res["split_receivables_pay_later"]).items():
                     if (
                         element.payment_method_id
                         == self.config_id.pay_on_reservation_method_id
@@ -120,8 +125,254 @@ class PosSession(models.Model):
                         value["amount_converted"] = 0.0
 
             else:
-                for element, value in dict(res["combine_receivables"]).items():
+                for element, value in dict(
+                    res["combine_receivables_pay_later"]
+                ).items():
                     if element == self.config_id.pay_on_reservation_method_id:
                         value["amount"] = 0.0
                         value["amount_converted"] = 0.0
         return res
+
+    def _pos_ui_models_to_load(self):
+        result = super()._pos_ui_models_to_load()
+        if self.config_id.pay_on_reservation:
+            result.append("pms.reservation")
+        return result
+
+    def _loader_params_pms_reservation(self):
+        domain = [
+            "|",
+            ("state", "=", "onboard"),
+            "&",
+            ("checkout", "=", fields.Datetime.now().date()),
+            ("state", "!=", "cancel"),
+        ]
+        if self.config_id and self.config_id.reservation_allowed_propertie_ids:
+            domain.append(
+                (
+                    "pms_property_id",
+                    "in",
+                    self.config_id.reservation_allowed_propertie_ids.ids,
+                )
+            )
+        return {
+            "search_params": {
+                "domain": domain,
+                "fields": [
+                    "name",
+                    "id",
+                    "state",
+                    "service_ids",
+                    "partner_name",
+                    "adults",
+                    "children",
+                    "checkin",
+                    "checkout",
+                    "folio_internal_comment",
+                    "rooms",
+                ],
+            },
+        }
+
+    def _loader_params_pms_service(self):
+        return {
+            "search_params": {
+                "fields": [
+                    "name",
+                    "id",
+                    "service_line_ids",
+                    "product_id",
+                    "reservation_id",
+                ],
+            },
+        }
+
+    def _loader_params_pms_service_line(self):
+        return {
+            "search_params": {
+                "fields": [
+                    "date",
+                    "service_id",
+                    "id",
+                    "product_id",
+                    "day_qty",
+                    "pos_order_line_ids",
+                ],
+            },
+        }
+
+    def _loader_params_pos_order_line(self):
+        return {
+            "search_params": {
+                "fields": [
+                    "qty",
+                    "id",
+                    "pms_service_line_id",
+                ],
+            },
+        }
+
+    def _get_pos_ui_pms_reservation(self, params):
+        ctx = self.env.context.copy()
+        ctx.update({"pos_user_force": True})
+
+        # 1. Obtener las reservas con `search_read` para todos los campos que necesitas
+        reservations = (
+            self.env["pms.reservation"]
+            .with_context(ctx)
+            .search_read(**params["search_params"])
+        )
+        reservation_ids = [r["id"] for r in reservations]
+
+        if not reservations:
+            return []
+
+        # 2. Obtener los servicios relacionados con esas reservas
+        service_params = self._loader_params_pms_service()
+        service_params["search_params"]["domain"] = [
+            ("reservation_id", "in", reservation_ids)
+        ]
+        services = (
+            self.env["pms.service"]
+            .with_context(ctx)
+            .search_read(
+                service_params["search_params"]["domain"],
+                fields=service_params["search_params"]["fields"],
+            )
+        )
+        service_ids = [s["id"] for s in services]
+
+        # 3. Obtener las líneas de servicio relacionadas con esos servicios
+        service_line_params = self._loader_params_pms_service_line()
+        service_line_params["search_params"]["domain"] = [
+            ("service_id", "in", service_ids)
+        ]
+        service_lines = (
+            self.env["pms.service.line"]
+            .with_context(ctx)
+            .search_read(
+                service_line_params["search_params"]["domain"],
+                fields=service_line_params["search_params"]["fields"],
+            )
+        )
+        service_line_ids = [sl["id"] for sl in service_lines]
+
+        # 4. Obtener las líneas de pedido POS relacionadas con esas líneas de servicio
+        pos_order_line_params = self._loader_params_pos_order_line()
+        pos_order_line_params["search_params"]["domain"] = [
+            ("pms_service_line_id", "in", service_line_ids)
+        ]
+        pos_order_lines = (
+            self.env["pos.order.line"]
+            .with_context(ctx)
+            .search_read(
+                pos_order_line_params["search_params"]["domain"],
+                fields=pos_order_line_params["search_params"]["fields"],
+            )
+        )
+
+        # 5. Agrupar las líneas de pedido por línea de servicio
+        pos_order_lines_by_service_line = {}
+        for pos_order_line in pos_order_lines:
+            service_line_id = pos_order_line["pms_service_line_id"][0]
+            if service_line_id not in pos_order_lines_by_service_line:
+                pos_order_lines_by_service_line[service_line_id] = []
+            pos_order_lines_by_service_line[service_line_id].append(pos_order_line)
+
+        # 6. Agrupar las líneas de servicio por servicio
+        service_lines_by_service = {}
+        for service_line in service_lines:
+            service_id = service_line["service_id"][0]
+            if service_id not in service_lines_by_service:
+                service_lines_by_service[service_id] = []
+            service_line["pos_order_lines"] = pos_order_lines_by_service_line.get(
+                service_line["id"], []
+            )
+            service_lines_by_service[service_id].append(service_line)
+
+        # 7. Agrupar los servicios por reserva
+        services_by_reservation = {}
+        for service in services:
+            reservation_id = service["reservation_id"][0]
+            if reservation_id not in services_by_reservation:
+                services_by_reservation[reservation_id] = []
+            service["service_lines"] = service_lines_by_service.get(service["id"], [])
+            services_by_reservation[reservation_id].append(service)
+
+        # 8. Añadir los servicios dentro de las reservas
+        for reservation in reservations:
+            reservation["services"] = services_by_reservation.get(reservation["id"], [])
+
+        return reservations
+
+    # def get_pos_ui_pms_reservation_by_params(self, custom_search_params):
+    #     """
+    #     :param custom_search_params: a dictionary containing params of a search_read()
+    #     """
+
+    #     ctx = self.env.context.copy()
+    #     ctx.update({"pos_user_force": True})
+    #     params = self._loader_params_pms_reservation()
+    #     params['search_params'] = {**params['search_params'], **custom_search_params}
+    #     reservations = self.env['pms.reservation'].with_context(ctx).search_read(**params['search_params'])
+    #     reservation_ids = [r["id"] for r in reservations]
+    #     service_params = self._loader_params_pms_service()
+    #     service_params["search_params"]["domain"] =  [('reservation_id', 'in', reservation_ids)]
+    #     services = self.env["pms.service"].with_context(ctx).search(service_params["search_params"]["domain"])
+    #     services_by_reservation = {}
+    #     for reservation_id, service_group in groupby(services, key=lambda service: service.reservation_id):
+    #         reservation_services = self.env['pms.service'].concat(*service_group)
+    #         services_by_reservation[reservation_id.id] = reservation_services.read(service_params['search_params']['fields'])
+
+    #     for reservation in reservations:
+    #         reservation['services'] = services_by_reservation.get(reservation['id'], [])
+
+    #     return reservations
+
+    def try_cash_in_out(self, _type, amount, reason, extras):
+        sign = 1 if _type == "in" else -1
+        sessions = self.filtered("cash_journal_id")
+        if not sessions:
+            raise UserError(_("There is no cash payment method for this PoS Session"))
+
+        partner_id = self.env.context.get("partner_id", False)
+        self.env["account.bank.statement.line"].sudo().create(
+            [
+                {
+                    "pos_session_id": session.id,
+                    "journal_id": session.cash_journal_id.id,
+                    "amount": sign * amount,
+                    "date": fields.Date.context_today(self),
+                    "payment_ref": "-".join(
+                        [session.name, extras["translatedType"], reason]
+                    ),
+                    "partner_id": partner_id,
+                }
+                for session in sessions
+            ]
+        )
+        cashier = self.env.context.get("cashier", False)
+        message_content = [f"-Cashier: {cashier}"] if cashier else []
+        message_content.append(f'-Cash {extras["translatedType"]}')
+        message_content.append(f'-Amount: {extras["formattedAmount"]}')
+        if reason:
+            message_content.append(f"-Reason: {reason}")
+        self.message_post(body="<br/>\n".join(message_content))
+
+    def set_cashbox_pos(self, cashbox_value, notes):
+        super().set_cashbox_pos(cashbox_value, notes)
+        cashier = self.env.context.get("cashier", False)
+        if cashier:
+            self.message_post(
+                body=f'Session opened by cashier: <strong style="text-transform:uppercase;">{cashier}<strong/>'
+            )
+
+    def close_session_from_ui(self, bank_payment_method_diff_pairs=None):
+        result = super().close_session_from_ui(bank_payment_method_diff_pairs)
+        if result.get("successful"):
+            cashier = self.env.context.get("cashier", False)
+            if cashier:
+                self.message_post(
+                    body=f'Session ended by cashier: <strong style="text-transform:uppercase;">{cashier}<strong/>'
+                )
+        return result

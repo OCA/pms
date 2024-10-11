@@ -1,44 +1,34 @@
-odoo.define("pos_pms_link.ReservationSelectionButton", function (require) {
-    "use strict";
+/** @odoo-module **/
 
-    const PosComponent = require("point_of_sale.PosComponent");
-    const ProductScreen = require("point_of_sale.ProductScreen");
-    const {useListener} = require("web.custom_hooks");
-    const Registries = require("point_of_sale.Registries");
-    const {Gui} = require("point_of_sale.Gui");
-    var core = require("web.core");
-    var QWeb = core.qweb;
+import Registries from "point_of_sale.Registries";
+import PosComponent from "point_of_sale.PosComponent";
+import ProductScreen from "point_of_sale.ProductScreen";
+import {_t} from "web.core";
 
-    var _t = core._t;
+class ReservationSelectionButton extends PosComponent {
+    get currentOrder() {
+        return this.env.pos.get_order();
+    }
 
-    class ReservationSelectionButton extends PosComponent {
-        constructor() {
-            super(...arguments);
-            useListener("click", this.onClick);
-        }
-        get currentOrder() {
-            return this.env.pos.get_order();
-        }
-        async onClick() {
-            const {
-                confirmed,
-                payload: newReservation,
-            } = await this.showTempScreen("ReservationListScreen", {reservation: null});
-            if (confirmed) {
-                this.currentOrder.add_reservation_services(newReservation);
-            }
+    async onClick() {
+        const {confirmed, payload: newReservation} = await this.showTempScreen(
+            "ReservationListScreen",
+            {reservation: null}
+        );
+        if (confirmed) {
+            this.currentOrder.add_reservation_services(newReservation);
+            console.log(newReservation);
         }
     }
-    ReservationSelectionButton.template = "ReservationSelectionButton";
+}
 
-    ProductScreen.addControlButton({
-        component: ReservationSelectionButton,
-        condition: function () {
-            return true;
-        },
-    });
+ReservationSelectionButton.template = "ReservationSelectionButton";
 
-    Registries.Component.add(ReservationSelectionButton);
-
-    return ReservationSelectionButton;
+ProductScreen.addControlButton({
+    component: ReservationSelectionButton,
+    condition: function () {
+        return true;
+    },
 });
+
+Registries.Component.add(ReservationSelectionButton);

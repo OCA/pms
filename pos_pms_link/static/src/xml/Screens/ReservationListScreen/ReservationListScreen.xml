@@ -2,10 +2,7 @@
 <templates id="template" xml:space="preserve">
 
     <t t-name="ReservationListScreen" owl="1">
-        <div
-            class="clientlist-screen screen"
-            t-on-activate-edit-mode="activateEditMode"
-        >
+        <div class="partnerlist-screen screen">
             <div class="screen-content">
                 <div class="top-content">
                     <div
@@ -34,28 +31,30 @@
                         </t>
                     </div>
                     <div
+                        class="search-bar-container sb-partner"
                         t-if="!state.detailIsShown"
-                        class="searchbox-client top-content-center"
                     >
-                        <input
-                            placeholder="Search Reservations"
-                            size="1"
-                            t-on-keyup="updateReservationList"
-                        />
-                        <span class="search-clear-client" />
+                        <div class="pos-search-bar">
+                            <input
+                                t-ref="search-word-input-reservation"
+                                placeholder="Search Reservations..."
+                                size="1"
+                                t-on-keyup="updateReservationList"
+                            />
+                        </div>
                     </div>
                 </div>
                 <section class="full-content">
-                    <div class="client-window">
+                    <div class="partner-window">
                         <section class="subwindow collapsed">
                             <div class="subwindow-container collapsed">
                                 <div
                                     t-if="state.detailIsShown"
-                                    class="client-details-contents subwindow-container-fix"
+                                    class="partner-details-contents subwindow-container-fix"
                                 >
                                     <ReservationDetailsEdit
                                         t-props="state.editModeProps"
-                                        t-on-cancel-edit="cancelEdit"
+                                        onCancel.bind="cancelEdit"
                                     />
                                 </div>
                             </div>
@@ -66,7 +65,7 @@
                                     t-if="!state.detailIsShown"
                                     class="subwindow-container-fix scrollable-y"
                                 >
-                                    <table class="client-list">
+                                    <table class="partner-list">
                                         <thead>
                                             <tr>
                                                 <th>Name</th>
@@ -78,7 +77,7 @@
                                                 <th>Children</th>
                                             </tr>
                                         </thead>
-                                        <tbody class="client-list-contents">
+                                        <tbody class="partner-list-contents">
                                             <t
                                                 t-foreach="reservations"
                                                 t-as="reservation"
@@ -88,7 +87,8 @@
                                                     reservation="reservation"
                                                     selectedReservation="state.selectedReservation"
                                                     detailIsShown="state.detailIsShown"
-                                                    t-on-click-reservation="clickReservation"
+                                                    onClickReservation.bind="clickReservation"
+                                                    onClickEdit.bind="editReservation"
                                                 />
                                             </t>
                                         </tbody>

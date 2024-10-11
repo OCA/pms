@@ -21,7 +21,7 @@
 {
     "name": "POS PMS link",
     "summary": "Allows to use PMS reservations on the POS interface",
-    "version": "14.0.1.0.0",
+    "version": "16.0.1.0.0",
     "author": "Comunitea Servicios Tecnológicos S.L., Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/pms",
     "license": "AGPL-3",
@@ -29,21 +29,25 @@
     "depends": [
         "point_of_sale",
         "pms",
+        "pos_hr",
     ],
     "data": [
-        "views/assets_common.xml",
+        # "views/assets_common.xml",
         "views/pms_service_line.xml",
         "views/pos_order.xml",
-        "views/pos_config.xml",
+        "views/res_config_settings.xml",
     ],
     "demo": [],
-    "qweb": [
-        "static/src/xml/ReservationSelectionButton.xml",
-        "static/src/xml/Screens/ReservationListScreen/ReservationDetailsEdit.xml",
-        "static/src/xml/Screens/ReservationListScreen/ReservationLine.xml",
-        "static/src/xml/Screens/ReservationListScreen/ReservationListScreen.xml",
-        "static/src/xml/Screens/PaymentScreen/PaymentScreen.xml",
-        "static/src/xml/Screens/ReceiptScreen/OrderReceipt.xml",
-    ],
+    "assets": {
+        "point_of_sale.assets": [
+            "pos_pms_link/static/src/js/*.js",
+            "pos_pms_link/static/src/js/*/*.js",
+            "pos_pms_link/static/src/js/*/*/*.js",
+            "pos_pms_link/static/src/xml/*.xml",
+            "pos_pms_link/static/src/xml/*/*.xml",
+            "pos_pms_link/static/src/xml/*/*/*.xml",
+            "pos_pms_link/static/src/scss/*.scss",
+        ],
+    },
     "installable": True,
 }

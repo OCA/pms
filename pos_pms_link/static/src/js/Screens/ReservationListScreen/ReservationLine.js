@@ -1,19 +1,16 @@
-odoo.define("pos_pms_link.ReservationLine", function (require) {
-    "use strict";
+/** @odoo-module **/
 
-    const PosComponent = require("point_of_sale.PosComponent");
-    const Registries = require("point_of_sale.Registries");
+import PosComponent from "point_of_sale.PosComponent";
+import Registries from "point_of_sale.Registries";
 
-    class ReservationLine extends PosComponent {
-        get highlight() {
-            return this.props.reservation !== this.props.selectedReservation
-                ? ""
-                : "highlight";
-        }
+class ReservationLine extends PosComponent {
+    get highlight() {
+        return this.props.reservation !== this.props.selectedReservation
+            ? ""
+            : "highlight";
     }
-    ReservationLine.template = "ReservationLine";
+}
 
-    Registries.Component.add(ReservationLine);
+ReservationLine.template = "ReservationLine";
 
-    return ReservationLine;
-});
+Registries.Component.add(ReservationLine);

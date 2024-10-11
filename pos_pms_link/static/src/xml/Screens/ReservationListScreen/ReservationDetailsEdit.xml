@@ -2,37 +2,37 @@
 <templates id="template" xml:space="preserve">
 
     <t t-name="ReservationDetailsEdit" owl="1">
-        <section class="client-details edit">
-            <h3 class="detail client-name" t-esc="props.reservation.name" />
-            <div class="client-details-box clearfix">
-                <div class="client-details-row">
+        <section class="partner-details edit">
+            <h3 class="detail partner-name" t-esc="props.reservation.name" />
+            <div class="partner-details-box clearfix">
+                <div class="partner-details-row">
                     Name: <span
-                        class="detail client-partner-name"
+                        class="detail partner-partner-name"
                         t-esc="props.reservation.partner_name"
                     /><br />
                     Checkin: <span
-                        class="detail client-aduls"
+                        class="detail partner-aduls"
                         t-esc="props.reservation.checkin"
                     /><br />
                     Checkout: <span
-                        class="detail client-aduls"
+                        class="detail partner-aduls"
                         t-esc="props.reservation.checkout"
                     /><br />
                     Adults: <span
-                        class="detail client-aduls"
+                        class="detail partner-aduls"
                         t-esc="props.reservation.adults"
                     /><br />
                     Children: <span
-                        class="detail client-children"
+                        class="detail partner-children"
                         t-esc="props.reservation.children"
                     /><br />
                     Internal comment: <span
-                        class="detail client-aduls"
+                        class="detail partner-aduls"
                         t-esc="props.reservation.folio_internal_comment"
                     /><br />
                 </div>
-                <h3 class="detail client-name">Services:</h3>
-                <div class="client-details-row">
+                <h3 class="detail partner-name">Services:</h3>
+                <div class="partner-details-row">
                     <table class="content-row">
                         <thead>
                             <tr>
@@ -42,7 +42,7 @@
                         </thead>
                         <tbody>
                             <t
-                                t-foreach="props.reservation.service_ids"
+                                t-foreach="props.reservation.services"
                                 t-as="service"
                                 t-key="service.id"
                             >
@@ -51,7 +51,7 @@
                                     <td>
                                         <ul>
                                             <t
-                                                t-foreach="service_value['service_line_ids']"
+                                                t-foreach="service_value['service_lines']"
                                                 t-as="line_service"
                                                 t-key="line_service.id"
                                             >

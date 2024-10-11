@@ -35,6 +35,11 @@ class PosConfig(models.Model):
     reservation_allowed_propertie_ids = fields.Many2many(
         "pms.property", string="Reservation allowed properties"
     )
+    close_session_allowed = fields.Boolean("Close session allowed", default=False)
+
+    cash_in_out_allowed = fields.Boolean("Cash in/out allowed", default=False)
+
+    cash_move_partner = fields.Boolean("Use partner in cash moves", default=False)
 
     @api.model
     def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
