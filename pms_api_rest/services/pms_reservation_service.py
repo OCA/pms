@@ -1580,7 +1580,7 @@ class PmsReservationService(Component):
             partners.append(
                 PmsCheckinPartnerInfo(
                     # partner id
-                    id=partner.id,
+                    partnerId=partner.id,
                     # names
                     firstname="#" if partner.firstname else None,
                     lastname="#" if partner.lastname else None,
