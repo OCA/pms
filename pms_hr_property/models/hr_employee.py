@@ -9,4 +9,10 @@ class HrEmployeeBase(models.AbstractModel):
 
     _inherit = "hr.employee.base"
 
-    property_ids = fields.Many2many("pms.property", string="Workplaces asigned")
+    property_ids = fields.Many2many(
+        comodel_name="pms.property",
+        string="Workplaces asigned",
+        relation="hr_employee_pms_property_rel",
+        column1="hr_employee_id",
+        column2="pms_property_id",
+    )
