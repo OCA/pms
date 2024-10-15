@@ -4,7 +4,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from odoo.tests.common import TransactionCase
 
-
 class TestPmsHrProperty(TransactionCase):
     def setUp(self):
         super(TestPmsHrProperty, self).setUp()
@@ -12,98 +11,96 @@ class TestPmsHrProperty(TransactionCase):
         self.HrEmployee = self.env["hr.employee"]
         self.Company = self.env["res.company"]
 
+        # Company creation
         self.company1 = self.Company.create(
-            {
-                "name": "Company 1",
-            }
+            {"name": "Company 1"}
         )
+
+        # Property creation
         self.property1 = self.PmsProperty.create(
             {
-                "name": "Property 1",
-                "company_id": self.company1.id,
+                "name": "Property 1", 
+                "company_id": self.company1.id
             }
         )
+
+        # User creation
         user_dict = {
-            "name": "User 1",
-            "login": "tua@example.com",
-            "password": "base-test-passwd",
+            "name": "User 1", 
+            "login": "tua@example.com", 
+            "password": "base-test-passwd"
         }
         self.user_test = self.env["res.users"].create(user_dict)
 
         user_dict2 = {
-            "name": "User 2",
-            "login": "user2@example.com",
-            "password": "base-test-passwd",
+            "name": "User 2", 
+            "login": "user2@example.com", 
+            "password": "base-test-passwd"
         }
         self.user_test2 = self.env["res.users"].create(user_dict2)
+
+        # Employee creation
         employee_dict = {
-            "name": "Employee 1",
-            "user_id": self.user_test.id,
-            "address_id": self.user_test.partner_id.id,
+            "name": "Employee 1", 
+            "user_id": self.user_test.id, 
+            "address_id": self.user_test.partner_id.id
         }
         self.employee = self.env["hr.employee"].create(employee_dict)
 
         employee_dict2 = {
-            "name": "Employee 2",
-            "user_id": self.user_test2.id,
-            "address_id": self.user_test2.partner_id.id,
+            "name": "Employee 2", 
+            "user_id": self.user_test2.id, 
+            "address_id": self.user_test2.partner_id.id
         }
         self.employee2 = self.env["hr.employee"].create(employee_dict2)
-        self.employee.write({"property_ids": [(4, self.property1.id)]})
 
-    def test_compute_employee_ids(self):
-        """Verifica que el método _compute_employee_ids
-        calcule correctamente el campo employee_ids"""
-
-        self.property1._compute_employee_ids()
+    def test_employee_assignment(self):
+        """Check if employees are correctly assigned to properties"""
+        self.employee.write(
+            {"property_ids": [(4, self.property1.id)]}
+        )
 
         assigned_employees = self.property1.employee_ids
-
-        expected_employees = self.HrEmployee.search(
-            [("property_ids", "in", self.property1.id)]
+        self.assertIn(
+            self.employee,
+            assigned_employees,
+            "The employee is not correctly assigned to the property."
         )
 
-        self.assertEqual(
-            sorted(assigned_employees.ids),
-            sorted(expected_employees.ids),
-            "Property 1 no coincide con los empleados esperados.",
+    def test_employee_removal(self):
+        """Check if employees can be unassigned from properties correctly"""
+        self.employee.write(
+            {"property_ids": [(4, self.property1.id)]}
         )
 
-    def test_no_employees_assigned(self):
-        """Verifica el comportamiento si no hay empleados asignados a una propiedad"""
+        self.employee.write(
+            {"property_ids": [(3, self.property1.id)]}
+        )
 
-        self.employee.write({"property_ids": [(5, self.property1.id)]})
-
-        self.property1._compute_employee_ids()
         assigned_employees = self.property1.employee_ids
-
-        self.assertEqual(
-            len(assigned_employees),
-            0,
-            "Se esperaba que no hubiera empleados asignados a la propiedad 1.",
+        self.assertNotIn(
+            self.employee,
+            assigned_employees,
+            "The employee is still assigned to the property after removal."
         )
 
-    def test_multiple_properties(self):
-        """Verifica que los empleados se asignen correctamente a múltiples propiedades"""
-        self.property2 = self.PmsProperty.create(
-            {
-                "name": "Property 2",
-                "company_id": self.company1.id,
-            }
+    def test_multiple_employees_assignment(self):
+        """Check if multiple employees can be assigned to a single property"""
+        self.employee.write(
+            {"property_ids": [(4, self.property1.id)]}
+        )
+        self.employee2.write(
+            {"property_ids": [(4, self.property1.id)]}
         )
 
-        self.employee2.write({"property_ids": [(4, self.property2.id)]})
-
-        self.property2._compute_employee_ids()
-
-        assigned_employees = self.property2.employee_ids
-
-        expected_employees = self.HrEmployee.search(
-            [("property_ids", "in", self.property2.id)]
+        assigned_employees = self.property1.employee_ids
+        self.assertIn(
+            self.employee,
+            assigned_employees,
+            "Employee 1 is not correctly assigned."
         )
-
-        self.assertEqual(
-            sorted(assigned_employees.ids),
-            sorted(expected_employees.ids),
-            "employee_ids calculado para la propiedad 2 no coincide con los empleados.",
+        self.assertIn(
+            self.employee2,
+            assigned_employees,
+            "Employee 2 is not correctly assigned."
         )
