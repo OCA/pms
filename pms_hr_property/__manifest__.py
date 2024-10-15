@@ -14,8 +14,6 @@
         "hr",
         "pms",
     ],
-    "data": [
-        "views/hr_employee_view.xml",
-    ],
+    "data": ["views/hr_employee_view.xml", "views/pms_hr_property_view.xml"],
     "installable": True,
 }
