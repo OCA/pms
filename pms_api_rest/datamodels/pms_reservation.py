@@ -12,6 +12,7 @@ class PmsReservationSearchParam(Datamodel):
     createDateFrom = fields.String(required=False, allow_none=True)
     createDateTo = fields.String(required=False, allow_none=True)
     ids = fields.List(fields.Integer(), required=False)
+    lastUpdateFrom = fields.String(required=False, allow_none=True)
 
 
 class PmsReservationShortInfo(Datamodel):
@@ -45,6 +46,7 @@ class PmsReservationShortInfo(Datamodel):
     segmentationId = fields.Integer(required=False, allow_none=True)
     isOverNightRoom = fields.Boolean(required=False, allow_none=True)
     lastUpdateFrom = fields.String(required=False, allow_none=True)
+
 
 class PmsReservationInfo(Datamodel):
     _name = "pms.reservation.info"
