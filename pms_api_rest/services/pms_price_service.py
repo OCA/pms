@@ -38,6 +38,13 @@ class PmsPriceService(Component):
             product = self.env["product.product"].search(
                 [("id", "=", prices_search_param.productId)]
             )
+        elif (
+            prices_search_param.boardServiceLineId
+            and not prices_search_param.boardServiceId
+        ):
+            raise ValidationError(
+                _("Mandatory board service id is missing for board service line")
+            )
         elif prices_search_param.boardServiceId:
             if prices_search_param.isAdults and prices_search_param.isChildren:
                 raise ValidationError(
@@ -45,7 +52,11 @@ class PmsPriceService(Component):
                         "It is not allowed to filter by adults and children simultaneously"
                     )
                 )
-            if not prices_search_param.isAdults and not prices_search_param.isChildren:
+            if (
+                not prices_search_param.isAdults
+                and not prices_search_param.isChildren
+                and not prices_search_param.boardServiceLineId
+            ):
                 raise ValidationError(
                     _(
                         """
@@ -86,6 +97,8 @@ class PmsPriceService(Component):
                                 partner_id=prices_search_param.partnerId,
                                 product_qty=prices_search_param.productQty,
                                 date_consumption=price_date,
+                                board_service_line_id=prices_search_param.boardServiceLineId
+                                or False,
                             ),
                             2,
                         ),
@@ -159,11 +172,18 @@ class PmsPriceService(Component):
         partner_id=False,
         product_qty=False,
         date_consumption=False,
+        board_service_line_id=False,
     ):
         price = 0
-        lines = board_service.board_service_line_ids.filtered(
-            lambda l: l.adults if board_type == "adults" else l.children
-        )
+        if board_service_line_id:
+            lines = self.env["pms.board.service.room.type.line"].browse(
+                board_service_line_id
+            )
+        else:
+            lines = board_service.board_service_line_ids.filtered(
+                lambda l: l.adults if board_type == "adults" else l.children
+            )
+        print(lines)
         for line in lines:
             price += self._get_product_price(
                 product=line.product_id,
