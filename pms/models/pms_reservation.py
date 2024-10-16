@@ -206,8 +206,8 @@ class PmsReservation(models.Model):
         store=True,
         comodel_name="pms.service",
         inverse_name="reservation_id",
-        compute="_compute_service_ids",
-        # check_company=True,
+        compute="_compute_board_service_ids",
+        check_company=True,
         check_pms_properties=True,
     )
     pricelist_id = fields.Many2one(
@@ -956,8 +956,8 @@ class PmsReservation(models.Model):
             reservation.check_in_out_dates()
 
     @api.depends("board_service_room_id")
-    def _compute_service_ids(self):
-        if self.env.context.get("skip_compute_service_ids", False):
+    def _compute_board_service_ids(self):
+        if self.env.context.get("skip_compute_board_service_ids", False):
             return
         for reservation in self:
             board_services = []
@@ -2225,7 +2225,7 @@ class PmsReservation(models.Model):
         # compute_service_ids dont run (compute with readonly to False),
         # and we must force it to compute the services linked with the board service:
         if "board_service_room_id" in vals and "service_ids" in vals:
-            self._compute_service_ids()
+            self._compute_board_service_ids()
 
     def get_folios_to_update_channel(self, vals):
         folios_to_update_channel = self.env["pms.folio"]
