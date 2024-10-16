@@ -295,7 +295,7 @@ class PmsReservationService(Component):
             reservation_vals.update({"service_ids": service_cmds})
 
         if reservation_vals and reservation_data.boardServices:
-            reservation.with_context(skip_compute_service_ids=True).write(
+            reservation.with_context(skip_compute_board_service_ids=True).write(
                 reservation_vals
             )
         elif reservation_vals:
@@ -544,7 +544,9 @@ class PmsReservationService(Component):
             "reservation_id": reservation.id,
             "is_board_service": service_info.isBoardService or False,
         }
+        skip_compute_service_line_ids = False
         if service_info.serviceLines:
+            skip_compute_service_line_ids = True
             vals["service_line_ids"] = [
                 (
                     0,
@@ -558,7 +560,10 @@ class PmsReservationService(Component):
                 )
                 for line in service_info.serviceLines
             ]
-        service = self.env["pms.service"].create(vals)
+        service = self.env["pms.service"].with_context(
+            skip_compute_service_line_ids=skip_compute_service_line_ids
+        ).create(vals)
+
         return service.id
 
     # ------------------------------------------------------------------------------------
