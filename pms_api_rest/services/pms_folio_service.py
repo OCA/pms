@@ -512,7 +512,7 @@ class PmsFolioService(Component):
                     journal_id=journal.id,
                     force=False,
                 )
-        self.env["pms.folio"].do_payment(
+        self.env["pms.folio"].sudo().do_payment(
             journal,
             journal.suspense_account_id,
             self.env.user,
@@ -556,7 +556,7 @@ class PmsFolioService(Component):
                     journal_id=journal.id,
                     force=False,
                 )
-        self.env["pms.folio"].do_refund(
+        self.env["pms.folio"].sudo().do_refund(
             journal,
             journal.suspense_account_id,
             self.env.user,
@@ -1000,7 +1000,7 @@ class PmsFolioService(Component):
                     proposed_transaction.action_post()
                 else:
                     if transaction.transactionType == "inbound":
-                        folio.do_payment(
+                        folio.sudo().do_payment(
                             journal,
                             journal.suspense_account_id,
                             self.env.user,
