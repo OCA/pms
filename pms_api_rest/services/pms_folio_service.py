@@ -822,7 +822,7 @@ class PmsFolioService(Component):
                 reservation_record = (
                     self.env["pms.reservation"]
                     .with_context(
-                        skip_compute_service_ids=False if external_app else True,
+                        skip_compute_board_service_ids=False if external_app else True,
                         force_overbooking=True if external_app else False,
                         force_write_blocked=True if external_app else False,
                     )
@@ -875,7 +875,7 @@ class PmsFolioService(Component):
                     or reservation_record.board_service_room_id == 0
                 ):
                     reservation_record.with_context(
-                        skip_compute_service_ids=False,
+                        skip_compute_board_service_ids=False,
                         force_write_blocked=True if external_app else False,
                     )._compute_board_service_room_id()
                 if reservation.stateCode == "cancel":
@@ -2064,7 +2064,7 @@ class PmsFolioService(Component):
                 folio_vals.update({"reservation_ids": reservations_vals})
         if folio_vals:
             folio.with_context(
-                skip_compute_service_ids=False if external_app else True,
+                skip_compute_board_service_ids=False if external_app else True,
                 force_overbooking=True if external_app else False,
                 force_write_blocked=True if external_app else False,
             ).write(folio_vals)
