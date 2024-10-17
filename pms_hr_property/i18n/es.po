@@ -1,0 +1,74 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pms_hr_property
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-10-16 06:14+0000\n"
+"PO-Revision-Date: 2024-10-16 08:23+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: Poedit 3.0.1\n"
+
+#. module: pms_hr_property
+#: model:ir.model.fields,field_description:pms_hr_property.field_channel_wubook_pms_property_availability__employee_ids
+#: model:ir.model.fields,field_description:pms_hr_property.field_pms_property__employee_ids
+msgid "Assigned Employees"
+msgstr "Empleados asignados"
+
+#. module: pms_hr_property
+#: model:ir.model,name:pms_hr_property.model_hr_employee_base
+msgid "Basic Employee"
+msgstr "Empleado Básico"
+
+#. module: pms_hr_property
+#: model:ir.model.fields,field_description:pms_hr_property.field_hr_employee_base__display_name
+#: model:ir.model.fields,field_description:pms_hr_property.field_pms_property__display_name
+msgid "Display Name"
+msgstr "Mostrar Nombre"
+
+#. module: pms_hr_property
+#: model_terms:ir.ui.view,arch_db:pms_hr_property.pms_hr_property_form
+msgid "Employees"
+msgstr "Empleados"
+
+#. module: pms_hr_property
+#: model:ir.model.fields,field_description:pms_hr_property.field_hr_employee_base__id
+#: model:ir.model.fields,field_description:pms_hr_property.field_pms_property__id
+msgid "ID"
+msgstr "ID (identificación)"
+
+#. module: pms_hr_property
+#: model:ir.model.fields,field_description:pms_hr_property.field_hr_employee_base____last_update
+#: model:ir.model.fields,field_description:pms_hr_property.field_pms_property____last_update
+msgid "Last Modified on"
+msgstr "Última Modificación el"
+
+#. module: pms_hr_property
+#: model:ir.model,name:pms_hr_property.model_pms_property
+msgid "Property"
+msgstr "Hotel"
+
+#. module: pms_hr_property
+#: model_terms:ir.ui.view,arch_db:pms_hr_property.pms_hr_property_form
+msgid "Property Staff"
+msgstr "Staff del centro"
+
+#. module: pms_hr_property
+#: model_terms:ir.ui.view,arch_db:pms_hr_property.hr_property_employee_filter
+msgid "Workplace"
+msgstr "Centro de trabajo"
+
+#. module: pms_hr_property
+#: model:ir.model.fields,field_description:pms_hr_property.field_hr_employee__property_ids
+#: model:ir.model.fields,field_description:pms_hr_property.field_hr_employee_base__property_ids
+#: model:ir.model.fields,field_description:pms_hr_property.field_hr_employee_public__property_ids
+msgid "Workplaces asigned"
+msgstr "Centro asignado"
