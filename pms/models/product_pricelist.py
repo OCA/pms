@@ -73,79 +73,102 @@ class ProductPricelist(models.Model):
         default=False,
     )
 
-    def _compute_price_rule_get_items(
-        self, products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids
-    ):
-        board_service = True if self._context.get("board_service") else False
-        if (
-            "property" in self._context
-            and self._context["property"]
-            and self._context.get("consumption_date")
-        ):
-            self.env.cr.execute(
-                """
-                SELECT item.id
-                FROM   product_pricelist_item item
-                       LEFT JOIN product_category categ
-                            ON item.categ_id = categ.id
-                       LEFT JOIN product_pricelist_pms_property_rel cab
-                            ON item.pricelist_id = cab.product_pricelist_id
-                       LEFT JOIN product_pricelist_item_pms_property_rel lin
-                            ON item.id = lin.product_pricelist_item_id
-                WHERE  (lin.pms_property_id = %s OR lin.pms_property_id IS NULL)
-                   AND (cab.pms_property_id = %s OR cab.pms_property_id IS NULL)
-                   AND (item.product_tmpl_id IS NULL
-                        OR item.product_tmpl_id = ANY(%s))
-                   AND (item.product_id IS NULL OR item.product_id = ANY(%s))
-                   AND (item.categ_id IS NULL OR item.categ_id = ANY(%s))
-                   AND (item.pricelist_id = %s)
-                   AND (item.date_start IS NULL OR item.date_start <=%s)
-                   AND (item.date_end IS NULL OR item.date_end >=%s)
-                   AND (item.date_start_consumption IS NULL
-                        OR item.date_start_consumption <=%s)
-                   AND (item.date_end_consumption IS NULL
-                        OR item.date_end_consumption >=%s)
-                GROUP  BY item.id
-                ORDER  BY item.applied_on,
-                          /* REVIEW: priotrity date sale / date consumption */
-                          item.date_end - item.date_start ASC,
-                          item.date_end_consumption - item.date_start_consumption ASC,
-                          NULLIF((SELECT COUNT(1)
-                           FROM   product_pricelist_item_pms_property_rel l
-                           WHERE  item.id = l.product_pricelist_item_id)
-                          + (SELECT COUNT(1)
-                             FROM   product_pricelist_pms_property_rel c
-                             WHERE  item.pricelist_id = c.product_pricelist_id),0)
-                          NULLS LAST,
-                          item.id DESC;
-                """,
-                (
-                    self._context["property"],
-                    self._context["property"],
-                    prod_tmpl_ids,
-                    prod_ids,
-                    categ_ids,
-                    self.id,
-                    date,
-                    date,
-                    self._context["consumption_date"],
-                    self._context["consumption_date"],
-                ),
+    def _get_applicable_rules_domain(self, products, date, **kwargs):
+        # Llamada al método original para obtener el dominio base
+        domain = super(ProductPricelist, self)._get_applicable_rules_domain(
+            products, date, **kwargs
+        )
+
+        # Si se pasa el parámetro "consumption_date", agregar condiciones adicionales al dominio
+        consumption_date = kwargs.get("consumption_date")
+        if consumption_date:
+            domain.extend(
+                [
+                    "|",
+                    ("date_start_consumption", "=", False),
+                    ("date_start_consumption", "<=", consumption_date),
+                    "|",
+                    ("date_end_consumption", "=", False),
+                    ("date_end_consumption", ">=", consumption_date),
+                ]
             )
-            item_ids = [x[0] for x in self.env.cr.fetchall()]
-            items = self.env["product.pricelist.item"].browse(item_ids)
-            if board_service:
-                items = items.filtered(
-                    lambda x: x.board_service_room_type_id.id
-                    == self._context.get("board_service")
-                )
-            else:
-                items = items.filtered(lambda x: not x.board_service_room_type_id.id)
-        else:
-            items = super(ProductPricelist, self)._compute_price_rule_get_items(
-                products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids
-            )
-        return items
+
+        return domain
+
+    # V14.0
+    # def _compute_price_rule_get_items(
+    #     self, products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids
+    # ):
+    #     board_service = True if self._context.get("board_service") else False
+    #     if (
+    #         "property" in self._context
+    #         and self._context["property"]
+    #         and self._context.get("consumption_date")
+    #     ):
+    #         self.env.cr.execute(
+    #             """
+    #             SELECT item.id
+    #             FROM   product_pricelist_item item
+    #                    LEFT JOIN product_category categ
+    #                         ON item.categ_id = categ.id
+    #                    LEFT JOIN product_pricelist_pms_property_rel cab
+    #                         ON item.pricelist_id = cab.product_pricelist_id
+    #                    LEFT JOIN product_pricelist_item_pms_property_rel lin
+    #                         ON item.id = lin.product_pricelist_item_id
+    #             WHERE  (lin.pms_property_id = %s OR lin.pms_property_id IS NULL)
+    #                AND (cab.pms_property_id = %s OR cab.pms_property_id IS NULL)
+    #                AND (item.product_tmpl_id IS NULL
+    #                     OR item.product_tmpl_id = ANY(%s))
+    #                AND (item.product_id IS NULL OR item.product_id = ANY(%s))
+    #                AND (item.categ_id IS NULL OR item.categ_id = ANY(%s))
+    #                AND (item.pricelist_id = %s)
+    #                AND (item.date_start IS NULL OR item.date_start <=%s)
+    #                AND (item.date_end IS NULL OR item.date_end >=%s)
+    #                AND (item.date_start_consumption IS NULL
+    #                     OR item.date_start_consumption <=%s)
+    #                AND (item.date_end_consumption IS NULL
+    #                     OR item.date_end_consumption >=%s)
+    #             GROUP  BY item.id
+    #             ORDER  BY item.applied_on,
+    #                       /* REVIEW: priotrity date sale / date consumption */
+    #                       item.date_end - item.date_start ASC,
+    #                       item.date_end_consumption - item.date_start_consumption ASC,
+    #                       NULLIF((SELECT COUNT(1)
+    #                        FROM   product_pricelist_item_pms_property_rel l
+    #                        WHERE  item.id = l.product_pricelist_item_id)
+    #                       + (SELECT COUNT(1)
+    #                          FROM   product_pricelist_pms_property_rel c
+    #                          WHERE  item.pricelist_id = c.product_pricelist_id),0)
+    #                       NULLS LAST,
+    #                       item.id DESC;
+    #             """,
+    #             (
+    #                 self._context["property"],
+    #                 self._context["property"],
+    #                 prod_tmpl_ids,
+    #                 prod_ids,
+    #                 categ_ids,
+    #                 self.id,
+    #                 date,
+    #                 date,
+    #                 self._context["consumption_date"],
+    #                 self._context["consumption_date"],
+    #             ),
+    #         )
+    #         item_ids = [x[0] for x in self.env.cr.fetchall()]
+    #         items = self.env["product.pricelist.item"].browse(item_ids)
+    #         if board_service:
+    #             items = items.filtered(
+    #                 lambda x: x.board_service_room_type_id.id
+    #                 == self._context.get("board_service")
+    #             )
+    #         else:
+    #             items = items.filtered(lambda x: not x.board_service_room_type_id.id)
+    #     else:
+    #         items = super(ProductPricelist, self)._compute_price_rule_get_items(
+    #             products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids
+    #         )
+    #     return items
 
     @api.constrains("is_pms_available", "availability_plan_id")
     def _check_is_pms_available(self):

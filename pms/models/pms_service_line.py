@@ -98,13 +98,19 @@ class PmsServiceLine(models.Model):
         store=True,
         compute="_compute_day_amount_service",
     )
-    currency_id = fields.Many2one(
-        string="Currency",
-        help="The currency used in relation to the service where it's included",
-        readonly=True,
+    pricelist_id = fields.Many2one(
+        related="service_id.pricelist_id",
+        depends=["service_id"],
         store=True,
-        index=True,
-        related="service_id.currency_id",
+        precompute=True,
+        ondelete="restrict",
+    )
+    currency_id = fields.Many2one(
+        related="pricelist_id.currency_id",
+        depends=["pricelist_id"],
+        store=True,
+        precompute=True,
+        ondelete="restrict",
     )
     reservation_id = fields.Many2one(
         string="Reservation",

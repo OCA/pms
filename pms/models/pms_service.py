@@ -84,6 +84,14 @@ class PmsService(models.Model):
         related="folio_id.pms_property_id",
         check_pms_properties=True,
     )
+    pricelist_id = fields.Many2one(
+        string="Pricelist",
+        help="Pricelist used in the service",
+        comodel_name="product.pricelist",
+        compute="_compute_pricelist_id",
+        store=True,
+        index=True,
+    )
     tax_ids = fields.Many2many(
         string="Taxes",
         help="Taxes applied in the service",
@@ -225,6 +233,12 @@ class PmsService(models.Model):
     )
 
     # Compute and Search methods
+    @api.depends("folio_id", "reservation_id")
+    def _compute_pricelist_id(self):
+        for record in self:
+            origin = record.reservation_id if record.reservation_id else record.folio_id
+            record.pricelist_id = origin.pricelist_id
+
     @api.depends("product_id")
     def _compute_tax_ids(self):
         for service in self:

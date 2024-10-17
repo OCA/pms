@@ -26,6 +26,12 @@ class PmsReservationLine(models.Model):
         index=True,
         check_pms_properties=True,
     )
+    currency_id = fields.Many2one(
+        related="reservation_id.currency_id",
+        depends=["reservation_id.currency_id"],
+        store=True,
+        precompute=True,
+    )
     room_id = fields.Many2one(
         string="Room",
         help="The room of a reservation. ",
@@ -64,6 +70,10 @@ class PmsReservationLine(models.Model):
         help="State of the reservation line.",
         related="reservation_id.state",
         store=True,
+    )
+    # Tech field caching pricelist rule used for price & discount computation
+    pricelist_item_id = fields.Many2one(
+        comodel_name="product.pricelist.item", compute="_compute_pricelist_item_id"
     )
     price = fields.Float(
         string="Price",
@@ -156,34 +166,134 @@ class PmsReservationLine(models.Model):
             result.append((res.id, name))
         return result
 
-    def _get_display_price(self, product):
+    # NEW
+
+    @api.depends(
+        "reservation_id",
+        "reservation_id.room_type_id",
+        "reservation_id.reservation_type",
+        "reservation_id.pms_property_id",
+    )
+    def _compute_pricelist_item_id(self):
+        for line in self:
+            if (
+                not line.reservation_id.room_type_id
+                or not line.reservation_id.pricelist_id
+            ):
+                line.pricelist_item_id = False
+            else:
+                product = line.reservation_id.room_type_id.product_id
+                line.pricelist_item_id = (
+                    line.reservation_id.pricelist_id._get_product_rule(
+                        product,
+                        1.0,
+                        uom=product.uom_id,
+                        date=line.reservation_id.date_order or fields.Date.now(),
+                        consumption_date=line.date,
+                    )
+                )
+
+    def _get_display_price(self):
+        """Compute the displayed unit price for a given line.
+
+        Overridden in custom flows:
+        * where the price is not specified by the pricelist
+        * where the discount is not specified by the pricelist
+
+        Note: self.ensure_one()
+        """
+        self.ensure_one()
+
+        pricelist_price = self._get_pricelist_price()
+
         if self.reservation_id.pricelist_id.discount_policy == "with_discount":
-            return product.with_context(
-                pricelist=self.reservation_id.pricelist_id.id
-            ).standard_price
-        product_context = dict(
-            self.env.context,
-            partner_id=self.reservation_id.partner_id.id,
-            date=self.date,
-            uom=product.uom_id.id,
-        )
-        final_price, rule_id = self.reservation_id.pricelist_id.with_context(
-            product_context
-        ).get_product_price_rule(product, 1.0, self.reservation_id.partner_id)
-        base_price, currency = self.with_context(
-            product_context
-        )._get_real_price_currency(
-            product, rule_id, 1, product.uom_id, self.reservation_id.pricelist_id.id
-        )
-        if currency != self.reservation_id.pricelist_id.currency_id:
-            base_price = currency._convert(
-                base_price,
-                self.reservation_id.pricelist_id.currency_id,
-                self.reservation_id.company_id or self.env.company,
-                fields.Date.today(),
-            )
+            return pricelist_price
+
+        if not self.pricelist_item_id:
+            # No pricelist rule found => no discount from pricelist
+            return pricelist_price
+
+        base_price = self._get_pricelist_price_before_discount()
+
         # negative discounts (= surcharge) are included in the display price
-        return max(base_price, final_price)
+        return max(base_price, pricelist_price)
+
+    def _get_pricelist_price(self):
+        """Compute the price given by the pricelist for the given line information.
+
+        :return: the product sales price in the order currency (without taxes)
+        :rtype: float
+        """
+        self.ensure_one()
+        product = self.reservation_id.room_type_id.product_id
+        product.ensure_one()
+
+        pricelist_rule = self.pricelist_item_id
+        order_date = self.reservation_id.date_order or fields.Date.today()
+        # product = product.with_context(**self._get_product_price_context())
+        qty = 1.0
+        uom = product.uom_id
+        currency = self.currency_id or self.order_id.company_id.currency_id
+
+        price = pricelist_rule._compute_price(
+            product, qty, uom, order_date, currency=currency
+        )
+
+        return price
+
+    # def _get_product_price_context(self):
+    #     """Gives the context for product price computation.
+
+    #     :return: additional context to consider extra prices from attributes in the base product price.
+    #     :rtype: dict
+    #     """
+    #     self.ensure_one()
+    #     res = {}
+
+    #     # It is possible that a no_variant attribute is still in a variant if
+    #     # the type of the attribute has been changed after creation.
+    #     no_variant_attributes_price_extra = [
+    #         ptav.price_extra for ptav in self.product_no_variant_attribute_value_ids.filtered(
+    #             lambda ptav:
+    #                 ptav.price_extra and
+    #                 ptav not in self.product_id.product_template_attribute_value_ids
+    #         )
+    #     ]
+    #     if no_variant_attributes_price_extra:
+    #         res['no_variant_attributes_price_extra'] = tuple(no_variant_attributes_price_extra)
+
+    #     return res
+
+    # OLD
+
+    # def _get_display_price(self, product):
+    #     if self.reservation_id.pricelist_id.discount_policy == "with_discount":
+    #         return product.with_context(
+    #             pricelist=self.reservation_id.pricelist_id.id
+    #         ).lst_price
+    #     product_context = dict(
+    #         self.env.context,
+    #         partner_id=self.reservation_id.partner_id.id,
+    #         date=self.date,
+    #         uom=product.uom_id.id,
+    #     )
+    #     final_price, rule_id = self.reservation_id.pricelist_id.with_context(
+    #         product_context
+    #     ).get_product_price_rule(product, 1.0, self.reservation_id.partner_id)
+    #     base_price, currency = self.with_context(
+    #         product_context
+    #     )._get_real_price_currency(
+    #         product, rule_id, 1, product.uom_id, self.reservation_id.pricelist_id.id
+    #     )
+    #     if currency != self.reservation_id.pricelist_id.currency_id:
+    #         base_price = currency._convert(
+    #             base_price,
+    #             self.reservation_id.pricelist_id.currency_id,
+    #             self.reservation_id.company_id or self.env.company,
+    #             fields.Date.today(),
+    #         )
+    #     # negative discounts (= surcharge) are included in the display price
+    #     return max(base_price, final_price)
 
     # flake8: noqa=C901
     @api.depends("reservation_id.room_type_id", "reservation_id.preferred_room_id")
@@ -395,7 +505,7 @@ class PmsReservationLine(models.Model):
                     property=reservation.pms_property_id.id,
                 )
                 line.price = self.env["account.tax"]._fix_tax_included_price_company(
-                    line._get_display_price(product),
+                    line._get_display_price(),
                     product.taxes_id,
                     reservation.tax_ids,
                     reservation.pms_property_id.company_id,

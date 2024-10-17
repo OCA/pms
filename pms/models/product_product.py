@@ -147,7 +147,7 @@ class ProductProduct(models.Model):
             elif (
                 pricelist_item.base == "pricelist" and pricelist_item.base_pricelist_id
             ):
-                field_name = "price"
+                field_name = "lst_price"
                 product = product.with_context(
                     pricelist=pricelist_item.base_pricelist_id.id
                 )
