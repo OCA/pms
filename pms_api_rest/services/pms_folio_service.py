@@ -93,6 +93,7 @@ class PmsFolioService(Component):
                 if folio.out_service_description
                 else None,
                 portalUrl=portal_url,
+                accessToken=folio.access_token,
                 language=folio.lang if folio.lang else None,
             )
         else:
