@@ -438,7 +438,7 @@ class PmsCheckinPartner(models.Model):
             elif not record.residence_state_id:
                 record.residence_state_id = False
 
-    @api.depends(lambda self: self._checkin_manual_fields(depends=True))
+    @api.depends(lambda self: self._checkin_manual_fields())
     def _compute_state(self):
         for record in self:
             if not record.state:
@@ -783,7 +783,7 @@ class PmsCheckinPartner(models.Model):
         return res
 
     @api.model
-    def _checkin_manual_fields(self, country=False, depends=False):
+    def _checkin_manual_fields(self, country=False):
         manual_fields = [
             "name",
             "partner_id",
@@ -805,9 +805,6 @@ class PmsCheckinPartner(models.Model):
             "residence_country_id",
             "residence_state_id",
         ]
-        # api.depends need "reservation_id.state" in the lambda function
-        if depends:
-            manual_fields.append("reservation_id.state")
         return manual_fields
 
     @api.model
