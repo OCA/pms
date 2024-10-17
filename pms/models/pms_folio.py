@@ -130,12 +130,10 @@ class PmsFolio(models.Model):
         comodel_name="account.analytic.account",
     )
     currency_id = fields.Many2one(
-        string="Currency",
-        help="The currency of the property location",
-        readonly=True,
-        required=True,
-        index=True,
         related="pricelist_id.currency_id",
+        depends=["pricelist_id"],
+        store=True,
+        precompute=True,
         ondelete="restrict",
     )
     pricelist_id = fields.Many2one(
