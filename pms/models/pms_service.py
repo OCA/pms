@@ -332,6 +332,14 @@ class PmsService(models.Model):
     )
     # flake8:noqa=C901
     def _compute_service_line_ids(self):
+        if (
+            self.env.context.get("skip_compute_board_service_ids", False)
+            and self.is_board_service
+        ) or (
+            self.env.context.get("skip_compute_service_line_ids", False)
+            and not self.is_board_service
+        ):
+            return
         for service in self:
             if service.no_auto_add_lines:
                 continue
