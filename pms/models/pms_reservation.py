@@ -330,13 +330,11 @@ class PmsReservation(models.Model):
         domain="[('is_used_in_checkin', '=', True)]",
     )
     currency_id = fields.Many2one(
-        string="Currency",
-        help="The currency used in relation to the pricelist",
-        readonly=True,
-        store=True,
-        index=True,
         related="pricelist_id.currency_id",
         depends=["pricelist_id"],
+        store=True,
+        precompute=True,
+        ondelete="restrict",
     )
     tax_ids = fields.Many2many(
         string="Taxes",
