@@ -5,8 +5,10 @@
         <field name="model">pms.room</field>
         <field name="inherit_id" ref="pms.pms_room_view_form" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='sequence']" position="after">
-                 <field name="in_ine" />
+            <xpath expr="//page[@name='information_pms_room']" position="inside">
+                <group>
+                    <field name="in_ine" />
+                </group>
             </xpath>
         </field>
     </record>
