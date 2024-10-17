@@ -743,7 +743,7 @@ class WizardIne(models.TransientModel):
         # of the state statistics,
         # so at least I will feel that the effort made some sense :)
 
-        total_percent = sum([val for val in percents.values()])
+        total_percent = sum(val for val in percents.values())
         sum_percentages = 0
         for group in total_groups_domains.keys():
             percents[group] = round(percents[group] * 100 / (total_percent or 1), 2)
