@@ -206,7 +206,9 @@ class AccountPayment(models.Model):
             ):
                 group[(line.account_id, line.currency_id)].append(line.id)
             for (account, _dummy), line_ids in group.items():
-                if account.reconcile or account.internal_type == "liquidity":
+                if (
+                    account.reconcile or account.account_type == "liquidity"
+                ):  # TODO: liquidity not in account.account_type
                     self.env["account.move.line"].browse(line_ids).reconcile()
         # Set folio sale lines default_invoice_to to partner downpayment invoice
         for folio in payment.folio_ids:
