@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--==================================================== Cancelation Rules ==================================================== -->
+    <!-- Form view of cancelation rules -->
+    <record model="ir.ui.view" id="pms_cancelation_rule_form">
+        <field name="name">pms.cancelation.rule.form</field>
+        <field name="model">pms.cancelation.rule</field>
+        <field name="arch" type="xml">
+            <form string="Cancelation Rules">
+                <sheet>
+                    <h3>
+                        <field name="name" />
+                        <field
+                            name="pms_property_ids"
+                            widget="many2many_tags"
+                            options="{'no_create': True,'no_open': True}"
+                        />
+                        <separator />
+                        <label for="name" string="Max. days InTime before Checkin" />
+                        <field name="days_intime" />
+                    </h3>
+                    <group>
+                        <group string="Late">
+                            <field name="penalty_late" />
+                            <field name="apply_on_late" />
+                            <field
+                                name="days_late"
+                                attrs="{'invisible': [('apply_on_late','not in',('days'))]}"
+                            />
+                        </group>
+                        <group string="No Show">
+                            <field name="penalty_noshow" />
+                            <field name="apply_on_noshow" />
+                            <field
+                                name="days_noshow"
+                                attrs="{'invisible': [('apply_on_noshow','not in',('days'))]}"
+                            />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!-- Tree view of cancelation rules -->
+    <record model="ir.ui.view" id="pms_cancelation_rule_view_tree">
+        <field name="name">pms.cancelation.rule.tree</field>
+        <field name="model">pms.cancelation.rule</field>
+        <field name="arch" type="xml">
+            <tree name="Cancelation Rules">
+                <field name="name" />
+                <field name="days_intime" />
+                <field name="penalty_late" />
+                <field name="apply_on_late" />
+                <field name="penalty_noshow" />
+                <field name="apply_on_noshow" />
+            </tree>
+        </field>
+    </record>
+    <!-- Action of pms cancelation rules -->
+    <record model="ir.actions.act_window" id="action_pms_cancelation_rule">
+        <field name="name">Cancelation Rules</field>
+        <field name="res_model">pms.cancelation.rule</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem
+        name="Cancelation Rules"
+        id="menu_pms_cancelation_rule"
+        action="action_pms_cancelation_rule"
+        sequence="25"
+        parent="pms.pms_configuration_menu"
+    />
+</odoo>

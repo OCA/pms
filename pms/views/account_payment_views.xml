@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="account_payment_view_form" model="ir.ui.view">
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date']" position="after">
+                <field
+                    name="folio_ids"
+                    widget="many2many_tags"
+                    attrs="{'invisible':[('partner_type','!=','customer')]}"
+                />
+                <field
+                    name="origin_agency_id"
+                    attrs="{'invisible':[('origin_agency_id','=',False)]}"
+                />
+                <field
+                    name="origin_reference"
+                    attrs="{'invisible':[('origin_agency_id','=',False)]}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- <record id="view_account_payment_tree" model="ir.ui.view">
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="before">
+                <field name="folio_ids" optional="hidden" />
+                <field name="pms_property_id" optional="hidden" />
+                <field name="origin_agency_id" optional="hidden" />
+                <field name="origin_reference" optional="hidden" />
+            </xpath>
+        </field>
+    </record> -->
+
+    <!-- <record id="view_account_payment_search" model="ir.ui.view">
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='journal_id']" position="after">
+                <field name="pms_property_id" />
+                <field name="origin_agency_id" />
+                <field name="origin_reference" />
+            </xpath>
+            <xpath expr="//filter[@name='company']" position="after">
+                <filter
+                    name="by_property"
+                    string="Property"
+                    context="{'group_by':'pms_property_id'}"
+                />
+                <filter
+                    name="by_origin_agency"
+                    string="Originating agency"
+                    context="{'group_by':'origin_agency_id'}"
+                />
+            </xpath>
+        </field>
+    </record> -->
+
+</odoo>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+        <!-- Basic pms  -->
+        <record id="main_pms_availability_plan" model="pms.availability.plan">
+            <field name="name">Availability Plan</field>
+        </record>
+        <record id="main_pms_property" model="pms.property">
+            <field name="name">My Property</field>
+            <field name="company_id" ref="base.main_company" />
+            <field name="default_pricelist_id" ref="product.list0" />
+            <field name="street">Rua Street Demo, s/n</field>
+            <field name="city">Commitsun city</field>
+            <field name="country_id" ref="base.es" />
+            <field name="zip">15703</field>
+            <field name="phone">+34 123 456 879</field>
+            <field name="email">commitsun@hootel.com</field>
+            <field name="website">https://www.commitsun.com</field>
+            <field name="folio_sequence_id" ref="pms.seq_pms_folio" />
+            <field name="checkin_sequence_id" ref="pms.seq_pms_checkin" />
+        </record>
+        <record id="product.list0" model="product.pricelist">
+            <field name="availability_plan_id" ref="main_pms_availability_plan" />
+            <field name="is_pms_available" eval="True" />
+        </record>
+        <!-- default partner simplified invoices -->
+        <record id="various_pms_partner" model="res.partner">
+            <field name="name">Various Clients</field>
+            <field
+            name="comment"
+        >Contact used for simplified invoices where no customer is available</field>
+        </record>
+        <!-- pms.users -->
+        <record id="base.user_root" model="res.users">
+            <field name="company_id" ref="base.main_company" />
+            <field name="company_ids" eval="[(4, ref('base.main_company'))]" />
+            <field name="pms_property_id" ref="main_pms_property" />
+            <field name="pms_property_ids" eval="[(4, ref('main_pms_property'))]" />
+            <field name="groups_id" eval="[(4,ref('pms.group_pms_manager'))]" />
+        </record>
+        <record id="base.user_admin" model="res.users">
+            <field name="company_id" ref="base.main_company" />
+            <field name="company_ids" eval="[(4, ref('base.main_company'))]" />
+            <field name="pms_property_id" ref="main_pms_property" />
+            <field name="pms_property_ids" eval="[(4, ref('main_pms_property'))]" />
+            <field name="groups_id" eval="[(4,ref('pms.group_pms_manager'))]" />
+        </record>
+        <!-- pms.sale.channel-->
+        <record id="main_pms_sale_channel_door" model="pms.sale.channel">
+            <field name="name">Door</field>
+            <field name="channel_type">direct</field>
+            <field name="icon" type="base64" file="pms/data/icon-door.svg" />
+        </record>
+        <record id="main_pms_sale_channel_phone" model="pms.sale.channel">
+            <field name="name">Phone</field>
+            <field name="channel_type">direct</field>
+            <field name="icon" type="base64" file="pms/data/icon-phone.svg" />
+        </record>
+        <record id="main_pms_sale_channel_mail" model="pms.sale.channel">
+            <field name="name">Mail</field>
+            <field name="channel_type">direct</field>
+            <field name="icon" type="base64" file="pms/data/icon-mail.svg" />
+        </record>
+        <record id="main_pms_sale_channel_agency" model="pms.sale.channel">
+            <field name="name">Agency</field>
+            <field name="channel_type">indirect</field>
+        </record>
+        <!--res.partner_category_id-->
+        <record id="document_type_passport" model="res.partner.id_category">
+            <field name="name">Passport</field>
+            <field name="code">P</field>
+            <field name="priority">20</field>
+<!--            <field name="has_unique_numbers">True</field>-->
+        </record>
+        <record id="document_type_driving_license" model="res.partner.id_category">
+            <field name="name">Driving License</field>
+            <field name="code">C</field>
+            <field name="priority">50</field>
+            <field name="validation_code">
+letters = {
+    0: "T",
+    1: "R",
+    2: "W",
+    3: "A",
+    4: "G",
+    5: "M",
+    6: "Y",
+    7: "F",
+    8: "P",
+    9: "D",
+    10: "X",
+    11: "B",
+    12: "N",
+    13: "J",
+    14: "Z",
+    15: "S",
+    16: "Q",
+    17: "V",
+    18: "H",
+    19: "L",
+    20: "C",
+    21: "K",
+    22: "E",
+}
+dni_number = id_number.name[0:8]
+dni_letter = id_number.name[
+    len(id_number.name) - 1 : len(id_number.name)
+]
+if dni_number.isdigit() and not dni_letter.isdigit():
+    if letters.get(int(dni_number) % 23) != dni_letter.upper():
+        failed = True
+else:
+    failed = True
+            </field>
+<!--            <field name="has_unique_numbers">True</field>-->
+        </record>
+        <record
+        id="document_type_identification_document"
+        model="res.partner.id_category"
+    >
+            <field name="name">Identification Document</field>
+            <field name="code">I</field>
+            <field name="priority">60</field>
+<!--            <field name="has_unique_numbers">True</field>-->
+        </record>
+
+        <record id="document_type_european_residence" model="res.partner.id_category">
+            <field name="name">European Residence permit</field>
+            <field name="code">X</field>
+            <field name="priority">40</field>
+            <field name="validation_code">
+permit_first_letter=id_number.name[0:1]
+permit_last_letter = id_number.name[
+    len(id_number.name) - 1 : len(id_number.name)
+]
+if (permit_first_letter.upper() in ['X','Y']) and id_number.name[1:8].isdigit() and not permit_last_letter.isdigit():
+    failed = False
+else:
+    failed = True
+            </field>
+        </record>
+</odoo>

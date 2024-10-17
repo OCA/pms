@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="pms_amenity_view_form" model="ir.ui.view">
+        <field name="name">pms.amenity.form</field>
+        <field name="model">pms.amenity</field>
+        <field name="arch" type="xml">
+            <form string="Room Amenities">
+                <sheet>
+                    <h1>
+                        <label for="name" string="Amenity" />
+                        <field name="name" select="1" />
+                    </h1>
+                    <group>
+                        <field name="default_code" select="1" />
+                    </group>
+                    <notebook>
+                        <page string="Information">
+                            <group colspan="4" col="4">
+                                <field
+                                    name="pms_property_ids"
+                                    widget="many2many_tags"
+                                    options="{'no_create': True,'no_open': True}"
+                                />
+                                <field
+                                    name="pms_amenity_type_id"
+                                    select="2"
+                                    string="Amenity Type"
+                                    domain="['|', ('pms_property_ids', '=', False), ('pms_property_ids', 'in', pms_property_ids)]"
+                                />
+                                <field name="is_add_code_room_name" />
+                                <!-- <field name="categ_id" select="1"
+                                    domain="[('isamenitytype','=',True)]" /> -->
+                            </group>
+                            <newline />
+                            <separator colspan='4' string="Supplier Taxes" />
+                            <!-- <field name="supplier_taxes_id" colspan="4" nolabel='1'
+                                help='Define supplier taxes if there any on the ty. ' /> -->
+                            <newline />
+                            <separator colspan='4' string="Customer Taxes" />
+                            <!-- <field name="taxes_id" colspan="4" nolabel='1'
+                                help='List of customer taxes applied on the ty. ' /> -->
+                        </page>
+                        <page string="Procurement">
+                            <group colspan="4" col="4">
+                                <field name="active" select="2" />
+                                <!-- <field name="list_price" /> -->
+                                <!-- <field name="cost_method" string="Cost Method"/> -->
+                                <!-- <field name="sale_ok" select="2" /> -->
+                                <!-- <field name="standard_price" /> -->
+                                <!-- <field name="rental" select="2" /> -->
+                            </group>
+                            <newline />
+                            <group>
+                                <separator string="Suppliers" />
+                                <!-- <field name="seller_ids" colspan="4" nolabel="1"
+                                    widget="one2many_list" /> -->
+                            </group>
+                        </page>
+                        <page string="Descriptions">
+                            <!-- <separator string="Description" />
+                            <field name="description" colspan="4" nolabel="1" />
+                            <separator string="Sale Description" />
+                            <field name="description_sale" colspan="4" nolabel="1" />
+                            <separator string="Purchase Description" />
+                            <field name="description_purchase" colspan="4" nolabel="1" /> -->
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="pms_amenity_search">
+        <field name="name">pms.room_amenity_search</field>
+        <field name="model">pms.amenity</field>
+        <field name="arch" type="xml">
+            <search string="Room Amenities">
+                <field name="name" />
+                <field name="pms_amenity_type_id" select="1" />
+                <!-- <field name="list_price" string="ty rate" /> -->
+                <newline />
+                <group expand="0" string="Group By...">
+                    <!-- <filter name="categ_id" string="Catagory"
+                        icon="terp-stock_symbol-selection" domain="[]"
+                        context="{'group_by':'categ_id'}" /> -->
+                </group>
+            </search>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="pms_amenity_view_list">
+        <field name="name">pms.room_amenity_list</field>
+        <field name="model">pms.amenity</field>
+        <field name="arch" type="xml">
+            <tree name="Room Amenities">
+                <field name="name" />
+                <field name="pms_amenity_type_id" select="1" />
+                <field name="default_code" />
+                <field name="is_add_code_room_name" />
+                <!-- <field name="list_price" string="Ty rate" invisible="1" /> -->
+            </tree>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="action_pms_room_amenity_view_form">
+        <field name="name">Room Amenities</field>
+        <field name="res_model">pms.amenity</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="pms_amenity_view_list" />
+    </record>
+    <menuitem
+        id="menu_amenity"
+        name="Amenity"
+        parent="pms.pms_configuration_menu"
+        sequence="55"
+    />
+    <menuitem
+        name="Amenities"
+        id="menu_action_pms_room_amenity_view_form"
+        action="action_pms_room_amenity_view_form"
+        sequence="5"
+        parent="pms.menu_amenity"
+    />
+    <!-- Amenities Categories -->
+    <!-- <record model="ir.actions.act_window" id="pms_ty_category_action">
+        <field name="name">Amenities by Category</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.category</field>
+        <field name="domain">[('parent_id','=',False),('isamenitytype','=',True)]</field>
+        <field name="view_type">tree</field>
+        <field name="view_id" ref="product_category_tree_view" />
+    </record> -->
+    <!--record id="ir_amenities_category_open" ref="model_product_category">
+        <field eval="'tree_but_open'" name="key2"/>
+        <field eval="'product.category'" name="model"/>
+        <field name="name">Amenities</field>
+        <field eval="'ir.actions.act_window,%d'%action_room_cate" name="value"/>
+    </record-->
+    <!-- <menuitem name="Amenities by Type" id="menu_pms_ty_category_action"
+        action="pms_ty_category_action" sequence="4" parent="pms.menu_amenity" /> -->
+</odoo>

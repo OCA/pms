@@ -1,0 +1,208 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="booking_engine" model="ir.ui.view">
+        <field name="name">Folio Wizard</field>
+        <field name="model">pms.booking.engine</field>
+        <field name="arch" type="xml">
+            <form class="pt-1">
+                <h2>
+                    <field
+                        name="pms_property_id"
+                        required="1"
+                        attrs="{'readonly':[('folio_id','!=',False)]}"
+                    />
+                </h2>
+                <div class="row">
+                    <div class="col-5 ">
+                        <group>
+                            <field name="reservation_type" />
+                            <field
+                                name="start_date"
+                                widget="daterange"
+                                options="{'related_end_date': 'end_date'}"
+                            />
+                            <field
+                                name="end_date"
+                                widget="daterange"
+                                options="{'related_start_date': 'start_date'}"
+                            />
+                            <field name="folio_id" invisible="1" />
+                            <field
+                                name="agency_id"
+                                attrs="{'invisible': [('reservation_type','!=','normal')]}"
+                            />
+                            <field
+                                name="segmentation_ids"
+                                widget="many2many_tags"
+                                attrs="{'invisible': [('reservation_type','!=','normal')]}"
+                            />
+                        </group>
+                    </div>
+                    <div class="col-5">
+                        <group>
+                            <field
+                                name="partner_id"
+                                string="Partner"
+                                options="{'no_create': True,'no_open': True}"
+                                attrs="{'invisible': [('reservation_type','=','out')]}"
+                            />
+                            <field
+                                name="partner_name"
+                                string="Partner"
+                                required="1"
+                                attrs="{'invisible': [('reservation_type','=','out')]}"
+                            />
+                            <field
+                                name="partner_name"
+                                string="Reason"
+                                required="1"
+                                attrs="{'invisible': [('reservation_type','!=','out')]}"
+                            />
+                            <field
+                                default_focus="1"
+                                name="pricelist_id"
+                                string="Pricelist"
+                                options="{'no_create': True,'no_open': True}"
+                                attrs="{'required': [('reservation_type','=','normal')], 'invisible': [('reservation_type','!=','normal')]}"
+                            />
+                            <field
+                                name="channel_type_id"
+                                attrs="{'invisible': [('reservation_type','!=','normal')]}"
+                            />
+                        </group>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <group>
+                            <field name="availability_results" nolabel="1">
+                                 <tree
+                                    editable="bottom"
+                                    create="false"
+                                    delete="false"
+                                    decoration-muted="num_rooms_available &lt; 1"
+                                    decoration-primary="value_num_rooms_selected &gt; 0"
+                                    decoration-bf="value_num_rooms_selected &gt; 0"
+                                >
+                                    <field name="pms_property_id" invisible="1" />
+                                     <field
+                                        name="room_type_id"
+                                        readonly="1"
+                                        options="{'no_open': True}"
+                                        force_save="1"
+                                    />
+
+                                     <field name="checkin" />
+                                     <field name="checkout" />
+                                     <field
+                                        name="num_rooms_available"
+                                        readonly="1"
+                                        force_save="1"
+                                    />
+                                     <field
+                                        name="value_num_rooms_selected"
+                                        invisible="1"
+                                    />
+                                     <field
+                                        name="num_rooms_selected"
+                                        options="{'no_create': True, 'no_open' : True, 'no_edit': True}"
+                                        attrs="{'readonly':[('num_rooms_available','&lt;',1)]}"
+                                        force_save="1"
+                                    />
+                                    <field
+                                        name="board_service_room_id"
+                                        attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
+                                    />
+                                    <field
+                                        name="price_per_room"
+                                        readonly="1"
+                                        force_save="1"
+                                        attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
+                                    />
+                                    <field
+                                        name="price_total"
+                                        readonly="1"
+                                        force_save="1"
+                                        attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
+                                    />
+
+                                 </tree>
+                            </field>
+                        </group>
+                    </div>
+                </div>
+                <div>
+                    <group>
+                        <field
+                            name="internal_comment"
+                            placeholder="Internal comment Folio"
+                            nolabel="1"
+                        />
+                    </group>
+                </div>
+                <div class="row float-right border mr-2 mb-5">
+                    <div class="col-3 ">
+                        <group>
+                            <field
+                                name="discount"
+                                widget="percentage"
+                                attrs="{'invisible': [('reservation_type','!=','normal')]}"
+                            />
+                        </group>
+                        <div class="col-3 px-0">
+                            <group>
+                                <field
+                                    name="total_price_folio"
+                                    widget="monetary"
+                                    attrs="{'invisible': [('reservation_type','!=','normal')]}"
+                                />
+                            </group>
+                        </div>
+                    </div>
+                </div>
+                <footer>
+                    <field name="can_create_folio" invisible="1" />
+                    <button
+                        name="create_folio"
+                        string="Create Folio"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible' : ['|',('can_create_folio', '=', False),('folio_id', '!=', False)]}"
+                    />
+                    <button
+                        name="create_folio"
+                        string="Add to Folio"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible' : ['|',('can_create_folio', '=', False),('folio_id', '=', False)]}"
+                    />
+                    <span attrs="{'invisible' : [('can_create_folio', '=', False)]}">
+                        or
+                    </span>
+                    <button
+                        string="Cancel"
+                        class="btn-default border"
+                        special="cancel"
+                    />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_booking_engine" model="ir.actions.act_window">
+        <field name="name">Folio creation</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pms.booking.engine</field>
+        <field name="view_id" ref="booking_engine" />
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        name="Booking Engine"
+        id="menu_pms_booking_engine"
+        action="action_booking_engine"
+        sequence="55"
+        parent="pms.menu_reservations"
+    />
+</odoo>

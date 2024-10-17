@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+        <record id="precheckin_invitation_email" model="mail.template">
+            <field name="name">Precheckin Invitation</field>
+            <field name="model_id" ref="pms.model_pms_checkin_partner" />
+            <field
+            name="subject"
+        >Hi ${object.firstname}, do your check-in now in ${object.pms_property_id.name}</field>
+            <field
+            name="email_from"
+        >${object.pms_property_id.partner_id.email | safe}</field>
+            <field
+            name="email_to"
+        >${(object.email and '"%s" &lt;%s&gt;' % (object.name, object.email) or object.partner_id.email_formatted or '') | safe}</field>
+            <field name="body_html" type="html">
+                <div>
+                    Do your check-in now and save time.
+                    <br />
+                    Access our<strong
+                > quick registration system</strong>. In a few steps you will be able to register your data in an agile, simple and secure way,<strong
+                > avoiding queues at reception</strong>.
+                    If you register your data in our system, <strong
+                > your passage through reception will be much faster</strong>, being able to enjoy the comfort of your room right away.
+                    <table align="center">
+                        <tr>
+                            <td align="center" style="padding: 20px 0 0px 0; ">
+                                <table border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="center">
+                                            <a
+                                            href="${object.get_portal_url()}"
+                                            target="_blank"
+                                            style="text-decoration: none; color: #FFFFFF; font-size: 2em; padding: 10px 20px 10px 20px;"
+                                        >
+                                                <div
+                                                style="padding: 0.5em; background-color: #45C2B1; border-color: #45C2B1; border-width: 2px;border-style:solid; border-bottom-style: solid;border-left-style: solid;border-right-style: solid;border-top-style: solid;-webkit-border-radius: 10; -moz-border-radius: 10; border-radius: 10px;font-size: 12px;"
+                                            >Check-in
+                                                </div>
+                                                <center><img
+                                                    src="https://www.aldahotels.es/firma/email/llegada/check-in.png"
+                                                    alt="Hacer check-in"
+                                                    width="80px"
+                                                    height="80px"
+                                                    href="${object.get_portal_url()}"
+                                                /></center></a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </field>
+        </record>
+</odoo>

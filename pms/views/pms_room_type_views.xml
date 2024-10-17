@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2017 Alexandre Díaz
+     Copyright 2017 Dario Lodeiros
+     Copyright 2021 Eric Antones <eantones@nuobit.com>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record model="ir.ui.view" id="pms_room_type_view_form">
+        <field name="name">pms.room_type.form</field>
+        <field name="model">pms.room.type</field>
+        <field name="arch" type="xml">
+            <form string="Property Room Type">
+                <sheet>
+                    <!-- <div class="oe_button_box" name="button_box">
+                        <button
+                            name="toggle_active"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-archive"
+                        >
+                            <field
+                                name="active"
+                                widget="boolean_button"
+                                options='{"terminology": "archive"}'
+                            />
+                        </button>
+                    </div> -->
+                    <group colspan="4">
+                        <group>
+                            <field name="name" />
+                            <field name="default_code" />
+                            <field name="class_id" />
+                        </group>
+                        <group>
+                            <field name="pms_property_ids" widget="many2many_tags" />
+                            <field name="company_id" />
+                        </group>
+                    </group>
+                    <group colspan="2">
+                        <group name="room_ids_group">
+                            <field name="room_ids" widget="many2many_tags" />
+                            <field name="total_rooms_count" />
+                            <field name="default_max_avail" />
+                            <field name="default_quota" />
+                            <field name="min_price" />
+                        </group>
+                        <group name="accounting_group">
+                            <field
+                                name="list_price"
+                                widget='monetary'
+                                options="{'currency_field': 'currency_id', 'field_digits': True}"
+                            />
+                            <field name="taxes_id" widget="many2many_tags" />
+                            <field name="categ_id" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Board Services">
+                            <separator string="Board Services" />
+                            <field
+                                name="board_service_room_type_ids"
+                                colspan="4"
+                                nolabel="1"
+                                context="{'default_pms_room_type_id':id}"
+                            >
+                                <tree editable="bottom">
+                                    <field name="by_default" />
+                                    <field name="pms_room_type_id" invisible="1" />
+                                    <field name="pms_board_service_id" />
+                                    <field name="amount" />
+                                    <field name="pms_property_id" />
+                                    <button
+                                        type="object"
+                                        class="oe_stat_button"
+                                        id="go_board_lines"
+                                        icon="fa-2x fa-bars"
+                                        name="open_board_lines_form"
+                                    />
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Room Amenities">
+                            <separator string="Room Amenities" />
+                            <field name="room_amenity_ids" colspan="4" nolabel="1" />
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="pms_room_type_view_tree">
+        <field name="name">pms.room_type.tree</field>
+        <field name="model">pms.room.type</field>
+        <field name="arch" type="xml">
+            <tree name=" Property Room Type">
+                <field name="sequence" widget="handle" />
+                <field name="pms_property_ids" widget="many2many_tags" />
+                <field name="name" />
+                <field name="default_code" />
+                <field name="list_price" />
+                <field name="room_ids" widget="many2many_tags" />
+                <field name="total_rooms_count" />
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="pms_room_type_view_search">
+        <field name="name">pms.room.type.search</field>
+        <field name="model">pms.room.type</field>
+        <field name="arch" type="xml">
+            <search string="Room Type">
+                <field name="name" />
+                <field
+                    name="pms_property_ids"
+                    string="Property"
+                    filter_domain="[
+                        '|',
+                        ('pms_property_ids', 'ilike', self),
+                        ('pms_property_ids', '=', False),
+                    ]"
+                />
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="open_pms_room_type_form_tree">
+        <field name="name">Room Type</field>
+        <field name="res_model">pms.room.type</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        name="Room Types"
+        id="menu_open_pms_room_type_form_tree"
+        action="open_pms_room_type_form_tree"
+        sequence="15"
+        parent="pms.pms_rooms_menu"
+    />
+</odoo>

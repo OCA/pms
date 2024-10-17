@@ -1,0 +1,154 @@
+<?xml version="1.0" ?>
+<odoo>
+        <template id="template_header">
+            <h1 t-field="object.pms_property_id.name" />
+            <div class="row">
+                <div class="col-sm-4">
+                    <t t-esc="object.pms_property_id.street" />
+                    <t t-if="object.pms_property_id.street2">
+                        -
+                        <t t-esc="object.pms_property_id.street2" />
+                    </t>
+                    <br />
+                    <t t-esc="object.pms_property_id.zip" />
+                    <t t-esc="object.pms_property_id.city" />
+                    ,
+                    <t t-esc="object.pms_property_id.state_id.name" />
+                    <br />
+                    <t t-esc="object.pms_property_id.country_id.name" />
+                </div>
+                <div class="col-sm-4">
+                    <i class="glyphicon glyphicon-phone-alt" />
+                    <t t-esc="object.pms_property_id.phone" />
+                    <br />
+                    <i class="glyphicon glyphicon-envelope" />
+                    <t t-esc="object.pms_property_id.email" />
+                    <br />
+                    <i class="glyphicon glyphicon-home" />
+                    <t t-esc="object.pms_property_id.website" />
+                    <br />
+                </div>
+            </div>
+        </template>
+        <template id="template_reservation_details">
+            <div class="row table-responsive" style="padding-top: 20px;">
+                <div class="col-sm-12">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Room Type</th>
+                                <th scope="col">Checkin</th>
+                                <th scope="col">Nights</th>
+                                <th scope="col">
+                                    Price
+                                    <t t-esc="object.currency_id.name" />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="object.reservation_ids" t-as="r">
+                                <tr>
+                                    <th scope="row">
+                                        <t t-esc="r_index+1" />
+                                    </th>
+                                    <td>
+                                        <t t-esc="r.room_type_id.name" />
+                                    </td>
+                                    <td>
+                                        <t t-esc="r.checkin" />
+                                    </td>
+                                    <td>
+                                        <t t-esc="r.nights" />
+                                    </td>
+                                    <td>
+                                        <t t-esc="r.price_total" />
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </template>
+        <template id="template_reservation">
+            <div class="row" style="padding-top: 20px;">
+                <div class="col-sm-12">
+                    <p>
+                        Dear
+                        <span t-field="object.partner_id.name" />
+                        ,
+                        <br />
+                        Thank you for your reservation.
+                    </p>
+                    <p>
+                        Here is your confirmation code:
+                        <b t-esc="object.name" />
+                        .
+                    Keep this code for any question about your booking order.
+                    </p>
+                    <p>You can find the reservation details below:</p>
+                </div>
+            </div>
+            <t t-call="pms.template_reservation_details" />
+            <div class="row" style="padding-top: 20px;">
+                <div class="col-sm-12">
+                    If you have any questions, please do not hesitate to contact with
+                    the property's staff.
+                    <br />
+                    Looking forward to seeing you at our property,
+                    <br />
+                    Best regards.
+                </div>
+            </div>
+        </template>
+        <template id="template_footer">
+            <div class="row" style="padding-top: 20px;">
+                <div class="col-sm-12">
+                    Privacy Policy: We use your Personal Information only for managing
+                    your reservation. By using the property, you
+                agree to the collection and use of information in accordance with this
+                    policy.
+                </div>
+            </div>
+        </template>
+        <template
+        id="template_reservation_confirmed"
+        name="Property Reservation Confirmed"
+    >
+            <t t-call="web.layout">
+                <t t-set="head">
+                    <!-- TODO: ensure bootstrap in shipped within the email -->
+                    <link
+                    rel="stylesheet"
+                    href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+                    integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+                    crossorigin="anonymous"
+                />
+                </t>
+                <t t-set="body_classname" t-value="'container'" />
+                <div class="container">
+                    <t t-call="pms.template_header" />
+                    <t t-call="pms.template_reservation" />
+                    <t t-call="pms.template_footer" />
+                </div>
+            </t>
+        </template>
+        <!-- notify customer that reservation has been confirmed -->
+        <record id="email_template_reservation" model="mail.template">
+            <field name="name">Property: Reservation Confirmed</field>
+            <field name="model_id" ref="pms.model_pms_folio" />
+            <field
+            name="email_from"
+        >${('%s &lt;%s&gt;' % (object.pms_property_id.partner_id.name, object.pms_property_id.partner_id.email) or '')|safe}</field>
+            <field name="email_to">${(object.email or '')|safe}</field>
+            <field name="partner_to">${(object.partner_id.id or '')}</field>
+            <field name="lang">${object.lang}</field>
+            <field name="subject">
+                Your reservation ${object.name} has been confirmed by the property staff
+            </field>
+            <field name="auto_delete" eval="True" />
+            <field name="body_type">qweb</field>
+            <field name="body_view_id" ref="pms.template_reservation_confirmed" />
+        </record>
+</odoo>

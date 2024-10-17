@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_users_view_form" model="ir.ui.view">
+        <field name="name">User Properties fields</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='access_rights']/group" position="after">
+                <group string="Multi Properties">
+                    <field
+                        string="Allowed Properties"
+                        name="pms_property_ids"
+                        widget="many2many_tags"
+                    />
+                    <field
+                        string="Current Property"
+                        name="pms_property_id"
+                        context="{'user_preference': 0}"
+                    />
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

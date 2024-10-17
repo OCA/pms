@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="traveller_report">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="docs">
+                <div class="logo">
+                    <img
+                        t-attf-src="data:image/*;base64,{{docs.pms_property_id.logo}}"
+                        t-att-alt="docs.pms_property_id.company_id.name"
+                    />
+                </div>
+                <div class="top">
+                    <p class="title">PART
+                        OF TRAVELERS ENTRY</p>
+                    <p class="checknumber"> Document number: <strong>
+                            <span t-field="docs.identifier" />
+                        </strong> / <span t-field="docs.reservation_id" />
+                    </p>
+                    <p class="amount"> Total amount
+                        (Reservation Card): <strong>
+                            <span t-field="docs.reservation_id.folio_id.amount_total" />
+                        </strong>
+                    </p>
+                    <div class="property amount">
+                        <strong>
+                            <span t-field="docs.pms_property_id.name" />
+                        </strong>
+                        <br />
+                        <strong> CIF: <span
+                                t-field="docs.pms_property_id.company_id.vat"
+                            />
+                        </strong>
+                        <br />
+                        <span t-field="docs.pms_property_id.company_id.name" />
+                        <br />
+                        <strong>
+                            <span t-field="docs.pms_property_id.street" />
+                            <span t-field="docs.pms_property_id.street2" />
+                        </strong>
+                        <br />
+                        <strong>
+                            <span t-field="docs.pms_property_id.zip" />
+                            <span t-field="docs.pms_property_id.city" />
+                        </strong>
+                        <b />
+                        <br />
+                        Categoría: <span
+                            t-field="docs.pms_property_id.ine_category_id"
+                        />
+                    </div>
+                    <p class="title2">TRAVELER'S DOCUMENT</p>
+                </div>
+                <table>
+                    <tr>
+                        <td>Document
+                            number</td>
+                        <td>
+                            <strong>
+                                <span t-field="docs.document_number" />
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Type</td>
+                        <td>
+                            <strong>
+                                <span t-field="docs.document_type" />
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Expedition
+                            date</td>
+                        <td>
+                            <strong>
+                                <span t-field="docs.document_expedition_date" />
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <td>
+                            Name</td>
+                        <td>
+                            <strong>
+                                <span t-field="docs.firstname" />
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Lastnames</td>
+                        <td>
+                            <strong>
+                                <span t-field="docs.lastname" />
+                                <span t-field="docs.lastname2" />
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <td>
+                            Gender</td>
+                        <td>
+                            <strong>
+                                <span t-field="docs.gender" />
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Birthdate</td>
+                        <td>
+                            <strong>
+                                <span t-field="docs.birthdate_date" />
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <td>
+                            Entry date</td>
+                        <td>
+                            <strong>
+                                <span t-field="docs.checkin" />
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Exit date</td>
+                        <td>
+                            <strong>
+                                <span t-field="docs.checkout" />
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+                <div>
+                    <p class="date">
+                        <span
+                            t-field="docs.pms_property_id.partner_id.city"
+                        /> , at <span
+                            t-esc="time.strftime('%Y-%m-%d')"
+                            t-options="{&quot;widget&quot;: &quot;date&quot;}"
+                        />
+                    </p>
+                    <div class="sign">
+                        <div class="signature-wrapper" t-if="docs.signature">
+                            <img
+                                class="checkin-signature"
+                                t-attf-src="data:image/*;base64,{{docs.signature}}"
+                            />
+                        </div>
+                    </div>
+                    <br />
+                    <p class="signature">Traveler's signature</p>
+
+                    <p>
+                        <span t-field="docs.pms_property_id.cardex_warning" />
+                    </p>
+                    <p class="privacy_policy">
+                        <span
+                            t-field="docs.pms_property_id.company_id.privacy_policy"
+                        />
+                    </p>
+                </div>
+                <p style="page-break-after:always;" />
+                <div class="logo">
+                    <img
+                        t-attf-src="data:image/*;base64,{{docs.pms_property_id.logo}}"
+                        t-att-alt="docs.pms_property_id.company_id.name"
+                    />
+                </div>
+                <div class="top">
+                    <p class="title">PART OF TRAVELERS ENTRY</p>
+                    <p class="checknumber"> Document number: <strong>
+                            <span t-field="docs.identifier" />
+                        </strong> / <span t-field="docs.reservation_id" />
+                    </p>
+                    <p class="amount"> Total amount (Reservation Card): <strong>
+                            <span t-field="docs.reservation_id.folio_id.amount_total" />
+                        </strong>
+                    </p>
+                    <div class="property amount">
+                        <strong>
+                            <span t-field="docs.pms_property_id.name" />
+                        </strong>
+                        <br />
+                        <strong> CIF: <span
+                                t-field="docs.pms_property_id.company_id.vat"
+                            />
+                        </strong>
+                        <br />
+                        <span t-field="docs.pms_property_id.company_id.name" />
+                        <br />
+                        <strong>
+                            <span t-field="docs.pms_property_id.street" />
+                            <span t-field="docs.pms_property_id.street2" />
+                        </strong>
+                        <br />
+                        <strong>
+                            <span t-field="docs.pms_property_id.zip" />
+                            <span t-field="docs.pms_property_id.city" />
+                        </strong>
+                        <b />
+                        <br />
+                        Categoría: <span
+                            t-field="docs.pms_property_id.ine_category_id"
+                        />
+                    </div>
+                    <p class="title2">TRAVELER'S DOCUMENT</p>
+                </div>
+                <table>
+                    <tr>
+                        <td>Document number</td>
+                        <td>
+                            <strong>
+                                <span t-field="docs.document_number" />
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Type</td>
+                        <td>
+                            <strong>
+                                <span t-field="docs.document_type" />
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Expedition
+                            date</td>
+                        <td>
+                            <strong>
+                                <span t-field="docs.document_expedition_date" />
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <td>
+                            Name</td>
+                        <td>
+                            <strong>
+                                <span t-field="docs.firstname" />
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Lastnames</td>
+                        <td>
+                            <strong>
+                                <span t-field="docs.lastname" />
+                                <span t-field="docs.lastname2" />
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <td>
+                            Gender</td>
+                        <td>
+                            <strong>
+                                <span t-field="docs.gender" />
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Birthdate</td>
+                        <td>
+                            <strong>
+                                <span t-field="docs.birthdate_date" />
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <td>
+                            Entry date</td>
+                        <td>
+                            <strong>
+                                <span t-field="docs.checkin" />
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Exit date</td>
+                        <td>
+                            <strong>
+                                <span t-field="docs.checkout" />
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+                <div>
+                    <p class="date">
+                        <span t-field="docs.pms_property_id.partner_id.city" />
+                        , at <span
+                            t-esc="time.strftime('%Y-%m-%d')"
+                            t-options="{&quot;widget&quot;: &quot;date&quot;}"
+                        />
+                    </p>
+                    <p>
+                        <strong>Copy for the host</strong>
+                    </p>
+                    <p>
+                        <span t-field="docs.pms_property_id.cardex_warning" />
+                    </p>
+                    <p class="privacy_policy">
+                        <span
+                            t-field="docs.pms_property_id.company_id.privacy_policy"
+                        />
+                    </p>
+                </div>
+                <div class="final" />
+                <p style="page-break-after:always;" />
+                <style>
+                    table{
+                    width: 100%;
+                    border: 1;
+                    border-style: double;
+                    margin-top:12px;
+                    }
+                    td:first-child{
+                    width:40%;
+                    padding-left:3px;
+                    border:double;
+                    border-width:1px;
+                    }
+                    td:last-child{
+                    width:100%;
+                    padding-left:3px;
+                    border:double;
+                    border-width:1px;
+                    }
+                    .sign{
+                    width: 100%;
+                    border:dotted 1px;
+                    height: 100px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    }
+                    .signature-wrapper {
+                    width: 200px;
+                    height: 100px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin: 0 auto;
+                    }
+                    .checkin-signature {
+                    width: 100%;
+                    height: 100%;
+                    }
+                    p,.property{
+                    text-align: center;
+                    font-family: kiro, Verdana, Geneva, sans-serif;
+                    }
+                    .date{
+                    margin-top:8px;
+                    }
+                    .title{
+                    font-size:1.9em;
+                    }
+                    .title2{
+                    font-size:1.32em;
+                    }
+                    .amount{
+                    font-size:1.2em;
+                    }
+                    .checknumber{
+                    font-size:1.4em;
+                    }
+                    td{
+                    font-size:180%;
+                    }
+                    p, span{
+                    font-size:1.2em;
+                    }
+                    .signature, .date{
+                    font-size: 1.2em;
+                    }
+                    .privacy_policy{
+                    text-align: justify;
+                    font-size: 0.9em;
+                    }
+                    .logo {
+                    width: 75%;
+                    height: 100px;
+                    margin:0 auto 2em;
+                    text-align: center;
+                    }
+                    img{
+                    max-width: 100%;
+                    max-height: 100px;
+                    }
+                    .top p {
+                    margin: 0 0 0 0;
+                    padding: 0 0 0 0;
+                    }
+                </style>
+            </t>
+        </t>
+    </template>
+</odoo>

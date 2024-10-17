@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="autoinvoice_folio_job_function" model="queue.job.function">
+        <field name="model_id" ref="pms.model_pms_property" />
+        <field name="method">autoinvoice_folio</field>
+        <field name="channel_id" ref="pms.channel_autoinvoicing_folios" />
+        <field name="retry_pattern" eval="{1: 10, 5: 30, 10: 60, 15: 300}" />
+    </record>
+    <record id="autovalidate_invoice_folio_job_function" model="queue.job.function">
+        <field name="model_id" ref="pms.model_pms_property" />
+        <field name="method">autovalidate_folio_invoice</field>
+        <field name="channel_id" ref="pms.channel_autoinvoicing_folios" />
+        <field name="retry_pattern" eval="{1: 10, 5: 30, 10: 60, 15: 300}" />
+    </record>
+</odoo>

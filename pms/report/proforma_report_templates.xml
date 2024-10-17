@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <template id="report_pms_pro_forma">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="is_pro_forma" t-value="True" />
+                <t t-set="o" t-value="o.with_context(proforma=True)" />
+                <t
+                    t-call="account.report_invoice_document"
+                    t-lang="o.partner_id.lang"
+                />
+            </t>
+        </t>
+    </template>
+
+</odoo>
