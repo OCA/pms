@@ -48,7 +48,7 @@ class PmsProperty(models.Model):
         compute="_compute_other_places",
     )
 
-    @api.depends("room_ids.in_ine")
+    @api.depends("room_ids")
     def _compute_tourist_rooms(self):
         for record in self:
             tourist_rooms = len(record.room_ids.filtered(lambda r: r.in_ine))
