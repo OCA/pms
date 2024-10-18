@@ -3,3 +3,4 @@ reporting-engine
 queue
 community-data-files
 l10n-spain
+connector

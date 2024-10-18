@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2021 Eric Antones <eantones@nuobit.com>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="channel_wubook_backend_type_view_form" model="ir.ui.view">
+        <field name="name">channel.wubook.backend.type.form</field>
+        <field name="model">channel.wubook.backend.type</field>
+        <field name="arch" type="xml">
+            <form string="PMS Channel Backend Type" create="0">
+                <header />
+                <sheet>
+                    <group>
+                        <field name="direct_channel_type_id" class="oe_inline" />
+                    </group>
+                    <notebook>
+                        <page name="mappings" string="Mappings">
+                            <group name="room_type_class" string="Room Type Classes">
+                                <field name="room_type_class_ids" nolabel="1">
+                                    <tree editable="bottom">
+                                        <field name="wubook_room_type" />
+                                        <field
+                                            name="room_type_shortname"
+                                            string="Shortname"
+                                            attrs="{'required': [('wubook_room_type', '!=', False)]}"
+                                        />
+                                    </tree>
+                                </field>
+                            </group>
+                            <group name="board_service" string="Board Services">
+                                <field name="board_service_ids" nolabel="1">
+                                    <tree editable="bottom">
+                                        <field name="wubook_board_service" />
+                                        <field
+                                            name="board_service_shortname"
+                                            string="Shortname"
+                                            attrs="{'required': [('wubook_board_service', '!=', False)]}"
+                                        />
+                                    </tree>
+                                </field>
+                            </group>
+                             <group name="otas" string="OTAs">
+                                <field name="ota_ids" nolabel="1">
+                                    <tree editable="bottom">
+                                        <field name="wubook_ota" />
+                                        <field
+                                            name="agency_id"
+                                            attrs="{'required': [('wubook_ota', '!=', False)]}"
+                                        />
+                                    </tree>
+                                </field>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
