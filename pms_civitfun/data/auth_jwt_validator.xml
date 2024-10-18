@@ -1,0 +1,16 @@
+<odoo>
+    <data noupdate="1">
+        <record id="civitfun_validator" model="auth.jwt.validator">
+            <field name="name">civitfun</field>
+            <field name="audience">civitfun</field>
+            <field name="issuer">civitfun</field>
+            <field name="signature_type">secret</field>
+            <field name="secret_algorithm">HS256</field>
+            <field name="secret_key">civitfun_secret_key_example</field>
+            <field name="user_id_strategy">login</field>
+            <field name="static_user_id">1</field>
+            <field name="partner_id_strategy">email</field>
+            <field name="partner_id_required" eval="False" />
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="inherit_pms_property_views" model="ir.ui.view">
+        <field name="model">pms.property</field>
+        <field name="inherit_id" ref="pms.pms_property_views_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='property_settings']" position="inside">
+                <div class="row">
+                    <div class="o_horizontal_separator">
+                        CIVITFUN Settings
+                    </div>
+                    <group>
+                        <field name="use_civitfun" />
+                        <field name="civitfun_property_code" />
+                        <field name="civitfun_payment_journal_id" />
+                    </group>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
