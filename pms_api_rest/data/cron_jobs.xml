@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+        <record model="ir.cron" id="clean_log_pms_api_rest">
+            <field name="name">Clean Log PMS API REST</field>
+            <field name="interval_number">1</field>
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False" />
+            <field name="state">code</field>
+            <field name="model_id" ref="model_pms_api_log" />
+            <field
+            name="nextcall"
+            eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 06:00:00')"
+        />
+            <field name="code">model.clean_log_data(offset=60)</field>
+        </record>
+
+</odoo>
