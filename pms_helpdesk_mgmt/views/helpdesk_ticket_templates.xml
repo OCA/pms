@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="assets_frontend" inherit_id="web.assets_frontend">
+        <xpath expr="." position="inside">
+            <script
+                src="pms_helpdesk_mgmt/static/src/js/hotel_on_company.js"
+                type="text/javascript"
+            />
+        </xpath>
+    </template>
+
+    <template
+        id="portal_my_home_inherited_form"
+        name="Portal My Home : Replace New Ticket Form"
+        inherit_id="helpdesk_mgmt.portal_my_home"
+        priority="40"
+    >
+        <xpath expr="//t[@t-call='portal.portal_docs_entry']" position="attributes">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Tickets</t>
+                <t t-set="url" t-value="'/my/tickets'" />
+                <t t-set="placeholder_count" t-value="ticket_count" />
+            </t>
+        </xpath>
+    </template>
+
+    <template id="portal_my_tickets" inherit_id="helpdesk_mgmt.portal_my_tickets">
+        <xpath expr="//t[@t-if='not grouped_tickets']" position="attributes">
+            <t t-if="not grouped_tickets">
+                <div class="alert alert-warning mt8" role="alert">
+                    <p>No tickets found for your properties.</p>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <template
+        id="portal_ticket_list"
+        inherit_id="helpdesk_mgmt.portal_ticket_list"
+        name="Tickets List"
+    >
+        <xpath expr="//tr/th[position()=3]" position="after">
+            <th t-if="groupby =='category'">Title</th>
+            <th t-if="groupby =='stage'">Title</th>
+            <th>Property</th>
+            <th>Room</th>
+        </xpath>
+        <xpath expr="//tr/td[position()=3]" position="after">
+            <td>
+                <span t-esc="ticket.pms_property_id.name" />
+            </td>
+            <td>
+                <span t-field="ticket.room_id.name" />
+            </td>
+        </xpath>
+    </template>
+
+    <template
+        id="portal_helpdesk_ticket_page"
+        inherit_id="helpdesk_mgmt.portal_helpdesk_ticket_page"
+        name="Ticket Portal Template"
+    >
+        <xpath expr="//span[@t-field='ticket.create_date']" position="after">
+            <div><strong>Property:</strong>
+            <span t-field="ticket.sudo().pms_property_id.name" /></div>
+            <div><strong>Room:</strong>
+            <span t-field="ticket.sudo().room_id.name" /></div>
+        </xpath>
+        <xpath expr="//span[@t-field='ticket.category_id']" position="after">
+            <div><strong>Tag:</strong>
+            <span t-field="ticket.sudo().tag_ids" /></div>
+        </xpath>
+    </template>
+
+    <template
+        id="portal_create_ticket_inherit"
+        inherit_id="helpdesk_mgmt.portal_create_ticket"
+        name="Create Ticket"
+    >
+        <xpath
+            expr="//div[@class='col-md-7 col-sm-8']/select[@id='category']/.."
+            position="after"
+        >
+            <div class="col-md-7 col-sm-8">
+                <label for="company_id">Company:</label>
+                <select
+                    class="form-control"
+                    id="company_id"
+                    name="company_id"
+                    required="required"
+                >
+                    <option value="" disabled="disabled">Select a company</option>
+                    <t t-foreach="companies" t-as="company">
+                        <option t-att-value="company.id">
+                            <t t-esc="company.name" />
+                        </option>
+                    </t>
+                </select>
+            </div>
+            <div class="col-md-7 col-sm-8">
+                <label for="pms_property_id">Property</label>
+                <select
+                    class="form-control"
+                    id="pms_property_id"
+                    name="pms_property_id"
+                    required="required"
+                    t-attf-widget="many2one_tags"
+                    t-attf-domain="[('user_ids', 'in', [user.id]), ('company_id', '=', company_id)]"
+                >
+                    <option value="">Select a Property</option>
+                    <t t-foreach="properties" t-as="property">
+                        <option t-attf-value="#{property.id}">
+                            <t t-esc="property.name" />
+                        </option>
+                    </t>
+                </select>
+                <label for="room_id">Select Room</label>
+                <select
+                    class="form-control"
+                    id="room_id"
+                    name="room_id"
+                    t-attf-widget="many2one_tags"
+                    t-attf-domain="[('pms_property_id', '=', parseInt($('#pms_property_id').val()))]"
+                >
+                    <option value="" />
+                    <t t-foreach="rooms" t-as="room">
+                        <option t-attf-value="#{room.id}">
+                            <t t-esc="room.name" />
+                        </option>
+                    </t>
+                </select>
+                <label class="col-md-3 col-sm-4 control-label" for="tag">Tag</label>
+                <div class="col-md-7 col-sm-8">
+                    <select
+                        class="form-control"
+                        id="tag_ids"
+                        name="tag_ids"
+                        required="required"
+                    >
+                        <option value="">Select a option</option>
+                        <t t-foreach="tags" t-as="tag">
+                            <option t-attf-value="#{tag.id}">
+                                <t t-esc="tag.name" />
+                            </option>
+                        </t>
+                    </select>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

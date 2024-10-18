@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_helpdesk_ticket_kanban_custom" model="ir.actions.act_window">
+            <field name="name">Helpdesk Ticket Custom</field>
+            <field name="res_model">helpdesk.ticket</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="context">{'default_team_id': active_id}</field>
+            <field
+            name="domain"
+        >[('team_id', '=', active_id), ('pms_property_id', 'in', allowed_pms_property_ids),('active', '=', True)]</field>
+    </record>
+
+    <record id="helpdesk_ticket_view_search" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.view.search</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk_mgmt.helpdesk_ticket_view_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="company_id" />
+                <field name="pms_property_id" />
+                <field name="room_id" />
+                <field name="category_id" />
+            </xpath>
+            <xpath expr="//filter[@name='group_partner']" position="after">
+                <filter
+                    string="Company"
+                    name="group_company"
+                    domain="[]"
+                    context="{'group_by':'company_id'}"
+                />
+                <filter
+                    string="Property"
+                    name="group_property"
+                    domain="[]"
+                    context="{'group_by':'pms_property_id'}"
+                />
+                <filter
+                    string="Room"
+                    name="group_room"
+                    domain="[]"
+                    context="{'group_by':'room_id'}"
+                />
+                <filter
+                    string="Category"
+                    name="group_category"
+                    domain="[]"
+                    context="{'group_by':'category_id'}"
+                />
+            </xpath>
+        </field>
+    </record>
+    <!-- View Ticket kanban -->
+    <record id="pms_ticket_view_kanban" model="ir.ui.view">
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk_mgmt.view_helpdesk_ticket_kanban" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//div[@class='o_kanban_record_headings']/field[@name='number']"
+                position="after"
+            >
+                <field name="allowed_company_ids" invisible="1" />
+                <field
+                    name='company_id'
+                    domain="[('id', 'in', allowed_company_ids)]"
+                    invisible="1"
+                />
+                <div class="font-weight-bold text-info">
+                    <br />
+                    <field name="allowed_pms_property_ids" invisible="1" />
+                    <span class="text-dark">
+                        <field
+                            name="pms_property_id"
+                            domain="[('id', 'in', allowed_pms_property_ids)]"
+                        />
+                    </span>
+                </div>
+                <div class="text-warning">
+                    <span class="text-dark"><field name="room_id" /></span>
+                </div>
+                <div class="text-warning">
+                    <span class="text-dark"><field name="category_id" /></span>
+                </div>
+
+                <div class="text-warning">
+                    <span class="text-dark"><field name="create_date" /></span>
+                </div>
+            </xpath>
+        </field>
+    </record>
+    <!-- View Ticket tree -->
+    <record id="ticket_view_tree" model="ir.ui.view">
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk_mgmt.ticket_view_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="category_id" />
+                <field
+                    name="pms_property_id"
+                    options="{'no_create': True}"
+                    domain="[('id', 'in', allowed_pms_property_ids)]"
+                />
+                <field name="room_id" />
+                <field name="tag_ids" widget="many2many_tags" />
+                <field name="allowed_pms_property_ids" invisible="1" />
+            </xpath>
+        </field>
+    </record>
+    <!-- View Form Ticket -->
+    <record id="ticket_view_form" model="ir.ui.view">
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk_mgmt.ticket_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="attributes">
+                <attribute name="domain" />
+                <attribute name="options">{'no_create': True}</attribute>
+                <attribute name="domain">[('id', 'in', allowed_company_ids)]</attribute>
+            </xpath>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="pms_property_id" options="{'no_create': True}" />
+                <field
+                    name="room_id"
+                    options="{'no_create': True}"
+                    attrs="{'invisible': [('pms_property_id', '=', False)]}"
+                />
+            </xpath>
+            <xpath expr="//field[@name='partner_lang']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='sequence']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+    <!-- View Form Ticket Tag -->
+    <record id="pms_ticket_tag_view_form" model="ir.ui.view">
+        <field name="model">helpdesk.ticket.tag</field>
+        <field name="inherit_id" ref="helpdesk_mgmt.view_helpdesk_ticket_tag_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <group>
+                    <field
+                        name="company_id"
+                        options="{'no_create': True}"
+                        groups="base.group_multi_company"
+                    />
+                </group>
+            </xpath>
+        </field>
+    </record>
+    <record id="pms_view_ticket_tag_tree" model="ir.ui.view">
+        <field name="name">pms.helpdesk.ticket.tag.tree</field>
+        <field name="model">helpdesk.ticket.tag</field>
+        <field name="inherit_id" ref="helpdesk_mgmt.view_helpdesk_ticket_tag_tree" />
+        <field name="arch" type="xml">
+            <tree>
+                <field name="company_id" groups="base.group_multi_company" />
+            </tree>
+        </field>
+    </record>
+</odoo>
