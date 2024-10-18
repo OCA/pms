@@ -5,18 +5,22 @@
         <field name="model">pms.property</field>
         <field name="inherit_id" ref="pms.pms_property_views_form" />
         <field name="arch" type="xml">
-            <xpath expr="//page[@name='property_general']" position="inside">
+            <xpath expr="//field[@name='email']" position="after">
                 <sheet>
-                    <div class="container">
-                        <div class="o_horizontal_separator">Property Opening</div>
-                        <div class="o_row">
-                            <div class="o_col-8">
-                                <group>
+                    <group>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="o_horizontal_separator">
+                                    Property Opening
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <group name="tourism_rooms">
                                     <field name="open_date" />
                                 </group>
                             </div>
                         </div>
-                    </div>
+                    </group>
                 </sheet>
             </xpath>
         </field>

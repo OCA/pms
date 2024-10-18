@@ -2,36 +2,96 @@
 # Copyright 2024 Irlui Ramírez
 # From Consultores Hoteleros Integrales (ALDA Hotels) - 2024
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo import api, fields, models
 
 
 class PmsProperty(models.Model):
     _inherit = "pms.property"
 
-    total_tourist_rooms = fields.Integer(
+    tourist_rooms = fields.Integer(
         string="Tourist Rooms",
-        help="Number of tourist rooms in the hotel.",
-        compute="_compute_total_rooms",
+        help="Total Number of Registered Tourist Rooms (INE Listed)",
         store=True,
-        default=lambda self: self._get_default_total_rooms(),
+        readonly=True,
+        compute="_compute_tourist_rooms",
     )
 
+    property_rooms = fields.Integer(
+        string="Total Rooms",
+        help="Overall Count of Available Rooms in the Property",
+        store=True,
+        readonly=True,
+        compute="_compute_property_rooms",
+    )
+
+    property_parkings = fields.Integer(
+        string="Total Parkings",
+        help="Total Number of Parking Spaces Available on the Property",
+        store=True,
+        readonly=True,
+        compute="_compute_property_parkings",
+    )
+
+    property_halls = fields.Integer(
+        string="Total Event Halls",
+        help="Total Count of Event Halls and Meeting Rooms in the Property",
+        store=True,
+        readonly=True,
+        compute="_compute_property_halls",
+    )
+
+    property_other_places = fields.Integer(
+        string="Total Other Places",
+        help="Total Count of Additional Facilities and Amenities on the Property",
+        store=True,
+        readonly=True,
+        compute="_compute_other_places",
+    )
+
+    @api.depends("room_ids.in_ine")
+    def _compute_tourist_rooms(self):
+        for record in self:
+            tourist_rooms = len(record.room_ids.filtered(lambda r: r.in_ine))
+            record.tourist_rooms = tourist_rooms
+
     @api.depends("room_ids")
-    def _compute_total_rooms(self):
+    def _compute_property_rooms(self):
         for record in self:
-            record.total_tourist_rooms = len(record.room_ids)
+            rooms = record.room_ids.filtered(
+                lambda r: r.room_type_id.class_id.default_code in ["HAB", "APA"]
+            )
+            record.property_rooms = len(rooms)
 
-    @api.constrains("total_tourist_rooms")
-    def _check_total_tourism_rooms(self):
+    @api.depends("room_ids")
+    def _compute_property_parkings(self):
         for record in self:
-            if record.total_tourist_rooms > len(record.room_ids):
-                raise ValidationError(
-                    _(
-                        "The number of tourist rooms cannot exceed the total number of rooms."
-                    )
-                )
+            rooms = record.room_ids.filtered(
+                lambda r: r.room_type_id.class_id.default_code in ["PRK"]
+            )
+            record.property_parkings = len(rooms)
 
-    @api.model
-    def _get_default_total_rooms(self):
-        return len(self.room_ids)
+    @api.depends("room_ids")
+    def _compute_property_halls(self):
+        for record in self:
+            rooms = record.room_ids.filtered(
+                lambda r: r.room_type_id.class_id.default_code in ["SLA"]
+            )
+            record.property_halls = len(rooms)
+
+    @api.depends("room_ids")
+    def _compute_other_places(self):
+        for record in self:
+            rooms = record.room_ids.filtered(
+                lambda r: r.room_type_id.class_id.default_code
+                not in ["SLA", "PRK", "HAB", "APA"]
+            )
+            record.property_other_places = len(rooms)
+
+    def init(self):
+        properties = self.env["pms.property"].search([])
+        for property in properties:
+            property._compute_tourist_rooms()
+            property._compute_property_rooms()
+            property._compute_property_parkings()
+            property._compute_property_halls()
+            property._compute_other_places()

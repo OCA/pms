@@ -9,5 +9,7 @@ class PmsProperty(models.Model):
     _inherit = "pms.property"
 
     open_date = fields.Datetime(
-        string="Open date", default=fields.Datetime.now, help="Property opening date."
+        string="Open date",
+        default=lambda self: fields.Datetime.now(),
+        help="Date of opening of the property",
     )
