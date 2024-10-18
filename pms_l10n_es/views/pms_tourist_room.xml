@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="pms_property_tourist_room_form" model="ir.ui.view">
+        <field name="name">pms.property_tourist_room.form</field>
+        <field name="model">pms.property</field>
+        <field name="inherit_id" ref="pms.pms_property_views_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//page[@name='property_rooms']//field[@name='room_ids']"
+                position="attributes"
+            >
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='property_rooms']" position="inside">
+                <sheet>
+                    <group>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="o_horizontal_separator">
+                                    Resume property places
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <group name="tourism_rooms">
+                                    <field name="tourist_rooms" readonly="1" />
+                                    <field name="property_rooms" readonly="1" />
+                                </group>
+                            </div>
+                            <div class="col-6 px-0">
+                                <group name="other_rooms">
+                                    <field name="property_parkings" readonly="1" />
+                                    <field name="property_halls" readonly="1" />
+                                    <field name="property_other_places" readonly="1" />
+                                </group>
+                            </div>
+                        </div>
+                    </group>
+                    <group>
+                        <div class="row">
+                            <div class="col-12">
+                                <field name="room_ids" />
+                            </div>
+                        </div>
+                    </group>
+                </sheet>
+            </xpath>
+        </field>
+    </record>
+</odoo>

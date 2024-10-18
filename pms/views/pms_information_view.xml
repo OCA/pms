@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="pms_property_information_view" model="ir.ui.view">
+        <field name="name">pms.property.information.view</field>
+        <field name="model">pms.property</field>
+        <field name="inherit_id" ref="pms.pms_property_views_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='street']" position="before">
+                <sheet>
+                    <group>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="o_horizontal_separator">
+                                    Property Ubication
+                                </div>
+                            </div>
+                        </div>
+                    </group>
+                </sheet>
+            </xpath>
+            <xpath expr="//field[@name='phone']" position="after">
+                <sheet>
+                    <field name="email" readonly="1" />
+                    <group>
+                        <div class="row">
+                            <div class="col-12">
+                                <h4 style="color:#7C7BAD;">Bank Information</h4>
+                                        <field name="vat" readonly="1" />
+                                        <field name="bank_ids" readonly="1" />
+                            </div>
+                            </div>
+                    </group>
+                </sheet>
+            </xpath>
+        </field>
+    </record>
+</odoo>

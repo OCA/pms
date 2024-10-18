@@ -10,3 +10,4 @@ from . import pms_checkin_partner
 from . import res_partner_id_number
 from . import pms_ses_communication
 from . import pms_reservation
+from . import pms_tourist_room
