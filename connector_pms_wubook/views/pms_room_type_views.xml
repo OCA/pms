@@ -10,7 +10,7 @@
             <xpath expr="//notebook/page[@name='connector']">
                 <group string="Wubook">
                     <field name="channel_wubook_bind_ids" nolabel="1">
-                        <tree>
+                        <tree editable="bottom">
                             <field
                                 name="backend_id"
                                 attrs="{'readonly': [('id', '!=', False)]}"
