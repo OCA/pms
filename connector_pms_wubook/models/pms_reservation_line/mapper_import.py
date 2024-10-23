@@ -66,7 +66,7 @@ class ChannelWubookPmsReservationLineMapperImport(Component):
                     .filtered(lambda line: line.children)
                     .mapped("amount")
                 )
-                * record["children"]
+                * (record.get("children") or 0)
             )
             price -= board_day_price_adults + board_day_price_children
         return {"price": price}
