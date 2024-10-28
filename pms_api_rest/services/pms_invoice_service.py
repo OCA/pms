@@ -225,7 +225,11 @@ class PmsInvoiceService(Component):
         if pms_invoice_info.date:
             invoice_date_info = fields.Date.from_string(pms_invoice_info.date)
             if invoice_date_info != invoice.invoice_date:
-                new_vals["invoice_date"] = invoice_date_info
+                # If the invoice is in draft state and the date is less than today,
+                if invoice_date_info < fields.Date.today() and not invoice.invoice_date:
+                    new_vals["invoice_date"] = fields.Date.today()
+                else:
+                    new_vals["invoice_date"] = invoice_date_info
 
         # If invoice lines are updated, we expect that all lines will be
         # send to service, the lines that are not sent we assume that
