@@ -128,7 +128,7 @@ class PmsProperty(models.Model):
             )
             self.env["klippa.log"].sudo().create(log_data)
             return mapped_data
-        except Exception as e:
+        except Exception:
             log_data.update(
                 {
                     "error": traceback.format_exc(),
@@ -139,7 +139,7 @@ class PmsProperty(models.Model):
                 }
             )
             self.env["klippa.log"].sudo().create(log_data)
-            _logger.error(e)
+            _logger.error(traceback.format_exc())
             return {}
 
     def _map_klippa_data(self, document_data):
@@ -438,94 +438,113 @@ class PmsProperty(models.Model):
             try:
                 params = self._get_nominatim_address(params, street_name, mapped_data)
             except Exception as e:
-                _logger.error(e)
+                _logger.error(traceback.format_exc())
                 mapped_data["nominatim_status"] = "error"
                 mapped_data["nominatim_response"] = str(e)
         return mapped_data
 
     def _get_nominatim_address(self, params, street_name, mapped_data):
         if street_name:
-            # Clean street name with mains words
+            # Clean street name with main words
             street_words = street_name.split(" ")
             params["street"] = " ".join(
                 [word for word in street_words if len(word) > 2]
             )
-        location = requests.get(NOMINATIM_URL, params=params)
-        if not location.json() or location.status_code != 200:
-            # If not found address, pop the street to try again
-            if street_name:
-                params.pop("street")
-                location = requests.get(NOMINATIM_URL, params=params)
-        if location.json() and location.status_code == 200:
-            mapped_data["nominatim_response"] = location.json()
-            mapped_data["nominatim_status"] = "success"
-            location = location.json()[0]
-            _logger.info(location)
-            if not mapped_data.get("zip", False):
-                mapped_data["zip"] = location.get("address", {}).get("postcode", False)
-                if mapped_data["zip"]:
-                    zip_code = self.env["res.city.zip"].search(
-                        [("name", "=", mapped_data["zip"])]
-                    )
-                    if zip_code:
-                        mapped_data["residence_city"] = zip_code.city_id.name
-                        mapped_data["country_state"] = zip_code.city_id.state_id.id
-                        mapped_data[
-                            "country_id"
-                        ] = zip_code.city_id.state_id.country_id.id
-            if not mapped_data.get("country_id", False):
-                country_record = self.env["res.country"].search(
-                    [
-                        (
-                            "code",
-                            "=",
-                            location.get("address", {})
-                            .get("country_code", False)
-                            .upper(),
+
+        try:
+            # Make the request to Nominatim
+            location = requests.get(NOMINATIM_URL, params=params, timeout=10)
+            location.raise_for_status()  # Ensure we get a successful response
+
+            if (
+                location.headers.get("Content-Type") == "application/json"
+                and location.text
+            ):
+                locations = location.json()
+                if locations:
+                    mapped_data["nominatim_response"] = locations
+                    mapped_data["nominatim_status"] = "success"
+                    location = locations[0]
+                    _logger.info(location)
+
+                    # Update mapped data with address details
+                    if not mapped_data.get("zip", False):
+                        mapped_data["zip"] = location.get("address", {}).get(
+                            "postcode", False
                         )
-                    ]
-                )
-                if not country_record and location.get("address", {}).get(
-                    "country", False
-                ):
-                    country_match = process.extractOne(
-                        location.get("address", {}).get("country", False),
-                        self.env["res.country"]
-                        .with_context(lang="en_US")
-                        .search([])
-                        .mapped("name"),
-                    )
-                    if country_match[1] >= 90:
-                        country_record = (
-                            self.env["res.country"]
-                            .with_context(lang="en_US")
-                            .search([("name", "=", country_match[0])])
+                        if mapped_data["zip"]:
+                            zip_code = self.env["res.city.zip"].search(
+                                [("name", "=", mapped_data["zip"])]
+                            )
+                            if zip_code:
+                                mapped_data["residence_city"] = zip_code.city_id.name
+                                mapped_data[
+                                    "country_state"
+                                ] = zip_code.city_id.state_id.id
+                                mapped_data[
+                                    "country_id"
+                                ] = zip_code.city_id.state_id.country_id.id
+
+                    if not mapped_data.get("country_id", False):
+                        country_code = (
+                            location.get("address", {}).get("country_code", "").upper()
                         )
-                mapped_data["country_id"] = country_record.id
-            if not mapped_data.get("country_state", False):
-                state_name = (
-                    location.get("address", {}).get("province")
-                    if location.get("address", {}).get("province")
-                    else location.get("address", {}).get("state")
-                )
-                if state_name:
-                    country_state_record = process.extractOne(
-                        state_name,
-                        self.env["res.country.state"].search([]).mapped("name"),
-                    )
-                    if country_state_record[1] >= 90:
-                        country_state = self.env["res.country.state"].search(
-                            [("name", "=", country_state_record[0])], limit=1
+                        if country_code:
+                            country_record = self.env["res.country"].search(
+                                [("code", "=", country_code)]
+                            )
+                            if not country_record and location.get("address", {}).get(
+                                "country", False
+                            ):
+                                country_match = process.extractOne(
+                                    location.get("address", {}).get("country", False),
+                                    self.env["res.country"]
+                                    .with_context(lang="en_US")
+                                    .search([])
+                                    .mapped("name"),
+                                )
+                                if country_match and country_match[1] >= 90:
+                                    country_record = (
+                                        self.env["res.country"]
+                                        .with_context(lang="en_US")
+                                        .search([("name", "=", country_match[0])])
+                                    )
+                            if country_record:
+                                mapped_data["country_id"] = country_record.id
+
+                    if not mapped_data.get("country_state", False):
+                        state_name = location.get("address", {}).get(
+                            "province"
+                        ) or location.get("address", {}).get("state")
+                        if state_name:
+                            country_state_record = process.extractOne(
+                                state_name,
+                                self.env["res.country.state"].search([]).mapped("name"),
+                            )
+                            if country_state_record and country_state_record[1] >= 90:
+                                country_state = self.env["res.country.state"].search(
+                                    [("name", "=", country_state_record[0])], limit=1
+                                )
+                                if country_state:
+                                    mapped_data["country_state"] = country_state.id
+
+                    if not mapped_data.get("residence_city", False):
+                        mapped_data["residence_city"] = location.get("address", {}).get(
+                            "city", False
                         )
-                        mapped_data["country_state"] = country_state.id
-            if not mapped_data.get("residence_city", False):
-                mapped_data["residence_city"] = location.get("address", {}).get(
-                    "city", False
-                )
-            if not mapped_data.get("residence_street", False):
-                mapped_data["residence_street"] = location.get("address", {}).get(
-                    "road", False
-                )
+
+                    if not mapped_data.get("residence_street", False):
+                        mapped_data["residence_street"] = location.get(
+                            "address", {}
+                        ).get("road", False)
+
+        except requests.exceptions.RequestException as e:
+            _logger.error("Error in request to Nominatim: %s", traceback.format_exc())
+        except requests.exceptions.JSONDecodeError as e:
+            _logger.error("Error decoding JSON response: %s", traceback.format_exc())
+        except Exception:
+            _logger.error("Internal error: %s", traceback.format_exc())
+
         return mapped_data
 
     def _complete_mapped_from_partner(self, document, mapped_data):
