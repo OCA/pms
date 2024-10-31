@@ -1706,6 +1706,11 @@ class PmsReservationService(Component):
             checkin_partner_record.support_number = (
                 pms_checkin_partner_info.documentSupportNumber
             )
+        # origin input data
+        if pms_checkin_partner_info.originInputData:
+            checkin_partner_record.origin_input_data = (
+                pms_checkin_partner_info.originInputData
+            )
         # name
         if pms_checkin_partner_info.firstname:
             checkin_partner_record.firstname = pms_checkin_partner_info.firstname
