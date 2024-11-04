@@ -110,6 +110,89 @@ class PmsRoom(models.Model):
         help="Four character name, if not set, autocompletes with the first two letters of "
         "the room name and two incremental numbers",
     )
+    address_is_independent = fields.Boolean(
+        string="Address is Independent",
+        help="Indicates that the address of the room is independent of the property",
+    )
+    address_id = fields.Many2one(
+        string="Address",
+        help="Address of the room",
+        comodel_name="res.partner",
+        index=True,
+        compute="_compute_address_id",
+        store=True,
+        ondelete="restrict",
+    )
+    street = fields.Char(
+        related="address_id.street",
+        readonly=False,
+    )
+    street2 = fields.Char(
+        related="address_id.street2",
+        readonly=False,
+    )
+    zip = fields.Char(
+        related="address_id.zip",
+        readonly=False,
+    )
+    city = fields.Char(
+        related="address_id.city",
+        readonly=False,
+    )
+    state_id = fields.Many2one(
+        "res.country.state",
+        related="address_id.state_id",
+        string="State",
+        ondelete="restrict",
+        domain="[('country_id', '=?', country_id)]",
+        readonly=False,
+    )
+    country_id = fields.Many2one(
+        "res.country",
+        related="address_id.country_id",
+        string="Country",
+        ondelete="restrict",
+        readonly=False,
+    )
+    partner_latitude = fields.Float(
+        string="Geo Latitude",
+        related="address_id.partner_latitude",
+        readonly=False,
+        digits=(16, 5),
+    )
+    partner_longitude = fields.Float(
+        string="Geo Longitude",
+        related="address_id.partner_longitude",
+        readonly=False,
+        digits=(16, 5),
+    )
+    email = fields.Char(
+        related="address_id.email",
+        readonly=False,
+    )
+    email_formatted = fields.Char(
+        "Formatted Email",
+        compute="_compute_email_formatted",
+        help='Format email address "Name <email@domain>"',
+    )
+    phone = fields.Char(
+        related="address_id.phone",
+        readonly=False,
+    )
+    mobile = fields.Char(
+        related="address_id.mobile",
+        readonly=False,
+    )
+    website = fields.Char(
+        related="address_id.website",
+        readonly=False,
+    )
+    image_1920 = fields.Image(
+        related="address_id.image_1920",
+        readonly=False,
+        max_width=1920,
+        max_height=1920,
+    )
 
     _sql_constraints = [
         (
@@ -129,10 +212,38 @@ class PmsRoom(models.Model):
     @api.depends("child_ids")
     def _compute_is_shared_room(self):
         for record in self:
-            if record.child_ids:
-                record.is_shared_room = True
-            elif not record.is_shared_room:
-                record.is_shared_room = False
+            record.is_shared_room = bool(record.child_ids)
+
+    @api.depends("address_is_independent")
+    def _compute_address_id(self):
+        for record in self:
+            if not record.address_is_independent:
+                if record.address_id and record.address_id.active:
+                    record.address_id.active = False
+            if record.address_is_independent:
+                if record.address_id and not record.address_id.active:
+                    record.address_id.active = True
+                elif not record.address_id:
+                    record.address_id = (
+                        self.env["res.partner"]
+                        .with_context(avoid_document_restriction=True)
+                        .create(
+                            {
+                                "name": record.name,
+                                "type": "other",
+                                "is_company": False,
+                                "active": True,
+                                "parent_id": record.pms_property_id.id,
+                            }
+                        )
+                    )
+
+    @api.depends("name", "email")
+    def _compute_email_formatted(self):
+        for room in self.filtered("address_id"):
+            room.email_formatted = (
+                room.address_id.email_formatted() if room.address_id else False
+            )
 
     def name_get(self):
         result = []

@@ -341,3 +341,92 @@ class TestPmsRoom(TestPms):
             msg="The short_name of the room should not be able to be write.",
         ):
             self.room1.write({"short_name": "SIN-201"})
+
+    def test_create_independent_address(self):
+        """
+        Check that an independent address is created and associated correctly
+        when address_is_independent is set to True.
+        """
+        self.room1 = self.env["pms.room"].create(
+            {
+                "name": "Room 101",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type1.id,
+                "address_is_independent": True,
+            }
+        )
+        self.assertTrue(
+            self.room1.address_id,
+            "The address should be created and associated with the room.",
+        )
+        self.assertTrue(self.room1.address_id.active, "The address should be active.")
+
+    def test_deactivate_independent_address(self):
+        """
+        Check that the independent address is archived when a
+        ddress_is_independent is set to False.
+        """
+        self.room1 = self.env["pms.room"].create(
+            {
+                "name": "Room 101",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type1.id,
+                "address_is_independent": True,
+            }
+        )
+        self.room1.address_is_independent = False
+        self.assertFalse(
+            self.room1.address_id.active, "The address should be archived."
+        )
+
+    def test_reactivate_independent_address(self):
+        """
+        Check that the archived independent address is reactivated when
+        address_is_independent is set to True again.
+        """
+        self.room1 = self.env["pms.room"].create(
+            {
+                "name": "Room 101",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type1.id,
+                "address_is_independent": True,
+            }
+        )
+        initial_address_id = self.room1.address_id.id
+        self.room1.address_is_independent = False
+        self.assertFalse(
+            self.room1.address_id.active, "The address should be archived."
+        )
+        self.room1.address_is_independent = True
+        self.assertTrue(
+            self.room1.address_id.active,
+            "The address should be reactivated, not created again.",
+        )
+        self.assertEqual(
+            self.room1.address_id.id,
+            initial_address_id,
+            "The reactivated address should be the same as the initial address.",
+        )
+        self.assertEqual(
+            self.room1.address_id.name,
+            "Room 101",
+            "The reactivated address should have the same name.",
+        )
+
+    def test_prevent_deletion_of_associated_address(self):
+        """
+        Check that an associated address cannot be deleted.
+        """
+        self.room1 = self.env["pms.room"].create(
+            {
+                "name": "Room 101",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type1.id,
+                "address_is_independent": True,
+            }
+        )
+        with self.assertRaises(
+            IntegrityError,
+            msg="The address associated with a room should not be deletable.",
+        ):
+            self.room1.address_id.unlink()

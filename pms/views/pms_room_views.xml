@@ -27,6 +27,9 @@
                             <field name="name" />
                         </h1>
                     </div>
+                    <group>
+                        <field name="sequence" />
+                    </group>
                     <notebook>
                         <page name="information_pms_room" string="Information">
                             <group colspan="4" col="4">
@@ -36,6 +39,8 @@
                                     force_save="1"
                                 />
                                 <field name="ubication_id" string="Ubication" />
+                                <field name="address_is_independent" />
+                                <field name="address_id" invisible="1" force_save="1" />
                                 <!-- <field name="categ_id" select="1" domain="[('isroomtype','=',True)]" string="Room Type" /> -->
                                 <field name="room_type_id" string="Room Type" />
                                 <field name="is_shared_room" />
@@ -73,6 +78,64 @@
                             <field name="room_amenity_ids" />
                         </page>
                         <page
+                            string="Address"
+                            attrs="{'invisible':[('address_is_independent', '=', False)]}"
+                        >
+                            <field
+                                name="image_1920"
+                                widget='image'
+                                class="oe_avatar"
+                                options='{"preview_image": "image_128"}'
+                            />
+                            <group>
+                                <group>
+                                    <label for="street" string="Address" />
+                                    <div class="o_address_format">
+                                        <field
+                                            name="street"
+                                            placeholder="Street..."
+                                            class="o_address_street"
+                                        />
+                                        <field
+                                            name="street2"
+                                            placeholder="Street 2..."
+                                            class="o_address_street"
+                                        />
+                                        <field
+                                            name="city"
+                                            placeholder="City"
+                                            class="o_address_city"
+                                        />
+                                        <field
+                                            name="state_id"
+                                            class="o_address_state"
+                                            placeholder="State"
+                                            options="{'no_open': True, 'no_quick_create': True}"
+                                            context="{'default_country_id': country_id}"
+                                        />
+                                        <field
+                                            name="zip"
+                                            placeholder="ZIP"
+                                            class="o_address_zip"
+                                        />
+                                        <field
+                                            name="country_id"
+                                            placeholder="Country"
+                                            class="o_address_country"
+                                            options='{"no_open": True, "no_create": True}'
+                                        />
+                                    </div>
+                                    <field
+                                        name="website"
+                                        widget="url"
+                                        placeholder="e.g. https://www.odoo.com"
+                                    />
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                        </page>
+                        <page
                             string="Shared Room"
                             attrs="{'invisible':[('is_shared_room', '=', False)]}"
                         >
@@ -94,9 +157,6 @@
                             </group>
                         </page>
                     </notebook>
-                    <group>
-                        <field name="sequence" />
-                    </group>
                 </sheet>
             </form>
         </field>
