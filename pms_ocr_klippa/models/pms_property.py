@@ -437,10 +437,10 @@ class PmsProperty(models.Model):
             # Try to complete the address with Nominatim API
             try:
                 params = self._get_nominatim_address(params, street_name, mapped_data)
-            except Exception as e:
+            except Exception:
                 _logger.error(traceback.format_exc())
                 mapped_data["nominatim_status"] = "error"
-                mapped_data["nominatim_response"] = str(e)
+                mapped_data["nominatim_response"] = str(traceback.format_exc())
         return mapped_data
 
     def _get_nominatim_address(self, params, street_name, mapped_data):
