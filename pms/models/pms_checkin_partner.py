@@ -509,18 +509,23 @@ class PmsCheckinPartner(models.Model):
                         )
                     )
                     if not id_number_id:
+                        document_vals = record.get_document_vals()
                         id_number_id = self.env["res.partner.id_number"].create(
-                            {
-                                "partner_id": record.partner_id.id,
-                                "name": record.document_number,
-                                "category_id": record.document_type.id,
-                                "valid_from": record.document_expedition_date,
-                            }
+                            document_vals
                         )
 
                     record.document_id = id_number_id
             else:
                 record.document_id = False
+
+    def get_document_vals(self):
+        return {
+            "name": self.document_number,
+            "partner_id": self.partner_id.id,
+            "category_id": self.document_type.id,
+            "valid_from": self.document_expedition_date,
+            "country_id": self.document_country_id.id,
+        }
 
     @api.depends(
         "document_number",

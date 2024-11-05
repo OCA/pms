@@ -110,6 +110,11 @@ class PmsCheckinPartner(models.Model):
         manual_fields.extend(["support_number"])
         return manual_fields
 
+    def get_document_vals(self):
+        vals = super(PmsCheckinPartner, self).get_document_vals()
+        vals["support_number"] = self.support_number
+        return vals
+
     def write(self, vals):
         result = super(PmsCheckinPartner, self).write(vals)
         for record in self:
