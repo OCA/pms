@@ -4,7 +4,7 @@ from datetime import datetime
 import werkzeug.exceptions
 
 from odoo import _, fields
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, MissingError
 from odoo.osv import expression
 
 from odoo.addons.base_rest import restapi
@@ -321,6 +321,26 @@ class PmsInvoiceService(Component):
         ):
             invoice_to_update.unlink()
         return invoice_to_update.id or None
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:invoice_id>",
+                ],
+                "DELETE",
+            )
+        ],
+        auth="jwt_api_pms",
+    )
+    def delete_invoice(self, invoice_id):
+        invoice = self.env["account.move"].browse(invoice_id)
+        if invoice:
+            if invoice.state != "draft":
+                raise UserError(_("Only draft invoices can be deleted"))
+            invoice.unlink()
+        else:
+            raise MissingError(_("Invoice not found"))
 
     def _direct_move_update(self, invoice, new_vals):
         previus_state = invoice.state
