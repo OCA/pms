@@ -6,14 +6,14 @@
         <field name="name">pms.availability.plan.rule.connector.form</field>
         <field name="model">pms.availability.plan.rule</field>
         <field name="inherit_id" ref="pms.availability_plan_rule_view_form" />
-        <field
-            name="groups_id"
-            eval="[(4, ref('connector.group_connector_manager'))]"
-        />
         <field name="arch" type="xml">
             <xpath expr="/form">
                 <notebook>
-                    <page string="Connectors" name="connector" />
+                    <page
+                        string="Connectors"
+                        name="connector"
+                        groups="connector.group_connector_manager"
+                    />
                 </notebook>
             </xpath>
         </field>

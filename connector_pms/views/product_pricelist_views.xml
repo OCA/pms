@@ -6,15 +6,15 @@
         <field name="name">product.pricelist.connector.form</field>
         <field name="model">product.pricelist</field>
         <field name="inherit_id" ref="product.product_pricelist_view" />
-        <field
-            name="groups_id"
-            eval="[(4, ref('connector.group_connector_manager'))]"
-        />
         <field name="arch" type="xml">
             <xpath expr="/form/sheet/notebook">
                 <!-- change the invisible attribute to 0 when used
                      in submodules -->
-                <page string="Connectors" name="connector" />
+                <page
+                    string="Connectors"
+                    name="connector"
+                    groups="connector.group_connector_manager"
+                />
             </xpath>
         </field>
     </record>

@@ -6,10 +6,6 @@
         <field name="name">pms.room.type.class.connector.form</field>
         <field name="model">pms.room.type.class</field>
         <field name="inherit_id" ref="pms.pms_room_type_class_view_form" />
-        <field
-            name="groups_id"
-            eval="[(4, ref('connector.group_connector_manager'))]"
-        />
         <field name="arch" type="xml">
             <!--            <xpath expr="/form/sheet/notebook">-->
             <!--                &lt;!&ndash; change the invisible attribute to 0 when used-->
@@ -20,7 +16,11 @@
                 <!-- change the invisible attribute to 0 when used
                      in submodules -->
                 <notebook>
-                    <page string="Connectors" name="connector" />
+                    <page
+                        string="Connectors"
+                        name="connector"
+                        groups="connector.group_connector_manager"
+                    />
                 </notebook>
             </xpath>
         </field>
