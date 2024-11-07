@@ -6,15 +6,15 @@
         <field name="name">pms.availability.plan.connector.form</field>
         <field name="model">pms.availability.plan</field>
         <field name="inherit_id" ref="pms.availability_view_form" />
-        <field
-            name="groups_id"
-            eval="[(4, ref('connector.group_connector_manager'))]"
-        />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='rule_ids']" position="after">
                 <notebook>
                     <page name="rules" string="Rules" />
-                    <page string="Connectors" name="connector" />
+                    <page
+                        string="Connectors"
+                        name="connector"
+                        groups="connector.group_connector_manager"
+                    />
                 </notebook>
             </xpath>
             <page name="rules" position="inside">
