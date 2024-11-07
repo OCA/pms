@@ -7,7 +7,6 @@ from werkzeug.exceptions import (
     Unauthorized,
 )
 
-import odoo
 from odoo.exceptions import (
     AccessDenied,
     AccessError,
@@ -15,21 +14,17 @@ from odoo.exceptions import (
     UserError,
     ValidationError,
 )
-from odoo.http import HttpRequest, Root, SessionExpiredException
+from odoo.http import SessionExpiredException
 from odoo.loglevels import ustr
 
-from odoo.addons.base_rest.http import (
-    HttpRestRequest,
-    _rest_services_routes,
-    wrapJsonException,
-)
+from odoo.addons.base_rest.http import RestApiDispatcher, wrapJsonException
 
 
-class HttpRestRequestPms(HttpRestRequest):
+class RestApiDispatcherPms(RestApiDispatcher):
     def __init__(self, httprequest):
-        super(HttpRestRequestPms, self).__init__(httprequest)
+        super(RestApiDispatcherPms, self).__init__(httprequest)
 
-    def _handle_exception(self, exception):
+    def handle_error(self, exception):
         """Called within an except block to allow converting exceptions
         to abitrary responses. Anything returned (except None) will
         be used as response."""
@@ -38,7 +33,7 @@ class HttpRestRequestPms(HttpRestRequest):
             # we want to raise a proper exception
             return wrapJsonException(Unauthorized(ustr(exception)))
         try:
-            return super(HttpRequest, self)._handle_exception(exception)
+            return super(RestApiDispatcher, self)._handle_exception(exception)
         except MissingError as e:
             extra_info = getattr(e, "rest_json_info", None)
             return wrapJsonException(
@@ -66,24 +61,3 @@ class HttpRestRequestPms(HttpRestRequest):
         except Exception as e:  # flake8: noqa: E722
             extra_info = getattr(e, "rest_json_info", None)
             return wrapJsonException(InternalServerError(e), extra_info=extra_info)
-
-
-ori_get_request = Root.get_request
-
-
-def get_request(self, httprequest):
-    db = httprequest.session.db
-    if db and odoo.service.db.exp_db_exist(db):
-        # on the very first request processed by a worker,
-        # registry is not loaded yet
-        # so we enforce its loading here to make sure that
-        # _rest_services_databases is not empty
-        odoo.registry(db)
-        rest_routes = _rest_services_routes.get(db, [])
-        for root_path in rest_routes:
-            if httprequest.path.startswith(root_path):
-                return HttpRestRequestPms(httprequest)
-    return ori_get_request(self, httprequest)
-
-
-Root.get_request = get_request

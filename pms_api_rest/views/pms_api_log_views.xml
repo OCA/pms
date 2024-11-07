@@ -4,7 +4,7 @@
         <field name="name">pms.api.log.tree</field>
         <field name="model">pms.api.log</field>
         <field name="arch" type="xml">
-            <tree string="API Logs" decoration-danger="status == 'error'">
+            <tree decoration-danger="status == 'error'">
                 <field name="pms_property_id" />
                 <field name="client_id" widget="many2one_avatar_user" />
                 <field name="request_date" />
