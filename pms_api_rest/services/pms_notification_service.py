@@ -1,5 +1,3 @@
-import datetime
-
 from odoo import fields
 
 from odoo.addons.base_rest import restapi

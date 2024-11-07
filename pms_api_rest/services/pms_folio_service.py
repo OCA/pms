@@ -2117,19 +2117,19 @@ class PmsFolioService(Component):
             for reservation in pms_folio_info.reservations:
                 if reservation.reservationLines:
                     amount_total += sum(
-                        [
+                        
                             line.price - (line.price * ((line.discount or 0.0) * 0.01))
                             for line in reservation.reservationLines
                             if line.price
-                        ]
+                        
                     )
                 if reservation.services:
                     amount_total += sum(
-                        [
+                        
                             service.priceUnit * service.quantity
                             for service in reservation.services
                             if service.priceUnit and service.quantity
-                        ]
+                        
                     )
 
             # TODO: Review where to input the data to identify payments,
@@ -2572,8 +2572,7 @@ class PmsFolioService(Component):
             folioReference=folio_record.name,
             folioRoomTypesDescription=folio_room_types_description_result.rstrip(", "),
             folioPendingAmount=folio_record.pending_amount,
-            folioPaymentLink=folio_payment_link
-            if folio_payment_link else "",
+            folioPaymentLink=folio_payment_link if folio_payment_link else "",
             folioPortalLink=folio_portal_link,
             folioNumCheckins=sum(
                 len(r.checkin_partner_ids) for r in folio_record.reservation_ids
