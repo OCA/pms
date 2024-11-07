@@ -2117,19 +2117,15 @@ class PmsFolioService(Component):
             for reservation in pms_folio_info.reservations:
                 if reservation.reservationLines:
                     amount_total += sum(
-                        
-                            line.price - (line.price * ((line.discount or 0.0) * 0.01))
-                            for line in reservation.reservationLines
-                            if line.price
-                        
+                        line.price - (line.price * ((line.discount or 0.0) * 0.01))
+                        for line in reservation.reservationLines
+                        if line.price
                     )
                 if reservation.services:
                     amount_total += sum(
-                        
-                            service.priceUnit * service.quantity
-                            for service in reservation.services
-                            if service.priceUnit and service.quantity
-                        
+                        service.priceUnit * service.quantity
+                        for service in reservation.services
+                        if service.priceUnit and service.quantity
                     )
 
             # TODO: Review where to input the data to identify payments,
