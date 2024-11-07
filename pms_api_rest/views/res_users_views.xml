@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="base.view_users_form" />
         <field name="arch" type="xml">
             <xpath
-                expr="//page[@name='references']/group[@name='messaging']"
+                expr="//page[@name='preferences']/group[@name='messaging']"
                 position="after"
             >
                 <group>
