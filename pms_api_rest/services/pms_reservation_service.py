@@ -560,9 +560,11 @@ class PmsReservationService(Component):
                 )
                 for line in service_info.serviceLines
             ]
-        service = self.env["pms.service"].with_context(
-            skip_compute_service_line_ids=skip_compute_service_line_ids
-        ).create(vals)
+        service = (
+            self.env["pms.service"]
+            .with_context(skip_compute_service_line_ids=skip_compute_service_line_ids)
+            .create(vals)
+        )
 
         return service.id
 
@@ -1003,10 +1005,16 @@ class PmsReservationService(Component):
             vals.update({"signature": base64.b64encode(signature_image)})
         else:
             vals.update({"signature": False})
-        if pms_checkin_partner_info.relationship != '':
-            vals.update({"ses_partners_relationship": pms_checkin_partner_info.relationship})
+        if pms_checkin_partner_info.relationship != "":
+            vals.update(
+                {"ses_partners_relationship": pms_checkin_partner_info.relationship}
+            )
         if pms_checkin_partner_info.responsibleCheckinPartnerId:
-            vals.update({"ses_related_checkin_partner_id": pms_checkin_partner_info.responsibleCheckinPartnerId})
+            vals.update(
+                {
+                    "ses_related_checkin_partner_id": pms_checkin_partner_info.responsibleCheckinPartnerId
+                }
+            )
         return vals
 
     @restapi.method(

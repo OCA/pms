@@ -1,7 +1,8 @@
+from odoo.exceptions import MissingError
+
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
-from odoo.exceptions import MissingError
 
 
 class PmsRoomTypeService(Component):
@@ -82,9 +83,7 @@ class PmsRoomTypeService(Component):
         auth="jwt_api_pms",
     )
     def get_restricted_room_type(self, room_type_id):
-        room_type_record = self.env["pms.room.type"].sudo().browse(
-            room_type_id
-        )
+        room_type_record = self.env["pms.room.type"].sudo().browse(room_type_id)
         if room_type_record.exists():
             PmsRoomTypeInfo = self.env.datamodels["pms.room.type.info"]
             return PmsRoomTypeInfo(

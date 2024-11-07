@@ -82,11 +82,7 @@ class PmsOcr(Component):
     )
     def process_ocr_document_public(self, reservation_id, token, input_param):
         # check if the reservation exists
-        reservation_record = (
-            self.env["pms.reservation"]
-            .sudo()
-            .browse(reservation_id)
-        )
+        reservation_record = self.env["pms.reservation"].sudo().browse(reservation_id)
         if not reservation_record.exists():
             raise MissingError(_("Reservation not found"))
 
