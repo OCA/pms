@@ -82,6 +82,7 @@ class PmsCalendarInfo(Datamodel):
     pendingPayment = fields.Float(required=False, allow_none=True)
     numNotifications = fields.Integer(required=False, allow_none=True)
     adults = fields.Integer(required=False, allow_none=True)
+    children = fields.Integer(required=False, allow_none=True)
     nextLineSplitted = fields.Boolean(required=False, allow_none=True)
     previousLineSplitted = fields.Boolean(required=False, allow_none=True)
     closureReasonId = fields.Number(required=False, allow_none=True)
