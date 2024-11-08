@@ -49,6 +49,7 @@ def build_reservation_line_info(calendar_item, previous_item=False, next_item=Fa
         ).isoformat(),
         "priceTotal": calendar_item["price_total"],
         "adults": calendar_item["adults"],
+        "children": calendar_item["children"] or 0,
         "pendingPayment": calendar_item["folio_pending_amount"],
         "closureReasonId": calendar_item["closure_reason_id"],
         "isFirstNight": calendar_item["date"] == calendar_item["checkin"]
@@ -264,6 +265,7 @@ class PmsCalendarService(Component):
             "checkout": "r.checkout checkout",
             "price_total": "r.price_total price_total",
             "adults": "r.adults adults",
+            "children": "r.children children",
             "folio_pending_amount": "f.pending_amount folio_pending_amount",
             "closure_reason_id": "f.closure_reason_id closure_reason_id",
             "closed": "ru.closed closed",
