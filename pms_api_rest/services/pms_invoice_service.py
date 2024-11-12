@@ -4,7 +4,7 @@ from datetime import datetime
 import werkzeug.exceptions
 
 from odoo import _, fields
-from odoo.exceptions import UserError, MissingError
+from odoo.exceptions import MissingError, UserError
 from odoo.osv import expression
 
 from odoo.addons.base_rest import restapi
@@ -240,6 +240,17 @@ class PmsInvoiceService(Component):
             )
             if cmd_invoice_lines:
                 new_vals["invoice_line_ids"] = cmd_invoice_lines
+        # Update Journal by partner if necessary (simplified invoice -> normal invoice)
+        if pms_invoice_info.isSimplifiedInvoice is not None:
+            if (
+                invoice.journal_id.is_simplified_invoice
+                != pms_invoice_info.isSimplifiedInvoice
+            ):
+                new_vals["journal_id"] = (
+                    invoice.pms_property_id.journal_simplified_invoice_id.id
+                    if pms_invoice_info.isSimplifiedInvoice
+                    else invoice.pms_property_id.journal_normal_invoice_id.id
+                )
         new_invoice = False
         if new_vals:
             # Update Invoice
@@ -285,12 +296,6 @@ class PmsInvoiceService(Component):
                     for move in invoice
                 ]
                 invoice._reverse_moves(default_values_list, cancel=True)
-                # Update Journal by partner if necessary (simplified invoice -> normal invoice)
-                new_vals["journal_id"] = (
-                    invoice.pms_property_id._get_folio_default_journal(
-                        new_vals.get("partner_id", invoice.partner_id.id)
-                    ).id,
-                )
                 new_invoice.write(new_vals)
                 new_invoice.sudo().action_post()
             else:
