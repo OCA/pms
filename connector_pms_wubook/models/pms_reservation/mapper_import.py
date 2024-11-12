@@ -64,7 +64,12 @@ class ChannelWubookPmsReservationMapperImport(Component):
     @only_create
     @mapping
     def blocked(self, record):
-        return {"blocked": True}
+        # Block False if the reservation origin is from the Wubook
+        # True if the reservation origin is from the OTA
+        if record["id_channel"] == 0:
+            return {"blocked": False}
+        else:
+            return {"blocked": True}
 
     @only_create
     @mapping
