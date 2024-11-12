@@ -328,6 +328,7 @@ class ChannelWubookPmsFolioAdapter(Component):
                         "rate_id": room_rate_id,
                         "customer_notes": customer_notes,
                         "lines": lines,
+                        "id_channel": id_channel,
                     }
                 )
             value["reservations"] = reservations
