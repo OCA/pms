@@ -2162,9 +2162,25 @@ msgid "Additional information of the mail"
 msgstr "Información adicional sobre el correo"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room__address_id
+#: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
+msgid "Address"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__type
 msgid "Address Type"
 msgstr "Tipo de Dirección"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room__address_is_independent
+msgid "Address is Independent"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room__address_id
+msgid "Address of the room"
+msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
@@ -3681,10 +3697,12 @@ msgstr "Seleccione un cliente si desea añadirlo a la reserva"
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_city
 #: model:ir.model.fields,field_description:pms.field_pms_property__city
+#: model:ir.model.fields,field_description:pms.field_pms_room__city
 #: model:ir.model.fields,field_description:pms.field_res_partner__city
 #: model:ir.model.fields,field_description:pms.field_res_users__city
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
+#: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 #: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "City"
@@ -3993,12 +4011,14 @@ msgstr ""
 #. module: pms
 #: model:ir.model,name:pms.model_res_country
 #: model:ir.model.fields,field_description:pms.field_pms_property__country_id
+#: model:ir.model.fields,field_description:pms.field_pms_room__country_id
 #: model:ir.model.fields,field_description:pms.field_res_partner__country_id
 #: model:ir.model.fields,field_description:pms.field_res_partner_id_number__country_id
 #: model:ir.model.fields,field_description:pms.field_res_users__country_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
+#: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
 #: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "Country"
 msgstr "País"
@@ -5036,6 +5056,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__email
+#: model:ir.model.fields,field_description:pms.field_pms_room__email
 #: model:ir.model.fields,field_description:pms.field_res_partner__email
 #: model:ir.model.fields,field_description:pms.field_res_users__email
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_invitations
@@ -5645,12 +5666,14 @@ msgstr "Formato de la Hora de Salida (HH:MM) Error:%s"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__email_formatted
+#: model:ir.model.fields,help:pms.field_pms_room__email_formatted
 msgid "Format email address \"Name <email@domain>\""
 msgstr ""
 "Formato de las direcciones de correo electrónico \"Nombre <email@dominio>\""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__email_formatted
+#: model:ir.model.fields,field_description:pms.field_pms_room__email_formatted
 msgid "Formatted Email"
 msgstr "Email Formateado"
 
@@ -5753,11 +5776,13 @@ msgstr "Cupo Genérico Asignada."
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__partner_latitude
+#: model:ir.model.fields,field_description:pms.field_pms_room__partner_latitude
 msgid "Geo Latitude"
 msgstr "Latitud Geográfica"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__partner_longitude
+#: model:ir.model.fields,field_description:pms.field_pms_room__partner_longitude
 msgid "Geo Longitude"
 msgstr "Longitud Geofráfica"
 
@@ -6180,6 +6205,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__image_128
 #: model:ir.model.fields,field_description:pms.field_pms_property__image_1920
+#: model:ir.model.fields,field_description:pms.field_pms_room__image_1920
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__image_1920
 msgid "Image"
 msgstr "Imagen"
@@ -6408,6 +6434,11 @@ msgstr "Indica si la línea de servicio es parte de un board service"
 msgid "Indicates if this board service is applied by default in the room type"
 msgstr ""
 "Indica si este board service se aplica por defecto en el tipo de habitación"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room__address_is_independent
+msgid "Indicates that the address of the room is independent of the property"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__per_day
@@ -7665,6 +7696,7 @@ msgstr "Estancia mínima si el check in es hoy"
 #: model:ir.model.fields,field_description:pms.field_pms_folio__mobile
 #: model:ir.model.fields,field_description:pms.field_pms_property__mobile
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__mobile
+#: model:ir.model.fields,field_description:pms.field_pms_room__mobile
 #: model:ir.model.fields,field_description:pms.field_res_partner__mobile
 #: model:ir.model.fields,field_description:pms.field_res_users__mobile
 msgid "Mobile"
@@ -8845,6 +8877,7 @@ msgstr "Las personas no pueden superar a la capacidad de la habitación (%s)"
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__phone
 #: model:ir.model.fields,field_description:pms.field_pms_property__phone
+#: model:ir.model.fields,field_description:pms.field_pms_room__phone
 #: model:ir.model.fields,field_description:pms.field_res_partner__phone
 #: model:ir.model.fields,field_description:pms.field_res_users__phone
 msgid "Phone"
@@ -11259,6 +11292,7 @@ msgstr "Fecha de inicio para aplicar los items de tarifa diarios"
 #: model:ir.model.fields,field_description:pms.field_pms_property__state_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__state
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__state
+#: model:ir.model.fields,field_description:pms.field_pms_room__state_id
 #: model:ir.model.fields,field_description:pms.field_pms_service__state
 #: model:ir.model.fields,field_description:pms.field_res_partner__state_id
 #: model:ir.model.fields,field_description:pms.field_res_users__state_id
@@ -11267,6 +11301,7 @@ msgstr "Fecha de inicio para aplicar los items de tarifa diarios"
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
+#: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
 #: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "State"
 msgstr "Estado"
@@ -11354,6 +11389,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_street
 #: model:ir.model.fields,field_description:pms.field_pms_property__street
+#: model:ir.model.fields,field_description:pms.field_pms_room__street
 #: model:ir.model.fields,field_description:pms.field_res_partner__street
 #: model:ir.model.fields,field_description:pms.field_res_users__street
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
@@ -11363,6 +11399,7 @@ msgstr "Calle"
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
+#: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
 #: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "Street 2..."
 msgstr "Calle 2..."
@@ -11385,6 +11422,7 @@ msgstr "Calle de la residencia del huésped"
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
+#: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
 #: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "Street..."
 msgstr "Calle"
@@ -11392,6 +11430,7 @@ msgstr "Calle"
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_street2
 #: model:ir.model.fields,field_description:pms.field_pms_property__street2
+#: model:ir.model.fields,field_description:pms.field_pms_room__street2
 #: model:ir.model.fields,field_description:pms.field_res_partner__street2
 #: model:ir.model.fields,field_description:pms.field_res_users__street2
 msgid "Street2"
@@ -13265,6 +13304,7 @@ msgstr "Advertencia en Cardex"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__website
+#: model:ir.model.fields,field_description:pms.field_pms_room__website
 msgid "Website Link"
 msgstr "Enlace del sitio web"
 
@@ -13449,6 +13489,7 @@ msgstr "Su reserva en ${object.pms_property_id.name} ha sido modificada"
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
+#: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
 #: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "ZIP"
 msgstr "Código Postal"
@@ -13456,6 +13497,7 @@ msgstr "Código Postal"
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_zip
 #: model:ir.model.fields,field_description:pms.field_pms_property__zip
+#: model:ir.model.fields,field_description:pms.field_pms_room__zip
 #: model:ir.model.fields,field_description:pms.field_res_partner__zip
 #: model:ir.model.fields,field_description:pms.field_res_users__zip
 msgid "Zip"
@@ -13541,6 +13583,11 @@ msgstr "Cerrar"
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_prechekin_folio
 msgid "completed"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
+msgid "e.g. https://www.odoo.com"
 msgstr ""
 
 #. module: pms
