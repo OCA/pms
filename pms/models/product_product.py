@@ -64,11 +64,13 @@ class ProductProduct(models.Model):
             else:
                 rec.room_type_id = False
 
-    def price_compute(self, price_type, uom=False, currency=False, company=None):
+    def price_compute(
+        self, price_type, uom=False, currency=False, company=None, date=False
+    ):
         if self._context.get("board_service"):
             price_type = "board_price"
         return super(ProductProduct, self).price_compute(
-            price_type, uom, currency, company
+            price_type, uom, currency, company, date
         )
 
     @api.model
