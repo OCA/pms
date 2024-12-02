@@ -5,12 +5,22 @@ from odoo import fields, models
 class PmsSesCommunication(models.Model):
     _name = "pms.ses.communication"
     _description = "SES Communication"
+    _order = "create_date desc"
+
     reservation_id = fields.Many2one(
         string="Reservation",
         help="Reservation related to this communication",
         index=True,
         required=True,
         comodel_name="pms.reservation",
+    )
+    pms_property_id = fields.Many2one(
+        comodel_name="pms.property",
+        string="Property",
+        help="Property related to this communication",
+        related="reservation_id.pms_property_id",
+        index=True,
+        store=True,
     )
     communication_id = fields.Char(
         string="Communication ID",
@@ -37,7 +47,6 @@ class PmsSesCommunication(models.Model):
         string="Query status time",
         help="Date and time of the last state query",
     )
-
     state = fields.Selection(
         string="State",
         help="State of the communication",
@@ -52,7 +61,6 @@ class PmsSesCommunication(models.Model):
             ("processed", "Processed"),
         ],
     )
-
     sending_result = fields.Text(
         string="Sending Result",
         help="Notification sending result",
@@ -86,3 +94,10 @@ class PmsSesCommunication(models.Model):
         string="SOAP Resp. Status",
         help="SOAP response status query",
     )
+
+    def force_send_communication(self):
+        for record in self:
+            self.env["traveller.report.wizard"].ses_send_communication(
+                entity=record.entity,
+                communication_id=record.communication_id,
+            )
