@@ -42,7 +42,15 @@
         <field name="name">pms.ses.communication.tree</field>
         <field name="model">pms.ses.communication</field>
         <field name="arch" type="xml">
-            <tree name="Property Ubications" create="false">
+            <tree
+                name="Property Ubications"
+                create="false"
+                decoration-danger="state in ('error_sending', 'error_processing')"
+                decoration-muted="state=='processed'"
+                decoration-info="state=='incomplete'"
+                decoration-success="state=='to_process'"
+            >
+                <field name="pms_property_id" />
                 <field name="reservation_id" />
                 <field name="communication_id" />
                 <field name="operation" />
@@ -64,15 +72,82 @@
         <field name="model">pms.ses.communication</field>
         <field name="arch" type="xml">
             <search string="Log SES Communications">
+                <field name="pms_property_id" widget="selection" />
                 <field name="communication_id" />
                 <field name="reservation_id" />
-                <!-- times -->
-                <field name="create_date" />
-                <field name="communication_time" />
-                <field name="query_status_time" />
-                <field name="state" />
+                <!-- filters -->
+                <separator string="Results" colspan="4" />
+                <filter
+                    string="To Process"
+                    name="to_process"
+                    domain="[('state', '=', 'to_process')]"
+                />
+                <filter
+                    string="Processed"
+                    name="processed"
+                    domain="[('state', '=', 'processed')]"
+                />
+                <filter
+                    string="Error Sending"
+                    name="error_sending"
+                    domain="[('state', '=', 'error_sending')]"
+                />
+                <filter
+                    string="Error Processing"
+                    name="error_processing"
+                    domain="[('state', '=', 'error_processing')]"
+                />
+                <filter
+                    string="Wait checkins"
+                    name="incomplete"
+                    domain="[('state', '=', 'incomplete')]"
+                />
+                <separator string="Times" colspan="4" />
+                <filter
+                    string="Today"
+                    name="today"
+                    domain="[('create_date', '&gt;=', (context_today() + ' 00:00:00'))]"
+                />
+                <filter
+                    string="This Week"
+                    name="this_week"
+                    domain="[('create_date', '&gt;=', (context_today() + ' 00:00:00'))]"
+                />
+                <filter
+                    string="This Month"
+                    name="this_month"
+                    domain="[('create_date', '&gt;=', (context_today() + ' 00:00:00'))]"
+                />
+                <!-- groups -->
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_by_pms_property_id"
+                        string="Property"
+                        context="{'group_by': 'pms_property_id'}"
+                    />
+                    <filter
+                        name="group_by_state"
+                        string="State"
+                        context="{'group_by': 'state'}"
+                    />
+                </group>
             </search>
         </field>
+    </record>
+
+    <!-- action to force_send_communication -->
+    <record
+        model="ir.actions.server"
+        id="pms_ses_communication_force_send_communication"
+    >
+        <field name="name">Force Send Communication</field>
+        <field name="model_id" ref="model_pms_ses_communication" />
+        <field name="state">code</field>
+        <field name="code">
+            records.force_send_communication()
+        </field>
+        <field name="binding_model_id" ref="model_pms_ses_communication" />
+        <field name="binding_view_types">form,list</field>
     </record>
 
     <record model="ir.actions.act_window" id="open_pms_ses_communication_form_tree">

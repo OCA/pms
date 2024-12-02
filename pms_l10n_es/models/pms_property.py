@@ -42,7 +42,6 @@ class PmsProperty(models.Model):
         string="Institution lessor id",
         help="Id provided by institution to send data from lessor.",
     )
-
     ine_tourism_number = fields.Char(
         "Tourism number",
         help="Registration number in the Ministry of Tourism. Used for INE statistics.",

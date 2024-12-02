@@ -15,12 +15,76 @@ class PmsReservation(models.Model):
         string="Is SES",
         readonly=True,
         compute="_compute_is_ses",
+        store=True,
+    )
+    ses_status_reservation = fields.Selection(
+        string="SES Status",
+        help="Status of the reservation in SES",
+        selection=[
+            ("not_applicable", "Not Applicable"),
+            ("to_send", "Pending Notification"),
+            ("to_process", "Pending Processing"),
+            ("error_create", "Error Creating"),
+            ("error_sending", "Error Sending"),
+            ("error_processing", "Error Processing"),
+            ("processed", "Processed"),
+        ],
+        compute="_compute_ses_status_reservation",
+        store=True,
+    )
+    ses_status_traveller_report = fields.Selection(
+        string="SES Status traveller",
+        help="Status of the traveller report in SES",
+        selection=[
+            ("not_applicable", "Not Applicable"),
+            ("incomplete", "Incomplete checkin data"),
+            ("to_send", "Pending Notification"),
+            ("to_process", "Pending Processing"),
+            ("error_create", "Error Creating"),
+            ("error_sending", "Error Sending"),
+            ("error_processing", "Error Processing"),
+            ("processed", "Processed"),
+        ],
+        compute="_compute_ses_status_traveller_report",
+        store=True,
     )
 
     @api.depends("pms_property_id")
     def _compute_is_ses(self):
         for record in self:
             record.is_ses = record.pms_property_id.institution == "ses"
+
+    @api.depends("ses_communication_ids", "ses_communication_ids.state")
+    def _compute_ses_status_reservation(self):
+        for record in self:
+            if record.pms_property_id.institution != "ses":
+                record.ses_status_reservation = "not_applicable"
+                continue
+            communication = record.ses_communication_ids.filtered(
+                lambda x: x.entity == "RH"
+            )
+            if len(communication) > 1:
+                # get the last communication
+                communication = communication.sorted(key=lambda x: x.create_date)[-1]
+            record.ses_status_reservation = (
+                communication.state if communication else "error_create"
+            )
+
+    @api.depends("ses_communication_ids", "ses_communication_ids.state")
+    def _compute_ses_status_traveller_report(self):
+        for record in self:
+            if record.pms_property_id.institution != "ses":
+                record.ses_status_traveller_report = "not_applicable"
+                continue
+            communication = record.ses_communication_ids.filtered(
+                lambda x: x.entity == "PV"
+            )
+            if len(communication) > 1:
+                # get the last communication
+                communication = communication.sorted(key=lambda x: x.create_date)[-1]
+            record.ses_status_traveller_report = (
+                communication.state if communication else "error_create"
+            )
 
     @api.model
     def create_communication(self, reservation_id, operation, entity):
@@ -100,6 +164,9 @@ class PmsReservation(models.Model):
 
     def write(self, vals):
         for record in self:
-            if record.pms_property_id.institution == "ses":
+            if (
+                record.pms_property_id.institution == "ses"
+                and record.reservation_type != "out"
+            ):
                 self.create_communication_after_update_reservation(record, vals)
         return super(PmsReservation, self).write(vals)
