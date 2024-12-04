@@ -22,6 +22,10 @@ class PmsSesCommunication(models.Model):
         index=True,
         store=True,
     )
+    batch_id = fields.Char(
+        string="Batch ID",
+        default=False,
+    )
     communication_id = fields.Char(
         string="Communication ID",
         help="ID of the communication",
@@ -99,5 +103,5 @@ class PmsSesCommunication(models.Model):
         for record in self:
             self.env["traveller.report.wizard"].ses_send_communication(
                 entity=record.entity,
-                communication_id=record.communication_id,
+                pms_ses_communication_id=record.id,
             )
