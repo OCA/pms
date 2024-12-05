@@ -100,6 +100,11 @@ msgid "Abuelo/a"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__batch_id
+msgid "Batch ID"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__ine_seats
 msgid "Beds available excluding extra beds"
 msgstr "Camas disponibles excluidas las supletorias"
