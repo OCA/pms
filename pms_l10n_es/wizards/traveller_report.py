@@ -335,7 +335,9 @@ def _generate_payload(lessor_id, operation, entity, data):
                             <codigoArrendador>{lessor_id}</codigoArrendador>
                             <aplicacion>Roomdoo</aplicacion>
                             <tipoOperacion>{operation}</tipoOperacion>
-                            {'<tipoComunicacion>'+entity+'</tipoComunicacion>' if entity else ''}
+                            {
+    '<tipoComunicacion>'+entity+'</tipoComunicacion>' if entity else ''
+    }
                         </cabecera>
                         <solicitud>{data}</solicitud>
                     </peticion>
@@ -1219,7 +1221,6 @@ class TravellerReport(models.TransientModel):
         for communication in self.env["pms.ses.communication"].search(
             [
                 ("state", "=", "to_process"),
-                ("operation", "!=", DELETE_OPERATION_CODE),
             ]
         ):
             try:
@@ -1234,7 +1235,7 @@ class TravellerReport(models.TransientModel):
                 payload = _generate_payload(
                     communication.reservation_id.pms_property_id.institution_lessor_id,
                     "C",
-                    "",
+                    False,
                     data,
                 )
                 communication.query_status_soap = payload
