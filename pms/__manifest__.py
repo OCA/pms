@@ -25,7 +25,7 @@
         "partner_contact_gender",
         "partner_contact_birthdate",
         "partner_contact_nationality",
-        "account_reconcile_oca",
+        # "account_reconcile_oca",
         # "partner_identification_unique_by_category",
         "queue_job",
         "web_timeline",
