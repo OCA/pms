@@ -776,6 +776,12 @@ class PmsCheckinPartner(models.Model):
             _("Is not possible to create the proposed check-in in this reservation")
         )
 
+    def write(self, vals):
+        res = super().write(vals)
+        for record in self:
+            record.reservation_id._update_tourist_tax_service()
+        return res
+
     def unlink(self):
         reservations = self.mapped("reservation_id")
         res = super().unlink()
