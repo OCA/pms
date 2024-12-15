@@ -7,6 +7,7 @@ import time
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools.safe_eval import safe_eval
 
 _logger = logging.getLogger(__name__)
 
@@ -894,9 +895,11 @@ class PmsReservation(models.Model):
                     room_type_id=False,  # Allows to choose any available room
                     current_lines=reservation.reservation_line_ids.ids,
                     pricelist_id=reservation.pricelist_id.id,
-                    class_id=reservation.room_type_id.class_id.id
-                    if reservation.room_type_id
-                    else False,
+                    class_id=(
+                        reservation.room_type_id.class_id.id
+                        if reservation.room_type_id
+                        else False
+                    ),
                     real_avail=True,
                 )
                 reservation.allowed_room_ids = pms_property.free_room_ids
@@ -2118,6 +2121,7 @@ class PmsReservation(models.Model):
             record.action_cancel()
 
         record._check_services(vals)
+        record._add_tourist_tax_service()
         return record
 
     def write(self, vals):
@@ -2187,6 +2191,8 @@ class PmsReservation(models.Model):
         # that not take access to possible extra beds service in vals
         if "adults" in vals:
             self._check_capacity()
+        if "checkin" in vals or "checkout" in vals or "reservation_line_ids" in vals:
+            self._update_tourist_tax_service()
         return res
 
     def _get_folio_vals(self, reservation_vals):
@@ -2541,3 +2547,116 @@ class PmsReservation(models.Model):
             "target": "self",
             "url": self.get_portal_url(),
         }
+
+    def _add_tourist_tax_service(self):
+        for record in self:
+            tourist_tax_products = self.env["product.product"].search(
+                [("is_tourist_tax", "=", True)]
+            )
+            for product in tourist_tax_products:
+                if product.touristic_calculation == "occupancy":
+                    checkins = record.checkin_partner_ids.filtered_domain(
+                        safe_eval(product.occupancy_domain)
+                    )
+                    quantity = len(checkins)
+                elif product.touristic_calculation == "nights":
+                    if not record.filtered_domain(safe_eval(product.nights_domain)):
+                        continue
+                    quantity = (record.checkout - record.checkin).days
+                elif product.touristic_calculation == "occupancyandnights":
+                    checkins = record.checkin_partner_ids.filtered_domain(
+                        safe_eval(product.occupancy_domain)
+                    )
+                    if not record.filtered_domain(safe_eval(product.nights_domain)):
+                        continue
+                    quantity = len(checkins) * (record.checkout - record.checkin).days
+                else:
+                    quantity = 1
+
+                if quantity == 0:
+                    continue
+
+                product = product.with_context(
+                    lang=record.partner_id.lang,
+                    partner=record.partner_id.id,
+                    quantity=quantity,
+                    date=record.date_order,
+                    consumption_date=record.checkin,
+                    pricelist=record.pricelist_id.id,
+                    uom=product.uom_id.id,
+                    property=record.pms_property_id.id,
+                )
+                price = self.env["account.tax"]._fix_tax_included_price_company(
+                    product.price,
+                    product.taxes_id,
+                    record.tax_ids,
+                    record.pms_property_id.company_id,
+                )
+
+                self.env["pms.service"].create(
+                    {
+                        "reservation_id": record.id,
+                        "product_id": product.id,
+                        "quantity": quantity,
+                        "price_unit": price,
+                    }
+                )
+
+    def _update_tourist_tax_service(self):
+        for record in self:
+            services = self.env["pms.service"].search(
+                [
+                    ("reservation_id", "=", record.id),
+                    ("product_id.is_tourist_tax", "=", True),
+                ]
+            )
+            for service in services:
+                product = service.product_id
+                if product.touristic_calculation == "occupancy":
+                    checkins = record.checkin_partner_ids.filtered_domain(
+                        safe_eval(product.occupancy_domain)
+                    )
+                    quantity = len(checkins)
+                elif product.touristic_calculation == "nights":
+                    if not record.filtered_domain(safe_eval(product.nights_domain)):
+                        service.unlink()
+                        continue
+                    quantity = (record.checkout - record.checkin).days
+                elif product.touristic_calculation == "occupancyandnights":
+                    checkins = record.checkin_partner_ids.filtered_domain(
+                        safe_eval(product.occupancy_domain)
+                    )
+                    if not record.filtered_domain(safe_eval(product.nights_domain)):
+                        service.unlink()
+                        continue
+                    quantity = len(checkins) * (record.checkout - record.checkin).days
+                else:
+                    quantity = 1
+
+                if quantity == 0:
+                    service.unlink()
+                    continue
+
+                product = product.with_context(
+                    lang=record.partner_id.lang,
+                    partner=record.partner_id.id,
+                    quantity=quantity,
+                    date=record.date_order,
+                    consumption_date=record.checkin,
+                    pricelist=record.pricelist_id.id,
+                    uom=product.uom_id.id,
+                    property=record.pms_property_id.id,
+                )
+                price = self.env["account.tax"]._fix_tax_included_price_company(
+                    product.price,
+                    product.taxes_id,
+                    record.tax_ids,
+                    record.pms_property_id.company_id,
+                )
+
+                service.write(
+                    {
+                        "quantity": quantity,
+                        "price_unit": price,
+                    }
+                )

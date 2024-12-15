@@ -57,6 +57,31 @@ class ProductTemplate(models.Model):
         help="Indicates if that product is available in PMS",
         default=True,
     )
+    is_tourist_tax = fields.Boolean(
+        string="Is tourist tax",
+        help="Indicates if that product is a tourist tax",
+        default=False,
+    )
+    touristic_calculation = fields.Selection(
+        string="Touristic calculation",
+        help="Indicates how the tourist tax is calculated",
+        selection=[
+            ("occupany", "Occupancy"),
+            ("nights", "Nights"),
+            ("occupancyandnights", "Occupancy and Nights"),
+        ],
+        default="occupancyandnights",
+    )
+    occupancy_domain = fields.Char(
+        string="Occupancy domain",
+        help="Domain to filter checkins",
+        default="",
+    )
+    nights_domain = fields.Char(
+        string="Nights domain",
+        help="Domain to filter reservations",
+        default="[('state', '!=', 'cancel')]",
+    )
 
     @api.depends_context("allowed_pms_property_ids")
     def _compute_daily_limit(self):
