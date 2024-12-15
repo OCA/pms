@@ -814,14 +814,16 @@ class PmsCheckinPartner(models.Model):
         return manual_fields
 
     @api.model
-    def _checkin_mandatory_fields(self, country=False, depends=False):
-        mandatory_fields = [
-            "name",
-        ]
-        # api.depends need "reservation_id.state" in the lambda function
-        if depends:
-            mandatory_fields.extend(["reservation_id.state", "name"])
+    def _get_depends_state_fields(self):
+        manual_fields = self._checkin_manual_fields()
+        manual_fields.append("reservation_id.state")
+        return manual_fields
 
+    @api.model
+    def _checkin_mandatory_fields(
+        self, residence_country=False, document_type=False, birthdate_date=False
+    ):
+        mandatory_fields = []
         return mandatory_fields
 
     @api.model
