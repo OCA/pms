@@ -1093,10 +1093,14 @@ class PmsReservation(models.Model):
             else:
                 reservation.show_update_pricelist = False
 
-    @api.depends("adults")
+    @api.depends("adults", "children")
     def _compute_checkin_partner_ids(self):
         for reservation in self:
-            adults = reservation.adults if reservation.reservation_type != "out" else 0
+            occupancy = (
+                reservation.adults + reservation.children
+                if reservation.reservation_type != "out"
+                else 0
+            )
             assigned_checkins = reservation.checkin_partner_ids.filtered(
                 lambda c: c.state in ("precheckin", "onboard", "done")
             )
@@ -1104,18 +1108,18 @@ class PmsReservation(models.Model):
                 lambda c: c.state in ("dummy", "draft")
             )
             leftover_unassigneds_count = (
-                len(assigned_checkins) + len(unassigned_checkins) - adults
+                len(assigned_checkins) + len(unassigned_checkins) - occupancy
             )
-            if len(assigned_checkins) > adults:
+            if len(assigned_checkins) > occupancy:
                 raise UserError(
                     _("Remove some of the leftover assigned checkins first")
                 )
             elif leftover_unassigneds_count > 0:
                 for i in range(0, leftover_unassigneds_count):
                     reservation.checkin_partner_ids = [(2, unassigned_checkins[i].id)]
-            elif adults > len(reservation.checkin_partner_ids):
+            elif occupancy > len(reservation.checkin_partner_ids):
                 checkins_lst = []
-                count_new_checkins = adults - len(reservation.checkin_partner_ids)
+                count_new_checkins = occupancy - len(reservation.checkin_partner_ids)
                 for _i in range(0, count_new_checkins):
                     checkins_lst.append(
                         (
@@ -1127,7 +1131,7 @@ class PmsReservation(models.Model):
                         )
                     )
                 reservation.checkin_partner_ids = checkins_lst
-            elif adults == 0:
+            elif occupancy == 0:
                 reservation.checkin_partner_ids = False
 
     @api.depends("checkin_partner_ids", "checkin_partner_ids.state")
@@ -1142,11 +1146,10 @@ class PmsReservation(models.Model):
     @api.depends("count_pending_arrival")
     def _compute_checkins_ratio(self):
         self.checkins_ratio = 0
-        for reservation in self.filtered(lambda r: r.adults > 0):
+        for reservation in self.filtered(lambda r: (r.adults + r.children) > 0):
+            occupancy = reservation.adults + reservation.children
             reservation.checkins_ratio = (
-                (reservation.adults - reservation.count_pending_arrival)
-                * 100
-                / reservation.adults
+                (occupancy - reservation.count_pending_arrival) * 100 / occupancy
             )
 
     @api.depends("checkin_partner_ids", "checkin_partner_ids.state")
@@ -1162,12 +1165,11 @@ class PmsReservation(models.Model):
     def _compute_ratio_checkin_data(self):
         self.ratio_checkin_data = 0
         for reservation in self.filtered(
-            lambda r: r.adults > 0 and r.state != "cancel"
+            lambda r: (r.adults + r.children) > 0 and r.state != "cancel"
         ):
+            occupancy = reservation.adults + reservation.children
             reservation.ratio_checkin_data = (
-                (reservation.adults - reservation.pending_checkin_data)
-                * 100
-                / reservation.adults
+                (occupancy - reservation.pending_checkin_data) * 100 / occupancy
             )
 
     def _compute_allowed_checkin(self):
@@ -1547,8 +1549,9 @@ class PmsReservation(models.Model):
     def _compute_checkin_partner_count(self):
         for record in self:
             if record.reservation_type != "out" and record.overnight_room:
+                occupancy = record.adults + record.children
                 record.checkin_partner_count = len(record.checkin_partner_ids)
-                record.checkin_partner_pending_count = record.adults - len(
+                record.checkin_partner_pending_count = occupancy - len(
                     record.checkin_partner_ids
                 )
             else:
@@ -1736,7 +1739,9 @@ class PmsReservation(models.Model):
         return [
             ("state", "in", ("draft", "confirm", "arrival_delayed")),
             ("checkin", "<=", today),
+            "|",
             ("adults", ">", 0),
+            ("children", ">", 0),
         ]
 
     def _search_allowed_checkout(self, operator, value):
@@ -1754,7 +1759,9 @@ class PmsReservation(models.Model):
         return [
             ("state", "in", ("onboard", "departure_delayed")),
             ("checkout", ">=", today),
+            "|",
             ("adults", ">", 0),
+            ("children", ">", 0),
         ]
 
     def _search_allowed_cancel(self, operator, value):

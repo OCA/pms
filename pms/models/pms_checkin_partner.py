@@ -829,7 +829,9 @@ class PmsCheckinPartner(models.Model):
         return manual_fields
 
     @api.model
-    def _checkin_mandatory_fields(self, residence_country=False, document_type=False):
+    def _checkin_mandatory_fields(
+        self, residence_country=False, document_type=False, birthdate_date=False
+    ):
         mandatory_fields = [
             "name",
         ]
