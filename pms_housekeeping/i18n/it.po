@@ -1,0 +1,448 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pms_housekeeping
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__allowed_housekeeper_ids
+msgid "Allowed Housekeepers"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_hr_employee__allowed_pre_assigned_room_ids
+msgid "Allowed Pre Assigned Rooms"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping_task__state__cancel
+msgid "Cancel"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_housekeeping_task_form
+msgid "Cancel Task"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__cancellation_type_id
+msgid "Cancellation Type"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__is_checkin
+msgid "Checkin"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__is_checkout
+msgid "Checkout"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__child_ids
+msgid "Child Task Types"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__child_ids
+msgid "Child Tasks"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_room__housekeeping_state__clean
+msgid "Clean"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__cleaning_comments
+msgid "Cleaning Comments"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_cancellation_type__create_uid
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__create_uid
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_cancellation_type__create_date
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__create_date
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__task_date
+msgid "Date"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__days_after_clean_empty
+msgid "Days After Clean Empty"
+msgstr ""
+
+#. module: pms_housekeeping
+#: code:addons/pms_housekeeping/models/pms_housekeeping_task_type.py:0
+#, python-format
+msgid "Days After Clean Empty should be greater than 0"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__days_after_clean_overnight
+msgid "Days After Clean Overnight"
+msgstr ""
+
+#. module: pms_housekeeping
+#: code:addons/pms_housekeeping/models/pms_housekeeping_task_type.py:0
+#, python-format
+msgid "Days After Clean Overnight should be greater than 0"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_cancellation_type__description
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__description
+msgid "Description"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_room__housekeeping_state__dirty
+msgid "Dirty"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_cancellation_type__display_name
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__display_name
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__display_name
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_room__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping_task__state__done
+msgid "Done"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model,name:pms_housekeeping.model_hr_employee
+msgid "Employee"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__is_empty
+msgid "Empty"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.actions.server,name:pms_housekeeping.generate_tasks_ir_actions_server
+#: model:ir.cron,cron_name:pms_housekeeping.generate_tasks
+#: model:ir.cron,name:pms_housekeeping.generate_tasks
+msgid "Generate Housekeeping Tasks"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:hr.job,name:pms_housekeeping.housekeeping_job_id
+msgid "Housekeeper"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__housekeeper_ids
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__housekeeper_ids
+msgid "Housekeepers"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.ui.menu,name:pms_housekeeping.menu_action_pms_housekeeping
+msgid "Housekeeping"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_room__housekeeping_state
+msgid "Housekeeping State"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.actions.act_window,name:pms_housekeeping.action_pms_housekeeping_task
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_housekeeping_task_form
+msgid "Housekeeping Task"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.actions.act_window,name:pms_housekeeping.action_pms_housekeeping_task_type
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_housekeeping_task_type_form
+msgid "Housekeeping Task Type"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_hr_employee__id
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_cancellation_type__id
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__id
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__id
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_room__id
+msgid "ID"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping_task__state__in_progress
+msgid "In Progress"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,help:pms_housekeeping.field_pms_housekeeping_task__child_ids
+msgid "Indicates that this task has child tasks"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,help:pms_housekeeping.field_pms_housekeeping_task__parent_id
+msgid "Indicates that this task is a child of another task"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,help:pms_housekeeping.field_pms_housekeeping_task_type__parent_id
+msgid "Indicates that this task type is a child of another task type"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__is_inspection
+msgid "Inspection"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__is_automated
+msgid "Is Automated"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__cancel_allowed
+msgid "Is Cancel Allowed"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__done_allowed
+msgid "Is Done Allowed"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__in_progress_allowed
+msgid "Is In Progress Allowed"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__to_do_allowed
+msgid "Is To Do Allowed"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__pending_allowed
+msgid "Is pending allowed"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_hr_employee__job_name
+msgid "Job Name"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_hr_employee____last_update
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_cancellation_type____last_update
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task____last_update
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type____last_update
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_room____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_cancellation_type__write_uid
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__write_uid
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_cancellation_type__write_date
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__write_date
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_housekeeping_task_form
+msgid "Mark as Done"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_housekeeping_task_form
+msgid "Mark as In Progress"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_housekeeping_task_form
+msgid "Mark as Pending"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_housekeeping_task_form
+msgid "Mark as To Do"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_cancellation_type__name
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__name
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__name
+msgid "Name"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__is_overnight
+msgid "Overnight"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__parent_state
+msgid "Parent State"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__parent_id
+msgid "Parent Task"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__parent_id
+msgid "Parent Task Type"
+msgstr ""
+
+#. module: pms_housekeeping
+#: code:addons/pms_housekeeping/models/pms_housekeeping_task.py:0
+#, python-format
+msgid "Parent task cannot have a parent task"
+msgstr ""
+
+#. module: pms_housekeeping
+#: code:addons/pms_housekeeping/models/pms_housekeeping_task_type.py:0
+#, python-format
+msgid "Parent task type cannot have a parent task type"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping_task__state__pending
+msgid "Pending"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_hr_employee__pre_assigned_room_ids
+msgid "Pre Assigned Rooms"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__priority
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__priority
+msgid "Priority"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task_type__pms_property_ids
+msgid "Properties"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model,name:pms_housekeeping.model_pms_room
+msgid "Property Room"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__room_id
+msgid "Room"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,help:pms_housekeeping.field_hr_employee__allowed_pre_assigned_room_ids
+msgid "Rooms allowed to be pre assigned to this employee"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,help:pms_housekeeping.field_hr_employee__pre_assigned_room_ids
+msgid "Rooms pre assigned to this employee"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__state
+msgid "State"
+msgstr ""
+
+#. module: pms_housekeeping
+#: code:addons/pms_housekeeping/models/pms_housekeeping_task.py:0
+#, python-format
+msgid "Task Date must be greater than or equal to today"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__task_type_id
+msgid "Task Type"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.ui.menu,name:pms_housekeeping.menu_action_pms_housekeeping_view_task_type
+msgid "Task Types"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.ui.menu,name:pms_housekeeping.menu_action_pms_housekeeping_view_task
+msgid "Tasks"
+msgstr ""
+
+#. module: pms_housekeeping
+#: code:addons/pms_housekeeping/models/pms_housekeeping_task.py:0
+#, python-format
+msgid "The housekeeper should belong to the room's property."
+msgstr ""
+
+#. module: pms_housekeeping
+#: code:addons/pms_housekeeping/models/hr_employee.py:0
+#: code:addons/pms_housekeeping/models/pms_housekeeping_task_type.py:0
+#, python-format
+msgid "The job position should be Housekeeper."
+msgstr ""
+
+#. module: pms_housekeeping
+#: code:addons/pms_housekeeping/models/hr_employee.py:0
+#, python-format
+msgid "The room should belong to the employee's property."
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping_task__state__to_do
+msgid "To Do"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_room__housekeeping_state__to_inspect
+msgid "To Inspect"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model,name:pms_housekeeping.model_pms_housekeeping_cancellation_type
+msgid "pms.housekeeping.cancellation.type"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model,name:pms_housekeeping.model_pms_housekeeping_task
+msgid "pms.housekeeping.task"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model,name:pms_housekeeping.model_pms_housekeeping_task_type
+msgid "pms.housekeeping.task.type"
+msgstr ""
