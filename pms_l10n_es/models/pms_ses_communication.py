@@ -22,6 +22,14 @@ class PmsSesCommunication(models.Model):
         index=True,
         store=True,
     )
+    room_id = fields.Many2one(
+        comodel_name="pms.room",
+        string="Room",
+        help="Room related to this communication",
+        related="reservation_id.preferred_room_id",
+        index=True,
+        store=True,
+    )
     batch_id = fields.Char(
         default=False,
     )
