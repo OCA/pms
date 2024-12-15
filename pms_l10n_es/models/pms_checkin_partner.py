@@ -1,5 +1,7 @@
 import logging
 
+from dateutil.relativedelta import relativedelta
+
 from odoo import api, fields, models
 
 from ..wizards.traveller_report import CREATE_OPERATION_CODE
@@ -65,7 +67,9 @@ class PmsCheckinPartner(models.Model):
                     record.support_number = False
 
     @api.model
-    def _checkin_mandatory_fields(self, residence_country=False, document_type=False):
+    def _checkin_mandatory_fields(
+        self, residence_country=False, document_type=False, birthdate_date=False
+    ):
         mandatory_fields = super(PmsCheckinPartner, self)._checkin_mandatory_fields(
             residence_country, document_type
         )
@@ -73,9 +77,6 @@ class PmsCheckinPartner(models.Model):
             [
                 "birthdate_date",
                 "gender",
-                "document_number",
-                "document_type",
-                "document_expedition_date",
                 "nationality_id",
                 "residence_street",
                 "residence_city",
@@ -83,6 +84,18 @@ class PmsCheckinPartner(models.Model):
                 "residence_zip",
             ]
         )
+
+        # Checkins with age greater than 14 must have an identity document
+        if birthdate_date:
+            if birthdate_date <= fields.Date.today() - relativedelta(years=14):
+                mandatory_fields.extend(
+                    [
+                        "document_number",
+                        "document_type",
+                        "document_expedition_date",
+                        "document_country_id",
+                    ]
+                )
 
         if residence_country and residence_country.code == CODE_SPAIN:
             mandatory_fields.extend(
