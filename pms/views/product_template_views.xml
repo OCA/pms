@@ -28,12 +28,31 @@
                         <group>
                             <field name="per_day" />
                             <field name="per_person" />
+                            <field name="is_tourist_tax" />
                             <field
                                 name="consumed_on"
                                 widget="radio"
                                 attrs="{'invisible': [('per_day','!=',True)]}"
                             />
                         </group>
+                    </group>
+                </page>
+                <page
+                    string="Tourist tax configuration"
+                    attrs="{'invisible': [('is_tourist_tax', '=', False)]}"
+                >
+                    <group>
+                        <field name="touristic_calculation" />
+                        <field
+                            name="occupancy_domain"
+                            widget="domain"
+                            options="{'model': 'pms.checkin.partner'}"
+                        />
+                        <field
+                            name="nights_domain"
+                            widget="domain"
+                            options="{'model': 'pms.reservation'}"
+                        />
                     </group>
                 </page>
             </xpath>
