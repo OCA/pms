@@ -30,7 +30,6 @@ class PmsReservation(models.Model):
             ("processed", "Processed"),
         ],
         compute="_compute_ses_status_reservation",
-        store=True,
     )
     ses_status_traveller_report = fields.Selection(
         string="SES Status traveller",
@@ -46,15 +45,20 @@ class PmsReservation(models.Model):
             ("processed", "Processed"),
         ],
         compute="_compute_ses_status_traveller_report",
-        store=True,
     )
 
-    @api.depends("pms_property_id")
+    @api.depends("pms_property_id", "preferred_room_id")
     def _compute_is_ses(self):
         for record in self:
-            record.is_ses = record.pms_property_id.institution == "ses"
+            if (
+                record.preferred_room_id
+                and record.preferred_room_id.institution_independent_account
+                and record.preferred_room_id.institution == "ses"
+            ):
+                record.is_ses = True
+            else:
+                record.is_ses = record.pms_property_id.institution == "ses"
 
-    @api.depends("ses_communication_ids", "ses_communication_ids.state")
     def _compute_ses_status_reservation(self):
         for record in self:
             if record.pms_property_id.institution != "ses":
@@ -70,7 +74,6 @@ class PmsReservation(models.Model):
                 communication.state if communication else "error_create"
             )
 
-    @api.depends("ses_communication_ids", "ses_communication_ids.state")
     def _compute_ses_status_traveller_report(self):
         for record in self:
             if record.pms_property_id.institution != "ses":
@@ -88,11 +91,13 @@ class PmsReservation(models.Model):
 
     @api.model
     def create_communication(self, reservation_id, operation, entity):
+        reservation = self.env["pms.reservation"].browse(reservation_id)
         self.env["pms.ses.communication"].create(
             {
                 "reservation_id": reservation_id,
                 "operation": operation,
                 "entity": entity,
+                "room_id": reservation.preferred_room_id.id,
             }
         )
 
@@ -164,9 +169,6 @@ class PmsReservation(models.Model):
 
     def write(self, vals):
         for record in self:
-            if (
-                record.pms_property_id.institution == "ses"
-                and record.reservation_type != "out"
-            ):
+            if record.is_ses and record.reservation_type != "out":
                 self.create_communication_after_update_reservation(record, vals)
         return super(PmsReservation, self).write(vals)
