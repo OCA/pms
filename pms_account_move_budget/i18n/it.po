@@ -1,0 +1,40 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pms_account_move_budget
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#. module: pms_account_move_budget
+#: model:ir.model,name:pms_account_move_budget.model_account_move_budget_line
+msgid "Account Move Budget Line"
+msgstr ""
+
+#. module: pms_account_move_budget
+#: model:ir.model.fields,field_description:pms_account_move_budget.field_account_move_budget_line__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pms_account_move_budget
+#: model:ir.model.fields,field_description:pms_account_move_budget.field_account_move_budget_line__pms_property_id
+msgid "Hotel"
+msgstr ""
+
+#. module: pms_account_move_budget
+#: model:ir.model.fields,field_description:pms_account_move_budget.field_account_move_budget_line__id
+msgid "ID"
+msgstr ""
+
+#. module: pms_account_move_budget
+#: model:ir.model.fields,field_description:pms_account_move_budget.field_account_move_budget_line____last_update
+msgid "Last Modified on"
+msgstr ""
