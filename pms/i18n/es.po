@@ -4915,6 +4915,20 @@ msgid "Domain"
 msgstr "Dominio"
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room_type__occupancy_domain
+#: model:ir.model.fields,help:pms.field_product_product__occupancy_domain
+#: model:ir.model.fields,help:pms.field_product_template__occupancy_domain
+msgid "Domain to filter checkins"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room_type__nights_domain
+#: model:ir.model.fields,help:pms.field_product_product__nights_domain
+#: model:ir.model.fields,help:pms.field_product_template__nights_domain
+msgid "Domain to filter reservations"
+msgstr ""
+
+#. module: pms
 #: model:pms.room.type,name:pms.pms_room_type_double
 #: model:product.product,name:pms.pms_room_type_double_product_product
 msgid "Double"
@@ -6333,6 +6347,13 @@ msgid "Indicates how much products can consumed in one day"
 msgstr "Indica cuántos productos se pueden consumir en un día"
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room_type__touristic_calculation
+#: model:ir.model.fields,help:pms.field_product_product__touristic_calculation
+#: model:ir.model.fields,help:pms.field_product_template__touristic_calculation
+msgid "Indicates how the tourist tax is calculated"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__invoice_to_agency
 #: model:ir.model.fields,help:pms.field_res_partner__invoice_to_agency
 #: model:ir.model.fields,help:pms.field_res_users__invoice_to_agency
@@ -6375,6 +6396,13 @@ msgid "Indicates if that product is a extra bed, add +1 capacity in the room"
 msgstr ""
 "Indica si ese producto es una cama supletoria, añade +1 de capacidad en la "
 "habitación"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room_type__is_tourist_tax
+#: model:ir.model.fields,help:pms.field_product_product__is_tourist_tax
+#: model:ir.model.fields,help:pms.field_product_template__is_tourist_tax
+msgid "Indicates if that product is a tourist tax"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__is_pms_available
@@ -6920,6 +6948,13 @@ msgid ""
 msgstr ""
 "Es el número de días de ausencia en la regla de cancelación si el valor del "
 "campo apply_on_show es specify days."
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__is_tourist_tax
+#: model:ir.model.fields,field_description:pms.field_product_product__is_tourist_tax
+#: model:ir.model.fields,field_description:pms.field_product_template__is_tourist_tax
+msgid "Is tourist tax"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_wizard_reservation_lines_split__allowed_room_ids
@@ -7914,8 +7949,16 @@ msgstr "Siguiente tipo de actividad"
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__reservation_line_ids
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__nights
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__nights
+#: model:ir.model.fields.selection,name:pms.selection__product_template__touristic_calculation__nights
 msgid "Nights"
 msgstr "Noches"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__nights_domain
+#: model:ir.model.fields,field_description:pms.field_product_product__nights_domain
+#: model:ir.model.fields,field_description:pms.field_product_template__nights_domain
+msgid "Nights domain"
+msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
@@ -8211,6 +8254,23 @@ msgstr "Número de mensajes no leídos"
 msgid ""
 "Number total of children there in guest list,whose presence counts or not"
 msgstr "Número total de niños en el roomins"
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__product_template__touristic_calculation__occupany
+msgid "Occupancy"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__product_template__touristic_calculation__occupancyandnights
+msgid "Occupancy and Nights"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__occupancy_domain
+#: model:ir.model.fields,field_description:pms.field_product_product__occupancy_domain
+#: model:ir.model.fields,field_description:pms.field_product_template__occupancy_domain
+msgid "Occupancy domain"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__occupied_room
@@ -12811,6 +12871,18 @@ msgstr "Precio total de la habitación y servicios"
 #: model:ir.model.fields,help:pms.field_pms_service_line__price_day_total
 msgid "Total price with taxes"
 msgstr "Precio Total"
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.product_template_view_form
+msgid "Tourist tax configuration"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__touristic_calculation
+#: model:ir.model.fields,field_description:pms.field_product_product__touristic_calculation
+#: model:ir.model.fields,field_description:pms.field_product_template__touristic_calculation
+msgid "Touristic calculation"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__service_type
