@@ -1791,6 +1791,11 @@ class PmsReservationService(Component):
                             "document_number",
                             "=",
                             pms_checkin_partner_info.documentLegalRepresentative,
+                        ),
+                        (
+                            "reservation_id",
+                            "=",
+                            pms_checkin_partner_info.reservationId,
                         )
                     ]
                 )
