@@ -441,7 +441,9 @@ class PmsCheckinPartner(models.Model):
                 elif any(
                     not getattr(record, field)
                     for field in record._checkin_mandatory_fields(
-                        country=record.document_country_id
+                        residence_country=record.residence_country_id,
+                        document_type=record.document_type,
+                        birthdate_date=record.birthdate_date,
                     )
                 ):
                     record.state = "draft"
@@ -767,7 +769,9 @@ class PmsCheckinPartner(models.Model):
         dummy_checkins = reservation.checkin_partner_ids.filtered(
             lambda c: c.state == "dummy"
         )
-        if len(reservation.checkin_partner_ids) < reservation.adults:
+        if len(reservation.checkin_partner_ids) < (
+            reservation.adults + reservation.children
+        ):
             return super(PmsCheckinPartner, self).create(vals)
         if len(dummy_checkins) > 0:
             dummy_checkins[0].write(vals)
@@ -810,6 +814,8 @@ class PmsCheckinPartner(models.Model):
             "residence_city",
             "residence_country_id",
             "residence_state_id",
+            "document_country_id",
+            "document_type",
         ]
         return manual_fields
 
