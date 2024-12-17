@@ -1,6 +1,6 @@
 # Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import collections
+import collections.abc
 import logging
 import uuid
 
@@ -29,7 +29,7 @@ class Mapper(AbstractComponent):
         for_create = self.options.for_create
         result = {}
         for from_attr, to_attr in self.direct:
-            if isinstance(from_attr, collections.Callable):
+            if isinstance(from_attr, collections.abc.Callable):
                 attr_name = self._direct_source_field_name(from_attr)
             else:
                 attr_name = from_attr
@@ -69,7 +69,7 @@ class Mapper(AbstractComponent):
         fields = set(fields)
         result = {}
         for from_attr, to_attr in self.direct:
-            if isinstance(from_attr, collections.Callable):
+            if isinstance(from_attr, collections.abc.Callable):
                 # attr_name = self._direct_source_field_name(from_attr)
                 # TODO
                 raise NotImplementedError
@@ -155,7 +155,7 @@ class ExportMapper(AbstractComponent):
         :param to_attr: name of the target attribute
         :type to_attr: str
         """
-        if isinstance(from_attr, collections.Callable):
+        if isinstance(from_attr, collections.abc.Callable):
             return from_attr(self, record, to_attr)
 
         value = record[from_attr]
