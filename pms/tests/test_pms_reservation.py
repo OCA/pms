@@ -99,7 +99,7 @@ class TestPmsReservations(TestPms):
         )
         cls.agency1 = cls.env["res.partner"].create(
             {
-                "name": "partner1",
+                "firstname": "partner1",
                 "is_agency": True,
                 "invoice_to_agency": "always",
                 "default_commission": 15,
@@ -1666,7 +1666,7 @@ class TestPmsReservations(TestPms):
         # ARRANGE
         host = self.env["res.partner"].create(
             {
-                "name": "Miguel",
+                "firstname": "Miguel",
                 "mobile": "654667733",
                 "email": "miguel@example.com",
                 "birthdate_date": "1995-12-10",
@@ -1679,7 +1679,7 @@ class TestPmsReservations(TestPms):
                 "name": "30065089H",
                 "valid_from": datetime.date.today(),
                 "partner_id": host.id,
-                "document_country_id": self.env.ref("base.es").id,
+                "country_id": self.env.ref("base.es").id,
             }
         )
         r1 = self.env["pms.reservation"].create(
@@ -1822,7 +1822,7 @@ class TestPmsReservations(TestPms):
         )
         agency = self.env["res.partner"].create(
             {
-                "name": "partner1",
+                "firstname": "partner1",
                 "is_agency": True,
                 "sale_channel_id": sale_channel1.id,
                 "invoice_to_agency": "always",
@@ -1868,7 +1868,7 @@ class TestPmsReservations(TestPms):
         )
         agency = self.env["res.partner"].create(
             {
-                "name": "partner1",
+                "firstname": "partner1",
                 "is_agency": True,
                 "sale_channel_id": sale_channel1.id,
                 "apply_pricelist": True,
@@ -1925,7 +1925,7 @@ class TestPmsReservations(TestPms):
         """
         self.host1 = self.env["res.partner"].create(
             {
-                "name": "Miguel",
+                "firstname": "Miguel",
                 "mobile": "654667733",
                 "email": "miguel@example.com",
                 "birthdate_date": "1995-12-10",
@@ -1938,12 +1938,12 @@ class TestPmsReservations(TestPms):
                 "name": "30065000H",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.host1.id,
-                "document_country_id": self.env.ref("base.es").id,
+                "country_id": self.env.ref("base.es").id,
             }
         )
         self.host2 = self.env["res.partner"].create(
             {
-                "name": "Brais",
+                "firstname": "Brais",
                 "mobile": "654437733",
                 "email": "brais@example.com",
                 "birthdate_date": "1995-12-10",
@@ -1956,7 +1956,7 @@ class TestPmsReservations(TestPms):
                 "name": "30065089H",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.host2.id,
-                "document_country_id": self.env.ref("base.es").id,
+                "country_id": self.env.ref("base.es").id,
             }
         )
         self.reservation = self.env["pms.reservation"].create(
@@ -2002,7 +2002,7 @@ class TestPmsReservations(TestPms):
         """
         self.host1 = self.env["res.partner"].create(
             {
-                "name": "Host1",
+                "firstname": "Host1",
             }
         )
         with self.assertRaises(UserError):
@@ -2028,7 +2028,7 @@ class TestPmsReservations(TestPms):
         """
         self.host1 = self.env["res.partner"].create(
             {
-                "name": "Host1",
+                "firstname": "Host1",
             }
         )
         with self.assertRaises(ValidationError):
@@ -2054,7 +2054,7 @@ class TestPmsReservations(TestPms):
         """
         self.host1 = self.env["res.partner"].create(
             {
-                "name": "Host1",
+                "firstname": "Host1",
             }
         )
         with self.assertRaises(ValidationError):
@@ -2078,7 +2078,7 @@ class TestPmsReservations(TestPms):
         """
         self.host1 = self.env["res.partner"].create(
             {
-                "name": "Host1",
+                "firstname": "Host1",
             }
         )
         with self.assertRaises(ValidationError):
@@ -2111,7 +2111,7 @@ class TestPmsReservations(TestPms):
         )
         self.host1 = self.env["res.partner"].create(
             {
-                "name": "Host1",
+                "firstname": "Host1",
             }
         )
         self.room_type_double.pms_property_ids = [
@@ -2141,7 +2141,7 @@ class TestPmsReservations(TestPms):
         """
         self.host1 = self.env["res.partner"].create(
             {
-                "name": "Host1",
+                "firstname": "Host1",
             }
         )
         self.reservation = self.env["pms.reservation"].create(
@@ -2176,7 +2176,7 @@ class TestPmsReservations(TestPms):
         """
         self.host1 = self.env["res.partner"].create(
             {
-                "name": "Host1",
+                "firstname": "Host1",
             }
         )
         self.reservation = self.env["pms.reservation"].create(
@@ -2206,7 +2206,7 @@ class TestPmsReservations(TestPms):
         """
         self.host1 = self.env["res.partner"].create(
             {
-                "name": "Host1",
+                "firstname": "Host1",
             }
         )
         reservation = self.env["pms.reservation"].create(
@@ -2253,7 +2253,7 @@ class TestPmsReservations(TestPms):
         )
         self.host1 = self.env["res.partner"].create(
             {
-                "name": "Host1",
+                "firstname": "Host1",
             }
         )
 
@@ -2308,7 +2308,7 @@ class TestPmsReservations(TestPms):
         )
         self.host1 = self.env["res.partner"].create(
             {
-                "name": "Host1",
+                "firstname": "Host1",
             }
         )
 
@@ -2362,7 +2362,7 @@ class TestPmsReservations(TestPms):
         )
         self.host1 = self.env["res.partner"].create(
             {
-                "name": "Host1",
+                "firstname": "Host1",
             }
         )
 
@@ -2393,14 +2393,14 @@ class TestPmsReservations(TestPms):
         """
         self.host1 = self.env["res.partner"].create(
             {
-                "name": "Miguel",
+                "firstname": "Miguel",
                 "mobile": "654667733",
                 "email": "miguel@example.com",
             }
         )
         self.host2 = self.env["res.partner"].create(
             {
-                "name": "Brais",
+                "firstname": "Brais",
                 "mobile": "654437733",
                 "email": "brais@example.com",
             }
@@ -2454,14 +2454,14 @@ class TestPmsReservations(TestPms):
         """
         self.host1 = self.env["res.partner"].create(
             {
-                "name": "Miguel",
+                "firstname": "Miguel",
                 "mobile": "654667733",
                 "email": "miguel@example.com",
             }
         )
         self.host2 = self.env["res.partner"].create(
             {
-                "name": "Brais",
+                "firstname": "Brais",
                 "mobile": "654437733",
                 "email": "brais@example.com",
             }
@@ -2516,7 +2516,7 @@ class TestPmsReservations(TestPms):
         """
         host = self.env["res.partner"].create(
             {
-                "name": "Miguel",
+                "firstname": "Miguel",
                 "mobile": "654667733",
                 "email": "miguel@example.com",
             }
@@ -2590,7 +2590,7 @@ class TestPmsReservations(TestPms):
         )
         agency = self.env["res.partner"].create(
             {
-                "name": "partner1",
+                "firstname": "partner1",
                 "is_agency": True,
                 "sale_channel_id": sale_channel1.id,
             }
@@ -3056,7 +3056,7 @@ class TestPmsReservations(TestPms):
         # ARRANGE
         checkin = fields.date.today()
         checkout = fields.date.today() + datetime.timedelta(days=3)
-        self.partner1 = self.env["res.partner"].create({"name": "Ana"})
+        self.partner1 = self.env["res.partner"].create({"firstname": "Ana"})
         folio1 = self.env["pms.folio"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -3272,7 +3272,7 @@ class TestPmsReservations(TestPms):
         'staff'.
         """
         # ARRANGE AND ACT
-        self.partner1 = self.env["res.partner"].create({"name": "Ana"})
+        self.partner1 = self.env["res.partner"].create({"firstname": "Ana"})
         folio1 = self.env["pms.folio"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -3382,7 +3382,7 @@ class TestPmsReservations(TestPms):
         # ARRANGE
         partner = self.env["res.partner"].create(
             {
-                "name": "Enrique",
+                "firstname": "Enrique",
                 "mobile": "654667733",
                 "email": "enrique@example.com",
             }
@@ -3433,7 +3433,7 @@ class TestPmsReservations(TestPms):
         # ARRANGE
         partner = self.env["res.partner"].create(
             {
-                "name": "Simon",
+                "firstname": "Simon",
                 "mobile": "654667733",
                 "email": "simon@example.com",
             }
@@ -3482,7 +3482,7 @@ class TestPmsReservations(TestPms):
         # ARRANGE
         partner = self.env["res.partner"].create(
             {
-                "name": "Courtney Campbell",
+                "firstname": "Courtney Campbell",
                 "email": "courtney@example.com",
             }
         )
@@ -3520,7 +3520,7 @@ class TestPmsReservations(TestPms):
         # ARRANGE
         partner = self.env["res.partner"].create(
             {
-                "name": "Ledicia Sandoval",
+                "firstname": "Ledicia Sandoval",
                 "mobile": "615369231",
             }
         )
@@ -3560,7 +3560,7 @@ class TestPmsReservations(TestPms):
         # ARRANGE
         partner = self.env["res.partner"].create(
             {
-                "name": "Serafín Rivas",
+                "firstname": "Serafín Rivas",
                 "email": "serafin@example.com",
                 "mobile": "60595595",
             }
@@ -3610,14 +3610,14 @@ class TestPmsReservations(TestPms):
         # ARRANGE
         partner1 = self.env["res.partner"].create(
             {
-                "name": "Serafín Rivas",
+                "firstname": "Serafín Rivas",
                 "email": "serafin@example.com",
                 "mobile": "60595595",
             }
         )
         partner2 = self.env["res.partner"].create(
             {
-                "name": "Simon",
+                "firstname": "Simon",
                 "mobile": "654667733",
                 "email": "simon@example.com",
             }
