@@ -102,7 +102,7 @@ class TestWizardINE(TestPms):
         # Create partner 1 (italy)
         self.partner_1 = self.env["res.partner"].create(
             {
-                "name": "partner1",
+                "firstname": "partner1",
                 "country_id": self.country_italy.id,
                 "nationality_id": self.country_italy.id,
                 "residence_country_id": self.country_italy.id,
@@ -116,13 +116,14 @@ class TestWizardINE(TestPms):
                 "name": "55103354T",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.partner_1.id,
+                "country_id": self.country_italy.id,
             }
         )
 
         # Create partner 2 (russia)
         self.partner_2 = self.env["res.partner"].create(
             {
-                "name": "partner2",
+                "firstname": "partner2",
                 "country_id": self.country_russia.id,
                 "nationality_id": self.country_russia.id,
                 "residence_country_id": self.country_russia.id,
@@ -136,12 +137,13 @@ class TestWizardINE(TestPms):
                 "name": "45437298Q",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.partner_2.id,
+                "country_id": self.country_russia.id,
             }
         )
         # Create partner 3 (italy)
         self.partner_3 = self.env["res.partner"].create(
             {
-                "name": "partner3",
+                "firstname": "partner3",
                 "country_id": self.country_italy.id,
                 "nationality_id": self.country_italy.id,
                 "residence_country_id": self.country_italy.id,
@@ -155,12 +157,13 @@ class TestWizardINE(TestPms):
                 "name": "81534086Y",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.partner_3.id,
+                "country_id": self.country_italy.id,
             }
         )
         # Create partner 4 (italy)
         self.partner_4 = self.env["res.partner"].create(
             {
-                "name": "partner4",
+                "firstname": "partner4",
                 "country_id": self.country_italy.id,
                 "nationality_id": self.country_italy.id,
                 "residence_country_id": self.country_italy.id,
@@ -174,12 +177,13 @@ class TestWizardINE(TestPms):
                 "name": "00807643K",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.partner_4.id,
+                "country_id": self.country_italy.id,
             }
         )
         # Create partner 5 (afghanistan)
         self.partner_5 = self.env["res.partner"].create(
             {
-                "name": "partner5",
+                "firstname": "partner5",
                 "country_id": self.country_afghanistan.id,
                 "nationality_id": self.country_afghanistan.id,
                 "residence_country_id": self.country_afghanistan.id,
@@ -193,12 +197,13 @@ class TestWizardINE(TestPms):
                 "name": "54564399G",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.partner_5.id,
+                "country_id": self.country_afghanistan.id,
             }
         )
         # Create partner 6 (afghanistan)
         self.partner_6 = self.env["res.partner"].create(
             {
-                "name": "partner6",
+                "firstname": "partner6",
                 "country_id": self.country_afghanistan.id,
                 "nationality_id": self.country_afghanistan.id,
                 "residence_country_id": self.country_afghanistan.id,
@@ -212,12 +217,13 @@ class TestWizardINE(TestPms):
                 "name": "39854152M",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.partner_6.id,
+                "country_id": self.country_afghanistan.id,
             }
         )
         # Create partner 7 (afghanistan)
         self.partner_7 = self.env["res.partner"].create(
             {
-                "name": "partner7",
+                "firstname": "partner7",
                 "country_id": self.country_afghanistan.id,
                 "nationality_id": self.country_afghanistan.id,
                 "residence_country_id": self.country_afghanistan.id,
@@ -231,6 +237,7 @@ class TestWizardINE(TestPms):
                 "name": "39854152O",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.partner_7.id,
+                "country_id": self.country_afghanistan.id,
             }
         )
 
@@ -405,7 +412,7 @@ class TestWizardINE(TestPms):
         # Create 3 checkin partners from russia
         self.partner_russia_1 = self.env["res.partner"].create(
             {
-                "name": "partner1",
+                "firstname": "partner1",
                 "country_id": self.country_russia.id,
                 "nationality_id": self.country_russia.id,
                 "residence_country_id": self.country_russia.id,
@@ -418,7 +425,7 @@ class TestWizardINE(TestPms):
         )
         self.partner_russia_2 = self.env["res.partner"].create(
             {
-                "name": "partner2",
+                "firstname": "partner2",
                 "country_id": self.country_russia.id,
                 "nationality_id": self.country_russia.id,
                 "residence_country_id": self.country_russia.id,
@@ -431,7 +438,7 @@ class TestWizardINE(TestPms):
         )
         self.partner_russia_3 = self.env["res.partner"].create(
             {
-                "name": "partner3",
+                "firstname": "partner3",
                 "country_id": self.country_russia.id,
                 "nationality_id": self.country_russia.id,
                 "residence_country_id": self.country_russia.id,
@@ -449,6 +456,7 @@ class TestWizardINE(TestPms):
                 "name": "15103354T",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.partner_russia_1.id,
+                "country_id": self.country_russia.id,
             }
         )
         self.env["res.partner.id_number"].create(
@@ -457,6 +465,7 @@ class TestWizardINE(TestPms):
                 "name": "25103354T",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.partner_russia_2.id,
+                "country_id": self.country_russia.id,
             }
         )
         self.env["res.partner.id_number"].create(
@@ -465,6 +474,7 @@ class TestWizardINE(TestPms):
                 "name": "35103354T",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.partner_russia_3.id,
+                "country_id": self.country_russia.id,
             }
         )
 
