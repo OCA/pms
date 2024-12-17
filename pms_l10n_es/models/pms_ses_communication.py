@@ -92,7 +92,7 @@ class PmsSesCommunication(models.Model):
 
     def force_send_communication(self):
         for record in self:
-            self.env["traveller.report.wizard"].ses_send_communication(
+            self.env["traveller.report.wizard"].ses_send_communications(
                 entity=record.entity,
                 pms_ses_communication_id=record.id,
             )
