@@ -1679,6 +1679,7 @@ class TestPmsReservations(TestPms):
                 "name": "30065089H",
                 "valid_from": datetime.date.today(),
                 "partner_id": host.id,
+                "document_country_id": self.env.ref("base.es").id,
             }
         )
         r1 = self.env["pms.reservation"].create(
@@ -1937,6 +1938,7 @@ class TestPmsReservations(TestPms):
                 "name": "30065000H",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.host1.id,
+                "document_country_id": self.env.ref("base.es").id,
             }
         )
         self.host2 = self.env["res.partner"].create(
@@ -1954,6 +1956,7 @@ class TestPmsReservations(TestPms):
                 "name": "30065089H",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.host2.id,
+                "document_country_id": self.env.ref("base.es").id,
             }
         )
         self.reservation = self.env["pms.reservation"].create(
