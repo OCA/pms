@@ -100,6 +100,12 @@ msgid "Abuelo/a"
 msgstr ""
 
 #. module: pms_l10n_es
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#, python-format
+msgid "All reservation rooms must have the same institution property id."
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__batch_id
 msgid "Batch ID"
 msgstr ""
@@ -344,6 +350,7 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_property__institution__ertxaintxa
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_room__institution__ertxaintxa
 msgid "Ertxaintxa (soon)"
 msgstr "Ertxaintxa (próximamente)"
 
@@ -475,11 +482,13 @@ msgstr "Código de Estado INE"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__institution_lessor_id
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_room__institution_lessor_id
 msgid "Id provided by institution to send data from lessor."
 msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__institution_property_id
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_room__institution_property_id
 msgid "Id provided by institution to send data from property."
 msgstr "Id proporcionado por la institución para enviar datos de la propiedad."
 
@@ -495,37 +504,48 @@ msgid "Incomplete checkin data"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__institution_independent_account
+msgid "Independent account for institution (travel reports)"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__ine_category_id
 msgid "Ine Category"
 msgstr "Categoría Ine"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__institution
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__institution
 msgid "Institution"
 msgstr "Institución"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__institution_lessor_id
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__institution_lessor_id
 msgid "Institution lessor id"
 msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__institution_password
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__institution_password
 msgid "Institution password"
 msgstr "Contraseña de la institución"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__institution_property_id
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__institution_property_id
 msgid "Institution property id"
 msgstr "Id de propiedad de la institución"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__institution
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_room__institution
 msgid "Institution to send daily guest data."
 msgstr "Institución para el envío diario de datos de huéspedes."
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__institution_user
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__institution_user
 msgid "Institution user"
 msgstr "Usuario de la institución"
 
@@ -598,6 +618,7 @@ msgstr "Registro de envío de ficheros a las instituciones"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_property__institution__mossos
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_room__institution__mossos
 msgid "Mossos_d'esquadra (soon)"
 msgstr "Mossos_d'esquadra (próximamente)"
 
@@ -659,6 +680,7 @@ msgstr "Número ID de Socio"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__institution_password
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_room__institution_password
 msgid "Password provided by institution to send the data."
 msgstr "Contraseña proporcionada por la institución para enviar los datos."
 
@@ -785,7 +807,19 @@ msgid "Results"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__room_id
+#: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__room_id
+msgid "Room"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__room_id
+msgid "Room related to this communication"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_property__institution__ses
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_room__institution__ses
 msgid "SES"
 msgstr ""
 
@@ -814,6 +848,7 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__ses_url
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__ses_url
 msgid "SES URL"
 msgstr ""
 
@@ -1204,6 +1239,11 @@ msgid "This Week"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_room__institution_independent_account
+msgid "This room has an independent account"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "Times"
 msgstr ""
@@ -1228,6 +1268,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__ine_tourism_number
 msgid "Tourism number"
 msgstr "Número de turismo"
+
+#. module: pms_l10n_es
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.view_room_form_pms_l10n_es
+msgid "Travel record institution"
+msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.actions.act_window,name:pms_l10n_es.action_traveller_report
@@ -1276,6 +1321,7 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__ses_url
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_room__ses_url
 msgid "URL to send the data to SES"
 msgstr ""
 
@@ -1294,6 +1340,7 @@ msgstr "Utilizado para las estadísticas del INE."
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__institution_user
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_room__institution_user
 msgid "User provided by institution to send the data."
 msgstr "Usuario facilitado por la institución para enviar los datos."
 
