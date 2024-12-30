@@ -471,12 +471,6 @@ class PmsFolio(models.Model):
         compute="_compute_amount_all",
         tracking=True,
     )
-    max_reservation_priority = fields.Integer(
-        string="Max reservation priority on the entire folio",
-        help="Max reservation priority on the entire folio",
-        compute="_compute_max_reservation_priority",
-        store=False,
-    )
     invoice_status = fields.Selection(
         help="Invoice Status; it can be: invoiced, to invoice, to confirm, no",
         readonly=True,
@@ -1346,11 +1340,6 @@ class PmsFolio(models.Model):
         }
         return vals
 
-    def _compute_max_reservation_priority(self):
-        for record in self.filtered("reservation_ids"):
-            reservation_priors = record.reservation_ids.mapped("priority")
-            record.max_reservation_priority = max(reservation_priors)
-
     def _compute_checkin_partner_count(self):
         for record in self:
             if (
@@ -2179,7 +2168,7 @@ class PmsFolio(models.Model):
         # Review: force to autoreconcile payment with invoices already created
         pay.flush()
         for move in folio.move_ids:
-            move._autoreconcile_folio_payments()
+            move.sudo()._autoreconcile_folio_payments()
 
         # Automatic register payment in cash register
         # TODO: cash_register to avoid flow in the new api (delete it in the future)
