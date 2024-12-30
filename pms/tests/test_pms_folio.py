@@ -363,41 +363,6 @@ class TestPmsFolio(TestPms):
             reservation1.agency_id, folio1.partner_id, "Agency has to be the partner"
         )
 
-    # TestCases: Priority
-
-    def test_compute_folio_priority(self):
-        """
-        Check the priority of a folio based on its reservations
-        #TODO: Commented test waiting to redefine the priority calculation
-        """
-        # reservation1 = self.env["pms.reservation"].create(
-        #     {
-        #         "checkin": fields.date.today(),
-        #         "checkout": fields.date.today() + datetime.timedelta(days=1),
-        #         "room_type_id": self.room_type_double.id,
-        #         "partner_id": self.env.ref("base.res_partner_12").id,
-        #         "pms_property_id": self.property.id,
-        #     }
-        # )
-        # reservation1.allowed_checkin = False
-
-        # self.env["pms.reservation"].create(
-        #     {
-        #         "folio_id": reservation1.folio_id.id,
-        #         "checkin": fields.date.today(),
-        #         "checkout": fields.date.today() + datetime.timedelta(days=1),
-        #         "room_type_id": self.room_type_double.id,
-        #         "partner_id": self.env.ref("base.res_partner_12").id,
-        #         "pms_property_id": self.property.id,
-        #     }
-        # )
-
-        # self.assertEqual(
-        #     reservation1.priority,
-        #     reservation1.folio_id.max_reservation_priority,
-        #     "The max. reservation priority on the whole folio is incorrect",
-        # )
-
     # TestCases: Payments
     @freeze_time("2000-02-02")
     def test_full_pay_folio(self):
