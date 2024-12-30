@@ -37,11 +37,6 @@ class PmsReservation(models.Model):
         help="Techinal field to get reservation name",
         readonly=True,
     )
-    priority = fields.Integer(
-        help="Priority of a reservation",
-        store="True",
-        compute="_compute_priority",
-    )
     preferred_room_id = fields.Many2one(
         string="Room",
         help="It's the preferred room assigned to reservation, "
@@ -740,72 +735,6 @@ class PmsReservation(models.Model):
     def _compute_check_adults(self):
         for record in self:
             record.check_adults = True
-
-    @api.depends(
-        "checkin",
-        "checkout",
-        "state",
-        "folio_payment_state",
-        "folio_pending_amount",
-        "to_assign",
-    )
-    def _compute_priority(self):
-        # TODO: Notifications priority
-        for record in self:
-            if record.to_assign or record.state in (
-                "arrival_delayed",
-                "departure_delayed",
-            ):
-                record.priority = 1
-            elif record.state == "cancel":
-                record.priority = record.cancel_priority()
-            elif record.state == "onboard":
-                record.priority = record.onboard_priority()
-            elif record.state in ("draf", "confirm"):
-                record.priority = record.reservations_future_priority()
-            elif record.state == "done":
-                record.priority = record.reservations_past_priority()
-
-    def cancel_priority(self):
-        self.ensure_one()
-        if self.folio_pending_amount > 0:
-            return 2
-        elif self.checkout >= fields.date.today():
-            return 100
-        else:
-            return 1000 * (fields.date.today() - self.checkout).days
-
-    def onboard_priority(self):
-        self.ensure_one()
-        days_for_checkout = (self.checkout - fields.date.today()).days
-        if self.folio_pending_amount > 0:
-            return days_for_checkout
-        else:
-            return 3 * days_for_checkout
-
-    def reservations_future_priority(self):
-        self.ensure_one()
-        days_for_checkin = (self.checkin - fields.date.today()).days
-        if days_for_checkin < 3:
-            return 2 * days_for_checkin
-        elif days_for_checkin < 20:
-            return 3 * days_for_checkin
-        else:
-            return 4 * days_for_checkin
-
-    def reservations_past_priority(self):
-        self.ensure_one()
-        if self.folio_pending_amount > 0:
-            return 3
-        days_from_checkout = (fields.date.today() - self.checkout).days
-        if days_from_checkout <= 1:
-            return 6
-        elif days_from_checkout < 15:
-            return 5 * days_from_checkout
-        elif days_from_checkout <= 90:
-            return 10 * days_from_checkout
-        elif days_from_checkout > 90:
-            return 100 * days_from_checkout
 
     @api.depends("pricelist_id", "room_type_id")
     def _compute_board_service_room_id(self):
@@ -2305,12 +2234,6 @@ class PmsReservation(models.Model):
             reservation.message_post(
                 subject=_("No Checkins!"), subtype="mt_comment", body=msg
             )
-        return True
-
-    @api.model
-    def update_daily_priority_reservation(self):
-        reservations = self.env["pms.reservation"].search([("priority", "<", 1000)])
-        reservations._compute_priority()
         return True
 
     def action_confirm(self):
