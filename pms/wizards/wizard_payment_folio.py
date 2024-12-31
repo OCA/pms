@@ -46,7 +46,11 @@ class WizardPaymentFolio(models.TransientModel):
         self.ensure_one()
         journal_ids = False
         if self.folio_id:
-            journal_ids = self.folio_id.pms_property_id._get_payment_methods().ids
+            journal_ids = self.folio_id.pms_property_id._get_payment_methods(
+                room_ids=self.folio_id.mapped(
+                    "reservation_ids.reservation_line_ids.room_id.id"
+                ),
+            ).ids
         self.allowed_method_ids = journal_ids
 
     def button_payment(self):
