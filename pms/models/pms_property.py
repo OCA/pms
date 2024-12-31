@@ -569,11 +569,13 @@ class PmsProperty(models.Model):
             dt = dt.replace(tzinfo=None)
         return dt
 
-    def _get_payment_methods(self, automatic_included=False):
+    def _get_payment_methods(self, automatic_included=False, room_ids=False):
         # We use automatic_included to True to see absolutely
         # all the journals with associated payments, if it is
         # false, we will only see those journals that can be used
         # to pay manually
+        # room_ids [list] is used to filter the payment methods
+        # by rooms (usefull in apartments, villas, etc)
         self.ensure_one()
         payment_methods = self.env["account.journal"].search(
             [
@@ -589,6 +591,11 @@ class PmsProperty(models.Model):
                 ("company_id", "=", False),
             ]
         )
+        if room_ids:
+            payment_methods = payment_methods.filtered(
+                lambda p: not p.room_filter_ids
+                or any([room_id in p.room_filter_ids.ids for room_id in room_ids])
+            )
         if not automatic_included:
             payment_methods = payment_methods.filtered(lambda p: p.allowed_pms_payments)
         return payment_methods
@@ -891,9 +898,10 @@ class PmsProperty(models.Model):
                 pms_property.journal_simplified_invoice_id.is_simplified_invoice = True
 
     @api.model
-    def _get_folio_default_journal(self, partner_invoice_id):
+    def _get_folio_default_journal(self, partner_invoice_id, room_ids=False):
         self.ensure_one()
         partner = self.env["res.partner"].browse(partner_invoice_id)
+        # For simplified invoices
         if (
             not partner
             or partner.id == self.env.ref("pms.various_pms_partner").id
@@ -902,8 +910,56 @@ class PmsProperty(models.Model):
                 and self._context.get("autoinvoice")
             )
         ):
-            return self.journal_simplified_invoice_id
-        return self.journal_normal_invoice_id
+            if self.journal_simplified_invoice_id:
+                return self.journal_simplified_invoice_id
+            else:
+                journals = self.env["account.journal"].search(
+                    [
+                        ("type", "=", "sale"),
+                        ("is_simplified_invoice", "=", True),
+                        ("company_id", "=", self.company_id.id),
+                        "|",
+                        ("pms_property_ids", "in", self.id),
+                        ("pms_property_ids", "=", False),
+                    ]
+                )
+                if journals:
+                    if room_ids:
+                        journals = journals.filtered(
+                            lambda j: not j.room_filter_ids
+                            or any(
+                                [
+                                    room_id in j.room_filter_ids.ids
+                                    for room_id in room_ids
+                                ]
+                            )
+                        )
+                    return journals[0]
+                return False
+        # For normal invoices
+        if self.journal_normal_invoice_id:
+            return self.journal_normal_invoice_id
+        else:
+            journals = self.env["account.journal"].search(
+                [
+                    ("type", "=", "sale"),
+                    ("is_simplified_invoice", "=", False),
+                    ("company_id", "=", self.company_id.id),
+                    "|",
+                    ("pms_property_ids", "in", self.id),
+                    ("pms_property_ids", "=", False),
+                ]
+            )
+            if journals:
+                if room_ids:
+                    journals = journals.filtered(
+                        lambda j: not j.room_filter_ids
+                        or any(
+                            [room_id in j.room_filter_ids.ids for room_id in room_ids]
+                        )
+                    )
+                return journals[0]
+            return False
 
     def _get_adr(self, start_date, end_date, domain=False):
         """

@@ -2082,7 +2082,10 @@ class PmsFolio(models.Model):
         (making sure to call super() to establish a clean extension chain).
         """
         self.ensure_one()
-        journal = self.pms_property_id._get_folio_default_journal(partner_invoice_id)
+        journal = self.pms_property_id._get_folio_default_journal(
+            partner_invoice_id=partner_invoice_id,
+            room_ids=self.reservation_ids.mapped("reservation_line_ids.room_id.id"),
+        )
         if not journal:
             journal = (
                 self.env["account.move"]

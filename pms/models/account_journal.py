@@ -32,6 +32,24 @@ class AccountJournal(models.Model):
         readonly=False,
         store=True,
     )
+    allowed_room_ids = fields.Many2many(
+        string="Rooms Filter allowed",
+        comodel_name="pms.room",
+        relation="account_journal_allow_room_rel",
+        column1="account_journal_id",
+        column2="room_id",
+        help="Room to filter the room in the reservation",
+        compute="_compute_allowed_room_ids",
+    )
+    room_filter_ids = fields.Many2many(
+        string="Apply Rooms",
+        comodel_name="pms.room",
+        relation="account_journal_room_rel",
+        column1="account_journal_id",
+        column2="room_id",
+        help="Room to filter the room types in the reservation",
+        domain="[('id', 'in', allowed_room_ids)]",
+    )
 
     @api.depends("pms_property_ids", "pms_property_ids.journal_simplified_invoice_id")
     def _compute_is_simplified_invoice(self):
@@ -41,6 +59,18 @@ class AccountJournal(models.Model):
                 "journal_simplified_invoice_id.id"
             ):
                 journal.is_simplified_invoice = True
+
+    @api.depends("pms_property_ids")
+    def _compute_allowed_room_ids(self):
+        for journal in self:
+            if not journal.pms_property_ids:
+                journal.allowed_room_ids = self.env["pms.room"].search([]).ids
+            else:
+                journal.allowed_room_ids = (
+                    self.env["pms.room"]
+                    .search([("pms_property_id", "in", journal.pms_property_ids.ids)])
+                    .ids
+                )
 
     @api.constrains("is_simplified_invoice")
     def _check_pms_properties_simplified_invoice(self):
