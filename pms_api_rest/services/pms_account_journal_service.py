@@ -32,7 +32,8 @@ class PmsAccountJournalService(Component):
             pass
         else:
             for payment_method in pms_property._get_payment_methods(
-                automatic_included=True
+                automatic_included=True,
+                room_ids=account_journal_search_param.roomIds or False,
             ):
                 # REVIEW: avoid send to app generic company journals
                 if not payment_method.pms_property_ids:

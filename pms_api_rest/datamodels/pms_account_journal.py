@@ -6,6 +6,7 @@ from odoo.addons.datamodel.core import Datamodel
 class PmsAccountJournalSearchParam(Datamodel):
     _name = "pms.account.journal.search.param"
     pmsPropertyId = fields.Integer(required=False, allow_none=False)
+    roomIds = fields.List(fields.Integer(), required=False, allow_none=True)
 
 
 class PmsAccountJournalInfo(Datamodel):
