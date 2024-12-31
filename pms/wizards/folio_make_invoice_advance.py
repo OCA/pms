@@ -160,7 +160,10 @@ class FolioAdvancePaymentInv(models.TransientModel):
             "ref": order.name,
             "move_type": "out_invoice",
             "journal_id": order.pms_property_id._get_folio_default_journal(
-                partner_id
+                partner_invoice_id=partner_id,
+                room_ids=order.mapped(
+                    "reservation_ids.reservation_line_ids.room_id.id"
+                ),
             ).id,
             "invoice_origin": order.name,
             "invoice_user_id": order.user_id.id,
