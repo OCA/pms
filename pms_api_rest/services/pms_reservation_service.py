@@ -28,6 +28,28 @@ def is_adult(birthdate):
     return age >= 18
 
 
+def find_opposite_relationship(relationship_code):
+    inverse_relationships = {
+        "PM": "HJ",  # Padre o Madre -> Hijo
+        "TU": "OT",  # Tutor -> Otro (sin inverso claro)
+        "TI": "SB",  # Tío -> Sobrino
+        "HR": "HR",  # Hermano -> Hermano
+        "AB": "NI",  # Abuelo -> Nieto
+        "BA": "BN",  # Bisabuelo -> Bisnieto
+        "CD": "CD",  # Cuñado -> Cuñado
+        "CY": "CY",  # Cónyuge -> Cónyuge
+        "SB": "TI",  # Sobrino -> Tío
+        "SG": "YN",  # Suegro -> Yerno o Nuera
+        "YN": "SG",  # Yerno o Nuera -> Suegro
+        "OT": "OT",  # Otro -> Tutor (arbitrario)
+    }
+    # Buscar la relación inversa
+    related_code = inverse_relationships.get(
+        relationship_code, "OT"
+    )  # Devuelve 'OT' si el código no es válido
+    return related_code
+
+
 def remove_html_tags(text):
     pattern = re.compile(r"<.*?>")
     text_clean = re.sub(pattern, "", text)
@@ -572,9 +594,11 @@ class PmsReservationService(Component):
                 )
                 for line in service_info.serviceLines
             ]
-        service = self.env["pms.service"].with_context(
-            skip_compute_service_line_ids=skip_compute_service_line_ids
-        ).create(vals)
+        service = (
+            self.env["pms.service"]
+            .with_context(skip_compute_service_line_ids=skip_compute_service_line_ids)
+            .create(vals)
+        )
 
         return service.id
 
@@ -610,7 +634,9 @@ class PmsReservationService(Component):
                     PmsCheckinPartnerInfo(
                         id=checkin_partner.id,
                         reservationId=checkin_partner.reservation_id.id,
-                        partnerId=checkin_partner.partner_id.id if checkin_partner.partner_id else None,
+                        partnerId=checkin_partner.partner_id.id
+                        if checkin_partner.partner_id
+                        else None,
                         name=checkin_partner.name if checkin_partner.name else "",
                         firstname=checkin_partner.firstname
                         if checkin_partner.firstname
@@ -716,9 +742,22 @@ class PmsReservationService(Component):
                 checkin_partner.partner_id.id if checkin_partner.partner_id else False,
             )
         )
+        if pms_checkin_partner_info.responsibleCheckinPartnerId:
+            responsible_checkin_partner_record = (
+                self.env["pms.checkin.partner"]
+                .search(
+                    [("id", "=", pms_checkin_partner_info.responsibleCheckinPartnerId)]
+                )
+            )
+            if responsible_checkin_partner_record:
+                responsible_checkin_partner_record.ses_partners_relationship = (
+                    pms_checkin_partner_info.relationship
+                )
+
         # if not partner_id we need to force compute to create partner
         if not checkin_partner.partner_id:
             checkin_partner._compute_partner_id()
+
         return checkin_partner.id
 
     @restapi.method(
@@ -779,7 +818,9 @@ class PmsReservationService(Component):
                         name=reservation.name,
                         folioId=reservation.folio_id.id,
                         folioSequence=reservation.folio_sequence,
-                        partnerId=reservation.partner_id.id if reservation.partner_id else None,
+                        partnerId=reservation.partner_id.id
+                        if reservation.partner_id
+                        else None,
                         partnerName=reservation.partner_name or None,
                         boardServiceId=reservation.board_service_room_id.id
                         if reservation.board_service_room_id
@@ -1017,10 +1058,20 @@ class PmsReservationService(Component):
             vals.update({"signature": base64.b64encode(signature_image)})
         else:
             vals.update({"signature": False})
-        if pms_checkin_partner_info.relationship != '':
-            vals.update({"ses_partners_relationship": pms_checkin_partner_info.relationship})
+        if pms_checkin_partner_info.relationship != "":
+            vals.update(
+                {
+                    "ses_partners_relationship": find_opposite_relationship(
+                        pms_checkin_partner_info.relationship,
+                    )
+                }
+            )
         if pms_checkin_partner_info.responsibleCheckinPartnerId:
-            vals.update({"ses_related_checkin_partner_id": pms_checkin_partner_info.responsibleCheckinPartnerId})
+            vals.update(
+                {
+                    "ses_related_checkin_partner_id": pms_checkin_partner_info.responsibleCheckinPartnerId
+                }
+            )
         return vals
 
     @restapi.method(
@@ -1774,6 +1825,12 @@ class PmsReservationService(Component):
             pms_checkin_partner_info.documentLegalRepresentative
             and pms_checkin_partner_info.relationship
         ):
+            folio_id = (
+                self.env["pms.reservation"]
+                .sudo()
+                .browse(pms_checkin_partner_info.reservationId)
+                .folio_id.id
+            )
             record_checkin_partner_legal_representative = (
                 self.env["pms.checkin.partner"]
                 .sudo()
@@ -1786,16 +1843,26 @@ class PmsReservationService(Component):
                         ),
                         (
                             "reservation_id",
+                            "folio_id",
                             "=",
                             pms_checkin_partner_info.reservationId,
-                        )
-                    ]
+                            folio_id,
+                        ),
+                    ],
+                    limit=1,
                 )
             )
             if record_checkin_partner_legal_representative:
                 checkin_partner_record.write(
                     {
                         "ses_related_checkin_partner_id": record_checkin_partner_legal_representative.id,
+                        "ses_partners_relationship": find_opposite_relationship(
+                            pms_checkin_partner_info.relationship
+                        ),
+                    }
+                )
+                record_checkin_partner_legal_representative.write(
+                    {
                         "ses_partners_relationship": pms_checkin_partner_info.relationship,
                     }
                 )
