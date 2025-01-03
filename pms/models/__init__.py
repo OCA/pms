@@ -49,7 +49,8 @@ from . import payment_transaction
 from . import pms_team_member
 from . import ir_pms_property
 from . import payment_acquirer
-from . import account_analytic_line
+
+# from . import account_analytic_line
 from . import res_partner_category
 from . import res_country
 from . import res_partner_id_category
