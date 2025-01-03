@@ -12,8 +12,9 @@ from odoo.tools.safe_eval import safe_eval
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
-from odoo.addons.pms_api_rest.pms_api_rest_utils import url_image_pms_api_rest
 from odoo.addons.portal.controllers.portal import CustomerPortal
+
+from . import url_image_pms_api_rest
 
 
 def is_adult(birthdate):
@@ -26,6 +27,28 @@ def is_adult(birthdate):
         - ((today.month, today.day) < (birthdate.month, birthdate.day))
     )
     return age >= 18
+
+
+def find_opposite_relationship(relationship_code):
+    inverse_relationships = {
+        "PM": "HJ",  # Padre o Madre -> Hijo
+        "TU": "OT",  # Tutor -> Otro (sin inverso claro)
+        "TI": "SB",  # Tío -> Sobrino
+        "HR": "HR",  # Hermano -> Hermano
+        "AB": "NI",  # Abuelo -> Nieto
+        "BA": "BN",  # Bisabuelo -> Bisnieto
+        "CD": "CD",  # Cuñado -> Cuñado
+        "CY": "CY",  # Cónyuge -> Cónyuge
+        "SB": "TI",  # Sobrino -> Tío
+        "SG": "YN",  # Suegro -> Yerno o Nuera
+        "YN": "SG",  # Yerno o Nuera -> Suegro
+        "OT": "OT",  # Otro -> Tutor (arbitrario)
+    }
+    # Buscar la relación inversa
+    related_code = inverse_relationships.get(
+        relationship_code, "OT"
+    )  # Devuelve 'OT' si el código no es válido
+    return related_code
 
 
 def remove_html_tags(text):
@@ -612,7 +635,9 @@ class PmsReservationService(Component):
                     PmsCheckinPartnerInfo(
                         id=checkin_partner.id,
                         reservationId=checkin_partner.reservation_id.id,
-                        partnerId=checkin_partner.partner_id.id if checkin_partner.partner_id else None,
+                        partnerId=checkin_partner.partner_id.id
+                        if checkin_partner.partner_id
+                        else None,
                         name=checkin_partner.name if checkin_partner.name else "",
                         firstname=checkin_partner.firstname
                         if checkin_partner.firstname
@@ -718,9 +743,19 @@ class PmsReservationService(Component):
                 checkin_partner.partner_id.id if checkin_partner.partner_id else False,
             )
         )
+        if pms_checkin_partner_info.responsibleCheckinPartnerId:
+            responsible_checkin_partner_record = self.env["pms.checkin.partner"].search(
+                [("id", "=", pms_checkin_partner_info.responsibleCheckinPartnerId)]
+            )
+            if responsible_checkin_partner_record:
+                responsible_checkin_partner_record.ses_partners_relationship = (
+                    pms_checkin_partner_info.relationship
+                )
+
         # if not partner_id we need to force compute to create partner
         if not checkin_partner.partner_id:
             checkin_partner._compute_partner_id()
+
         return checkin_partner.id
 
     @restapi.method(
@@ -781,7 +816,9 @@ class PmsReservationService(Component):
                         name=reservation.name,
                         folioId=reservation.folio_id.id,
                         folioSequence=reservation.folio_sequence,
-                        partnerId=reservation.partner_id.id if reservation.partner_id else None,
+                        partnerId=reservation.partner_id.id
+                        if reservation.partner_id
+                        else None,
                         partnerName=reservation.partner_name or None,
                         boardServiceId=reservation.board_service_room_id.id
                         if reservation.board_service_room_id
@@ -1021,7 +1058,11 @@ class PmsReservationService(Component):
             vals.update({"signature": False})
         if pms_checkin_partner_info.relationship != "":
             vals.update(
-                {"ses_partners_relationship": pms_checkin_partner_info.relationship}
+                {
+                    "ses_partners_relationship": find_opposite_relationship(
+                        pms_checkin_partner_info.relationship,
+                    )
+                }
             )
         if pms_checkin_partner_info.responsibleCheckinPartnerId:
             vals.update(
@@ -1204,6 +1245,7 @@ class PmsReservationService(Component):
         output_param=Datamodel("pms.wizard.state.info", is_list=False),
         auth="jwt_api_pms",
     )
+    # flake8: noqa: B950
     def wizard_states(self, reservation_id):
         reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
         today = datetime.now().strftime("%Y-%m-%d")
@@ -1246,8 +1288,8 @@ class PmsReservationService(Component):
                 "]",
                 "filtered": "lambda r: r.count_alternative_free_rooms <= 0",
                 "text": f"Parece que a {reservation.partner_name} le ha tocado dormir en habitaciones diferentes "
-                f" pero no hay ninguna habitación disponible para asignarle, puedes probar a mover otras reservas "
-                f" para poder establecerle una única habitación.  ",
+                f"pero no hay ninguna habitación disponible para asignarle, puedes probar a mover otras reservas "
+                f"para poder establecerle una única habitación.  ",
                 "priority": 200,
             },
             {
@@ -1333,7 +1375,7 @@ class PmsReservationService(Component):
                 "('pending_checkin_data', '>', 0),"
                 "('folio_payment_state', 'in', ['not_paid', 'partial'])"
                 "]",
-                "text": "Esta reserva está pendiente de cobro y de que los huéspedes "
+                "text": f"Esta reserva está pendiente de cobro y de que los huéspedes "
                 " registren sus datos: puedes enviarles un recordatorio desde aquí",
                 "priority": 600,
             },
@@ -1369,8 +1411,8 @@ class PmsReservationService(Component):
                 "('folio_payment_state', 'in', ['not_paid', 'partial']),"
                 "]",
                 "filtered": "lambda r: r.service_ids.filtered(lambda s: s.is_cancel_penalty and s.price_total > 0)",
-                "text": f"La reserva de {reservation.partner_name} ha sido cancelada con una penalización de {reservation.service_ids.filtered(lambda s: s.is_cancel_penalty).price_total}€,"
-                " puedes eliminar la penalización en caso de que no se vaya a cobrar.",
+                "text": f"La reserva de {reservation.partner_name} ha sido cancelada con una penalización de {reservation.service_ids.filtered(lambda s: s.is_cancel_penalty).price_total}€, "
+                "puedes eliminar la penalización en caso de que no se vaya a cobrar.",
                 "priority": 700,
             },
             {
@@ -1379,7 +1421,8 @@ class PmsReservationService(Component):
                 "domain": "[('state', 'in', ['onboard', 'departure_delayed']),"
                 "('folio_payment_state', 'in', ['not_paid', 'partial'])"
                 "]",
-                "text": f"En esta reserva tenemos un pago pendiente de {reservation.folio_pending_amount}. Puedes registrar el pago desde aquí.",
+                "text": f"En esta reserva tenemos un pago pendiente de {reservation.folio_pending_amount}. "
+                "Puedes registrar el pago desde aquí.",
                 "priority": 800,
             },
             {
@@ -1388,8 +1431,8 @@ class PmsReservationService(Component):
                 "domain": "[('state', '=', 'done'),"
                 "('folio_payment_state', 'in', ['not_paid', 'partial'])"
                 "]",
-                "text": f"Esta reserva ha quedado con un cargo pendiente de {reservation.folio_pending_amount}€."
-                " Cuando gestiones el cobro puedes registrarlo desde aquí.",
+                "text": f"Esta reserva ha quedado con un cargo pendiente de {reservation.folio_pending_amount}€. "
+                "Cuando gestiones el cobro puedes registrarlo desde aquí.",
                 "priority": 900,
             },
             {
@@ -1463,8 +1506,8 @@ class PmsReservationService(Component):
                 reservation_id,
                 access_token=token,
             )
-        except AccessError:
-            raise MissingError(_("Reservation not found"))
+        except AccessError as err:
+            raise MissingError(_("Reservation not found")) from err
 
         reservation_checkin_partner_names = []
         reservation_checkin_partners = []
@@ -1578,8 +1621,8 @@ class PmsReservationService(Component):
                 reservation_record.id,
                 access_token=token,
             )
-        except AccessError:
-            raise MissingError(_("Reservation not found"))
+        except AccessError as err:
+            raise MissingError(_("Reservation not found")) from err
 
         doc_type = (
             self.env["res.partner.id_category"]
@@ -1678,8 +1721,8 @@ class PmsReservationService(Component):
                 reservation_record.id,
                 access_token=token,
             )
-        except AccessError:
-            raise MissingError(_("Reservation not found"))
+        except AccessError as err:
+            raise MissingError(_("Reservation not found")) from err
 
         partner_record = False
         # search checkin partner by id
@@ -1782,6 +1825,12 @@ class PmsReservationService(Component):
             pms_checkin_partner_info.documentLegalRepresentative
             and pms_checkin_partner_info.relationship
         ):
+            folio_id = (
+                self.env["pms.reservation"]
+                .sudo()
+                .browse(pms_checkin_partner_info.reservationId)
+                .folio_id.id
+            )
             record_checkin_partner_legal_representative = (
                 self.env["pms.checkin.partner"]
                 .sudo()
@@ -1794,16 +1843,26 @@ class PmsReservationService(Component):
                         ),
                         (
                             "reservation_id",
+                            "folio_id",
                             "=",
                             pms_checkin_partner_info.reservationId,
-                        )
-                    ]
+                            folio_id,
+                        ),
+                    ],
+                    limit=1,
                 )
             )
             if record_checkin_partner_legal_representative:
                 checkin_partner_record.write(
                     {
                         "ses_related_checkin_partner_id": record_checkin_partner_legal_representative.id,
+                        "ses_partners_relationship": find_opposite_relationship(
+                            pms_checkin_partner_info.relationship
+                        ),
+                    }
+                )
+                record_checkin_partner_legal_representative.write(
+                    {
                         "ses_partners_relationship": pms_checkin_partner_info.relationship,
                     }
                 )
@@ -1836,8 +1895,8 @@ class PmsReservationService(Component):
                 reservation_record.id,
                 access_token=token,
             )
-        except AccessError:
-            raise MissingError(_("Folio not found"))
+        except AccessError as err:
+            raise MissingError(_("Folio not found")) from err
 
         if checkin_partner_search_params.documentNumber:
             adults = reservation_record.folio_id.checkin_partner_ids.filtered(
