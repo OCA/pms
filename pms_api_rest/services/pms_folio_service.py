@@ -942,6 +942,11 @@ class PmsFolioService(Component):
                     )._compute_board_service_room_id()
                 if reservation.stateCode == "cancel":
                     reservation_record.action_cancel()
+            # Apply coupon discount
+            for reservation in folio.reservation_ids:
+                service_discount_cmds = self.get_autoinclude_coupon_by_code(reservation)
+                if len(service_discount_cmds) > 0:
+                    reservation.write({"service_ids": service_discount_cmds})
             pms_folio_info.transactions = self.normalize_payments_structure(
                 pms_folio_info, folio
             )
@@ -2696,3 +2701,50 @@ class PmsFolioService(Component):
             ),
             reservations=reservations,
         )
+
+    def get_autoinclude_coupon_by_code(self, reservation):
+        """
+        This method is used to get the autoinclude coupon by code
+        """
+        promos = self.env["coupon.program"].search(
+            [
+                ("company_id", "=", reservation.company_id.id),
+            ]
+        )
+        cmds = []
+        for promo in promos.filtered(
+            lambda p: p.promo_code and p.promo_code in reservation.partner_requests
+        ):
+            product = promo.discount_line_product_id
+            if promo.discount_type == "fixed_amount":
+                price = -promo.discount_fixed_amount
+            elif promo.discount_type == "percentage":
+                price = (
+                    -promo.discount_percentage
+                    * reservation.price_room_services_set
+                    / 100
+                )
+            if not product or price == 0:
+                continue
+            cmds.append(
+                (
+                    0,
+                    False,
+                    {
+                        "product_id": product.id,
+                        "reservation_id": reservation.id,
+                        "service_line_ids": [
+                            (
+                                0,
+                                False,
+                                {
+                                    "date": reservation.checkin,
+                                    "price_unit": price,
+                                    "day_qty": 1,
+                                },
+                            )
+                        ],
+                    },
+                )
+            )
+        return cmds
