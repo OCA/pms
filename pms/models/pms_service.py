@@ -232,12 +232,24 @@ class PmsService(models.Model):
             origin = record.reservation_id if record.reservation_id else record.folio_id
             record.pricelist_id = origin.pricelist_id
 
-    @api.depends("product_id")
+    @api.depends("product_id", "folio_id.partner_id", "reservation_id.partner_id")
     def _compute_tax_ids(self):
         for service in self:
-            service.tax_ids = service.product_id.taxes_id.filtered(
-                lambda r: not service.company_id or r.company_id == service.company_id
+            partner = (
+                service.reservation_id.partner_id
+                if service.reservation_id
+                else service.folio_id.partner_id
             )
+            if (
+                service.folio_id.partner_id == service.company_id.partner_id
+                and service.company_id.self_billed_tax_ids
+            ):
+                service.tax_ids = service.company_id.self_billed_tax_ids
+            else:
+                service.tax_ids = service.product_id.taxes_id.filtered(
+                    lambda r: not service.company_id
+                    or r.company_id == service.company_id
+                )
 
     @api.depends("service_line_ids", "service_line_ids.day_qty")
     def _compute_product_qty(self):
