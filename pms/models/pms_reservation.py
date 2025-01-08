@@ -1459,16 +1459,22 @@ class PmsReservation(models.Model):
                 record.checkin_partner_count = 0
                 record.checkin_partner_pending_count = 0
 
-    @api.depends("room_type_id")
+    @api.depends("room_type_id", "partner_id")
     def _compute_tax_ids(self):
         for record in self:
             record = record.with_company(record.company_id)
-            product = self.env["product.product"].browse(
-                record.room_type_id.product_id.id
-            )
-            record.tax_ids = product.taxes_id.filtered(
-                lambda t: t.company_id == record.env.company
-            )
+            if (
+                record.partner_id == record.company_id.partner_id
+                and record.company_id.self_billed_tax_ids
+            ):
+                record.tax_ids = record.company_id.self_billed_tax_ids
+            else:
+                product = self.env["product.product"].browse(
+                    record.room_type_id.product_id.id
+                )
+                record.tax_ids = product.taxes_id.filtered(
+                    lambda t: t.company_id == record.env.company
+                )
 
     @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
     def _compute_rooms(self):

@@ -100,7 +100,6 @@ class PmsProperty(models.Model):
         index=True,
         comodel_name="ir.sequence",
     )
-
     tz = fields.Selection(
         string="Timezone",
         help="This field is used to determine de timezone of the property.",
@@ -108,7 +107,6 @@ class PmsProperty(models.Model):
         default=lambda self: self.env.user.tz or "UTC",
         selection=_tz_get,
     )
-
     cardex_warning = fields.Text(
         string="Warning in Cardex",
         default="Time to access rooms: 14: 00h. "
@@ -132,43 +130,32 @@ class PmsProperty(models.Model):
         "amenity_ids and / or pricelist_id) check the availability for the hotel",
         compute="_compute_availability",
     )
-
-    mail_information = fields.Html(
-        string="Mail Information", help="Additional information of the mail"
-    )
-
-    privacy_policy = fields.Html(string="Privacy Policy", help="Mail privacy policy ")
-
+    mail_information = fields.Html(help="Additional information of the mail")
+    privacy_policy = fields.Html(help="Mail privacy policy ")
     property_confirmed_template = fields.Many2one(
         string="Confirmation Email",
         help="Confirmation email template",
         comodel_name="mail.template",
     )
-
     property_modified_template = fields.Many2one(
         string="Modification Email",
         help="Modification email template",
         comodel_name="mail.template",
     )
-
     property_exit_template = fields.Many2one(
         string="Exit Email",
         comodel_name="mail.template",
     )
-
     property_canceled_template = fields.Many2one(
         string="Cancellation Email",
         help="Cancellation email template",
         comodel_name="mail.template",
     )
-
     is_confirmed_auto_mail = fields.Boolean(string="Auto Send Confirmation Mail")
     is_modified_auto_mail = fields.Boolean(string="Auto Send Modification Mail")
     is_exit_auto_mail = fields.Boolean(string="Auto Send Exit Mail")
     is_canceled_auto_mail = fields.Boolean(string="Auto Send Cancellation Mail")
-
     default_invoicing_policy = fields.Selection(
-        string="Default Invoicing Policy",
         selection=[
             ("manual", "Manual"),
             ("checkout", "Checkout"),
@@ -176,17 +163,13 @@ class PmsProperty(models.Model):
         ],
         default="manual",
     )
-
     margin_days_autoinvoice = fields.Integer(
         string="Margin Days",
         help="Days from Checkout to generate the invoice",
     )
-
     invoicing_month_day = fields.Integer(
-        string="Invoicing Month Day",
         help="The day of the month to invoice",
     )
-
     journal_simplified_invoice_id = fields.Many2one(
         string="Simplified Invoice Journal",
         comodel_name="account.journal",
@@ -197,7 +180,6 @@ class PmsProperty(models.Model):
         check_company=True,
         check_pms_properties=True,
     )
-
     journal_normal_invoice_id = fields.Many2one(
         string="Normal Invoice Journal",
         comodel_name="account.journal",
@@ -209,9 +191,7 @@ class PmsProperty(models.Model):
         check_company=True,
         check_pms_properties=True,
     )
-
     max_amount_simplified_invoice = fields.Float(
-        string="Max Amount Simplified Invoice",
         help="Maximum amount to create the simplified invoice",
         default=400.0,
     )
@@ -238,7 +218,7 @@ class PmsProperty(models.Model):
         default=get_default_logo(),
     )
     analytic_account_id = fields.Many2one(
-        "account.analytic.account", readonly=True, copy=False
+        comodel_name="account.analytic.account", readonly=True, copy=False
     )
 
     @api.depends_context(
@@ -503,9 +483,9 @@ class PmsProperty(models.Model):
                 if duplicated:
                     raise ValidationError(
                         _(
-                            "Alreay exist other property with this ref: %s (%s)",
-                            duplicated.name,
-                            duplicated.ref,
+                            "Alreay exist other property with this ref: %(name)s (%(ref)s)",
+                            name=duplicated.name,
+                            ref=duplicated.ref,
                         )
                     )
 
@@ -522,9 +502,9 @@ class PmsProperty(models.Model):
                 if duplicated:
                     raise ValidationError(
                         _(
-                            "Alreay exist other property with this code: %s (%s)",
-                            duplicated.name,
-                            duplicated.pms_property_code,
+                            "Alreay exist other property with this code: %(name)s (%(code)s)",
+                            name=duplicated.name,
+                            code=duplicated.pms_property_code,
                         )
                     )
 
@@ -533,28 +513,22 @@ class PmsProperty(models.Model):
         for record in self:
             try:
                 time.strptime(record.default_arrival_hour, "%H:%M")
-                return True
-            except ValueError:
+            except ValueError as e:
                 raise ValidationError(
-                    _(
-                        "Format Arrival Hour (HH:MM) Error: %s",
-                        record.default_arrival_hour,
-                    )
-                )
+                    _("Format Arrival Hour (HH:MM) Error: %s")
+                    % record.default_arrival_hour
+                ) from e
 
     @api.constrains("default_departure_hour")
     def _check_departure_hour(self):
         for record in self:
             try:
                 time.strptime(record.default_departure_hour, "%H:%M")
-                return True
-            except ValueError:
+            except ValueError as e:
                 raise ValidationError(
-                    _(
-                        "Format Departure Hour (HH:MM) Error: %s",
-                        record.default_departure_hour,
-                    )
-                )
+                    _("Format Departure Hour (HH:MM) Error: %s")
+                    % record.default_departure_hour
+                ) from e
 
     def date_property_timezone(self, dt):
         self.ensure_one()
@@ -773,9 +747,9 @@ class PmsProperty(models.Model):
                     }
                     for move in downpayment_invoice
                 ]
-                downpayment_invoice.with_context(
-                    {"sii_refund_type": "I"}
-                )._reverse_moves(default_values_list, cancel=True)
+                downpayment_invoice.with_context(sii_refund_type="I")._reverse_moves(
+                    default_values_list, cancel=True
+                )
                 downpayment_invoice.message_post(
                     body=_(
                         """
@@ -818,7 +792,9 @@ class PmsProperty(models.Model):
             with self.env.cr.savepoint():
                 invoice.action_post()
         except Exception as e:
-            invoice.message_post(body=_("Error in autovalidate invoice: " + str(e)))
+            raise ValidationError(
+                _("Error in autovalidate invoice: %s") % str(e)
+            ) from e
 
     def autoinvoice_folio(self, folio):
         try:
@@ -888,10 +864,10 @@ class PmsProperty(models.Model):
                         for move in downpayment_invoices
                     ]
                     downpayment_invoices.with_context(
-                        {"sii_refund_type": "I"}
+                        sii_refund_type="I"
                     )._reverse_moves(default_values_list, cancel=True)
         except Exception as e:
-            folio.sudo().message_post(body=_("Error in autoinvoicing folio: " + str(e)))
+            raise ValidationError(_("Error in autoinvoicing folio: %s") % str(e)) from e
 
     @api.constrains("journal_normal_invoice_id")
     def _check_journal_normal_invoice(self):
@@ -912,6 +888,11 @@ class PmsProperty(models.Model):
     def _get_folio_default_journal(self, partner_invoice_id):
         self.ensure_one()
         partner = self.env["res.partner"].browse(partner_invoice_id)
+        if (
+            self.company_id.partner_id.id == partner.id
+            and self.company_id.self_billed_journal_id
+        ):
+            return self.company_id.self_billed_journal_id
         if (
             not partner
             or partner.id == self.env.ref("pms.various_pms_partner").id
