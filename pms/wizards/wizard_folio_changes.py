@@ -390,6 +390,10 @@ class WizardFolioChanges(models.TransientModel):
                             reservation.folio_id.pms_property_id.id
                             == x.pms_property_id.ids
                         )
+                        and (
+                            not x.pricelist_ids
+                            or reservation.pricelist_id.id in x.pricelist_ids.ids
+                        )
                     )
                 )
 

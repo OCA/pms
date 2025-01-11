@@ -60,6 +60,11 @@ class PmsBoardServiceRoomType(models.Model):
         string="Apply by Default",
         help="Indicates if this board service is applied by default in the room type",
     )
+    pricelist_ids = fields.Many2many(
+        string="Pricelists",
+        help="Pricelists where this Board Service is available",
+        comodel_name="product.pricelist",
+    )
 
     @api.depends("board_service_line_ids.amount")
     def _compute_board_amount(self):
@@ -86,11 +91,11 @@ class PmsBoardServiceRoomType(models.Model):
                     "by_default"
                 )
             )
-            # TODO Check properties (with different propertys is allowed)
             if any(
                 default_boards.filtered(
-                    lambda l: l.id != record.id
-                    and l.pms_property_id == record.pms_property_id
+                    lambda board: board.id != record.id
+                    and board.pms_property_id == record.pms_property_id
+                    and board.pricelist_ids == record.pricelist_ids
                 )
             ):
                 raise UserError(_("""Only can set one default board service"""))
