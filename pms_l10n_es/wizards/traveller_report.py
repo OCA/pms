@@ -298,7 +298,7 @@ def _ses_xml_person_contact_elements(persona, reservation, checkin_partner=False
                 "have a contact method (mail or phone)"
             )
         )
-    if checkin_partner.ses_partners_relationship:
+    if checkin_partner and checkin_partner.ses_partners_relationship:
         ET.SubElement(
             persona, "parentesco"
         ).text = checkin_partner.ses_partners_relationship
