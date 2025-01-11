@@ -7,6 +7,8 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
+from ..pms_api_rest_utils import pms_api_check_access
+
 
 class PmsServiceLineService(Component):
     _inherit = "base.rest.service"
@@ -27,11 +29,10 @@ class PmsServiceLineService(Component):
         auth="jwt_api_pms",
     )
     def get_service_line(self, service_line_id):
-        service_line = self.env["pms.service.line"].search(
-            [("id", "=", service_line_id)]
-        )
-        if not service_line:
+        service_line = self.env["pms.service.line"].sudo().browse(service_line_id)
+        if not service_line.exists():
             raise MissingError(_("Service line not found"))
+        pms_api_check_access(user=self.env.user, records=service_line)
         PmsServiceLineInfo = self.env.datamodels["pms.service.line.info"]
 
         return PmsServiceLineInfo(
@@ -55,9 +56,10 @@ class PmsServiceLineService(Component):
         auth="jwt_api_pms",
     )
     def update_service_line(self, service_line_id, pms_service_line_info_data):
-        service_line = self.env["pms.service.line"].search(
-            [("id", "=", service_line_id)]
-        )
+        service_line = self.env["pms.service.line"].sudo().browse(service_line_id)
+        if not service_line.exists():
+            raise MissingError(_("Service line not found"))
+        pms_api_check_access(user=self.env.user, records=service_line)
         vals = {}
         if service_line:
             if pms_service_line_info_data.date:
@@ -87,10 +89,8 @@ class PmsServiceLineService(Component):
     )
     def delete_service_line(self, service_line_id):
         # esto tb podría ser con un browse
-        service_line = self.env["pms.service.line"].search(
-            [("id", "=", service_line_id)]
-        )
-        if service_line:
-            service_line.unlink()
-        else:
+        service_line = self.env["pms.service.line"].sudo().browse(service_line_id)
+        if not service_line.exists():
             raise MissingError(_("Service line not found"))
+        pms_api_check_access(user=self.env.user, records=service_line)
+        service_line.unlink()

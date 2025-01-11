@@ -11,6 +11,7 @@
             >
                 <group>
                     <group string="Configurable Availability Rules">
+                        <field name="pms_api_user_role" />
                         <field
                             name="availability_rule_field_ids"
                             widget="many2many_tags"

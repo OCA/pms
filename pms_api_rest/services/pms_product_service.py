@@ -5,6 +5,8 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
+from ..pms_api_rest_utils import pms_api_check_access
+
 
 class PmsProductService(Component):
     _inherit = "base.rest.service"
@@ -43,9 +45,9 @@ class PmsProductService(Component):
             )
         result_products = []
         PmsProductInfo = self.env.datamodels["pms.product.info"]
-        for product in self.env["product.product"].search(
-            domain,
-        ):
+        products = self.env["product.product"].sudo().search(domain)
+        pms_api_check_access(user=self.env.user, records=products)
+        for product in products:
             result_products.append(
                 PmsProductInfo(
                     id=product.id,
@@ -71,8 +73,9 @@ class PmsProductService(Component):
         auth="jwt_api_pms",
     )
     def get_product(self, product_id, product_search_param):
-        product = self.env["product.product"].browse(product_id)
-        if product and product.sale_ok:
+        product = self.env["product.product"].sudo().browse(product_id)
+        if product.exists() and product.sale_ok:
+            pms_api_check_access(user=self.env.user, records=product)
             PmsProductInfo = self.env.datamodels["pms.product.info"]
             return PmsProductInfo(
                 id=product.id,
@@ -95,9 +98,10 @@ class PmsProductService(Component):
         output_param=Datamodel("pms.product.info", is_list=False),
         auth="jwt_api_pms",
     )
-    def get_product(self, product_id, product_search_param):
+    def get_product_restricted(self, product_id, product_search_param):
         product = self.env["product.product"].sudo().browse(product_id)
         if product.exists() and product.sale_ok:
+            pms_api_check_access(user=self.env.user, records=product)
             PmsProductInfo = self.env.datamodels["pms.product.info"]
             return PmsProductInfo(
                 id=product.id,

@@ -84,6 +84,6 @@ class PmsLoginService(Component):
             userImageUrl=url_image_pms_api_rest(
                 "res.partner", user_record.partner_id.id, "image_1024"
             ),
-            isNewInterfaceUser=user_record.is_new_interface_app_user,
             availabilityRuleFields=avail_rule_names,
+            userRole=user_record.pms_api_user_role,
         )

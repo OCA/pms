@@ -7,6 +7,8 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
+from ..pms_api_rest_utils import pms_api_check_access
+
 
 class PmsAvailService(Component):
     _inherit = "base.rest.service"
@@ -36,9 +38,10 @@ class PmsAvailService(Component):
             raise MissingError(_("Missing required parameters"))
         pricelist_id = avails_search_param.pricelistId or False
         room_type_id = avails_search_param.roomTypeId or False
-        pms_property = self.env["pms.property"].browse(
-            avails_search_param.pmsPropertyId
+        pms_property = (
+            self.env["pms.property"].sudo().browse(avails_search_param.pmsPropertyId)
         )
+        pms_api_check_access(user=self.env.user, records=pms_property)
         PmsAvailInfo = self.env.datamodels["pms.avail.info"]
         result_avails = []
         date_from = fields.Date.from_string(avails_search_param.availabilityFrom)

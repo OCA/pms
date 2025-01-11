@@ -4,6 +4,8 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
+from ..pms_api_rest_utils import pms_api_check_access
+
 
 def build_reservation_line_info(calendar_item, previous_item=False, next_item=False):
     next_itemSplitted = (
@@ -93,144 +95,6 @@ class PmsCalendarService(Component):
         [
             (
                 [
-                    "/old-calendar",
-                ],
-                "GET",
-            )
-        ],
-        input_param=Datamodel("pms.calendar.search.param"),
-        output_param=Datamodel("pms.calendar.info", is_list=True),
-        auth="jwt_api_pms",
-    )
-    def get_old_reservations_calendar(self, calendar_search_param):
-        date_from = datetime.strptime(calendar_search_param.dateFrom, "%Y-%m-%d").date()
-        date_to = datetime.strptime(calendar_search_param.dateTo, "%Y-%m-%d").date()
-        count_nights = (date_to - date_from).days + 1
-        target_dates = [date_from + timedelta(days=x) for x in range(count_nights)]
-        pms_property_id = calendar_search_param.pmsPropertyId
-
-        selected_fields_mapper = {
-            "id": "night.id",
-            "state": "night.state",
-            "date": "DATE(night.date)",
-            "room_id": "night.room_id",
-            "room_type_name": "pms_room_type.default_code",
-            "to_assign": "reservation.to_assign",
-            "splitted": "reservation.splitted",
-            "partner_id": "reservation.partner_id",
-            "partner_name": "reservation.partner_name",
-            "folio_id": "folio.id",
-            "reservation_id": "reservation.id",
-            "reservation_name": "reservation.name",
-            "reservation_type": "reservation.reservation_type",
-            "checkin": "reservation.checkin",
-            "checkout": "reservation.checkout",
-            "price_total": "reservation.price_total",
-            "folio_pending_amount": "folio.pending_amount",
-            "adults": "reservation.adults",
-            "price_day_total": "night.price_day_total",
-            "closure_reason_id": "folio.closure_reason_id",
-            "is_reselling": "reservation.is_reselling",
-            # "price_day_total_services": subselect_sum_services_price,
-        }
-        selected_fields_sql = list(selected_fields_mapper.values())
-        selected_fields = list(selected_fields_mapper.keys())
-        sql_select = "SELECT %s" % ", ".join(selected_fields_sql)
-        self.env.cr.execute(
-            f"""
-                {sql_select}
-                FROM    pms_reservation_line  night
-                        LEFT JOIN pms_reservation reservation
-                            ON reservation.id = night.reservation_id
-                        LEFT JOIN pms_room_type
-                            ON pms_room_type.id = reservation.room_type_id
-                        LEFT JOIN pms_folio folio
-                            ON folio.id = reservation.folio_id
-                WHERE   (night.pms_property_id = %s)
-                    AND (night.date in %s)
-                    AND (night.state != 'cancel')
-                    AND (night.occupies_availability = True)
-                """,
-            (
-                pms_property_id,
-                tuple(target_dates),
-            ),
-        )
-        result_sql = self.env.cr.fetchall()
-        lines = []
-        for res in result_sql:
-            lines.append(
-                {field: res[selected_fields.index(field)] for field in selected_fields}
-            )
-
-        PmsCalendarInfo = self.env.datamodels["pms.calendar.info"]
-        result_lines = []
-        for line in lines:
-            next_line_splitted = False
-            previous_line_splitted = False
-            is_first_night = line["checkin"] == line["date"]
-            is_last_night = line["checkout"] + timedelta(days=-1) == line["date"]
-            if line.get("splitted"):
-                next_line = next(
-                    (
-                        item
-                        for item in lines
-                        if item["reservation_id"] == line["reservation_id"]
-                        and item["date"] == line["date"] + timedelta(days=1)
-                    ),
-                    False,
-                )
-                if next_line:
-                    next_line_splitted = next_line["room_id"] != line["room_id"]
-
-                previous_line = next(
-                    (
-                        item
-                        for item in lines
-                        if item["reservation_id"] == line["reservation_id"]
-                        and item["date"] == line["date"] + timedelta(days=-1)
-                    ),
-                    False,
-                )
-                if previous_line:
-                    previous_line_splitted = previous_line["room_id"] != line["room_id"]
-            result_lines.append(
-                PmsCalendarInfo(
-                    id=line["id"],
-                    state=line["state"],
-                    date=datetime.combine(
-                        line["date"], datetime.min.time()
-                    ).isoformat(),
-                    roomId=line["room_id"],
-                    roomTypeName=str(line["room_type_name"]),
-                    toAssign=line["to_assign"],
-                    splitted=line["splitted"],
-                    partnerId=line["partner_id"] or None,
-                    partnerName=line["partner_name"] or None,
-                    folioId=line["folio_id"],
-                    reservationId=line["reservation_id"],
-                    reservationName=line["reservation_name"],
-                    reservationType=line["reservation_type"],
-                    isFirstNight=is_first_night,
-                    isLastNight=is_last_night,
-                    totalPrice=round(line["price_total"], 2),
-                    pendingPayment=round(line["folio_pending_amount"], 2),
-                    priceDayTotal=round(line["price_day_total"], 0),
-                    priceDayTotalServices=0,
-                    numNotifications=0,
-                    adults=line["adults"],
-                    nextLineSplitted=next_line_splitted,
-                    previousLineSplitted=previous_line_splitted,
-                    closureReasonId=line["closure_reason_id"],
-                    isReselling=line["is_reselling"] if line["is_reselling"] else False,
-                )
-            )
-        return result_lines
-
-    @restapi.method(
-        [
-            (
-                [
                     "/",
                 ],
                 "GET",
@@ -241,6 +105,10 @@ class PmsCalendarService(Component):
         auth="jwt_api_pms",
     )
     def get_reservations_calendar(self, calendar_search_param):
+        pms_property = (
+            self.env["pms.property"].sudo().browse(calendar_search_param.pmsPropertyId)
+        )
+        pms_api_check_access(user=self.env.user, records=pms_property)
         response = []
         date_from = datetime.strptime(calendar_search_param.dateFrom, "%Y-%m-%d").date()
         date_to = datetime.strptime(calendar_search_param.dateTo, "%Y-%m-%d").date()
@@ -412,6 +280,10 @@ class PmsCalendarService(Component):
         auth="jwt_api_pms",
     )
     def get_prices_rules_calendar(self, calendar_search_param):
+        pms_property = (
+            self.env["pms.property"].sudo().browse(calendar_search_param.pmsPropertyId)
+        )
+        pms_api_check_access(user=self.env.user, records=pms_property)
         response = []
         date_from = datetime.strptime(calendar_search_param.dateFrom, "%Y-%m-%d").date()
         date_to = datetime.strptime(calendar_search_param.dateTo, "%Y-%m-%d").date()
@@ -556,6 +428,10 @@ class PmsCalendarService(Component):
         auth="jwt_api_pms",
     )
     def get_calendar_headers(self, calendar_search_param):
+        pms_property = (
+            self.env["pms.property"].sudo().browse(calendar_search_param.pmsPropertyId)
+        )
+        pms_api_check_access(user=self.env.user, records=pms_property)
         response = []
         date_from = datetime.strptime(calendar_search_param.dateFrom, "%Y-%m-%d").date()
         date_to = datetime.strptime(calendar_search_param.dateTo, "%Y-%m-%d").date()
@@ -658,17 +534,22 @@ class PmsCalendarService(Component):
     def swap_reservation_slices(self, swap_info):
         reservation_lines_target = (
             self.env["pms.reservation.line"]
+            .sudo()
             .search([("id", "in", swap_info.reservationLineIds)])
-            .sorted(key=lambda l: l.date)
+            .sorted(key=lambda line: line.date)
         )
-
+        pms_api_check_access(user=self.env.user, records=reservation_lines_target)
         for reservation_line in reservation_lines_target:
             old_room_id = reservation_line.room_id
-            affected_line = self.env["pms.reservation.line"].search(
-                [
-                    ("date", "=", reservation_line.date),
-                    ("room_id", "=", swap_info.roomId),
-                ]
+            affected_line = (
+                self.env["pms.reservation.line"]
+                .sudo()
+                .search(
+                    [
+                        ("date", "=", reservation_line.date),
+                        ("room_id", "=", swap_info.roomId),
+                    ]
+                )
             )
             reservation_line.with_context(
                 avoid_availability_check=True
@@ -691,13 +572,17 @@ class PmsCalendarService(Component):
         auth="jwt_api_pms",
     )
     def get_daily_invoincing(self, pms_calendar_search_param):
+        pms_property_id = pms_calendar_search_param.pmsPropertyId
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"].sudo().browse(pms_property_id),
+        )
         date_from = datetime.strptime(
             pms_calendar_search_param.dateFrom, "%Y-%m-%d"
         ).date()
         date_to = datetime.strptime(pms_calendar_search_param.dateTo, "%Y-%m-%d").date()
         count_nights = (date_to - date_from).days + 1
         target_dates = [date_from + timedelta(days=x) for x in range(count_nights)]
-        pms_property_id = pms_calendar_search_param.pmsPropertyId
 
         self.env.cr.execute(
             """
@@ -780,13 +665,17 @@ class PmsCalendarService(Component):
         auth="jwt_api_pms",
     )
     def get_free_rooms(self, pms_calendar_search_param):
+        pms_property_id = pms_calendar_search_param.pmsPropertyId
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"].sudo().browse(pms_property_id),
+        )
         date_from = datetime.strptime(
             pms_calendar_search_param.dateFrom, "%Y-%m-%d"
         ).date()
         date_to = datetime.strptime(pms_calendar_search_param.dateTo, "%Y-%m-%d").date()
         count_nights = (date_to - date_from).days + 1
         target_dates = [date_from + timedelta(days=x) for x in range(count_nights)]
-        pms_property_id = pms_calendar_search_param.pmsPropertyId
 
         self.env.cr.execute(
             """
@@ -805,7 +694,11 @@ class PmsCalendarService(Component):
             ),
         )
         result_sql = self.env.cr.fetchall()
-        rooms = self.env["pms.room"].search([("pms_property_id", "=", pms_property_id)])
+        rooms = (
+            self.env["pms.room"]
+            .sudo()
+            .search([("pms_property_id", "=", pms_property_id)])
+        )
         room_types = rooms.mapped("room_type_id")
         total_rooms_by_room_type = [
             {
@@ -813,6 +706,7 @@ class PmsCalendarService(Component):
                 "rooms_total": len(
                     self.env["pms.room"]
                     .with_context(active_test=True)
+                    .sudo()
                     .search(
                         [
                             ("room_type_id", "=", room_type.id),
@@ -863,14 +757,17 @@ class PmsCalendarService(Component):
         auth="jwt_api_pms",
     )
     def get_alerts_per_day(self, pms_calendar_search_param):
+        pms_property_id = pms_calendar_search_param.pmsPropertyId
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"].sudo().browse(pms_property_id),
+        )
         date_from = datetime.strptime(
             pms_calendar_search_param.dateFrom, "%Y-%m-%d"
         ).date()
         date_to = datetime.strptime(pms_calendar_search_param.dateTo, "%Y-%m-%d").date()
         count_nights = (date_to - date_from).days + 1
         target_dates = [date_from + timedelta(days=x) for x in range(count_nights)]
-        pms_property_id = pms_calendar_search_param.pmsPropertyId
-
         self.env.cr.execute(
             """
             SELECT  night.date AS date, COUNT(night.id) AS count
@@ -916,71 +813,25 @@ class PmsCalendarService(Component):
         if reservation_lines_changes.reservationLinesChanges:
 
             # TEMP: Disabled temporal date changes to avoid drag&drops errors
-            lines_to_change = self.env["pms.reservation.line"].browse(
-                [
-                    item["reservationLineId"]
-                    for item in reservation_lines_changes.reservationLinesChanges
-                ]
+            lines_to_change = (
+                self.env["pms.reservation.line"]
+                .sudo()
+                .browse(
+                    [
+                        item["reservationLineId"]
+                        for item in reservation_lines_changes.reservationLinesChanges
+                    ]
+                )
             )
+            pms_api_check_access(user=self.env.user, records=lines_to_change)
             lines_to_change.room_id = reservation_lines_changes.reservationLinesChanges[
                 0
             ]["roomId"]
-            # # get date of first reservation id to change
-            # first_reservation_line_id_to_change = (
-            #     reservation_lines_changes.reservationLinesChanges[0][
-            #         "reservationLineId"
-            #     ]
-            # )
-            # first_reservation_line_to_change = self.env["pms.reservation.line"].browse(
-            #     first_reservation_line_id_to_change
-            # )
-            # date_first_reservation_line_to_change = datetime.strptime(
-            #     reservation_lines_changes.reservationLinesChanges[0]["date"], "%Y-%m-%d"
-            # )
-
-            # # iterate changes
-            # for change_iterator in sorted(
-            #     reservation_lines_changes.reservationLinesChanges,
-            #     # adjust order to start changing from last/first reservation line
-            #     # to avoid reservation line date constraint
-            #     reverse=first_reservation_line_to_change.date
-            #     < date_first_reservation_line_to_change.date(),
-            #     key=lambda x: datetime.strptime(x["date"], "%Y-%m-%d"),
-            # ):
-            #     # recordset of each line
-            #     line_to_change = self.env["pms.reservation.line"].search(
-            #         [
-            #             ("reservation_id", "=", reservation_id),
-            #             ("id", "=", change_iterator["reservationLineId"]),
-            #         ]
-            #     )
-            #     # modifying date, room_id, ...
-            #     if "date" in change_iterator:
-            #         line_to_change.date = change_iterator["date"]
-            #     if (
-            #         "roomId" in change_iterator
-            #         and line_to_change.room_id.id != change_iterator["roomId"]
-            #     ):
-            #         line_to_change.room_id = change_iterator["roomId"]
-
-            # max_value = max(
-            #     first_reservation_line_to_change.reservation_id.reservation_line_ids.mapped(
-            #         "date"
-            #     )
-            # ) + timedelta(days=1)
-            # min_value = min(
-            #     first_reservation_line_to_change.reservation_id.reservation_line_ids.mapped(
-            #         "date"
-            #     )
-            # )
-            # reservation = self.env["pms.reservation"].browse(reservation_id)
-            # reservation.checkin = min_value
-            # reservation.checkout = max_value
-
         else:
             reservation_to_update = (
                 self.env["pms.reservation"].sudo().search([("id", "=", reservation_id)])
             )
+            pms_api_check_access(user=self.env.user, records=reservation_to_update)
             reservation_vals = {}
 
             if reservation_lines_changes.preferredRoomId:

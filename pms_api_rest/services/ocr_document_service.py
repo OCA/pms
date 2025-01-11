@@ -8,6 +8,8 @@ from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 from odoo.addons.portal.controllers.portal import CustomerPortal
 
+from ..pms_api_rest_utils import pms_api_check_access
+
 
 class PmsOcr(Component):
     _inherit = "base.rest.service"
@@ -29,7 +31,11 @@ class PmsOcr(Component):
         auth="jwt_api_pms",
     )
     def process_ocr_document(self, input_param):
-        pms_property = self.env["pms.property"].browse(input_param.pmsPropertyId)
+        pms_property = self.env["pms.property"].sudo().browse(input_param.pmsPropertyId)
+        pms_api_check_access(
+            user=self.env.user,
+            records=pms_property,
+        )
         ocr_find_method_name = (
             "_%s_document_process" % pms_property.ocr_checkin_supplier
         )
@@ -82,11 +88,7 @@ class PmsOcr(Component):
     )
     def process_ocr_document_public(self, reservation_id, token, input_param):
         # check if the reservation exists
-        reservation_record = (
-            self.env["pms.reservation"]
-            .sudo()
-            .browse(reservation_id)
-        )
+        reservation_record = self.env["pms.reservation"].sudo().browse(reservation_id)
         if not reservation_record.exists():
             raise MissingError(_("Reservation not found"))
 

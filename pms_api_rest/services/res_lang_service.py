@@ -24,7 +24,7 @@ class ReslANGService(Component):
     def get_partners(self):
         result_langs = []
         ResLangInfo = self.env.datamodels["res.lang.info"]
-        languages = self.env["res.lang"].get_installed()
+        languages = self.env["res.lang"].sudo().get_installed()
         for lang in languages:
             result_langs.append(
                 ResLangInfo(

@@ -5,13 +5,15 @@ import pytz
 import werkzeug.exceptions
 
 from odoo import _, fields
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import MissingError, UserError, ValidationError
 from odoo.osv import expression
 from odoo.tools import get_lang
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
+
+from ..pms_api_rest_utils import pms_api_check_access
 
 _logger = logging.getLogger(__name__)
 
@@ -47,12 +49,15 @@ class PmsTransactionService(Component):
                 ("journal_id", "=", pms_transactions_search_param.transactionMethodId),
             )
         elif pms_transactions_search_param.pmsPropertyId:
-            pms_property = self.env["pms.property"].browse(
-                pms_transactions_search_param.pmsPropertyId
+            pms_property = (
+                self.env["pms.property"]
+                .sudo()
+                .browse(pms_transactions_search_param.pmsPropertyId)
             )
+            pms_api_check_access(user=self.env.user, records=pms_property)
             available_journals = pms_property._get_payment_methods(
                 automatic_included=True
-            )
+            ).sudo()
             # REVIEW: avoid send to app generic company journals
             available_journals = available_journals.filtered(
                 lambda j: j.pms_property_ids
@@ -106,9 +111,11 @@ class PmsTransactionService(Component):
             domain = domain_fields
         PmsTransactionResults = self.env.datamodels["pms.transaction.results"]
         PmsTransactiontInfo = self.env.datamodels["pms.transaction.info"]
-        total_transactions = self.env["account.payment"].search_count(domain)
-        group_transactions = self.env["account.payment"].read_group(
-            domain=domain, fields=["amount:sum"], groupby=["payment_type"]
+        total_transactions = self.env["account.payment"].sudo().search_count(domain)
+        group_transactions = (
+            self.env["account.payment"]
+            .sudo()
+            .read_group(domain=domain, fields=["amount:sum"], groupby=["payment_type"])
         )
         amount_result = 0
         if group_transactions:
@@ -133,12 +140,17 @@ class PmsTransactionService(Component):
             order_by_param = self._get_mapped_order_by_field(
                 pms_transactions_search_param.orderBy
             ) + (" desc" if pms_transactions_search_param.orderDesc else " asc")
-        transactions = self.env["account.payment"].search(
-            domain,
-            order=order_by_param if order_by_param else False,
-            limit=pms_transactions_search_param.limit,
-            offset=pms_transactions_search_param.offset,
+        transactions = (
+            self.env["account.payment"]
+            .sudo()
+            .search(
+                domain,
+                order=order_by_param if order_by_param else False,
+                limit=pms_transactions_search_param.limit,
+                offset=pms_transactions_search_param.offset,
+            )
         )
+        pms_api_check_access(user=self.env.user, records=transactions)
         for transaction in transactions:
             # In internal transfer payments, the APP only show
             # the outbound payment, with the countrapart journal id
@@ -219,7 +231,10 @@ class PmsTransactionService(Component):
     )
     def get_transaction(self, transaction_id):
         PmsTransactiontInfo = self.env.datamodels["pms.transaction.info"]
-        transaction = self.env["account.payment"].browse(transaction_id)
+        transaction = self.env["account.payment"].sudo().browse(transaction_id)
+        if not transaction.exists():
+            raise MissingError(_("Transaction not found"))
+        pms_api_check_access(user=self.env.user, records=transaction)
         destination_journal_id = False
         if transaction.is_internal_transfer:
             destination_journal_id = (
@@ -260,7 +275,12 @@ class PmsTransactionService(Component):
         payment_type, partner_type = self._get_mapper_transaction_type(
             pms_transaction_info.transactionType
         )
-        journal = self.env["account.journal"].browse(pms_transaction_info.journalId)
+        journal = (
+            self.env["account.journal"].sudo().browse(pms_transaction_info.journalId)
+        )
+        if not journal.exists():
+            raise MissingError(_("Journal not found"))
+        pms_api_check_access(user=self.env.user, records=journal)
         is_internal_transfer = (
             pms_transaction_info.transactionType == "internal_transfer"
         )
@@ -283,10 +303,11 @@ class PmsTransactionService(Component):
         if is_internal_transfer:
             vals["partner_bank_id"] = (
                 self.env["account.journal"]
+                .sudo()
                 .browse(pms_transaction_info.destinationJournalId)
                 .bank_account_id.id
             )
-        pay = self.env["account.payment"].create(vals)
+        pay = self.env["account.payment"].sudo().create(vals)
         if journal.type == "cash":
             # REVIEW: Temporaly, if not cash session open, create a new one automatically
             # Review this in pms_folio_service (/charge & /refund)
@@ -301,7 +322,7 @@ class PmsTransactionService(Component):
                     journal_id=journal.id,
                     force=False,
                 )
-        pay.sudo().action_post()
+        pay.action_post()
         if is_internal_transfer:
             if journal.type == "cash":
                 # REVIEW: Temporaly, if not cash session open, create a new one automatically
@@ -328,8 +349,10 @@ class PmsTransactionService(Component):
                 "partner_type": partner_type,
                 "is_internal_transfer": is_internal_transfer,
             }
-            countrepart_pay = self.env["account.payment"].create(counterpart_vals)
-            countrepart_pay.sudo().action_post()
+            countrepart_pay = (
+                self.env["account.payment"].sudo().create(counterpart_vals)
+            )
+            countrepart_pay.action_post()
             pay.pms_api_counterpart_payment_id = countrepart_pay.id
             countrepart_pay.pms_api_counterpart_payment_id = pay.id
         return pay.id
@@ -346,8 +369,12 @@ class PmsTransactionService(Component):
         input_param=Datamodel("pms.transaction.info", is_list=False),
         auth="jwt_api_pms",
     )
+    # flake8: noqa: C901
     def update_transaction(self, transaction_id, pms_transaction_info):
-        transaction = self.env["account.payment"].browse(transaction_id)
+        transaction = self.env["account.payment"].sudo().browse(transaction_id)
+        if not transaction.exists():
+            raise MissingError(_("Transaction not found"))
+        pms_api_check_access(user=self.env.user, records=transaction)
         vals = {}
         transacion_type = pms_transaction_info.transactionType
         counterpart_transaction = False
@@ -377,9 +404,14 @@ class PmsTransactionService(Component):
             pms_transaction_info.journalId
             and pms_transaction_info.journalId != transaction.journal_id.id
         ):
-            new_journal = self.env["account.journal"].browse(
-                pms_transaction_info.journalId
+            new_journal = (
+                self.env["account.journal"]
+                .sudo()
+                .browse(pms_transaction_info.journalId)
             )
+            if not new_journal.exists():
+                raise MissingError(_("Journal not found"))
+            pms_api_check_access(user=self.env.user, records=new_journal)
             if new_journal.type == "cash":
                 last_cash_session = self._get_last_cash_session(new_journal.id)
                 new_date = vals.get("date", transaction.date)
@@ -390,8 +422,8 @@ class PmsTransactionService(Component):
                             "before the last cash session"
                         )
                     )
-            transaction.sudo().action_draft()
-            transaction.sudo().action_cancel()
+            transaction.action_draft()
+            transaction.action_cancel()
             vals["journal_id"] = new_journal.id
             transaction = transaction.copy()
         if counterpart_transaction:
@@ -400,8 +432,15 @@ class PmsTransactionService(Component):
                 and pms_transaction_info.destinationJournalId
                 != counterpart_transaction.journal_id.id
             ):
-                new_counterpart_journal = self.env["account.journal"].browse(
-                    pms_transaction_info.destinationJournalId
+                new_counterpart_journal = (
+                    self.env["account.journal"]
+                    .sudo()
+                    .browse(pms_transaction_info.destinationJournalId)
+                )
+                if not new_counterpart_journal.exists():
+                    raise MissingError(_("Journal not found"))
+                pms_api_check_access(
+                    user=self.env.user, records=new_counterpart_journal
                 )
                 counterpart_vals = vals.copy()
                 if new_counterpart_journal.type == "cash":
@@ -416,24 +455,25 @@ class PmsTransactionService(Component):
                                 "before the last cash session"
                             )
                         )
-                counterpart_transaction.sudo().action_draft()
-                counterpart_transaction.sudo().action_cancel()
+                counterpart_transaction.action_draft()
+                counterpart_transaction.action_cancel()
                 counterpart_vals["journal_id"] = new_counterpart_journal.id
                 counterpart_transaction = counterpart_transaction.copy()
                 vals["partner_bank_id"] = (
                     self.env["account.journal"]
+                    .sudo()
                     .browse(pms_transaction_info.destinationJournalId)
                     .bank_account_id.id
                 )
                 vals["counterpart_payment_id"] = counterpart_transaction.id
                 counterpart_vals["counterpart_payment_id"] = transaction.id
         if vals:
-            transaction.sudo().action_draft()
-            transaction.sudo().write(vals)
-            transaction.sudo().action_post()
+            transaction.action_draft()
+            transaction.write(vals)
+            transaction.action_post()
         if counterpart_transaction:
-            counterpart_transaction.sudo().write(vals)
-            counterpart_transaction.sudo().action_post()
+            counterpart_transaction.write(vals)
+            counterpart_transaction.action_post()
         return transaction.id
 
     @restapi.method(
@@ -573,7 +613,7 @@ class PmsTransactionService(Component):
                 session_payments, statement, amount, auto_conciliation=True
             )
             if statement.all_lines_reconciled:
-                statement.sudo().button_validate_or_action()
+                statement.button_validate_or_action()
             return {
                 "result": True,
                 "diff": 0,
@@ -609,17 +649,25 @@ class PmsTransactionService(Component):
     )
     def transactions_report(self, pms_transaction_report_search_param):
         pms_property_id = pms_transaction_report_search_param.pmsPropertyId
+        pms_property = self.env["pms.property"].sudo().browse(pms_property_id)
+        if not pms_property.exists():
+            raise MissingError(_("Property not found"))
+        pms_api_check_access(user=self.env.user, records=pms_property)
         date_from = fields.Date.from_string(
             pms_transaction_report_search_param.dateFrom
         )
         date_to = fields.Date.from_string(pms_transaction_report_search_param.dateTo)
 
-        report_wizard = self.env["cash.daily.report.wizard"].create(
-            {
-                "date_start": date_from,
-                "date_end": date_to,
-                "pms_property_id": pms_property_id,
-            }
+        report_wizard = (
+            self.env["cash.daily.report.wizard"]
+            .sudo()
+            .create(
+                {
+                    "date_start": date_from,
+                    "date_end": date_to,
+                    "pms_property_id": pms_property_id,
+                }
+            )
         )
         result = report_wizard._export()
         file_name = result["xls_filename"]
@@ -668,8 +716,8 @@ class PmsTransactionService(Component):
         # Not call to button post to avoid create profit/loss line
         # (_check_balance_end_real_same_as_computed)
         if not statement.name:
-            statement.sudo()._set_next_sequence()
-        statement.sudo().balance_end_real = amount
+            statement._set_next_sequence()
+        statement.balance_end_real = amount
         statement.write({"state": "posted"})
         lines_of_moves_to_post = statement.line_ids.filtered(
             lambda line: line.move_id.state != "posted"
@@ -707,7 +755,7 @@ class PmsTransactionService(Component):
         domain = [("journal_id", "=", journal_id)]
         if pms_property_id:
             domain.append(("pms_property_id", "=", pms_property_id))
-        return (
+        statement = (
             self.env["account.bank.statement"]
             .sudo()
             .search(
@@ -716,6 +764,8 @@ class PmsTransactionService(Component):
                 limit=1,
             )
         )
+        pms_api_check_access(user=self.env.user, records=statement)
+        return statement
 
     def _get_mapped_order_by_field(self, field):
         if field == "name":
