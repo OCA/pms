@@ -5,6 +5,8 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
+from ..pms_api_rest_utils import pms_api_check_access
+
 
 class PmsBoardServiceService(Component):
     _inherit = "base.rest.service"
@@ -43,9 +45,9 @@ class PmsBoardServiceService(Component):
 
         result_board_services = []
         PmsBoardServiceInfo = self.env.datamodels["pms.board.service.info"]
-        for board_service in self.env["pms.board.service.room.type"].search(
-            domain,
-        ):
+        board_services = self.env["pms.board.service.room.type"].sudo().search(domain)
+        pms_api_check_access(user=self.env.user, records=board_services)
+        for board_service in board_services:
             result_board_services.append(
                 PmsBoardServiceInfo(
                     id=board_service.id,
@@ -59,11 +61,12 @@ class PmsBoardServiceService(Component):
         if external_app:
             room_type_ids = board_services_search_param.roomTypeId or self.env[
                 "pms.room"
-            ].search(
+            ].sudo().search(
                 [("pms_property_id", "=", board_services_search_param.pmsPropertyId)]
             ).mapped(
                 "room_type_id.id"
             )
+            pms_api_check_access(user=self.env.user, records=room_type_ids)
             for room_type_id in room_type_ids:
                 result_board_services.append(
                     PmsBoardServiceInfo(
@@ -90,10 +93,13 @@ class PmsBoardServiceService(Component):
         auth="jwt_api_pms",
     )
     def get_board_service(self, board_service_id):
-        board_service = self.env["pms.board.service.room.type"].search(
-            [("id", "=", board_service_id)]
+        board_service = (
+            self.env["pms.board.service.room.type"]
+            .sudo()
+            .search([("id", "=", board_service_id)])
         )
         if board_service:
+            pms_api_check_access(user=self.env.user, records=board_service)
             PmsBoardServiceInfo = self.env.datamodels["pms.board.service.info"]
             return PmsBoardServiceInfo(
                 id=board_service.id,
@@ -129,9 +135,9 @@ class PmsBoardServiceService(Component):
             )
         result_board_service_lines = []
         PmsBoardServiceLineInfo = self.env.datamodels["pms.board.service.line.info"]
-        for line in self.env["pms.board.service.room.type.line"].search(
-            domain,
-        ):
+        lines = self.env["pms.board.service.room.type.line"].sudo().search(domain)
+        pms_api_check_access(user=self.env.user, records=lines)
+        for line in lines:
             result_board_service_lines.append(
                 PmsBoardServiceLineInfo(
                     id=line.id,
@@ -157,7 +163,7 @@ class PmsBoardServiceService(Component):
         output_param=Datamodel("pms.board.service.info", is_list=False),
         auth="jwt_api_pms",
     )
-    def get_board_service(self, board_service_id):
+    def get_restricted_board_service(self, board_service_id):
         board_service_record = (
             self.env["pms.board.service.room.type"].sudo().browse(board_service_id)
         )

@@ -7,6 +7,8 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
+from ..pms_api_rest_utils import pms_api_check_access
+
 
 class PmsPriceService(Component):
     _inherit = "base.rest.service"
@@ -31,13 +33,19 @@ class PmsPriceService(Component):
         product = room_type = board_service_room_type = False
 
         if prices_search_param.roomTypeId:
-            room_type = self.env["pms.room.type"].search(
-                [("id", "=", prices_search_param.roomTypeId)]
+            room_type = (
+                self.env["pms.room.type"]
+                .sudo()
+                .search([("id", "=", prices_search_param.roomTypeId)])
             )
+            pms_api_check_access(user=self.env.user, records=room_type)
         elif prices_search_param.productId:
-            product = self.env["product.product"].search(
-                [("id", "=", prices_search_param.productId)]
+            product = (
+                self.env["product.product"]
+                .sudo()
+                .search([("id", "=", prices_search_param.productId)])
             )
+            pms_api_check_access(user=self.env.user, records=product)
         elif (
             prices_search_param.boardServiceLineId
             and not prices_search_param.boardServiceId
@@ -65,9 +73,12 @@ class PmsPriceService(Component):
                     """
                     )
                 )
-            board_service_room_type = self.env["pms.board.service.room.type"].search(
-                [("id", "=", prices_search_param.boardServiceId)]
+            board_service_room_type = (
+                self.env["pms.board.service.room.type"]
+                .sudo()
+                .search([("id", "=", prices_search_param.boardServiceId)])
             )
+            pms_api_check_access(user=self.env.user, records=board_service_room_type)
         else:
             raise MissingError(_("Wrong input param"))
 
@@ -136,7 +147,8 @@ class PmsPriceService(Component):
         board_service_id=False,
         board_service_line_id=False,
     ):
-        pms_property = self.env["pms.property"].browse(pms_property_id)
+        pms_property = self.env["pms.property"].sudo().browse(pms_property_id)
+        pms_api_check_access(user=self.env.user, records=pms_property)
         product_context = dict(
             self.env.context,
             date=datetime.today().date(),
@@ -149,9 +161,11 @@ class PmsPriceService(Component):
             product_context["consumption_date"] = date_consumption
         if board_service_line_id:
             product_context["board_service_line_id"] = board_service_line_id
-        product = product.with_context(product_context)
+        product = product.with_context(**product_context)
         return self.env["account.tax"]._fix_tax_included_price_company(
-            self.env["product.product"]._pms_get_display_price(
+            self.env["product.product"]
+            .sudo()
+            ._pms_get_display_price(
                 pricelist_id=pricelist_id,
                 product=product,
                 company_id=pms_property.company_id.id,
@@ -174,16 +188,20 @@ class PmsPriceService(Component):
         date_consumption=False,
         board_service_line_id=False,
     ):
+        pms_property = self.env["pms.property"].sudo().browse(pms_property_id)
+        pms_api_check_access(user=self.env.user, records=pms_property)
         price = 0
         if board_service_line_id:
-            lines = self.env["pms.board.service.room.type.line"].browse(
-                board_service_line_id
+            lines = (
+                self.env["pms.board.service.room.type.line"]
+                .sudo()
+                .browse()
+                .browse(board_service_line_id)
             )
         else:
             lines = board_service.board_service_line_ids.filtered(
-                lambda l: l.adults if board_type == "adults" else l.children
+                lambda line: line.adults if board_type == "adults" else line.children
             )
-        print(lines)
         for line in lines:
             price += self._get_product_price(
                 product=line.product_id,

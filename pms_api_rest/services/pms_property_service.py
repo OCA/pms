@@ -7,7 +7,7 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
-from ..pms_api_rest_utils import url_image_pms_api_rest
+from ..pms_api_rest_utils import pms_api_check_access, url_image_pms_api_rest
 
 
 class PmsPropertyService(Component):
@@ -32,9 +32,9 @@ class PmsPropertyService(Component):
         domain = [("user_ids", "in", [self.env.user.id])]
         result_properties = []
         PmsPropertyInfo = self.env.datamodels["pms.property.info"]
-        for prop in self.env["pms.property"].search(
-            domain,
-        ):
+        properties = self.env["pms.property"].sudo().search(domain)
+        pms_api_check_access(user=self.env.user, records=properties)
+        for prop in properties:
             state_name = False
             ine_category = False
             privacy_policy = False
@@ -46,6 +46,7 @@ class PmsPropertyService(Component):
             if prop.state_id:
                 state_name = (
                     self.env["res.country.state"]
+                    .sudo()
                     .search([("id", "=", prop.state_id.id)])
                     .name
                 )
@@ -114,7 +115,10 @@ class PmsPropertyService(Component):
         auth="jwt_api_pms",
     )
     def get_property(self, property_id):
-        pms_property = self.env["pms.property"].search([("id", "=", property_id)])
+        pms_property = (
+            self.env["pms.property"].sudo().search([("id", "=", property_id)])
+        )
+        pms_api_check_access(user=self.env.user, records=pms_property)
         res = []
         PmsPropertyInfo = self.env.datamodels["pms.property.info"]
         if not pms_property:
@@ -125,6 +129,7 @@ class PmsPropertyService(Component):
             if pms_property.state_id:
                 state_name = (
                     self.env["res.country.state"]
+                    .sudo()
                     .search([("id", "=", pms_property.state_id.id)])
                     .name
                 )
@@ -193,8 +198,10 @@ class PmsPropertyService(Component):
     def get_users(self, pms_property_id):
         result_users = []
         ResUsersInfo = self.env.datamodels["res.users.info"]
-        users = self.env["res.users"].search(
-            [("pms_property_ids", "in", pms_property_id)]
+        users = (
+            self.env["res.users"]
+            .sudo()
+            .search([("pms_property_ids", "in", pms_property_id)])
         )
         for user in users:
             result_users.append(
@@ -225,12 +232,22 @@ class PmsPropertyService(Component):
         pms_property_id = pms_report_search_param.pmsPropertyId
         date_from = fields.Date.from_string(pms_report_search_param.dateFrom)
         date_to = fields.Date.from_string(pms_report_search_param.dateTo)
-        report_wizard = self.env["pms.ine.wizard"].create(
-            {
-                "start_date": date_from,
-                "end_date": date_to,
-                "pms_property_id": pms_property_id,
-            }
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"]
+            .sudo()
+            .search([("id", "=", pms_property_id)]),
+        )
+        report_wizard = (
+            self.env["pms.ine.wizard"]
+            .sudo()
+            .create(
+                {
+                    "start_date": date_from,
+                    "end_date": date_to,
+                    "pms_property_id": pms_property_id,
+                }
+            )
         )
         report_wizard.ine_generate_xml()
         # file_name is INE_<date_from_MONTH>_<date_from_YEAR>.xml
@@ -255,13 +272,18 @@ class PmsPropertyService(Component):
     )
     def transactions_report(self, pms_report_search_param):
         pms_property_id = pms_report_search_param.pmsPropertyId
-        pms_property = self.env["pms.property"].search([("id", "=", pms_property_id)])
+        pms_property = self.env["pms.property"].sudo().browse(pms_property_id)
+        pms_api_check_access(user=self.env.user, records=pms_property)
         date_from = fields.Date.from_string(pms_report_search_param.dateFrom)
-        report_wizard = self.env["traveller.report.wizard"].create(
-            {
-                "date_target": date_from,
-                "pms_property_id": pms_property_id,
-            }
+        report_wizard = (
+            self.env["traveller.report.wizard"]
+            .sudo()
+            .create(
+                {
+                    "date_target": date_from,
+                    "pms_property_id": pms_property_id,
+                }
+            )
         )
         content = report_wizard.generate_checkin_list(
             pms_property_id=pms_property_id,

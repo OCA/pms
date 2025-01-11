@@ -3,13 +3,15 @@ from datetime import datetime
 
 import werkzeug.exceptions
 
-from odoo import _, fields
+from odoo import SUPERUSER_ID, _, fields
 from odoo.exceptions import MissingError, UserError
 from odoo.osv import expression
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
+
+from ..pms_api_rest_utils import pms_api_check_access
 
 
 class PmsInvoiceService(Component):
@@ -94,30 +96,25 @@ class PmsInvoiceService(Component):
         PmsInvoiceResults = self.env.datamodels["pms.invoice.results"]
         PmsInvoiceInfo = self.env.datamodels["pms.invoice.info"]
         PmsInvoiceLineInfo = self.env.datamodels["pms.invoice.line.info"]
-        total_invoices = self.env["account.move"].search_count(domain)
+        total_invoices = self.env["account.move"].sudo().search_count(domain)
         if pms_invoice_search_param.orderBy:
             order_by_param = self._get_mapped_order_by_field(
                 pms_invoice_search_param.orderBy
             ) + (" desc" if pms_invoice_search_param.orderDesc else " asc")
-        amount_total = sum(
+        invoices = (
             self.env["account.move"]
+            .sudo()
             .search(
                 domain,
                 order=order_by_param if order_by_param else False,
                 limit=pms_invoice_search_param.limit,
                 offset=pms_invoice_search_param.offset,
             )
-            .mapped("amount_total")
         )
-        for invoice in self.env["account.move"].search(
-            domain,
-            order=order_by_param if order_by_param else False,
-            limit=pms_invoice_search_param.limit,
-            offset=pms_invoice_search_param.offset,
-        ):
-
+        pms_api_check_access(user=self.env.user, records=invoices)
+        amount_total = sum(invoices.mapped("amount_total"))
+        for invoice in invoices:
             move_lines = []
-
             for move_line in invoice.invoice_line_ids:
                 move_lines.append(
                     PmsInvoiceLineInfo(
@@ -209,12 +206,14 @@ class PmsInvoiceService(Component):
     )
     # flake8: noqa: C901
     def update_invoice(self, invoice_id, pms_invoice_info):
-        invoice = self.env["account.move"].browse(invoice_id)
+        invoice = self.env["account.move"].sudo().browse(invoice_id)
+        pms_api_check_access(user=self.env.user, records=invoice)
         if invoice.move_type in ["in_refund", "out_refund"]:
             raise UserError(_("You can't update a refund invoice"))
         if invoice.payment_state == "reversed":
             raise UserError(_("You can't update a reversed invoice"))
-        invoice._check_fiscalyear_lock_date()
+        # TODO: _check_fiscalyear_lock_date with sudo is unsafe, we need to check the access
+        # invoice._check_fiscalyear_lock_date()
         new_vals = {}
         if (
             pms_invoice_info.partnerId
@@ -271,10 +270,14 @@ class PmsInvoiceService(Component):
                     if item[0] == 0:
                         cmd_new_invoice_lines.append(item)
                     else:
-                        folio_line_ids = self.env["folio.sale.line"].browse(
-                            self.env["account.move.line"]
-                            .browse(item[1])
-                            .folio_line_ids.ids
+                        folio_line_ids = (
+                            self.env["folio.sale.line"]
+                            .sudo()
+                            .browse(
+                                self.env["account.move.line"]
+                                .browse(item[1])
+                                .folio_line_ids.ids
+                            )
                         )
                         new_id = new_invoice.invoice_line_ids.filtered(
                             lambda l: l.folio_line_ids == folio_line_ids
@@ -339,9 +342,10 @@ class PmsInvoiceService(Component):
         auth="jwt_api_pms",
     )
     def delete_invoice(self, invoice_id):
-        invoice = self.env["account.move"].browse(invoice_id)
+        invoice = self.env["account.move"].sudo().browse(invoice_id)
+        pms_api_check_access(user=self.env.user, records=invoice)
         if invoice:
-            if invoice.state != "draft":
+            if invoice.state != "draft" and invoice.name not in ["/", False]:
                 raise UserError(_("Only draft invoices can be deleted"))
             invoice.unlink()
         else:
@@ -402,11 +406,11 @@ class PmsInvoiceService(Component):
         if new_vals.get("invoice_line_ids"):
             for line in new_vals["invoice_line_ids"]:
                 if line[0] == 2:
-                    move_line = self.env["account.move.line"].browse(line[1])
+                    move_line = self.env["account.move.line"].sudo().browse(line[1])
                     if not move_line.display_type:
                         return True
                 if line[0] == 1:
-                    move_line = self.env["account.move.line"].browse(line[1])
+                    move_line = self.env["account.move.line"].sudo().browse(line[1])
                     if "quantity" in line[2] and move_line.quantity != line[2].get(
                         "quantity"
                     ):
@@ -429,10 +433,13 @@ class PmsInvoiceService(Component):
     )
     def create_invoice(self, pms_invoice_info):
         if pms_invoice_info.originDownPaymentId:
-            payment = self.env["account.payment"].browse(
-                pms_invoice_info.originDownPaymentId
+            payment = (
+                self.env["account.payment"]
+                .sudo()
+                .browse(pms_invoice_info.originDownPaymentId)
             )
-            self.env["account.payment"]._create_downpayment_invoice(
+            pms_api_check_access(user=self.env.user, records=payment)
+            self.env["account.payment"].sudo()._create_downpayment_invoice(
                 payment=payment,
                 partner_id=pms_invoice_info.partnerId,
             )
@@ -450,16 +457,21 @@ class PmsInvoiceService(Component):
         auth="jwt_api_pms",
     )
     def get_invoice_mail(self, invoice_id):
-        invoice = self.env["account.move"].browse(invoice_id)
+        invoice = self.env["account.move"].sudo().browse(invoice_id)
+        pms_api_check_access(user=self.env.user, records=invoice)
         compose_vals = {
             "template_id": self.env.ref("account.email_template_edi_invoice").id,
             "model": "account.move",
             "res_ids": invoice.id,
         }
-        values = self.env["mail.compose.message"].generate_email_for_composer(
-            template_id=compose_vals["template_id"],
-            res_ids=compose_vals["res_ids"],
-            fields=["subject", "body_html"],
+        values = (
+            self.env["mail.compose.message"]
+            .with_user(SUPERUSER_ID)
+            .generate_email_for_composer(
+                template_id=compose_vals["template_id"],
+                res_ids=compose_vals["res_ids"],
+                fields=["subject", "body_html"],
+            )
         )
         PmsMailInfo = self.env.datamodels["pms.mail.info"]
         return PmsMailInfo(
@@ -481,10 +493,13 @@ class PmsInvoiceService(Component):
         auth="jwt_api_pms",
     )
     def send_mail_print_invoices(self, account_send_search_param):
-        invoices = self.env["account.move"].browse(account_send_search_param.invoiceIds)
+        invoices = (
+            self.env["account.move"].sudo().browse(account_send_search_param.invoiceIds)
+        )
+        pms_api_check_access(user=self.env.user, records=invoices)
         template = self.env.ref(
             "account.email_template_edi_invoice", raise_if_not_found=False
-        )
+        ).sudo()
         PmsResponse = self.env.datamodels["pms.report"]
         base64_encoded_str = None
 
@@ -503,12 +518,14 @@ class PmsInvoiceService(Component):
                     else False,
                     "email_to": account_send_search_param.emailAddresses,
                 }
-                template.send_mail(
+                template.with_user(SUPERUSER_ID).send_mail(
                     invoice.id, force_send=True, email_values=email_values
                 )
         if account_send_search_param.isPrint:
-            invoice_report = self.env.ref("account.account_invoices")
-            pdf_content, _ = invoice_report._render_qweb_pdf(invoices.ids)
+            invoice_report = self.env.ref("account.account_invoices").sudo()
+            pdf_content, _ = invoice_report.with_user(SUPERUSER_ID)._render_qweb_pdf(
+                invoices.ids
+            )
             base64_encoded_str = base64.b64encode(pdf_content)
         return PmsResponse(binary=base64_encoded_str)
 
@@ -525,11 +542,12 @@ class PmsInvoiceService(Component):
         auth="jwt_api_pms",
     )
     def send_invoice_mail(self, invoice_id, pms_mail_info):
-        invoice = self.env["account.move"].browse(invoice_id)
+        invoice = self.env["account.move"].sudo().browse(invoice_id)
+        pms_api_check_access(user=self.env.user, records=invoice)
         recipients = pms_mail_info.emailAddresses
         template = self.env.ref(
             "account.email_template_edi_invoice", raise_if_not_found=False
-        )
+        ).sudo()
         email_values = {
             "email_to": ",".join(recipients) if recipients else False,
             "email_from": invoice.pms_property_id.email
@@ -545,7 +563,9 @@ class PmsInvoiceService(Component):
             else False,
             "auto_delete": False,
         }
-        template.send_mail(invoice.id, force_send=True, email_values=email_values)
+        template.with_user(SUPERUSER_ID).send_mail(
+            invoice.id, force_send=True, email_values=email_values
+        )
         invoice.write(
             {
                 "is_move_sent": True,
@@ -576,23 +596,30 @@ class PmsInvoiceService(Component):
         )
         if newInvoiceLinesInfo:
             partner = (
-                self.env["res.partner"].browse(pms_invoice_info.partnerId)
+                self.env["res.partner"].sudo().browse(pms_invoice_info.partnerId)
                 if pms_invoice_info.partnerId
                 else invoice.partner_id
             )
-            folios = self.env["pms.folio"].browse(
-                list(
-                    {
-                        self.env["folio.sale.line"].browse(line.saleLineId).folio_id.id
-                        for line in list(
-                            filter(
-                                lambda item: item.name,
-                                pms_invoice_info.moveLines,
+            folios = (
+                self.env["pms.folio"]
+                .sudo()
+                .browse(
+                    list(
+                        {
+                            self.env["folio.sale.line"]
+                            .browse(line.saleLineId)
+                            .folio_id.id
+                            for line in list(
+                                filter(
+                                    lambda item: item.name,
+                                    pms_invoice_info.moveLines,
+                                )
                             )
-                        )
-                    }
+                        }
+                    )
                 )
             )
+            pms_api_check_access(user=self.env.user, records=folios)
             lines_to_invoice = {
                 newInvoiceLinesInfo[i].saleLineId: newInvoiceLinesInfo[i].quantity
                 for i in range(0, len(newInvoiceLinesInfo))
@@ -600,6 +627,7 @@ class PmsInvoiceService(Component):
             # Add sections to invoice lines
             new_section_ids = (
                 self.env["folio.sale.line"]
+                .sudo()
                 .browse([line.saleLineId for line in newInvoiceLinesInfo])
                 .filtered(
                     lambda l: l.section_id.id
@@ -607,6 +635,7 @@ class PmsInvoiceService(Component):
                 )
                 .mapped("section_id.id")
             )
+            pms_api_check_access(user=self.env.user, records=new_section_ids)
             if new_section_ids:
                 lines_to_invoice.update(
                     {section_id: 0 for section_id in new_section_ids}

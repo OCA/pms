@@ -5,6 +5,8 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
+from ..pms_api_rest_utils import pms_api_check_access
+
 
 class PmsAmenityTypeService(Component):
     _inherit = "base.rest.service"
@@ -44,9 +46,9 @@ class PmsAmenityTypeService(Component):
 
         result_amenity_types = []
         PmsAmenityTypeInfo = self.env.datamodels["pms.amenity.type.info"]
-        for amenity_type in self.env["pms.amenity.type"].search(
-            domain,
-        ):
+        amenity_types = self.env["pms.amenity.type"].sudo().search(domain)
+        pms_api_check_access(user=self.env.user, records=amenity_types)
+        for amenity_type in amenity_types:
 
             result_amenity_types.append(
                 PmsAmenityTypeInfo(
@@ -69,14 +71,12 @@ class PmsAmenityTypeService(Component):
         auth="jwt_api_pms",
     )
     def get_amenity_type(self, amenity_type_id):
-        amenity_type = self.env["pms.amenity.type"].search(
-            [("id", "=", amenity_type_id)]
-        )
-        if amenity_type:
-            PmsAmenityTypeInfo = self.env.datamodels["pms.amenity.type.info"]
-            return PmsAmenityTypeInfo(
-                id=amenity_type.id,
-                name=amenity_type.name,
-            )
-        else:
+        amenity_type = self.env["pms.amenity.type"].sudo().browse(amenity_type_id)
+        if not amenity_type.exists():
             raise MissingError(_("Amenity Type not found"))
+        pms_api_check_access(user=self.env.user, records=amenity_type)
+        PmsAmenityTypeInfo = self.env.datamodels["pms.amenity.type.info"]
+        return PmsAmenityTypeInfo(
+            id=amenity_type.id,
+            name=amenity_type.name,
+        )

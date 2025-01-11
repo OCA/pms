@@ -7,6 +7,8 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
+from ..pms_api_rest_utils import pms_api_check_access
+
 
 class PmsPricelistService(Component):
     _inherit = "base.rest.service"
@@ -33,8 +35,7 @@ class PmsPricelistService(Component):
         ]
         if pms_search_param.daily and pms_search_param.daily is True:
             domain.append(("pricelist_type", "=", "daily"))
-
-        pricelists = self.env["product.pricelist"].search(domain)
+        pricelists = self.env["product.pricelist"].sudo().search(domain)
         if pms_search_param.pmsPropertyIds and pms_search_param.pmsPropertyId:
             raise ValidationError(
                 _(
@@ -62,6 +63,7 @@ class PmsPricelistService(Component):
                 lambda p: not p.pms_sale_channel_ids
                 or pms_search_param.saleChannelId in p.pms_sale_channel_ids.ids
             )
+        pms_api_check_access(user=self.env.user, records=pricelists)
         PmsPricelistInfo = self.env.datamodels["pms.pricelist.info"]
         result_pricelists = []
         for pricelist in pricelists:
@@ -93,7 +95,7 @@ class PmsPricelistService(Component):
         output_param=Datamodel("pms.pricelist.info", is_list=False),
         auth="jwt_api_pms",
     )
-    def get_pricelist(self, pricelist_id, **args):
+    def get_pricelist_restricted(self, pricelist_id, **args):
         pricelist = self.env["product.pricelist"].sudo().browse(pricelist_id)
         if pricelist.exists():
             PmsPricelistInfo = self.env.datamodels["pms.pricelist.info"]
@@ -126,9 +128,14 @@ class PmsPricelistService(Component):
         auth="jwt_api_pms",
     )
     def get_pricelists_items(self, pricelist_id, pricelist_item_search_param):
-        pms_property = self.env["pms.property"].browse(
-            pricelist_item_search_param.pmsPropertyId
+        pms_property = (
+            self.env["pms.property"]
+            .sudo()
+            .browse(pricelist_item_search_param.pmsPropertyId)
         )
+        if not pms_property.exists():
+            raise MissingError
+        pms_api_check_access(user=self.env.user, records=pms_property)
         date_from = datetime.strptime(
             pricelist_item_search_param.dateFrom, "%Y-%m-%d"
         ).date()
@@ -137,16 +144,19 @@ class PmsPricelistService(Component):
         ).date()
         count_nights = (date_to - date_from).days + 1
         target_dates = [date_from + timedelta(days=x) for x in range(count_nights)]
-        record_pricelist = self.env["product.pricelist"].sudo.browse(pricelist_id)
+        record_pricelist = self.env["product.pricelist"].sudo().browse(pricelist_id)
         if not record_pricelist.exists():
             raise MissingError
+        pms_api_check_access(user=self.env.user, records=record_pricelist)
         rooms = (
             self.env["pms.room"]
+            .sudo()
             .with_context(active_test=True)
             .search(
                 [("pms_property_id", "=", pricelist_item_search_param.pmsPropertyId)]
             )
         )
+        pms_api_check_access(user=self.env.user, records=rooms)
         room_types = rooms.mapped("room_type_id")
         result = []
         PmsPricelistItemInfo = self.env.datamodels["pms.pricelist.item.info"]
@@ -159,7 +169,10 @@ class PmsPricelistService(Component):
             )._compute_price_rule(products, datetime.today())
             for product_id, v in date_prices.items():
                 room_type_id = (
-                    self.env["product.product"].browse(product_id).room_type_id.id
+                    self.env["product.product"]
+                    .sudo()
+                    .browse(product_id)
+                    .room_type_id.id
                 )
                 if not v[1]:
                     continue
@@ -177,18 +190,25 @@ class PmsPricelistService(Component):
             date = datetime.strptime(pms_pricelist_item.date, "%Y-%m-%d").date()
             product_id = (
                 self.env["pms.room.type"]
+                .sudo()
                 .browse(pms_pricelist_item.roomTypeId)
                 .product_id
             )
-            product_pricelist_item = self.env["product.pricelist.item"].search(
-                [
-                    ("pricelist_id", "=", pms_pricelist_item.pricelistId),
-                    ("product_id", "=", product_id.id),
-                    ("pms_property_ids", "in", pms_pricelist_item.pmsPropertyId),
-                    ("date_start_consumption", "=", date),
-                    ("date_end_consumption", "=", date),
-                ]
+            pms_api_check_access(user=self.env.user, records=product_id)
+            product_pricelist_item = (
+                self.env["product.pricelist.item"]
+                .sudo()
+                .search(
+                    [
+                        ("pricelist_id", "=", pms_pricelist_item.pricelistId),
+                        ("product_id", "=", product_id.id),
+                        ("pms_property_ids", "in", pms_pricelist_item.pmsPropertyId),
+                        ("date_start_consumption", "=", date),
+                        ("date_end_consumption", "=", date),
+                    ]
+                )
             )
+            pms_api_check_access(user=self.env.user, records=product_pricelist_item)
             if product_pricelist_item:
                 product_pricelist_item.write(
                     {
@@ -196,7 +216,19 @@ class PmsPricelistService(Component):
                     }
                 )
             else:
-                self.env["product.pricelist.item"].create(
+                pms_api_check_access(
+                    user=self.env.user,
+                    records=self.env["product.pricelist"]
+                    .sudo()
+                    .browse(pms_pricelist_item.pricelistId),
+                )
+                pms_api_check_access(
+                    user=self.env.user,
+                    records=self.env["pms.property"]
+                    .sudo()
+                    .browse(pms_pricelist_item.pmsPropertyId),
+                )
+                self.env["product.pricelist.item"].sudo().create(
                     {
                         "applied_on": "0_product_variant",
                         "product_id": product_id.id,

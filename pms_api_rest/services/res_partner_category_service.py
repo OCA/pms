@@ -26,6 +26,7 @@ class PmsPartnerCategoriesService(Component):
         ResPartnerCategoryInfo = self.env.datamodels["res.partner.category.info"]
         for category in (
             self.env["res.partner.category"]
+            .sudo()
             .with_context(lang=self.env.user.lang)
             .search([("is_used_in_checkin", "=", True)])
         ):

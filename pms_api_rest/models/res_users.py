@@ -4,6 +4,16 @@ from odoo import fields, models
 class ResUsers(models.Model):
     _inherit = "res.users"
 
+    pms_api_user_role = fields.Selection(
+        help="PMS API User Role",
+        selection=[
+            ("receptionist", "Receptionist"),
+            ("manager", "Manager"),
+            ("revenue", "Revenue"),
+            ("administration", "Administration"),
+        ],
+        default="receptionist",
+    )
     availability_rule_field_ids = fields.Many2many(
         string="Availability Rules",
         help="Configurable availability rules",
@@ -13,32 +23,19 @@ class ResUsers(models.Model):
         column1="ir_model_fields",
         column2="res_users",
     )
-
-    is_new_interface_app_user = fields.Boolean(
-        string="Is New Interface App User",
-        help="Is New Interface App User",
-        default=False,
-        store=True,
-        readonly=False,
-    )
     pms_api_client = fields.Boolean(
-        string="PMS API Client",
         help="PMS API Client",
     )
     url_endpoint_prices = fields.Char(
-        string="URL Endpoint Prices",
         help="URL Endpoint Prices",
     )
     url_endpoint_availability = fields.Char(
-        string="URL Endpoint Availability",
         help="URL Endpoint Availability",
     )
     url_endpoint_rules = fields.Char(
-        string="URL Endpoint Rules",
         help="URL Endpoint Rules",
     )
     external_public_token = fields.Char(
-        string="External Public Token",
         help="External Public Token",
     )
 

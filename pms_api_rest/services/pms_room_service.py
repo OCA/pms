@@ -7,6 +7,8 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
+from ..pms_api_rest_utils import pms_api_check_access
+
 
 class PmsRoomService(Component):
     _inherit = "base.rest.service"
@@ -44,13 +46,11 @@ class PmsRoomService(Component):
             date_to = datetime.strptime(
                 room_search_param.availabilityTo, "%Y-%m-%d"
             ).date()
-            pms_property = self.env["pms.property"].browse(
-                room_search_param.pmsPropertyId
+            pms_property = (
+                self.env["pms.property"].sudo().browse(room_search_param.pmsPropertyId)
             )
+            pms_api_check_access(user=self.env.user, records=pms_property)
             if not room_search_param.pricelistId:
-                pms_property = self.env["pms.property"].browse(
-                    room_search_param.pmsPropertyId
-                )
                 pms_property = pms_property.with_context(
                     checkin=date_from,
                     checkout=date_to,
@@ -70,13 +70,9 @@ class PmsRoomService(Component):
             domain.append(("id", "in", pms_property.free_room_ids.ids))
         result_rooms = []
         PmsRoomInfo = self.env.datamodels["pms.room.info"]
-        for room in (
-            self.env["pms.room"]
-            .search(
-                domain,
-            )
-            .sorted("sequence")
-        ):
+        rooms = self.env["pms.room"].sudo().search(domain).sorted("sequence")
+        pms_api_check_access(user=self.env.user, records=rooms)
+        for room in rooms:
             # TODO: avoid, change short_name,
             # set code amenities like a tag in room calendar name?
             short_name = room.short_name
@@ -121,19 +117,19 @@ class PmsRoomService(Component):
         auth="jwt_api_pms",
     )
     def get_room(self, room_id):
-        room = self.env["pms.room"].search([("id", "=", room_id)])
-        if room:
-            PmsRoomInfo = self.env.datamodels["pms.room.info"]
-            return PmsRoomInfo(
-                id=room.id,
-                name=room.name,
-                roomTypeId=room.room_type_id,
-                capacity=room.capacity,
-                shortName=room.short_name,
-                extraBedsAllowed=room.extra_beds_allowed,
-            )
-        else:
+        room = self.env["pms.room"].sudo().browse(room_id)
+        if not room.exists():
             raise MissingError(_("Room not found"))
+        pms_api_check_access(user=self.env.user, records=room)
+        PmsRoomInfo = self.env.datamodels["pms.room.info"]
+        return PmsRoomInfo(
+            id=room.id,
+            name=room.name,
+            roomTypeId=room.room_type_id,
+            capacity=room.capacity,
+            shortName=room.short_name,
+            extraBedsAllowed=room.extra_beds_allowed,
+        )
 
     @restapi.method(
         [
@@ -148,14 +144,13 @@ class PmsRoomService(Component):
         auth="jwt_api_pms",
     )
     def update_room(self, room_id, pms_room_info_data):
-        room = self.env["pms.room"].search([("id", "=", room_id)])
-        room_vals = {}
-        if not room:
+        room = self.env["pms.room"].sudo().browse(room_id)
+        if not room.exists():
             raise MissingError(_("Room not found"))
-
+        pms_api_check_access(user=self.env.user, records=room)
+        room_vals = {}
         if pms_room_info_data.name:
             room_vals["name"] = pms_room_info_data.name
-
         if room_vals:
             room.write(room_vals)
 
@@ -171,12 +166,11 @@ class PmsRoomService(Component):
         auth="jwt_api_pms",
     )
     def delete_room(self, room_id):
-        # esto tb podría ser con un browse
-        room = self.env["pms.room"].search([("id", "=", room_id)])
-        if room:
-            room.active = False
-        else:
+        room = self.env["pms.room"].sudo().browse(room_id)
+        if not room.exists():
             raise MissingError(_("Room not found"))
+        pms_api_check_access(user=self.env.user, records=room)
+        room.active = False
 
     @restapi.method(
         [
@@ -191,12 +185,23 @@ class PmsRoomService(Component):
         auth="jwt_api_pms",
     )
     def create_room(self, pms_room_info_param):
-        room = self.env["pms.room"].create(
-            {
-                "name": pms_room_info_param.name,
-                "room_type_id": pms_room_info_param.roomTypeId,
-                "capacity": pms_room_info_param.capacity,
-                "short_name": pms_room_info_param.shortName,
-            }
+        pms_property = (
+            self.env["pms.property"].sudo().browse(pms_room_info_param.pmsPropertyId)
+        )
+        if not pms_property.exists():
+            raise MissingError(_("Property not found"))
+        pms_api_check_access(user=self.env.user, records=pms_property)
+        room = (
+            self.env["pms.room"]
+            .sudo()
+            .create(
+                {
+                    "name": pms_room_info_param.name,
+                    "room_type_id": pms_room_info_param.roomTypeId,
+                    "capacity": pms_room_info_param.capacity,
+                    "short_name": pms_room_info_param.shortName,
+                    "pms_property_id": pms_room_info_param.pmsPropertyId,
+                }
+            )
         )
         return room.id

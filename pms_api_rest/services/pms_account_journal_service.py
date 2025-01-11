@@ -2,6 +2,8 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
+from ..pms_api_rest_utils import pms_api_check_access
+
 
 class PmsAccountJournalService(Component):
     _inherit = "base.rest.service"
@@ -23,8 +25,14 @@ class PmsAccountJournalService(Component):
         auth="jwt_api_pms",
     )
     def get_method_payments(self, account_journal_search_param):
-        pms_property = self.env["pms.property"].search(
-            [("id", "=", account_journal_search_param.pmsPropertyId)]
+        pms_property = (
+            self.env["pms.property"]
+            .sudo()
+            .search([("id", "=", account_journal_search_param.pmsPropertyId)])
+        )
+        pms_api_check_access(
+            user=self.env.user,
+            records=pms_property,
         )
         PmsAccountJournalInfo = self.env.datamodels["pms.account.journal.info"]
         result_account_journals = []

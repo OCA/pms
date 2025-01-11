@@ -1,8 +1,11 @@
+from odoo import _
 from odoo.exceptions import MissingError
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
+
+from ..pms_api_rest_utils import pms_api_check_access
 
 
 class PmsRoomTypeService(Component):
@@ -25,14 +28,16 @@ class PmsRoomTypeService(Component):
         auth="jwt_api_pms",
     )
     def get_room_types(self, room_type_search_param):
-        room_type_all_properties = self.env["pms.room.type"].search(
-            [("pms_property_ids", "=", False)]
+        room_type_all_properties = (
+            self.env["pms.room.type"].sudo().search([("pms_property_ids", "=", False)])
         )
         if room_type_search_param.pmsPropertyIds:
             room_types = set()
             for index, prop in enumerate(room_type_search_param.pmsPropertyIds):
-                room_types_with_query_property = self.env["pms.room.type"].search(
-                    [("pms_property_ids", "=", prop)]
+                room_types_with_query_property = (
+                    self.env["pms.room.type"]
+                    .sudo()
+                    .search([("pms_property_ids", "=", prop)])
                 )
                 if index == 0:
                     room_types = set(room_types_with_query_property.ids)
@@ -51,10 +56,9 @@ class PmsRoomTypeService(Component):
 
         result_rooms = []
         PmsRoomTypeInfo = self.env.datamodels["pms.room.type.info"]
-        for room in self.env["pms.room.type"].search(
-            domain,
-        ):
-
+        room_types = self.env["pms.room.type"].sudo().search(domain)
+        pms_api_check_access(user=self.env.user, records=room_types)
+        for room in room_types:
             result_rooms.append(
                 PmsRoomTypeInfo(
                     id=room.id,
@@ -98,4 +102,4 @@ class PmsRoomTypeService(Component):
                 defaultQuota=room_type_record.default_quota,
             )
         else:
-            raise MissingError("Room Type Class not found")
+            raise MissingError(_("Room Type Class not found"))

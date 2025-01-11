@@ -1,10 +1,13 @@
 from datetime import datetime
 
-from odoo import fields
+from odoo import _, fields
+from odoo.exceptions import MissingError
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
+
+from ..pms_api_rest_utils import pms_api_check_access
 
 
 class PmsDashboardServices(Component):
@@ -27,6 +30,12 @@ class PmsDashboardServices(Component):
         auth="jwt_api_pms",
     )
     def get_pending_reservations(self, pms_dashboard_search_param):
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"]
+            .sudo()
+            .browse(pms_dashboard_search_param.pmsPropertyId),
+        )
         dateFrom = fields.Date.from_string(pms_dashboard_search_param.dateFrom)
         dateTo = fields.Date.from_string(pms_dashboard_search_param.dateTo)
 
@@ -104,6 +113,12 @@ class PmsDashboardServices(Component):
         auth="jwt_api_pms",
     )
     def get_occupancy(self, pms_dashboard_search_param):
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"]
+            .sudo()
+            .browse(pms_dashboard_search_param.pmsPropertyId),
+        )
         date_occupancy = fields.Date.from_string(pms_dashboard_search_param.date)
 
         self.env.cr.execute(
@@ -154,6 +169,12 @@ class PmsDashboardServices(Component):
         output_param=Datamodel("pms.dashboard.state.rooms", is_list=True),
     )
     def get_state_rooms(self, pms_dashboard_search_param):
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"]
+            .sudo()
+            .browse(pms_dashboard_search_param.pmsPropertyId),
+        )
         dateFrom = fields.Date.from_string(pms_dashboard_search_param.dateFrom)
         dateTo = fields.Date.from_string(pms_dashboard_search_param.dateTo)
         self.env.cr.execute(
@@ -235,6 +256,12 @@ class PmsDashboardServices(Component):
         auth="jwt_api_pms",
     )
     def get_reservations_by_sale_channel(self, pms_dashboard_search_param):
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"]
+            .sudo()
+            .browse(pms_dashboard_search_param.pmsPropertyId),
+        )
         dateFrom = fields.Date.from_string(pms_dashboard_search_param.dateFrom)
         dateTo = fields.Date.from_string(pms_dashboard_search_param.dateTo)
         self.env.cr.execute(
@@ -308,6 +335,12 @@ class PmsDashboardServices(Component):
         auth="jwt_api_pms",
     )
     def get_billing(self, pms_dashboard_search_param):
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"]
+            .sudo()
+            .browse(pms_dashboard_search_param.pmsPropertyId),
+        )
         date_billing = fields.Date.from_string(pms_dashboard_search_param.date)
 
         self.env.cr.execute(
@@ -346,12 +379,22 @@ class PmsDashboardServices(Component):
         auth="jwt_api_pms",
     )
     def get_adr(self, pms_dashboard_search_param):
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"]
+            .sudo()
+            .browse(pms_dashboard_search_param.pmsPropertyId),
+        )
         date_from = fields.Date.from_string(pms_dashboard_search_param.dateFrom)
         date_to = fields.Date.from_string(pms_dashboard_search_param.dateTo)
 
-        pms_property = self.env["pms.property"].search(
-            [("id", "=", pms_dashboard_search_param.pmsPropertyId)]
+        pms_property = (
+            self.env["pms.property"]
+            .sudo()
+            .browse(pms_dashboard_search_param.pmsPropertyId)
         )
+        if not pms_property.exists():
+            raise MissingError(_("Property not found"))
 
         adr = pms_property._get_adr(date_from, date_to)
 
@@ -375,12 +418,17 @@ class PmsDashboardServices(Component):
         auth="jwt_api_pms",
     )
     def get_revpar(self, pms_dashboard_search_param):
+        pms_property = (
+            self.env["pms.property"]
+            .sudo()
+            .browse(pms_dashboard_search_param.pmsPropertyId)
+        )
+        pms_api_check_access(
+            user=self.env.user,
+            records=pms_property,
+        )
         date_from = fields.Date.from_string(pms_dashboard_search_param.dateFrom)
         date_to = fields.Date.from_string(pms_dashboard_search_param.dateTo)
-
-        pms_property = self.env["pms.property"].search(
-            [("id", "=", pms_dashboard_search_param.pmsPropertyId)]
-        )
 
         revpar = pms_property._get_revpar(date_from, date_to)
 
@@ -404,6 +452,12 @@ class PmsDashboardServices(Component):
         auth="jwt_api_pms",
     )
     def get_number_of_new_folios(self, pms_dashboard_search_param):
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"]
+            .sudo()
+            .browse(pms_dashboard_search_param.pmsPropertyId),
+        )
         date_new_folios = fields.Date.from_string(pms_dashboard_search_param.date)
 
         self.env.cr.execute(
@@ -442,6 +496,12 @@ class PmsDashboardServices(Component):
         auth="jwt_api_pms",
     )
     def get_overnights(self, pms_dashboard_search_param):
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"]
+            .sudo()
+            .browse(pms_dashboard_search_param.pmsPropertyId),
+        )
         date = fields.Date.from_string(pms_dashboard_search_param.date)
 
         self.env.cr.execute(
@@ -483,6 +543,12 @@ class PmsDashboardServices(Component):
         auth="jwt_api_pms",
     )
     def get_cancelled_overnights(self, pms_dashboard_search_param):
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"]
+            .sudo()
+            .browse(pms_dashboard_search_param.pmsPropertyId),
+        )
         date = fields.Date.from_string(pms_dashboard_search_param.date)
 
         self.env.cr.execute(
@@ -526,6 +592,12 @@ class PmsDashboardServices(Component):
         auth="jwt_api_pms",
     )
     def get_overbookings(self, pms_dashboard_search_param):
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"]
+            .sudo()
+            .browse(pms_dashboard_search_param.pmsPropertyId),
+        )
         date = fields.Date.from_string(pms_dashboard_search_param.date)
 
         self.env.cr.execute(
@@ -563,6 +635,12 @@ class PmsDashboardServices(Component):
         auth="jwt_api_pms",
     )
     def get_occupied_rooms(self, pms_dashboard_search_param):
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"]
+            .sudo()
+            .browse(pms_dashboard_search_param.pmsPropertyId),
+        )
         dateFrom = fields.Date.from_string(pms_dashboard_search_param.dateFrom)
         dateTo = fields.Date.from_string(pms_dashboard_search_param.dateTo)
         self.env.cr.execute(
@@ -621,6 +699,12 @@ class PmsDashboardServices(Component):
         auth="jwt_api_pms",
     )
     def get_daily_billings(self, pms_dashboard_search_param):
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"]
+            .sudo()
+            .browse(pms_dashboard_search_param.pmsPropertyId),
+        )
         dateFrom = fields.Date.from_string(pms_dashboard_search_param.dateFrom)
         dateTo = fields.Date.from_string(pms_dashboard_search_param.dateTo)
         self.env.cr.execute(
@@ -679,16 +763,22 @@ class PmsDashboardServices(Component):
     def get_last_received_folios(self, pms_folio_search_param):
         result_folios = []
         PmsFolioShortInfo = self.env.datamodels["pms.folio.short.info"]
-        for folio in self.env["pms.folio"].search(
-            [
-                ("first_checkin", ">=", datetime.now().date()),
-                ("pms_property_id", "=", pms_folio_search_param.pmsPropertyId),
-                ("reservation_type", "=", "normal"),
-            ],
-            limit=pms_folio_search_param.limit,
-            offset=pms_folio_search_param.offset,
-            order="create_date desc",
-        ):
+        folios = (
+            self.env["pms.folio"]
+            .sudo()
+            .search(
+                [
+                    ("first_checkin", ">=", datetime.now().date()),
+                    ("pms_property_id", "=", pms_folio_search_param.pmsPropertyId),
+                    ("reservation_type", "=", "normal"),
+                ],
+                limit=pms_folio_search_param.limit,
+                offset=pms_folio_search_param.offset,
+                order="create_date desc",
+            )
+        )
+        pms_api_check_access(user=self.env.user, records=folios)
+        for folio in folios:
             result_folios.append(
                 PmsFolioShortInfo(
                     id=folio.id,
@@ -733,10 +823,20 @@ class PmsDashboardServices(Component):
         auth="jwt_api_pms",
     )
     def get_num_last_received_folios(self, pms_folio_search_param):
-        return self.env["pms.folio"].search_count(
-            [
-                ("first_checkin", ">=", datetime.now().date()),
-                ("pms_property_id", "=", pms_folio_search_param.pmsPropertyId),
-                ("reservation_type", "=", "normal"),
-            ],
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"]
+            .sudo()
+            .browse(pms_folio_search_param.pmsPropertyId),
+        )
+        return (
+            self.env["pms.folio"]
+            .sudo()
+            .search_count(
+                [
+                    ("first_checkin", ">=", datetime.now().date()),
+                    ("pms_property_id", "=", pms_folio_search_param.pmsPropertyId),
+                    ("reservation_type", "=", "normal"),
+                ],
+            )
         )

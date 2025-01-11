@@ -7,6 +7,8 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
+from ..pms_api_rest_utils import pms_api_check_access
+
 
 class PmsAvailabilityPlanService(Component):
     _inherit = "base.rest.service"
@@ -29,15 +31,19 @@ class PmsAvailabilityPlanService(Component):
     )
     def get_availability_plans(self, pms_search_param, **args):
 
-        availability_plans_all_properties = self.env["pms.availability.plan"].search(
-            [("pms_property_ids", "=", False)]
+        availability_plans_all_properties = (
+            self.env["pms.availability.plan"]
+            .sudo()
+            .search([("pms_property_ids", "=", False)])
         )
         availabilities = set()
         if pms_search_param.pmsPropertyIds:
             for index, prop in enumerate(pms_search_param.pmsPropertyIds):
-                availabilities_with_query_property = self.env[
-                    "pms.availability.plan"
-                ].search([("pms_property_ids", "=", prop)])
+                availabilities_with_query_property = (
+                    self.env["pms.availability.plan"]
+                    .sudo()
+                    .search([("pms_property_ids", "=", prop)])
+                )
                 if index == 0:
                     availabilities = set(availabilities_with_query_property.ids)
                 else:
@@ -55,12 +61,14 @@ class PmsAvailabilityPlanService(Component):
 
         PmsAvialabilityPlanInfo = self.env.datamodels["pms.availability.plan.info"]
         result_availabilities = []
-        for availability in self.env["pms.availability.plan"].search(domain):
+        availability_plans = self.env["pms.availability.plan"].sudo().search(domain)
+        pms_api_check_access(user=self.env.user, records=availability_plans)
+        for availability_plan in availability_plans:
             result_availabilities.append(
                 PmsAvialabilityPlanInfo(
-                    id=availability.id,
-                    name=availability.name,
-                    pmsPropertyIds=availability.pms_property_ids.mapped("id"),
+                    id=availability_plan.id,
+                    name=availability_plan.name,
+                    pmsPropertyIds=availability_plan.pms_property_ids.mapped("id"),
                 )
             )
         return result_availabilities
@@ -90,15 +98,16 @@ class PmsAvailabilityPlanService(Component):
         count_nights = (date_to - date_from).days + 1
         target_dates = [date_from + timedelta(days=x) for x in range(count_nights)]
         pms_property_id = availability_plan_rule_search_param.pmsPropertyId
-        record_availability_plan_id = self.env["pms.availability.plan"].browse(
-            availability_plan_id
+        record_availability_plan_id = (
+            self.env["pms.availability.plan"].sudo().browse(availability_plan_id)
         )
         if not record_availability_plan_id:
             raise MissingError
-
+        pms_api_check_access(user=self.env.user, records=record_availability_plan_id)
         rooms = (
             self.env["pms.room"]
             .with_context(active_test=True)
+            .sudo()
             .search(
                 [
                     (
@@ -109,6 +118,7 @@ class PmsAvailabilityPlanService(Component):
                 ]
             )
         )
+        pms_api_check_access(user=self.env.user, records=rooms)
         room_type_ids = rooms.mapped("room_type_id").ids
         selected_fields = [
             "id",
@@ -185,47 +195,67 @@ class PmsAvailabilityPlanService(Component):
         return result
 
     def _create_or_update_avail_plan_rules(self, pms_avail_plan_rules_info):
+        rules_by_property = {}
+        # Group rules by property to avoid multiple calls to the same property
+        # when checking access rights
         for avail_plan_rule in pms_avail_plan_rules_info.availabilityPlanRules:
-            vals = dict()
-            date = datetime.strptime(avail_plan_rule.date, "%Y-%m-%d").date()
-            if avail_plan_rule.minStay is not None:
-                vals.update({"min_stay": avail_plan_rule.minStay})
-            if avail_plan_rule.minStayArrival is not None:
-                vals.update({"min_stay_arrival": avail_plan_rule.minStayArrival})
-            if avail_plan_rule.maxStay is not None:
-                vals.update({"max_stay": avail_plan_rule.maxStay})
-            if avail_plan_rule.maxStayArrival is not None:
-                vals.update({"max_stay_arrival": avail_plan_rule.maxStayArrival})
-            if avail_plan_rule.closed is not None:
-                vals.update({"closed": avail_plan_rule.closed})
-            if avail_plan_rule.closedDeparture is not None:
-                vals.update({"closed_departure": avail_plan_rule.closedDeparture})
-            if avail_plan_rule.closedArrival is not None:
-                vals.update({"closed_arrival": avail_plan_rule.closedArrival})
-            if avail_plan_rule.quota is not None:
-                vals.update({"quota": avail_plan_rule.quota})
-            if avail_plan_rule.maxAvailability is not None:
-                vals.update({"max_avail": avail_plan_rule.maxAvailability})
-            avail_rule = self.env["pms.availability.plan.rule"].search(
-                [
-                    ("availability_plan_id", "=", avail_plan_rule.availabilityPlanId),
-                    ("pms_property_id", "=", avail_plan_rule.pmsPropertyId),
-                    ("room_type_id", "=", avail_plan_rule.roomTypeId),
-                    ("date", "=", date),
-                ]
-            )
-            if avail_rule:
-                avail_rule.write(vals)
-            else:
-                vals.update(
-                    {
-                        "room_type_id": avail_plan_rule.roomTypeId,
-                        "date": date,
-                        "pms_property_id": avail_plan_rule.pmsPropertyId,
-                        "availability_plan_id": avail_plan_rule.availabilityPlanId,
-                    }
+            property_id = avail_plan_rule.pmsPropertyId
+            if property_id not in rules_by_property:
+                rules_by_property[property_id] = []
+            rules_by_property[property_id].append(avail_plan_rule)
+
+        for property_id, rules in rules_by_property.items():
+            pms_property = self.env["pms.property"].sudo().browse(property_id)
+            pms_api_check_access(user=self.env.user, records=pms_property)
+            for avail_plan_rule in rules:
+                vals = dict()
+                date = datetime.strptime(avail_plan_rule.date, "%Y-%m-%d").date()
+                if avail_plan_rule.minStay is not None:
+                    vals.update({"min_stay": avail_plan_rule.minStay})
+                if avail_plan_rule.minStayArrival is not None:
+                    vals.update({"min_stay_arrival": avail_plan_rule.minStayArrival})
+                if avail_plan_rule.maxStay is not None:
+                    vals.update({"max_stay": avail_plan_rule.maxStay})
+                if avail_plan_rule.maxStayArrival is not None:
+                    vals.update({"max_stay_arrival": avail_plan_rule.maxStayArrival})
+                if avail_plan_rule.closed is not None:
+                    vals.update({"closed": avail_plan_rule.closed})
+                if avail_plan_rule.closedDeparture is not None:
+                    vals.update({"closed_departure": avail_plan_rule.closedDeparture})
+                if avail_plan_rule.closedArrival is not None:
+                    vals.update({"closed_arrival": avail_plan_rule.closedArrival})
+                if avail_plan_rule.quota is not None:
+                    vals.update({"quota": avail_plan_rule.quota})
+                if avail_plan_rule.maxAvailability is not None:
+                    vals.update({"max_avail": avail_plan_rule.maxAvailability})
+                avail_rule = (
+                    self.env["pms.availability.plan.rule"]
+                    .sudo()
+                    .search(
+                        [
+                            (
+                                "availability_plan_id",
+                                "=",
+                                avail_plan_rule.availabilityPlanId,
+                            ),
+                            ("pms_property_id", "=", avail_plan_rule.pmsPropertyId),
+                            ("room_type_id", "=", avail_plan_rule.roomTypeId),
+                            ("date", "=", date),
+                        ]
+                    )
                 )
-                self.env["pms.availability.plan.rule"].create(vals)
+                if avail_rule:
+                    avail_rule.write(vals)
+                else:
+                    vals.update(
+                        {
+                            "room_type_id": avail_plan_rule.roomTypeId,
+                            "date": date,
+                            "pms_property_id": avail_plan_rule.pmsPropertyId,
+                            "availability_plan_id": avail_plan_rule.availabilityPlanId,
+                        }
+                    )
+                    self.env["pms.availability.plan.rule"].sudo().create(vals)
 
     @restapi.method(
         [

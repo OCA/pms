@@ -14,7 +14,7 @@ from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 from odoo.addons.portal.controllers.portal import CustomerPortal
 
-from ..pms_api_rest_utils import url_image_pms_api_rest
+from ..pms_api_rest_utils import pms_api_check_access, url_image_pms_api_rest
 
 _logger = logging.getLogger(__name__)
 
@@ -50,12 +50,17 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def get_folio(self, folio_id):
-        folio = self.env["pms.folio"].search(
-            [
-                ("id", "=", folio_id),
-            ]
+        folio = (
+            self.env["pms.folio"]
+            .sudo()
+            .search(
+                [
+                    ("id", "=", folio_id),
+                ]
+            )
         )
         if folio:
+            pms_api_check_access(user=self.env.user, records=folio)
             portal_url = (
                 self.env["ir.config_parameter"].sudo().get_param("web.base.url")
                 + folio.get_portal_url()
@@ -112,13 +117,18 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def get_folio_adults(self, folio_id):
-        folio_record = self.env["pms.folio"].search(
-            [
-                ("id", "=", folio_id),
-            ]
+        folio_record = (
+            self.env["pms.folio"]
+            .sudo()
+            .search(
+                [
+                    ("id", "=", folio_id),
+                ]
+            )
         )
         if not folio_record:
             raise MissingError(_("Folio not found"))
+        pms_api_check_access(user=self.env.user, records=folio_record)
         result = []
         for checkin_partner_record in folio_record.checkin_partner_ids:
             if is_adult(checkin_partner_record.birthdate_date):
@@ -331,15 +341,21 @@ class PmsFolioService(Component):
             domain = domain_fields
         result_folios = []
         reservations_result = (
-            self.env["pms.reservation"].search(domain).mapped("folio_id").ids
+            self.env["pms.reservation"].sudo().search(domain).mapped("folio_id").ids
         )
         PmsFolioShortInfo = self.env.datamodels["pms.folio.short.info"]
-        for folio in self.env["pms.folio"].search(
-            [("id", "in", reservations_result)],
-            order=order_field,
-            limit=folio_search_param.limit,
-            offset=folio_search_param.offset,
-        ):
+        folios = (
+            self.env["pms.folio"]
+            .sudo()
+            .search(
+                [("id", "in", reservations_result)],
+                order=order_field,
+                limit=folio_search_param.limit,
+                offset=folio_search_param.offset,
+            )
+        )
+        pms_api_check_access(user=self.env.user, records=folios)
+        for folio in folios:
             reservations = []
             for reservation in folio.reservation_ids:
                 reservations.append(
@@ -444,7 +460,8 @@ class PmsFolioService(Component):
         domain.append(("id", "=", folio_id))
         if pms_search_param.pmsPropertyId:
             domain.append(("pms_property_id", "=", pms_search_param.pmsPropertyId))
-        folio = self.env["pms.folio"].search(domain)
+        folio = self.env["pms.folio"].sudo().search(domain)
+        pms_api_check_access(user=self.env.user, records=folio)
         transactions = []
         PmsTransactiontInfo = self.env.datamodels["pms.transaction.info"]
         if not folio:
@@ -495,14 +512,25 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def create_folio_charge(self, folio_id, pms_account_payment_info):
-        folio = self.env["pms.folio"].browse(folio_id)
-        partner_id = self.env["res.partner"].browse(pms_account_payment_info.partnerId)
-        journal = self.env["account.journal"].browse(pms_account_payment_info.journalId)
+        folio = self.env["pms.folio"].sudo().browse(folio_id)
+        pms_api_check_access(user=self.env.user, records=folio)
+        partner_id = (
+            self.env["res.partner"].sudo().browse(pms_account_payment_info.partnerId)
+        )
+        journal = (
+            self.env["account.journal"]
+            .sudo()
+            .browse(pms_account_payment_info.journalId)
+        )
+        pms_api_check_access(user=self.env.user, records=journal)
         reservations = (
-            self.env["pms.reservation"].browse(pms_account_payment_info.reservationIds)
+            self.env["pms.reservation"]
+            .sudo()
+            .browse(pms_account_payment_info.reservationIds)
             if pms_account_payment_info.reservationIds
             else False
         )
+        pms_api_check_access(user=self.env.user, records=reservations)
         if journal.type == "cash":
             # REVIEW: Temporaly, if not cash session open, create a new one automatically
             # Review this in pms_folio_service (/charge & /refund)
@@ -544,9 +572,17 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def create_folio_refund(self, folio_id, pms_account_payment_info):
-        folio = self.env["pms.folio"].browse(folio_id)
-        partner_id = self.env["res.partner"].browse(pms_account_payment_info.partnerId)
-        journal = self.env["account.journal"].browse(pms_account_payment_info.journalId)
+        folio = self.env["pms.folio"].sudo().browse(folio_id)
+        pms_api_check_access(user=self.env.user, records=folio)
+        partner_id = (
+            self.env["res.partner"].sudo().browse(pms_account_payment_info.partnerId)
+        )
+        journal = (
+            self.env["account.journal"]
+            .sudo()
+            .browse(pms_account_payment_info.journalId)
+        )
+        pms_api_check_access(user=self.env.user, records=journal)
         if journal.type == "cash":
             # REVIEW: Temporaly, if not cash session open, create a new one automatically
             # Review this in pms_folio_service (/charge & /refund)
@@ -585,80 +621,79 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def get_folio_reservations(self, folio_id):
-        folio = self.env["pms.folio"].browse(folio_id)
+        folio = self.env["pms.folio"].sudo().browse(folio_id)
+        if not folio.exists():
+            raise MissingError(_("Folio not found"))
+        pms_api_check_access(user=self.env.user, records=folio)
         reservations = []
         PmsReservationShortInfo = self.env.datamodels["pms.reservation.short.info"]
-        if not folio:
-            pass
-        else:
-            if folio.reservation_ids:
-                for reservation in sorted(
-                    folio.reservation_ids, key=lambda r: r.folio_sequence
-                ):
-                    reservation_room_type_class_id = self.env[
-                        "pms.room.type.class"
-                    ].browse(reservation.room_type_id.sudo().class_id.id)
-                    reservations.append(
-                        PmsReservationShortInfo(
-                            id=reservation.id,
-                            boardServiceId=reservation.board_service_room_id.id
-                            if reservation.board_service_room_id
-                            else None,
-                            checkin=datetime.combine(
-                                reservation.checkin, datetime.min.time()
-                            ).isoformat(),
-                            checkout=datetime.combine(
-                                reservation.checkout, datetime.min.time()
-                            ).isoformat(),
-                            roomTypeId=reservation.room_type_id.id
-                            if reservation.room_type_id
-                            else None,
-                            roomTypeClassId=reservation_room_type_class_id
-                            if reservation_room_type_class_id
-                            else None,
-                            preferredRoomId=reservation.preferred_room_id.id
-                            if reservation.preferred_room_id
-                            else None,
-                            name=reservation.name,
-                            adults=reservation.adults,
-                            stateCode=reservation.state,
-                            stateDescription=dict(
-                                reservation.fields_get(["state"])["state"]["selection"]
-                            )[reservation.state],
-                            children=reservation.children
-                            if reservation.children
-                            else 0,
-                            readyForCheckin=reservation.ready_for_checkin,
-                            allowedCheckout=reservation.allowed_checkout,
-                            isSplitted=reservation.splitted,
-                            priceTotal=round(reservation.price_room_services_set, 2),
-                            folioSequence=reservation.folio_sequence
-                            if reservation.folio_sequence
-                            else None,
-                            pricelistId=reservation.pricelist_id,
-                            servicesCount=sum(
-                                reservation.service_ids.filtered(
-                                    lambda x: not x.is_board_service
-                                ).mapped("product_qty")
-                            ),
-                            nights=reservation.nights,
-                            numServices=len(reservation.service_ids)
-                            if reservation.service_ids
-                            else 0,
-                            toAssign=reservation.to_assign,
-                            overbooking=reservation.overbooking,
-                            isBlocked=reservation.blocked,
-                            reservationType=reservation.reservation_type,
-                            segmentationId=reservation.segmentation_ids[0].id
-                            if reservation.segmentation_ids
-                            else None,
-                            isOverNightRoom=reservation.overnight_room,
-                            partnerId=reservation.partner_id.id
-                            if reservation.partner_id
-                            else None,
-                        )
+        if folio.reservation_ids:
+            for reservation in sorted(
+                folio.reservation_ids, key=lambda r: r.folio_sequence
+            ):
+                reservation_room_type_class_id = (
+                    self.env["pms.room.type.class"]
+                    .sudo()
+                    .browse(reservation.room_type_id.class_id.id)
+                )
+                reservations.append(
+                    PmsReservationShortInfo(
+                        id=reservation.id,
+                        boardServiceId=reservation.board_service_room_id.id
+                        if reservation.board_service_room_id
+                        else None,
+                        checkin=datetime.combine(
+                            reservation.checkin, datetime.min.time()
+                        ).isoformat(),
+                        checkout=datetime.combine(
+                            reservation.checkout, datetime.min.time()
+                        ).isoformat(),
+                        roomTypeId=reservation.room_type_id.id
+                        if reservation.room_type_id
+                        else None,
+                        roomTypeClassId=reservation_room_type_class_id
+                        if reservation_room_type_class_id
+                        else None,
+                        preferredRoomId=reservation.preferred_room_id.id
+                        if reservation.preferred_room_id
+                        else None,
+                        name=reservation.name,
+                        adults=reservation.adults,
+                        stateCode=reservation.state,
+                        stateDescription=dict(
+                            reservation.fields_get(["state"])["state"]["selection"]
+                        )[reservation.state],
+                        children=reservation.children if reservation.children else 0,
+                        readyForCheckin=reservation.ready_for_checkin,
+                        allowedCheckout=reservation.allowed_checkout,
+                        isSplitted=reservation.splitted,
+                        priceTotal=round(reservation.price_room_services_set, 2),
+                        folioSequence=reservation.folio_sequence
+                        if reservation.folio_sequence
+                        else None,
+                        pricelistId=reservation.pricelist_id,
+                        servicesCount=sum(
+                            reservation.service_ids.filtered(
+                                lambda x: not x.is_board_service
+                            ).mapped("product_qty")
+                        ),
+                        nights=reservation.nights,
+                        numServices=len(reservation.service_ids)
+                        if reservation.service_ids
+                        else 0,
+                        toAssign=reservation.to_assign,
+                        overbooking=reservation.overbooking,
+                        isBlocked=reservation.blocked,
+                        reservationType=reservation.reservation_type,
+                        segmentationId=reservation.segmentation_ids[0].id
+                        if reservation.segmentation_ids
+                        else None,
+                        isOverNightRoom=reservation.overnight_room,
+                        partnerId=reservation.partner_id.id
+                        if reservation.partner_id
+                        else None,
                     )
-
+                )
         return reservations
 
     @restapi.method(
@@ -675,6 +710,10 @@ class PmsFolioService(Component):
     )
     # flake8:noqa=C901
     def create_folio(self, pms_folio_info):
+        pms_property = (
+            self.env["pms.property"].sudo().browse(pms_folio_info.pmsPropertyId)
+        )
+        pms_api_check_access(user=self.env.user, records=pms_property)
         external_app = self.env.user.pms_api_client
         log_payload = pms_folio_info
         min_checkin_payload = min(
@@ -687,12 +726,20 @@ class PmsFolioService(Component):
             if pms_folio_info.externalReference and external_app:
                 # If folio exists (external_reference + pms_property_id)
                 # ignore the creation of the folio and log the payload with "duplicate" mensaje
-                folio = self.env["pms.folio"].search(
-                    [
-                        ("external_reference", "=", pms_folio_info.externalReference),
-                        ("pms_property_id", "=", pms_folio_info.pmsPropertyId),
-                        ("agency_id", "=", pms_folio_info.agencyId),
-                    ]
+                folio = (
+                    self.env["pms.folio"]
+                    .sudo()
+                    .search(
+                        [
+                            (
+                                "external_reference",
+                                "=",
+                                pms_folio_info.externalReference,
+                            ),
+                            ("pms_property_id", "=", pms_folio_info.pmsPropertyId),
+                            ("agency_id", "=", pms_folio_info.agencyId),
+                        ]
+                    )
                 )
                 if folio:
                     _logger.info(
@@ -703,7 +750,7 @@ class PmsFolioService(Component):
                     raise ValidationError(_("Folio already exists"))
             agency = False
             if pms_folio_info.agencyId:
-                agency = self.env["res.partner"].browse(pms_folio_info.agencyId)
+                agency = self.env["res.partner"].sudo().browse(pms_folio_info.agencyId)
             if pms_folio_info.reservationType == "out":
                 vals = {
                     "pms_property_id": pms_folio_info.pmsPropertyId,
@@ -751,7 +798,7 @@ class PmsFolioService(Component):
                                 "email": pms_folio_info.partnerEmail,
                             }
                         )
-            folio = self.env["pms.folio"].create(vals)
+            folio = self.env["pms.folio"].sudo().create(vals)
             for reservation in pms_folio_info.reservations:
                 commision_percent_to_deduct = 0
                 if external_app and agency and agency.commission_type == "subtract":
@@ -780,9 +827,12 @@ class PmsFolioService(Component):
                     board_day_price = 0
                     # The service price is included in day price when it is a board service (external api)
                     if external_app and vals.get("board_service_room_id"):
-                        board = self.env["pms.board.service.room.type"].browse(
-                            vals["board_service_room_id"]
+                        board = (
+                            self.env["pms.board.service.room.type"]
+                            .sudo()
+                            .browse(vals["board_service_room_id"])
                         )
+                        pms_api_check_access(user=self.env.user, records=board)
                         if reservation.adults:
                             board_day_price += (
                                 sum(
@@ -832,6 +882,7 @@ class PmsFolioService(Component):
                         force_overbooking=True if external_app else False,
                         force_write_blocked=True if external_app else False,
                     )
+                    .sudo()
                     .create(vals)
                 )
                 if reservation.services:
@@ -856,11 +907,16 @@ class PmsFolioService(Component):
                                     for line in service.serviceLines
                                 ],
                             }
-                            self.env["pms.service"].create(vals)
+                            self.env["pms.service"].sudo().create(vals)
                         else:
-                            product = self.env["product.product"].browse(
-                                service.productId
+                            product = (
+                                self.env["product.product"]
+                                .sudo()
+                                .browse(service.productId)
                             )
+                            if not product.exists():
+                                raise MissingError(_("Product not found"))
+                            pms_api_check_access(user=self.env.user, records=product)
                             vals = {
                                 "product_id": service.productId,
                                 "reservation_id": reservation_record.id,
@@ -872,7 +928,7 @@ class PmsFolioService(Component):
                                         "product_qty": service.quantity,
                                     }
                                 )
-                            new_service = self.env["pms.service"].create(vals)
+                            new_service = self.env["pms.service"].sudo().create(vals)
                             new_service.service_line_ids.price_unit = service.priceUnit
                 # Force compute board service default if not board service is set
                 # REVIEW: Precharge the board service in the app form?
@@ -973,28 +1029,39 @@ class PmsFolioService(Component):
                 reference += transaction.reference
             else:
                 raise ValidationError(_("The transaction reference is required"))
-            journal = self.env["account.journal"].search(
-                [("id", "=", transaction.journalId)]
+            journal = (
+                self.env["account.journal"]
+                .sudo()
+                .search([("id", "=", transaction.journalId)])
             )
+            pms_api_check_access(user=self.env.user, records=journal)
             if not journal:
-                ota_conf = self.env["ota.property.settings"].search(
-                    [
-                        ("pms_property_id", "=", folio.pms_property_id.id),
-                        ("agency_id", "=", self.env.user.partner_id.id),
-                    ]
+                ota_conf = (
+                    self.env["ota.property.settings"]
+                    .sudo()
+                    .search(
+                        [
+                            ("pms_property_id", "=", folio.pms_property_id.id),
+                            ("agency_id", "=", self.env.user.partner_id.id),
+                        ]
+                    )
                 )
                 if ota_conf:
                     journal = ota_conf.pms_api_payment_journal_id
-            proposed_transaction = self.env["account.payment"].search(
-                [
-                    ("pms_property_id", "=", folio.pms_property_id.id),
-                    ("payment_type", "=", transaction.transactionType),
-                    ("folio_ids", "in", folio.id),
-                    ("ref", "ilike", reference),
-                    ("state", "=", "posted"),
-                    ("create_uid", "=", self.env.user.id),
-                    ("journal_id", "=", journal.id),
-                ]
+            proposed_transaction = (
+                self.env["account.payment"]
+                .sudo()
+                .search(
+                    [
+                        ("pms_property_id", "=", folio.pms_property_id.id),
+                        ("payment_type", "=", transaction.transactionType),
+                        ("folio_ids", "in", folio.id),
+                        ("ref", "ilike", reference),
+                        ("state", "=", "posted"),
+                        ("create_uid", "=", self.env.user.id),
+                        ("journal_id", "=", journal.id),
+                    ]
+                )
             )
             if (
                 not proposed_transaction
@@ -1046,7 +1113,8 @@ class PmsFolioService(Component):
     )
     # flake8:noqa=C901
     def update_folio(self, folio_id, pms_folio_info):
-        folio = self.env["pms.folio"].browse(folio_id)
+        folio = self.env["pms.folio"].sudo().browse(folio_id)
+        pms_api_check_access(user=self.env.user, records=folio)
         folio_vals = {}
         if not folio:
             raise MissingError(_("Folio not found"))
@@ -1086,7 +1154,7 @@ class PmsFolioService(Component):
                     "reservation_type": pms_folio_info.reservationType,
                     "children": reservation.children,
                 }
-                reservation_record = self.env["pms.reservation"].create(vals)
+                reservation_record = self.env["pms.reservation"].sudo().create(vals)
                 if reservation.services:
                     for service in reservation.services:
                         vals = {
@@ -1107,7 +1175,7 @@ class PmsFolioService(Component):
                                 for line in service.serviceLines
                             ],
                         }
-                        self.env["pms.service"].create(vals)
+                        self.env["pms.service"].sudo().create(vals)
         if folio_vals:
             folio.write(folio_vals)
 
@@ -1128,10 +1196,10 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def get_folio_services(self, folio_id):
-        folio = self.env["pms.folio"].search([("id", "=", folio_id)])
+        folio = self.env["pms.folio"].sudo().search([("id", "=", folio_id)])
         if not folio:
             raise MissingError(_("Folio not found"))
-
+        pms_api_check_access(user=self.env.user, records=folio)
         result_services = []
         PmsServiceInfo = self.env.datamodels["pms.service.info"]
         for reservation in folio.reservation_ids:
@@ -1182,7 +1250,8 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def get_folio_mail(self, folio_id, pms_mail_info):
-        folio = self.env["pms.folio"].browse(folio_id)
+        folio = self.env["pms.folio"].sudo().browse(folio_id)
+        pms_api_check_access(user=self.env.user, records=folio)
         if pms_mail_info.mailType == "confirm":
             compose_vals = {
                 "template_id": folio.pms_property_id.property_confirmed_template.id,
@@ -1205,10 +1274,14 @@ class PmsFolioService(Component):
                     lambda r: r.state == "cancel"
                 )[0].id,
             }
-        values = self.env["mail.compose.message"].generate_email_for_composer(
-            template_id=compose_vals["template_id"],
-            res_ids=compose_vals["res_ids"],
-            fields=["subject", "body_html"],
+        values = (
+            self.env["mail.compose.message"]
+            .sudo()
+            .generate_email_for_composer(
+                template_id=compose_vals["template_id"],
+                res_ids=compose_vals["res_ids"],
+                fields=["subject", "body_html"],
+            )
         )
         PmsMailInfo = self.env.datamodels["pms.mail.info"]
         return PmsMailInfo(
@@ -1229,7 +1302,8 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def send_folio_mail(self, folio_id, pms_mail_info):
-        folio = self.env["pms.folio"].browse(folio_id)
+        folio = self.env["pms.folio"].sudo().browse(folio_id)
+        pms_api_check_access(user=self.env.user, records=folio)
         recipients = pms_mail_info.emailAddresses
 
         email_values = {
@@ -1277,7 +1351,8 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def get_folio_sale_lines(self, folio_id):
-        folio = self.env["pms.folio"].browse(folio_id)
+        folio = self.env["pms.folio"].sudo().browse(folio_id)
+        pms_api_check_access(user=self.env.user, records=folio)
         sale_lines = []
         if not folio:
             pass
@@ -1336,7 +1411,10 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def get_folio_invoices(self, folio_id):
-        folio = self.env["pms.folio"].browse(folio_id)
+        folio = self.env["pms.folio"].sudo().browse(folio_id)
+        if not folio.exists():
+            raise MissingError(_("Folio not found"))
+        pms_api_check_access(user=self.env.user, records=folio)
         invoices = []
         if not folio:
             pass
@@ -1438,9 +1516,10 @@ class PmsFolioService(Component):
             if item.qtyToInvoice:
                 lines_to_invoice_dict[item.id] = item.qtyToInvoice
 
-        sale_lines_to_invoice = self.env["folio.sale.line"].browse(
-            lines_to_invoice_dict.keys()
+        sale_lines_to_invoice = (
+            self.env["folio.sale.line"].sudo().browse(lines_to_invoice_dict.keys())
         )
+        pms_api_check_access(user=self.env.user, records=sale_lines_to_invoice)
         for line in sale_lines_to_invoice:
             if line.section_id and line.section_id.id not in sale_lines_to_invoice.ids:
                 sale_lines_to_invoice |= line.section_id
@@ -1547,7 +1626,8 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def get_folio_checkin_partners(self, folio_id):
-        folio = self.env["pms.folio"].browse(folio_id)
+        folio = self.env["pms.folio"].sudo().browse(folio_id)
+        pms_api_check_access(user=self.env.user, records=folio)
         checkin_partners = []
         if folio:
             PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
@@ -1637,8 +1717,9 @@ class PmsFolioService(Component):
         reservation_messages = []
         folio_messages = []
         if folio_id:
-            folio = self.env["pms.folio"].browse(folio_id)
-            reservations = self.env["pms.reservation"].browse(folio.reservation_ids.ids)
+            folio = self.env["pms.folio"].sudo().browse(folio_id)
+            pms_api_check_access(user=self.env.user, records=folio)
+            reservations = folio.reservation_ids
             user_tz = pytz.timezone(self.env.user.tz)
             for messages in reservations.message_ids:
                 PmsReservationMessageInfo = self.env.datamodels[
@@ -1763,6 +1844,7 @@ class PmsFolioService(Component):
                 self.env.user.partner_id.sale_channel_id.id
                 if self.env.user.partner_id.sale_channel_id
                 else self.env["pms.sale.channel"]
+                .sudo()
                 .search(
                     [("channel_type", "=", "direct"), ("is_on_line", "=", True)],
                     limit=1,
@@ -1770,7 +1852,7 @@ class PmsFolioService(Component):
                 .id
             )
             return channel_origin_id
-        agency = self.env["res.partner"].browse(agency_id)
+        agency = self.env["res.partner"].sudo().browse(agency_id)
         if agency:
             return agency.sale_channel_id.id
         return False
@@ -1782,7 +1864,12 @@ class PmsFolioService(Component):
         external_app = self.env.user.pms_api_client
         if not external_app:
             return lang_code
-        return self.env["res.lang"].search([("iso_code", "=", lang_code)], limit=1).code
+        return (
+            self.env["res.lang"]
+            .sudo()
+            .search([("iso_code", "=", lang_code)], limit=1)
+            .code
+        )
 
     def get_board_service_room_type_id(
         self, board_service_id, room_type_id, pms_property_id
@@ -1792,14 +1879,17 @@ class PmsFolioService(Component):
         but the external app uses the board service id and the room type id.
         Returns the board service room type id for the given board service and room type
         """
-        board_service = self.env["pms.board.service"].browse(board_service_id)
-        room_type = self.env["pms.room.type"].browse(room_type_id)
+        board_service = self.env["pms.board.service"].sudo().browse(board_service_id)
+        pms_api_check_access(user=self.env.user, records=board_service)
+        room_type = self.env["pms.room.type"].sudo().browse(room_type_id)
+        pms_api_check_access(user=self.env.user, records=room_type)
         external_app = self.env.user.pms_api_client
         if not external_app:
             return board_service_id
         if board_service and room_type:
             return (
                 self.env["pms.board.service.room.type"]
+                .sudo()
                 .search(
                     [
                         ("pms_board_service_id", "=", board_service.id),
@@ -1836,15 +1926,20 @@ class PmsFolioService(Component):
             pms_folio_info.reservations, key=lambda x: x.checkout
         ).checkout
         try:
-            folio = self.env["pms.folio"].search(
-                [
-                    ("external_reference", "ilike", external_reference),
-                    ("pms_property_id", "=", pms_folio_info.pmsPropertyId),
-                    ("agency_id", "=", pms_folio_info.agencyId),
-                ]
+            folio = (
+                self.env["pms.folio"]
+                .sudo()
+                .search(
+                    [
+                        ("external_reference", "ilike", external_reference),
+                        ("pms_property_id", "=", pms_folio_info.pmsPropertyId),
+                        ("agency_id", "=", pms_folio_info.agencyId),
+                    ]
+                )
             )
             if not folio or len(folio) > 1:
                 raise MissingError(_("Folio not found"))
+            pms_api_check_access(user=self.env.user, records=folio)
             self.update_folio_values(folio, pms_folio_info)
             # Force update availability
             mapped_room_types = folio.reservation_ids.mapped("room_type_id")
@@ -1922,9 +2017,10 @@ class PmsFolioService(Component):
             pms_folio_info.reservations, key=lambda x: x.checkout
         ).checkout
         try:
-            folio = self.env["pms.folio"].browse(folio_id)
+            folio = self.env["pms.folio"].sudo().browse(folio_id)
             if not folio:
                 raise MissingError(_("Folio not found"))
+            pms_api_check_access(user=self.env.user, records=folio)
             self.update_folio_values(folio, pms_folio_info)
             # Force update availability
             mapped_room_types = folio.reservation_ids.mapped("room_type_id")
@@ -2048,14 +2144,14 @@ class PmsFolioService(Component):
                         if val[2].get("state") == "cancel":
                             self.env["pms.reservation"].with_context(
                                 force_write_blocked=True
-                            ).browse(val[1]).action_cancel()
+                            ).sudo().browse(val[1]).action_cancel()
                             # delete from reservations_vals the reservation that has been canceled
                             reservations_vals.pop(reservations_vals.index(val))
                         if val[2].get("state") == "confirm":
                             self.env["pms.reservation"].with_context(
                                 force_write_blocked=True,
                                 force_overbooking=True if external_app else False,
-                            ).browse(val[1]).action_confirm()
+                            ).sudo().browse(val[1]).action_confirm()
                             # delete from reservations_vals the field state
                             val[2].pop("state")
                         update_reservation_ids.append(val[1])
@@ -2090,11 +2186,15 @@ class PmsFolioService(Component):
             # payment identifier configured in the OTA
             for transaction in pms_folio_info.transactions:
                 if not transaction.journalId:
-                    ota_conf = self.env["ota.property.settings"].search(
-                        [
-                            ("pms_property_id", "=", pms_folio_info.pmsPropertyId),
-                            ("agency_id", "=", self.env.user.partner_id.id),
-                        ]
+                    ota_conf = (
+                        self.env["ota.property.settings"]
+                        .sudo()
+                        .search(
+                            [
+                                ("pms_property_id", "=", pms_folio_info.pmsPropertyId),
+                                ("agency_id", "=", self.env.user.partner_id.id),
+                            ]
+                        )
                     )
                     if not ota_conf:
                         raise ValidationError(
@@ -2109,11 +2209,15 @@ class PmsFolioService(Component):
                         )
                     transaction.journalId = ota_conf.pms_api_payment_journal_id.id
         elif pms_folio_info.agencyId:
-            ota_conf = self.env["ota.property.settings"].search(
-                [
-                    ("pms_property_id", "=", pms_folio_info.pmsPropertyId),
-                    ("agency_id", "=", pms_folio_info.agencyId),
-                ]
+            ota_conf = (
+                self.env["ota.property.settings"]
+                .sudo()
+                .search(
+                    [
+                        ("pms_property_id", "=", pms_folio_info.pmsPropertyId),
+                        ("agency_id", "=", pms_folio_info.agencyId),
+                    ]
+                )
             )
             # Compute amount total like the sum of the price in reservation lines
             # and the sum of the price in service lines in the pms_folio_info
@@ -2262,13 +2366,18 @@ class PmsFolioService(Component):
                 # The service price is included in day price when it is a board service (external api)
                 board_day_price = 0
                 if external_app and info_reservation.boardServiceId:
-                    board = self.env["pms.board.service.room.type"].browse(
-                        self.get_board_service_room_type_id(
-                            info_reservation.boardServiceId,
-                            info_reservation.roomTypeId,
-                            folio.pms_property_id.id,
+                    board = (
+                        self.env["pms.board.service.room.type"]
+                        .sudo()
+                        .browse(
+                            self.get_board_service_room_type_id(
+                                info_reservation.boardServiceId,
+                                info_reservation.roomTypeId,
+                                folio.pms_property_id.id,
+                            )
                         )
                     )
+                    pms_api_check_access(user=self.env.user, records=board)
                     if info_reservation.adults:
                         board_day_price += (
                             sum(
@@ -2415,7 +2524,8 @@ class PmsFolioService(Component):
         if not room_type_ids or not api_clients:
             return False
         for room_type_id in room_type_ids:
-            pms_property = self.env["pms.property"].browse(pms_property_id)
+            pms_property = self.env["pms.property"].sudo().browse(pms_property_id)
+            pms_api_check_access(user=self.env.user, records=pms_property)
             self.env["pms.property"].sudo().pms_api_push_batch(
                 call_type="availability",  # 'availability', 'prices', 'restrictions'
                 date_from=date_from.strftime("%Y-%m-%d"),  # 'YYYY-MM-DD'

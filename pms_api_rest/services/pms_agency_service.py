@@ -5,7 +5,7 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
-from ..pms_api_rest_utils import url_image_pms_api_rest
+from ..pms_api_rest_utils import pms_api_check_access, url_image_pms_api_rest
 
 
 class PmsAgencyService(Component):
@@ -35,10 +35,9 @@ class PmsAgencyService(Component):
             domain.append(("name", "like", agencies_search_param.name))
         result_agencies = []
         PmsAgencyInfo = self.env.datamodels["pms.agency.info"]
-        for agency in self.env["res.partner"].search(
-            domain,
-        ):
-
+        agencies = self.env["res.partner"].sudo().search(domain)
+        pms_api_check_access(user=self.env.user, records=agencies)
+        for agency in agencies:
             result_agencies.append(
                 PmsAgencyInfo(
                     id=agency.id,
@@ -63,13 +62,18 @@ class PmsAgencyService(Component):
         auth="jwt_api_pms",
     )
     def get_agency(self, agency_id):
-        agency = self.env["res.partner"].search(
-            [
-                ("id", "=", agency_id),
-                ("is_agency", "=", True),
-            ]
+        agency = (
+            self.env["res.partner"]
+            .sudo()
+            .search(
+                [
+                    ("id", "=", agency_id),
+                    ("is_agency", "=", True),
+                ]
+            )
         )
         if agency:
+            pms_api_check_access(user=self.env.user, records=agency)
             PmsAgencieInfo = self.env.datamodels["pms.agency.info"]
             return PmsAgencieInfo(
                 id=agency.id,
