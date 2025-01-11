@@ -44,8 +44,8 @@ class PmsLoginService(Component):
             raise werkzeug.exceptions.Unauthorized(_("wrong user/pass"))
         try:
             user_record.with_user(user_record)._check_credentials(user.password, None)
-        except AccessDenied:
-            raise werkzeug.exceptions.Unauthorized(_("wrong user/pass"))
+        except AccessDenied as e:
+            raise werkzeug.exceptions.Unauthorized(_("wrong user/pass")) from e
 
         validator = (
             self.env["auth.jwt.validator"].sudo()._get_validator_by_name("api_pms")
@@ -84,6 +84,6 @@ class PmsLoginService(Component):
             userImageUrl=url_image_pms_api_rest(
                 "res.partner", user_record.partner_id.id, "image_1024"
             ),
-            isNewInterfaceUser=user_record.is_new_interface_app_user,
             availabilityRuleFields=avail_rule_names,
+            userRole=user_record.pms_api_user_role,
         )

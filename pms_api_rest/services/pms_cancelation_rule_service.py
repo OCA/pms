@@ -5,6 +5,8 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
+from ..pms_api_rest_utils import pms_api_check_access
+
 
 class PmsCancelationRuleService(Component):
     _inherit = "base.rest.service"
@@ -27,7 +29,6 @@ class PmsCancelationRuleService(Component):
     )
     def get_cancelation_rules(self, cancelation_rule_search_param):
         domain = []
-
         if cancelation_rule_search_param.pricelistId:
             domain.append(
                 ("pricelist_ids", "in", [cancelation_rule_search_param.pricelistId])
@@ -46,9 +47,9 @@ class PmsCancelationRuleService(Component):
             )
         result_cancelation_rules = []
         PmsCancelationRuleInfo = self.env.datamodels["pms.cancelation.rule.info"]
-        for cancelation_rule in self.env["pms.cancelation.rule"].search(
-            domain,
-        ):
+        cancelation_rules = self.env["pms.cancelation.rule"].sudo().search(domain)
+        pms_api_check_access(user=self.env.user, records=cancelation_rules)
+        for cancelation_rule in cancelation_rules:
             result_cancelation_rules.append(
                 PmsCancelationRuleInfo(
                     id=cancelation_rule.id,
@@ -70,10 +71,11 @@ class PmsCancelationRuleService(Component):
         auth="jwt_api_pms",
     )
     def get_cancelation_rule(self, cancelation_rule_id):
-        cancelation_rule = self.env["pms.cancelation.rule"].search(
+        cancelation_rule = self.env["pms.cancelation.rule"].sudo.search(
             [("id", "=", cancelation_rule_id)]
         )
         if cancelation_rule:
+            pms_api_check_access(user=self.env.user, records=cancelation_rule)
             PmsCancelationRuleInfo = self.env.datamodels["pms.cancelation.rule.info"]
             return PmsCancelationRuleInfo(
                 id=cancelation_rule.id,

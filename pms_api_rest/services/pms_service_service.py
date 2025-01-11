@@ -8,6 +8,8 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
+from ..pms_api_rest_utils import pms_api_check_access
+
 _logger = logging.getLogger(__name__)
 
 
@@ -30,9 +32,10 @@ class PmsServiceService(Component):
         auth="jwt_api_pms",
     )
     def get_service(self, service_id):
-        service = self.env["pms.service"].search([("id", "=", service_id)])
+        service = self.env["pms.service"].sudo().browse(service_id)
         if not service:
             raise MissingError(_("Service not found"))
+        pms_api_check_access(user=self.env.user, records=service)
         PmsServiceInfo = self.env.datamodels["pms.service.info"]
         lines = [
             self.env.datamodels["pms.service.line.info"](
@@ -70,9 +73,10 @@ class PmsServiceService(Component):
         auth="jwt_api_pms",
     )
     def update_service(self, service_id, service_data):
-        service = self.env["pms.service"].search([("id", "=", service_id)])
-        if not service:
+        service = self.env["pms.service"].sudo().browse(service_id)
+        if not service.exists():
             raise MissingError(_("Service not found"))
+        pms_api_check_access(user=self.env.user, records=service)
         vals = {}
         if service_data.serviceLines:
             cmds_lines = []
@@ -133,12 +137,11 @@ class PmsServiceService(Component):
         auth="jwt_api_pms",
     )
     def delete_service(self, service_id):
-        # esto tb podría ser con un browse
-        service = self.env["pms.service"].search([("id", "=", service_id)])
-        if service:
-            service.unlink()
-        else:
+        service = self.env["pms.service"].sudo().browse(service_id)
+        if not service.exists():
             raise MissingError(_("Service not found"))
+        pms_api_check_access(user=self.env.user, records=service)
+        service.unlink()
 
     @restapi.method(
         [
@@ -153,9 +156,10 @@ class PmsServiceService(Component):
         auth="jwt_api_pms",
     )
     def get_service_lines(self, service_id):
-        service = self.env["pms.service"].search([("id", "=", service_id)])
-        if not service:
+        service = self.env["pms.service"].sudo().browse(service_id)
+        if not service.exists():
             raise MissingError(_("Service not found"))
+        pms_api_check_access(user=self.env.user, records=service)
         result_service_lines = []
         PmsServiceLineInfo = self.env.datamodels["pms.service.line.info"]
         for service_line in service.service_line_ids:
@@ -189,10 +193,16 @@ class PmsServiceService(Component):
         pms_property_id = pms_report_search_param.pmsPropertyId
         date_from = fields.Date.from_string(pms_report_search_param.dateFrom)
         date_to = fields.Date.from_string(pms_report_search_param.dateTo)
-        query = self.env.ref("pms_api_rest.sql_export_services")
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"].sudo().browse(pms_property_id),
+        )
+        query = self.env.ref("pms_api_rest.sql_export_services").sudo()
         if not query:
             raise MissingError(_("SQL query not found"))
-        report_wizard = self.env["sql.file.wizard"].create({"sql_export_id": query.id})
+        report_wizard = (
+            self.env["sql.file.wizard"].sudo().create({"sql_export_id": query.id})
+        )
         report_wizard.x_date_from = date_from
         report_wizard.x_date_to = date_to
         report_wizard.x_pms_property_id = pms_property_id

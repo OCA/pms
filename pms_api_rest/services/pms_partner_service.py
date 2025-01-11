@@ -2,12 +2,14 @@ import re
 from datetime import date, datetime, timedelta
 
 from odoo import _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import MissingError, ValidationError
 from odoo.osv import expression
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
+
+from ..pms_api_rest_utils import pms_api_check_access
 
 _ref_vat = {
     "al": "J91402501L",
@@ -82,14 +84,20 @@ class PmsPartnerService(Component):
         output_param=Datamodel("pms.partner.results", is_list=False),
         auth="jwt_api_pms",
     )
+    # flake8: noqa: C901
     def get_partners(self, pms_partner_search_params):
         result_partners = []
         domain = []
-
         if pms_partner_search_params.housedNow:
             partners_housed_now = (
                 self.env["pms.checkin.partner"]
-                .search([("state", "=", "onboard")])
+                .sudo()
+                .search(
+                    [
+                        ("state", "=", "onboard"),
+                        ("pms_property_id", "in", self.env.user.pms_property_ids.ids),
+                    ]
+                )
                 .mapped("partner_id")
             )
             domain.append(("id", "in", partners_housed_now.ids))
@@ -98,8 +106,10 @@ class PmsPartnerService(Component):
             last_week_day = today - timedelta(days=7)
             partners_housed_last_week = (
                 self.env["pms.checkin.partner"]
+                .sudo()
                 .search(
                     [
+                        ("pms_property_id", "in", self.env.user.pms_property_ids.ids),
                         "|",
                         "&",
                         ("checkin", ">=", last_week_day),
@@ -127,8 +137,10 @@ class PmsPartnerService(Component):
             last_month_day = today - timedelta(days=30)
             partners_housed_last_month = (
                 self.env["pms.checkin.partner"]
+                .sudo()
                 .search(
                     [
+                        ("pms_property_id", "in", self.env.user.pms_property_ids.ids),
                         "|",
                         "&",
                         ("checkin", ">=", last_month_day),
@@ -183,16 +195,27 @@ class PmsPartnerService(Component):
             domain = expression.AND([domain, domain_partner_search_field])
         PmsPartnerResults = self.env.datamodels["pms.partner.results"]
         PmsPartnerInfo = self.env.datamodels["pms.partner.info"]
-        total_partners = self.env["res.partner"].search_count(domain)
-
-        for partner in self.env["res.partner"].search(
-            domain,
-            limit=pms_partner_search_params.limit,
-            offset=pms_partner_search_params.offset,
-        ):
+        total_partners = self.env["res.partner"].sudo().search_count(domain)
+        partners = (
+            self.env["res.partner"]
+            .sudo()
+            .search(
+                domain,
+                limit=pms_partner_search_params.limit,
+                offset=pms_partner_search_params.offset,
+            )
+        )
+        pms_api_check_access(user=self.env.user, records=partners)
+        for partner in partners:
             checkouts = (
                 self.env["pms.checkin.partner"]
-                .search([("partner_id.id", "=", partner.id)])
+                .sudo()
+                .search(
+                    [
+                        ("partner_id.id", "=", partner.id),
+                        ("pms_property_id", "in", self.env.user.pms_property_ids.ids),
+                    ]
+                )
                 .filtered(lambda x: x.checkout)
                 .mapped("checkout")
             )
@@ -332,7 +355,7 @@ class PmsPartnerService(Component):
     )
     def create_partner(self, partner_info):
         vals = self.mapping_partner_values(partner_info)
-        partner = self.env["res.partner"].create(vals)
+        partner = self.env["res.partner"].sudo().create(vals)
         return partner.id
 
     @restapi.method(
@@ -348,7 +371,8 @@ class PmsPartnerService(Component):
         auth="jwt_api_pms",
     )
     def write_partner(self, partner_id, partner_info):
-        partner = self.env["res.partner"].browse(partner_id)
+        partner = self.env["res.partner"].sudo().browse(partner_id)
+        pms_api_check_access(user=self.env.user, records=partner)
         if partner:
             partner.write(self.mapping_partner_values(partner_info))
 
@@ -365,9 +389,17 @@ class PmsPartnerService(Component):
         auth="jwt_api_pms",
     )
     def get_partner_payments(self, partner_id):
-        partnerPayments = self.env["account.payment"].search(
-            [("partner_id", "=", partner_id)]
+        partnerPayments = (
+            self.env["account.payment"]
+            .sudo()
+            .search(
+                [
+                    ("partner_id", "=", partner_id),
+                    ("pms_property_id", "=", self.env.user.pms_property_ids.ids),
+                ]
+            )
         )
+        pms_api_check_access(user=self.env.user, records=partnerPayments)
         PmsTransactiontInfo = self.env.datamodels["pms.transaction.info"]
         payments = []
         for payment in partnerPayments:
@@ -415,12 +447,18 @@ class PmsPartnerService(Component):
         auth="jwt_api_pms",
     )
     def get_partner_invoices(self, partner_id):
-        partnerInvoices = self.env["account.move"].search(
-            [
-                ("partner_id", "=", partner_id),
-                ("move_type", "in", self.env["account.move"].get_invoice_types()),
-            ]
+        partnerInvoices = (
+            self.env["account.move"]
+            .sudo()
+            .search(
+                [
+                    ("partner_id", "=", partner_id),
+                    ("move_type", "in", self.env["account.move"].get_invoice_types()),
+                    ("pms_property_id", "in", self.env.user.pms_property_ids.ids),
+                ]
+            )
         )
+        pms_api_check_access(user=self.env.user, records=partnerInvoices)
         invoices = []
         PmsFolioInvoiceInfo = self.env.datamodels["pms.invoice.info"]
         PmsInvoiceLineInfo = self.env.datamodels["pms.invoice.line.info"]
@@ -504,13 +542,17 @@ class PmsPartnerService(Component):
         auth="jwt_api_pms",
     )
     def get_partner_by_vat_number(self, vat_number):
-        partner = self.env["res.partner"].search(
-            [
-                "|",
-                ("vat", "ilike", vat_number),
-                ("aeat_identification", "ilike", vat_number),
-            ],
-            limit=1,
+        partner = (
+            self.env["res.partner"]
+            .sudo()
+            .search(
+                [
+                    "|",
+                    ("vat", "ilike", vat_number),
+                    ("aeat_identification", "ilike", vat_number),
+                ],
+                limit=1,
+            )
         )
         PmsPartnerService = self.env.datamodels["pms.partner.info"]
         if not partner:
@@ -621,14 +663,19 @@ class PmsPartnerService(Component):
         auth="jwt_api_pms",
     )
     def get_checkin_partner_by_partner_doc_number(self, document_type, document_number):
-        doc_type = self.env["res.partner.id_category"].search(
-            [("id", "=", document_type)]
+        doc_type = (
+            self.env["res.partner.id_category"]
+            .sudo()
+            .search([("id", "=", document_type)])
         )
         # Clean Document number
         document_number = re.sub(r"[^a-zA-Z0-9]", "", document_number).upper()
-        partner = self.env["pms.checkin.partner"]._get_partner_by_document(
-            document_number, doc_type
+        partner = (
+            self.env["pms.checkin.partner"]
+            .sudo()
+            ._get_partner_by_document(document_number, doc_type)
         )
+        pms_api_check_access(user=self.env.user, records=partner)
         partners = []
         if partner:
             doc_record = partner.id_numbers.filtered(
@@ -727,7 +774,7 @@ class PmsPartnerService(Component):
         auth="jwt_api_pms",
     )
     def deactivate_partner(self, partner_id):
-        self.env["res.partner"].browse(partner_id).active = False
+        self.env["res.partner"].sudo().browse(partner_id).active = False
 
     @restapi.method(
         [
@@ -741,7 +788,11 @@ class PmsPartnerService(Component):
         auth="jwt_api_pms",
     )
     def activate_partner(self, partner_id):
-        self.env["res.partner"].browse(partner_id).active = True
+        partner = self.env["res.partner"].sudo().browse(partner_id)
+        if not partner.exists():
+            raise MissingError(_("Partner not found"))
+        pms_api_check_access(user=self.env.user, records=partner)
+        partner.active = True
 
     @restapi.method(
         [
@@ -757,10 +808,11 @@ class PmsPartnerService(Component):
     )
     def get_partner(self, partner_id):
         PmsPartnerInfo = self.env.datamodels["pms.partner.info"]
-        partner = self.env["res.partner"].browse(partner_id)
+        partner = self.env["res.partner"].sudo().browse(partner_id)
         if not partner:
             return PmsPartnerInfo()
         else:
+            pms_api_check_access(user=self.env.user, records=partner)
             return PmsPartnerInfo(
                 id=partner.id,
                 name=partner.name if partner.name else None,
@@ -918,9 +970,11 @@ class PmsPartnerService(Component):
         vat_no = "(##=VAT Number)"
         vat_no = _ref_vat.get(country_code) or vat_no
         if self.env.context.get("company_id"):
-            company = self.env["res.company"].browse(self.env.context["company_id"])
+            company = (
+                self.env["res.company"].sudo().browse(self.env.context["company_id"])
+            )
         else:
-            company = self.env.company
+            company = self.env.company.sudo()
         if company.vat_check_vies:
             return "\n" + _(
                 "The VAT number [%(vat)s] either failed the VIES VAT "

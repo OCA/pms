@@ -5,6 +5,8 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
+from ..pms_api_rest_utils import pms_api_check_access
+
 
 class PmsBoardServiceService(Component):
     _inherit = "base.rest.service"
@@ -38,9 +40,9 @@ class PmsBoardServiceService(Component):
 
         result_board_service_lines = []
         PmsBoardServiceInfo = self.env.datamodels["pms.board.service.line.info"]
-        for line in self.env["pms.board.service.room.type.line"].search(
-            domain,
-        ):
+        lines = self.env["pms.board.service.room.type.line"].sudo().search(domain)
+        pms_api_check_access(user=self.env.user, records=lines)
+        for line in lines:
             result_board_service_lines.append(
                 PmsBoardServiceInfo(
                     id=line.id,
@@ -65,10 +67,13 @@ class PmsBoardServiceService(Component):
         auth="jwt_api_pms",
     )
     def get_board_service_line(self, board_service_line_id):
-        board_service_line = self.env["pms.board.service.room.type.line"].search(
-            [("id", "=", board_service_line_id)]
+        board_service_line = (
+            self.env["pms.board.service.room.type.line"]
+            .sudo()
+            .search([("id", "=", board_service_line_id)])
         )
         if board_service_line:
+            pms_api_check_access(user=self.env.user, records=board_service_line)
             PmsBoardServiceInfo = self.env.datamodels["pms.board.service.line.info"]
             return PmsBoardServiceInfo(
                 id=board_service_line.id,

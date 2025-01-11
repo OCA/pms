@@ -4,7 +4,7 @@ import re
 import tempfile
 from datetime import datetime, timedelta
 
-from odoo import _, fields
+from odoo import SUPERUSER_ID, _, fields
 from odoo.exceptions import AccessError, MissingError
 from odoo.osv import expression
 from odoo.tools.safe_eval import safe_eval
@@ -14,7 +14,7 @@ from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 from odoo.addons.portal.controllers.portal import CustomerPortal
 
-from . import url_image_pms_api_rest
+from ..pms_api_rest_utils import pms_api_check_access, url_image_pms_api_rest
 
 
 def is_adult(birthdate):
@@ -85,7 +85,10 @@ class PmsReservationService(Component):
         domain.append(("id", "=", reservation_id))
         if pms_search_param.pmsPropertyId:
             domain.append(("pms_property_id", "=", pms_search_param.pmsPropertyId))
-        reservation = self.env["pms.reservation"].search(domain)
+        reservation = self.env["pms.reservation"].sudo().search(domain)
+        if not reservation.exists():
+            raise MissingError(_("Reservation not found"))
+        pms_api_check_access(user=self.env.user, records=reservation)
         res = []
         PmsReservationInfo = self.env.datamodels["pms.reservation.info"]
         if not reservation:
@@ -240,7 +243,10 @@ class PmsReservationService(Component):
     )
     # TODO: route changed because bug route CORS patch
     def update_reservation(self, reservation_id, reservation_data):
-        reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
+        reservation = self.env["pms.reservation"].sudo().browse(reservation_id)
+        if not reservation.exists():
+            raise MissingError(_("Reservation not found"))
+        pms_api_check_access(user=self.env.user, records=reservation)
         reservation_vals = {}
         if reservation_data.reservationLines:
             reservation_lines_vals = []
@@ -252,8 +258,15 @@ class PmsReservationService(Component):
                 date_line = datetime.strptime(line_data.date, "%Y-%m-%d").date()
                 date_list.append(date_line)
                 # 1- update values in existing lines
-                reservation_line = self.env["pms.reservation.line"].search(
-                    [("reservation_id", "=", reservation_id), ("date", "=", date_line)]
+                reservation_line = (
+                    self.env["pms.reservation.line"]
+                    .sudo()
+                    .search(
+                        [
+                            ("reservation_id", "=", reservation_id),
+                            ("date", "=", date_line),
+                        ]
+                    )
                 )
                 if reservation_line:
                     line_vals = self._get_reservation_lines_mapped(
@@ -391,9 +404,10 @@ class PmsReservationService(Component):
         auth="jwt_api_pms",
     )
     def get_reservation_line(self, reservation_id):
-        reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
-        if not reservation:
+        reservation = self.env["pms.reservation"].sudo().browse(reservation_id)
+        if not reservation.exists():
             raise MissingError(_("Reservation not found"))
+        pms_api_check_access(user=self.env.user, records=reservation)
         result_lines = []
         PmsReservationLineInfo = self.env.datamodels["pms.reservation.line.info"]
         for reservation_line in reservation.reservation_line_ids:
@@ -427,10 +441,11 @@ class PmsReservationService(Component):
         auth="jwt_api_pms",
     )
     def create_reservation_line(self, reservation_id, reservation_line_info):
-        reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
+        reservation = self.env["pms.reservation"].sudo().browse(reservation_id)
         date = datetime.strptime(reservation_line_info.date, "%Y-%m-%d").date()
-        if not reservation:
+        if not reservation.exists():
             raise MissingError(_("Reservation not found"))
+        pms_api_check_access(user=self.env.user, records=reservation)
         if not reservation_line_info.date or not reservation_line_info.price:
             raise MissingError(_("Date and price are required"))
         if (
@@ -451,7 +466,7 @@ class PmsReservationService(Component):
                 else reservation.preferred_room_id.id,
             }
         )
-        self.env["pms.reservation.line"].create(vals)
+        self.env["pms.reservation.line"].sudo().create(vals)
 
     @restapi.method(
         [
@@ -465,7 +480,10 @@ class PmsReservationService(Component):
         auth="jwt_api_pms",
     )
     def delete_reservation_line(self, reservation_id, reservation_line_id):
-        reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
+        reservation = self.env["pms.reservation"].sudo().browse(reservation_id)
+        if not reservation.exists():
+            raise MissingError(_("Reservation not found"))
+        pms_api_check_access(user=self.env.user, records=reservation)
         line = reservation.reservation_line_ids.filtered(
             lambda l: l.id == reservation_line_id
         )
@@ -493,9 +511,18 @@ class PmsReservationService(Component):
         self, _reservation_id, reservation_line_id, reservation_line_param
     ):
         if reservation_line_param.roomId:
-            reservation_line_id = self.env["pms.reservation.line"].browse(
-                reservation_line_id
+            reservation_line_id = (
+                self.env["pms.reservation.line"].sudo().browse(reservation_line_id)
             )
+            if not reservation_line_id.exists():
+                raise MissingError(_("Reservation Line not found"))
+            pms_api_check_access(user=self.env.user, records=reservation_line_id)
+            room = self.env["pms.room"].sudo().browse(reservation_line_param.roomId)
+            if not room.exists():
+                raise MissingError(_("Room not found"))
+            pms_api_check_access(user=self.env.user, records=room)
+            if room.pms_property_id != reservation_line_id.pms_property_id:
+                raise MissingError(_("Room not found in the property"))
             reservation_line_id.room_id = reservation_line_param.roomId
 
     # ------------------------------------------------------------------------------------
@@ -515,10 +542,10 @@ class PmsReservationService(Component):
         auth="jwt_api_pms",
     )
     def get_reservation_services(self, reservation_id):
-        reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
-        if not reservation:
+        reservation = self.env["pms.reservation"].sudo().browse(reservation_id)
+        if not reservation.exists():
             raise MissingError(_("Reservation not found"))
-
+        pms_api_check_access(user=self.env.user, records=reservation)
         result_services = []
         PmsServiceInfo = self.env.datamodels["pms.service.info"]
         for service in reservation.service_ids:
@@ -571,9 +598,10 @@ class PmsReservationService(Component):
         auth="jwt_api_pms",
     )
     def create_reservation_service(self, reservation_id, service_info):
-        reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
-        if not reservation:
+        reservation = self.env["pms.reservation"].sudo().browse(reservation_id)
+        if not reservation.exists():
             raise MissingError(_("Reservation not found"))
+        pms_api_check_access(user=self.env.user, records=reservation)
         vals = {
             "product_id": service_info.productId,
             "reservation_id": reservation.id,
@@ -597,6 +625,7 @@ class PmsReservationService(Component):
             ]
         service = (
             self.env["pms.service"]
+            .sudo()
             .with_context(skip_compute_service_line_ids=skip_compute_service_line_ids)
             .create(vals)
         )
@@ -620,16 +649,20 @@ class PmsReservationService(Component):
         auth="jwt_api_pms",
     )
     def get_checkin_partners(self, reservation_id):
-        reservation = self.env["pms.reservation"].browse(reservation_id)
+        reservation = self.env["pms.reservation"].sudo().browse(reservation_id)
+        if not reservation.exists():
+            raise MissingError(_("Reservation not found"))
+        pms_api_check_access(user=self.env.user, records=reservation)
         checkin_partners = []
         PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
-        if not reservation:
+        if not reservation.exists():
             pass
         else:
             # TODO Review state draft
             # .filtered(
             #     lambda ch: ch.state != "dummy"
             # )
+            pms_api_check_access(user=self.env.user, records=reservation)
             for checkin_partner in reservation.checkin_partner_ids:
                 checkin_partners.append(
                     PmsCheckinPartnerInfo(
@@ -724,11 +757,19 @@ class PmsReservationService(Component):
     def write_reservation_checkin_partner(
         self, reservation_id, checkin_partner_id, pms_checkin_partner_info
     ):
-        checkin_partner = self.env["pms.checkin.partner"].search(
-            [("id", "=", checkin_partner_id), ("reservation_id", "=", reservation_id)]
+        checkin_partner = (
+            self.env["pms.checkin.partner"]
+            .sudo()
+            .search(
+                [
+                    ("id", "=", checkin_partner_id),
+                    ("reservation_id", "=", reservation_id),
+                ]
+            )
         )
         if not checkin_partner:
             raise MissingError(_("Checkin partner not found"))
+        pms_api_check_access(user=self.env.user, records=checkin_partner)
         if (
             pms_checkin_partner_info.actionOnBoard
             and pms_checkin_partner_info.actionOnBoard is not None
@@ -744,8 +785,12 @@ class PmsReservationService(Component):
             )
         )
         if pms_checkin_partner_info.responsibleCheckinPartnerId:
-            responsible_checkin_partner_record = self.env["pms.checkin.partner"].search(
-                [("id", "=", pms_checkin_partner_info.responsibleCheckinPartnerId)]
+            responsible_checkin_partner_record = (
+                self.env["pms.checkin.partner"]
+                .sudo()
+                .search(
+                    [("id", "=", pms_checkin_partner_info.responsibleCheckinPartnerId)]
+                )
             )
             if responsible_checkin_partner_record:
                 responsible_checkin_partner_record.ses_partners_relationship = (
@@ -804,7 +849,8 @@ class PmsReservationService(Component):
             last_update = fields.Datetime.from_string(pms_search_param.lastUpdateFrom)
             domain.append(("write_date", ">=", last_update))
 
-        reservations = self.env["pms.reservation"].search(domain)
+        reservations = self.env["pms.reservation"].sudo().search(domain)
+        pms_api_check_access(user=self.env.user, records=reservations)
         PmsReservationInfo = self.env.datamodels["pms.reservation.info"]
         if not reservations:
             pass
@@ -892,17 +938,21 @@ class PmsReservationService(Component):
         auth="jwt_api_pms",
     )
     def get_reservations_for_partners_as_host(self, pms_partner_search_param):
-        checkins = self.env["pms.checkin.partner"].search(
-            [("partner_id", "=", pms_partner_search_param.id)]
+        checkins = (
+            self.env["pms.checkin.partner"]
+            .sudo()
+            .search([("partner_id", "=", pms_partner_search_param.id)])
         )
+        pms_api_check_access(user=self.env.user, records=checkins)
         PmsReservationShortInfo = self.env.datamodels["pms.reservation.short.info"]
         reservations = []
         if checkins:
             for checkin in checkins:
-                reservation = self.env["pms.reservation"].search(
-                    [("id", "=", checkin.reservation_id.id)]
+                reservation = (
+                    self.env["pms.reservation"]
+                    .sudo()
+                    .search([("id", "=", checkin.reservation_id.id)])
                 )
-
                 reservations.append(
                     PmsReservationShortInfo(
                         id=reservation.id,
@@ -930,9 +980,17 @@ class PmsReservationService(Component):
         auth="jwt_api_pms",
     )
     def get_reservations_for_partner_as_customer(self, pms_partner_search_param):
-        partnerReservations = self.env["pms.reservation"].search(
-            [("partner_id", "=", pms_partner_search_param.id)]
+        partnerReservations = (
+            self.env["pms.reservation"]
+            .sudo()
+            .search(
+                [
+                    ("partner_id", "=", pms_partner_search_param.id),
+                    ("pms_property_id", "in", self.env.user.pms_property_ids.ids),
+                ]
+            )
         )
+        pms_api_check_access(user=self.env.user, records=partnerReservations)
         PmsReservationShortInfo = self.env.datamodels["pms.reservation.short.info"]
         reservations = []
         for reservation in partnerReservations:
@@ -963,30 +1021,42 @@ class PmsReservationService(Component):
     def create_reservation_checkin_partner(
         self, reservation_id, pms_checkin_partner_info
     ):
-        reservation_rec = self.env["pms.reservation"].browse(reservation_id)
+        reservation_rec = self.env["pms.reservation"].sudo().browse(reservation_id)
+        if not reservation_rec.exists():
+            raise MissingError(_("Reservation not found"))
+        pms_api_check_access(user=self.env.user, records=reservation_rec)
         if any(
             reservation_rec.checkin_partner_ids.filtered(lambda ch: ch.state == "dummy")
         ):
-            checkin_partner_last_id = max(
+            checkin_partner_last = max(
                 reservation_rec.checkin_partner_ids.filtered(
                     lambda ch: ch.state == "dummy"
                 )
-            ).id
-            checkin_partner = self.env["pms.checkin.partner"].browse(
-                checkin_partner_last_id
             )
-            checkin_partner.write(
+            checkin_partner_last.write(
                 self.mapping_checkin_partner_values(
                     pms_checkin_partner_info,
-                    checkin_partner.partner_id.id
-                    if checkin_partner.partner_id
+                    checkin_partner_last.partner_id.id
+                    if checkin_partner_last.partner_id
                     else False,
                 )
             )
             # if not partner_id we need to force compute to create partner
-            if not checkin_partner.partner_id:
-                checkin_partner._compute_partner_id()
-            return checkin_partner.id
+            if not checkin_partner_last.partner_id:
+                checkin_partner_last._compute_partner_id()
+            return checkin_partner_last.id
+        else:
+            raise MissingError(
+                _(
+                    "This reservation has %(adults) adults and %(children) children"
+                    " and already has %(checkins) checkins created"
+                )
+                % {
+                    "adults": reservation_rec.adults,
+                    "children": reservation_rec.children,
+                    "checkins": len(reservation_rec.checkin_partner_ids),
+                }
+            )
 
     @restapi.method(
         [
@@ -1000,9 +1070,13 @@ class PmsReservationService(Component):
         auth="jwt_api_pms",
     )
     def delete_reservation_checkin_partner(self, reservation_id, checkin_partner_id):
-        checkin_partner = self.env["pms.checkin.partner"].browse(checkin_partner_id)
-        if checkin_partner:
-            checkin_partner.unlink()
+        checkin_partner = (
+            self.env["pms.checkin.partner"].sudo().browse(checkin_partner_id)
+        )
+        if not checkin_partner.exists():
+            raise MissingError(_("Checkin partner not found"))
+        pms_api_check_access(user=self.env.user, records=checkin_partner)
+        checkin_partner.unlink()
 
     def mapping_checkin_partner_values(
         self, pms_checkin_partner_info, partner_id=False
@@ -1085,15 +1159,16 @@ class PmsReservationService(Component):
         output_param=Datamodel("pms.report", is_list=False),
     )
     def print_all_checkins(self, reservation_id):
-        reservations = False
-        if reservation_id:
-            reservations = self.env["pms.reservation"].sudo().browse(reservation_id)
-        checkins = reservations.checkin_partner_ids.filtered(
+        reservation = self.env["pms.reservation"].sudo().browse(reservation_id)
+        if not reservation.exists():
+            raise MissingError(_("Reservation not found"))
+        pms_api_check_access(user=self.env.user, records=reservation)
+        checkins = reservation.checkin_partner_ids.filtered(
             lambda x: x.state in ["precheckin", "onboard", "done"]
         )
         pdf = (
             self.env.ref("pms.action_traveller_report")
-            .sudo()
+            .with_user(SUPERUSER_ID)
             ._render_qweb_pdf(checkins.ids)[0]
         )
         base64EncodedStr = base64.b64encode(pdf)
@@ -1114,15 +1189,16 @@ class PmsReservationService(Component):
         output_param=Datamodel("pms.report", is_list=False),
     )
     def print_checkin(self, reservation_id, checkin_partner_id):
-        reservations = False
-        if reservation_id:
-            reservations = self.env["pms.reservation"].sudo().browse(reservation_id)
-        checkin_partner = reservations.checkin_partner_ids.filtered(
+        reservation = self.env["pms.reservation"].sudo().browse(reservation_id)
+        if not reservation.exists():
+            raise MissingError(_("Reservation not found"))
+        pms_api_check_access(user=self.env.user, records=reservation)
+        checkin_partner = reservation.checkin_partner_ids.filtered(
             lambda x: x.id == checkin_partner_id
         )
         pdf = (
             self.env.ref("pms.action_traveller_report")
-            .sudo()
+            .with_user(SUPERUSER_ID)
             ._render_qweb_pdf(checkin_partner.id)[0]
         )
         base64EncodedStr = base64.b64encode(pdf)
@@ -1144,13 +1220,20 @@ class PmsReservationService(Component):
     )
     def kelly_report(self, pms_report_search_param):
         pms_property_id = pms_report_search_param.pmsPropertyId
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"].sudo().browse(pms_property_id),
+        )
         date_from = fields.Date.from_string(pms_report_search_param.dateFrom)
-
-        report_wizard = self.env["kellysreport"].create(
-            {
-                "date_start": date_from,
-                "pms_property_id": pms_property_id,
-            }
+        report_wizard = (
+            self.env["kellysreport"]
+            .sudo()
+            .create(
+                {
+                    "date_start": date_from,
+                    "pms_property_id": pms_property_id,
+                }
+            )
         )
         report_wizard.calculate_report()
         result = report_wizard._excel_export()
@@ -1174,12 +1257,18 @@ class PmsReservationService(Component):
     )
     def arrivals_report(self, pms_report_search_param):
         pms_property_id = pms_report_search_param.pmsPropertyId
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"].sudo().browse(pms_property_id),
+        )
         date_from = fields.Date.from_string(pms_report_search_param.dateFrom)
 
-        query = self.env.ref("pms_api_rest.sql_export_arrivals")
+        query = self.env.ref("pms_api_rest.sql_export_arrivals").sudo()
         if not query:
             raise MissingError(_("SQL query not found"))
-        report_wizard = self.env["sql.file.wizard"].create({"sql_export_id": query.id})
+        report_wizard = (
+            self.env["sql.file.wizard"].sudo().create({"sql_export_id": query.id})
+        )
         if not report_wizard._fields.get(
             "x_date_from"
         ) or not report_wizard._fields.get("x_pms_property_id"):
@@ -1210,14 +1299,20 @@ class PmsReservationService(Component):
     )
     def departures_report(self, pms_report_search_param):
         pms_property_id = pms_report_search_param.pmsPropertyId
+        pms_api_check_access(
+            user=self.env.user,
+            records=self.env["pms.property"].sudo().browse(pms_property_id),
+        )
         date_from = fields.Date.from_string(pms_report_search_param.dateFrom)
 
-        query = self.env.ref("pms_api_rest.sql_export_departures")
+        query = self.env.ref("pms_api_rest.sql_export_departures").sudo()
         if not query:
             raise MissingError(_("SQL query not found"))
         if query.state == "draft":
             query.button_validate_sql_expression()
-        report_wizard = self.env["sql.file.wizard"].create({"sql_export_id": query.id})
+        report_wizard = (
+            self.env["sql.file.wizard"].sudo().create({"sql_export_id": query.id})
+        )
         if not report_wizard._fields.get(
             "x_date_from"
         ) or not report_wizard._fields.get("x_pms_property_id"):
@@ -1247,7 +1342,10 @@ class PmsReservationService(Component):
     )
     # flake8: noqa: B950
     def wizard_states(self, reservation_id):
-        reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
+        reservation = self.env["pms.reservation"].sudo().browse(reservation_id)
+        if not reservation.exists():
+            raise MissingError(_("Reservation not found"))
+        pms_api_check_access(user=self.env.user, records=reservation)
         today = datetime.now().strftime("%Y-%m-%d")
         wizard_states = [
             {
@@ -1260,7 +1358,7 @@ class PmsReservationService(Component):
                 "('reservation_type', 'in', ['normal', 'staff'])"
                 "]",
                 "filtered": "lambda r: r.count_alternative_free_rooms",
-                "text": f"Parece que ha entrado una reserva sin haber disponibilidad para {reservation.sudo().room_type_id.name}.",
+                "text": f"Parece que ha entrado una reserva sin haber disponibilidad para {reservation.room_type_id.name}.",
                 "priority": 100,
             },
             {
@@ -1456,10 +1554,10 @@ class PmsReservationService(Component):
             domain = expression.AND(
                 [[("id", "=", reservation_id)], safe_eval(state["domain"])]
             )
-            if self.env["pms.reservation"].search_count(domain):
-                if state.get("filtered") and not self.env["pms.reservation"].browse(
-                    reservation_id
-                ).filtered(safe_eval(state["filtered"])):
+            if self.env["pms.reservation"].sudo().search_count(domain):
+                if state.get("filtered") and not self.env[
+                    "pms.reservation"
+                ].sudo().browse(reservation_id).filtered(safe_eval(state["filtered"])):
                     continue
 
                 return PmsWizardStateInfo(
@@ -1707,6 +1805,7 @@ class PmsReservationService(Component):
         input_param=Datamodel("pms.checkin.partner.info", is_list=False),
         auth="public",
     )
+    # flake8: noqa: C901
     def patch_checkin_partner(
         self, reservation_id, token, checkin_partner_id, pms_checkin_partner_info
     ):

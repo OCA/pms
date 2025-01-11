@@ -2,6 +2,8 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
+from ..pms_api_rest_utils import pms_api_check_access
+
 
 class PmsExtraBedService(Component):
     _inherit = "base.rest.service"
@@ -37,21 +39,24 @@ class PmsExtraBedService(Component):
 
         result_extra_beds = []
         PmsExtraBed = self.env.datamodels["pms.extra.bed.info"]
-
-        for bed in self.env["product.product"].search(
-            domain,
-        ):
+        beds = self.env["product.product"].sudo().search(domain)
+        pms_api_check_access(user=self.env.user, records=beds)
+        for bed in beds:
             avail = -1
             if extra_beds_search_param.dateFrom and extra_beds_search_param.dateTo:
-                qty_for_day = self.env["pms.service.line"].read_group(
-                    [
-                        ("product_id", "=", bed.id),
-                        ("date", ">=", extra_beds_search_param.dateFrom),
-                        ("date", "<=", extra_beds_search_param.dateTo),
-                        ("cancel_discount", "=", 0),
-                    ],
-                    ["day_qty:sum"],
-                    ["date:day"],
+                qty_for_day = (
+                    self.env["pms.service.line"]
+                    .sudo()
+                    .read_group(
+                        [
+                            ("product_id", "=", bed.id),
+                            ("date", ">=", extra_beds_search_param.dateFrom),
+                            ("date", "<=", extra_beds_search_param.dateTo),
+                            ("cancel_discount", "=", 0),
+                        ],
+                        ["day_qty:sum"],
+                        ["date:day"],
+                    )
                 )
                 max_daily_used = (
                     max(date["day_qty"] for date in qty_for_day) if qty_for_day else 0

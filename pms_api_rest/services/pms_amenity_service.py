@@ -5,6 +5,8 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
+from ..pms_api_rest_utils import pms_api_check_access
+
 
 class PmsAmenityService(Component):
     _inherit = "base.rest.service"
@@ -37,13 +39,11 @@ class PmsAmenityService(Component):
                     ("pms_property_ids", "=", False),
                 ]
             )
-
         result_amenities = []
         PmsAmenityInfo = self.env.datamodels["pms.amenity.info"]
-        for amenity in self.env["pms.amenity"].search(
-            domain,
-        ):
-
+        amenities = self.env["pms.amenity"].sudo().search(domain)
+        pms_api_check_access(user=self.env.user, records=amenities)
+        for amenity in amenities:
             result_amenities.append(
                 PmsAmenityInfo(
                     id=amenity.id,
@@ -68,8 +68,9 @@ class PmsAmenityService(Component):
         auth="jwt_api_pms",
     )
     def get_amenity(self, amenity_id):
-        amenity = self.env["pms.amenity"].search([("id", "=", amenity_id)])
+        amenity = self.env["pms.amenity"].sudo().search([("id", "=", amenity_id)])
         if amenity:
+            pms_api_check_access(user=self.env.user, records=amenity)
             PmsAmenityInfo = self.env.datamodels["pms.amenity.info"]
             return PmsAmenityInfo(
                 id=amenity.id,

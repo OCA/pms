@@ -9,3 +9,4 @@ class PmsResUsersInfo(Datamodel):
     name = fields.String(required=False, allow_none=True)
     userFirstName = fields.String(required=False, allow_none=True)
     userImageBase64 = fields.String(required=False, allow_none=True)
+    userRole = fields.String(required=False, allow_none=True)

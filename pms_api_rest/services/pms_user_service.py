@@ -34,24 +34,21 @@ class PmsRoomTypeClassService(Component):
         auth="jwt_api_pms",
     )
     def get_user(self, user_id):
-        user = self.env["res.users"].sudo().search([("id", "=", user_id)])
-        if user:
-            PmsUserInfo = self.env.datamodels["pms.api.rest.user.output"]
-            return PmsUserInfo(
-                userId=user.id,
-                userName=user.name,
-                userFirstName=user.firstname if user.firstname else "",
-                userEmail=user.email if user.email else "",
-                userPhone=user.phone if user.phone else "",
-                userImageBase64=user.image_1920 if user.image_1920 else "",
-                userImageUrl=url_image_pms_api_rest(
-                    "res.partner", user.partner_id.id, "image_1024"
-                ),
-                isNewInterfaceUser=user.is_new_interface_app_user,
-            )
-
-        else:
-            raise MissingError(_("Folio not found"))
+        user = self.env["res.users"].sudo().browse(user_id)
+        if not user.exists():
+            raise MissingError(_("User not found"))
+        PmsUserInfo = self.env.datamodels["pms.api.rest.user.output"]
+        return PmsUserInfo(
+            userId=user.id,
+            userName=user.name,
+            userFirstName=user.firstname if user.firstname else "",
+            userEmail=user.email if user.email else "",
+            userPhone=user.phone if user.phone else "",
+            userImageBase64=user.image_1920 if user.image_1920 else "",
+            userImageUrl=url_image_pms_api_rest(
+                "res.partner", user.partner_id.id, "image_1024"
+            ),
+        )
 
     @restapi.method(
         [
@@ -66,42 +63,37 @@ class PmsRoomTypeClassService(Component):
         auth="jwt_api_pms",
     )
     def write_user(self, user_id, input_data):
-        user = self.env["res.users"].sudo().search([("id", "=", user_id)])
-        if user:
-            if input_data.isNewInterfaceUser is not None:
-                user.write(
-                    {
-                        "is_new_interface_app_user": input_data.isNewInterfaceUser,
-                    }
-                )
+        user = self.env["res.users"].sudo().browse(user_id)
+        if not user.exists():
+            raise MissingError(_("User not found"))
+        user.write(
+            {
+                "name": input_data.userName,
+                "email": input_data.userEmail,
+                "phone": input_data.userPhone,
+            }
+        )
+        if input_data.userImageBase64 is not None:
+            with tempfile.NamedTemporaryFile(delete=False) as f:
+                f.write(base64.b64decode(input_data.userImageBase64))
+                temp_path = f.name
+
+            with open(temp_path, "rb") as f:
+                user_image = f.read()
+            os.unlink(temp_path)
+
             user.write(
                 {
-                    "name": input_data.userName,
-                    "email": input_data.userEmail,
-                    "phone": input_data.userPhone,
+                    "image_1024": base64.b64encode(user_image),
                 }
             )
-            if input_data.userImageBase64 is not None:
-                with tempfile.NamedTemporaryFile(delete=False) as f:
-                    f.write(base64.b64decode(input_data.userImageBase64))
-                    temp_path = f.name
-
-                with open(temp_path, "rb") as f:
-                    user_image = f.read()
-                os.unlink(temp_path)
-
-                user.write(
-                    {
-                        "image_1024": base64.b64encode(user_image),
-                    }
-                )
-            else:
-                user.write(
-                    {
-                        "image_1024": "",
-                    }
-                )
-            return True
+        else:
+            user.write(
+                {
+                    "image_1024": "",
+                }
+            )
+        return True
 
     @restapi.method(
         [
@@ -117,19 +109,20 @@ class PmsRoomTypeClassService(Component):
         auth="jwt_api_pms",
     )
     def change_password(self, user_id, input_data):
-        user = self.env["res.users"].sudo().search([("id", "=", user_id)])
-        if user:
-            try:
-                user.with_user(user)._check_credentials(input_data.password, None)
-            except AccessDenied:
-                raise werkzeug.exceptions.Unauthorized(_("Wrong password"))
+        user = self.env["res.users"].sudo().browse(user_id)
+        if not user.exists():
+            raise MissingError(_("User not found"))
+        try:
+            user.with_user(user)._check_credentials(input_data.password, None)
+        except AccessDenied as e:
+            raise werkzeug.exceptions.Unauthorized(_("Wrong password")) from e
 
-            user.change_password(input_data.password, input_data.newPassword)
+        user.change_password(input_data.password, input_data.newPassword)
 
-            PmsUserInfo = self.env.datamodels["pms.api.rest.user.login.output"]
-            return PmsUserInfo(
-                login=user.login,
-            )
+        PmsUserInfo = self.env.datamodels["pms.api.rest.user.login.output"]
+        return PmsUserInfo(
+            login=user.login,
+        )
 
     @restapi.method(
         [
@@ -175,7 +168,7 @@ class PmsRoomTypeClassService(Component):
                 return False
             expiration_datetime = datetime.now() + timedelta(minutes=15)
             user.partner_id.sudo().signup_prepare(expiration=expiration_datetime)
-            template.with_context({"app_url": input_data.url}).send_mail(
+            template.with_context(app_url=input_data.url).send_mail(
                 user.id, force_send=True
             )
             return True

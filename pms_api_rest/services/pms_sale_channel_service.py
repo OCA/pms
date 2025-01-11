@@ -5,7 +5,7 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
-from ..pms_api_rest_utils import url_image_pms_api_rest
+from ..pms_api_rest_utils import pms_api_check_access, url_image_pms_api_rest
 
 
 class PmsSaleChannelService(Component):
@@ -28,14 +28,18 @@ class PmsSaleChannelService(Component):
         auth="jwt_api_pms",
     )
     def get_sale_channels(self, sale_channel_search_param):
-        sale_channels_all_properties = self.env["pms.sale.channel"].search(
-            [("pms_property_ids", "=", False)]
+        sale_channels_all_properties = (
+            self.env["pms.sale.channel"]
+            .sudo()
+            .search([("pms_property_ids", "=", False)])
         )
         if sale_channel_search_param.pmsPropertyIds:
             sale_channels = set()
             for index, prop in enumerate(sale_channel_search_param.pmsPropertyIds):
-                sale_channels_with_query_property = self.env["pms.sale.channel"].search(
-                    [("pms_property_ids", "=", prop)]
+                sale_channels_with_query_property = (
+                    self.env["pms.sale.channel"]
+                    .sudo()
+                    .search([("pms_property_ids", "=", prop)])
                 )
                 if index == 0:
                     sale_channels = set(sale_channels_with_query_property.ids)
@@ -56,9 +60,9 @@ class PmsSaleChannelService(Component):
 
         result_sale_channels = []
         PmsSaleChannelInfo = self.env.datamodels["pms.sale.channel.info"]
-        for sale_channel in self.env["pms.sale.channel"].search(
-            domain,
-        ):
+        sale_channels = self.env["pms.sale.channel"].sudo().search(domain)
+        pms_api_check_access(user=self.env.user, records=sale_channels)
+        for sale_channel in sale_channels:
             result_sale_channels.append(
                 PmsSaleChannelInfo(
                     id=sale_channel.id,
@@ -87,14 +91,12 @@ class PmsSaleChannelService(Component):
         auth="jwt_api_pms",
     )
     def get_sale_channel(self, sale_channel_id):
-        sale_channel = self.env["pms.sale.channel"].search(
-            [("id", "=", sale_channel_id)]
-        )
-        if sale_channel:
-            PmsSaleChannelInfo = self.env.datamodels["pms.sale.channel.info"]
-            return PmsSaleChannelInfo(
-                id=sale_channel.id,
-                name=sale_channel.name if sale_channel else None,
-            )
-        else:
+        sale_channel = self.env["pms.sale.channel"].sudo().browse(sale_channel_id)
+        if not sale_channel.exists():
             raise MissingError(_("Sale Channel not found"))
+        pms_api_check_access(user=self.env.user, records=sale_channel)
+        PmsSaleChannelInfo = self.env.datamodels["pms.sale.channel.info"]
+        return PmsSaleChannelInfo(
+            id=sale_channel.id,
+            name=sale_channel.name if sale_channel else None,
+        )

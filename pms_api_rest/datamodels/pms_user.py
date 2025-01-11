@@ -27,10 +27,10 @@ class PmsApiRestUserOutput(Datamodel):
     userImageUrl = fields.String(required=False, allow_none=True)
     defaultPropertyId = fields.Integer(required=False, allow_none=True)
     defaultPropertyName = fields.String(required=False, allow_none=True)
-    isNewInterfaceUser = fields.Boolean(required=False, allow_none=True)
     availabilityRuleFields = fields.List(
         fields.String(), required=False, allow_none=True
     )
+    userRole = fields.String(required=False, allow_none=True)
 
 
 class PmsApiRestUserLoginOutput(Datamodel):

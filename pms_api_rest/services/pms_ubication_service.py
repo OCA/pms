@@ -2,6 +2,8 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
+from ..pms_api_rest_utils import pms_api_check_access
+
 
 class PmsUbicationService(Component):
     _inherit = "base.rest.service"
@@ -26,20 +28,22 @@ class PmsUbicationService(Component):
         if ubication_search_param.pmsPropertyIds:
             ubications = (
                 self.env["pms.room"]
+                .sudo()
                 .search(
                     [("pms_property_id", "in", ubication_search_param.pmsPropertyIds)]
                 )
                 .mapped("ubication_id")
             )
         else:
-            ubications = self.env["pms.ubication"].search(
-                [("pms_property_ids", "=", False)]
+            ubications = (
+                self.env["pms.ubication"]
+                .sudo()
+                .search([("pms_property_ids", "=", False)])
             )
-
+        pms_api_check_access(user=self.env.user, records=ubications)
         result_ubications = []
         PmsUbicationInfo = self.env.datamodels["pms.ubication.info"]
         for ubication in ubications:
-
             result_ubications.append(
                 PmsUbicationInfo(
                     id=ubication.id,

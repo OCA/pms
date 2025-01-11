@@ -2,7 +2,7 @@ from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
-from ..pms_api_rest_utils import url_image_pms_api_rest
+from ..pms_api_rest_utils import pms_api_check_access, url_image_pms_api_rest
 
 
 class PmsRoomTypeClassService(Component):
@@ -28,6 +28,7 @@ class PmsRoomTypeClassService(Component):
         if room_type_class_search_param.pmsPropertyIds:
             room_type_classes = (
                 self.env["pms.room"]
+                .sudo()
                 .search(
                     [
                         (
@@ -41,9 +42,12 @@ class PmsRoomTypeClassService(Component):
                 .mapped("class_id")
             )
         else:
-            room_type_classes = self.env["pms.room.type.class"].search(
-                [("pms_property_ids", "=", False)]
+            room_type_classes = (
+                self.env["pms.room.type.class"]
+                .sudo()
+                .search([("pms_property_ids", "=", False)])
             )
+        pms_api_check_access(user=self.env.user, records=room_type_classes)
         result_room_type_class = []
         PmsRoomTypeClassInfo = self.env.datamodels["pms.room.type.class.info"]
         for room in room_type_classes:
