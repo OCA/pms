@@ -75,6 +75,10 @@
                                         icon="fa-2x fa-bars"
                                         name="open_board_lines_form"
                                     />
+                                    <field
+                                        name="pricelist_ids"
+                                        widget="many2many_tags"
+                                    />
                                 </tree>
                             </field>
                         </page>
