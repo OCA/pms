@@ -158,7 +158,7 @@ class PmsServiceLine(models.Model):
     def _compute_day_amount_service(self):
         for line in self:
             amount_service = line.price_unit
-            if amount_service > 0:
+            if amount_service:
                 currency = line.service_id.currency_id
                 product = line.product_id
                 price = amount_service * (1 - (line.discount or 0.0) * 0.01)
