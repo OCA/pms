@@ -37,10 +37,16 @@ class PmsProperty(models.Model):
     _inherit = "pms.property"
 
     ocr_checkin_supplier = fields.Selection(selection_add=[("klippa", "Klippa")])
+    save_images_log = fields.Boolean(
+        string="Save Images Logs",
+        help="Indicates if the images sent to the OCR service are saved in the logs",
+        default=False,
+    )
 
     # flake8: noqa: C901
     def _klippa_document_process(self, image_base_64_front, image_base_64_back=False):
         try:
+            self.ensure_one()
             ocr_klippa_url = (
                 self.env["ir.config_parameter"].sudo().get_param("ocr_klippa_url")
             )
@@ -67,13 +73,19 @@ class PmsProperty(models.Model):
             )
             log_data = {
                 "pms_property_id": self.id,
-                "image_base64_front": image_base_64_front,
-                "image_base64_back": image_base_64_back,
                 "request_datetime": datetime.now(),
                 "endpoint": ocr_klippa_url,
                 "request_size": request_size,
                 "request_headers": str(headers),
             }
+            # TODO: Improvement this to save log only in error case
+            if self.save_images_log:
+                log_data.update(
+                    {
+                        "image_base64_front": image_base_64_front,
+                        "image_base64_back": image_base_64_back,
+                    }
+                )
 
             # Call Klippa OCR API
             result = requests.post(
@@ -84,7 +96,6 @@ class PmsProperty(models.Model):
             json_data = result.json()
             log_data.update(
                 {
-                    "klippa_response": json_data,
                     "klippa_status": json_data.get("result", "error"),
                     "response_datetime": datetime.now(),
                     "response_size": len(str(json_data)),
@@ -94,6 +105,13 @@ class PmsProperty(models.Model):
                     "request_id": json_data.get("request_id", False),
                 }
             )
+            if self.save_images_log:
+                log_data.update(
+                    {
+                        "klippa_response": json_data,
+                    }
+                )
+
             if json_data.get("result") != "success":
                 raise ValidationError(_("Error calling Klippa OCR API"))
             document_data = json_data["data"]["parsed"]
