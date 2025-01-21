@@ -19,3 +19,5 @@ class PmsBoardServiceInfo(Datamodel):
     boardServiceId = fields.Integer(required=False, allow_none=False)
     productIds = fields.List(fields.Integer(required=False, allow_none=False))
     boardServiceLineIds = fields.List(fields.Integer(required=False, allow_none=False))
+    isDefaultBoardService = fields.Boolean(required=False, allow_none=False)
+    pricelistIds = fields.List(fields.Integer(required=False, allow_none=False))
