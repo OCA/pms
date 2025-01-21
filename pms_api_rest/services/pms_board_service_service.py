@@ -39,7 +39,9 @@ class PmsBoardServiceService(Component):
         if board_services_search_param.pmsPropertyId:
             domain.extend(
                 [
+                    "|",
                     ("pms_property_id", "=", board_services_search_param.pmsPropertyId),
+                    ("pms_property_id", "=", False),
                 ]
             )
 
@@ -56,6 +58,8 @@ class PmsBoardServiceService(Component):
                     amount=round(board_service.amount, 2),
                     boardServiceId=board_service.pms_board_service_id,
                     boardServiceLineIds=board_service.board_service_line_ids.ids,
+                    isDefaultBoardService=board_service.by_default,
+                    pricelistIds=board_service.pricelist_ids,
                 )
             )
         if external_app:
@@ -107,6 +111,8 @@ class PmsBoardServiceService(Component):
                 roomTypeId=board_service.pms_room_type_id.id,
                 amount=round(board_service.amount),
                 boardServiceLineIds=board_service.board_service_line_ids.ids,
+                isDefaultBoardService=board_service.by_default,
+                pricelistIds=board_service.pricelist_ids,
             )
         else:
             raise MissingError(_("Board Service not found"))
