@@ -607,6 +607,7 @@ class PmsInvoiceService(Component):
                     list(
                         {
                             self.env["folio.sale.line"]
+                            .sudo()
                             .browse(line.saleLineId)
                             .folio_id.id
                             for line in list(
