@@ -195,13 +195,12 @@ class AccountMove(models.Model):
         company_id = self._context.get("default_company_id", self.env.company.id)
         company = self.env["res.company"].browse(company_id)
         journal_type = self._context.get("default_journal_type", journal.type)
+        pms_property = False
         pms_property_id = self.env.context.get(
             "default_pms_property_id", self.pms_property_id.id
-        ) or (
-            self.env.user.get_active_property_ids()
-            and self.env.user.get_active_property_ids()[0]
         )
-        pms_property = self.env["pms.property"].browse(pms_property_id)
+        if pms_property_id:
+            pms_property = self.env["pms.property"].browse(pms_property_id)
         if pms_property:
             domain = [
                 ("company_id", "=", pms_property.company_id.id),
@@ -237,6 +236,7 @@ class AccountMove(models.Model):
             raise UserError(error_msg)
         return journal
 
+    # pylint: disable=W8110
     @api.depends("pms_property_id")
     def _compute_suitable_journal_ids(self):
         super(AccountMove, self)._compute_suitable_journal_ids()

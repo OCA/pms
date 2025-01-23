@@ -2,7 +2,7 @@ import base64
 import calendar
 import datetime
 import math
-import xml.etree.cElementTree as ET
+import xml.etree.ElementTree as ET
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -19,7 +19,7 @@ class WizardIne(models.TransientModel):
         string="Property",
         comodel_name="pms.property",
         default=lambda self: self.env["pms.property"].browse(
-            self.env.user.get_active_property_ids()[0]
+            self.env.user.pms_property_id.id
         ),
         check_pms_properties=True,
         required=True,
@@ -514,11 +514,13 @@ class WizardIne(models.TransientModel):
         if number_of_rooms > self.pms_property_id.ine_seats:
             raise ValidationError(
                 _(
-                    "The number of seats, excluding extra beds (%s)"
-                    % str(number_of_rooms)
-                    + " exceeds the number of seats established in the property (%s)"
-                    % str(self.pms_property_id.ine_seats)
+                    "The number of seats, excluding extra beds (%(number_of_rooms)s) "
+                    "exceeds the number of seats established in the property (%(ine_seats)s)"
                 )
+                % {
+                    "number_of_rooms": number_of_rooms,
+                    "ine_seats": self.pms_property_id.ine_seats,
+                }
             )
 
         # INE XML

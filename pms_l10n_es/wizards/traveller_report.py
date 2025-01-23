@@ -422,7 +422,7 @@ class TravellerReport(models.TransientModel):
         comodel_name="pms.property",
         string="Property",
         required=True,
-        default=lambda self: self.env.user.get_active_property_ids()[0],
+        default=lambda self: self.env.user.pms_property_id.id,
     )
     room_id = fields.Many2one(
         comodel_name="pms.room",

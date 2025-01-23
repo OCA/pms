@@ -1,9 +1,10 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class IrPmsProperty(models.Model):
     _name = "ir.pms.property"
     _description = "IrPmsProperty"
+
     pms_property_id = fields.Many2one(
         string="Properties",
         help="",
@@ -17,12 +18,19 @@ class IrPmsProperty(models.Model):
         index=True,
     )
     record = fields.Integer(string="Record Id")
-
     value_integer = fields.Integer(string="Integer Field Value")
-
     value_float = fields.Float(string="Float Field Value")
-
     value_reference = fields.Text(string="Reference Field Value")
+    model_name = fields.Char(
+        compute="_compute_model_name",
+        store=True,
+        readonly=False,
+    )
+    field_name = fields.Char(
+        compute="_compute_field_name",
+        store=True,
+        readonly=False,
+    )
 
     def get_field_value(
         self, pms_property_id, model_name, field_name, record_id, value_type
@@ -93,3 +101,39 @@ class IrPmsProperty(models.Model):
                         "record": record_id,
                     }
                 )
+
+    @api.depends("model_id")
+    def _compute_model_name(self):
+        for record in self:
+            record.model_name = record.model_id.model
+
+    @api.depends("field_id")
+    def _compute_field_name(self):
+        for record in self:
+            record.field_name = record.field_id.name
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if "model_id" not in vals and "model_name" in vals:
+                model_id = self.env["ir.model"].search(
+                    [("model", "=", vals["model_name"])]
+                )
+                vals.update(
+                    {
+                        "model_id": model_id.id,
+                    }
+                )
+            if "field_id" not in vals and "field_name" in vals:
+                field_id = self.env["ir.model.fields"].search(
+                    [
+                        ("name", "=", vals["field_name"]),
+                        ("model_id", "=", vals["model_id"]),
+                    ]
+                )
+                vals.update(
+                    {
+                        "field_id": field_id.id,
+                    }
+                )
+        return super(IrPmsProperty, self).create(vals)
