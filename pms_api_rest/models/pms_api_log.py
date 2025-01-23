@@ -10,7 +10,6 @@ class PmsApiLog(models.Model):
         string="PMS Property",
         help="PMS Property",
         comodel_name="pms.property",
-        default=lambda self: self.env.user.get_active_property_ids()[0],
     )
     client_id = fields.Many2one(
         string="Client",
