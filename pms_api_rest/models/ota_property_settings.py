@@ -8,7 +8,6 @@ class OtaPropertySettings(models.Model):
         string="PMS Property",
         help="PMS Property",
         comodel_name="pms.property",
-        default=lambda self: self.env.user.get_active_property_ids()[0],
     )
     agency_id = fields.Many2one(
         string="Partner",
