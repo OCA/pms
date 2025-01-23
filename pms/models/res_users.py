@@ -2,7 +2,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-from odoo.http import request
 
 
 class ResUsers(models.Model):
@@ -25,21 +24,6 @@ class ResUsers(models.Model):
         column2="pms_property_id",
         domain="[('company_id','in',company_ids)]",
     )
-
-    @api.model
-    def get_active_property_ids(self):
-        # TODO: Require performance test and security (dont allow any property id)
-        # checks (Review lazy_property decorator?)
-        user_property_ids = self.env.user.pms_property_ids.ids
-        if request and request.httprequest.cookies.get("pms_pids"):
-            active_property_ids = list(
-                map(int, request.httprequest.cookies.get("pms_pids", "").split(","))
-            )
-            active_property_ids = [
-                pid for pid in active_property_ids if pid in user_property_ids
-            ]
-            return self.env["pms.property"].browse(active_property_ids).ids
-        return user_property_ids
 
     def _is_property_member(self, pms_property_id):
         self.ensure_one()

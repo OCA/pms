@@ -39,10 +39,6 @@ class ProductTemplate(models.Model):
         compute="_compute_daily_limit",
         inverse="_inverse_daily_limit",
     )
-    list_price = fields.Float(
-        compute="_compute_list_price",
-        inverse="_inverse_list_price",
-    )
     is_extra_bed = fields.Boolean(
         help="Indicates if that product is a extra bed, add +1 capacity in the room",
         default=False,
@@ -82,14 +78,20 @@ class ProductTemplate(models.Model):
         help="Domain to filter reservations",
         default="[('state', '!=', 'cancel')]",
     )
+    property_daily_limits = fields.One2many(
+        string="Daily Limits per Property",
+        comodel_name="ir.pms.property",
+        inverse_name="record",
+        domain=lambda self: [
+            ("model_id.model", "=", "product.template"),
+            ("field_id.name", "=", "daily_limit"),
+        ],
+    )
 
     @api.depends_context("allowed_pms_property_ids")
     def _compute_daily_limit(self):
         for record in self:
-            pms_property_id = (
-                self.env.context.get("property")
-                or self.env.user.get_active_property_ids()[0]
-            )
+            pms_property_id = self.env.context.get("property")
             record.daily_limit = self.env["ir.pms.property"].get_field_value(
                 pms_property_id,
                 self._name,
@@ -98,27 +100,9 @@ class ProductTemplate(models.Model):
                 type(record.daily_limit),
             )
 
-    @api.depends_context("allowed_pms_property_ids")
-    def _compute_list_price(self):
-        for record in self:
-            pms_property_id = (
-                self.env.context.get("property")
-                or self.env.user.get_active_property_ids()[0]
-            )
-            record.list_price = self.env["ir.pms.property"].get_field_value(
-                pms_property_id,
-                self._name,
-                "list_price",
-                record.id,
-                type(record.list_price),
-            )
-
     def _inverse_daily_limit(self):
         for record in self:
-            pms_property_id = (
-                self.env.context.get("property")
-                or self.env.user.get_active_property_ids()[0]
-            )
+            pms_property_id = self.env.context.get("property")
             self.env["ir.pms.property"].set_field_value(
                 pms_property_id,
                 self._name,
@@ -126,30 +110,3 @@ class ProductTemplate(models.Model):
                 record.id,
                 record.daily_limit,
             )
-
-    def _inverse_list_price(self):
-        for record in self:
-            pms_property_id = (
-                self.env.context.get("property")
-                or self.env.user.get_active_property_ids()[0]
-            )
-            self.env["ir.pms.property"].set_field_value(
-                pms_property_id, self._name, "list_price", record.id, record.list_price
-            )
-            # Set default value in other properties
-            other_properties = self.env["pms.property"].search([])
-            for other_property in other_properties.ids:
-                if not self.env["ir.pms.property"].get_field_value(
-                    other_property,
-                    self._name,
-                    "list_price",
-                    record.id,
-                    type(record.list_price),
-                ):
-                    self.env["ir.pms.property"].set_field_value(
-                        other_property,
-                        self._name,
-                        "list_price",
-                        record.id,
-                        record.list_price,
-                    )

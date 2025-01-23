@@ -43,7 +43,6 @@ class BookingEngine(models.TransientModel):
         domain="[('is_used_in_checkin', '=', True)]",
     )
     partner_name = fields.Char(
-        string="Partner name",
         help="In whose name is the reservation",
         compute="_compute_partner_name",
         readonly=False,
@@ -65,7 +64,6 @@ class BookingEngine(models.TransientModel):
         check_pms_properties=True,
     )
     availability_results = fields.One2many(
-        string="Availability Results",
         help="Availability Results",
         readonly=False,
         store=True,
@@ -105,13 +103,10 @@ class BookingEngine(models.TransientModel):
         compute="_compute_total_price_folio",
     )
     discount = fields.Float(
-        string="Discount",
         help="Discount that be applied in total price",
         default=0,
     )
-    can_create_folio = fields.Boolean(
-        string="Can create folio", compute="_compute_can_create_folio"
-    )
+    can_create_folio = fields.Boolean(compute="_compute_can_create_folio")
     internal_comment = fields.Text(
         string="Internal Folio Notes",
         help="Internal Folio notes for Staff",
@@ -122,7 +117,7 @@ class BookingEngine(models.TransientModel):
             folio = self.env["pms.folio"].browse(self._context.get("default_folio_id"))
             return folio.pms_property_id.id
         else:
-            return self.env.user.get_active_property_ids()[0]
+            return self.env.user.pms_property_id.id
 
     @api.depends("availability_results.value_num_rooms_selected")
     def _compute_can_create_folio(self):
