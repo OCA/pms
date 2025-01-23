@@ -15,10 +15,6 @@ class PmsAvailabilityPlan(models.Model):
     _description = "Reservation availability plan"
     _check_pms_properties_auto = True
 
-    @api.model
-    def _get_default_pms_property(self):
-        return self.env.user.get_active_property_ids()[0] or None
-
     name = fields.Char(
         string="Availability Plan Name", help="Name of availability plan", required=True
     )

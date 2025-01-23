@@ -42,7 +42,6 @@ class PmsFolio(models.Model):
         comodel_name="pms.property",
         required=True,
         index=True,
-        default=lambda self: self.env.user.get_active_property_ids()[0],
         check_pms_properties=True,
     )
     partner_id = fields.Many2one(
@@ -1459,11 +1458,9 @@ class PmsFolio(models.Model):
     @api.model
     def create(self, vals):
         if vals.get("name", _("New")) == _("New") or "name" not in vals:
-            pms_property_id = (
-                self.env.user.get_active_property_ids()[0]
-                if "pms_property_id" not in vals
-                else vals["pms_property_id"]
-            )
+            if "pms_property_id" not in vals:
+                raise UserError(_("Property is required"))
+            pms_property_id = vals.get("pms_property_id")
             pms_property = self.env["pms.property"].browse(pms_property_id)
             vals["name"] = pms_property.folio_sequence_id._next_do()
         result = super(PmsFolio, self).create(vals)

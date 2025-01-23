@@ -177,7 +177,6 @@ class PmsReservation(models.Model):
         help="Property to which the reservation belongs",
         store=True,
         readonly=False,
-        default=lambda self: self.env.user.get_active_property_ids()[0],
         related="folio_id.pms_property_id",
         comodel_name="pms.property",
         index=True,

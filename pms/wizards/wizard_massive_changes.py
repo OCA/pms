@@ -13,7 +13,7 @@ class AvailabilityWizard(models.TransientModel):
         string="Property",
         comodel_name="pms.property",
         default=lambda self: self.env["pms.property"].browse(
-            self.env.user.get_active_property_ids()[0]
+            self.env.user.get_active_property_id.id
         ),
         check_pms_properties=True,
         required=True,
@@ -58,7 +58,6 @@ class AvailabilityWizard(models.TransientModel):
     )
 
     apply_pricelists_on = fields.Selection(
-        string="Apply pricelists on",
         selection=[
             ("room_types", "Room Types"),
             ("board_services", "Board Services"),
@@ -86,7 +85,6 @@ class AvailabilityWizard(models.TransientModel):
     )
 
     board_service = fields.Many2one(
-        string="Board service",
         comodel_name="product.product",
         check_pms_properties=True,
         domain="[('id', 'in',allowed_board_services)]",
@@ -100,7 +98,6 @@ class AvailabilityWizard(models.TransientModel):
         store=True,
     )
     service = fields.Many2one(
-        string="Service",
         comodel_name="product.product",
         check_pms_properties=True,
         compute="_compute_service",
@@ -115,8 +112,7 @@ class AvailabilityWizard(models.TransientModel):
         ],
         default="consumption_dates",
     )
-
-    price = fields.Float(string="Price")
+    price = fields.Float()
     min_quantity = fields.Float(string="Min. Quantity")
 
     min_stay = fields.Integer(
@@ -136,19 +132,15 @@ class AvailabilityWizard(models.TransientModel):
         default=0,
     )
     closed = fields.Boolean(
-        string="Closed",
         default=False,
     )
     closed_departure = fields.Boolean(
-        string="Closed Departure",
         default=False,
     )
     closed_arrival = fields.Boolean(
-        string="Closed Arrival",
         default=False,
     )
     quota = fields.Integer(
-        string="Quota",
         help="Generic Quota assigned.",
         default=-1,
     )
@@ -235,14 +227,12 @@ class AvailabilityWizard(models.TransientModel):
     )
 
     rules_to_overwrite = fields.One2many(
-        string="Rule to Overwrite",
         readonly=True,
         store=False,
         comodel_name="pms.availability.plan.rule",
         compute="_compute_rules_to_overwrite",
     )
     pricelist_items_to_overwrite = fields.One2many(
-        string="Pricelist Items to Override",
         readonly=True,
         store=False,
         comodel_name="product.pricelist.item",
@@ -265,7 +255,6 @@ class AvailabilityWizard(models.TransientModel):
         default=lambda self: self._default_avail_readonly(),
     )
     pricelist_readonly = fields.Boolean(
-        string="Pricelist Readonly",
         default=lambda self: self._default_pricelist_readonly(),
     )
 
