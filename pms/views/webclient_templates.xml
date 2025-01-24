@@ -15,10 +15,6 @@
                 type="text/javascript"
                 src="/pms/static/src/js/pms_list_controller.js"
             />
-                <script
-                type="text/javascript"
-                src="/pms/static/src/js/reconciliation_widget.js"
-            />
             </xpath>
         </template>
 </odoo>

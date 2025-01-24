@@ -59,6 +59,17 @@ class AccountMoveLine(models.Model):
     )
     move_id = fields.Many2one(check_pms_properties=True)
 
+    @api.depends("account_id", "partner_id", "product_id", "pms_property_id")
+    def _compute_analytic_distribution(self):
+        properties = self.mapped("pms_property_id")
+        if not properties:
+            super()._compute_analytic_distribution()
+        for pms_property in properties:
+            records = self.filtered(lambda x: x.pms_property_id == pms_property)
+            super(
+                AccountMoveLine, records.with_context(pms_property_id=pms_property.id)
+            )._compute_analytic_distribution()
+
     @api.depends("move_id.payment_reference", "quantity")
     def _compute_name(self):
         res = super()._compute_name()
@@ -112,22 +123,6 @@ class AccountMoveLine(models.Model):
             agencies = line.mapped("folio_line_ids.origin_agency_id")
             if agencies:
                 line.origin_agency_id = agencies[0]
-
-    def _prepare_analytic_distribution_line(self, distribution):
-        vals = super()._prepare_analytic_distribution_line(distribution)
-        if distribution.pms_property_id:
-            vals["pms_property_id"] = distribution.pms_property_id.id
-        return vals
-
-    def _prepare_analytic_line(self):
-        result = super()._prepare_analytic_line()
-        for move_line in result:
-            move = self.browse(move_line["move_id"])
-            if move.pms_property_id or move.move_id.pms_property_id:
-                move_line["pms_property_id"] = (
-                    move.pms_property_id.id or move.move_id.pms_property_id.id
-                )
-        return result
 
     def reconcile(self):
         """

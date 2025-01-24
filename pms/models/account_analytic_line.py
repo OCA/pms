@@ -1,28 +1,6 @@
 from odoo import fields, models
 
 
-class AccountAnalyticLine(models.Model):
-    _inherit = "account.analytic.line"
-    _check_pms_properties_auto = True
-
-    pms_property_id = fields.Many2one(
-        name="Property",
-        comodel_name="pms.property",
-        compute="_compute_pms_property_id",
-        store=True,
-        readonly=False,
-        check_pms_properties=True,
-        index=True,
-    )
-
-    def _compute_pms_property_id(self):
-        for rec in self:
-            if rec.move_id and rec.move_id.pms_property_id:
-                rec.pms_property_id = rec.move_id.pms_property_id
-            elif not rec.pms_property_id:
-                rec.pms_property_id = False
-
-
 class AccountAnalyticDistribution(models.Model):
     _inherit = "account.analytic.distribution.model"
 
@@ -32,3 +10,10 @@ class AccountAnalyticDistribution(models.Model):
         check_pms_properties=True,
         index=True,
     )
+
+    def _get_distribution(self, vals):
+        pms_property_id = self.env.context.get("pms_property_id")
+        if pms_property_id:
+            vals["pms_property_id"] = pms_property_id
+        res = super()._get_distribution(vals)
+        return res
