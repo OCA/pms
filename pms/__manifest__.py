@@ -4,7 +4,7 @@
 {
     "name": "PMS (Property Management System)",
     "summary": "A property management system",
-    "version": "16.0.0.1.0",
+    "version": "16.0.0.2.0",
     "development_status": "Beta",
     "category": "Generic Modules/Property Management System",
     "website": "https://github.com/OCA/pms",
@@ -25,7 +25,6 @@
         "partner_contact_gender",
         "partner_contact_birthdate",
         "partner_contact_nationality",
-        # "account_reconcile_oca",
         # "partner_identification_unique_by_category",
         "queue_job",
         "web_timeline",
@@ -116,7 +115,6 @@
     "qweb": [
         "static/src/xml/pms_base_templates.xml",
         "static/src/xml/reservation_group_button_views.xml",
-        "static/src/xml/account_reconciliation.xml",
     ],
     "pre_init_hook": "pre_init_hook",
 }

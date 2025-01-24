@@ -237,6 +237,9 @@ class PmsProperty(models.Model):
         string="Image in checkin",
         default=get_default_logo(),
     )
+    analytic_account_id = fields.Many2one(
+        "account.analytic.account", readonly=True, copy=False
+    )
 
     @api.depends_context(
         "checkin",
@@ -615,7 +618,27 @@ class PmsProperty(models.Model):
                 }
             )
             vals.update({"checkin_sequence_id": checkin_sequence.id})
-        record = super(PmsProperty, self).create(vals)
+        # create analytic account
+        analytic_account = self.env["account.analytic.account"].create(
+            {
+                "name": name,
+                "code": vals.get("ref"),
+                "plan_id": self.env.ref("pms.main_pms_analytic_plan").id,
+                "company_id": vals.get("company_id"),
+            }
+        )
+        vals.update({"analytic_account_id": analytic_account.id})
+        record = super(
+            PmsProperty, self.with_context(avoid_document_restriction=True)
+        ).create(vals)
+        # analityc distribution by default
+        self.env["account.analytic.distribution.model"].create(
+            {
+                "pms_property_id": record.id,
+                "analytic_distribution": {analytic_account.id: 100},
+                "company_id": record.company_id.id,
+            }
+        )
         return record
 
     @api.model
