@@ -51,11 +51,12 @@ class AccountMove(models.Model):
     @api.onchange("pms_property_id")
     def _onchange_pms_property_id(self):
         for move in self:
-            journals = self.env["account.journal"].search(
-                [
-                    ("pms_property_ids", "=", move.pms_property_id.id),
-                ]
-            )
+            domain = [("pms_property_ids", "=", move.pms_property_id.id)]
+            if move.move_type in ("out_invoice", "out_refund", "out_receipt"):
+                domain.append(("type", "=", "sale"))
+            elif move.move_type in ("in_invoice", "in_refund", "in_receipt"):
+                domain.append(("type", "=", "purchase"))
+            journals = self.env["account.journal"].search(domain)
             if journals:
                 move.journal_id = journals[0]
             else:
@@ -193,6 +194,7 @@ class AccountMove(models.Model):
         journal = super(AccountMove, self)._search_default_journal()
         company_id = self._context.get("default_company_id", self.env.company.id)
         company = self.env["res.company"].browse(company_id)
+        journal_type = self._context.get("default_journal_type", journal.type)
         pms_property_id = self.env.context.get(
             "default_pms_property_id", self.pms_property_id.id
         ) or (
@@ -204,18 +206,21 @@ class AccountMove(models.Model):
             domain = [
                 ("company_id", "=", pms_property.company_id.id),
                 ("pms_property_ids", "in", pms_property.id),
+                ("type", "=", journal_type),
             ]
             journal = self.env["account.journal"].search(domain, limit=1)
             if not journal:
                 domain = [
                     ("company_id", "=", pms_property.company_id.id),
                     ("pms_property_ids", "=", False),
+                    ("type", "=", journal_type),
                 ]
                 journal = self.env["account.journal"].search(domain, limit=1)
         else:
             domain = [
                 ("company_id", "=", company_id),
                 ("pms_property_ids", "=", False),
+                ("type", "=", journal_type),
             ]
             journal = self.env["account.journal"].search(domain, limit=1)
         if not journal:
