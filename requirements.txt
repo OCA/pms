@@ -1,7 +1,9 @@
 # generated from manifests external_dependencies
 bs4
+geopy
 jose
 jwt
 marshmallow
 pycountry
 simplejson
+thefuzz

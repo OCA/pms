@@ -3,7 +3,7 @@
 
 {
     "name": "OCR Klippa",
-    "version": "14.0.1.0.1",
+    "version": "16.0.0.1.0",
     "author": "Commit [Sun], Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "application": True,
