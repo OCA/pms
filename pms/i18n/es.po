@@ -2613,6 +2613,11 @@ msgid "Apply Pricelist"
 msgstr "Aplicar Tarifa"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_account_journal__room_filter_ids
+msgid "Apply Rooms"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__change_to_date
 msgid "Apply To"
 msgstr "Aplicar a"
@@ -9227,6 +9232,7 @@ msgstr "Lista de precios utilizada para esta reserva"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan__pms_pricelist_ids
+#: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type__pricelist_ids
 #: model:ir.model.fields,field_description:pms.field_pms_sale_channel__product_pricelist_ids
 #: model:ir.ui.menu,name:pms.pricelist_menu
 msgid "Pricelists"
@@ -9246,6 +9252,11 @@ msgstr "Tarifas para un canal de venta"
 #: model:ir.model.fields,help:pms.field_pms_availability_plan__pms_pricelist_ids
 msgid "Pricelists of the availability plan "
 msgstr "Tarifa del plan de disponibilidad"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_board_service_room_type__pricelist_ids
+msgid "Pricelists where this Board Service is available"
+msgstr ""
 
 #. module: pms
 #: code:addons/pms/models/pms_reservation.py:0
@@ -10359,6 +10370,7 @@ msgstr "Tipo de Habitación:"
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_massive_changes_wizard__apply_pricelists_on__room_types
 #: model:ir.ui.menu,name:pms.menu_open_pms_room_type_form_tree
+#: model_terms:ir.ui.view,arch_db:pms.account_journal_view_form
 msgid "Room Types"
 msgstr "Tipos de Habitación"
 
@@ -10396,6 +10408,16 @@ msgstr "Detalles de la reserva"
 #: model:ir.model.fields,help:pms.field_pms_reservation_duplicate__preferred_room_id
 msgid "Room reserved"
 msgstr "Habitación reservada"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_account_journal__allowed_room_ids
+msgid "Room to filter the room in the reservation"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_account_journal__room_filter_ids
+msgid "Room to filter the room types in the reservation"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_service_line__reservation_id
@@ -10470,6 +10492,11 @@ msgstr "Huéspedes/Rooming"
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_bottom_tree
 msgid "Rooms"
 msgstr "Habitaciones"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_account_journal__allowed_room_ids
+msgid "Rooms Filter allowed"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__free_room_ids
