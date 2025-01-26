@@ -7079,6 +7079,11 @@ msgid "Journal Items"
 msgstr "Artículos Diarios"
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_res_company__self_billed_journal_id
+msgid "Journal used to create self billing"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__journal_normal_invoice_id
 msgid "Journal used to create the normal invoice"
 msgstr "Diario utilizado para crear la factura normal"
@@ -10912,6 +10917,16 @@ msgid "Self"
 msgstr "Si mismo"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_res_company__self_billed_journal_id
+msgid "Self billed journal"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_res_company__self_billed_tax_ids
+msgid "Self billed taxes"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Send Cancellation Email"
 msgstr "Enviar Correo Electrónico de Cancelación"
@@ -11654,6 +11669,11 @@ msgstr "Impuestos aplicados en la línea de servicio"
 #: model:ir.model.fields,help:pms.field_folio_advance_payment_inv__deposit_taxes_id
 msgid "Taxes used for deposits"
 msgstr "Tasas utilizadas para depósitos"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_res_company__self_billed_tax_ids
+msgid "Taxes used to create self billing"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__user_id
