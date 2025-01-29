@@ -2,7 +2,7 @@ from openupgradelib import openupgrade
 
 
 def populate_properties_analytic_data(env):
-    properties = env['pms.property'].search([])
+    properties = env["pms.property"].search([])
     for pms_property in properties:
         analytic_acc_id = env["account.analytic.account"].create(
             {
@@ -14,32 +14,38 @@ def populate_properties_analytic_data(env):
         )
         pms_property.analytic_account_id = analytic_acc_id.id
 
-        env['account.analytic.distribution.model'].create({
-            "pms_property_id": pms_property.id,
-            "analytic_distribution": {analytic_acc_id.id: 100},
-            "company_id": pms_property.company_id.id
-        })
+        env["account.analytic.distribution.model"].create(
+            {
+                "pms_property_id": pms_property.id,
+                "analytic_distribution": {analytic_acc_id.id: 100},
+                "company_id": pms_property.company_id.id,
+            }
+        )
 
 
 def recompute_analytic_lines(env):
-    properties = env['pms.property'].search([])
-    cont = 1
-    total = len(properties)
+    properties = env["pms.property"].search([])
     for pms_property in properties:
         cont += 1
-        result = env['account.move.line']._read_group(
-            domain=[('pms_property_id', '=', pms_property.id),
-                    ('account_id.account_type', 'in', ('income', 'expense'))],
-            fields=['analytic_distribution', 'ids:array_agg(id)'],
-            groupby=['analytic_distribution'],
+        result = env["account.move.line"]._read_group(
+            domain=[
+                ("pms_property_id", "=", pms_property.id),
+                ("account_id.account_type", "in", ("income", "expense")),
+            ],
+            fields=["analytic_distribution", "ids:array_agg(id)"],
+            groupby=["analytic_distribution"],
         )
         for res in result:
-            distribution_dict = res['analytic_distribution'] or {}
+            distribution_dict = res["analytic_distribution"] or {}
             distribution_dict.update({pms_property.analytic_account_id.id: 100})
-            lines = env['account.move.line'].\
-                with_context(skip_account_move_synchronization=True, check_move_validity=False).\
-                browse(res['ids'])
-            lines.write({'analytic_distribution': distribution_dict})
+            lines = (
+                env["account.move.line"]
+                .with_context(
+                    skip_account_move_synchronization=True, check_move_validity=False
+                )
+                .browse(res["ids"])
+            )
+            lines.write({"analytic_distribution": distribution_dict})
 
 
 @openupgrade.migrate()
