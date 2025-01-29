@@ -487,7 +487,7 @@ class PmsFolio(models.Model):
         string="Max reservation priority on the entire folio",
         help="Max reservation priority on the entire folio",
         compute="_compute_max_reservation_priority",
-        store=True,
+        store=False,
     )
     invoice_status = fields.Selection(
         string="Invoice Status",
@@ -1362,7 +1362,6 @@ class PmsFolio(models.Model):
         }
         return vals
 
-    @api.depends("reservation_ids", "reservation_ids.priority")
     def _compute_max_reservation_priority(self):
         for record in self.filtered("reservation_ids"):
             reservation_priors = record.reservation_ids.mapped("priority")
