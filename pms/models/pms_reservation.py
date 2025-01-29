@@ -774,6 +774,7 @@ class PmsReservation(models.Model):
         "checkout",
         "state",
         "folio_payment_state",
+        "folio_pending_amount",
         "to_assign",
     )
     def _compute_priority(self):
