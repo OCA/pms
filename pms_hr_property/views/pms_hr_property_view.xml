@@ -6,9 +6,9 @@
         <field name="inherit_id" ref="pms.pms_property_views_form" />
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
-                <page name="staff_property" string="Property Staff">
+                <page name="staff_property">
                     <field name="employee_ids">
-                        <tree string="Employees">
+                        <tree>
                             <field name="job_id" />
                             <field name="name" />
                             <field name="work_email" />
