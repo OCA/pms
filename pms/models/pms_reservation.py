@@ -27,19 +27,16 @@ class PmsReservation(models.Model):
         readonly=True,
     )
     external_reference = fields.Char(
-        string="External Reference",
         help="Reference of this folio in an external system",
         compute="_compute_external_reference",
         store=True,
         readonly=False,
     )
     folio_sequence = fields.Integer(
-        string="Folio Sequence",
         help="Techinal field to get reservation name",
         readonly=True,
     )
     priority = fields.Integer(
-        string="Priority",
         help="Priority of a reservation",
         store="True",
         compute="_compute_priority",
@@ -346,7 +343,6 @@ class PmsReservation(models.Model):
         domain=["|", ("active", "=", False), ("active", "=", True)],
     )
     adults = fields.Integer(
-        string="Adults",
         help="List of adults there in guest list",
         readonly=False,
         store=True,
@@ -354,24 +350,20 @@ class PmsReservation(models.Model):
         tracking=True,
     )
     children_occupying = fields.Integer(
-        string="Children occupying",
         help="Number of children there in guest list whose presence counts",
     )
     children = fields.Integer(
-        string="Children",
         help="Number total of children there in guest list,"
         "whose presence counts or not",
         readonly=False,
         tracking=True,
     )
     to_assign = fields.Boolean(
-        string="To Assign",
         help="It is True if the room of the reservation has been assigned "
         "automatically, False if it was confirmed by a person in charge",
         default=True,
     )
     state = fields.Selection(
-        string="State",
         help="The state of the reservation. "
         "It can be 'Pre-reservation', 'Pending arrival', 'On Board', 'Out', "
         "'Cancelled', 'Arrival Delayed' or 'Departure Delayed'",
@@ -397,7 +389,6 @@ class PmsReservation(models.Model):
         copy=False,
     )
     reservation_type = fields.Selection(
-        string="Reservation Type",
         help="Type of reservations. It can be 'normal', 'staff' or 'out of service",
         store=True,
         readonly=False,
@@ -405,7 +396,6 @@ class PmsReservation(models.Model):
         selection=[("normal", "Normal"), ("staff", "Staff"), ("out", "Out of Service")],
     )
     splitted = fields.Boolean(
-        string="Splitted",
         help="Field that indicates if the reservation is split. "
         "A reservation is split when guests don't sleep in the same room every night",
         store=True,
@@ -418,9 +408,7 @@ class PmsReservation(models.Model):
         store=True,
         tracking=True,
     )
-    credit_card_details = fields.Text(
-        string="Credit Card Details", help="", related="folio_id.credit_card_details"
-    )
+    credit_card_details = fields.Text(related="folio_id.credit_card_details")
     cancelled_reason = fields.Selection(
         string="Reason of cancellation",
         help="Field indicating type of cancellation. "
@@ -455,14 +443,12 @@ class PmsReservation(models.Model):
         tracking=True,
     )
     arrival_hour = fields.Char(
-        string="Arrival Hour",
         help="Arrival Hour (HH:MM)",
         readonly=False,
         store=True,
         compute="_compute_arrival_hour",
     )
     departure_hour = fields.Char(
-        string="Departure Hour",
         help="Departure Hour (HH:MM)",
         readonly=False,
         store=True,
@@ -498,7 +484,6 @@ class PmsReservation(models.Model):
         store=True,
     )
     nights = fields.Integer(
-        string="Nights",
         help="Number of nights of a reservation",
         compute="_compute_nights",
         store=True,
@@ -517,7 +502,6 @@ class PmsReservation(models.Model):
         tracking=True,
     )
     shared_folio = fields.Boolean(
-        string="Shared Folio",
         help="Used to notify is the reservation folio has other reservations/services",
         compute="_compute_shared_folio",
     )
@@ -536,7 +520,6 @@ class PmsReservation(models.Model):
         compute="_compute_email",
     )
     mobile = fields.Char(
-        string="Mobile",
         help="Customer Mobile",
         store=True,
         readonly=False,
@@ -550,14 +533,12 @@ class PmsReservation(models.Model):
         readonly=False,
     )
     partner_incongruences = fields.Char(
-        string="partner_incongruences",
         help="indicates that some partner fields \
             on the reservation do not correspond to that of \
             the associated partner",
         compute="_compute_partner_incongruences",
     )
     partner_requests = fields.Text(
-        string="Partner Requests",
         help="Guest requests",
     )
     folio_internal_comment = fields.Text(
@@ -573,7 +554,6 @@ class PmsReservation(models.Model):
         default=True,
     )
     invoice_status = fields.Selection(
-        string="Invoice Status",
         help="The status of the invoices in folio. Can be 'invoiced',"
         " 'to_invoice' or 'no'.",
         store=True,
@@ -635,7 +615,6 @@ class PmsReservation(models.Model):
         compute="_compute_price_room_services_set",
     )
     discount = fields.Float(
-        string="Discount (€)",
         help="Discount of total price in reservation",
         readonly=False,
         store=True,
@@ -645,7 +624,6 @@ class PmsReservation(models.Model):
     )
 
     services_discount = fields.Float(
-        string="Services discount (€)",
         help="Services discount",
         readonly=False,
         store=True,
@@ -654,7 +632,6 @@ class PmsReservation(models.Model):
         tracking=True,
     )
     date_order = fields.Datetime(
-        string="Date Order",
         help="Order date of reservation",
         default=fields.Datetime.now,
         store=True,
@@ -684,28 +661,24 @@ class PmsReservation(models.Model):
     )
 
     to_send_confirmation_mail = fields.Boolean(
-        string="To Send Confirmation Mail",
         compute="_compute_to_send_confirmation_mail",
         readonly=False,
         store=True,
     )
 
     to_send_modification_mail = fields.Boolean(
-        string="To Send Modification Mail",
         compute="_compute_to_send_modification_mail",
         readonly=False,
         store=True,
     )
 
     to_send_exit_mail = fields.Boolean(
-        string="To Send Exit Mail",
         compute="_compute_to_send_exit_mail",
         readonly=False,
         store=True,
     )
 
     to_send_cancelation_mail = fields.Boolean(
-        string="To Send Cancelation Mail",
         compute="_compute_to_send_cancelation_mail",
         readonly=False,
         store=True,
@@ -720,7 +693,6 @@ class PmsReservation(models.Model):
         string="Language", comodel_name="res.lang", compute="_compute_lang"
     )
     blocked = fields.Boolean(
-        string="Blocked",
         help="Indicates if the reservation is blocked",
         default=False,
     )
@@ -733,7 +705,6 @@ class PmsReservation(models.Model):
         readonly=False,
     )
     count_alternative_free_rooms = fields.Integer(
-        string="Count alternative free rooms",
         compute="_compute_count_alternative_free_rooms",
     )
 
@@ -1220,6 +1191,7 @@ class PmsReservation(models.Model):
                 >= 1
             )
 
+    # pylint: disable=W8110
     def _compute_access_url(self):
         super(PmsReservation, self)._compute_access_url()
         for reservation in self:
@@ -1270,6 +1242,7 @@ class PmsReservation(models.Model):
             # date checking
             record.check_in_out_dates()
 
+    # pylint: disable=W8110
     def _compute_precheckin_url(self):
         super(PmsReservation, self)._compute_access_url()
         for reservation in self:
@@ -1893,11 +1866,10 @@ class PmsReservation(models.Model):
             if record.arrival_hour:
                 try:
                     time.strptime(record.arrival_hour, "%H:%M")
-                    return True
-                except ValueError:
+                except ValueError as err:
                     raise ValidationError(
                         _("Format Arrival Hour (HH:MM) Error: %s", record.arrival_hour)
-                    )
+                    ) from err
 
     @api.constrains("departure_hour")
     def _check_departure_hour(self):
@@ -1905,14 +1877,13 @@ class PmsReservation(models.Model):
             if record.departure_hour:
                 try:
                     time.strptime(record.departure_hour, "%H:%M")
-                    return True
-                except ValueError:
+                except ValueError as err:
                     raise ValidationError(
                         _(
                             "Format Departure Hour (HH:MM) Error: %s",
                             record.departure_hour,
                         )
-                    )
+                    ) from err
 
     @api.constrains("agency_id")
     def _no_agency_as_agency(self):
@@ -2304,10 +2275,10 @@ class PmsReservation(models.Model):
         self.show_update_pricelist = False
         self.message_post(
             body=_(
-                """Prices have been recomputed according to pricelist <b>%s</b>
-                 and room type <b>%s</b>""",
-                self.pricelist_id.display_name,
-                self.room_type_id.name,
+                """Prices have been recomputed according to pricelist <b>%(pricelist)s</b>
+                and room type <b>%(room_type)s</b>""",
+                pricelist=self.pricelist_id.display_name,
+                room_type=self.room_type_id.name,
             )
         )
 
