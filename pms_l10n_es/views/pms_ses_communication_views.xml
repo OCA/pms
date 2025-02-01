@@ -8,6 +8,7 @@
                 <sheet>
                     <group>
                         <field name="reservation_id" />
+                        <field name="batch_id" />
                         <field name="communication_id" />
                         <field name="operation" />
                         <field name="entity" />
@@ -52,6 +53,7 @@
             >
                 <field name="pms_property_id" />
                 <field name="reservation_id" />
+                <field name="batch_id" />
                 <field name="communication_id" />
                 <field name="operation" />
                 <field name="entity" />
@@ -73,6 +75,7 @@
         <field name="arch" type="xml">
             <search string="Log SES Communications">
                 <field name="pms_property_id" widget="selection" />
+                <field name="batch_id" />
                 <field name="communication_id" />
                 <field name="reservation_id" />
                 <!-- filters -->

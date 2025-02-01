@@ -208,7 +208,7 @@ class FolioSaleLine(models.Model):
         related="product_id.uom_id.category_id",
     )
     product_uom_readonly = fields.Boolean(
-        string="", help="", compute="_compute_product_uom_readonly"
+        compute="_compute_product_uom_readonly"
     )
     qty_to_invoice = fields.Float(
         string="To Invoice Quantity",

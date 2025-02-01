@@ -13,7 +13,7 @@
                 >
                     <field name="is_ses" invisible="1" />
                     <field name="ses_communication_ids">
-                        <tree string="Comunicaciones">
+                        <tree>
                             <field name="reservation_id" />
                             <field name="communication_id" />
                             <field name="operation" />

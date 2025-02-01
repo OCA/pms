@@ -22,33 +22,30 @@ class PmsSesCommunication(models.Model):
         index=True,
         store=True,
     )
+    batch_id = fields.Char(
+        default=False,
+    )
     communication_id = fields.Char(
-        string="Communication ID",
         help="ID of the communication",
         default=False,
     )
     operation = fields.Selection(
-        string="Operation",
         help="Operation of the communication",
         selection=[("A", "New communication"), ("B", "Delete communication")],
         required=True,
     )
     entity = fields.Selection(
-        string="Entity",
         help="Entity of the communication",
         selection=[("RH", "Reservation"), ("PV", "Traveller report")],
         required=True,
     )
     communication_time = fields.Datetime(
-        string="Communication time",
         help="Date and time of the communication",
     )
     query_status_time = fields.Datetime(
-        string="Query status time",
         help="Date and time of the last state query",
     )
     state = fields.Selection(
-        string="State",
         help="State of the communication",
         default="to_send",
         required=True,
@@ -62,11 +59,9 @@ class PmsSesCommunication(models.Model):
         ],
     )
     sending_result = fields.Text(
-        string="Sending Result",
         help="Notification sending result",
     )
     processing_result = fields.Text(
-        string="Processing Result",
         help="Notification processing result",
     )
     communication_xml = fields.Text(
@@ -99,5 +94,5 @@ class PmsSesCommunication(models.Model):
         for record in self:
             self.env["traveller.report.wizard"].ses_send_communication(
                 entity=record.entity,
-                communication_id=record.communication_id,
+                pms_ses_communication_id=record.id,
             )
