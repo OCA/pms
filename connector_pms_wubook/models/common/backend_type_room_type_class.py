@@ -21,7 +21,6 @@ class ChannelWubookBackendTypeRoomTypeClass(models.Model):
     )
 
     wubook_room_type = fields.Selection(
-        string="Wubook Room Type",
         required=True,
         selection=[
             (NOSYNC, "--- Don't Sync ---"),
@@ -36,9 +35,7 @@ class ChannelWubookBackendTypeRoomTypeClass(models.Model):
             ("9", "RV park"),
         ],
     )
-    room_type_shortname = fields.Char(
-        string="Room Type Shortname",
-    )
+    room_type_shortname = fields.Char()
 
     _sql_constraints = [
         (

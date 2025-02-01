@@ -14,13 +14,11 @@ class ChannelWubookPmsRoomTypeBinding(models.Model):
     # binding fields
     odoo_id = fields.Many2one(
         comodel_name="pms.room.type",
-        string="Odoo ID",
         required=True,
         ondelete="cascade",
     )
 
     total_rooms_count = fields.Integer(
-        string="Total Rooms Count",
         help="The number of rooms in a room type",
         compute="_compute_total_rooms_count",
         store=True,
@@ -36,7 +34,6 @@ class ChannelWubookPmsRoomTypeBinding(models.Model):
             )
 
     default_quota = fields.Integer(
-        string="Default Quota",
         help="Quota assigned to the channel given no availability rules. "
         "Use `-1` for managing no quota.",
         required=True,
@@ -58,7 +55,6 @@ class ChannelWubookPmsRoomTypeBinding(models.Model):
                 rec.default_max_avail = rec.total_rooms_count or -1
 
     default_availability = fields.Integer(
-        string="Default Availability",
         compute="_compute_default_availability",
         inverse="_inverse_default_availability",
         required=False,
@@ -107,7 +103,6 @@ class ChannelWubookPmsRoomTypeBinding(models.Model):
                 rec.default_quota = -1
 
     occupancy = fields.Integer(
-        string="Occupancy",
         compute="_compute_occupancy",
         store=True,
         help="The occupancy/capacity/beds of the rooms (children included)",

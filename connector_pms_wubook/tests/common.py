@@ -135,4 +135,4 @@ class TestWubookConnector(SavepointComponentCase):
             with open("wubook_auth.json", "r") as f:
                 cls.test_credentials = json.load(f)
         except FileNotFoundError:
-            pass
+            _logger.warning("wubook_auth.json not found, using fake credentials")

@@ -27,10 +27,10 @@ class ChannelWubookPmsAvailabilityMapperExport(Component):
         if not external_id:
             raise ValidationError(
                 _(
-                    "External record of Room Type id [%s] %s does not exists. "
+                    "External record of Room Type id [%(code)s] %(room)s does not exists. "
                     "It should be exported in _export_dependencies"
                 )
-                % (room_type.default_code, room_type.name)
+                % {"code": room_type.id, "room": room_type.name}
             )
         return {
             "id_room": external_id,

@@ -47,8 +47,8 @@ class ChannelWubookPmsBoardServiceAdapter(Component):
         raise ChannelAdapterError(
             _(
                 "Write operation is not supported on Board Service by Wubook. "
-                "Id: %i, Values: %s. Probably the cause is a wrong mapping of "
-                "Board Services on Wubook backend type" % (_id, values)
+                "Id: %(id)i, Values: %(vals)s. Probably the cause is a wrong mapping of "
+                "Board Services on Wubook backend type" % {"id": _id, "vals": values}
             )
         )
 

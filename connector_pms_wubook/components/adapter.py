@@ -52,8 +52,14 @@ class ChannelCallControl:
             )
             if calls_int >= self.method.max_calls:
                 raise ValidationError(
-                    _("Too many calls to '%s': %i in last %i minutes")
-                    % (funcname, calls_int, int(self.method.time_window / 60))
+                    _(
+                        "Too many calls to '%(function)s': %(number)i in last %(minuts)i minutes"
+                    )
+                    % {
+                        "function": funcname,
+                        "number": calls_int,
+                        "minuts": self.method.time_window / 60,
+                    }
                 )
 
     def add_result(self, res, data):
@@ -94,7 +100,9 @@ class ChannelWubookAdapter(AbstractComponent):
         s = xmlrpc.client.Server(self.url)
         res, token = s.acquire_token(self.username, self.password, self.apikey)
         if res:
-            raise ChannelAdapterError(_("Error authorizing to endpoint. %s") % token)
+            raise ChannelAdapterError(
+                _("Error authorizing to endpoint. %(code)s") % {"code": token}
+            )
         if pms_property:
             args = (self.property_code, *args)
         func = getattr(s, funcname)
@@ -115,10 +123,10 @@ class ChannelWubookAdapter(AbstractComponent):
                     raise ChannelAdapterError(
                         _(
                             "Some of the resources (id's) not found on Backend "
-                            "executing %s(%s). Probably they have been "
+                            "executing %(function)s(%(arguments)s). Probably they have been "
                             "deleted from the Backend"
                         )
-                        % (funcname, args)
+                        % {"function": funcname, "arguments": args}
                     )
                 raise
             if res:
@@ -151,14 +159,23 @@ class ChannelWubookAdapter(AbstractComponent):
                     if diff_days > max_past_date:
                         raise ChannelAdapterError(
                             _(
-                                "Error executing function %s with params %s. %s. "
-                                "Wubook does not allow a 'dfrom' %i days older"
+                                "Error executing function %(function)s with "
+                                "params %(argumenst)s. %(values)s. "
+                                "Wubook does not allow a 'dfrom' %(date)i days older"
                             )
-                            % (funcname, args, data, max_past_date)
+                            % {
+                                "function": funcname,
+                                "arguments": args,
+                                "values": data,
+                                "date": diff_days,
+                            }
                         )
                 raise ChannelAdapterError(
-                    _("Error executing function %s with params %s. %s")
-                    % (funcname, args, data)
+                    _(
+                        "Error executing function %(function)s "
+                        "with params %(arguments)s. %(values)s"
+                    )
+                    % {"function": funcname, "arguments": args, "values": data}
                 )
             return data
         finally:
@@ -166,7 +183,9 @@ class ChannelWubookAdapter(AbstractComponent):
             #   https://tdocs.wubook.net/wired/policies.html#token-limits
             res, info = s.release_token(token)
             if res:
-                raise ChannelAdapterError(_("Error releasing token. %s") % info)
+                raise ChannelAdapterError(
+                    _("Error releasing token. %(value)s") % {"value": info}
+                )
 
     def _prepare_field_type(self, field_data):
         default_values = {}
@@ -191,7 +210,9 @@ class ChannelWubookAdapter(AbstractComponent):
 
         missing_fields = list(set(mandatory) - set(values))
         if missing_fields:
-            raise ChannelAdapterError(_("Missing mandatory fields %s") % missing_fields)
+            raise ChannelAdapterError(
+                _("Missing mandatory fields %(fields)s") % {"fields": missing_fields}
+            )
 
         mandatory_values = [values[x] for x in mandatory]
 
@@ -230,7 +251,9 @@ class ChannelWubookAdapter(AbstractComponent):
         ifields_check = {}
         for elem in domain:
             if len(elem) != 3:
-                raise ValidationError(_("Wrong domain clause format %s") % elem)
+                raise ValidationError(
+                    _("Wrong domain clause format %(domain)s") % {"domain": elem}
+                )
             field, op, value = elem
             if op == "=":
                 if field in interval_fields:
@@ -239,43 +262,52 @@ class ChannelWubookAdapter(AbstractComponent):
                         ifields_check.setdefault(field, set())
                         if field_field in ifields_check[field]:
                             raise ValidationError(
-                                _("Interval field %s duplicated") % field_field
+                                _("Interval field %(fields)s duplicated")
+                                % {"fields": field_field}
                             )
                         ifields_check[field].add(field_field)
                         if field_field in res:
                             raise ValidationError(
-                                _("Duplicated field %s") % field_field
+                                _("Duplicated field %(field)s") % {"field": field_field}
                             )
                         res[field_field] = self._normalize_value(value)
                 else:
                     if field in res:
-                        raise ValidationError(_("Duplicated field %s") % field)
+                        raise ValidationError(
+                            _("Duplicated field %(fields)s") % {"fields": field}
+                        )
                     res[field] = self._normalize_value(value)
             elif op == "!=":
                 if field in interval_fields:
                     raise ValidationError(
-                        _("Operator {} not supported on interval fields {}").format(
-                            op, field
+                        _(
+                            "Operator %(operation)s not supported on interval fields %(field)s"
                         )
+                        % {"operation": op, "field": field}
                     )
                 if not isinstance(value, bool):
                     raise ValidationError(
                         _("Not equal operation not supported for non boolean fields")
                     )
                 if field in res:
-                    raise ValidationError(_("Duplicated field %s") % field)
+                    raise ValidationError(
+                        _("Duplicated field %(name)s") % {"name": field}
+                    )
                 res[field] = self._normalize_value(not value)
             elif op == "in":
                 if field in interval_fields:
                     raise ValidationError(
-                        _("Operator {} not supported on interval fields {}").format(
-                            op, field
+                        _(
+                            "Operator %(operation)s not supported on interval fields %(field)s"
                         )
+                        % {"operation": op, "field": field}
                     )
                 if not isinstance(value, (tuple, list)):
                     raise ValidationError(
-                        _("Operator '%s' only supports tuples or lists, not %s")
-                        % (op, type(value))
+                        _(
+                            "Operator '%(operation)s' only supports tuples or lists, not %(field)s"
+                        )
+                        % {"operation": op, "field": type(value)}
                     )
                 if field in res:
                     raise ValidationError(_("Duplicated field %s") % field)
@@ -289,9 +321,8 @@ class ChannelWubookAdapter(AbstractComponent):
                     value, (datetime.date, datetime.datetime, int, float)
                 ):
                     raise ValidationError(
-                        _("Type {} not supported for operator {}").format(
-                            type(value), op
-                        )
+                        _("Type %(val)s not supported for operator %(operation)s")
+                        % {"val": type(value), "operation": op}
                     )
                 if op in (">", "<"):
                     adj = 1

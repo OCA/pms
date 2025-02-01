@@ -22,10 +22,13 @@ class ChannelWubookPmsRoomTypeBoardServiceMapperExport(Component):
         if not external_id:
             raise ValidationError(
                 _(
-                    "External record of Board Service [%s] %s does not exists. "
+                    "External record of Board Service [%(code)s] %(room)s does not exists. "
                     "It should be exported in _export_dependencies"
                 )
-                % (board_service.default_code, board_service.name)
+                % {
+                    "code": board_service.default_code,
+                    "room": record.pms_room_type_id.name,
+                }
             )
         return {
             external_id: {

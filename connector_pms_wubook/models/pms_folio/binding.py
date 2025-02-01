@@ -27,7 +27,6 @@ class ChannelWubookPmsFolioBinding(models.Model):
             ("6", "(Probably not used anymore): cancelled with penalty]"),
             ("7", "Modified (New state, it does not exist on Wubook)"),
         ],
-        string="Wubook Status",
     )
 
     payment_gateway_fee = fields.Float(
