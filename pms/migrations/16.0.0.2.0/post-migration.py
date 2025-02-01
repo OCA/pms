@@ -26,7 +26,6 @@ def populate_properties_analytic_data(env):
 def recompute_analytic_lines(env):
     properties = env["pms.property"].search([])
     for pms_property in properties:
-        cont += 1
         result = env["account.move.line"]._read_group(
             domain=[
                 ("pms_property_id", "=", pms_property.id),
