@@ -30,14 +30,18 @@ class FolioAdvancePaymentInv(models.TransientModel):
         ],
     )
     bill_services = fields.Boolean(
-        string="Bill Services", help="Bill Services", default=True
+        help="Bill Services",
+        default=True,
     )
-    bill_rooms = fields.Boolean(string="Bill Rooms", help="Bill Rooms", default=True)
+    bill_rooms = fields.Boolean(
+        help="Bill Rooms",
+        default=True,
+    )
     deduct_down_payments = fields.Boolean(
-        string="Deduct down payments", help="Deduct down payments", default=True
+        help="Deduct down payments",
+        default=True,
     )
     has_down_payments = fields.Boolean(
-        string="Has down payments",
         help="Has down payments",
         readonly=True,
         default=lambda self: self._default_has_down_payment(),
