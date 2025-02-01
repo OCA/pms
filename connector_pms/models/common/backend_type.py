@@ -12,7 +12,7 @@ class ChannelBackendType(models.Model):
     _name = "channel.backend.type"
     _description = "Channel PMS Backend Type"
 
-    name = fields.Char("Name", required=True)
+    name = fields.Char(required=True)
 
     model_type_id = fields.Many2one(
         comodel_name="ir.model",

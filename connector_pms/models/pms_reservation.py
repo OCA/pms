@@ -16,6 +16,7 @@ class PmsReservation(models.Model):
         readonly=True,
     )
 
+    # pylint: disable=W8110
     @api.depends("ota_reservation_code")
     def _compute_external_reference(self):
         super(PmsReservation, self)._compute_external_reference()

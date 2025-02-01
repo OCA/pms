@@ -21,7 +21,6 @@ class ChannelBackendLog(models.Model):
     )
 
     timestamp = fields.Datetime(
-        string="Timestamp",
         required=True,
         readonly=True,
     )
@@ -35,17 +34,14 @@ class ChannelBackendLog(models.Model):
     )
 
     arguments = fields.Text(
-        string="Arguments",
         required=True,
         readonly=True,
     )
     response_code = fields.Text(
-        string="Response Code",
         required=True,
         readonly=True,
     )
     response = fields.Text(
-        string="Response",
         required=True,
         readonly=True,
     )

@@ -12,7 +12,7 @@ class ChannelBackend(models.Model):
     _name = "channel.backend"
     _description = "Channel PMS Backend"
 
-    name = fields.Char("Name", required=True)
+    name = fields.Char(required=True)
 
     pms_property_id = fields.Many2one(
         comodel_name="pms.property",
@@ -34,7 +34,7 @@ class ChannelBackend(models.Model):
         ondelete="restrict",
     )
 
-    export_disabled = fields.Boolean(string="Export Disabled")
+    export_disabled = fields.Boolean()
 
     @property
     def child_id(self):
