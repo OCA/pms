@@ -25,8 +25,7 @@ class ProductProduct(models.Model):
 
     def _compute_board_price(self):
         pms_property_id = (
-            self.env.context.get("property")
-            or self.env.user.get_active_property_ids()[0]
+            self.env.context.get("property") or self.env.user.pms_property_ids.ids
         )
         for record in self:
             if self._context.get("board_service"):
