@@ -14,5 +14,4 @@ class PmsCheckinPartner(models.Model):
             ("ocr-precheckin", "OCR-Precheckin"),
             ("precheckin", "Precheckin"),
         ],
-        string="Origin Input Data",
     )

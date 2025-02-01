@@ -281,7 +281,12 @@ class PmsProperty(models.Model):
             "Content-Type": "application/json",
             "accept": "text/json",
         }
-        response = requests.post(endpoint, headers=headers, data=json.dumps(payload))
+        response = requests.post(
+            endpoint,
+            headers=headers,
+            data=json.dumps(payload),
+            timeout=10,
+        )
         return response
 
     def generate_availability_json(
@@ -514,7 +519,7 @@ class PmsProperty(models.Model):
         current_date_to = None
         for index, date in enumerate(all_dates):
             product_context["consumption_date"] = date
-            product = product.with_context(product_context)
+            product = product.with_context(**product_context)
             price = round(
                 self.env["account.tax"]._fix_tax_included_price_company(
                     self.env["product.product"]._pms_get_display_price(
