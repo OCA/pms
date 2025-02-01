@@ -114,7 +114,7 @@ class PmsService(models.Model):
         index=True,
         related="folio_id.currency_id",
     )
-    sequence = fields.Integer(string="Sequence", help="", default=10)
+    sequence = fields.Integer(default=10)
     state = fields.Selection(
         string="State",
         help="Service status, it corresponds with folio status",
@@ -135,7 +135,6 @@ class PmsService(models.Model):
         compute="_compute_product_qty",
     )
     is_board_service = fields.Boolean(
-        string="Is Board Service",
         help="Indicates if the service is part of a board service",
     )
     board_service_line_id = fields.Many2one(
@@ -154,7 +153,6 @@ class PmsService(models.Model):
         related_sudo=True,
     )
     invoice_status = fields.Selection(
-        string="Invoice Status",
         help="State in which the service is with respect to invoices."
         "It can be 'invoiced', 'to_invoice' or 'no'",
         readonly=True,
@@ -226,7 +224,6 @@ class PmsService(models.Model):
         ondelete="restrict",
     )
     is_cancel_penalty = fields.Boolean(
-        string="Is Cancel Penalty",
         help="Indicates if the service is a cancel penalty",
         readonly=True,
         compute="_compute_is_cancel_penalty",
@@ -582,25 +579,25 @@ class PmsService(models.Model):
                 partner = origin.partner_id
                 pricelist = origin.pricelist_id
                 board_room_type = False
-                product_context = dict(
-                    self.env.context,
-                    lang=partner.lang,
-                    partner=partner.id,
-                    quantity=self.product_qty,
-                    date=folio.date_order if folio else fields.Date.today(),
-                    pricelist=pricelist.id,
-                    board_service=board_room_type.id if board_room_type else False,
-                    uom=self.product_id.uom_id.id,
-                    fiscal_position=False,
-                    property=origin.pms_property_id.id,
-                )
+                product_context = {
+                    "lang": partner.lang,
+                    "partner": partner.id,
+                    "quantity": self.product_qty,
+                    "date": folio.date_order if folio else fields.Date.today(),
+                    "pricelist": pricelist.id,
+                    "board_service": board_room_type.id if board_room_type else False,
+                    "uom": self.product_id.uom_id.id,
+                    "fiscal_position": False,
+                    "property": origin.pms_property_id.id,
+                }
                 if date:
                     product_context["consumption_date"] = date
                 if reservation and self.is_board_service:
                     product_context[
                         "board_service"
                     ] = reservation.board_service_room_id.id
-                product = self.product_id.with_context(product_context)
+
+                product = self.product_id.with_context(**product_context)
                 return self.env["account.tax"]._fix_tax_included_price_company(
                     self.env["product.product"]._pms_get_display_price(
                         pricelist_id=pricelist.id,
@@ -613,8 +610,7 @@ class PmsService(models.Model):
                     self.tax_ids,
                     origin.company_id,
                 )
-            else:
-                return 0
+            return 0
 
     @api.model
     def create(self, vals):
