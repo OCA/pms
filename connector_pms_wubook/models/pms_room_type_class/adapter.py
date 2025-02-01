@@ -46,9 +46,10 @@ class ChannelWubookPmsRoomTypeClassAdapter(Component):
     def write(self, _id, values):
         raise ChannelAdapterError(
             _(
-                "Write operation is not supported on Room Class by Wubook. Id: %i, Values: %s. "
-                "Probably the cause is a wrong mapping of Room Classes on Wubook backend type"
-                % (_id, values)
+                "Write operation is not supported on Room Class by Wubook. "
+                "Id: %(id)i, Values: %(vals)s. "
+                "Probably the cause is a wrong mapping "
+                "of Room Classes on Wubook backend type" % {"id": _id, "vals": values}
             )
         )
 

@@ -34,13 +34,13 @@ def get_board_service_room_type(mapper, room_type, board):
     )
     if not board_service_room_type_id:
         raise ValidationError(
-            _("The Board Service '%s' is not available in Room Type '%s'")
-            % (board_service.default_code, room_type.default_code)
+            _("The Board Service '%(code)s' is not available in Room Type '%(room)s'")
+            % {"code": board_service.default_code, "room": room_type.default_code}
         )
     elif len(board_service_room_type_id) > 1:
         raise ValidationError(
-            _("The Board Service '%s' is duplicated in Room Type '%s'")
-            % (board_service.default_code, room_type.default_code)
+            _("The Board Service '%(code)s' is duplicated in Room Type '%(room)s'")
+            % {"code": board_service.default_code, "room": room_type.default_code}
         )
     return board_service_room_type_id
 

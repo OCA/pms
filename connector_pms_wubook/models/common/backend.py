@@ -36,19 +36,14 @@ class ChannelWubookBackend(models.Model):
     ]
 
     # connection data
-    username = fields.Char("Username", required=True)
-    password = fields.Char("Password", required=True)
+    username = fields.Char(required=True)
+    password = fields.Char(required=True)
 
-    url = fields.Char(
-        string="Url", default="https://wired.wubook.net/xrws/", required=True
-    )
-    property_code = fields.Char(string="Property code", required=True)
-    pkey = fields.Char(string="PKey", required=True)
-
-    security_token = fields.Char(string="Security Token", required=False)
-
+    url = fields.Char(default="https://wired.wubook.net/xrws/", required=True)
+    property_code = fields.Char(required=True)
+    pkey = fields.Char(required=True)
+    security_token = fields.Char(required=False)
     pricelist_external_id = fields.Integer(string="Parity Pricelist ID", required=True)
-
     backend_journal_ota_ids = fields.One2many(
         string="Journals Online Payments",
         comodel_name="wubook.backend.journal.ota",
@@ -113,8 +108,8 @@ class ChannelWubookBackend(models.Model):
             )
 
     # pricelist
-    pricelist_date_from = fields.Date("Pricelist Date From")
-    pricelist_date_to = fields.Date("Pricelist Date To")
+    pricelist_date_from = fields.Date()
+    pricelist_date_to = fields.Date()
     pricelist_ids = fields.Many2many(
         comodel_name="product.pricelist",
         relation="wubook_backend_pricelist_rel",
@@ -212,8 +207,8 @@ class ChannelWubookBackend(models.Model):
                 ).export_data(backend_record=rec)
 
     # availability
-    avail_date_from = fields.Date("Availability Date From")
-    avail_date_to = fields.Date("Availability Date To")
+    avail_date_from = fields.Date(string="Availability Date From")
+    avail_date_to = fields.Date(string="Availability Date To")
     # TODO: add logic to control this and filter the rooms by the current property
     avail_room_type_ids = fields.Many2many(
         comodel_name="pms.room.type",
@@ -263,7 +258,7 @@ class ChannelWubookBackend(models.Model):
     # folio
     folio_date_arrival_from = fields.Date(string="Arrival Date From")
     folio_date_arrival_to = fields.Date(string="Arrival Date To")
-    folio_mark = fields.Boolean(string="Mark")
+    folio_mark = fields.Boolean()
     folio_reservation_code = fields.Integer(string="Reservation Code")
 
     def import_folios(self):

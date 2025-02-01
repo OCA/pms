@@ -18,7 +18,6 @@ class ChannelWubookBackendTypeBoardService(models.Model):
     )
 
     wubook_board_service = fields.Selection(
-        string="Wubook Board Service",
         required=True,
         selection=[
             # ("nb", "No Board"), # no board means without any board service
