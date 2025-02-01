@@ -92,6 +92,7 @@ class PmsProperty(models.Model):
                 ocr_klippa_url,
                 headers=headers,
                 json=payload,
+                timeout=20,
             )
             json_data = result.json()
             log_data.update(
