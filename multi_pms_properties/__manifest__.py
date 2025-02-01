@@ -6,7 +6,7 @@
 {
     "name": "multi_pms_properties",
     "summary": "Multi Properties Manager",
-    "version": "14.0.1.0.0",
+    "version": "16.0.1.0.0",
     "website": "https://github.com/OCA/pms",
     "author": "Commit [Sun], Odoo Community Association (OCA)",
     "license": "AGPL-3",
