@@ -14,7 +14,6 @@ class WizardFolioChanges(models.TransientModel):
         comodel_name="pms.folio",
     )
     modification_type = fields.Selection(
-        string="Modification Type",
         selection=[
             ("reservations", "Reservations"),
             ("dates", "Dates"),
@@ -86,7 +85,6 @@ class WizardFolioChanges(models.TransientModel):
         default=False,
     )
     new_checkin = fields.Date(
-        string="New Checkin",
         default=lambda self: self.default_change_new_checkin(),
     )
 
@@ -95,15 +93,12 @@ class WizardFolioChanges(models.TransientModel):
         default=False,
     )
     new_checkout = fields.Date(
-        string="New Checkout",
         default=lambda self: self.default_change_new_checkout(),
     )
     nights = fields.Integer(
-        string="Nights",
         compute="_compute_nights",
     )
     dates_incongruence = fields.Boolean(
-        string="Dates incrongruence",
         help="Indicates that there are reservations with different checkin and/or checkout",
         compute="_compute_dates_incongruence",
         store=True,
@@ -112,10 +107,7 @@ class WizardFolioChanges(models.TransientModel):
         string="Apply Price update",
         default=False,
     )
-    new_price = fields.Float(
-        string="New Price",
-    )
-
+    new_price = fields.Float()
     apply_discount = fields.Boolean(
         string="Apply Discount update",
         default=False,
@@ -123,7 +115,6 @@ class WizardFolioChanges(models.TransientModel):
     new_discount = fields.Float(
         string="New Discount %",
     )
-
     apply_partner_id = fields.Boolean(
         string="Apply Customer",
         default=False,
@@ -132,7 +123,6 @@ class WizardFolioChanges(models.TransientModel):
         string="Customer",
         comodel_name="res.partner",
     )
-
     apply_pricelist_id = fields.Boolean(
         string="Apply Pricelist",
         default=False,
@@ -142,7 +132,6 @@ class WizardFolioChanges(models.TransientModel):
         comodel_name="product.pricelist",
         domain="[('is_pms_available', '=', True)]",
     )
-
     apply_board_service = fields.Boolean(
         string="Add Board Service to reservations",
         default=False,
@@ -151,7 +140,6 @@ class WizardFolioChanges(models.TransientModel):
         string="New Board Service",
         comodel_name="pms.board.service",
     )
-
     apply_service = fields.Boolean(
         string="Add Service to reservations",
         default=False,
@@ -161,7 +149,6 @@ class WizardFolioChanges(models.TransientModel):
         comodel_name="product.product",
         domain="[('sale_ok','=',True)]",
     )
-
     apply_day_qty = fields.Boolean(
         string="Change cuantity service per day",
         help="If not set, it will use the default product day qty",
@@ -170,7 +157,6 @@ class WizardFolioChanges(models.TransientModel):
     day_qty = fields.Integer(
         string="Quantity per day",
     )
-
     apply_on_monday = fields.Boolean(
         string="Apply Availability Rule on mondays",
         default=False,

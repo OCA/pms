@@ -18,6 +18,7 @@ class ProductProduct(models.Model):
         compute="_compute_room_type_id",
     )
 
+    # pylint: disable=W8110
     @api.depends_context("consumption_date")
     def _compute_product_price(self):
         super(ProductProduct, self)._compute_product_price()
@@ -82,10 +83,10 @@ class ProductProduct(models.Model):
         if pricelist.discount_policy == "with_discount":
             return product.standard_price
         final_price, rule_id = pricelist.with_context(
-            product._context
+            **product._context
         ).get_product_price_rule(product, product_qty or 1.0, partner)
         base_price, currency_id = self.with_context(
-            product._context
+            **product._context
         )._pms_get_real_price_currency(
             product,
             rule_id,
@@ -99,7 +100,7 @@ class ProductProduct(models.Model):
             base_price = (
                 self.env["res.currency"]
                 .browse(currency_id)
-                .with_context(product._context)
+                .with_context(**product._context)
                 .compute(base_price, pricelist.currency_id)
             )
         # negative discounts (= surcharge) are included in the display price

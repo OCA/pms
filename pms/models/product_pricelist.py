@@ -43,7 +43,6 @@ class ProductPricelist(models.Model):
         check_pms_properties=True,
     )
     pricelist_type = fields.Selection(
-        string="Pricelist Type",
         help="Pricelist types, it can be Daily Plan",
         default="daily",
         selection=[("daily", "Daily Plan")],
