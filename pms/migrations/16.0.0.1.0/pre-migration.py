@@ -85,24 +85,3 @@ def migrate(env, version):
         ADD COLUMN IF NOT EXISTS priority INTEGER
         """,
     )
-    openupgrade.logged_query(
-        env.cr,
-        """
-        UPDATE pms_reservation set priority =
-        case when (to_assign = true or state in ('arrival_delayed', 'departure_delayed')) then 1
-        when state = 'cancel' and folio_pending_amount > 0 then 2
-        when state = 'cancel' and checkout >= CURRENT_DATE then 100
-        when state = 'cancel' then 1000 * (CURRENT_DATE - checkout)
-        when state = 'onboard' and folio_pending_amount > 0 then (checkout - CURRENT_DATE)
-        when state = 'onboard' and folio_pending_amount <= 0 then 3 * (checkout - CURRENT_DATE)
-        when state in ('draft', 'confirm') and (checkin - CURRENT_DATE) < 3 then 2 * (checkin - CURRENT_DATE)
-        when state in ('draft', 'confirm') and (checkin - CURRENT_DATE) < 20 then 3 * (checkin - CURRENT_DATE)
-        when state in ('draft', 'confirm') then 4 * (checkin - CURRENT_DATE)
-        when state = 'done' and folio_pending_amount > 0 then 3
-        when state = 'done' and (CURRENT_DATE - checkout) <= 1 then 6
-        when state = 'done' and (CURRENT_DATE - checkout) < 15 then 5 * (CURRENT_DATE - checkout)
-        when state = 'done' and (CURRENT_DATE - checkout) <= 90 then 10 * (CURRENT_DATE - checkout)
-        when state = 'done' and (CURRENT_DATE - checkout) > 90 then 100 * (CURRENT_DATE - checkout)
-        else 0 end
-        """,
-    )
