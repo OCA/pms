@@ -46,7 +46,7 @@ class GenericImporterCustom(AbstractComponent):
                     "%s\n\n"
                     "Likely due to 2 concurrent jobs wanting to create "
                     "the same record. The job will be retried later." % err
-                )
+                ) from err
             else:
                 raise
 
