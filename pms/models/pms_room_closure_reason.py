@@ -8,7 +8,6 @@ class RoomClosureReason(models.Model):
     _description = "Cause of out of service"
 
     name = fields.Char(
-        string="Name",
         help="The name that identifies the room closure reason",
         required=True,
         translate=True,
@@ -24,7 +23,6 @@ class RoomClosureReason(models.Model):
         ondelete="restrict",
     )
     description = fields.Text(
-        string="Description",
         help="Explanation of the reason for closing a room",
         translate=True,
     )

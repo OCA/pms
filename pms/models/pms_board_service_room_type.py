@@ -49,7 +49,6 @@ class PmsBoardServiceRoomType(models.Model):
         required=True,
     )
     amount = fields.Float(
-        string="Amount",
         help="Price for this Board Service. "
         "It corresponds to the sum of his board service lines",
         store=True,

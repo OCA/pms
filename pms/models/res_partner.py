@@ -22,9 +22,7 @@ class ResPartner(models.Model):
         help="Number of folios of the partner",
         compute="_compute_folios_count",
     )
-    is_agency = fields.Boolean(
-        string="Is Agency", help="Indicates if the partner is an agency"
-    )
+    is_agency = fields.Boolean(help="Indicates if the partner is an agency")
     sale_channel_id = fields.Many2one(
         string="Sale Channel",
         help="The sale channel of the partner",
@@ -35,7 +33,6 @@ class ResPartner(models.Model):
     )
     default_commission = fields.Integer(string="Commission", help="Default commission")
     apply_pricelist = fields.Boolean(
-        string="Apply Pricelist",
         help="Indicates if agency pricelist is applied to his reservations",
     )
     invoice_to_agency = fields.Selection(
@@ -172,7 +169,6 @@ class ResPartner(models.Model):
         comodel_name="pms.checkin.partner",
     )
     invoicing_policy = fields.Selection(
-        string="Invoicing Policy",
         help="""The invoicing policy of the partner,
          set Property to user the policy configured in the Property""",
         selection=[
@@ -184,7 +180,6 @@ class ResPartner(models.Model):
         default="property",
     )
     invoicing_month_day = fields.Integer(
-        string="Invoicing Month Day",
         help="The day of the month to invoice",
     )
     margin_days_autoinvoice = fields.Integer(
@@ -239,6 +234,7 @@ class ResPartner(models.Model):
         comodel_name="res.country.state",
     )
 
+    # pylint: disable=W8110
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.gender")
     def _compute_gender(self):
         if hasattr(super(), "_compute_gender"):
@@ -252,6 +248,7 @@ class ResPartner(models.Model):
                 if last_update_gender and last_update_gender[0].gender:
                     record.gender = last_update_gender[0].gender
 
+    # pylint: disable=W8110
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.birthdate_date")
     def _compute_birthdate_date(self):
         if hasattr(super(), "_compute_birthdate_date"):
@@ -265,6 +262,7 @@ class ResPartner(models.Model):
                 if last_update_birthdate and last_update_birthdate[0].birthdate_date:
                     record.birthdate_date = last_update_birthdate[0].birthdate_date
 
+    # pylint: disable=W8110
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.nationality_id")
     def _compute_nationality_id(self):
         if hasattr(super(), "_compute_nationality_id"):
@@ -283,6 +281,7 @@ class ResPartner(models.Model):
                 if not record.nationality_id and record.country_id:
                     record.nationality_id = record.country_id
 
+    # pylint: disable=W8110
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.phone")
     def _compute_phone(self):
         if hasattr(super(), "_compute_phone"):
@@ -296,6 +295,7 @@ class ResPartner(models.Model):
                 if last_update_phone and last_update_phone[0].phone:
                     record.phone = last_update_phone[0].phone
 
+    # pylint: disable=W8110
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_street")
     def _compute_residence_street(self):
         if hasattr(super(), "_compute_residence_street"):
@@ -309,6 +309,7 @@ class ResPartner(models.Model):
                 if last_update_street and last_update_street[0].residence_street:
                     record.residence_street = last_update_street[0].residence_street
 
+    # pylint: disable=W8110
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_street2")
     def _compute_residence_street2(self):
         if hasattr(super(), "_compute_residence_street2"):
@@ -322,6 +323,7 @@ class ResPartner(models.Model):
                 if last_update_street2 and last_update_street2[0].residence_street2:
                     record.residence_street2 = last_update_street2[0].residence_street2
 
+    # pylint: disable=W8110
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_zip")
     def _compute_residence_zip(self):
         if hasattr(super(), "_compute_residence_zip"):
@@ -335,6 +337,7 @@ class ResPartner(models.Model):
                 if last_update_zip and last_update_zip[0].residence_zip:
                     record.residence_zip = last_update_zip[0].residence_zip
 
+    # pylint: disable=W8110
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_city")
     def _compute_residence_city(self):
         if hasattr(super(), "_compute_residence_city"):
@@ -348,6 +351,7 @@ class ResPartner(models.Model):
                 if last_update_city and last_update_city[0].residence_city:
                     record.residence_city = last_update_city[0].residence_city
 
+    # pylint: disable=W8110
     @api.depends(
         "pms_checkin_partner_ids",
         "pms_checkin_partner_ids.residence_country_id",
@@ -367,6 +371,7 @@ class ResPartner(models.Model):
                         0
                     ].residence_country_id
 
+    # pylint: disable=W8110
     @api.depends(
         "pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_state_id"
     )
@@ -382,6 +387,7 @@ class ResPartner(models.Model):
                 if last_update_state and last_update_state[0].residence_state_id:
                     record.residence_state_id = last_update_state[0].residence_state_id
 
+    # pylint: disable=W8110
     @api.depends(
         "pms_checkin_partner_ids",
         "pms_checkin_partner_ids.email",
@@ -402,6 +408,7 @@ class ResPartner(models.Model):
                 if last_update_checkin_mail and last_update_checkin_mail[0].email:
                     record.email = last_update_checkin_mail[0].email
 
+    # pylint: disable=W8110
     @api.depends(
         "pms_checkin_partner_ids",
         "pms_checkin_partner_ids.mobile",
@@ -422,6 +429,7 @@ class ResPartner(models.Model):
                 if last_update_mobile and last_update_mobile[0].mobile:
                     record.mobile = last_update_mobile[0].mobile
 
+    # pylint: disable=W8110
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.firstname")
     def _compute_firstname(self):
         if hasattr(super(), "_compute_firstname"):
@@ -435,6 +443,7 @@ class ResPartner(models.Model):
                 if last_update_firstname and last_update_firstname[0].firstname:
                     record.firstname = last_update_firstname[0].firstname
 
+    # pylint: disable=W8110
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.lastname")
     def _compute_lastname(self):
         if hasattr(super(), "_compute_lastname"):
@@ -448,6 +457,7 @@ class ResPartner(models.Model):
                 if last_update_lastname and last_update_lastname[0].lastname:
                     record.lastname = last_update_lastname[0].lastname
 
+    # pylint: disable=W8110
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.lastname2")
     def _compute_lastname2(self):
         if hasattr(super(), "_compute_lastname2"):
@@ -461,6 +471,7 @@ class ResPartner(models.Model):
                 if last_update_lastname2 and last_update_lastname2[0].lastname2:
                     record.lastname2 = last_update_lastname2[0].lastname2
 
+    # pylint: disable=W8110
     @api.depends("id_numbers")
     def _compute_country_id(self):
         if hasattr(super(), "_compute_country_id"):
@@ -474,6 +485,7 @@ class ResPartner(models.Model):
             ):
                 record.country_id = record.id_numbers[0].country_id
 
+    # pylint: disable=W8110
     @api.depends("residence_state_id")
     def _compute_state_id(self):
         if hasattr(super(), "_compute_state_id"):
@@ -486,6 +498,7 @@ class ResPartner(models.Model):
             ):
                 record.state_id = record.residence_state_id
 
+    # pylint: disable=W8110
     @api.depends("residence_city")
     def _compute_city(self):
         if hasattr(super(), "_compute_city"):
@@ -494,6 +507,7 @@ class ResPartner(models.Model):
             if not record.parent_id and not record.city and record.residence_city:
                 record.city = record.residence_city
 
+    # pylint: disable=W8110
     @api.depends("residence_street")
     def _compute_street(self):
         if hasattr(super(), "_compute_street"):
@@ -502,6 +516,7 @@ class ResPartner(models.Model):
             if not record.parent_id and not record.street and record.residence_street:
                 record.street = record.residence_street
 
+    # pylint: disable=W8110
     @api.depends("residence_street2")
     def _compute_street2(self):
         if hasattr(super(), "_compute_street2"):
@@ -510,6 +525,7 @@ class ResPartner(models.Model):
             if not record.parent_id and not record.street2 and record.residence_street2:
                 record.street2 = record.residence_street2
 
+    # pylint: disable=W8110
     @api.depends("residence_zip")
     def _compute_zip(self):
         if hasattr(super(), "_compute_zip"):
@@ -788,12 +804,14 @@ class ResPartner(models.Model):
                 _(
                     """
                     Agency must have a PMS pricelist, please review the
-                    pricelists configuration (%s) to allow it for PMS,
-                    or the pricelist selected for the agencies: %s
+                    pricelists configuration (%(pricelists)s) to allow it for PMS,
+                    or the pricelist selected for the agencies: %(agencies)s
                     """
                 )
-                % (
-                    ",".join(self.mapped("property_product_pricelist.name")),
-                    "".join(self.mapped("name")),
-                )
+                % {
+                    "pricelists": ",".join(
+                        self.mapped("property_product_pricelist.name")
+                    ),
+                    "agencies": "".join(self.mapped("name")),
+                }
             )

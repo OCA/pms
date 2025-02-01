@@ -16,7 +16,6 @@ class PmsUbication(models.Model):
         translate=True,
     )
     sequence = fields.Integer(
-        string="Sequence",
         help="Field used to change the position of the ubications in tree view."
         "Changing the position changes the sequence",
     )

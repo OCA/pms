@@ -7,7 +7,7 @@ import logging
 import re
 import time
 import traceback
-import xml.etree.cElementTree as ET
+import xml.etree.ElementTree as ET
 import zipfile
 
 import requests
@@ -335,7 +335,10 @@ def _generate_payload(lessor_id, operation, entity, data):
                             <codigoArrendador>{lessor_id}</codigoArrendador>
                             <aplicacion>Roomdoo</aplicacion>
                             <tipoOperacion>{operation}</tipoOperacion>
-                            <tipoComunicacion>{entity}</tipoComunicacion>
+                            {(
+                                '<tipoComunicacion>' + entity + '</tipoComunicacion>'
+                                if entity else ''
+                            )}
                         </cabecera>
                         <solicitud>{data}</solicitud>
                     </peticion>
@@ -412,13 +415,11 @@ class TravellerReport(models.TransientModel):
     )
 
     is_ses = fields.Boolean(
-        string="Is SES",
         readonly=True,
         compute="_compute_is_ses",
     )
 
     report_type = fields.Selection(
-        string="Report Type",
         required=True,
         default="reservations",
         help="Report type (reservation/traveller report)",
@@ -1072,13 +1073,13 @@ class TravellerReport(models.TransientModel):
             return xml_str
 
     @api.model
-    def ses_send_communications(self, entity, communication_id=False):
+    def ses_send_communications(self, entity, pms_ses_communication_id=False):
         domain = [
             ("state", "=", "to_send"),
             ("entity", "=", entity),
         ]
-        if communication_id:
-            domain.append(("id", "=", communication_id))
+        if pms_ses_communication_id:
+            domain.append(("id", "=", pms_ses_communication_id))
         for communication in self.env["pms.ses.communication"].search(domain):
             data = False
             try:
@@ -1127,6 +1128,7 @@ class TravellerReport(models.TransientModel):
                     headers=_get_auth_headers(communication),
                     data=payload,
                     verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
+                    timeout=20,
                 )
                 soap_response.raise_for_status()
 
@@ -1135,15 +1137,16 @@ class TravellerReport(models.TransientModel):
                 communication.response_communication_soap = soap_response.text
                 result_code = root.find(".//codigo").text
                 if result_code == REQUEST_CODE_OK:
-                    communication.communication_id = root.find(".//lote").text
+                    communication.batch_id = root.find(".//lote").text
+
                     communication.state = "to_process"
                 else:
                     communication.state = "error_sending"
 
-            except requests.exceptions.RequestException as e:
-                _handle_request_exception(communication, e)
             except requests.exceptions.HTTPError as http_err:
                 _handle_request_exception(communication, http_err)
+            except requests.exceptions.RequestException as e:
+                _handle_request_exception(communication, e)
             except Exception as e:
                 _handle_request_exception(communication, e)
 
@@ -1192,6 +1195,7 @@ class TravellerReport(models.TransientModel):
                         headers=_get_auth_headers(communication),
                         data=payload,
                         verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
+                        timeout=20,
                     )
                     soap_response.raise_for_status()
                     root = ET.fromstring(soap_response.text)
@@ -1199,18 +1203,17 @@ class TravellerReport(models.TransientModel):
                     communication.response_communication_soap = soap_response.text
                     result_code = root.find(".//codigo").text
                     if result_code == REQUEST_CODE_OK:
-                        communication.communication_id = root.find(".//lote").text
+                        communication.batch_id = root.find(".//lote").text
                         if communication.operation == CREATE_OPERATION_CODE:
                             communication.state = "to_process"
                         else:
                             communication.state = "processed"
                     else:
                         communication.state = "error_sending"
-
-            except requests.exceptions.RequestException as e:
-                _handle_request_exception(communication, e)
             except requests.exceptions.HTTPError as http_err:
                 _handle_request_exception(communication, http_err)
+            except requests.exceptions.RequestException as e:
+                _handle_request_exception(communication, e)
             except Exception as e:
                 _handle_request_exception(communication, e)
 
@@ -1226,7 +1229,7 @@ class TravellerReport(models.TransientModel):
                 var_xml_get_batch = f"""
                     <con:lotes
                     xmlns:con="http://www.neg.hospedajes.mir.es/consultarComunicacion">
-                        <con:lote>{communication.communication_id}</con:lote>
+                        <con:lote>{communication.batch_id}</con:lote>
                     </con:lotes>
                 """
                 communication.query_status_xml = var_xml_get_batch
@@ -1246,16 +1249,19 @@ class TravellerReport(models.TransientModel):
                     headers=_get_auth_headers(communication),
                     data=payload,
                     verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
+                    timeout=20,
                 )
                 soap_response.raise_for_status()
                 root = ET.fromstring(soap_response.text)
-                communication.response_communication_soap = soap_response.text
                 result_code = root.find(".//codigo").text
                 communication.response_query_status_soap = soap_response.text
                 if result_code == REQUEST_CODE_OK:
                     result_status = root.find(".//codigoEstado").text
                     if result_status == XML_OK:
                         communication.state = "processed"
+                        communication.communication_id = root.find(
+                            ".//codigoComunicacion"
+                        ).text
                         communication.processing_result = root.find(
                             ".//descripcion"
                         ).text
@@ -1269,9 +1275,9 @@ class TravellerReport(models.TransientModel):
                 else:
                     communication.state = "error_processing"
                     communication.processing_result = root.find(".//descripcion").text
-            except requests.exceptions.RequestException as e:
-                _handle_request_exception(communication, e)
             except requests.exceptions.HTTPError as http_err:
                 _handle_request_exception(communication, http_err)
+            except requests.exceptions.RequestException as e:
+                _handle_request_exception(communication, e)
             except Exception as e:
                 _handle_request_exception(communication, e)

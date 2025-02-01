@@ -27,7 +27,6 @@ class PmsServiceLine(models.Model):
         ondelete="cascade",
     )
     is_board_service = fields.Boolean(
-        string="Is Board Service",
         help="Indicates if the service line is part of a board service",
         store=True,
         related="service_id.is_board_service",
@@ -65,7 +64,6 @@ class PmsServiceLine(models.Model):
         check_pms_properties=True,
     )
     date = fields.Date(
-        string="Date",
         help="Sate on which the product is to be consumed",
     )
     day_qty = fields.Integer(
@@ -256,8 +254,11 @@ class PmsServiceLine(models.Model):
                 )
                 if limit < out_qty + record.day_qty:
                     raise ValidationError(
-                        _("%s limit exceeded for %s")
-                        % (record.service_id.product_id.name, record.date)
+                        _("%(product_name)s limit exceeded for %(date)s")
+                        % {
+                            "product_name": record.service_id.product_id.name,
+                            "date": record.date,
+                        }
                     )
 
     # Business methods

@@ -31,7 +31,6 @@ class PmsFolio(models.Model):
         default=lambda self: _("New"),
     )
     external_reference = fields.Char(
-        string="External Reference",
         help="Reference of this folio in an external system",
         compute="_compute_external_reference",
         readonly=False,
@@ -69,25 +68,22 @@ class PmsFolio(models.Model):
         check_pms_properties=True,
     )
     number_of_rooms = fields.Integer(
-        string="Number of Rooms",
         help="Number of rooms in folio. Canceled rooms do not count.",
         store="True",
         compute="_compute_number_of_rooms",
     )
     number_of_cancelled_rooms = fields.Integer(
-        string="Number of Cancelled Rooms",
         help="Number of cancelled rooms in folio.",
         store="True",
         compute="_compute_number_of_cancelled_rooms",
     )
     number_of_services = fields.Integer(
-        string="Number of Services",
         help="Number of services in the folio",
         store="True",
         compute="_compute_number_of_services",
     )
     service_ids = fields.One2many(
-        string="Service",
+        string="Services",
         help="Services detail provide to customer and it will "
         "include in main Invoice.",
         readonly=False,
@@ -107,7 +103,6 @@ class PmsFolio(models.Model):
         inverse_name="folio_id",
     )
     invoice_count = fields.Integer(
-        string="Invoice Count",
         help="The amount of invoices in out invoice and out refund status",
         readonly=True,
         compute="_compute_get_invoiced",
@@ -148,7 +143,6 @@ class PmsFolio(models.Model):
         compute="_compute_pricelist_id",
     )
     commission = fields.Float(
-        string="Commission",
         readonly=True,
         store=True,
         compute="_compute_commission",
@@ -364,7 +358,6 @@ class PmsFolio(models.Model):
         selection=[("normal", "Normal"), ("staff", "Staff"), ("out", "Out of Service")],
     )
     date_order = fields.Datetime(
-        string="Order Date",
         help="Date on which folio is sold",
         readonly=True,
         required=True,
@@ -374,7 +367,6 @@ class PmsFolio(models.Model):
         copy=False,
     )
     confirmation_date = fields.Datetime(
-        string="Confirmation Date",
         help="Date on which the folio is confirmed.",
         readonly=True,
         index=True,
@@ -412,14 +404,12 @@ class PmsFolio(models.Model):
         compute="_compute_email",
     )
     mobile = fields.Char(
-        string="Mobile",
         help="Customer Mobile",
         store=True,
         readonly=False,
         compute="_compute_mobile",
     )
     partner_incongruences = fields.Char(
-        string="partner_incongruences",
         help="indicates that some partner fields \
             on the folio do not correspond to that of \
             the associated partner",
@@ -433,12 +423,10 @@ class PmsFolio(models.Model):
         readonly=False,
     )
     credit_card_details = fields.Text(
-        string="Credit Card Details",
         help="Details of partner credit card",
     )
 
     pending_amount = fields.Monetary(
-        string="Pending Amount",
         help="The amount that remains to be paid",
         store=True,
         compute="_compute_amount",
@@ -490,7 +478,6 @@ class PmsFolio(models.Model):
         store=False,
     )
     invoice_status = fields.Selection(
-        string="Invoice Status",
         help="Invoice Status; it can be: invoiced, to invoice, to confirm, no",
         readonly=True,
         default="no",
@@ -523,12 +510,10 @@ class PmsFolio(models.Model):
         help="Indicates cause of cancelled",
     )
     prepaid_warning_days = fields.Integer(
-        string="Prepaid Warning Days",
         help="Margin in days to create a notice if a payment \
                 advance has not been recorded",
     )
     sequence = fields.Integer(
-        string="Sequence",
         help="Sequence used to form the name of the folio",
         default=10,
     )
@@ -556,7 +541,6 @@ class PmsFolio(models.Model):
         compute="_compute_first_checkin",
     )
     days_to_checkin = fields.Integer(
-        string="Days to Checkin",
         help="""Technical field to facilitate
             filtering by dates related to checkin""",
         compute="_compute_days_to_checkin",
@@ -569,7 +553,6 @@ class PmsFolio(models.Model):
         compute="_compute_last_checkout",
     )
     days_to_checkout = fields.Integer(
-        string="Days to Checkout",
         help="""Technical field to facilitate
             filtering by dates related to checkout""",
         compute="_compute_days_to_checkout",
@@ -1051,6 +1034,7 @@ class PmsFolio(models.Model):
 
     # is_checkin = fields.Boolean()
 
+    # pylint: disable=W8110
     def _compute_access_url(self):
         super(PmsFolio, self)._compute_access_url()
         for folio in self:
@@ -2100,8 +2084,13 @@ class PmsFolio(models.Model):
             )
         if not journal:
             raise UserError(
-                _("Please define an accounting sales journal for the company %s (%s).")
-                % (self.company_id.name, self.company_id.id)
+                _(
+                    "Please define an accounting sales journal for the company %(company_name)s (%(company_id)s)."
+                )
+                % {
+                    "company_name": self.company_id.name,
+                    "company_id": self.company_id.id,
+                }
             )
         ref = ""
         if self.name:
@@ -2208,21 +2197,15 @@ class PmsFolio(models.Model):
             )
             self.env["account.bank.statement.line"].sudo().create(line)
         folio.sudo().message_post(
-            body=_(
-                """Payment: <b>%s</b> by <b>%s</b>""",
-                amount,
-                journal.display_name,
-            ),
+            body=_("Payment: <b>%(amount)s</b> by <b>%(journal)s</b>")
+            % {"amount": amount, "journal": journal.display_name},
             email_from=user.partner_id.email_formatted
             or folio.pms_property_id.email_formatted,
         )
         for reservation in folio.reservation_ids:
             reservation.sudo().message_post(
-                body=_(
-                    """Payment: <b>%s</b> by <b>%s</b>""",
-                    amount,
-                    journal.display_name,
-                ),
+                body=_("Payment: <b>%(amount)s</b> by <b>%(journal)s</b>")
+                % {"amount": amount, "journal": journal.display_name},
                 email_from=user.partner_id.email_formatted
                 or folio.pms_property_id.email_formatted,
             )
@@ -2295,21 +2278,15 @@ class PmsFolio(models.Model):
             self.env["account.bank.statement.line"].sudo().create(line)
 
         folio.sudo().message_post(
-            body=_(
-                """Refund: <b>%s</b> by <b>%s</b>""",
-                amount,
-                journal.display_name,
-            ),
+            body=_("Refund: <b>%(amount)s</b> by <b>%(journal)s</b>")
+            % {"amount": amount, "journal": journal.display_name},
             email_from=user.partner_id.email_formatted
             or folio.pms_property_id.email_formatted,
         )
         for reservation in folio.reservation_ids:
             reservation.sudo().message_post(
-                body=_(
-                    """Refund: <b>%s</b> by <b>%s</b>""",
-                    amount,
-                    journal.display_name,
-                ),
+                body=_("Refund: <b>%(amount)s</b> by <b>%(journal)s</b>")
+                % {"amount": amount, "journal": journal.display_name},
                 email_from=user.partner_id.email_formatted
                 or folio.pms_property_id.email_formatted,
             )
@@ -2370,7 +2347,7 @@ class PmsFolio(models.Model):
             }
             statement = (
                 self.env["account.bank.statement"]
-                .with_context(ctx)
+                .with_context(**ctx)
                 .sudo()
                 .create(st_values)
             )
@@ -2733,13 +2710,23 @@ class PmsFolio(models.Model):
                 acquirer = self.env["payment.provider"].browse(acquirer_id)
                 if payment_token and payment_token.acquirer_id != acquirer:
                     raise ValidationError(
-                        _("Invalid token found! Token acquirer %s != %s")
-                        % (payment_token.acquirer_id.name, acquirer.name)
+                        _(
+                            "Invalid token found! Token acquirer %(token_acquirer)s != %(acquirer)s"
+                        )
+                        % {
+                            "token_acquirer": payment_token.acquirer_id.name,
+                            "acquirer": acquirer.name,
+                        }
                     )
                 if payment_token and payment_token.partner_id != partner:
                     raise ValidationError(
-                        _("Invalid token found! Token partner %s != %s")
-                        % (payment_token.partner.name, partner.name)
+                        _(
+                            "Invalid token found! Token partner %(token_partner)s != %(partner)s"
+                        )
+                        % {
+                            "token_partner": payment_token.partner.name,
+                            "partner": partner.name,
+                        }
                     )
             else:
                 acquirer = payment_token.acquirer_id

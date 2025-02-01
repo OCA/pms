@@ -25,12 +25,10 @@ class PmsRoomTypeClass(models.Model):
         translate=True,
     )
     active = fields.Boolean(
-        string="Active",
         help="If unchecked, it will allow you to hide the room type",
         default=True,
     )
     sequence = fields.Integer(
-        string="Sequence",
         help="Field used to change the position of the room type classes in tree view.",
         default=0,
     )

@@ -51,7 +51,6 @@ class PmsAvailabilityPlan(models.Model):
     )
 
     active = fields.Boolean(
-        string="Active",
         help="If unchecked, it will allow you to hide the "
         "Availability plan without removing it.",
         default=True,

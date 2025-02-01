@@ -35,7 +35,6 @@ class ProductTemplate(models.Model):
         default="before",
     )
     daily_limit = fields.Integer(
-        string="Daily limit",
         help="Indicates how much products can consumed in one day",
         compute="_compute_daily_limit",
         inverse="_inverse_daily_limit",
@@ -45,7 +44,6 @@ class ProductTemplate(models.Model):
         inverse="_inverse_list_price",
     )
     is_extra_bed = fields.Boolean(
-        string="Is extra bed",
         help="Indicates if that product is a extra bed, add +1 capacity in the room",
         default=False,
     )
