@@ -10,6 +10,5 @@ class ResPartnerIdCategory(models.Model):
     )
 
     priority = fields.Integer(
-        string="Priority",
         default=100,
     )

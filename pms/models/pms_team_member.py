@@ -6,16 +6,13 @@ class PmsTeamMember(models.Model):
     _description = "PMS Team Member"
 
     name = fields.Char(
-        string="Name",
         store=True,
         related="user_id.name",
     )
     active = fields.Boolean(
-        string="Active",
         default=True,
     )
     sequence = fields.Integer(
-        string="Sequence",
         default=10,
     )
     pms_property_id = fields.Many2one(
@@ -33,7 +30,6 @@ class PmsTeamMember(models.Model):
         index=True,
     )
     pms_role = fields.Selection(
-        string="PMS Role",
         help="The member role in the organization"
         "It can be 'Reception', 'Revenue', 'Administrative', or 'Manager'",
         copy=False,

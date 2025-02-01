@@ -38,7 +38,6 @@ class PmsBoardServiceLine(models.Model):
         check_pms_properties=True,
     )
     amount = fields.Float(
-        string="Amount",
         help="Price for this Board Service Line/Product",
         default=lambda self: self._get_default_price(),
         compute="_compute_amount",
@@ -46,12 +45,10 @@ class PmsBoardServiceLine(models.Model):
         digits=("Product Price"),
     )
     adults = fields.Boolean(
-        string="Adults",
         help="Apply service to adults",
         default=False,
     )
     children = fields.Boolean(
-        string="Children",
         help="Apply service to children",
         default=False,
     )

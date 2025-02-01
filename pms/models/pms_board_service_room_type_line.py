@@ -36,18 +36,15 @@ class PmsBoardServiceRoomTypeLine(models.Model):
         domain="[('is_pms_available', '=', True)]",
     )
     amount = fields.Float(
-        string="Amount",
         help="Price for this Board Service Room Type Line/Product",
         default=lambda self: self._default_amount(),
         digits=("Product Price"),
     )
     adults = fields.Boolean(
-        string="Adults",
         help="Apply service to adults",
         default=False,
     )
     children = fields.Boolean(
-        string="Children",
         help="Apply service to children",
         default=False,
     )

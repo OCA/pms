@@ -62,11 +62,9 @@ class PmsReservationLine(models.Model):
         check_pms_properties=True,
     )
     date = fields.Date(
-        string="Date",
         help="The date of the reservation in reservation line",
     )
     state = fields.Selection(
-        string="State",
         help="State of the reservation line.",
         related="reservation_id.state",
         store=True,
@@ -76,7 +74,6 @@ class PmsReservationLine(models.Model):
         comodel_name="product.pricelist.item", compute="_compute_pricelist_item_id"
     )
     price = fields.Float(
-        string="Price",
         help="The price in a reservation line",
         store=True,
         readonly=False,
@@ -125,7 +122,6 @@ class PmsReservationLine(models.Model):
         store=True,
     )
     overbooking = fields.Boolean(
-        string="Overbooking",
         help="Indicate if exists overbooking in the reservation line",
         store=True,
         readonly=False,
@@ -362,12 +358,14 @@ class PmsReservationLine(models.Model):
                                 line.room_id = reservation.preferred_room_id
                             else:
                                 raise ValidationError(
-                                    _("%s: No room available in %s <-> %s.")
-                                    % (
-                                        reservation.preferred_room_id.name,
-                                        reservation.checkin,
-                                        reservation.checkout,
+                                    _(
+                                        "%(room_name)s: No room available in %(checkin)s <-> %(checkout)s."
                                     )
+                                    % {
+                                        "room_name": reservation.preferred_room_id.name,
+                                        "checkin": reservation.checkin,
+                                        "checkout": reservation.checkout,
+                                    }
                                 )
 
                     # otherwise we assign the first of those
@@ -560,8 +558,13 @@ class PmsReservationLine(models.Model):
                         )
                     ):
                         raise ValidationError(
-                            _("There is no availability for the room type %s on %s")
-                            % (record.room_id.room_type_id.name, record.date)
+                            _(
+                                "There is no availability for the room type %(room_type)s on %(date)s"
+                            )
+                            % {
+                                "room_type": record.room_id.room_type_id.name,
+                                "date": record.date,
+                            }
                         )
                     record.avail_id = avail.id
                 else:

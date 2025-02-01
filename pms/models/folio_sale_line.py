@@ -82,10 +82,9 @@ class FolioSaleLine(models.Model):
         help="Subservices included in folio sale line service",
         comodel_name="pms.service.line",
     )
-    sequence = fields.Integer(string="Sequence", help="", default=10)
+    sequence = fields.Integer(default=10)
 
     invoice_lines = fields.Many2many(
-        string="Invoice Lines",
         copy=False,
         help="Folio sale line invoice lines",
         comodel_name="account.move.line",
@@ -94,7 +93,6 @@ class FolioSaleLine(models.Model):
         column2="invoice_line_id",
     )
     invoice_status = fields.Selection(
-        string="Invoice Status",
         help="Invoice Status; it can be: invoiced, to invoice, no",
         readonly=True,
         store=True,
@@ -106,7 +104,6 @@ class FolioSaleLine(models.Model):
         compute="_compute_invoice_status",
     )
     price_unit = fields.Float(
-        string="Unit Price",
         help="Unit Price of folio sale line",
         digits="Product Price",
     )
@@ -133,7 +130,6 @@ class FolioSaleLine(models.Model):
         compute="_compute_amount",
     )
     price_reduce = fields.Float(
-        string="Price Reduce",
         help="Reduced price amount, that is, total price with discounts applied",
         readonly=True,
         store=True,
@@ -149,14 +145,14 @@ class FolioSaleLine(models.Model):
         domain=["|", ("active", "=", False), ("active", "=", True)],
     )
     price_reduce_taxinc = fields.Monetary(
-        string="Price Reduce Tax inc",
+        string="Price Reduce Tax included",
         help="Price with discounts applied and taxes included",
         readonly=True,
         store=True,
         compute="_compute_get_price_reduce_tax",
     )
     price_reduce_taxexcl = fields.Monetary(
-        string="Price Reduce Tax excl",
+        string="Price Reduce Tax excluded",
         help="Price with discounts applied without taxes",
         readonly=True,
         store=True,
@@ -211,9 +207,7 @@ class FolioSaleLine(models.Model):
         readonly=True,
         related="product_id.uom_id.category_id",
     )
-    product_uom_readonly = fields.Boolean(
-        string="", help="", compute="_compute_product_uom_readonly"
-    )
+    product_uom_readonly = fields.Boolean(compute="_compute_product_uom_readonly")
 
     product_custom_attribute_value_ids = fields.One2many(
         string="Custom Values",
@@ -250,7 +244,6 @@ class FolioSaleLine(models.Model):
         compute_sudo=True,
     )
     untaxed_amount_to_invoice = fields.Monetary(
-        string="Untaxed Amount To Invoice",
         help="The invoiced amount without taxes in the line of the folio",
         store=True,
         compute="_compute_untaxed_amount_to_invoice",
@@ -309,7 +302,6 @@ class FolioSaleLine(models.Model):
     )
 
     display_type = fields.Selection(
-        string="Display Type",
         help="Technical field for UX purpose.",
         selection=[("line_section", "Section"), ("line_note", "Note")],
         default=False,
@@ -356,7 +348,6 @@ class FolioSaleLine(models.Model):
         index=True,
     )
     autoinvoice_date = fields.Date(
-        string="Autoinvoice Date",
         compute="_compute_autoinvoice_date",
         store=True,
     )

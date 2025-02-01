@@ -22,11 +22,8 @@ class PmsRoom(models.Model):
         help="Room Name",
         required=True,
     )
-    active = fields.Boolean(
-        string="Active", help="Determines if room is active", default=True
-    )
+    active = fields.Boolean(help="Determines if room is active", default=True)
     sequence = fields.Integer(
-        string="Sequence",
         help="Field used to change the position of the rooms in tree view."
         "Changing the position changes the sequence",
         default=0,
@@ -73,10 +70,9 @@ class PmsRoom(models.Model):
         check_pms_properties=True,
     )
     capacity = fields.Integer(
-        string="Capacity", help="The maximum number of people that can occupy a room"
+        help="The maximum number of people that can occupy a room"
     )
     extra_beds_allowed = fields.Integer(
-        string="Extra Beds Allowed",
         help="Number of extra beds allowed in room",
         required=True,
         default="0",
@@ -106,12 +102,10 @@ class PmsRoom(models.Model):
     )
 
     short_name = fields.Char(
-        string="Short Name",
         help="Four character name, if not set, autocompletes with the first two letters of "
         "the room name and two incremental numbers",
     )
     address_is_independent = fields.Boolean(
-        string="Address is Independent",
         help="Indicates that the address of the room is independent of the property",
     )
     address_id = fields.Many2one(

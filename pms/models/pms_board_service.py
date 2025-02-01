@@ -48,7 +48,6 @@ class PmsBoardService(models.Model):
         inverse_name="pms_board_service_id",
     )
     amount = fields.Float(
-        string="Amount",
         help="Price for this Board Service. "
         "It corresponds to the sum of his board service lines",
         store=True,
@@ -57,7 +56,6 @@ class PmsBoardService(models.Model):
     )
 
     show_detail_report = fields.Boolean(
-        string="Show Detail Report",
         help="True if you want that board service detail to be shown on the report",
     )
 

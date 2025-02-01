@@ -6,4 +6,4 @@ class PmsAutomatedMails(models.Model):
     _description = "Automatic Mails"
 
     # TODO: Model to delete
-    name = fields.Char(string="Name", help="Name of the automated mail.", required=True)
+    name = fields.Char(help="Name of the automated mail.", required=True)

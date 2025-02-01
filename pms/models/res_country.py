@@ -6,4 +6,4 @@ class Country(models.Model):
     _description = "Country"
     _order = "priority, name"
 
-    priority = fields.Integer(string="Priority", default=1000)
+    priority = fields.Integer(default=1000)
