@@ -79,11 +79,14 @@ class ResPartner(models.Model):
             repeat_partner = self._get_repeat_partner(partner)
             if bool(partner.vat) and not partner.parent_id and repeat_partner:
                 raise UserError(
-                    _("The VAT number %s already exists in other contacts: %s")
-                    % (
-                        repeat_partner.vat,
-                        repeat_partner.name,
+                    _(
+                        "The VAT number %(number)s already "
+                        "exists in other contacts: %(contact)s"
                     )
+                    % {
+                        "number": partner.vat,
+                        "contact": repeat_partner.name_get()[0][1],
+                    }
                 )
 
     def _get_repeat_partner(self, partner):
@@ -145,6 +148,6 @@ class ResPartner(models.Model):
                 if vat and country_id:
                     vat_with_code = record.fix_eu_vat_number(country_id, vat)
                     if country_id and vat != vat_with_code:
-                        record.with_context({"ignore_vat_update": True}).write(
+                        record.with_context(ignore_vat_update=True).write(
                             {"vat": vat_with_code}
                         )
