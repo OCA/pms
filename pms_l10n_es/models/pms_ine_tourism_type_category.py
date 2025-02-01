@@ -5,8 +5,8 @@ class PmsIneTourismCategory(models.Model):
     _name = "pms.ine.tourism.type.category"
     _description = "Hotel category in the Ministry of Tourism. Used for INE statistics."
 
-    type = fields.Char("Type", required=True)
-    category = fields.Char("Category", required=True)
+    type = fields.Char(required=True)
+    category = fields.Char(required=True)
 
     def name_get(self):
         data = []

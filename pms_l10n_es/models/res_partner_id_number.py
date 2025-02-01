@@ -13,6 +13,7 @@ class ResPartnerIdNumber(models.Model):
         compute="_compute_support_number",
     )
 
+    # pylint: disable=W8110
     @api.depends("partner_id", "partner_id.pms_checkin_partner_ids.support_number")
     def _compute_support_number(self):
         if hasattr(super(), "_compute_support_number"):

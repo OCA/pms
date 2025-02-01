@@ -19,27 +19,22 @@ class PmsProperty(models.Model):
             ("mossos", "Mossos_d'esquadra (soon)"),
             ("ses", "SES"),
         ],
-        string="Institution",
         help="Institution to send daily guest data.",
         required=False,
     )
     institution_property_id = fields.Char(
-        string="Institution property id",
         help="Id provided by institution to send data from property.",
     )
     ses_url = fields.Char(
-        string="SES URL",
         help="URL to send the data to SES",
     )
     institution_user = fields.Char(
-        string="Institution user", help="User provided by institution to send the data."
+        help="User provided by institution to send the data."
     )
     institution_password = fields.Char(
-        string="Institution password",
         help="Password provided by institution to send the data.",
     )
     institution_lessor_id = fields.Char(
-        string="Institution lessor id",
         help="Id provided by institution to send data from lessor.",
     )
     ine_tourism_number = fields.Char(
@@ -47,21 +42,21 @@ class PmsProperty(models.Model):
         help="Registration number in the Ministry of Tourism. Used for INE statistics.",
     )
     ine_seats = fields.Integer(
-        "Beds available excluding extra beds",
+        string="Beds available excluding extra beds",
         default=0,
         help="Used for INE statistics.",
     )
     ine_permanent_staff = fields.Integer(
-        "Permanent Staff", default=0, help="Used for INE statistics."
+        string="Permanent Staff", default=0, help="Used for INE statistics."
     )
     ine_eventual_staff = fields.Integer(
-        "Eventual Staff", default=0, help="Used for INE statistics."
+        string="Eventual Staff", default=0, help="Used for INE statistics."
     )
     ine_unpaid_staff = fields.Integer(
-        "Unpaid Staff", default=0, help="Used for INE statistics."
+        string="Unpaid Staff", default=0, help="Used for INE statistics."
     )
     ine_category_id = fields.Many2one(
-        "pms.ine.tourism.type.category",
+        comodel_name="pms.ine.tourism.type.category",
         help="Hotel category in the Ministry of Tourism. Used for INE statistics.",
     )
 
