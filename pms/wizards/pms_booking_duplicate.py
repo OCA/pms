@@ -53,7 +53,6 @@ class BookingDuplicate(models.TransientModel):
         domain="[('is_used_in_checkin', '=', True)]",
     )
     partner_name = fields.Char(
-        string="Partner name",
         help="In whose name is the reservation",
         compute="_compute_partner_name",
         readonly=False,
@@ -68,7 +67,6 @@ class BookingDuplicate(models.TransientModel):
         store=True,
         check_pms_properties=True,
     )
-
     reservation_type = fields.Selection(
         string="Type",
         help="The type of the reservation. "
@@ -101,7 +99,6 @@ class BookingDuplicate(models.TransientModel):
         compute="_compute_total_price_folio",
     )
     discount = fields.Float(
-        string="Discount",
         help="Discount that be applied in total price",
         default=0,
     )
@@ -405,13 +402,15 @@ class PmsReservationDuplicate(models.TransientModel):
         comodel_name="pms.reservation",
         check_pms_properties=True,
     )
-    adults = fields.Integer(string="Adults")
+    adults = fields.Integer()
     booking_duplicate_id = fields.Many2one(
         string="Folio Wizard ID",
         comodel_name="pms.booking.duplicate",
     )
     checkin = fields.Date(
-        string="From:", help="Date Reservation starts ", compute="_compute_checkin"
+        string="From:",
+        help="Date Reservation starts ",
+        compute="_compute_checkin",
     )
     checkout = fields.Date(
         string="To:",
@@ -447,7 +446,6 @@ class PmsReservationDuplicate(models.TransientModel):
         compute="_compute_allowed_room_ids",
     )
     occupied_room = fields.Boolean(
-        string="Occupied Room",
         help="Check if the room is occupied",
         compute="_compute_occupied_room",
     )

@@ -59,6 +59,7 @@ class AccountMoveLine(models.Model):
     )
     move_id = fields.Many2one(check_pms_properties=True)
 
+    # pylint: disable=W8110
     @api.depends("account_id", "partner_id", "product_id", "pms_property_id")
     def _compute_analytic_distribution(self):
         properties = self.mapped("pms_property_id")

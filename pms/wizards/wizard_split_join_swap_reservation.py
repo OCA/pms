@@ -9,7 +9,6 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
     _description = "Operations in reservations"
 
     operation = fields.Selection(
-        string="Operation",
         help="Operation to be applied on the reservation",
         selection=[
             ("swap", "Swap rooms"),
@@ -55,7 +54,6 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
         compute="_compute_reservation_ids",
     )
     room_source = fields.Many2one(
-        string="Room Source",
         default=lambda self: self.env["pms.reservation"]
         .browse(self._context.get("active_id"))
         .preferred_room_id
@@ -68,12 +66,10 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
         domain="[('id', 'in', allowed_rooms_sources)]",
     )
     room_target = fields.Many2one(
-        string="Room Target",
         comodel_name="pms.room",
         domain="[('id', 'in', allowed_rooms_target)]",
     )
     allowed_rooms_sources = fields.Many2many(
-        string="Allowed rooms source",
         store=True,
         readonly=False,
         comodel_name="pms.room",
@@ -83,7 +79,6 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
         compute="_compute_allowed_rooms_source",
     )
     allowed_rooms_target = fields.Many2many(
-        string="Allowed rooms target",
         comodel_name="pms.room",
         store=True,
         readonly=False,
@@ -93,7 +88,6 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
         compute="_compute_allowed_rooms_target",
     )
     reservation_lines_to_change = fields.One2many(
-        string="Reservations Lines To Change",
         comodel_name="pms.wizard.reservation.lines.split",
         inverse_name="reservation_wizard_id",
         compute="_compute_reservation_lines",
@@ -325,9 +319,7 @@ class ReservationLinesToSplit(models.TransientModel):
         string="Reservation Wizard",
         comodel_name="pms.reservation.split.join.swap.wizard",
     )
-    date = fields.Date(
-        string="Date",
-    )
+    date = fields.Date()
     room_id = fields.Many2one(
         string="Room",
         comodel_name="pms.room",
