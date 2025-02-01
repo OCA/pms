@@ -14,9 +14,7 @@ class PmsFolio(models.Model):
         string="Channel Wubook PMS Bindings",
     )
 
-    reservation_origin_code = fields.Integer(
-        string="Reservation Origin Code",
-    )
+    reservation_origin_code = fields.Integer()
 
     @api.model
     def _name_search(
