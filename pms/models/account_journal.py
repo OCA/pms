@@ -21,7 +21,6 @@ class AccountJournal(models.Model):
         help="Use to pay for reservations",
     )
     avoid_autoinvoice_downpayment = fields.Boolean(
-        string="Avoid autoinvoice downpayment",
         help="Avoid autoinvoice downpayment",
         default=False,
     )
@@ -52,11 +51,10 @@ class AccountJournal(models.Model):
             ):
                 raise models.ValidationError(
                     _(
-                        "The journal %s is used for normal invoices in the properties: %s"
-                        % (
-                            journal.name,
-                            ", ".join(journal.pms_property_ids.mapped("name")),
-                        )
+                        "The journal %(journal)s is used for normal "
+                        "invoices in the properties: %(properties)s",
+                        journal=journal.name,
+                        properties=", ".join(journal.pms_property_ids.mapped("name")),
                     )
                 )
             if (
@@ -66,10 +64,9 @@ class AccountJournal(models.Model):
             ):
                 raise models.ValidationError(
                     _(
-                        "The journal %s is used for simplified invoices in the properties: %s"
-                        % (
-                            journal.name,
-                            ", ".join(journal.pms_property_ids.mapped("name")),
-                        )
+                        "The journal %(journal)s is used for simplified "
+                        "invoices in the properties: %(properties)s",
+                        journal=journal.name,
+                        properties=", ".join(journal.pms_property_ids.mapped("name")),
                     )
                 )

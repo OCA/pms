@@ -10,7 +10,6 @@ class PmsRoomAmenityType(models.Model):
     _check_pms_properties_auto = True
 
     active = fields.Boolean(
-        string="Active",
         help="Determines if amenity type is active",
         default=True,
     )

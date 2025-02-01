@@ -116,13 +116,11 @@ class PmsService(models.Model):
     )
     sequence = fields.Integer(default=10)
     state = fields.Selection(
-        string="State",
         help="Service status, it corresponds with folio status",
         related="folio_id.state",
         store=True,
     )
     per_day = fields.Boolean(
-        string="Per Day",
         help="Indicates if service is sold by days",
         related="product_id.per_day",
         related_sudo=True,
@@ -146,7 +144,6 @@ class PmsService(models.Model):
     # Non-stored related field to allow portal user to
     # see the image of the product he has ordered
     product_image = fields.Binary(
-        string="Product Image",
         help="Image of the service",
         store=False,
         related="product_id.image_1024",
@@ -195,7 +192,6 @@ class PmsService(models.Model):
     )
 
     discount = fields.Float(
-        string="Discount (€/ud)",
         help="Discount of total price",
         readonly=False,
         store=True,

@@ -35,7 +35,7 @@ class PmsCancelationRule(models.Model):
         check_pms_properties=True,
     )
     active = fields.Boolean(
-        string="Active", help="Determines if cancelation rule is active", default=True
+        help="Determines if cancelation rule is active", default=True
     )
     days_intime = fields.Integer(
         string="Days Late",

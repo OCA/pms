@@ -20,7 +20,6 @@ class PmsRoomType(models.Model):
     _check_pms_properties_auto = True
 
     sequence = fields.Integer(
-        string="Sequence",
         help="Field used to change the position of the room types in tree view.",
         default=0,
     )
@@ -70,7 +69,6 @@ class PmsRoomType(models.Model):
         required=True,
     )
     total_rooms_count = fields.Integer(
-        string="Total Rooms Count",
         help="The number of rooms in a room type",
         compute="_compute_total_rooms_count",
         store=True,
@@ -83,7 +81,6 @@ class PmsRoomType(models.Model):
         default=-1,
     )
     default_quota = fields.Integer(
-        string="Default Quota",
         help="Quota assigned to the own Booking Engine given no availability rules. "
         "Use `-1` for managing no quota.",
         default=-1,

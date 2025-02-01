@@ -14,10 +14,9 @@ class ResCompany(models.Model):
         inverse_name="company_id",
     )
 
-    url_advert = fields.Char(string="Url Advert", help="Url to identify the ad")
+    url_advert = fields.Char(help="Url to identify the ad")
 
     privacy_policy = fields.Html(
-        string="Privacy Policy",
         help="Authorization by the user for the" "manage of their personal data",
     )
 
@@ -45,7 +44,6 @@ class ResCompany(models.Model):
     )
 
     document_partner_required = fields.Boolean(
-        string="Document partner required",
         help="""If true, the partner document is required
         to create a new contact""",
         default=False,

@@ -31,7 +31,6 @@ class AccountPayment(models.Model):
         readonly=True,
     )
     origin_reference = fields.Char(
-        string="Origin Reference",
         help="The reference of the payment origin",
     )
 
@@ -96,6 +95,7 @@ class AccountPayment(models.Model):
                 )
         return line_vals_list
 
+    # pylint: disable=W8110
     def _synchronize_to_moves(self, changed_fields):
         super(AccountPayment, self)._synchronize_to_moves(changed_fields)
         if "folio_ids" in changed_fields:

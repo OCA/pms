@@ -27,7 +27,6 @@ class PmsAvailabilityPlanRule(models.Model):
         check_pms_properties=True,
     )
     date = fields.Date(
-        string="Date",
         help="Date for which availability rule applies",
     )
 
@@ -52,29 +51,22 @@ class PmsAvailabilityPlanRule(models.Model):
         default=0,
     )
     closed = fields.Boolean(
-        string="Closed",
         help="Indicate if property is closed or not",
         default=False,
     )
     closed_departure = fields.Boolean(
-        string="Closed Departure",
-        help="",
         default=False,
     )
     closed_arrival = fields.Boolean(
-        string="Closed Arrival",
-        help="",
         default=False,
     )
     quota = fields.Integer(
-        string="Quota",
         help="Generic Quota assigned.",
         readonly=False,
         store=True,
         compute="_compute_quota",
     )
     max_avail = fields.Integer(
-        string="Max. Availability",
         help="Maximum simultaneous availability on own Booking Engine",
         readonly=False,
         store=True,

@@ -22,7 +22,6 @@ class PmsAvailability(models.Model):
         check_pms_properties=True,
     )
     date = fields.Date(
-        string="Date",
         help="Date for which availability applies",
         readonly=True,
         required=True,
@@ -53,8 +52,6 @@ class PmsAvailability(models.Model):
         check_pms_properties=True,
     )
     real_avail = fields.Integer(
-        string="Real Avail",
-        help="",
         store=True,
         readonly=True,
         compute="_compute_real_avail",

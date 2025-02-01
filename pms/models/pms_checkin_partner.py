@@ -20,7 +20,6 @@ class PmsCheckinPartner(models.Model):
     _rec_name = "identifier"
 
     identifier = fields.Char(
-        string="Identifier",
         help="Checkin Partner Id",
         readonly=True,
         index=True,
@@ -59,9 +58,7 @@ class PmsCheckinPartner(models.Model):
         comodel_name="pms.property",
         related="reservation_id.pms_property_id",
     )
-    name = fields.Char(
-        string="Name", help="Checkin partner name", related="partner_id.name"
-    )
+    name = fields.Char(help="Checkin partner name", related="partner_id.name")
     email = fields.Char(
         string="E-mail",
         help="Checkin Partner Email",
@@ -70,14 +67,12 @@ class PmsCheckinPartner(models.Model):
         compute="_compute_email",
     )
     mobile = fields.Char(
-        string="Mobile",
         help="Checkin Partner Mobile",
         readonly=False,
         store=True,
         compute="_compute_mobile",
     )
     phone = fields.Char(
-        string="Phone",
         help="Checkin Partner Phone",
         readonly=False,
         store=True,
@@ -96,14 +91,14 @@ class PmsCheckinPartner(models.Model):
         domain="[('is_used_in_checkin', '=', True)]",
     )
     checkin = fields.Date(
-        string="Checkin",
+        string="Check in",
         help="Checkin date",
         store=True,
         related="reservation_id.checkin",
         depends=["reservation_id.checkin"],
     )
     checkout = fields.Date(
-        string="Checkout",
+        string="Check out",
         help="Checkout date",
         store=True,
         related="reservation_id.checkout",
@@ -130,7 +125,6 @@ class PmsCheckinPartner(models.Model):
     )
 
     gender = fields.Selection(
-        string="Gender",
         help="host gender",
         readonly=False,
         store=True,
@@ -223,14 +217,12 @@ class PmsCheckinPartner(models.Model):
         compute="_compute_birth_date",
     )
     document_number = fields.Char(
-        string="Document Number",
         help="Host document number",
         readonly=False,
         store=True,
         compute="_compute_document_number",
     )
     document_type = fields.Many2one(
-        string="Document Type",
         help="Select a valid document type",
         readonly=False,
         store=True,
@@ -268,7 +260,6 @@ class PmsCheckinPartner(models.Model):
     )
 
     partner_incongruences = fields.Char(
-        string="partner_incongruences",
         help="indicates that some partner fields \
             on the checkin do not correspond to that of \
             the associated partner",
@@ -282,17 +273,13 @@ class PmsCheckinPartner(models.Model):
         inverse_name="checkin_partner_possible_customer_id",
     )
 
-    partner_relationship = fields.Char(
-        string="Partner relationship", help="Family relationship between travelers"
-    )
+    partner_relationship = fields.Char(help="Family relationship between travelers")
 
     signature = fields.Image(
-        string="Signature",
         help="Signature of the guest",
     )
 
     sign_on = fields.Datetime(
-        string="Sign on",
         help="Date and time of the signature",
         compute="_compute_sign_on",
     )
@@ -629,6 +616,7 @@ class PmsCheckinPartner(models.Model):
             else:
                 record.sign_on = False
 
+    # pylint: disable=W8110
     def _compute_access_url(self):
         super(PmsCheckinPartner, self)._compute_access_url()
         for checkin in self:
@@ -645,8 +633,11 @@ class PmsCheckinPartner(models.Model):
         for record in self:
             if record.departure and record.arrival > record.departure:
                 raise ValidationError(
-                    _("Departure date (%s) is prior to arrival on %s")
-                    % (record.departure, record.arrival)
+                    _(
+                        "Departure date (%(departure)s) is prior to arrival on %(arrival)s",
+                        departure=record.departure,
+                        arrival=record.arrival,
+                    )
                 )
 
     @api.constrains("partner_id")
@@ -730,15 +721,19 @@ class PmsCheckinPartner(models.Model):
                 except Exception as e:
                     raise UserError(
                         _(
-                            "Error when evaluating the id_category validation code:"
-                            ":\n %s \n(%s)"
+                            "Error when evaluating the id_category "
+                            "validation code:\n %(name)s \n(%(error)s)",
+                            name=self.name,
+                            error=e,
                         )
-                        % (self.name, e)
-                    )
+                    ) from e
                 if eval_context.get("failed", False):
                     raise ValidationError(
-                        _("%s is not a valid %s identifier")
-                        % (record.document_number, record.document_type.name)
+                        _(
+                            "%(doc_number)s is not a valid %(doc_type)s identifier",
+                            doc_number=record.document_number,
+                            doc_type=record.document_type.name,
+                        )
                     )
 
     @api.constrains("document_country_id", "document_type")
@@ -851,7 +846,11 @@ class PmsCheckinPartner(models.Model):
             reservation = self.env["pms.reservation"].browse(reservation_id)
             if not checkin:
                 raise ValidationError(
-                    _("%s not found in checkins (%s)"), identifier, reservation.name
+                    _(
+                        "%(identifier)s not found in checkins (%(reservation)s)",
+                        identifier=identifier,
+                        reservation=reservation.name,
+                    )
                 )
             checkin_vals = {}
             for key, value in checkin_dict.items():
