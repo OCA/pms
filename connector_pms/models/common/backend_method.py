@@ -23,7 +23,6 @@ class ChannelBackendMethod(models.Model):
     )
 
     max_calls = fields.Integer(
-        string="Max Calls",
         help="Maximum number of calls to this method in the defined time window",
     )
 

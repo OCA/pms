@@ -109,10 +109,10 @@ class BinderCustom(AbstractComponent):
                     if isinstance(e, (tuple, list, set, dict)):
                         raise ValidationError(
                             _(
-                                "Wrong domain value type '%s' "
-                                "on value '%s' of field '%s'"
+                                "Wrong domain value type '%(type)s' "
+                                "on value '%(value)s' of field '%(field)s'"
                             )
-                            % (type(e), e, field)
+                            % {"type": type(e), "value": e, "field": field}
                         )
 
     def _get_internal_record_domain(self, values):

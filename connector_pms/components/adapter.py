@@ -56,7 +56,7 @@ class ChannelAdapter(AbstractComponent):
                         break
                 else:
                     break
-                    raise NotImplementedError("Operator '%s' not supported" % op)
+                    # raise NotImplementedError("Operator '%s' not supported" % op)
             else:
                 values_filtered.append(record)
 
