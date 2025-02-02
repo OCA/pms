@@ -5,6 +5,7 @@ from odoo import fields, models
 
 class KlippaLog(models.Model):
     _name = "klippa.log"
+    _description = "Klippa Log"
     _order = "id desc"
 
     pms_property_id = fields.Many2one(
