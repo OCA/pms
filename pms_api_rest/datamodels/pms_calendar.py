@@ -85,9 +85,9 @@ class PmsCalendarInfo(Datamodel):
     children = fields.Integer(required=False, allow_none=True)
     nextLineSplitted = fields.Boolean(required=False, allow_none=True)
     previousLineSplitted = fields.Boolean(required=False, allow_none=True)
-    closureReasonId = fields.Number(required=False, allow_none=True)
-    priceDayTotal = fields.Number(required=False, allow_none=True)
-    priceDayTotalServices = fields.Number(required=False, allow_none=True)
+    closureReasonId = fields.Integer(required=False, allow_none=True)
+    priceDayTotal = fields.Float(required=False, allow_none=True)
+    priceDayTotalServices = fields.Float(required=False, allow_none=True)
     isReselling = fields.Boolean(required=False, allow_none=False)
 
 

@@ -3,6 +3,7 @@ from odoo import fields, models
 
 class OtaPropertySettings(models.Model):
     _name = "ota.property.settings"
+    _description = "OTA Property Settings"
 
     pms_property_id = fields.Many2one(
         string="PMS Property",
