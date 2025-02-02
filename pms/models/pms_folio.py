@@ -127,7 +127,6 @@ class PmsFolio(models.Model):
         related="pricelist_id.currency_id",
         depends=["pricelist_id"],
         store=True,
-        precompute=True,
         ondelete="restrict",
     )
     pricelist_id = fields.Many2one(
@@ -1455,17 +1454,19 @@ class PmsFolio(models.Model):
             if not record.partner_name and record.reservation_type != "out":
                 raise models.ValidationError(_("You must assign a customer name"))
 
-    @api.model
-    def create(self, vals):
-        if vals.get("name", _("New")) == _("New") or "name" not in vals:
-            if "pms_property_id" not in vals:
-                raise UserError(_("Property is required"))
-            pms_property_id = vals.get("pms_property_id")
-            pms_property = self.env["pms.property"].browse(pms_property_id)
-            vals["name"] = pms_property.folio_sequence_id._next_do()
-        result = super(PmsFolio, self).create(vals)
-        result.access_token = result._portal_ensure_token()
-        return result
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get("name", _("New")) == _("New") or "name" not in vals:
+                if "pms_property_id" not in vals:
+                    raise UserError(_("Property is required"))
+                pms_property_id = vals.get("pms_property_id")
+                pms_property = self.env["pms.property"].browse(pms_property_id)
+                vals["name"] = pms_property.folio_sequence_id._next_do()
+        records = super(PmsFolio, self).create(vals_list)
+        for record in records:
+            record.access_token = record._portal_ensure_token()
+        return records
 
     def write(self, vals):
         reservations_to_update = self.env["pms.reservation"]

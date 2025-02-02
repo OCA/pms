@@ -37,7 +37,6 @@ class ResPartner(models.Model):
             ("included", "Commission Included in Price"),
             ("subtract", "Commission Subtracts from Price"),
         ],
-        string="Commission Type",
         help="""
         If select subtract commission, for automatic import of reservations,
         the commission is calculated as price - (price * commission / 100)
@@ -748,13 +747,13 @@ class ResPartner(models.Model):
             )
         return super().unlink()
 
-    @api.model
-    def create(self, values):
-        check_missing_document = self._check_document_partner_required(values)
-        if check_missing_document:
-            raise ValidationError(_("A document identification is required"))
-
-        return super(ResPartner, self).create(values)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            check_missing_document = self._check_document_partner_required(vals)
+            if check_missing_document:
+                raise ValidationError(_("A document identification is required"))
+        return super(ResPartner, self).create(vals_list)
 
     def write(self, vals):
         check_missing_document = self._check_document_partner_required(

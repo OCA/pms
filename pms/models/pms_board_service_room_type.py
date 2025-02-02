@@ -122,14 +122,17 @@ class PmsBoardServiceRoomType(models.Model):
                 (pms_board_service_id, pms_room_type_id)"
             )
 
-    @api.model
-    def create(self, vals):
+    @api.model_create_multi
+    def create(self, vals_list):
         # properties = False
-        if "pms_board_service_id" in vals and "board_service_line_ids" not in vals:
-            vals.update(
-                self.prepare_board_service_reservation_ids(vals["pms_board_service_id"])
-            )
-        return super(PmsBoardServiceRoomType, self).create(vals)
+        for vals in vals_list:
+            if "pms_board_service_id" in vals and "board_service_line_ids" not in vals:
+                vals.update(
+                    self.prepare_board_service_reservation_ids(
+                        vals["pms_board_service_id"]
+                    )
+                )
+        return super(PmsBoardServiceRoomType, self).create(vals_list)
 
     def write(self, vals):
         if "pms_board_service_id" in vals and "board_service_line_ids" not in vals:

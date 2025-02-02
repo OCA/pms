@@ -50,11 +50,11 @@ class ResUsers(models.Model):
                     )
 
     # Inherit Create and Write method to set context avoid_document_restriction
-    @api.model
-    def create(self, vals):
+    @api.model_create_multi
+    def create(self, vals_list):
         return super(
             ResUsers, self.with_context(avoid_document_restriction=True)
-        ).create(vals)
+        ).create(vals_list)
 
     def write(self, vals):
         return super(

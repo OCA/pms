@@ -64,6 +64,7 @@
             >
                 <field name="is_board_service" invisible="1" />
                 <button
+                    title="View Services"
                     type="object"
                     class="oe_stat_button"
                     icon="fa-1x fa-bed"
@@ -92,6 +93,7 @@
                 <field name="sale_channel_origin_id" />
                 <field name="default_invoice_to" />
                 <button
+                    title="View Services"
                     type="object"
                     class="oe_stat_button"
                     icon="fa-2x fa-bars"

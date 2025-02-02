@@ -60,21 +60,22 @@ class PmsBoardServiceLine(models.Model):
         if self.product_id:
             self.update({"amount": self.product_id.list_price})
 
-    @api.model
-    def create(self, vals):
-        properties = False
-        if "pms_board_service_id" in vals:
-            board_service = self.env["pms.board.service"].browse(
-                vals["pms_board_service_id"]
-            )
-            properties = board_service.pms_property_ids
-        if properties:
-            vals.update(
-                {
-                    "pms_property_ids": properties,
-                }
-            )
-        return super(PmsBoardServiceLine, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            properties = False
+            if "pms_board_service_id" in vals:
+                board_service = self.env["pms.board.service"].browse(
+                    vals["pms_board_service_id"]
+                )
+                properties = board_service.pms_property_ids
+            if properties:
+                vals.update(
+                    {
+                        "pms_property_ids": properties,
+                    }
+                )
+        return super(PmsBoardServiceLine, self).create(vals_list)
 
     def write(self, vals):
         properties = False

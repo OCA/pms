@@ -188,17 +188,17 @@ class PmsRoomType(models.Model):
 
     # ORM Overrides
     # TODO: Review Check product fields default values to room
-    @api.model
-    def create(self, vals):
-        """Add room types as not purchase services."""
-        vals.update(
-            {
-                "purchase_ok": False,
-                "sale_ok": False,
-                "detailed_type": "service",
-            }
-        )
-        return super().create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            vals.update(
+                {
+                    "purchase_ok": False,
+                    "sale_ok": False,
+                    "detailed_type": "service",
+                }
+            )
+        return super().create(vals_list)
 
     # def unlink(self):
     #     for record in self:

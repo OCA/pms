@@ -69,6 +69,7 @@
                                     <field name="amount" />
                                     <field name="pms_property_id" />
                                     <button
+                                        title="View Board Services"
                                         type="object"
                                         class="oe_stat_button"
                                         id="go_board_lines"
