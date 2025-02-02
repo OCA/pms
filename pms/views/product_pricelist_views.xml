@@ -33,7 +33,10 @@
                 />
             </xpath>
             <xpath
-                expr="//field[@name='item_ids']/tree/field[@name='base']"
+                expr="//page[@name='pricelist_rules']
+                     /field[@name='item_ids']
+                     /tree[@groups='!product.group_sale_pricelist']
+                     /field[@name='fixed_price']"
                 position="after"
             >
                 <field
@@ -50,18 +53,40 @@
                     options="{'no_create': True,'no_open': True}"
                     attrs="{'column_invisible': [('parent.is_pms_available', '=', False)]}"
                 />
+                <!-- <field
+                    name="board_service_room_type_id"
+                    options="{'no_create': True, 'no_open': True}"
+                    attrs="{'invisible': [('parent.is_pms_available', '=', False)]}"
+                /> -->
             </xpath>
 
 
             <xpath
-                expr="//field[@name='item_ids']/tree/field[@name='name']"
+                expr="//page[@name='pricelist_rules']
+                     /field[@name='item_ids']
+                     /tree[@groups='product.group_sale_pricelist']
+                     /field[@name='name']"
                 position="after"
             >
                 <field
+                    name="date_start_consumption"
+                    attrs="{'column_invisible': [('parent.is_pms_available', '=', False)]}"
+                />
+                <field
+                    name="date_end_consumption"
+                    attrs="{'column_invisible': [('parent.is_pms_available', '=', False)]}"
+                />
+                <field
+                    name="pms_property_ids"
+                    widget="many2many_tags"
+                    options="{'no_create': True,'no_open': True}"
+                    attrs="{'column_invisible': [('parent.is_pms_available', '=', False)]}"
+                />
+                <!-- <field
                     name="board_service_room_type_id"
                     options="{'no_create': True, 'no_open': True}"
                     attrs="{'invisible': [('parent.is_pms_available', '=', False)]}"
-                />
+                /> -->
             </xpath>
 
 
