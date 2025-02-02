@@ -601,37 +601,21 @@ class PmsService(models.Model):
             if origin:
                 partner = origin.partner_id
                 pricelist = origin.pricelist_id
-                product_context = dict(
-                    self.env.context,
-                    lang=partner.lang,
-                    partner=partner.id,
-                    quantity=self.product_qty,
-                    date=folio.date_order if folio else fields.Date.today(),
-                    pricelist=pricelist.id,
-                    uom=self.product_id.uom_id.id,
-                    fiscal_position=False,
+                product = self.product_id.with_context(
+                    board_service_line_id=self.board_service_line_id.id,
                     property=origin.pms_property_id.id,
                 )
-                if date:
-                    product_context["consumption_date"] = date
-                if reservation and self.is_board_service:
-                    product_context[
-                        "board_service"
-                    ] = reservation.board_service_room_id.id
-                if reservation and self.board_service_line_id:
-                    product_context[
-                        "board_service_line_id"
-                    ] = self.board_service_line_id.id
-                product = self.product_id.with_context(**product_context)
+                price = pricelist._get_product_price(
+                    product=product,
+                    quantity=self.product_qty,
+                    partner=partner.id,
+                    consumption_date=date,
+                    pms_property_id=origin.pms_property_id.id,
+                    board_service_line_id=self.board_service_line_id.id,
+                )
                 return self.env["account.tax"]._fix_tax_included_price_company(
-                    self.env["product.product"]._pms_get_display_price(
-                        pricelist_id=pricelist.id,
-                        product=product,
-                        company_id=origin.company_id.id,
-                        product_qty=self.product_qty,
-                        partner_id=partner.id,
-                    ),
-                    product.taxes_id,
+                    price,
+                    self.product_id.taxes_id,
                     self.tax_ids,
                     origin.company_id,
                 )

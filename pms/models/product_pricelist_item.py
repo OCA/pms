@@ -1,6 +1,6 @@
 # Copyright 2017  Alexandre Díaz, Pablo Quesada, Darío Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
+from odoo import api, fields, models, tools
 
 
 class ProductPricelistItem(models.Model):
@@ -149,3 +149,105 @@ class ProductPricelistItem(models.Model):
                         that min price in room type defined"""
                     )
         return super().create(vals)
+
+    def _compute_consumption_price(
+        self, product, quantity, uom, date, currency=None, **kwargs
+    ):
+        """Override to add the consuption date parameter to the price computation
+
+        :param product: recordset of product (product.product/product.template)
+        :param float qty: quantity of products requested (in given uom)
+        :param uom: unit of measure (uom.uom record)
+        :param datetime date: date to use for price computation and currency conversions
+        :param currency: pricelist currency (for the specific case where self is empty)
+        :param **kwargs: optional context arguments, useful for
+            consumption date price computation
+
+        :returns: price according to pricelist rule, expressed in pricelist currency
+        :rtype: float
+        """
+        product.ensure_one()
+        uom.ensure_one()
+
+        currency = currency or self.currency_id
+        currency.ensure_one()
+
+        # Pricelist specific values are specified according to product UoM
+        # and must be multiplied according to the factor between uoms
+        product_uom = product.uom_id
+        if product_uom != uom:
+
+            def convert(p):
+                return product_uom._compute_consumption_price(p, uom)
+
+        else:
+
+            def convert(p):
+                return p
+
+        if self.compute_price == "fixed":
+            price = convert(self.fixed_price)
+        elif self.compute_price == "percentage":
+            base_price = self._compute_base_consumption_price(
+                product, quantity, uom, date, currency, **kwargs
+            )
+            price = (base_price - (base_price * (self.percent_price / 100))) or 0.0
+        elif self.compute_price == "formula":
+            base_price = self._compute_base_consumption_price(
+                product, quantity, uom, date, currency, **kwargs
+            )
+            # complete formula
+            price_limit = base_price
+            price = (base_price - (base_price * (self.price_discount / 100))) or 0.0
+            if self.price_round:
+                price = tools.float_round(price, precision_rounding=self.price_round)
+
+            if self.price_surcharge:
+                price += convert(self.price_surcharge)
+
+            if self.price_min_margin:
+                price = max(price, price_limit + convert(self.price_min_margin))
+
+            if self.price_max_margin:
+                price = min(price, price_limit + convert(self.price_max_margin))
+        else:  # empty self, or extended pricelist price computation logic
+            price = self._compute_base_consumption_price(
+                product, quantity, uom, date, currency, **kwargs
+            )
+
+        return price
+
+    def _compute_base_consumption_price(
+        self, product, quantity, uom, date, target_currency, **kwargs
+    ):
+        """Compute the base price for a given rule
+
+        :param product: recordset of product (product.product/product.template)
+        :param float qty: quantity of products requested (in given uom)
+        :param uom: unit of measure (uom.uom record)
+        :param datetime date: date to use for price computation and currency conversions
+        :param target_currency: pricelist currency
+
+        :returns: base price, expressed in provided pricelist currency
+        :rtype: float
+        """
+        target_currency.ensure_one()
+
+        rule_base = self.base or "list_price"
+        if rule_base == "pricelist" and self.base_pricelist_id:
+            price = self.base_pricelist_id._get_product_price(
+                product, quantity, uom, date, **kwargs
+            )
+            src_currency = self.base_pricelist_id.currency_id
+        elif rule_base == "standard_price":
+            src_currency = product.cost_currency_id
+            price = product.price_compute(rule_base, uom=uom, date=date)[product.id]
+        else:  # list_price
+            src_currency = product.currency_id
+            price = product.price_compute(rule_base, uom=uom, date=date)[product.id]
+
+        if src_currency != target_currency:
+            price = src_currency._convert(
+                price, target_currency, self.env.company, date, round=False
+            )
+        return price

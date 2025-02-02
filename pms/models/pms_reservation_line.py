@@ -186,6 +186,7 @@ class PmsReservationLine(models.Model):
                         uom=product.uom_id,
                         date=line.reservation_id.date_order or fields.Date.now(),
                         consumption_date=line.date,
+                        pms_property_id=line.reservation_id.pms_property_id.id,
                     )
                 )
 
@@ -230,66 +231,44 @@ class PmsReservationLine(models.Model):
         qty = 1.0
         uom = product.uom_id
         currency = self.currency_id or self.order_id.company_id.currency_id
+        consumption_date = self.date
 
-        price = pricelist_rule._compute_price(
-            product, qty, uom, order_date, currency=currency
+        price = pricelist_rule._compute_consumption_price(
+            product,
+            qty,
+            uom,
+            order_date,
+            currency=currency,
+            consumption_date=consumption_date,
+            pms_property_id=self.pms_property_id.id,
         )
 
         return price
 
-    # def _get_product_price_context(self):
-    #     """Gives the context for product price computation.
+    def _get_product_price_context(self):
+        """Gives the context for product price computation.
 
-    #     :return: additional context to consider extra prices from attributes in the base product price.
-    #     :rtype: dict
-    #     """
-    #     self.ensure_one()
-    #     res = {}
+        :return: additional context to consider extra prices from attributes in the base product price.
+        :rtype: dict
+        """
+        self.ensure_one()
+        res = {}
 
-    #     # It is possible that a no_variant attribute is still in a variant if
-    #     # the type of the attribute has been changed after creation.
-    #     no_variant_attributes_price_extra = [
-    #         ptav.price_extra for ptav in self.product_no_variant_attribute_value_ids.filtered(
-    #             lambda ptav:
-    #                 ptav.price_extra and
-    #                 ptav not in self.product_id.product_template_attribute_value_ids
-    #         )
-    #     ]
-    #     if no_variant_attributes_price_extra:
-    #         res['no_variant_attributes_price_extra'] = tuple(no_variant_attributes_price_extra)
+        # It is possible that a no_variant attribute is still in a variant if
+        # the type of the attribute has been changed after creation.
+        no_variant_attributes_price_extra = [
+            ptav.price_extra
+            for ptav in self.product_no_variant_attribute_value_ids.filtered(
+                lambda ptav: ptav.price_extra
+                and ptav not in self.product_id.product_template_attribute_value_ids
+            )
+        ]
+        if no_variant_attributes_price_extra:
+            res["no_variant_attributes_price_extra"] = tuple(
+                no_variant_attributes_price_extra
+            )
 
-    #     return res
-
-    # OLD
-
-    # def _get_display_price(self, product):
-    #     if self.reservation_id.pricelist_id.discount_policy == "with_discount":
-    #         return product.with_context(
-    #             pricelist=self.reservation_id.pricelist_id.id
-    #         ).lst_price
-    #     product_context = dict(
-    #         self.env.context,
-    #         partner_id=self.reservation_id.partner_id.id,
-    #         date=self.date,
-    #         uom=product.uom_id.id,
-    #     )
-    #     final_price, rule_id = self.reservation_id.pricelist_id.with_context(
-    #         product_context
-    #     ).get_product_price_rule(product, 1.0, self.reservation_id.partner_id)
-    #     base_price, currency = self.with_context(
-    #         product_context
-    #     )._get_real_price_currency(
-    #         product, rule_id, 1, product.uom_id, self.reservation_id.pricelist_id.id
-    #     )
-    #     if currency != self.reservation_id.pricelist_id.currency_id:
-    #         base_price = currency._convert(
-    #             base_price,
-    #             self.reservation_id.pricelist_id.currency_id,
-    #             self.reservation_id.company_id or self.env.company,
-    #             fields.Date.today(),
-    #         )
-    #     # negative discounts (= surcharge) are included in the display price
-    #     return max(base_price, final_price)
+        return res
 
     # flake8: noqa=C901
     @api.depends("reservation_id.room_type_id", "reservation_id.preferred_room_id")
@@ -491,17 +470,7 @@ class PmsReservationLine(models.Model):
             elif not line.price or self._context.get("force_recompute"):
                 room_type_id = reservation.room_type_id.id
                 product = self.env["pms.room.type"].browse(room_type_id).product_id
-                partner = self.env["res.partner"].browse(reservation.partner_id.id)
-                product = product.with_context(
-                    lang=partner.lang,
-                    partner=partner.id,
-                    quantity=1,
-                    date=reservation.date_order,
-                    consumption_date=line.date,
-                    pricelist=reservation.pricelist_id.id,
-                    uom=product.uom_id.id,
-                    property=reservation.pms_property_id.id,
-                )
+                self.env["res.partner"].browse(reservation.partner_id.id)
                 line.price = self.env["account.tax"]._fix_tax_included_price_company(
                     line._get_display_price(),
                     product.taxes_id,
