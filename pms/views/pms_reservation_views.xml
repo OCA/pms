@@ -18,6 +18,7 @@
                     <field name="to_assign" invisible="1" />
                     <field name="check_adults" invisible="1" />
                     <button
+                        title="Confirm Reservation"
                         name="action_confirm"
                         string="Confirm"
                         class="oe_highlight"
@@ -25,6 +26,7 @@
                         attrs="{'invisible':[('state','not in',('draft','cancel'))]}"
                     />
                     <button
+                        title="Assign Room"
                         name="action_assign"
                         string="Confirm Assigned Room"
                         class="oe_highlight"
@@ -32,36 +34,42 @@
                         attrs="{'invisible':['|',('preferred_room_id','=',False),('to_assign', '=', False)]}"
                     />
                     <button
+                        title="Cancel Reservation"
                         name="action_cancel"
                         string="Cancel Reservation"
                         type="object"
                         attrs="{'invisible':['|',('folio_id', '=', False),('state','not in',('confirm','onboard'))]}"
                     />
                     <button
+                        title="Check Out"
                         name="action_reservation_checkout"
                         string="Check Out"
                         states="onboard,departure_delayed"
                         type="object"
                     />
                     <button
+                        title="Send Confirmation Email"
                         name="action_open_confirmation_mail_composer"
                         string="Send Confirmation Email "
                         type="object"
                         attrs="{'invisible':[('to_send_confirmation_mail', '=', False)]}"
                     />
                     <button
+                        title="Send Modification Email"
                         name="action_open_modification_mail_composer"
                         string="Send Modification Email "
                         type="object"
                         attrs="{'invisible':[('to_send_modification_mail', '=', False)]}"
                     />
                     <button
+                        title="Send Exit Email"
                         name="action_open_exit_mail_composer"
                         string="Send Exit Email "
                         type="object"
                         attrs="{'invisible':[('to_send_exit_mail', '=', False)]}"
                     />
                     <button
+                        title="Send Cancellation Email"
                         name="action_open_cancelation_mail_composer"
                         string="Send Cancellation Email "
                         type="object"
@@ -179,6 +187,7 @@
                             ]}"
                         />
                         <button
+                            title="Preview Reservation"
                             name="preview_reservation"
                             type="object"
                             class="oe_stat_button"
@@ -191,6 +200,7 @@
                             </div>
                         </button>
                         <button
+                            title="Pay Folio"
                             type="object"
                             class="oe_stat_button"
                             id="payment_smart_button"
@@ -211,6 +221,7 @@
                             </div>
                         </button>
                         <button
+                            tittle="Onboards"
                             type="object"
                             class="oe_stat_button"
                             name="action_checkin_partner_onboard_view"
@@ -231,6 +242,7 @@
                             </div>
                         </button>
                         <button
+                            title="View Checkins"
                             type="object"
                             class="oe_stat_button"
                             name="action_checkin_partner_view"
@@ -245,6 +257,7 @@
                             />
                         </button>
                         <button
+                            tittle="View Folio"
                             type="object"
                             class="oe_stat_button"
                             icon="fa-file"
@@ -536,6 +549,7 @@
                                             readonly="1"
                                         />
                                         <button
+                                            title="Open Services"
                                             type="object"
                                             class="oe_stat_button"
                                             icon="fa-1x fa-bed"
@@ -574,6 +588,7 @@
                                             optional="hide"
                                         />
                                         <button
+                                            title="Open Services"
                                             type="object"
                                             class="oe_stat_button"
                                             icon="fa-2x fa-bars"
@@ -890,6 +905,7 @@
             </tree>
             <xpath expr="//field[@name='state']" position="before">
                 <button
+                    title="Open Reservation"
                     type="object"
                     class="oe_stat_button"
                     icon="fa-2x fa-suitcase"

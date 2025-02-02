@@ -325,7 +325,6 @@ class PmsReservation(models.Model):
         related="pricelist_id.currency_id",
         depends=["pricelist_id"],
         store=True,
-        precompute=True,
         ondelete="restrict",
     )
     tax_ids = fields.Many2many(
@@ -2005,80 +2004,91 @@ class PmsReservation(models.Model):
             result.append((res.id, name))
         return result
 
-    @api.model
-    def create(self, vals):
-        if vals.get("folio_id"):
-            folio = self.env["pms.folio"].browse(vals["folio_id"])
-            default_vals = {"pms_property_id": folio.pms_property_id.id}
-            if folio.partner_id:
-                default_vals["partner_id"] = folio.partner_id.id
-            elif folio.partner_name:
-                default_vals["partner_name"] = folio.partner_name
-                default_vals["mobile"] = folio.mobile
-                default_vals["email"] = folio.email
-            elif vals.get("reservation_type") != "out":
-                raise ValidationError(_("Partner contact name is required"))
-            if folio.sale_channel_origin_id and "sale_channel_origin_id" not in vals:
-                default_vals["sale_channel_origin_id"] = folio.sale_channel_origin_id.id
-            vals.update(default_vals)
-        elif (
-            "pms_property_id" in vals
-            and "sale_channel_origin_id" in vals
-            and ("partner_name" in vals or "partner_id" in vals or "agency_id" in vals)
-        ):
-            folio_vals = self._get_folio_vals(vals)
-
-            self._check_clousure_reason(
-                reservation_type=vals.get("reservation_type"),
-                closure_reason_id=vals.get("closure_reason_id"),
-            )
-
-            # Create the folio in case of need
-            # (To allow to create reservations direct)
-            folio = self.env["pms.folio"].create(folio_vals)
-            vals.update(
-                {
-                    "folio_id": folio.id,
-                    "reservation_type": vals.get("reservation_type"),
-                }
-            )
-
-        else:
-            raise ValidationError(
-                _(
-                    "The Property and Sale Channel Origin are mandatory in the reservation"
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get("folio_id"):
+                folio = self.env["pms.folio"].browse(vals["folio_id"])
+                default_vals = {"pms_property_id": folio.pms_property_id.id}
+                if folio.partner_id:
+                    default_vals["partner_id"] = folio.partner_id.id
+                elif folio.partner_name:
+                    default_vals["partner_name"] = folio.partner_name
+                    default_vals["mobile"] = folio.mobile
+                    default_vals["email"] = folio.email
+                elif vals.get("reservation_type") != "out":
+                    raise ValidationError(_("Partner contact name is required"))
+                if (
+                    folio.sale_channel_origin_id
+                    and "sale_channel_origin_id" not in vals
+                ):
+                    default_vals[
+                        "sale_channel_origin_id"
+                    ] = folio.sale_channel_origin_id.id
+                vals.update(default_vals)
+            elif (
+                "pms_property_id" in vals
+                and "sale_channel_origin_id" in vals
+                and (
+                    "partner_name" in vals
+                    or "partner_id" in vals
+                    or "agency_id" in vals
                 )
-            )
-        if vals.get("name", _("New")) == _("New") or "name" not in vals:
-            folio_sequence = (
-                max(folio.mapped("reservation_ids.folio_sequence")) + 1
-                if folio.reservation_ids
-                else 1
-            )
-            vals["folio_sequence"] = folio_sequence
-            vals["name"] = folio.name + "/" + str(folio_sequence)
-        if not vals.get("reservation_type"):
-            vals["reservation_type"] = (
-                folio.reservation_type if folio.reservation_type else "normal"
-            )
-        # Avoid send state field in vals, with the propouse to
-        # use action_confirm or action_cancel methods
-        reservation_state = False
-        if "state" in vals:
-            reservation_state = vals["state"]
-            vals.pop("state")
-        record = super(PmsReservation, self).create(vals)
-        record._check_capacity()
-        if (
-            record.preconfirm and record.state == "draft"
-        ) or reservation_state == "confirm":
-            record.action_confirm()
-        elif reservation_state == "cancel":
-            record.action_cancel()
+            ):
+                folio_vals = self._get_folio_vals(vals)
 
-        record._check_services(vals)
-        record._add_tourist_tax_service()
-        return record
+                self._check_clousure_reason(
+                    reservation_type=vals.get("reservation_type"),
+                    closure_reason_id=vals.get("closure_reason_id"),
+                )
+
+                # Create the folio in case of need
+                # (To allow to create reservations direct)
+                folio = self.env["pms.folio"].create(folio_vals)
+                vals.update(
+                    {
+                        "folio_id": folio.id,
+                        "reservation_type": vals.get("reservation_type"),
+                    }
+                )
+
+            else:
+                raise ValidationError(
+                    _(
+                        "The Property and Sale Channel Origin are mandatory in the reservation"
+                    )
+                )
+            if vals.get("name", _("New")) == _("New") or "name" not in vals:
+                folio_sequence = (
+                    max(folio.mapped("reservation_ids.folio_sequence")) + 1
+                    if folio.reservation_ids
+                    else 1
+                )
+                vals["folio_sequence"] = folio_sequence
+                vals["name"] = folio.name + "/" + str(folio_sequence)
+            if not vals.get("reservation_type"):
+                vals["reservation_type"] = (
+                    folio.reservation_type if folio.reservation_type else "normal"
+                )
+            # Avoid send state field in vals, with the propouse to
+            # use action_confirm or action_cancel methods
+            reservation_state = False
+            if "state" in vals:
+                reservation_state = vals["state"]
+                vals.pop("state")
+        records = super(PmsReservation, self).create(vals_list)
+        for record in records:
+            record._check_capacity()
+            if (
+                record.preconfirm and record.state == "draft"
+            ) or reservation_state == "confirm":
+                record.action_confirm()
+            elif reservation_state == "cancel":
+                record.action_cancel()
+
+            record._check_services(vals)
+            record._add_tourist_tax_service()
+        return records
 
     def write(self, vals):
         if (
