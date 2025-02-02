@@ -29,6 +29,7 @@
         "queue_job",
         "web_timeline",
         "partner_identification",
+        "analytic",
     ],
     "data": [
         "security/pms_security.xml",
