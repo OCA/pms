@@ -303,19 +303,14 @@ class PmsCalendarService(Component):
                 COALESCE(av.min_stay_arrival, 0) min_stay_arrival,
                 COALESCE(av.max_stay, 0) max_stay,
                 COALESCE(av.max_stay_arrival, 0) max_stay_arrival,
-                COALESCE(it.fixed_price, (
-                    SELECT ipp.value_float
-                    FROM ir_pms_property ipp, (SELECT id field_id, model_id
-                                                FROM ir_model_fields
-                                                WHERE name = 'list_price'
-                                                    AND model = 'product.template'
-                                                ) imf
-                    WHERE ipp.model_id = imf.model_id
-                    AND ipp.field_id = imf.field_id
-                    AND ipp.record = pp.product_tmpl_id
-                    AND ipp.pms_property_id = %s
+                COALESCE(
+                    it.fixed_price,
+                    (
+                        SELECT pt.list_price
+                        FROM product_template pt
+                        WHERE pt.id = pp.product_tmpl_id
                     )
-                ) price,
+                ) AS price,
                 (SELECT COUNT (1)
                     FROM pms_room r
                     WHERE r.room_type_id = dr.room_type_id
@@ -367,7 +362,6 @@ class PmsCalendarService(Component):
                 ORDER BY dr.sequence, dr.room_type_id, dr.date;
             """,
             (
-                calendar_search_param.pmsPropertyId,
                 calendar_search_param.pmsPropertyId,
                 date_from,
                 date_to,
