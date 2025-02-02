@@ -73,12 +73,9 @@ class ProductPricelist(models.Model):
     )
 
     def _get_applicable_rules_domain(self, products, date, **kwargs):
-        # Llamada al método original para obtener el dominio base
         domain = super(ProductPricelist, self)._get_applicable_rules_domain(
             products, date, **kwargs
         )
-
-        # Si se pasa el parámetro "consumption_date", agregar condiciones adicionales al dominio
         consumption_date = kwargs.get("consumption_date")
         if consumption_date:
             domain.extend(
@@ -91,8 +88,76 @@ class ProductPricelist(models.Model):
                     ("date_end_consumption", ">=", consumption_date),
                 ]
             )
-
+        if "pms_property_id" in kwargs:
+            domain.extend(
+                [
+                    "|",
+                    ("pms_property_ids", "=", False),
+                    ("pms_property_ids", "in", [kwargs["pms_property_id"]]),
+                ]
+            )
         return domain
+
+    def _compute_price_rule(self, products, qty, uom=None, date=False, **kwargs):
+        """Inherit the method to add the consumption date logic
+        if consuption_date is passed as a parameter in kwargs
+        fork the method to get the items to apply the rules
+        """
+        consumption_date = kwargs.get("consumption_date")
+        if not consumption_date:
+            return super(ProductPricelist, self)._compute_price_rule(
+                products, qty, uom=uom, date=date, **kwargs
+            )
+        self.ensure_one()
+        if not products:
+            return {}
+
+        if not date:
+            # Used to fetch pricelist rules and currency rates
+            date = fields.Datetime.now()
+
+        pms_property_id = kwargs.get("pms_property_id")
+        if not pms_property_id:
+            raise ValidationError(_("Property is required in pms context"))
+
+        # Fetch all rules potentially matching specified products/templates/categories and date
+        rules = self._get_applicable_rules(products, date, **kwargs)
+
+        results = {}
+        for product in products:
+            suitable_rule = self.env["product.pricelist.item"]
+
+            product_uom = product.uom_id
+            target_uom = (
+                uom or product_uom
+            )  # If no uom is specified, fall back on the product uom
+
+            # Compute quantity in product uom because pricelist rules are specified
+            # w.r.t product default UoM (min_quantity, price_surchage, ...)
+            if target_uom != product_uom:
+                qty_in_product_uom = target_uom._compute_quantity(
+                    qty, product_uom, raise_if_failure=False
+                )
+            else:
+                qty_in_product_uom = qty
+
+            for rule in rules:
+                if rule._is_applicable_for(product, qty_in_product_uom):
+                    suitable_rule = rule
+                    break
+
+            kwargs["pricelist"] = self
+            price = suitable_rule._compute_consumption_price(
+                product=product,
+                quantity=qty,
+                uom=target_uom,
+                date=date,
+                currency=self.currency_id,
+                **kwargs
+            )
+            results[product.id] = (price, suitable_rule.id)
+
+        return results
 
     # V14.0
     # def _compute_price_rule_get_items(
