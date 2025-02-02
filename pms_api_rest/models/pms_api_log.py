@@ -5,6 +5,7 @@ from odoo import _, fields, models
 
 class PmsApiLog(models.Model):
     _name = "pms.api.log"
+    _description = "PMS API Log"
 
     pms_property_id = fields.Many2one(
         string="PMS Property",

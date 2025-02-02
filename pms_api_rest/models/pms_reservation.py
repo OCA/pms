@@ -4,8 +4,9 @@ from odoo import api, models
 class PmsReservation(models.Model):
     _inherit = "pms.reservation"
 
-    @api.model
-    def create(self, vals):
-        result = super(PmsReservation, self).create(vals)
-        result.access_token = result._portal_ensure_token()
-        return result
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super(PmsReservation, self).create(vals_list)
+        for record in records:
+            record._portal_ensure_token()
+        return records
