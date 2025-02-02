@@ -60,16 +60,17 @@ class ResPartner(models.Model):
                 self._pms_check_unique_vat()
         return res
 
-    @api.model
-    def create(self, vals):
-        records = super(ResPartner, self).create(vals)
-        # REVIEW: Force Contrain vat
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super(ResPartner, self).create(vals_list)
+        # REVIEW: Force Constrain vat
         # https://github.com/odoo/odoo/issues/23242
-        if vals.get("vat") and vals.get("country_id"):
-            country = self.env["res.country"].browse(vals.get("country_id"))
-            if country.code == "ES":
-                self.check_vat()
-            records._pms_check_unique_vat()
+        for record in records:
+            if record.vat and record.country_id:
+                country = self.env["res.country"].browse(record.country_id.id)
+                if country.code == "ES":
+                    record.check_vat()
+        records._pms_check_unique_vat()
         return records
 
     # This function is a candidate to be moved to the module
