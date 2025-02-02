@@ -505,30 +505,21 @@ class PmsProperty(models.Model):
         )
         pms_property = self.env["pms.property"].browse(pms_property_id)
         pricelist = property_client_conf.main_pricelist_id
-        product_context = dict(
-            self.env.context,
-            date=datetime.datetime.today().date(),
-            pricelist=pricelist.id or pms_property.default_pricelist_id.id,
-            uom=product.uom_id.id,
-            fiscal_position=False,
-            property=pms_property_id,
-        )
         prices_data = []
         current_price = None
         current_date_from = None
         current_date_to = None
         for index, date in enumerate(all_dates):
-            product_context["consumption_date"] = date
-            product = product.with_context(**product_context)
+            base_price = pricelist._get_product_price(
+                product=product,
+                product_qty=1,
+                product_uom=product.uom_id,
+                consumption_date=date,
+                pms_property_id=pms_property_id,
+            )
             price = round(
                 self.env["account.tax"]._fix_tax_included_price_company(
-                    self.env["product.product"]._pms_get_display_price(
-                        pricelist_id=pricelist.id,
-                        product=product,
-                        company_id=pms_property.company_id.id,
-                        product_qty=1,
-                        partner_id=False,
-                    ),
+                    base_price,
                     product.taxes_id,
                     product.taxes_id,
                     pms_property.company_id,

@@ -491,7 +491,7 @@ class PmsFolioService(Component):
                             if payment.partner_id
                             else None,
                             reference=payment.ref if payment.ref else None,
-                            isReconcilied=(payment.reconciled_statements_count > 0),
+                            isReconcilied=payment.is_reconciled,
                             downPaymentInvoiceId=payment.reconciled_invoice_ids.filtered(
                                 lambda inv: inv._is_downpayment()
                             ),
