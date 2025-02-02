@@ -637,22 +637,24 @@ class PmsService(models.Model):
                 )
             return 0
 
-    @api.model
-    def create(self, vals):
-        if vals.get("reservation_id") and not vals.get("sale_channel_origin_id"):
-            reservation = self.env["pms.reservation"].browse(vals["reservation_id"])
-            if reservation.sale_channel_origin_id:
-                vals["sale_channel_origin_id"] = reservation.sale_channel_origin_id.id
-        elif (
-            vals.get("folio_id")
-            and not vals.get("reservation_id")
-            and not vals.get("sale_channel_origin_id")
-        ):
-            folio = self.env["pms.folio"].browse(vals["folio_id"])
-            if folio.sale_channel_origin_id:
-                vals["sale_channel_origin_id"] = folio.sale_channel_origin_id.id
-        record = super(PmsService, self).create(vals)
-        return record
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get("reservation_id") and not vals.get("sale_channel_origin_id"):
+                reservation = self.env["pms.reservation"].browse(vals["reservation_id"])
+                if reservation.sale_channel_origin_id:
+                    vals[
+                        "sale_channel_origin_id"
+                    ] = reservation.sale_channel_origin_id.id
+            elif (
+                vals.get("folio_id")
+                and not vals.get("reservation_id")
+                and not vals.get("sale_channel_origin_id")
+            ):
+                folio = self.env["pms.folio"].browse(vals["folio_id"])
+                if folio.sale_channel_origin_id:
+                    vals["sale_channel_origin_id"] = folio.sale_channel_origin_id.id
+        return super(PmsService, self).create(vals_list)
 
     def write(self, vals):
         folios_to_update_channel = self.env["pms.folio"]

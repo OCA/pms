@@ -28,6 +28,7 @@ class PmsProperty(models.Model):
     _name = "pms.property"
     _description = "Property"
     _inherits = {"res.partner": "partner_id"}
+    _inherit = ["mail.thread"]
     _check_company_auto = True
 
     partner_id = fields.Many2one(
@@ -578,55 +579,58 @@ class PmsProperty(models.Model):
             payment_methods = payment_methods.filtered(lambda p: p.allowed_pms_payments)
         return payment_methods
 
-    @api.model
-    def create(self, vals):
-        name = vals.get("name")
-        if "folio_sequence_id" not in vals or not vals.get("folio_sequence_id"):
-            folio_sequence = self.env["ir.sequence"].create(
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = self.env["pms.property"]
+        for vals in vals_list:
+            name = vals.get("name")
+            if "folio_sequence_id" not in vals or not vals.get("folio_sequence_id"):
+                folio_sequence = self.env["ir.sequence"].create(
+                    {
+                        "name": "PMS Folio " + name,
+                        "code": "pms.folio",
+                        "prefix": "F/%(y)s",
+                        "suffix": "%(sec)s",
+                        "padding": 4,
+                        "company_id": vals.get("company_id"),
+                    }
+                )
+                vals.update({"folio_sequence_id": folio_sequence.id})
+            if "checkin_sequence_id" not in vals or not vals.get("checkin_sequence_id"):
+                checkin_sequence = self.env["ir.sequence"].create(
+                    {
+                        "name": "PMS Checkin " + name,
+                        "code": "pms.checkin.partner",
+                        "prefix": "C/%(y)s",
+                        "suffix": "%(sec)s",
+                        "padding": 4,
+                        "company_id": vals.get("company_id"),
+                    }
+                )
+                vals.update({"checkin_sequence_id": checkin_sequence.id})
+            # create analytic account
+            analytic_account = self.env["account.analytic.account"].create(
                 {
-                    "name": "PMS Folio " + name,
-                    "code": "pms.folio",
-                    "prefix": "F/%(y)s",
-                    "suffix": "%(sec)s",
-                    "padding": 4,
+                    "name": name,
+                    "code": vals.get("ref"),
+                    "plan_id": self.env.ref("pms.main_pms_analytic_plan").id,
                     "company_id": vals.get("company_id"),
                 }
             )
-            vals.update({"folio_sequence_id": folio_sequence.id})
-        if "checkin_sequence_id" not in vals or not vals.get("checkin_sequence_id"):
-            checkin_sequence = self.env["ir.sequence"].create(
+            vals.update({"analytic_account_id": analytic_account.id})
+            record = super(
+                PmsProperty, self.with_context(avoid_document_restriction=True)
+            ).create(vals)
+            records += record
+            # analityc distribution by default
+            self.env["account.analytic.distribution.model"].create(
                 {
-                    "name": "PMS Checkin " + name,
-                    "code": "pms.checkin.partner",
-                    "prefix": "C/%(y)s",
-                    "suffix": "%(sec)s",
-                    "padding": 4,
-                    "company_id": vals.get("company_id"),
+                    "pms_property_id": record.id,
+                    "analytic_distribution": {analytic_account.id: 100},
+                    "company_id": record.company_id.id,
                 }
             )
-            vals.update({"checkin_sequence_id": checkin_sequence.id})
-        # create analytic account
-        analytic_account = self.env["account.analytic.account"].create(
-            {
-                "name": name,
-                "code": vals.get("ref"),
-                "plan_id": self.env.ref("pms.main_pms_analytic_plan").id,
-                "company_id": vals.get("company_id"),
-            }
-        )
-        vals.update({"analytic_account_id": analytic_account.id})
-        record = super(
-            PmsProperty, self.with_context(avoid_document_restriction=True)
-        ).create(vals)
-        # analityc distribution by default
-        self.env["account.analytic.distribution.model"].create(
-            {
-                "pms_property_id": record.id,
-                "analytic_distribution": {analytic_account.id: 100},
-                "company_id": record.company_id.id,
-            }
-        )
-        return record
+        return records
 
     @api.model
     def daily_closing(

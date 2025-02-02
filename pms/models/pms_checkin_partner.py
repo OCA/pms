@@ -764,34 +764,37 @@ class PmsCheckinPartner(models.Model):
                         _("State and country of residence do not match")
                     )
 
-    @api.model
-    def create(self, vals):
-        # The checkin records are created automatically from adult depends
-        # if you try to create one manually, we update one unassigned checkin
-        reservation_id = vals.get("reservation_id")
-        if reservation_id:
-            reservation = self.env["pms.reservation"].browse(reservation_id)
-        else:
-            raise ValidationError(
-                _("Is mandatory indicate the reservation on the checkin")
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = self.env["pms.checkin.partner"]
+        for vals in vals_list:
+            # The checkin records are created automatically from adult depends
+            # if you try to create one manually, we update one unassigned checkin
+            reservation_id = vals.get("reservation_id")
+            if reservation_id:
+                reservation = self.env["pms.reservation"].browse(reservation_id)
+            else:
+                raise ValidationError(
+                    _("Is mandatory indicate the reservation on the checkin")
+                )
+            # If a checkin is manually created, we need make sure that
+            # the reservation adults are computed
+            if not reservation.checkin_partner_ids:
+                reservation.flush()
+            dummy_checkins = reservation.checkin_partner_ids.filtered(
+                lambda c: c.state == "dummy"
             )
-        # If a checkin is manually created, we need make sure that
-        # the reservation adults are computed
-        if not reservation.checkin_partner_ids:
-            reservation.flush()
-        dummy_checkins = reservation.checkin_partner_ids.filtered(
-            lambda c: c.state == "dummy"
-        )
-        if len(reservation.checkin_partner_ids) < (
-            reservation.adults + reservation.children
-        ):
-            return super(PmsCheckinPartner, self).create(vals)
-        if len(dummy_checkins) > 0:
-            dummy_checkins[0].write(vals)
-            return dummy_checkins[0]
-        raise ValidationError(
-            _("Is not possible to create the proposed check-in in this reservation")
-        )
+            if len(reservation.checkin_partner_ids) < (
+                reservation.adults + reservation.children
+            ):
+                records += super(PmsCheckinPartner, self).create(vals)
+            if len(dummy_checkins) > 0:
+                dummy_checkins[0].write(vals)
+                records += dummy_checkins[0]
+            raise ValidationError(
+                _("Is not possible to create the proposed check-in in this reservation")
+            )
+        return records
 
     def write(self, vals):
         res = super().write(vals)

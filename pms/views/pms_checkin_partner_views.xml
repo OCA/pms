@@ -31,6 +31,7 @@
                         <field name="partner_incongruences" />
                         <bold>
                             <button
+                                title="View Customer"
                                 class="alert-link"
                                 type="object"
                                 name="open_partner"
@@ -47,6 +48,7 @@
                         A customer/s has this email or mobile, do you want to add it?
                         <field name="possible_existing_customer_ids" invisible="1" />
                         <button
+                            title="Add customer"
                             name="open_wizard_several_partners"
                             string="Add customer"
                             type="object"
@@ -147,6 +149,7 @@
                 decoration-success="state == 'onboard'"
             >
                 <button
+                    title="Checkin"
                     type="object"
                     class="oe_read_only oe_stat_button"
                     icon="fa-2x fa-check-circle"
@@ -193,6 +196,7 @@
                 decoration-success="state == 'onboard'"
             >
                 <button
+                    title="Checkin"
                     type="object"
                     class="oe_read_only oe_stat_button"
                     icon="fa-2x fa-check-circle"
@@ -236,6 +240,7 @@
                 decoration-success="state == 'onboard'"
             >
                 <button
+                    title="Checkin"
                     type="object"
                     class="oe_stat_button"
                     icon="fa fa-2x fa-check-circle"

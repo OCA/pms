@@ -302,15 +302,16 @@ class PmsRoom(models.Model):
                     _("The short name can't contain more than 4 characters")
                 )
 
-    @api.model
-    def create(self, vals):
-        if vals.get("name") and not vals.get("short_name"):
-            if len(vals["name"]) > 4:
-                short_name = self.calculate_short_name(vals)
-                vals.update({"short_name": short_name})
-            else:
-                vals.update({"short_name": vals["name"]})
-        return super(PmsRoom, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get("name") and not vals.get("short_name"):
+                if len(vals["name"]) > 4:
+                    short_name = self.calculate_short_name(vals)
+                    vals.update({"short_name": short_name})
+                else:
+                    vals.update({"short_name": vals["name"]})
+        return super(PmsRoom, self).create(vals_list)
 
     def write(self, vals):
         if vals.get("name") and not vals.get("short_name"):
