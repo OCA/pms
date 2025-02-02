@@ -780,7 +780,7 @@ class PmsCheckinPartner(models.Model):
             # If a checkin is manually created, we need make sure that
             # the reservation adults are computed
             if not reservation.checkin_partner_ids:
-                reservation.flush()
+                reservation.flush_recordset()
             dummy_checkins = reservation.checkin_partner_ids.filtered(
                 lambda c: c.state == "dummy"
             )
@@ -788,12 +788,15 @@ class PmsCheckinPartner(models.Model):
                 reservation.adults + reservation.children
             ):
                 records += super(PmsCheckinPartner, self).create(vals)
-            if len(dummy_checkins) > 0:
+            elif len(dummy_checkins) > 0:
                 dummy_checkins[0].write(vals)
                 records += dummy_checkins[0]
-            raise ValidationError(
-                _("Is not possible to create the proposed check-in in this reservation")
-            )
+            else:
+                raise ValidationError(
+                    _(
+                        "Is not possible to create the proposed check-in in this reservation"
+                    )
+                )
         return records
 
     def write(self, vals):
