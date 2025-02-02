@@ -31,7 +31,6 @@ class PmsPriceService(Component):
     )
     def get_prices(self, prices_search_param):
         product = room_type = board_service_room_type = False
-
         if prices_search_param.roomTypeId:
             room_type = (
                 self.env["pms.room.type"]
@@ -107,7 +106,7 @@ class PmsPriceService(Component):
                                 pricelist_id=prices_search_param.pricelistId,
                                 partner_id=prices_search_param.partnerId,
                                 product_qty=prices_search_param.productQty,
-                                date_consumption=price_date,
+                                consumption_date=price_date,
                                 board_service_line_id=prices_search_param.boardServiceLineId
                                 or False,
                             ),
@@ -128,7 +127,7 @@ class PmsPriceService(Component):
                                 pricelist_id=prices_search_param.pricelistId,
                                 partner_id=prices_search_param.partnerId,
                                 product_qty=prices_search_param.productQty,
-                                date_consumption=price_date,
+                                consumption_date=price_date,
                             ),
                             2,
                         ),
@@ -143,35 +142,23 @@ class PmsPriceService(Component):
         pricelist_id=False,
         partner_id=False,
         product_qty=False,
-        date_consumption=False,
+        consumption_date=False,
         board_service_id=False,
         board_service_line_id=False,
     ):
         pms_property = self.env["pms.property"].sudo().browse(pms_property_id)
         pms_api_check_access(user=self.env.user, records=pms_property)
-        product_context = dict(
-            self.env.context,
-            date=datetime.today().date(),
-            pricelist=pricelist_id,
-            uom=product.uom_id.id,
-            fiscal_position=False,
-            property=pms_property_id,
+        pricelist = self.env["product.pricelist"].sudo().browse(pricelist_id)
+        price = pricelist._get_product_price(
+            product=product,
+            quantity=product_qty or 1,
+            partner=partner_id,
+            consumption_date=consumption_date,
+            pms_property_id=pms_property_id,
+            board_service_line_id=board_service_line_id,
         )
-        if date_consumption:
-            product_context["consumption_date"] = date_consumption
-        if board_service_line_id:
-            product_context["board_service_line_id"] = board_service_line_id
-        product = product.with_context(**product_context)
         return self.env["account.tax"]._fix_tax_included_price_company(
-            self.env["product.product"]
-            .sudo()
-            ._pms_get_display_price(
-                pricelist_id=pricelist_id,
-                product=product,
-                company_id=pms_property.company_id.id,
-                product_qty=product_qty or 1,
-                partner_id=partner_id,
-            ),
+            price,
             product.taxes_id,
             product.taxes_id,  # Not exist service line, we repeat product taxes
             pms_property.company_id,
@@ -185,7 +172,7 @@ class PmsPriceService(Component):
         pricelist_id=False,
         partner_id=False,
         product_qty=False,
-        date_consumption=False,
+        consumption_date=False,
         board_service_line_id=False,
     ):
         pms_property = self.env["pms.property"].sudo().browse(pms_property_id)
@@ -209,7 +196,7 @@ class PmsPriceService(Component):
                 pricelist_id=pricelist_id,
                 partner_id=partner_id,
                 product_qty=product_qty or 1,
-                date_consumption=date_consumption,
+                consumption_date=consumption_date,
                 board_service_id=board_service.id,
                 board_service_line_id=line.id,
             )

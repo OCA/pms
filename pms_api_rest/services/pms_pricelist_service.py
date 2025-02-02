@@ -162,11 +162,14 @@ class PmsPricelistService(Component):
         PmsPricelistItemInfo = self.env.datamodels["pms.pricelist.item.info"]
         for date in target_dates:
             products = [(product, 1, False) for product in room_types.product_id]
-            date_prices = record_pricelist.with_context(
-                quantity=1,
+            date_prices = record_pricelist._compute_price_rule(
+                products=products,
+                qty=1,
+                uom=False,
+                date=False,
                 consumption_date=date,
-                property=pms_property.id,
-            )._compute_price_rule(products, datetime.today())
+                pms_property_id=pms_property.id,
+            )
             for product_id, v in date_prices.items():
                 room_type_id = (
                     self.env["product.product"]
