@@ -25,6 +25,7 @@ class FolioPaymentLink(models.TransientModel):
             )
         return res
 
+    # pylint: disable=W8110
     def _generate_link(self):
         """Override of the base method to add the folio_id in the link."""
         for payment_link in self:
