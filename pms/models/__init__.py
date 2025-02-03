@@ -48,7 +48,7 @@ from . import pms_automated_mails
 from . import payment_transaction
 from . import pms_team_member
 from . import ir_pms_property
-from . import payment_acquirer
+from . import payment_provider
 
 from . import account_analytic_line
 from . import res_partner_category
