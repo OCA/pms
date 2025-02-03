@@ -2,12 +2,12 @@ from openupgradelib import openupgrade
 
 
 def populate_properties_analytic_data(env):
-    properties = env["pms.property"].search([])
+    properties = env["pms.property"].search([("analytic_account_id", "=", False)])
     for pms_property in properties:
         analytic_acc_id = env["account.analytic.account"].create(
             {
                 "name": pms_property.name,
-                "code": pms_property.ref,
+                "code": pms_property.pms_property_code,
                 "plan_id": env.ref("pms.main_pms_analytic_plan").id,
                 "company_id": pms_property.company_id.id,
             }

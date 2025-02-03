@@ -101,7 +101,7 @@
         "report/proforma_report.xml",
         "views/account_portal_templates.xml",
         "views/payment_provider_views.xml",
-        # "views/account_analytic_distribution_views.xml",
+        "views/account_analytic_distribution_views.xml",
         # "views/account_analytic_line_views.xml",
         "views/res_partner_category.xml",
         "views/res_partner_id_category_views.xml",
