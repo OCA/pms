@@ -23,57 +23,48 @@
                     </div>
                     <notebook>
                         <page string="General Information" name="property_general">
-                            <group>
-                                <div class="o_address_format">
-                                    <field
-                                        name="street"
-                                        placeholder="Street..."
-                                        class="o_address_street"
-                                    />
-                                    <field
-                                        name="street2"
-                                        placeholder="Street 2..."
-                                        class="o_address_street"
-                                    />
-                                    <field
-                                        name="city"
-                                        placeholder="City"
-                                        class="o_address_city"
-                                    />
-                                    <field
-                                        name="state_id"
-                                        class="o_address_state"
-                                        placeholder="State"
-                                    />
-                                    <field
-                                        name="zip"
-                                        placeholder="ZIP"
-                                        class="o_address_zip"
-                                    />
-                                    <field
-                                        name="country_id"
-                                        placeholder="Country"
-                                        class="o_address_country"
-                                    />
-                                </div>
-                            </group>
-                            <group>
-                                <div class="row">
-                                    <div class="col-6">
-                                        <label for="phone" />
-                                        <field name="phone" />
-                                        <label for="email" />
-                                        <field name="email" />
-                                        <label for="website" />
-                                        <field name="website" />
-                                    </div>
-                                </div>
-                                <group>
+                            <div class="o_address_format">
+                                <field
+                                    name="street"
+                                    placeholder="Street..."
+                                    class="o_address_street"
+                                />
+                                <field
+                                    name="street2"
+                                    placeholder="Street 2..."
+                                    class="o_address_street"
+                                />
+                                <field
+                                    name="city"
+                                    placeholder="City"
+                                    class="o_address_city"
+                                />
+                                <field
+                                    name="state_id"
+                                    class="o_address_state"
+                                    placeholder="State"
+                                />
+                                <field
+                                    name="zip"
+                                    placeholder="ZIP"
+                                    class="o_address_zip"
+                                />
+                                <field
+                                    name="country_id"
+                                    placeholder="Country"
+                                    class="o_address_country"
+                                />
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for="phone" />
                                     <field name="phone" />
+                                    <label for="email" />
                                     <field name="email" />
+                                    <label for="website" />
                                     <field name="website" />
-                                </group>
-                            </group>
+                                </div>
+                            </div>
                         </page>
                         <page string="Settings" name="property_settings">
                             <group
