@@ -149,10 +149,13 @@ class PmsPriceService(Component):
         pms_property = self.env["pms.property"].sudo().browse(pms_property_id)
         pms_api_check_access(user=self.env.user, records=pms_property)
         pricelist = self.env["product.pricelist"].sudo().browse(pricelist_id)
+        product = product.with_context(
+            board_service_line_id=board_service_line_id,
+            property=pms_property_id,
+        )
         price = pricelist._get_product_price(
             product=product,
             quantity=product_qty or 1,
-            partner=partner_id,
             consumption_date=consumption_date,
             pms_property_id=pms_property_id,
             board_service_line_id=board_service_line_id,
