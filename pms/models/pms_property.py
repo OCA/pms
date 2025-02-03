@@ -612,7 +612,7 @@ class PmsProperty(models.Model):
             analytic_account = self.env["account.analytic.account"].create(
                 {
                     "name": name,
-                    "code": vals.get("ref"),
+                    "code": vals.get("pms_property_code"),
                     "plan_id": self.env.ref("pms.main_pms_analytic_plan").id,
                     "company_id": vals.get("company_id"),
                 }
