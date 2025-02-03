@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo noupdate="1">
+        <!-- account.analytic.plan -->
+        <record id="main_pms_analytic_plan" model="account.analytic.plan">
+            <field name="name">Properties</field>
+            <field name="company_id" eval="False" />
+        </record>
         <!-- Basic pms  -->
         <record id="main_pms_availability_plan" model="pms.availability.plan">
             <field name="name">Availability Plan</field>
@@ -63,11 +68,6 @@
         <record id="main_pms_sale_channel_agency" model="pms.sale.channel">
             <field name="name">Agency</field>
             <field name="channel_type">indirect</field>
-        </record>
-        <!-- account.analytic.plan -->
-        <record id="main_pms_analytic_plan" model="account.analytic.plan">
-            <field name="name">Properties</field>
-            <field name="company_id" eval="False" />
         </record>
         <!--res.partner_category_id-->
         <record id="document_type_passport" model="res.partner.id_category">
