@@ -2754,3 +2754,13 @@ class PmsFolio(models.Model):
             transaction.s2s_do_transaction()
 
         return transaction
+
+    def _get_default_payment_link_values(self):
+        self.ensure_one()
+        return {
+            "description": self.name,
+            "amount": self.pending_amount,
+            "currency_id": self.currency_id.id,
+            "partner_id": self.partner_id.id if self.partner_id else False,
+            "amount_max": self.pending_amount,
+        }
