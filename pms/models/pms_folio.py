@@ -2167,9 +2167,10 @@ class PmsFolio(models.Model):
         pay.action_post()
 
         # Review: force to autoreconcile payment with invoices already created
-        pay.flush()
-        for move in folio.move_ids:
-            move.sudo()._autoreconcile_folio_payments()
+        # TODO: refact autoreconcile_folio_payments
+        # pay.flush()
+        # for move in folio.move_ids:
+        #     move.sudo()._autoreconcile_folio_payments()
 
         # Automatic register payment in cash register
         # TODO: cash_register to avoid flow in the new api (delete it in the future)
