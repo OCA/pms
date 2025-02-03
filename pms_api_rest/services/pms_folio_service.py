@@ -2559,7 +2559,7 @@ class PmsFolioService(Component):
             .sudo()
             .create({})
         )
-        wizard_payment_link._generate_link()
+        wizard_payment_link._compute_link()
         return wizard_payment_link.link
 
     def _get_folio_reservations(self, folio_record):
