@@ -9,7 +9,6 @@ from itertools import groupby
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools import float_compare, float_is_zero
-from odoo.tools.misc import get_lang
 
 _logger = logging.getLogger(__name__)
 
@@ -2167,25 +2166,10 @@ class PmsFolio(models.Model):
         pay.action_post()
 
         # Review: force to autoreconcile payment with invoices already created
-        pay.flush()
+        pay.flush_recordset()
         for move in folio.move_ids:
             move.sudo()._autoreconcile_folio_payments()
 
-        # Automatic register payment in cash register
-        # TODO: cash_register to avoid flow in the new api (delete it in the future)
-        if pay_type == "cash" and self.env.context.get("cash_register"):
-            line = self._get_statement_line_vals(
-                journal=journal,
-                receivable_account=receivable_account,
-                user=user,
-                amount=amount,
-                folios=folio,
-                reservations=reservations,
-                services=services,
-                partner=partner,
-                date=date,
-            )
-            self.env["account.bank.statement.line"].sudo().create(line)
         folio.sudo().message_post(
             body=_("Payment: <b>%(amount)s</b> by <b>%(journal)s</b>")
             % {"amount": amount, "journal": journal.display_name},
@@ -2251,22 +2235,6 @@ class PmsFolio(models.Model):
         )
         pay.action_post()
 
-        # Automatic register refund in cash register
-        # TODO: cash_register to avoid flow in the new api (delete it in the future)
-        if pay_type == "cash" and self.env.context.get("cash_register"):
-            line = self._get_statement_line_vals(
-                journal=journal,
-                receivable_account=receivable_account,
-                user=user,
-                amount=amount if amount < 0 else -amount,
-                folios=folio,
-                reservations=reservations,
-                services=services,
-                partner=partner,
-                date=date,
-            )
-            self.env["account.bank.statement.line"].sudo().create(line)
-
         folio.sudo().message_post(
             body=_("Refund: <b>%(amount)s</b> by <b>%(journal)s</b>")
             % {"amount": amount, "journal": journal.display_name},
@@ -2295,63 +2263,6 @@ class PmsFolio(models.Model):
             "target": "new",
             "type": "ir.actions.act_window",
             "context": ctx,
-        }
-
-    @api.model
-    def _get_statement_line_vals(
-        self,
-        journal,
-        receivable_account,
-        user,
-        amount,
-        folios,
-        reservations=False,
-        services=False,
-        partner=False,
-        date=False,
-    ):
-        property_folio_id = folios.mapped("pms_property_id.id")
-        if len(property_folio_id) != 1:
-            raise ValidationError(_("Only can payment by property"))
-        ctx = dict(self.env.context, company_id=folios[0].company_id.id)
-        if not date:
-            date = fields.Date.today()
-        domain = [
-            ("journal_id", "=", journal.id),
-            ("pms_property_id", "=", property_folio_id[0]),
-            ("state", "=", "open"),
-            ("date", "=", date),
-        ]
-        statement = self.env["account.bank.statement"].sudo().search(domain, limit=1)
-        reservation_ids = reservations.ids if reservations else []
-        service_ids = services.ids if services else []
-        if not statement:
-            # TODO: cash control option
-            st_values = {
-                "journal_id": journal.id,
-                "user_id": self.env.user.id,
-                "pms_property_id": property_folio_id[0],
-                "name": datetime.datetime.today().strftime(
-                    get_lang(self.env).date_format
-                ),
-            }
-            statement = (
-                self.env["account.bank.statement"]
-                .with_context(**ctx)
-                .sudo()
-                .create(st_values)
-            )
-        return {
-            "date": date,
-            "amount": amount,
-            "partner_id": partner.id if partner else False,
-            "folio_ids": [(6, 0, folios.ids)],
-            "reservation_ids": [(6, 0, reservation_ids)],
-            "service_ids": [(6, 0, service_ids)],
-            "payment_ref": ", ".join(folios.mapped("name")),
-            "statement_id": statement.id,
-            "journal_id": statement.journal_id.id,
-            "counterpart_account_id": receivable_account.id,
         }
 
     @api.model
