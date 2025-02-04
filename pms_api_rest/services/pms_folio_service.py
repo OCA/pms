@@ -536,7 +536,7 @@ class PmsFolioService(Component):
             # Review this in pms_folio_service (/charge & /refund)
             # and in pms_transaction_service (POST)
             last_session = self._get_last_cash_session(journal_id=journal.id)
-            if last_session.state != "open":
+            if not last_session or last_session.is_complete:
                 self._action_open_cash_session(
                     pms_property_id=folio.pms_property_id.id,
                     amount=last_session.balance_end_real,
@@ -588,7 +588,7 @@ class PmsFolioService(Component):
             # Review this in pms_folio_service (/charge & /refund)
             # and in pms_transaction_service (POST)
             last_session = self._get_last_cash_session(journal_id=journal.id)
-            if last_session.state != "open":
+            if not last_session or last_session.is_complete:
                 self._action_open_cash_session(
                     pms_property_id=folio.pms_property_id.id,
                     amount=last_session.balance_end_real,
