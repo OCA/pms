@@ -215,7 +215,6 @@ class AccountMove(models.Model):
         else:
             domain = [
                 ("company_id", "=", company_id),
-                ("pms_property_ids", "=", False),
                 ("type", "=", journal_type),
             ]
             journal = self.env["account.journal"].search(domain, limit=1)

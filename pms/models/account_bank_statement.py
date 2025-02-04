@@ -16,7 +16,10 @@ class AccountBankStatement(models.Model):
         index=True,
         check_pms_properties=True,
     )
-    journal_id = fields.Many2one(check_pms_properties=True)
+    journal_id = fields.Many2one(
+        readonly=False,
+        check_pms_properties=True,
+    )
 
     # pylint: disable=W8110
     @api.depends("journal_id")
