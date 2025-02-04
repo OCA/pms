@@ -152,10 +152,6 @@ class PmsTransactionService(Component):
         )
         pms_api_check_access(user=self.env.user, records=transactions)
         for transaction in transactions:
-            # In internal transfer payments, the APP only show
-            # the outbound payment, with the countrapart journal id
-            # (destinationJournalId), the domain ensure avoid
-            # get the input internal transfer payment
             destination_journal_id = False
             if transaction.is_internal_transfer:
                 if (
@@ -186,7 +182,12 @@ class PmsTransactionService(Component):
                 PmsTransactiontInfo(
                     id=transaction.id,
                     name=transaction.name if transaction.name else None,
-                    amount=round(transaction.amount, 2),
+                    amount=round(
+                        transaction.amount_company_currency_signed
+                        if transaction.is_internal_transfer
+                        else transaction.amount,
+                        2,
+                    ),
                     journalId=transaction.journal_id.id
                     if transaction.journal_id
                     else None,
@@ -301,6 +302,7 @@ class PmsTransactionService(Component):
             "is_internal_transfer": is_internal_transfer,
         }
         if is_internal_transfer:
+            vals["destination_journal_id"] = pms_transaction_info.destinationJournalId
             vals["partner_bank_id"] = (
                 self.env["account.journal"]
                 .sudo()
@@ -313,48 +315,36 @@ class PmsTransactionService(Component):
             # Review this in pms_folio_service (/charge & /refund)
             # and in pms_transaction_service (POST)
             last_session = self._get_last_cash_session(journal_id=journal.id)
-            if last_session.state != "open":
+            if not last_session or last_session.balance_end:
                 self._action_open_cash_session(
                     pms_property_id=journal.pms_property_ids[0].id
                     if journal.pms_property_ids
                     else False,
-                    amount=last_session.balance_end_real,
+                    amount=last_session.balance_end,
                     journal_id=journal.id,
                     force=False,
                 )
         pay.action_post()
         if is_internal_transfer:
-            if journal.type == "cash":
+            destination_journal = (
+                self.env["account.journal"]
+                .sudo()
+                .browse(pms_transaction_info.destinationJournalId)
+            )
+            if destination_journal.type == "cash":
                 # REVIEW: Temporaly, if not cash session open, create a new one automatically
                 # Review this in pms_folio_service (/charge & /refund)
                 # and in pms_transaction_service (POST)
                 last_session = self._get_last_cash_session(journal_id=journal.id)
-                if last_session.state != "open":
+                if not last_session or last_session.balance_end:
                     self._action_open_cash_session(
-                        pms_property_id=journal.pms_property_ids[0]
+                        pms_property_id=journal.pms_property_ids[0].id
                         if journal.pms_property_ids
                         else False,
-                        amount=last_session.balance_end_real,
+                        amount=last_session.balance_end,
                         journal_id=pms_transaction_info.destinationJournalId,
                         force=False,
                     )
-            counterpart_vals = {
-                "amount": pms_transaction_info.amount,
-                "journal_id": pms_transaction_info.destinationJournalId,
-                "date": pay_date,
-                "partner_id": partner_id,
-                "ref": pms_transaction_info.reference,
-                "state": "draft",
-                "payment_type": "inbound",
-                "partner_type": partner_type,
-                "is_internal_transfer": is_internal_transfer,
-            }
-            countrepart_pay = (
-                self.env["account.payment"].sudo().create(counterpart_vals)
-            )
-            countrepart_pay.action_post()
-            pay.pms_api_counterpart_payment_id = countrepart_pay.id
-            countrepart_pay.pms_api_counterpart_payment_id = pay.id
         return pay.id
 
     @restapi.method(
@@ -376,8 +366,6 @@ class PmsTransactionService(Component):
             raise MissingError(_("Transaction not found"))
         pms_api_check_access(user=self.env.user, records=transaction)
         vals = {}
-        transacion_type = pms_transaction_info.transactionType
-        counterpart_transaction = False
         # TODO: Downpayment invoiced (search invoice, reverse it and create a new one)
         # Get generic update vals
         if pms_transaction_info.amount is not None and round(
@@ -398,8 +386,6 @@ class PmsTransactionService(Component):
             vals["ref"] = pms_transaction_info.reference
         if pms_transaction_info.date and pms_transaction_info.date != transaction.date:
             vals["date"] = fields.Date.from_string(pms_transaction_info.date)
-        if transacion_type == "internal_transfer":
-            counterpart_transaction = transaction.pms_api_counterpart_payment_id
         if (
             pms_transaction_info.journalId
             and pms_transaction_info.journalId != transaction.journal_id.id
@@ -426,54 +412,10 @@ class PmsTransactionService(Component):
             transaction.action_cancel()
             vals["journal_id"] = new_journal.id
             transaction = transaction.copy()
-        if counterpart_transaction:
-            if (
-                pms_transaction_info.destinationJournalId
-                and pms_transaction_info.destinationJournalId
-                != counterpart_transaction.journal_id.id
-            ):
-                new_counterpart_journal = (
-                    self.env["account.journal"]
-                    .sudo()
-                    .browse(pms_transaction_info.destinationJournalId)
-                )
-                if not new_counterpart_journal.exists():
-                    raise MissingError(_("Journal not found"))
-                pms_api_check_access(
-                    user=self.env.user, records=new_counterpart_journal
-                )
-                counterpart_vals = vals.copy()
-                if new_counterpart_journal.type == "cash":
-                    last_cash_session = self._get_last_cash_session(
-                        new_counterpart_journal.id
-                    )
-                    new_date = vals.get("date", counterpart_transaction.date)
-                    if new_date < last_cash_session.create_date.date():
-                        raise UserError(
-                            _(
-                                "You cannot create a cash payment for a date "
-                                "before the last cash session"
-                            )
-                        )
-                counterpart_transaction.action_draft()
-                counterpart_transaction.action_cancel()
-                counterpart_vals["journal_id"] = new_counterpart_journal.id
-                counterpart_transaction = counterpart_transaction.copy()
-                vals["partner_bank_id"] = (
-                    self.env["account.journal"]
-                    .sudo()
-                    .browse(pms_transaction_info.destinationJournalId)
-                    .bank_account_id.id
-                )
-                vals["counterpart_payment_id"] = counterpart_transaction.id
-                counterpart_vals["counterpart_payment_id"] = transaction.id
         if vals:
             transaction.action_draft()
             transaction.write(vals)
             transaction.action_post()
-        if counterpart_transaction:
-            counterpart_transaction.write(vals)
-            counterpart_transaction.action_post()
         return transaction.id
 
     @restapi.method(
@@ -495,20 +437,27 @@ class PmsTransactionService(Component):
         )
         CashRegister = self.env.datamodels["pms.cash.register.info"]
         if not statement:
-            return CashRegister()
-        isOpen = True if statement.state == "open" else False
+            return CashRegister(
+                state="close",
+                userId=1,
+                balance=0,
+                dateTime=fields.Datetime.now().isoformat(),
+            )
+        isOpen = True if not statement.is_complete else False
         timezone = pytz.timezone(self.env.context.get("tz") or "UTC")
         create_date_utc = pytz.UTC.localize(statement.create_date)
         create_date = create_date_utc.astimezone(timezone)
         date_done = False
-        if statement.date_done:
-            date_done_utc = pytz.UTC.localize(statement.date_done)
+        if statement.is_complete:
+            date_done_utc = pytz.UTC.localize(statement.write_date)
             date_done = date_done_utc.astimezone(timezone)
 
         return CashRegister(
             state="open" if isOpen else "close",
-            userId=statement.user_id.id,
-            balance=statement.balance_start if isOpen else statement.balance_end_real,
+            userId=statement.create_uid.id,
+            balance=self.get_balance_start(statement)
+            if isOpen
+            else statement.balance_end,
             dateTime=create_date.isoformat()
             if isOpen
             else date_done.isoformat()
@@ -555,27 +504,41 @@ class PmsTransactionService(Component):
         )
 
     def _action_open_cash_session(self, pms_property_id, amount, journal_id, force):
-        statement = self._get_last_cash_session(
+        last_statement = self._get_last_cash_session(
             journal_id=journal_id,
             pms_property_id=pms_property_id,
         )
-        if round(statement.balance_end_real, 2) == round(amount, 2) or force:
-            self.env["account.bank.statement"].sudo().create(
-                {
-                    "name": datetime.today().strftime(get_lang(self.env).date_format)
-                    + " ("
-                    + self.env.user.login
-                    + ")",
-                    "date": datetime.today(),
-                    "balance_start": amount,
-                    "journal_id": journal_id,
-                    "pms_property_id": pms_property_id,
-                }
+        compute_end_balance = (
+            round(last_statement.balance_end_real, 2) if last_statement else 0
+        )
+        if round(compute_end_balance, 2) == round(amount, 2) or force:
+            diff = round(amount - compute_end_balance, 2)
+            statement = (
+                self.env["account.bank.statement"]
+                .sudo()
+                .create(
+                    {
+                        "name": datetime.today().strftime(
+                            get_lang(self.env).date_format
+                        )
+                        + " ("
+                        + self.env.user.login
+                        + ")",
+                        "journal_id": journal_id,
+                        "pms_property_id": pms_property_id,
+                    }
+                )
             )
-            diff = round(amount - statement.balance_end_real, 2)
+            if diff != 0 and force:
+                # Create lost/profit line
+                self._post_statement_difference(
+                    amount=diff,
+                    statement_id=statement.id,
+                    journal_id=journal_id,
+                )
             return {"result": True, "diff": diff}
         else:
-            diff = round(amount - statement.balance_end_real, 2)
+            diff = round(amount - last_statement.balance_end, 2)
             return {"result": False, "diff": diff}
 
     def _action_close_cash_session(self, pms_property_id, amount, journal_id, force):
@@ -606,23 +569,37 @@ class PmsTransactionService(Component):
         )
 
         compute_end_balance = round(
-            statement.balance_start + session_payments_amount, 2
+            self.get_balance_start(statement) + session_payments_amount, 2
         )
         if round(compute_end_balance, 2) == round(amount, 2):
+            if not session_payments:
+                statement.unlink()
+                return {
+                    "result": True,
+                    "diff": 0,
+                }
             self._session_create_statement_lines(
                 session_payments, statement, amount, auto_conciliation=True
             )
-            if statement.all_lines_reconciled:
-                statement.button_validate_or_action()
+            # Force to complete the statement
+            statement._compute_balance_start()
             return {
                 "result": True,
                 "diff": 0,
             }
         elif force:
-            self._session_create_statement_lines(
-                session_payments, statement, amount, auto_conciliation=False
-            )
+            # Create lost/profit line
             diff = round(amount - compute_end_balance, 2)
+            self._post_statement_difference(
+                amount=diff,
+                statement_id=statement.id,
+                journal_id=journal_id,
+            )
+            self._session_create_statement_lines(
+                session_payments, statement, amount, auto_conciliation=True
+            )
+            # Force to complete the statement
+            statement._compute_balance_start()
             return {
                 "result": True,
                 "diff": diff,
@@ -677,8 +654,7 @@ class PmsTransactionService(Component):
 
     def _get_mapper_transaction_type(self, transaction_type):
         if transaction_type == "internal_transfer":
-            # counterpart is inbound supplier
-            return "outbound", "supplier"
+            return "outbound", "customer"
         elif transaction_type == "customer_inbound":
             return "inbound", "customer"
         elif transaction_type == "customer_outbound":
@@ -717,8 +693,7 @@ class PmsTransactionService(Component):
         # (_check_balance_end_real_same_as_computed)
         if not statement.name:
             statement._set_next_sequence()
-        statement.balance_end_real = amount
-        statement.write({"state": "posted"})
+        statement.balance_end = amount
         lines_of_moves_to_post = statement.line_ids.filtered(
             lambda line: line.move_id.state != "posted"
         )
@@ -736,10 +711,7 @@ class PmsTransactionService(Component):
                 payment_move_line = payment.move_id.line_ids.filtered(
                     lambda x: x.reconciled is False
                     and x.journal_id == journal
-                    and (
-                        x.account_id == journal.payment_debit_account_id
-                        or x.account_id == journal.payment_credit_account_id
-                    )
+                    and x.account_id in payment._get_valid_liquidity_accounts()
                 )
                 statement_line_move = statement_line.move_id
                 statement_move_line = statement_line_move.line_ids.filtered(
@@ -779,3 +751,71 @@ class PmsTransactionService(Component):
         else:
             raise werkzeug.exceptions.MethodNotAllowed(description="Field not allowed")
         return result
+
+    def _post_statement_difference(
+        self, amount, statement_id, journal_id, is_opening=False
+    ):
+        if amount:
+            statement = self.env["account.bank.statement"].browse(statement_id)
+            st_line_vals = {
+                "statement_id": statement_id,
+                "journal_id": journal_id,
+                "amount": amount,
+                "date": fields.Date.today(),
+            }
+            if amount < 0.0:
+                if not statement.journal_id.loss_account_id:
+                    raise UserError(
+                        _(
+                            "Please go on the %s journal and define a Loss Account. This account will be used to record cash difference.",
+                            statement.journal_id.name,
+                        )
+                    )
+
+                st_line_vals["payment_ref"] = _(
+                    "Cash difference observed during the counting (Loss)"
+                ) + (_(" - opening") if is_opening else _(" - closing"))
+                st_line_vals[
+                    "counterpart_account_id"
+                ] = statement.journal_id.loss_account_id.id
+            else:
+                # self.cash_register_difference  > 0.0
+                if not statement.journal_id.profit_account_id:
+                    raise UserError(
+                        _(
+                            "Please go on the %s journal and define a Profit Account. This account will be used to record cash difference.",
+                            statement.journal_id.name,
+                        )
+                    )
+
+                st_line_vals["payment_ref"] = _(
+                    "Cash difference observed during the counting (Profit)"
+                ) + (_(" - opening") if is_opening else _(" - closing"))
+                st_line_vals[
+                    "counterpart_account_id"
+                ] = statement.journal_id.profit_account_id.id
+
+            self.env["account.bank.statement.line"].create(st_line_vals)
+
+    def get_balance_start(self, statement):
+        # If not lines, the balance start is the balance start of the previous statement
+        # Odoo dont compute bañance_start in statement if not lines
+        if statement.line_ids:
+            return statement.balance_start
+        else:
+            # statement lines ir order_by internal_index, so the first line is the last line created
+            # we use search limit=1 to get the last line created
+            previous_line_with_statement = self.env[
+                "account.bank.statement.line"
+            ].search(
+                [
+                    ("journal_id", "=", statement.journal_id.id),
+                    ("state", "=", "posted"),
+                    ("statement_id", "!=", False),
+                ],
+                limit=1,
+            )
+            if previous_line_with_statement:
+                return previous_line_with_statement.statement_id.balance_end_real
+            else:
+                return 0
