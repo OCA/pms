@@ -1169,7 +1169,7 @@ class PmsReservationService(Component):
         pdf = (
             self.env.ref("pms.action_traveller_report")
             .with_user(SUPERUSER_ID)
-            ._render_qweb_pdf(checkins.ids)[0]
+            ._render_qweb_pdf("pms.action_traveller_report", checkins.ids)[0]
         )
         base64EncodedStr = base64.b64encode(pdf)
         PmsResponse = self.env.datamodels["pms.report"]
@@ -1199,7 +1199,7 @@ class PmsReservationService(Component):
         pdf = (
             self.env.ref("pms.action_traveller_report")
             .with_user(SUPERUSER_ID)
-            ._render_qweb_pdf(checkin_partner.id)[0]
+            ._render_qweb_pdf("pms.action_traveller_report", checkin_partner.id)[0]
         )
         base64EncodedStr = base64.b64encode(pdf)
         PmsResponse = self.env.datamodels["pms.report"]
@@ -1261,8 +1261,6 @@ class PmsReservationService(Component):
             user=self.env.user,
             records=self.env["pms.property"].sudo().browse(pms_property_id),
         )
-        date_from = fields.Date.from_string(pms_report_search_param.dateFrom)
-
         query = self.env.ref("pms_api_rest.sql_export_arrivals").sudo()
         if not query:
             raise MissingError(_("SQL query not found"))
@@ -1275,9 +1273,18 @@ class PmsReservationService(Component):
             raise MissingError(
                 _("The Query params was modifieds, please contact the administrator")
             )
-        report_wizard.x_date_from = date_from
-        report_wizard.x_pms_property_id = pms_property_id
+        charge_params = {
+            "x_date_from": pms_report_search_param.dateFrom,
+            "x_pms_property_id": pms_property_id,
+        }
+        vals = []
+        for item in report_wizard.query_properties:
+            if item["string"] in charge_params:
+                vals.append(
+                    {"name": item["name"], "value": charge_params[item["string"]]}
+                )
 
+        report_wizard.sudo().write({"query_properties": vals})
         report_wizard.export_sql()
         file_name = report_wizard.file_name
         base64EncodedStr = report_wizard.binary_file
@@ -1303,7 +1310,6 @@ class PmsReservationService(Component):
             user=self.env.user,
             records=self.env["pms.property"].sudo().browse(pms_property_id),
         )
-        date_from = fields.Date.from_string(pms_report_search_param.dateFrom)
 
         query = self.env.ref("pms_api_rest.sql_export_departures").sudo()
         if not query:
@@ -1319,8 +1325,18 @@ class PmsReservationService(Component):
             raise MissingError(
                 _("The Query params was modifieds, please contact the administrator")
             )
-        report_wizard.x_date_from = date_from
-        report_wizard.x_pms_property_id = pms_property_id
+        charge_params = {
+            "x_date_from": pms_report_search_param.dateFrom,
+            "x_pms_property_id": pms_property_id,
+        }
+        vals = []
+        for item in report_wizard.query_properties:
+            if item["string"] in charge_params:
+                vals.append(
+                    {"name": item["name"], "value": charge_params[item["string"]]}
+                )
+
+        report_wizard.sudo().write({"query_properties": vals})
 
         report_wizard.export_sql()
         file_name = report_wizard.file_name
