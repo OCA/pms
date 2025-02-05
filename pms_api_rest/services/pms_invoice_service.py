@@ -524,7 +524,8 @@ class PmsInvoiceService(Component):
         if account_send_search_param.isPrint:
             invoice_report = self.env.ref("account.account_invoices").sudo()
             pdf_content, _ = invoice_report.with_user(SUPERUSER_ID)._render_qweb_pdf(
-                invoices.ids
+                "account.account_invoices",
+                invoices.ids,
             )
             base64_encoded_str = base64.b64encode(pdf_content)
         return PmsResponse(binary=base64_encoded_str)
