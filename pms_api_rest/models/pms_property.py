@@ -512,7 +512,7 @@ class PmsProperty(models.Model):
         for index, date in enumerate(all_dates):
             base_price = pricelist._get_product_price(
                 product=product,
-                product_qty=1,
+                quantity=1,
                 product_uom=product.uom_id,
                 consumption_date=date,
                 pms_property_id=pms_property_id,
@@ -672,7 +672,7 @@ class PmsProperty(models.Model):
                             f"""PMS API push batch response to
                             {endpoint}: {response.status_code} - {response.text}"""
                         )
-                    self.invalidate_cache()
+                    self.invalidate_model()
                     self.env["pms.api.log"].sudo().create(
                         {
                             "pms_property_id": pms_property_id,
