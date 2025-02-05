@@ -30,7 +30,18 @@ class ResCityZipService(Component):
         res_zip = (
             self.env["res.city.zip"]
             .sudo()
-            .search([("display_name", "ilike", zip_search_param.address)], limit=10)
+            .search(
+                [
+                    "|",
+                    "|",
+                    "|",
+                    ("name", "=like", f"{zip_search_param.address}%"),
+                    ("city_id.name", "ilike", zip_search_param.address),
+                    ("state_id.name", "ilike", zip_search_param.address),
+                    ("country_id.name", "ilike", zip_search_param.address),
+                ],
+                limit=10,
+            )
         )
 
         if res_zip:
