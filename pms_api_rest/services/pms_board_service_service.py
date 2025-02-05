@@ -70,7 +70,10 @@ class PmsBoardServiceService(Component):
             ).mapped(
                 "room_type_id.id"
             )
-            pms_api_check_access(user=self.env.user, records=room_type_ids)
+            pms_api_check_access(
+                user=self.env.user,
+                records=self.env["pms.room.type"].sudo().browse(room_type_ids),
+            )
             for room_type_id in room_type_ids:
                 result_board_services.append(
                     PmsBoardServiceInfo(
