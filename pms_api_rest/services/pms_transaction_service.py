@@ -795,7 +795,7 @@ class PmsTransactionService(Component):
                     "counterpart_account_id"
                 ] = statement.journal_id.profit_account_id.id
 
-            self.env["account.bank.statement.line"].create(st_line_vals)
+            self.env["account.bank.statement.line"].sudo().create(st_line_vals)
 
     def get_balance_start(self, statement):
         # If not lines, the balance start is the balance start of the previous statement
@@ -805,15 +805,17 @@ class PmsTransactionService(Component):
         else:
             # statement lines ir order_by internal_index, so the first line is the last line created
             # we use search limit=1 to get the last line created
-            previous_line_with_statement = self.env[
-                "account.bank.statement.line"
-            ].search(
-                [
-                    ("journal_id", "=", statement.journal_id.id),
-                    ("state", "=", "posted"),
-                    ("statement_id", "!=", False),
-                ],
-                limit=1,
+            previous_line_with_statement = (
+                self.env["account.bank.statement.line"]
+                .sudo()
+                .search(
+                    [
+                        ("journal_id", "=", statement.journal_id.id),
+                        ("state", "=", "posted"),
+                        ("statement_id", "!=", False),
+                    ],
+                    limit=1,
+                )
             )
             if previous_line_with_statement:
                 return previous_line_with_statement.statement_id.balance_end_real
