@@ -191,8 +191,8 @@ class PmsServiceService(Component):
     )
     def services_report(self, pms_report_search_param):
         pms_property_id = pms_report_search_param.pmsPropertyId
-        date_from = fields.Date.from_string(pms_report_search_param.dateFrom)
-        date_to = fields.Date.from_string(pms_report_search_param.dateTo)
+        fields.Date.from_string(pms_report_search_param.dateFrom)
+        fields.Date.from_string(pms_report_search_param.dateTo)
         pms_api_check_access(
             user=self.env.user,
             records=self.env["pms.property"].sudo().browse(pms_property_id),
@@ -203,15 +203,25 @@ class PmsServiceService(Component):
         report_wizard = (
             self.env["sql.file.wizard"].sudo().create({"sql_export_id": query.id})
         )
-        report_wizard.x_date_from = date_from
-        report_wizard.x_date_to = date_to
-        report_wizard.x_pms_property_id = pms_property_id
         if not report_wizard._fields.get(
             "x_date_from"
         ) or not report_wizard._fields.get("x_pms_property_id"):
             raise MissingError(
                 _("The Query params was modifieds, please contact the administrator")
             )
+        charge_params = {
+            "x_date_from": pms_report_search_param.dateFrom,
+            "x_date_to": pms_report_search_param.dateTo,
+            "x_pms_property_id": pms_property_id,
+        }
+        vals = []
+        for item in report_wizard.query_properties:
+            if item["string"] in charge_params:
+                vals.append(
+                    {"name": item["name"], "value": charge_params[item["string"]]}
+                )
+
+        report_wizard.write({"query_properties": vals})
         report_wizard.export_sql()
         file_name = report_wizard.file_name
         base64EncodedStr = report_wizard.binary_file
