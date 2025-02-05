@@ -71,8 +71,10 @@ class PmsCancelationRuleService(Component):
         auth="jwt_api_pms",
     )
     def get_cancelation_rule(self, cancelation_rule_id):
-        cancelation_rule = self.env["pms.cancelation.rule"].sudo.search(
-            [("id", "=", cancelation_rule_id)]
+        cancelation_rule = (
+            self.env["pms.cancelation.rule"]
+            .sudo()
+            .search([("id", "=", cancelation_rule_id)])
         )
         if cancelation_rule:
             pms_api_check_access(user=self.env.user, records=cancelation_rule)
