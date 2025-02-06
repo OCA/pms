@@ -646,7 +646,7 @@ class PmsTransactionService(Component):
                 }
             )
         )
-        result = report_wizard._export()
+        result = report_wizard._export(pms_property_id)
         file_name = result["xls_filename"]
         base64EncodedStr = result["xls_binary"]
         PmsResponse = self.env.datamodels["pms.report"]
