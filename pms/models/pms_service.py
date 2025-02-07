@@ -440,7 +440,7 @@ class PmsService(models.Model):
                                 if consumed_on == "checkin"
                                 else reservation.checkout
                             )
-                            price_unit = service._get_price_unit_line()
+                            price_unit = service._get_price_unit_line(target_date)
                             service.service_line_ids = [
                                 (
                                     0,
@@ -459,7 +459,7 @@ class PmsService(models.Model):
 
                 else:
                     if not service.service_line_ids:
-                        price_unit = service._get_price_unit_line()
+                        price_unit = service._get_price_unit_line(fields.Date.today())
                         service.service_line_ids = [
                             (
                                 0,
