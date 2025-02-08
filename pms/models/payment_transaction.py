@@ -13,14 +13,13 @@ class PaymentTransaction(models.Model):
         column1="payment_transaction_id",
         column2="folio_id",
     )
+    folio_ids_nbr = fields.Integer(
+        compute="_compute_folio_ids_nbr", string="# of Folios"
+    )
 
-    def _create_payment(self, add_payment_vals=False):
+    def _create_payment(self):
         self.ensure_one()
-        if not add_payment_vals:
-            add_payment_vals = {}
-        if self.folio_ids:
-            add_payment_vals["folio_ids"] = [(6, 0, self.folio_ids.ids)]
-        return super(PaymentTransaction, self)._create_payment(add_payment_vals)
+        return super(PaymentTransaction, self)._create_payment(folio_ids=self.folio_ids)
 
     def render_folio_button(
         self, folio, submit_txt=None, render_values=None, custom_amount=None
@@ -45,9 +44,29 @@ class PaymentTransaction(models.Model):
         )
 
     @api.model
-    def _compute_reference_prefix(self, values):
-        res = super(PaymentTransaction, self)._compute_reference_prefix(values)
-        if not res and values and values.get("folio_ids"):
-            folios = self.new({"folio_ids": values["folio_ids"]}).folio_ids
-            return "".join(folios.mapped("name"))[-9:]
-        return None
+    def _compute_reference(self, provider_code, prefix=None, separator='-', **kwargs):
+        reference = super()._compute_reference(provider_code, prefix=prefix, separator=separator, **kwargs)
+        if provider_code == "redsys":
+            reference = reference[-12:]
+        return reference
+
+    @api.depends("folio_ids")
+    def _compute_folio_ids_nbr(self):
+        for trans in self:
+            trans.folio_ids_nbr = len(trans.folio_ids)
+
+    def action_view_folios(self):
+        action = {
+            "name": _("Folio(s)"),
+            "type": "ir.actions.act_window",
+            "res_model": "pms.folio",
+            "target": "current",
+        }
+        folio_ids = self.folio_ids.ids
+        if len(folio_ids) == 1:
+            action["res_id"] = folio_ids[0]
+            action["view_mode"] = "form"
+        else:
+            action["view_mode"] = "tree,form"
+            action["domain"] = [("id", "in", folio_ids)]
+        return action
