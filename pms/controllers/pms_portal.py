@@ -1,10 +1,11 @@
 from odoo import _, http
-from odoo.exceptions import AccessError, MissingError
+from odoo.exceptions import AccessError, MissingError, ValidationError
+from odoo.fields import Command
 from odoo.http import request
 
 from odoo.addons.account.controllers.portal import PortalAccount
-
-# from odoo.addons.payment.controllers.portal import PaymentProcessing
+from odoo.addons.payment import utils as payment_utils
+from odoo.addons.payment.controllers import portal as payment_portal
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo.addons.portal.models.portal_mixin import PortalMixin
 
@@ -70,60 +71,6 @@ class PortalFolio(CustomerPortal):
         )
         return self._get_page_view_values(
             folio, access_token, values, "my_folios_history", False, **kwargs
-        )
-
-    @http.route(
-        "/folio/pay/<int:folio_id>/form_tx", type="json", auth="public", website=True
-    )
-    def folio_pay_form(
-        self, acquirer_id, folio_id, save_token=False, access_token=None, **kwargs
-    ):
-        folio_sudo = request.env["pms.folio"].sudo().browse(folio_id)
-        if not folio_sudo:
-            return False
-
-        try:
-            acquirer_id = int(acquirer_id)
-        except Exception:
-            return False
-
-        if request.env.user._is_public():
-            save_token = False  # we avoid to create a token for the public user
-
-        success_url = kwargs.get(
-            "success_url",
-            "%s?%s" % (folio_sudo.access_url, access_token if access_token else ""),
-        )
-        custom_amount = False
-        if "custom_amount" in kwargs:
-            custom_amount = float(kwargs["custom_amount"])
-
-        vals = {
-            "acquirer_id": acquirer_id,
-            "return_url": success_url,
-        }
-
-        if save_token:
-            vals["type"] = "form_save"
-        transaction = folio_sudo._create_payment_transaction(vals)
-        # PaymentProcessing.add_payment_transaction(transaction)
-        if not transaction:
-            return False
-        tx_ids_list = set(request.session.get("__payment_tx_ids__", [])) | set(
-            transaction.ids
-        )
-        request.session["__payment_tx_ids__"] = list(tx_ids_list)
-        return transaction.render_folio_button(
-            folio_sudo,
-            submit_txt=_("Pay & Confirm"),
-            render_values={
-                "type": "form_save" if save_token else "form",
-                "alias_usage": _(
-                    "If we store your payment information on our server, "
-                    "subscription payments will be made automatically."
-                ),
-            },
-            custom_amount=custom_amount,
         )
 
     @http.route(
@@ -210,6 +157,149 @@ class PortalFolio(CustomerPortal):
         return request.render("pms.folio_portal_template", values)
 
 
+class PaymentPortal(payment_portal.PaymentPortal):
+    @http.route("/my/folios/<int:folio_id>/transaction", type="json", auth="public")
+    def portal_folio_transaction(self, pms_folio_id, access_token, **kwargs):
+        """Create a draft transaction and return its processing values.
+
+        :param int pms_folio_id: The folio to pay, as a `pms.folio` id
+        :param str access_token: The access token used to authenticate the request
+        :param dict kwargs: Locally unused data passed to `_create_transaction`
+        :return: The mandatory values for the processing of the transaction
+        :rtype: dict
+        :raise: ValidationError if the invoice id or the access token is invalid
+        """
+        # Check the order id and the access token
+        try:
+            folio_sudo = self._document_check_access(
+                "pms.folio", pms_folio_id, access_token
+            )
+        except MissingError as error:
+            raise error
+        except AccessError:
+            raise ValidationError(_("The access token is invalid."))
+
+        kwargs.update(
+            {
+                "reference_prefix": None,  # Allow the reference to be computed based on the order
+                "partner_id": (
+                    folio_sudo.partner_id.id
+                    if folio_sudo.partner_id
+                    else self.env.ref("pms.various_pms_partner")
+                ),
+                "pms_folio_id": pms_folio_id,  # Include the Folio to allow Subscriptions tokenizing the tx
+            }
+        )
+        kwargs.pop(
+            "custom_create_values", None
+        )  # Don't allow passing arbitrary create values
+        tx_sudo = self._create_transaction(
+            custom_create_values={"folio_ids": [Command.set([pms_folio_id])]},
+            **kwargs,
+        )
+
+        return tx_sudo._get_processing_values()
+
+    # Payment overrides
+
+    @http.route()
+    def payment_pay(
+        self, *args, amount=None, pms_folio_id=None, access_token=None, **kwargs
+    ):
+        """Override of payment to replace the missing transaction values by that of the folio.
+
+        This is necessary for the reconciliation as all transaction values, excepted the amount,
+        need to match exactly that of the folio.
+
+        :param str amount: The (possibly partial) amount to pay used to check the access token
+        :param str pms_folio_id: The folio for which a payment id made, as a `pms.folio` id
+        :param str access_token: The access token used to authenticate the partner
+        :return: The result of the parent method
+        :rtype: str
+        :raise: ValidationError if the order id is invalid
+        """
+        # Cast numeric parameters as int or float and void them if their str value is malformed
+        amount = self._cast_as_float(amount)
+        pms_folio_id = self._cast_as_int(pms_folio_id)
+        if pms_folio_id:
+            folio_sudo = request.env["pms.folio"].sudo().browse(pms_folio_id).exists()
+            if not folio_sudo:
+                raise ValidationError(_("The provided parameters are invalid."))
+
+            # Check the access token against the order values. Done after fetching the order as we
+            # need the order fields to check the access token.
+            if not payment_utils.check_access_token(
+                access_token,
+                folio_sudo.partner_id.id
+                if folio_sudo.partner_id
+                else request.env.ref("pms.various_pms_partner"),
+                amount,
+                folio_sudo.currency_id.id,
+            ):
+                raise ValidationError(_("The provided parameters are invalid."))
+
+            kwargs.update(
+                {
+                    "currency_id": folio_sudo.currency_id.id,
+                    "partner_id": (
+                        folio_sudo.partner_id.id
+                        if folio_sudo.partner_id
+                        else request.env.ref("pms.various_pms_partner")
+                    ),
+                    "company_id": folio_sudo.company_id.id,
+                    "pms_folio_id": pms_folio_id,
+                }
+            )
+        return super().payment_pay(
+            *args, amount=amount, access_token=access_token, **kwargs
+        )
+
+    def _get_custom_rendering_context_values(self, pms_folio_id=None, **kwargs):
+        """Override of payment to add the sale order id in the custom rendering context values.
+
+        :param int sale_order_id: The sale order for which a payment id made, as a `sale.order` id
+        :return: The extended rendering context values
+        :rtype: dict
+        """
+        rendering_context_values = super()._get_custom_rendering_context_values(
+            pms_folio_id=pms_folio_id, **kwargs
+        )
+        if pms_folio_id:
+            rendering_context_values["pms_folio_id"] = pms_folio_id
+
+            # Interrupt the payment flow if the sales order has been canceled.
+            folio_sudo = request.env["pms.folio"].sudo().browse(pms_folio_id)
+            if folio_sudo.state == "cancel":
+                rendering_context_values["amount"] = 0.0
+        return rendering_context_values
+
+    def _create_transaction(
+        self, *args, pms_folio_id=None, custom_create_values=None, **kwargs
+    ):
+        """Override of payment to add the sale order id in the custom create values.
+
+        :param int sale_order_id: The sale order for which a payment id made, as a `sale.order` id
+        :param dict custom_create_values: Additional create values overwriting the default ones
+        :return: The result of the parent method
+        :rtype: recordset of `payment.transaction`
+        """
+        if pms_folio_id:
+            if custom_create_values is None:
+                custom_create_values = {}
+            # As this override is also called if the flow is initiated from sale or website_sale, we
+            # need not to override whatever value these modules could have already set
+            if (
+                "folio_ids" not in custom_create_values
+            ):  # We are in the payment module's flow
+                custom_create_values["folio_ids"] = [Command.set([int(pms_folio_id)])]
+        return super()._create_transaction(
+            *args,
+            pms_folio_id=pms_folio_id,
+            custom_create_values=custom_create_values,
+            **kwargs,
+        )
+
+
 class PortalReservation(CustomerPortal):
     def _prepare_home_portal_values(self, counters):
         partner = request.env.user.partner_id
@@ -235,7 +325,7 @@ class PortalReservation(CustomerPortal):
             values,
             "my_reservations_history",
             False,
-            **kwargs
+            **kwargs,
         )
 
     @http.route(
@@ -324,7 +414,7 @@ class PortalPrecheckin(CustomerPortal):
             values,
             "my_precheckins_history",
             False,
-            **kwargs
+            **kwargs,
         )
 
     @http.route(
