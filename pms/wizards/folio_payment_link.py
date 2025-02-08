@@ -1,56 +1,50 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from werkzeug import urls
-
 from odoo import models
 
 
 class FolioPaymentLink(models.TransientModel):
     _inherit = "payment.link.wizard"
-    _description = "Generate Sales Payment Link"
+    _description = "Generate Folio Payment Link"
 
-    # pylint: disable=W8110
-    def _compute_link(self):
-        """Override of the base method to add the folio_id in the link."""
-        for payment_link in self:
-            if payment_link.res_model == "pms.folio":
-                # TODO: Review controller /website_payment/pay,
-                # how inherit it to add acquirers by property?
-                # now we send the first acquirer that has the property in pms_property_ids
-                folio = self.env["pms.folio"].browse(payment_link.res_id)
-                acquirer = self.env["payment.provider"].search(
-                    [
-                        ("pms_property_ids", "in", folio.pms_property_id.id),
-                        ("state", "=", "enabled"),
-                    ],
-                    limit=1,
-                )
-                if acquirer:
-                    record = self.env[payment_link.res_model].browse(
-                        payment_link.res_id
-                    )
-                    payment_link.link = (
-                        "%s/payment/pay?reference=%s&amount=%s&currency_id=%s"
-                        "&folio_id=%s&company_id=%s"
-                        "&access_token=%s"
-                    ) % (
-                        record.get_base_url(),
-                        urls.url_quote_plus(payment_link.description),
-                        payment_link.amount,
-                        payment_link.currency_id.id,
-                        payment_link.res_id,
-                        payment_link.company_id.id,
-                        self._get_access_token(),
-                    )
-                    if acquirer:
-                        payment_link.link += "&acquirer_id=%s" % acquirer.id
-                    if payment_link.partner_id:
-                        payment_link.link += (
-                            "&partner_id=%s" % payment_link.partner_id.id
-                        )
-                    if not acquirer or acquirer.state != "enabled":
-                        payment_link.link = False
-                else:
-                    payment_link.link = False
-            else:
-                super(FolioPaymentLink, payment_link)._compute_link()
+    def _get_payment_provider_available(self, res_model, res_id, **kwargs):
+        """Select and return the providers matching the criteria.
+
+        :param str res_model: active model
+        :param int res_id: id of 'active_model' record
+        :return: The compatible providers
+        :rtype: recordset of `payment.provider`
+        """
+        # If the model has the field "pms_property_id",
+        # we will use it to filter the providers
+        record = self.env[res_model].browse(res_id)
+        if hasattr(record, "pms_property_id"):
+            kwargs["pms_property_id"] = record.pms_property_id.id
+        if res_model == "pms.folio":
+            kwargs["pms_folio_id"] = res_id
+        return super()._get_payment_provider_available(res_model, res_id, **kwargs)
+
+    def _get_additional_link_values(self):
+        """Override of `payment` to add `pms_folio_id` and "pms_property_id"
+        to the payment link values.
+
+        Note: self.ensure_one()
+
+        :return: The additional payment link values.
+        :rtype: dict
+        """
+        res = super()._get_additional_link_values()
+        if self.res_model != "pms.folio":
+            return res
+
+        # If target record has pms_property_id
+        # add pms_property_id to link
+        folio_res = {}
+        record = self.env[self.res_model].browse(self.res_id)
+        if hasattr(record, "pms_property_id"):
+            folio_res["pms_property_id"] = record.pms_property_id.id
+
+        if self.res_model == "pms.folio":
+            folio_res["pms_folio_id"] = self.res_id
+
+        return folio_res

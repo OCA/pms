@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <!-- Include folio-related values in payment checkout form to pass them to the client -->
+    <template id="payment_checkout_inherit" inherit_id="payment.checkout">
+        <xpath expr="//form[@name='o_payment_checkout']" position="attributes">
+            <attribute name="t-att-data-pms-folio-id">pms_folio_id</attribute>
+        </xpath>
+    </template>
+
+    <!-- Include folio-related values in payment manage form to pass them to the client -->
+    <template id="payment_manage_inherit" inherit_id="payment.manage">
+        <xpath expr="//form[@name='o_payment_manage']" position="attributes">
+            <attribute name="t-att-data-pms-folio-id">pms_folio_id</attribute>
+        </xpath>
+    </template>
+
+</odoo>

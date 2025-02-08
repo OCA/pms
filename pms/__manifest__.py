@@ -89,7 +89,6 @@
         "views/reservation_portal_templates.xml",
         "views/res_company_views.xml",
         "views/traveller_report_template.xml",
-        # "views/assets.xml",
         "wizards/wizard_split_join_swap_reservation.xml",
         "views/precheckin_portal_templates.xml",
         "wizards/wizard_massive_changes.xml",
@@ -107,6 +106,7 @@
         "views/res_partner_id_category_views.xml",
         "views/res_partner_id_number_views.xml",
         "views/res_country_views.xml",
+        "views/payment_templates.xml",
     ],
     "demo": [
         "demo/pms_master_data_no_update.xml",
@@ -117,5 +117,10 @@
     "qweb": [
         "static/src/xml/reservation_group_button_views.xml",
     ],
+    "assets": {
+        "web.assets_frontend": [
+            "pms/static/src/js/payment_form.js",
+        ],
+    },
     "pre_init_hook": "pre_init_hook",
 }
