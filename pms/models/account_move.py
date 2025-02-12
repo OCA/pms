@@ -68,11 +68,10 @@ class AccountMove(models.Model):
     @api.depends("pms_property_id")
     def _compute_bank_partner_id(self):
         pms_property_out_moves = self.filtered(
-            lambda r: r.pms_property_id and r.is_isbound()
+            lambda r: r.pms_property_id and r.is_inbound()
         )
         for move in pms_property_out_moves:
-            if move.is_outbound() and move.pms_property_id:
-                move.bank_partner_id = move.pms_property_id.partner_id
+            move.bank_partner_id = move.pms_property_id.partner_id
         return super(
             AccountMove,
             self - pms_property_out_moves,
