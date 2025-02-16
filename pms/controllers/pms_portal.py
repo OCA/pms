@@ -176,18 +176,20 @@ class PaymentPortal(payment_portal.PaymentPortal):
             )
         except MissingError as error:
             raise error
-        except AccessError:
-            raise ValidationError(_("The access token is invalid."))
+        except AccessError as error:
+            raise ValidationError(_("The access token is invalid.")) from error
 
         kwargs.update(
             {
-                "reference_prefix": None,  # Allow the reference to be computed based on the order
+                "reference_prefix": None,
+                # Allow the reference to be computed based on the order
                 "partner_id": (
                     folio_sudo.partner_id.id
                     if folio_sudo.partner_id
-                    else self.env.ref("pms.various_pms_partner")
+                    else self.env.ref("pms.various_pms_partner").id
                 ),
-                "pms_folio_id": pms_folio_id,  # Include the Folio to allow Subscriptions tokenizing the tx
+                "pms_folio_id": pms_folio_id,
+                # Include the Folio to allow Subscriptions tokenizing the tx
             }
         )
         kwargs.pop(
@@ -206,19 +208,23 @@ class PaymentPortal(payment_portal.PaymentPortal):
     def payment_pay(
         self, *args, amount=None, pms_folio_id=None, access_token=None, **kwargs
     ):
-        """Override of payment to replace the missing transaction values by that of the folio.
+        """Override of payment to replace the missing transaction values
+        by that of the folio.
 
-        This is necessary for the reconciliation as all transaction values, excepted the amount,
-        need to match exactly that of the folio.
+        This is necessary for the reconciliation as all transaction values,
+        excepted the amount, need to match exactly that of the folio.
 
-        :param str amount: The (possibly partial) amount to pay used to check the access token
-        :param str pms_folio_id: The folio for which a payment id made, as a `pms.folio` id
+        :param str amount: The (possibly partial) amount to pay used
+        to check the access token
+        :param str pms_folio_id: The folio for which a payment id made,
+        as a `pms.folio` id
         :param str access_token: The access token used to authenticate the partner
         :return: The result of the parent method
         :rtype: str
         :raise: ValidationError if the order id is invalid
         """
-        # Cast numeric parameters as int or float and void them if their str value is malformed
+        # Cast numeric parameters as int or float and void them if their
+        # str value is malformed
         amount = self._cast_as_float(amount)
         pms_folio_id = self._cast_as_int(pms_folio_id)
         if pms_folio_id:
@@ -226,13 +232,16 @@ class PaymentPortal(payment_portal.PaymentPortal):
             if not folio_sudo:
                 raise ValidationError(_("The provided parameters are invalid."))
 
-            # Check the access token against the order values. Done after fetching the order as we
+            # Check the access token against the order values.
+            # Done after fetching the order as we
             # need the order fields to check the access token.
             if not payment_utils.check_access_token(
                 access_token,
-                folio_sudo.partner_id.id
-                if folio_sudo.partner_id
-                else request.env.ref("pms.various_pms_partner"),
+                (
+                    folio_sudo.partner_id.id
+                    if folio_sudo.partner_id
+                    else request.env.ref("pms.various_pms_partner")
+                ),
                 amount,
                 folio_sudo.currency_id.id,
             ):
@@ -244,7 +253,7 @@ class PaymentPortal(payment_portal.PaymentPortal):
                     "partner_id": (
                         folio_sudo.partner_id.id
                         if folio_sudo.partner_id
-                        else request.env.ref("pms.various_pms_partner")
+                        else request.env.ref("pms.various_pms_partner").id
                     ),
                     "company_id": folio_sudo.company_id.id,
                     "pms_folio_id": pms_folio_id,
@@ -255,9 +264,11 @@ class PaymentPortal(payment_portal.PaymentPortal):
         )
 
     def _get_custom_rendering_context_values(self, pms_folio_id=None, **kwargs):
-        """Override of payment to add the sale order id in the custom rendering context values.
+        """Override of payment to add the sale order id in the custom
+        rendering context values.
 
-        :param int sale_order_id: The sale order for which a payment id made, as a `sale.order` id
+        :param int sale_order_id: The sale order for which a payment
+        id made, as a `sale.order` id
         :return: The extended rendering context values
         :rtype: dict
         """
@@ -267,10 +278,6 @@ class PaymentPortal(payment_portal.PaymentPortal):
         if pms_folio_id:
             rendering_context_values["pms_folio_id"] = pms_folio_id
 
-            # Interrupt the payment flow if the sales order has been canceled.
-            folio_sudo = request.env["pms.folio"].sudo().browse(pms_folio_id)
-            if folio_sudo.state == "cancel":
-                rendering_context_values["amount"] = 0.0
         return rendering_context_values
 
     def _create_transaction(
@@ -278,15 +285,18 @@ class PaymentPortal(payment_portal.PaymentPortal):
     ):
         """Override of payment to add the sale order id in the custom create values.
 
-        :param int sale_order_id: The sale order for which a payment id made, as a `sale.order` id
-        :param dict custom_create_values: Additional create values overwriting the default ones
+        :param int sale_order_id: The sale order for which a payment id made,
+        as a `sale.order` id
+        :param dict custom_create_values: Additional create values overwriting
+        the default ones
         :return: The result of the parent method
         :rtype: recordset of `payment.transaction`
         """
         if pms_folio_id:
             if custom_create_values is None:
                 custom_create_values = {}
-            # As this override is also called if the flow is initiated from sale or website_sale, we
+            # As this override is also called if the flow is initiated
+            # from sale or website_sale, we
             # need not to override whatever value these modules could have already set
             if (
                 "folio_ids" not in custom_create_values
@@ -690,9 +700,7 @@ class PortalAccount(PortalAccount):
         """
         Override to add the pms property filter
         """
-        values = super(PortalAccount, self)._invoice_get_page_view_values(
-            invoice, access_token, **kwargs
-        )
+        values = super()._invoice_get_page_view_values(invoice, access_token, **kwargs)
         acquirers = values.get("acquirers")
         if acquirers:
             for acquirer in acquirers:
