@@ -19,13 +19,15 @@ class PaymentTransaction(models.Model):
 
     def _create_payment(self):
         self.ensure_one()
-        return super(PaymentTransaction, self)._create_payment(folio_ids=self.folio_ids)
+        return super()._create_payment(folio_ids=self.folio_ids)
 
     def render_folio_button(
         self, folio, submit_txt=None, render_values=None, custom_amount=None
     ):
         values = {
-            "partner_id": folio.partner_id.id,
+            "partner_id": (
+                folio.partner_id.id or self.env.ref("pms.various_pms_partner").id
+            ),
             "type": self.type,
         }
         if render_values:
@@ -44,8 +46,10 @@ class PaymentTransaction(models.Model):
         )
 
     @api.model
-    def _compute_reference(self, provider_code, prefix=None, separator='-', **kwargs):
-        reference = super()._compute_reference(provider_code, prefix=prefix, separator=separator, **kwargs)
+    def _compute_reference(self, provider_code, prefix=None, separator="-", **kwargs):
+        reference = super()._compute_reference(
+            provider_code, prefix=prefix, separator=separator, **kwargs
+        )
         if provider_code == "redsys":
             reference = reference[-12:]
         return reference
