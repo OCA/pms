@@ -64,18 +64,12 @@ class AccountMove(models.Model):
 
     # Inherit _compute_bank_partner_id
     # to take account pms_property_id in move in move account bank
-    # pylint: disable=W8110
     @api.depends("pms_property_id")
     def _compute_bank_partner_id(self):
-        pms_property_out_moves = self.filtered(
-            lambda r: r.pms_property_id and r.is_inbound()
-        )
-        for move in pms_property_out_moves:
+        res = super()._compute_bank_partner_id()
+        for move in self.filtered(lambda r: r.pms_property_id and r.is_inbound()):
             move.bank_partner_id = move.pms_property_id.partner_id
-        return super(
-            AccountMove,
-            self - pms_property_out_moves,
-        )._compute_bank_partner_id
+        return res
 
     @api.depends("journal_id", "folio_ids")
     def _compute_pms_property_id(self):
@@ -203,7 +197,7 @@ class AccountMove(models.Model):
         the parent method is overwritten to add the property filter if
         default_pms_property_id is set in context
         """
-        journal = super(AccountMove, self)._search_default_journal()
+        journal = super()._search_default_journal()
         company_id = self._context.get("default_company_id", self.env.company.id)
         company = self.env["res.company"].browse(company_id)
         journal_type = self._context.get("default_journal_type", journal.type)
@@ -250,7 +244,7 @@ class AccountMove(models.Model):
     # pylint: disable=W8110
     @api.depends("pms_property_id")
     def _compute_suitable_journal_ids(self):
-        super(AccountMove, self)._compute_suitable_journal_ids()
+        super()._compute_suitable_journal_ids()
         for move in self:
             if move.pms_property_id:
                 move.suitable_journal_ids = move.suitable_journal_ids.filtered(
@@ -311,7 +305,7 @@ class AccountMove(models.Model):
         """
         for record in self:
             record._check_pms_valid_invoice(record)
-        res = super(AccountMove, self)._post(soft)
+        res = super()._post(soft)
         self._autoreconcile_folio_payments()
         return res
 
@@ -420,4 +414,4 @@ class AccountMove(models.Model):
                 or False
             )
         else:
-            return super(AccountMove, self)._is_downpayment()
+            return super()._is_downpayment()
