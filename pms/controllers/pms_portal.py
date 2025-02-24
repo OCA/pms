@@ -240,7 +240,7 @@ class PaymentPortal(payment_portal.PaymentPortal):
                 (
                     folio_sudo.partner_id.id
                     if folio_sudo.partner_id
-                    else request.env.ref("pms.various_pms_partner")
+                    else request.env.ref("pms.various_pms_partner").id
                 ),
                 amount,
                 folio_sudo.currency_id.id,
