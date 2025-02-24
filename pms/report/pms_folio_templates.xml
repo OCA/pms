@@ -34,7 +34,7 @@
             </t>
         </t>
         <div class="page">
-            <div class="oe_structure" />
+            <div id="folio_header_oe_structure" class="oe_structure" />
 
             <h2 class="mt16">
                 <span t-if="doc.state not in ['draft','sent']">Order #</span>
@@ -334,7 +334,7 @@
                 </div>
             </div>
 
-            <div class="oe_structure" />
+            <div id="folio_footer_oe_structure" class="oe_structure" />
 
             <p t-field="doc.note" />
             <p t-if="doc.payment_term_id.note">
