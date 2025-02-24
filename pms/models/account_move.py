@@ -64,12 +64,18 @@ class AccountMove(models.Model):
 
     # Inherit _compute_bank_partner_id
     # to take account pms_property_id in move in move account bank
+    # pylint: disable=W8110
     @api.depends("pms_property_id")
     def _compute_bank_partner_id(self):
-        res = super()._compute_bank_partner_id()
-        for move in self.filtered(lambda r: r.pms_property_id and r.is_inbound()):
-            move.bank_partner_id = move.pms_property_id.partner_id
-        return res
+        for move in self:
+            if (
+                move.pms_property_id
+                and move.pms_property_id.bank_ids
+                and move.is_inbound()
+            ):
+                move.bank_partner_id = move.pms_property_id.partner_id
+            else:
+                super(AccountMove, move)._compute_bank_partner_id()
 
     @api.depends("journal_id", "folio_ids")
     def _compute_pms_property_id(self):
