@@ -1027,7 +1027,7 @@ class PmsFolio(models.Model):
 
     # pylint: disable=W8110
     def _compute_access_url(self):
-        super(PmsFolio, self)._compute_access_url()
+        super()._compute_access_url()
         for folio in self:
             folio.access_url = "/my/folios/%s" % (folio.id)
 
@@ -1462,7 +1462,7 @@ class PmsFolio(models.Model):
                 pms_property_id = vals.get("pms_property_id")
                 pms_property = self.env["pms.property"].browse(pms_property_id)
                 vals["name"] = pms_property.folio_sequence_id._next_do()
-        records = super(PmsFolio, self).create(vals_list)
+        records = super().create(vals_list)
         for record in records:
             record.access_token = record._portal_ensure_token()
         return records
@@ -1474,7 +1474,7 @@ class PmsFolio(models.Model):
             reservations_to_update = self.get_reservations_to_update_channel(vals)
             services_to_update = self.get_services_to_update_channel(vals)
 
-        res = super(PmsFolio, self).write(vals)
+        res = super().write(vals)
         if reservations_to_update:
             reservations_to_update.sale_channel_origin_id = vals[
                 "sale_channel_origin_id"
@@ -1773,7 +1773,7 @@ class PmsFolio(models.Model):
         }
 
     def _message_post_after_hook(self, message, msg_vals):
-        res = super(PmsFolio, self)._message_post_after_hook(message, msg_vals)
+        res = super()._message_post_after_hook(message, msg_vals)
         for folio in self:
             for follower in folio.message_follower_ids:
                 follower.sudo().unlink()
@@ -2097,7 +2097,6 @@ class PmsFolio(models.Model):
             # 'source_id': self.source_id.id,
             "invoice_user_id": self.user_id and self.user_id.id,
             "partner_id": partner_invoice_id,
-            "partner_bank_id": self.company_id.partner_id.bank_ids[:1].id,
             "journal_id": journal.id,  # company comes from the journal
             "invoice_origin": self.name,
             "invoice_payment_term_id": self.payment_term_id.id,
@@ -2328,9 +2327,11 @@ class PmsFolio(models.Model):
                     "discount": final_discount,
                     "reservation_line_ids": [(6, 0, lines_to.ids)],
                     "sequence": sequence,
-                    "default_invoice_to": partner_invoice[0].id
-                    if partner_invoice
-                    else current_sale_line_ids[index].default_invoice_to,
+                    "default_invoice_to": (
+                        partner_invoice[0].id
+                        if partner_invoice
+                        else current_sale_line_ids[index].default_invoice_to
+                    ),
                 }
                 sale_reservation_vals.append(
                     (1, current_sale_line_ids[index].id, current)
@@ -2345,9 +2346,9 @@ class PmsFolio(models.Model):
                     "tax_ids": [(6, 0, reservation.tax_ids.ids)],
                     "reservation_line_ids": [(6, 0, lines_to.ids)],
                     "sequence": sequence,
-                    "default_invoice_to": partner_invoice[0].id
-                    if partner_invoice
-                    else False,
+                    "default_invoice_to": (
+                        partner_invoice[0].id if partner_invoice else False
+                    ),
                 }
                 sale_reservation_vals.append((0, 0, new))
         folio_sale_lines_to_remove = []
@@ -2394,9 +2395,11 @@ class PmsFolio(models.Model):
                         "discount": final_discount,
                         "service_line_ids": [(6, 0, lines_to.ids)],
                         "sequence": sequence,
-                        "default_invoice_to": partner_invoice[0].id
-                        if partner_invoice
-                        else current_sale_service_ids[index].default_invoice_to,
+                        "default_invoice_to": (
+                            partner_invoice[0].id
+                            if partner_invoice
+                            else current_sale_service_ids[index].default_invoice_to
+                        ),
                     }
                     sale_service_vals.append(
                         (1, current_sale_service_ids[index].id, current)
@@ -2412,9 +2415,9 @@ class PmsFolio(models.Model):
                         "product_id": service.product_id.id,
                         "tax_ids": [(6, 0, service.tax_ids.ids)],
                         "sequence": sequence,
-                        "default_invoice_to": partner_invoice[0].id
-                        if partner_invoice
-                        else False,
+                        "default_invoice_to": (
+                            partner_invoice[0].id if partner_invoice else False
+                        ),
                     }
                     sale_service_vals.append((0, 0, new))
                 sequence = sequence + 1
