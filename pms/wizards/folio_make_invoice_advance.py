@@ -177,7 +177,6 @@ class FolioAdvancePaymentInv(models.TransientModel):
             "folio_ids": [(6, 0, order.ids)],
             "payment_reference": order.reference,
             "invoice_payment_term_id": order.payment_term_id.id,
-            "partner_bank_id": order.company_id.partner_id.bank_ids[:1].id,
             "fiscal_position_id": self.env["res.partner"]
             .browse(partner_id)
             .property_account_position_id.id,
@@ -260,9 +259,9 @@ class FolioAdvancePaymentInv(models.TransientModel):
             folios._create_invoices(
                 final=self.deduct_down_payments,
                 lines_to_invoice=lines_to_invoice,
-                partner_invoice_id=self.partner_invoice_id.id
-                if self.partner_invoice_id
-                else False,
+                partner_invoice_id=(
+                    self.partner_invoice_id.id if self.partner_invoice_id else False
+                ),
             )
         else:
             # Create deposit product if necessary
@@ -330,11 +329,11 @@ class FolioAdvancePaymentInv(models.TransientModel):
         lines_to_invoice = folios.sale_line_ids
         if not bill_services:
             lines_to_invoice = lines_to_invoice - lines_to_invoice.filtered(
-                lambda l: l.service_id and not l.service_id.is_board_service
+                lambda line: line.service_id and not line.service_id.is_board_service
             )
         if not bill_rooms:
             lines_to_invoice = lines_to_invoice.filtered(
-                lambda l: l.reservation_id and l.reservation_line_ids
+                lambda line: line.reservation_id and line.reservation_line_ids
             )
         if not lines_to_invoice:
             raise UserError(_("Nothing to invoice"))
