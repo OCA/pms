@@ -2675,6 +2675,10 @@ class PmsFolio(models.Model):
             "description": self.name,
             "amount": self.pending_amount,
             "currency_id": self.currency_id.id,
-            "partner_id": self.partner_id.id if self.partner_id else False,
+            "partner_id": (
+                self.partner_id.id
+                if self.partner_id
+                else self.env.ref("pms.various_pms_partner").id
+            ),
             "amount_max": self.pending_amount,
         }
