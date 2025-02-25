@@ -297,7 +297,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
                 taxes = self.product_id.taxes_id.filtered(
                     lambda r: not order.company_id or r.company_id == order.company_id
                 )
-                tax_ids = order.fiscal_position_id.map_tax(taxes, self.product_id).ids
+                tax_ids = order.fiscal_position_id.map_tax(taxes).ids
                 # analytic_tag_ids = []
                 # for line in order.sale_line_ids:
                 #     analytic_tag_ids = [
