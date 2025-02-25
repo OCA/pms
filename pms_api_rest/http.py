@@ -22,7 +22,7 @@ from odoo.addons.base_rest.http import RestApiDispatcher, wrapJsonException
 
 class RestApiDispatcherPms(RestApiDispatcher):
     def __init__(self, httprequest):
-        super(RestApiDispatcherPms, self).__init__(httprequest)
+        super().__init__(httprequest)
 
     def handle_error(self, exception):
         """Called within an except block to allow converting exceptions
@@ -33,7 +33,7 @@ class RestApiDispatcherPms(RestApiDispatcher):
             # we want to raise a proper exception
             return wrapJsonException(Unauthorized(ustr(exception)))
         try:
-            return super(RestApiDispatcher, self)._handle_exception(exception)
+            return super(RestApiDispatcher, self).handle_error(exception)
         except MissingError as e:
             extra_info = getattr(e, "rest_json_info", None)
             return wrapJsonException(
