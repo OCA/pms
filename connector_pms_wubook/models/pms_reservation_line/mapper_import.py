@@ -32,7 +32,7 @@ class ChannelWubookPmsReservationLineMapperImport(Component):
         commision_percent_to_deduct = 0
         agency = self.env["res.partner"].browse(record["agency_id"])
         if agency and agency.commission_type == "subtract":
-            commision_percent_to_deduct = agency.commission
+            commision_percent_to_deduct = agency.default_commission
         if not vat_included:
             product = room_type.product_id
             company = self.backend_record.pms_property_id.company_id
