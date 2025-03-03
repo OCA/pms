@@ -32,7 +32,7 @@ class ChannelWubookPmsReservationLineMapperImport(Component):
         commision_percent_to_deduct = 0
         agency = self.env["res.partner"].browse(record["agency_id"])
         if agency and agency.commission_type == "subtract":
-            commision_percent_to_deduct = agency.commission
+            commision_percent_to_deduct = agency.default_commission
         if not vat_included:
             product = room_type.product_id
             company = self.backend_record.pms_property_id.company_id
@@ -58,15 +58,12 @@ class ChannelWubookPmsReservationLineMapperImport(Component):
                 )
                 * record["occupancy"]
             )
-            board_day_price_children = (
-                sum(
-                    board_service_room.board_service_line_ids.with_context(
-                        property=self.backend_record.pms_property_id.id
-                    )
-                    .filtered(lambda line: line.children)
-                    .mapped("amount")
+            board_day_price_children = sum(
+                board_service_room.board_service_line_ids.with_context(
+                    property=self.backend_record.pms_property_id.id
                 )
-                * (record.get("children") or 0)
-            )
+                .filtered(lambda line: line.children)
+                .mapped("amount")
+            ) * (record.get("children") or 0)
             price -= board_day_price_adults + board_day_price_children
         return {"price": price}
