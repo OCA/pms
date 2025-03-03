@@ -2672,7 +2672,7 @@ class PmsFolio(models.Model):
     def _get_default_payment_link_values(self):
         self.ensure_one()
         return {
-            "description": self.name,
+            "description": self.name[-8:],
             "amount": self.pending_amount,
             "currency_id": self.currency_id.id,
             "partner_id": (

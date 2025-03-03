@@ -46,12 +46,12 @@ class PaymentTransaction(models.Model):
         )
 
     @api.model
-    def _compute_reference(self, provider_code, prefix=None, separator="-", **kwargs):
-        reference = super()._compute_reference(
-            provider_code, prefix=prefix, separator=separator, **kwargs
+    def _compute_reference_prefix(self, provider_code, separator, **values):
+        if provider_code == "redsys" and "reference" in values:
+            values["reference"] = values["reference"][-8:]
+        reference = super()._compute_reference_prefix(
+            provider_code, separator=separator, **values
         )
-        if provider_code == "redsys":
-            reference = reference[-12:]
         return reference
 
     @api.depends("folio_ids")
