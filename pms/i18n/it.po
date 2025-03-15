@@ -6,13 +6,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2025-03-15 15:06+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.10.2\n"
 
 #. module: pms
 #: code:addons/pms/models/account_move.py:0
@@ -1369,7 +1371,7 @@ msgstr ""
 #: code:addons/pms/models/pms_folio.py:0
 #, python-format
 msgid "A payment acquirer is required to create a transaction."
-msgstr ""
+msgstr "È richiesto un metodo di pagamento per creare la transazione."
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_folio_advance_payment_inv__advance_payment_method
@@ -8083,7 +8085,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model,name:pms.model_payment_acquirer
 msgid "Payment Acquirer"
-msgstr ""
+msgstr "Sistema di pagamento"
 
 #. module: pms
 #: model:ir.actions.act_window,name:pms.action_payment_folio
@@ -8160,7 +8162,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__transaction_ids
 msgid "Payments made through payment acquirer"
-msgstr ""
+msgstr "Pagamenti eseguiti attraverso il sistema di pagamento"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__pending_amount
