@@ -739,8 +739,8 @@ class PmsReservation(models.Model):
         for reservation in self:
             if reservation.pricelist_id and reservation.room_type_id:
                 board_service_default = (
-                    reservation.pricelist_id.get_default_board_service(
-                        pms_porperty_id=reservation.pms_property_id.id,
+                    reservation.room_type_id.get_default_board_service(
+                        pms_property_id=reservation.pms_property_id.id,
                         room_type_id=reservation.room_type_id.id,
                         pricelist_id=reservation.pricelist_id.id,
                     )
