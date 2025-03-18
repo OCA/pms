@@ -800,6 +800,8 @@ class PmsFolioService(Component):
                         )
             folio = self.env["pms.folio"].sudo().create(vals)
             for reservation in pms_folio_info.reservations:
+                # If not set board service search a default board service by pricelist
+
                 commision_percent_to_deduct = 0
                 if external_app and agency and agency.commission_type == "subtract":
                     commision_percent_to_deduct = agency.default_commission
@@ -810,9 +812,10 @@ class PmsFolioService(Component):
                     "pricelist_id": pms_folio_info.pricelistId,
                     "external_reference": pms_folio_info.externalReference,
                     "board_service_room_id": self.get_board_service_room_type_id(
-                        reservation.boardServiceId,
-                        reservation.roomTypeId,
-                        pms_folio_info.pmsPropertyId,
+                        room_type_id=reservation.roomTypeId,
+                        pricelist_id=pms_folio_info.pricelistId,
+                        pms_property_id=pms_folio_info.pmsPropertyId,
+                        board_service_id=reservation.boardServiceId,
                     ),
                     "preferred_room_id": reservation.preferredRoomId,
                     "adults": reservation.adults,
@@ -1872,20 +1875,35 @@ class PmsFolioService(Component):
         )
 
     def get_board_service_room_type_id(
-        self, board_service_id, room_type_id, pms_property_id
+        self, room_type_id, pms_property_id, board_service_id=False, pricelist_id=False
     ):
         """
         The internal app uses the board service room type id to create the reservation,
         but the external app uses the board service id and the room type id.
         Returns the board service room type id for the given board service and room type
         """
-        board_service = self.env["pms.board.service"].sudo().browse(board_service_id)
+        board_service = False
+        board_default = False
+        if board_service_id:
+            board_service = (
+                self.env["pms.board.service"].sudo().browse(board_service_id)
+            )
+        elif pricelist_id:
+            room_type = self.env["pms.room.type"].sudo().browse(room_type_id)
+            board_service = room_type.get_default_board_service(
+                pms_property_id=pms_property_id,
+                pricelist_id=pricelist_id,
+                room_type_id=room_type_id,
+            )
+            board_default = True if board_service else False
         pms_api_check_access(user=self.env.user, records=board_service)
         room_type = self.env["pms.room.type"].sudo().browse(room_type_id)
         pms_api_check_access(user=self.env.user, records=room_type)
         external_app = self.env.user.pms_api_client
-        if not external_app:
-            return board_service_id
+        # Only need transform board in board_room_type if the board id
+        # is provided by external app, else, return directly board_service_id
+        if board_service and (not external_app or board_default):
+            return board_service.id
         if board_service and room_type:
             return (
                 self.env["pms.board.service.room.type"]
@@ -2326,12 +2344,13 @@ class PmsFolioService(Component):
                     != info_reservation.pricelistId
                 ):
                     vals.update({"pricelist_id": info_reservation.pricelistId})
-            if info_reservation.boardServiceId:
-                board_service_id = self.get_board_service_room_type_id(
-                    info_reservation.boardServiceId,
-                    info_reservation.roomTypeId,
-                    folio.pms_property_id.id,
-                )
+            board_service_id = self.get_board_service_room_type_id(
+                info_reservation.roomTypeId,
+                folio.pms_property_id.id,
+                info_reservation.boardServiceId,
+                info_reservation.pricelistId,
+            )
+            if board_service_id:
                 if (
                     new_res
                     or proposed_reservation.board_service_room_id.id != board_service_id
@@ -2365,15 +2384,16 @@ class PmsFolioService(Component):
             if info_reservation.reservationLines:
                 # The service price is included in day price when it is a board service (external api)
                 board_day_price = 0
-                if external_app and info_reservation.boardServiceId:
+                if external_app:
                     board = (
                         self.env["pms.board.service.room.type"]
                         .sudo()
                         .browse(
                             self.get_board_service_room_type_id(
-                                info_reservation.boardServiceId,
-                                info_reservation.roomTypeId,
-                                folio.pms_property_id.id,
+                                room_type_id=info_reservation.roomTypeId,
+                                pms_property_id=folio.pms_property_id.id,
+                                board_service_id=info_reservation.boardServiceId,
+                                pricelist_id=info_reservation.pricelistId,
                             )
                         )
                     )
