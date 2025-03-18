@@ -130,8 +130,11 @@ class PmsProperty(models.Model):
                 ("agency_id", "=", client.partner_id.id),
             ]
         )
+        room_types_excluded_ids = property_client_conf.excluded_room_type_ids.ids
         plan_avail = property_client_conf.main_avail_plan_id
-        for room_type_id in room_type_ids:
+        for room_type_id in room_type_ids.filtered(
+            lambda r: r not in room_types_excluded_ids
+        ):
             room_type_avails = sorted(
                 avails.filtered(lambda r: r.room_type_id.id == room_type_id),
                 key=lambda r: r.date,
@@ -188,7 +191,15 @@ class PmsProperty(models.Model):
         pms_property_id = self.id
         prices_dict = {"pmsPropertyId": pms_property_id, "prices": []}
         product_ids = prices.mapped("product_id.id")
-        for product_id in product_ids:
+        property_client_conf = self.env["ota.property.settings"].search(
+            [
+                ("pms_property_id", "=", self.id),
+                ("agency_id", "=", client.partner_id.id),
+            ]
+        )
+        room_types_excluded = property_client_conf.excluded_room_type_ids
+        product_excluded_ids = room_types_excluded.mapped("product_id.id")
+        for product_id in product_ids.filtered(lambda r: r not in product_excluded_ids):
             room_type_id = (
                 self.env["pms.room.type"].search([("product_id", "=", product_id)]).id
             )
@@ -232,7 +243,16 @@ class PmsProperty(models.Model):
         pms_property_id = self.id
         rules_dict = {"pmsPropertyId": pms_property_id, "rules": []}
         room_type_ids = rules.mapped("room_type_id.id")
-        for room_type_id in room_type_ids:
+        property_client_conf = self.env["ota.property.settings"].search(
+            [
+                ("pms_property_id", "=", self.id),
+                ("agency_id", "=", client.partner_id.id),
+            ]
+        )
+        room_types_excluded_ids = property_client_conf.excluded_room_type_ids.ids
+        for room_type_id in room_type_ids.filtered(
+            lambda r: r not in room_types_excluded_ids
+        ):
             room_type_rules = sorted(
                 rules.filtered(lambda r: r.room_type_id.id == room_type_id),
                 key=lambda r: r.date,
