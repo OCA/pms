@@ -215,3 +215,23 @@ class PmsRoomType(models.Model):
             lambda r: not r.pms_property_id or r.pms_property_id.id == pms_property_id
         ).mapped("capacity")
         return min(capacities) if any(capacities) else 0
+
+    @api.model
+    def get_default_board_service(self, pms_property_id, room_type_id, pricelist_id):
+        board_services_candidates = self.env["pms.board.service.room.type"].search(
+            [
+                ("pms_room_type_id", "=", room_type_id),
+                ("by_default", "=", True),
+                ("pms_property_id", "=", pms_property_id),
+            ]
+        )
+        board_service_default = (
+            board_services_candidates.filtered(
+                lambda service: pricelist_id in service.pricelist_ids.ids
+            )
+            or board_services_candidates.filtered(
+                lambda service: not service.pricelist_ids
+            )
+            or False
+        )
+        return board_service_default
