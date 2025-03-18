@@ -737,9 +737,7 @@ class ResPartner(models.Model):
         return True
 
     def unlink(self):
-        dummy, various_partner_id = self.env["ir.model.data"].get_object_reference(
-            "pms", "various_pms_partner"
-        )
+        various_partner_id = self.env.ref("pms.various_pms_partner").id
         if various_partner_id in self.ids:
             various_partner = self.browse(various_partner_id)
             raise ValidationError(
