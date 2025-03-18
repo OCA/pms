@@ -738,24 +738,12 @@ class PmsReservation(models.Model):
     def _compute_board_service_room_id(self):
         for reservation in self:
             if reservation.pricelist_id and reservation.room_type_id:
-                board_services_candidates = self.env[
-                    "pms.board.service.room.type"
-                ].search(
-                    [
-                        ("pms_room_type_id", "=", reservation.room_type_id.id),
-                        ("by_default", "=", True),
-                        ("pms_property_id", "=", reservation.pms_property_id.id),
-                    ]
-                )
                 board_service_default = (
-                    board_services_candidates.filtered(
-                        lambda service: reservation.pricelist_id
-                        in service.pricelist_ids
+                    reservation.pricelist_id.get_default_board_service(
+                        pms_porperty_id=reservation.pms_property_id.id,
+                        room_type_id=reservation.room_type_id.id,
+                        pricelist_id=reservation.pricelist_id.id,
                     )
-                    or board_services_candidates.filtered(
-                        lambda service: not service.pricelist_ids
-                    )
-                    or False
                 )
                 if (
                     not reservation.board_service_room_id
