@@ -69,19 +69,19 @@ class ChannelWubookProductPricelistItemMapperExport(Component):
             # If board service default is defined, we need sum the price of the board service
             # to the price of the room type (wubook does not separate the price of the room
             # type from the price of the board service in this case)
-            board_service_default = self.env["pms.board.service.room.type"].search(
-                [
-                    ("pms_room_type_id", "=", room_type.id),
-                    ("by_default", "=", True),
-                    ("pms_property_id", "=", record.backend_id.pms_property_id.id),
-                ]
+            # Check if a default board service was found
+            # Search for the default board service for the room type
+            default_board_service = room_type.get_default_board_service(
+                pms_property_id=record.backend_id.pms_property_id.id,
+                pricelist_id=record.base_pricelist_id.id,
+                room_type_id=room_type.id,
             )
-            if board_service_default:
+            if default_board_service:
                 # TODO: get board service price with date context
                 # (view _get_price_unit_line method in pms_service.py)
                 values[
                     "price"
-                ] += board_service_default.amount * room_type.get_room_type_capacity(
+                ] += default_board_service.amount * room_type.get_room_type_capacity(
                     pms_property_id=record.backend_id.pms_property_id.id
                 )
             binder = self.binder_for("channel.wubook.pms.room.type")
