@@ -132,9 +132,10 @@ class PmsProperty(models.Model):
         )
         room_types_excluded_ids = property_client_conf.excluded_room_type_ids.ids
         plan_avail = property_client_conf.main_avail_plan_id
-        for room_type_id in room_type_ids.filtered(
-            lambda r: r not in room_types_excluded_ids
-        ):
+        room_type_ids = [
+            rid for rid in room_type_ids if rid not in room_types_excluded_ids
+        ]
+        for room_type_id in room_type_ids:
             room_type_avails = sorted(
                 avails.filtered(lambda r: r.room_type_id.id == room_type_id),
                 key=lambda r: r.date,
@@ -199,7 +200,8 @@ class PmsProperty(models.Model):
         )
         room_types_excluded = property_client_conf.excluded_room_type_ids
         product_excluded_ids = room_types_excluded.mapped("product_id.id")
-        for product_id in product_ids.filtered(lambda r: r not in product_excluded_ids):
+        product_ids = [pid for pid in product_ids if pid not in product_excluded_ids]
+        for product_id in product_ids:
             room_type_id = (
                 self.env["pms.room.type"].search([("product_id", "=", product_id)]).id
             )
@@ -250,9 +252,10 @@ class PmsProperty(models.Model):
             ]
         )
         room_types_excluded_ids = property_client_conf.excluded_room_type_ids.ids
-        for room_type_id in room_type_ids.filtered(
-            lambda r: r not in room_types_excluded_ids
-        ):
+        room_type_ids = [
+            rid for rid in room_type_ids if rid not in room_types_excluded_ids
+        ]
+        for room_type_id in room_type_ids:
             room_type_rules = sorted(
                 rules.filtered(lambda r: r.room_type_id.id == room_type_id),
                 key=lambda r: r.date,
