@@ -207,15 +207,9 @@ class FolioSaleLine(models.Model):
         readonly=True,
         related="product_id.uom_id.category_id",
     )
-    product_uom_readonly = fields.Boolean(compute="_compute_product_uom_readonly")
-
-    product_custom_attribute_value_ids = fields.One2many(
-        string="Custom Values",
-        copy=True,
-        comodel_name="product.attribute.custom.value",
-        inverse_name="sale_order_line_id",
+    product_uom_readonly = fields.Boolean(
+        string="", help="", compute="_compute_product_uom_readonly"
     )
-
     qty_to_invoice = fields.Float(
         string="To Invoice Quantity",
         help="The quantity to invoice. If the invoice policy is order, "
@@ -276,22 +270,11 @@ class FolioSaleLine(models.Model):
         index=True,
         readonly=False,
     )
-    # analytic_tag_ids = fields.Many2many(
-    #     string="Analytic Tags",
-    #     comodel_name="account.analytic.tag",
-    #     domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
-    # )
-    analytic_line_ids = fields.One2many(
-        string="Analytic lines",
-        comodel_name="account.analytic.line",
-        inverse_name="so_line",
-    )
     is_downpayment = fields.Boolean(
         string="Is a down payment",
         help="Down payments are made when creating invoices from a folio."
         " They are not copied when duplicating a folio.",
     )
-
     state = fields.Selection(
         string="Folio Status",
         help="The status of the folio related with folio sale line",
