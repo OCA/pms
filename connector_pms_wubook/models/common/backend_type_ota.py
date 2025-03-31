@@ -27,21 +27,3 @@ class ChannelWubookBackendTypeOTA(models.Model):
         domain="[('is_agency', '=', True)]",
         string="Agency",
     )
-
-    _sql_constraints = [
-        (
-            "uniq",
-            "unique(backend_type_id,wubook_ota,agency_id)",
-            "Wubook OTA ID and Agency already used in another map line",
-        ),
-        (
-            "board_service_uniq",
-            "unique(backend_type_id,wubook_ota)",
-            "Wubook OTa ID already used in another map line",
-        ),
-        (
-            "board_service_shortname_uniq",
-            "unique(backend_type_id,agency_id)",
-            "Agency already used in another map line",
-        ),
-    ]
