@@ -1194,6 +1194,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_room__active
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__active
 #: model:ir.model.fields,field_description:pms.field_pms_room_type_class__active
+#: model:ir.model.fields,field_description:pms.field_pms_sale_channel__active
 #: model:ir.model.fields,field_description:pms.field_pms_team_member__active
 msgid "Active"
 msgstr ""
@@ -1639,12 +1640,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__analytic_tag_ids
 #: model:ir.model.fields,field_description:pms.field_pms_service__analytic_tag_ids
 msgid "Analytic Tags"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_folio_sale_line__analytic_line_ids
-#: model:ir.model.fields,field_description:pms.field_pms_reservation__analytic_line_ids
-msgid "Analytic lines"
 msgstr ""
 
 #. module: pms
@@ -3427,11 +3422,6 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_detail
 msgid "Current state of this reservation"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_folio_sale_line__product_custom_attribute_value_ids
-msgid "Custom Values"
 msgstr ""
 
 #. module: pms
