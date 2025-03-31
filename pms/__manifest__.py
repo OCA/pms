@@ -18,7 +18,7 @@
         "mail",
         # "account_payment_return",
         # "email_template_qweb",
-        "sale",
+        "sales_team",
         "multi_pms_properties",
         "partner_firstname",
         "partner_second_lastname",

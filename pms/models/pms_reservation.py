@@ -559,19 +559,6 @@ class PmsReservation(models.Model):
         ],
         compute="_compute_invoice_status",
     )
-    # analytic_tag_ids = fields.Many2many(
-    #     string="Analytic Tags",
-    #     comodel_name="account.analytic.tag",
-    #     relation="pms_reservation_account_analytic_tag",
-    #     column1="reservation_id",
-    #     column2="account_analytic_tag_id",
-    #     domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
-    # )
-    analytic_line_ids = fields.One2many(
-        string="Analytic lines",
-        comodel_name="account.analytic.line",
-        inverse_name="so_line",
-    )
     price_subtotal = fields.Monetary(
         string="Subtotal",
         help="Subtotal price without taxes",
