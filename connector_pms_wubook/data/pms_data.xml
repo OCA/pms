@@ -5,6 +5,11 @@
         <field name="name">Wubook Engine</field>
         <field name="channel_type">direct</field>
         <field name="is_on_line">True</field>
+        <field
+            name="icon"
+            type="base64"
+            file="connector_pms_wubook/static/img/website.svg"
+        />
     </record>
     <record id="main_pms_sale_channel_wubook_ota" model="pms.sale.channel">
         <field name="name">Wubook OTAs</field>

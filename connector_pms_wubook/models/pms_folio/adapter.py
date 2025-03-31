@@ -323,7 +323,7 @@ class ChannelWubookPmsFolioAdapter(Component):
                         "arrival_hour": value["arrival_hour"],
                         "ota_reservation_code": value["channel_reservation_code"],
                         "board": board,
-                        "occupancy": occupancies_d[room_id],
+                        "occupancy": occupancies_d.get(room_id) or 1,
                         "children": occupancies_d_children.get(room_id) or 0,
                         "rate_id": room_rate_id,
                         "customer_notes": customer_notes,
