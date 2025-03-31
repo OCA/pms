@@ -26,6 +26,7 @@
         "data/auth_jwt_validator.xml",
         "data/pms_app_reset_password_template.xml",
         "data/cron_jobs.xml",
+        "data/roomdoo_data.xml",
         "views/pms_property_views.xml",
         "views/res_users_views.xml",
         "views/pms_room_type_class_views.xml",
@@ -36,4 +37,5 @@
         "demo/pms_api_rest_master_data.xml",
     ],
     "installable": True,
+    "post_init_hook": "post_init_hook",
 }

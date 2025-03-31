@@ -190,38 +190,74 @@ class PmsReservationService(Component):
     def _create_vals_from_params(
         self, reservation_vals, reservation_data, reservation_id
     ):
-        if reservation_data.preferredRoomId:
+        reservation = self.env["pms.reservation"].sudo().browse(reservation_id)
+        if (
+            reservation_data.preferredRoomId
+            and reservation_data.preferredRoomId != reservation.preferred_room_id.id
+        ):
             reservation_vals.update(
                 {"preferred_room_id": reservation_data.preferredRoomId}
             )
-        if reservation_data.boardServiceId is not None:
+        if (
+            reservation_data.boardServiceId is not None
+            and reservation_data.boardServiceId != reservation.board_service_room_id.id
+        ):
             reservation_vals.update(
                 {"board_service_room_id": reservation_data.boardServiceId or False}
             )
-        if reservation_data.pricelistId:
+        if (
+            reservation_data.pricelistId
+            and reservation_data.pricelistId != reservation.pricelist_id.id
+        ):
             reservation_vals.update({"pricelist_id": reservation_data.pricelistId})
-        if reservation_data.adults:
+        if reservation_data.adults and reservation_data.adults != reservation.adults:
             reservation_vals.update({"adults": reservation_data.adults})
-        if reservation_data.children is not None:
+        if (
+            reservation_data.children is not None
+            and reservation_data.children != reservation.children
+        ):
             reservation_vals.update({"children": reservation_data.children})
-        if reservation_data.segmentationId is not None:
+        if (
+            reservation_data.segmentationId is not None
+            and reservation_data.segmentationId not in reservation.segmentation_ids.ids
+        ):
             if reservation_data.segmentationId != 0:
                 reservation_vals.update(
                     {"segmentation_ids": [(6, 0, [reservation_data.segmentationId])]}
                 )
             else:
                 reservation_vals.update({"segmentation_ids": [(5, 0, 0)]})
-        if reservation_data.checkin:
+        if (
+            reservation_data.roomTypeId
+            and reservation_data.roomTypeId != reservation.room_type_id.id
+        ):
+            reservation_vals.update({"room_type_id": reservation_data.roomTypeId})
+        if reservation_data.checkin and reservation_data.checkin != reservation.checkin:
             reservation_vals.update({"checkin": reservation_data.checkin})
-        if reservation_data.checkout:
+        if (
+            reservation_data.checkout
+            and reservation_data.checkout != reservation.checkout
+        ):
             reservation_vals.update({"checkout": reservation_data.checkout})
-        if reservation_data.partnerName:
+        if (
+            reservation_data.partnerName
+            and reservation_data.partnerName != reservation.partner_name
+        ):
             reservation_vals.update({"partner_name": reservation_data.partnerName})
-        if reservation_data.partnerEmail:
+        if (
+            reservation_data.partnerEmail
+            and reservation_data.partnerEmail != reservation.email
+        ):
             reservation_vals.update({"email": reservation_data.partnerEmail})
-        if reservation_data.partnerPhone:
+        if (
+            reservation_data.partnerPhone
+            and reservation_data.partnerPhone != reservation.mobile
+        ):
             reservation_vals.update({"mobile": reservation_data.partnerPhone})
-        if reservation_data.partnerId:
+        if (
+            reservation_data.partnerId
+            and reservation_data.partnerId != reservation.partner_id.id
+        ):
             if reservation_data.partnerId != 0:
                 reservation_vals.update({"partner_id": reservation_data.partnerId})
             else:
