@@ -589,11 +589,6 @@ class PmsReservation(models.Model):
         column2="account_analytic_tag_id",
         domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
     )
-    analytic_line_ids = fields.One2many(
-        string="Analytic lines",
-        comodel_name="account.analytic.line",
-        inverse_name="so_line",
-    )
     price_subtotal = fields.Monetary(
         string="Subtotal",
         help="Subtotal price without taxes",
