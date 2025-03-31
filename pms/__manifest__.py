@@ -30,6 +30,7 @@
         "queue_job",
         "web_timeline",
         "partner_identification",
+        "sale",
     ],
     "data": [
         "security/pms_security.xml",
