@@ -2088,6 +2088,7 @@ msgstr "Acción Necesaria"
 #: model:ir.model.fields,field_description:pms.field_pms_room__active
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__active
 #: model:ir.model.fields,field_description:pms.field_pms_room_type_class__active
+#: model:ir.model.fields,field_description:pms.field_pms_sale_channel__active
 #: model:ir.model.fields,field_description:pms.field_pms_team_member__active
 msgid "Active"
 msgstr "Activo"
@@ -2542,12 +2543,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_service__analytic_tag_ids
 msgid "Analytic Tags"
 msgstr "Etiquetas Analíticas"
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_folio_sale_line__analytic_line_ids
-#: model:ir.model.fields,field_description:pms.field_pms_reservation__analytic_line_ids
-msgid "Analytic lines"
-msgstr "Líneas Analíticas"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
@@ -4341,11 +4336,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_detail
 msgid "Current state of this reservation"
 msgstr "Actual estado de la reserva"
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_folio_sale_line__product_custom_attribute_value_ids
-msgid "Custom Values"
-msgstr "Valores Personalizados"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__partner_id
@@ -13893,6 +13883,12 @@ msgstr ""
 "independiente,\n"
 "                                puede seleccionarlo en el asistente de "
 "facturación"
+
+#~ msgid "Analytic lines"
+#~ msgstr "Líneas Analíticas"
+
+#~ msgid "Custom Values"
+#~ msgstr "Valores Personalizados"
 
 #, python-format
 #~ msgid "Dropdown menu"
