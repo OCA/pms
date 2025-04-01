@@ -41,3 +41,4 @@ from . import test_shared_room
 
 # from . import test_automated_mails
 from . import test_pms_service
+from . import test_pms_tourist_tax
