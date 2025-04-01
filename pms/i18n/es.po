@@ -2551,6 +2551,20 @@ msgid "Applicable on"
 msgstr "Aplicable en"
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room_type__tourist_tax_max_age
+#: model:ir.model.fields,help:pms.field_product_product__tourist_tax_max_age
+#: model:ir.model.fields,help:pms.field_product_template__tourist_tax_max_age
+msgid "Applies only to guests up to this age"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room_type__tourist_tax_min_age
+#: model:ir.model.fields,help:pms.field_product_product__tourist_tax_min_age
+#: model:ir.model.fields,help:pms.field_product_template__tourist_tax_min_age
+msgid "Applies only to guests with this age or older"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_on_all_week
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_on_all_week
 msgid "Apply Availability Rule for the whole week"
@@ -2624,6 +2638,13 @@ msgid "Apply From"
 msgstr "Aplicar desde"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__tourist_tax_apply_from_night
+#: model:ir.model.fields,field_description:pms.field_product_product__tourist_tax_apply_from_night
+#: model:ir.model.fields,field_description:pms.field_product_template__tourist_tax_apply_from_night
+msgid "Apply From Night"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_price
 msgid "Apply Price update"
 msgstr "Aplicar Actualización de precios"
@@ -2645,6 +2666,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__change_to_date
 msgid "Apply To"
 msgstr "Aplicar a"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__tourist_tax_apply_to_night
+#: model:ir.model.fields,field_description:pms.field_product_product__tourist_tax_apply_to_night
+#: model:ir.model.fields,field_description:pms.field_product_template__tourist_tax_apply_to_night
+msgid "Apply Until Night"
+msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
@@ -4974,20 +5002,6 @@ msgid "Domain"
 msgstr "Dominio"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_room_type__occupancy_domain
-#: model:ir.model.fields,help:pms.field_product_product__occupancy_domain
-#: model:ir.model.fields,help:pms.field_product_template__occupancy_domain
-msgid "Domain to filter checkins"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_room_type__nights_domain
-#: model:ir.model.fields,help:pms.field_product_product__nights_domain
-#: model:ir.model.fields,help:pms.field_product_template__nights_domain
-msgid "Domain to filter reservations"
-msgstr ""
-
-#. module: pms
 #: model:pms.room.type,name:pms.pms_room_type_double
 #: model:product.product,name:pms.pms_room_type_double_product_product
 msgid "Double"
@@ -5153,6 +5167,13 @@ msgstr "Asistente de redacción de correo electrónico"
 #: model:ir.model.fields,field_description:pms.field_pms_property__employee
 msgid "Employee"
 msgstr "Empleado/a"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__tourist_tax_date_end
+#: model:ir.model.fields,field_description:pms.field_product_product__tourist_tax_date_end
+#: model:ir.model.fields,field_description:pms.field_product_template__tourist_tax_date_end
+msgid "End Date (Annual)"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_product_pricelist_item__date_end_consumption
@@ -6410,13 +6431,6 @@ msgid "Indicates how much products can consumed in one day"
 msgstr "Indica cuántos productos se pueden consumir en un día"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_room_type__touristic_calculation
-#: model:ir.model.fields,help:pms.field_product_product__touristic_calculation
-#: model:ir.model.fields,help:pms.field_product_template__touristic_calculation
-msgid "Indicates how the tourist tax is calculated"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__invoice_to_agency
 #: model:ir.model.fields,help:pms.field_res_partner__invoice_to_agency
 #: model:ir.model.fields,help:pms.field_res_users__invoice_to_agency
@@ -7647,6 +7661,13 @@ msgid "Max. days InTime before Checkin"
 msgstr "Máximo de días a tiempo antes del Checkin"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__tourist_tax_max_age
+#: model:ir.model.fields,field_description:pms.field_product_product__tourist_tax_max_age
+#: model:ir.model.fields,field_description:pms.field_product_template__tourist_tax_max_age
+msgid "Maximum Age"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__max_amount_simplified_invoice
 msgid "Maximum amount to create the simplified invoice"
 msgstr "Importe máximo para crear la factura simplificada"
@@ -7768,6 +7789,13 @@ msgstr "Min. Estancia Llegada no puede ser menor que cero"
 #, python-format
 msgid "Min. Stay can't be less than zero"
 msgstr "La estancia mínima no puede ser menor que cero"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__tourist_tax_min_age
+#: model:ir.model.fields,field_description:pms.field_product_product__tourist_tax_min_age
+#: model:ir.model.fields,field_description:pms.field_product_template__tourist_tax_min_age
+msgid "Minimum Age"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__orderpoint_ids
@@ -8014,19 +8042,25 @@ msgid "Next Activity Type"
 msgstr "Siguiente tipo de actividad"
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room_type__tourist_tax_apply_from_night
+#: model:ir.model.fields,help:pms.field_product_product__tourist_tax_apply_from_night
+#: model:ir.model.fields,help:pms.field_product_template__tourist_tax_apply_from_night
+msgid "Night number the rule starts applying (e.g., 1 = first night)"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room_type__tourist_tax_apply_to_night
+#: model:ir.model.fields,help:pms.field_product_product__tourist_tax_apply_to_night
+#: model:ir.model.fields,help:pms.field_product_template__tourist_tax_apply_to_night
+msgid "Night number the rule stops applying (optional)"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__reservation_line_ids
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__nights
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__nights
-#: model:ir.model.fields.selection,name:pms.selection__product_template__touristic_calculation__nights
 msgid "Nights"
 msgstr "Noches"
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_room_type__nights_domain
-#: model:ir.model.fields,field_description:pms.field_product_product__nights_domain
-#: model:ir.model.fields,field_description:pms.field_product_template__nights_domain
-msgid "Nights domain"
-msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
@@ -8322,23 +8356,6 @@ msgstr "Número de mensajes no leídos"
 msgid ""
 "Number total of children there in guest list,whose presence counts or not"
 msgstr "Número total de niños en el roomins"
-
-#. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__product_template__touristic_calculation__occupany
-msgid "Occupancy"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__product_template__touristic_calculation__occupancyandnights
-msgid "Occupancy and Nights"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_room_type__occupancy_domain
-#: model:ir.model.fields,field_description:pms.field_product_product__occupancy_domain
-#: model:ir.model.fields,field_description:pms.field_product_template__occupancy_domain
-msgid "Occupancy domain"
-msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__occupied_room
@@ -11430,6 +11447,13 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__tourist_tax_date_start
+#: model:ir.model.fields,field_description:pms.field_product_product__tourist_tax_date_start
+#: model:ir.model.fields,field_description:pms.field_product_template__tourist_tax_date_start
+msgid "Start Date (Annual)"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_product_pricelist_item__date_start_consumption
 msgid "Start Date Consumption"
 msgstr "Fecha de Inicio consumición"
@@ -12976,14 +13000,7 @@ msgstr "Precio Total"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.product_template_view_form
-msgid "Tourist tax configuration"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_room_type__touristic_calculation
-#: model:ir.model.fields,field_description:pms.field_product_product__touristic_calculation
-#: model:ir.model.fields,field_description:pms.field_product_template__touristic_calculation
-msgid "Touristic calculation"
+msgid "Tourist Tax"
 msgstr ""
 
 #. module: pms
