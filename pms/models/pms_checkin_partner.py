@@ -796,8 +796,11 @@ class PmsCheckinPartner(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
-        for record in self:
-            record.reservation_id._update_tourist_tax_service()
+        reservations = self.mapped("reservation_id")
+        for reservation in reservations:
+            tourist_tax_services_cmds = reservation._compute_tourist_tax_lines()
+            if tourist_tax_services_cmds:
+                reservation.write({"service_ids": tourist_tax_services_cmds})
         return res
 
     def unlink(self):

@@ -1,6 +1,10 @@
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from datetime import date
+
+import babel
+
 from odoo import api, fields, models
 
 
@@ -17,8 +21,8 @@ class ProductTemplate(models.Model):
         relation="product_template_pms_property_rel",
         column1="product_tmpl_id",
         column2="pms_property_id",
-        ondelete="restrict",
         check_pms_properties=True,
+        ondelete="restrict",
     )
     per_day = fields.Boolean(
         string="Unit increment per day",
@@ -65,25 +69,30 @@ class ProductTemplate(models.Model):
         help="Indicates if that product is a tourist tax",
         default=False,
     )
-    touristic_calculation = fields.Selection(
-        string="Touristic calculation",
-        help="Indicates how the tourist tax is calculated",
-        selection=[
-            ("occupany", "Occupancy"),
-            ("nights", "Nights"),
-            ("occupancyandnights", "Occupancy and Nights"),
-        ],
-        default="occupancyandnights",
+    tourist_tax_date_start = fields.Selection(
+        selection=lambda self: self._get_mmdd_selection(),
+        string="Start Date (Annual)",
+        required=False,
     )
-    occupancy_domain = fields.Char(
-        string="Occupancy domain",
-        help="Domain to filter checkins",
-        default="",
+    tourist_tax_date_end = fields.Selection(
+        selection=lambda self: self._get_mmdd_selection(),
+        string="End Date (Annual)",
+        required=False,
     )
-    nights_domain = fields.Char(
-        string="Nights domain",
-        help="Domain to filter reservations",
-        default="[('state', '!=', 'cancel')]",
+    tourist_tax_apply_from_night = fields.Integer(
+        string="Apply From Night",
+        default=1,
+        help="Night number the rule starts applying (e.g., 1 = first night)",
+    )
+    tourist_tax_apply_to_night = fields.Integer(
+        string="Apply Until Night",
+        help="Night number the rule stops applying (optional)",
+    )
+    tourist_tax_min_age = fields.Integer(
+        string="Minimum Age", help="Applies only to guests with this age or older"
+    )
+    tourist_tax_max_age = fields.Integer(
+        string="Maximum Age", help="Applies only to guests up to this age"
     )
     property_daily_limits = fields.One2many(
         string="Daily Limits per Property",
@@ -117,3 +126,37 @@ class ProductTemplate(models.Model):
                 record.id,
                 record.daily_limit,
             )
+
+    def write(self, vals):
+        if vals.get("is_tourist_tax") is True:
+            vals["is_pms_available"] = True
+            vals["per_day"] = True
+            vals["consumed_on"] = "before"
+        return super(ProductTemplate, self).write(vals)
+
+    def _get_mmdd_selection(self):
+        lang = self.env.lang or "en_US"
+        days_by_month = {
+            1: 31,
+            2: 29,
+            3: 31,
+            4: 30,
+            5: 31,
+            6: 30,
+            7: 31,
+            8: 31,
+            9: 30,
+            10: 31,
+            11: 30,
+            12: 31,
+        }
+
+        options = []
+        for month in range(1, 13):
+            for day in range(1, days_by_month[month] + 1):
+                mmdd = f"{month:02d}-{day:02d}"
+                dt = date(2024, month, day)  # Dummy year
+                label = babel.dates.format_date(dt, format="d MMMM", locale=lang)
+                options.append((mmdd, label.capitalize()))
+                # Capitalize first letter for consistency
+        return options
