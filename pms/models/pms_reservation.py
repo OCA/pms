@@ -7,7 +7,6 @@ import time
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools.safe_eval import safe_eval
 
 _logger = logging.getLogger(__name__)
 
@@ -2058,8 +2057,14 @@ class PmsReservation(models.Model):
                 record.action_cancel()
 
             record._check_services(vals)
-            record._add_tourist_tax_service()
-        return records
+            tourist_tax_services_cmds = record._compute_tourist_tax_lines()
+            if tourist_tax_services_cmds:
+                record.write(
+                    {
+                        "service_ids": tourist_tax_services_cmds,
+                    }
+                )
+        return record
 
     def write(self, vals):
         if (
@@ -2123,13 +2128,20 @@ class PmsReservation(models.Model):
                 "sale_channel_origin_id"
             ]
 
-        self._check_services(vals)
-        # Only check if adult to avoid to check capacity in intermediate states (p.e. flush)
-        # that not take access to possible extra beds service in vals
-        if "adults" in vals:
-            self._check_capacity()
-        if "checkin" in vals or "checkout" in vals or "reservation_line_ids" in vals:
-            self._update_tourist_tax_service()
+        for record in self:
+            record._check_services(vals)
+            # Only check if adult to avoid to check capacity in intermediate states (p.e. flush)
+            # that not take access to possible extra beds service in vals
+            if "adults" in vals:
+                record._check_capacity()
+            if (
+                "checkin" in vals
+                or "checkout" in vals
+                or "reservation_line_ids" in vals
+            ):
+                tourist_tax_services_cmds = record._compute_tourist_tax_lines()
+                if tourist_tax_services_cmds:
+                    record.write({"service_ids": tourist_tax_services_cmds})
         return res
 
     def _get_folio_vals(self, reservation_vals):
@@ -2479,138 +2491,184 @@ class PmsReservation(models.Model):
             "url": self.get_portal_url(),
         }
 
-    def _add_tourist_tax_service(self):
-        for record in self:
-            tourist_tax_products = self.env["product.product"].search(
-                [("is_tourist_tax", "=", True)]
-            )
-            for product in tourist_tax_products:
-                if product.touristic_calculation == "occupancy":
-                    checkins = record.checkin_partner_ids.filtered_domain(
-                        safe_eval(product.occupancy_domain)
-                    )
-                    quantity = len(checkins)
-                elif product.touristic_calculation == "nights":
-                    if not record.filtered_domain(safe_eval(product.nights_domain)):
-                        continue
-                    quantity = (record.checkout - record.checkin).days
-                elif product.touristic_calculation == "occupancyandnights":
-                    checkins = record.checkin_partner_ids.filtered_domain(
-                        safe_eval(product.occupancy_domain)
-                    )
-                    if not record.filtered_domain(safe_eval(product.nights_domain)):
-                        continue
-                    quantity = len(checkins) * (record.checkout - record.checkin).days
-                else:
-                    quantity = 1
+    def _compute_tourist_tax_lines(self):
+        """Return ORM commands to sync tourist tax services on this reservation."""
+        self.ensure_one()
 
-                if quantity == 0:
+        tax_products = self._get_tourist_tax_products()
+        if not tax_products:
+            return []
+
+        nightly_dates = self._get_nightly_dates()
+        grouped_lines = self._build_grouped_tax_lines(tax_products, nightly_dates)
+        existing_services = self._get_existing_tourist_tax_services()
+        return self._build_service_commands(grouped_lines, existing_services)
+
+    def _get_tourist_tax_products(self):
+        return self.env["product.product"].search([("is_tourist_tax", "=", True)])
+
+    def _get_nightly_dates(self):
+        return [
+            self.checkin + datetime.timedelta(days=i)
+            for i in range((self.checkout - self.checkin).days)
+        ]
+
+    def _build_grouped_tax_lines(self, products, nightly_dates):
+        grouped = {}
+        for night_index, night_date in enumerate(nightly_dates):
+            night_number = night_index + 1
+            for product in products:
+                if not self._should_apply_product_for_night(
+                    product, night_date, night_number
+                ):
                     continue
 
-                product = product.with_context(
-                    lang=record.partner_id.lang,
-                    partner=record.partner_id.id,
-                    quantity=quantity,
-                    date=record.date_order,
-                    consumption_date=record.checkin,
-                    pricelist=record.pricelist_id.id,
-                    uom=product.uom_id.id,
-                    property=record.pms_property_id.id,
+                quantity = (
+                    self._get_applicable_guest_count(product)
+                    if product.per_person
+                    else 1
                 )
-                price = self.env["account.tax"]._fix_tax_included_price_company(
-                    product.price,
-                    product.taxes_id,
-                    record.tax_ids,
-                    record.pms_property_id.company_id,
-                )
+                price_unit = self._get_product_price(product, quantity, night_date)
+                key = (product.id, price_unit)
 
-                self.env["pms.service"].create(
-                    {
-                        "reservation_id": record.id,
-                        "folio_id": record.folio_id.id,
-                        "product_id": product.id,
-                        "name": product.name,
-                        "service_line_ids": [
+                line = {
+                    "product_id": product.id,
+                    "day_qty": quantity,
+                    "price_unit": price_unit,
+                    "date": night_date,
+                }
+                grouped.setdefault(key, []).append(line)
+        return grouped
+
+    def _should_apply_product_for_night(self, product, night_date, night_number):
+        return (
+            self._is_mmdd_in_range(
+                night_date, product.tourist_tax_date_start, product.tourist_tax_date_end
+            )
+            and night_number >= product.tourist_tax_apply_from_night
+            and (
+                not product.tourist_tax_apply_to_night
+                or night_number <= product.tourist_tax_apply_to_night
+            )
+        )
+
+    def _get_applicable_guest_count(self, product):
+        return len(
+            self._get_guests_by_age(
+                product.tourist_tax_min_age,
+                product.tourist_tax_max_age,
+            )
+        )
+
+    def _get_product_price(self, product, quantity, night_date):
+        priced = product.with_context(
+            lang=self.partner_id.lang,
+            partner=self.partner_id.id,
+            quantity=quantity,
+            date=fields.Date.today(),
+            consumption_date=night_date,
+            pricelist=self.pricelist_id.id,
+            uom=product.uom_id.id,
+            property=self.pms_property_id.id,
+        )
+        return self.env["account.tax"]._fix_tax_included_price_company(
+            priced.price,
+            priced.taxes_id,
+            self.tax_ids,
+            self.pms_property_id.company_id,
+        )
+
+    def _get_existing_tourist_tax_services(self):
+        return self.service_ids.filtered(
+            lambda s: s.product_id.product_tmpl_id.is_tourist_tax
+        )
+
+    def _build_service_commands(self, grouped_lines, existing_services):
+        cmds = []
+        existing_by_product = {s.product_id.id: s for s in existing_services}
+        new_product_ids = {product_id for product_id, _ in grouped_lines}
+
+        # Remove services no longer needed
+        for product_id in existing_by_product.keys() - new_product_ids:
+            cmds.append((2, existing_by_product[product_id].id))
+
+        for (product_id, _price_unit), new_lines in grouped_lines.items():
+            product = self.env["product.product"].browse(product_id)
+            service = existing_by_product.get(product_id)
+
+            if not service:
+                cmds.append(
+                    (
+                        0,
+                        0,
+                        {
+                            "reservation_id": self.id,
+                            "folio_id": self.folio_id.id,
+                            "product_id": product.id,
+                            "name": product.name,
+                            "per_day": True,
+                            "service_line_ids": [(0, 0, line) for line in new_lines],
+                        },
+                    )
+                )
+            else:
+                existing_lines = {line.date: line for line in service.service_line_ids}
+                new_lines_by_date = {line["date"]: line for line in new_lines}
+                line_cmds = []
+
+                for date in existing_lines.keys() & new_lines_by_date.keys():
+                    existing = existing_lines[date]
+                    new = new_lines_by_date[date]
+                    if (
+                        existing.day_qty != new["day_qty"]
+                        or existing.price_unit != new["price_unit"]
+                    ):
+                        line_cmds.append(
                             (
-                                0,
-                                0,
+                                1,
+                                existing.id,
                                 {
-                                    "product_id": product.id,
-                                    "day_qty": quantity,
-                                    "price_unit": price,
-                                    "date": record.checkin,
+                                    "day_qty": new["day_qty"],
+                                    "price_unit": new["price_unit"],
                                 },
                             )
-                        ],
-                    }
-                )
+                        )
+                for date in existing_lines.keys() - new_lines_by_date.keys():
+                    line_cmds.append((2, existing_lines[date].id))
+                for date in new_lines_by_date.keys() - existing_lines.keys():
+                    line_cmds.append((0, 0, new_lines_by_date[date]))
 
-    def _update_tourist_tax_service(self):
-        for record in self:
-            services = self.env["pms.service"].search(
-                [
-                    ("reservation_id", "=", record.id),
-                    ("product_id.is_tourist_tax", "=", True),
-                ]
+                if line_cmds:
+                    cmds.append((1, service.id, {"service_line_ids": line_cmds}))
+
+        return cmds
+
+    def _get_guests_by_age(self, min_age=None, max_age=None):
+        today = fields.Date.today()
+        guests = self.checkin_partner_ids
+
+        def age(birthdate):
+            return (today - birthdate).days // 365 if birthdate else 0
+
+        filtered = guests.filtered(
+            lambda g: (
+                (not min_age or age(g.birthdate_date) >= min_age)
+                and (not max_age or age(g.birthdate_date) <= max_age)
             )
-            for service in services:
-                product = service.product_id
-                if product.touristic_calculation == "occupancy":
-                    checkins = record.checkin_partner_ids.filtered_domain(
-                        safe_eval(product.occupancy_domain)
-                    )
-                    quantity = len(checkins)
-                elif product.touristic_calculation == "nights":
-                    if not record.filtered_domain(safe_eval(product.nights_domain)):
-                        service.unlink()
-                        continue
-                    quantity = (record.checkout - record.checkin).days
-                elif product.touristic_calculation == "occupancyandnights":
-                    checkins = record.checkin_partner_ids.filtered_domain(
-                        safe_eval(product.occupancy_domain)
-                    )
-                    if not record.filtered_domain(safe_eval(product.nights_domain)):
-                        service.unlink()
-                        continue
-                    quantity = len(checkins) * (record.checkout - record.checkin).days
-                else:
-                    quantity = 1
+        )
+        return filtered
 
-                if quantity == 0:
-                    service.unlink()
-                    continue
+    def _is_mmdd_in_range(self, check_date, start_mmdd, end_mmdd):
+        """Check if a date falls between two MM-DD values,
+        supporting wrap-around (e.g. Nov–Feb)."""
+        if not start_mmdd or not end_mmdd:
+            return True
 
-                product = product.with_context(
-                    lang=record.partner_id.lang,
-                    partner=record.partner_id.id,
-                    quantity=quantity,
-                    date=record.date_order,
-                    consumption_date=record.checkin,
-                    pricelist=record.pricelist_id.id,
-                    uom=product.uom_id.id,
-                    property=record.pms_property_id.id,
-                )
-                price = self.env["account.tax"]._fix_tax_included_price_company(
-                    product.price,
-                    product.taxes_id,
-                    record.tax_ids,
-                    record.pms_property_id.company_id,
-                )
+        check_md = (check_date.month, check_date.day)
+        start_md = tuple(map(int, start_mmdd.split("-")))
+        end_md = tuple(map(int, end_mmdd.split("-")))
 
-                service.write(
-                    {
-                        "service_line_ids": [
-                            (5, 0, 0),
-                            (
-                                0,
-                                0,
-                                {
-                                    "product_id": product.id,
-                                    "day_qty": quantity,
-                                    "price_unit": price,
-                                    "date": record.checkin,
-                                },
-                            ),
-                        ]
-                    }
-                )
+        if start_md <= end_md:
+            return start_md <= check_md <= end_md
+        else:
+            return check_md >= start_md or check_md <= end_md

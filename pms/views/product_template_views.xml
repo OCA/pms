@@ -35,6 +35,30 @@
                             />
                         </group>
                     </group>
+                    <group
+                        string="Tourist Tax"
+                        colspan="4"
+                        attrs="{'invisible': [('is_tourist_tax', '=', False)]}"
+                    >
+                        <group>
+                            <field name="tourist_tax_date_start" />
+                            <field name="tourist_tax_date_end" />
+                        </group>
+                        <group>
+                            <field name="tourist_tax_apply_from_night" />
+                            <field name="tourist_tax_apply_to_night" />
+                        </group>
+                        <group>
+                            <field
+                                name="tourist_tax_min_age"
+                                attrs="{'invisible': [('per_person', '=', False)]}"
+                            />
+                            <field
+                                name="tourist_tax_max_age"
+                                attrs="{'invisible': [('per_person', '=', False)]}"
+                            />
+                        </group>
+                    </group>
                     <group>
                         <field
                             name="property_daily_limits"
@@ -51,24 +75,6 @@
                                 <field name="field_name" invisible="1" />
                             </tree>
                         </field>
-                    </group>
-                </page>
-                <page
-                    string="Tourist tax configuration"
-                    attrs="{'invisible': [('is_tourist_tax', '=', False)]}"
-                >
-                    <group>
-                        <field name="touristic_calculation" />
-                        <field
-                            name="occupancy_domain"
-                            widget="domain"
-                            options="{'model': 'pms.checkin.partner'}"
-                        />
-                        <field
-                            name="nights_domain"
-                            widget="domain"
-                            options="{'model': 'pms.reservation'}"
-                        />
                     </group>
                 </page>
             </xpath>
