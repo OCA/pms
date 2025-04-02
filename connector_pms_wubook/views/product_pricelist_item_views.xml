@@ -8,20 +8,19 @@
         <field name="inherit_id" ref="connector_pms.product_pricelist_item_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//notebook/page[@name='connector']">
-                <group string="Wubook">
-                    <field name="channel_wubook_bind_ids" nolabel="1">
-                        <tree editable="bottom">
-                            <field
-                                name="backend_id"
-                                attrs="{'readonly': [('id', '!=', False)]}"
-                            />
-                            <field name="external_id" />
-                            <field name="sync_date" />
-                            <field name="synced_export" />
-                            <field name="sync_date_export" />
-                        </tree>
-                    </field>
-                </group>
+                <separator string="Wubook" />
+                <field name="channel_wubook_bind_ids" nolabel="1">
+                    <tree editable="bottom">
+                        <field
+                            name="backend_id"
+                            attrs="{'readonly': [('id', '!=', False)]}"
+                        />
+                        <field name="external_id" />
+                        <field name="sync_date" />
+                        <field name="synced_export" />
+                        <field name="sync_date_export" />
+                    </tree>
+                </field>
             </xpath>
         </field>
     </record>
