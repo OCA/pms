@@ -1708,13 +1708,40 @@ class PmsReservationService(Component):
                 + reservation_record.pms_property_id.ine_category_id.type
                 + ")"
             )
+        pms_property_name = reservation_record.pms_property_id.name
+        pms_property_street = reservation_record.pms_property_id.street
+        pms_property_city = reservation_record.pms_property_id.city
+        pms_property_zip = reservation_record.pms_property_id.zip
+        pms_property_state = (
+            reservation_record.pms_property_id.state_id.name
+            if reservation_record.pms_property_id.state_id
+            else ""
+        )
+        pms_property_image = url_image_pms_api_rest(
+            "pms.property",
+            reservation_record.pms_property_id.id,
+            "hotel_image_pms_api_rest",
+        )
+        if reservation_record.preferred_room_id.address_is_independent:
+            pms_property_name = reservation_record.preferred_room_id.name
+            pms_property_street = reservation_record.preferred_room_id.street
+            pms_property_city = reservation_record.preferred_room_id.city
+            pms_property_zip = reservation_record.preferred_room_id.zip
+            pms_property_state = reservation_record.preferred_room_id.state_id.name
+            pms_room_image = url_image_pms_api_rest(
+                "pms.room",
+                reservation_record.preferred_room_id.id,
+                "image_1920",
+            )
+            if pms_room_image != '':
+                pms_property_image = pms_room_image
 
         return self.env.datamodels["pms.folio.public.info"](
-            pmsPropertyName=reservation_record.pms_property_id.name,
-            pmsPropertyStreet=reservation_record.pms_property_id.street,
-            pmsPropertyCity=reservation_record.pms_property_id.city,
-            pmsPropertyZip=reservation_record.pms_property_id.zip,
-            pmsPropertyState=reservation_record.pms_property_id.state_id.name,
+            pmsPropertyName=pms_property_name,
+            pmsPropertyStreet=pms_property_street,
+            pmsPropertyCity=pms_property_city,
+            pmsPropertyZip=pms_property_zip,
+            pmsPropertyState=pms_property_state,
             pmsPropertyPhoneNumber=reservation_record.pms_property_id.phone,
             pmsPropertyLogo=url_image_pms_api_rest(
                 "pms.property",
@@ -1722,11 +1749,7 @@ class PmsReservationService(Component):
                 "logo",
             ),
             pmsPropertyIneCategory=ine_category,
-            pmsPropertyImage=url_image_pms_api_rest(
-                "pms.property",
-                reservation_record.pms_property_id.id,
-                "hotel_image_pms_api_rest",
-            ),
+            pmsPropertyImage=pms_property_image,
             pmsPropertyIsOCRAvailable=True
             if reservation_record.pms_property_id.ocr_checkin_supplier
             else False,
