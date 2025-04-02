@@ -14,41 +14,38 @@
                     </group>
                     <notebook>
                         <page name="mappings" string="Mappings">
-                            <group name="room_type_class" string="Room Type Classes">
-                                <field name="room_type_class_ids" nolabel="1">
-                                    <tree editable="bottom">
-                                        <field name="wubook_room_type" />
-                                        <field
-                                            name="room_type_shortname"
-                                            string="Shortname"
-                                            attrs="{'required': [('wubook_room_type', '!=', False)]}"
-                                        />
-                                    </tree>
-                                </field>
-                            </group>
-                            <group name="board_service" string="Board Services">
-                                <field name="board_service_ids" nolabel="1">
-                                    <tree editable="bottom">
-                                        <field name="wubook_board_service" />
-                                        <field
-                                            name="board_service_shortname"
-                                            string="Shortname"
-                                            attrs="{'required': [('wubook_board_service', '!=', False)]}"
-                                        />
-                                    </tree>
-                                </field>
-                            </group>
-                             <group name="otas" string="OTAs">
-                                <field name="ota_ids" nolabel="1">
-                                    <tree editable="bottom">
-                                        <field name="wubook_ota" />
-                                        <field
-                                            name="agency_id"
-                                            attrs="{'required': [('wubook_ota', '!=', False)]}"
-                                        />
-                                    </tree>
-                                </field>
-                            </group>
+                            <separator string="Room Type Classes" />
+                            <field name="room_type_class_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="wubook_room_type" />
+                                    <field
+                                        name="room_type_shortname"
+                                        string="Shortname"
+                                        attrs="{'required': [('wubook_room_type', '!=', False)]}"
+                                    />
+                                </tree>
+                            </field>
+                            <separator string="Board Services" />
+                            <field name="board_service_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="wubook_board_service" />
+                                    <field
+                                        name="board_service_shortname"
+                                        string="Shortname"
+                                        attrs="{'required': [('wubook_board_service', '!=', False)]}"
+                                    />
+                                </tree>
+                            </field>
+                             <separator string="OTAs" />
+                            <field name="ota_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="wubook_ota" />
+                                    <field
+                                        name="agency_id"
+                                        attrs="{'required': [('wubook_ota', '!=', False)]}"
+                                    />
+                                </tree>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>
