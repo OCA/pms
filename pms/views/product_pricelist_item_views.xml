@@ -22,9 +22,25 @@
                     options="{'no_create': True,'no_open': True}"
                 />
             </xpath>
-            <xpath expr="//field[@name='date_end']" position="after">
-                <field name="date_start_consumption" />
-                <field name="date_end_consumption" />
+            <xpath expr="//field[@name='min_quantity']" position="after">
+                <label for="date_start_consumption" string="Consumption" />
+                <div class="o_row">
+                    <field
+                        name="date_start_consumption"
+                        widget="daterange"
+                        options="{&quot;related_end_date&quot;: &quot;date_end_consumption&quot;}"
+                    />
+                    <i
+                        class="fa fa-long-arrow-right mx-2 oe_edit_only"
+                        aria-label="Arrow icon"
+                        title="Arrow"
+                    />
+                    <field
+                        name="date_end_consumption"
+                        widget="daterange"
+                        options="{&quot;related_start_date&quot;: &quot;date_start_consumption&quot;}"
+                    />
+                </div>
             </xpath>
             <xpath expr="//field[@name='product_id']" position="attributes">
                 <attribute
