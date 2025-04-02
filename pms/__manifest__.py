@@ -30,6 +30,7 @@
         "web_timeline",
         "partner_identification",
         "analytic",
+        "account",
     ],
     "data": [
         "security/pms_security.xml",
