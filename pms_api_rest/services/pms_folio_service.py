@@ -2666,6 +2666,41 @@ class PmsFolioService(Component):
         self._check_folio_access(folio_record, token)
         folio_payment_link = self._generate_payment_link(folio_record)
         reservations = self._get_folio_reservations(folio_record)
+        pms_property_name = folio_record.pms_property_id.name
+        pms_property_street = folio_record.pms_property_id.street
+        pms_property_city = folio_record.pms_property_id.city
+        pms_property_state = (
+            folio_record.pms_property_id.state_id.name
+            if folio_record.pms_property_id.state_id
+            else ""
+        )
+        pms_property_zip = folio_record.pms_property_id.zip
+        pms_property_image = url_image_pms_api_rest(
+            "pms.property",
+            folio_record.pms_property_id.id,
+            "hotel_image_pms_api_rest",
+        )
+
+        if self._check_room_addresses(folio_record):
+            reservation = self.env["pms.reservation"].sudo().browse(reservations[0].id)
+            pms_property_name = reservation.preferred_room_id.name
+            pms_property_street = reservation.preferred_room_id.street
+            pms_property_city = reservation.preferred_room_id.city
+            pms_property_state = (
+                reservation.preferred_room_id.state_id.name
+                if reservation.preferred_room_id.state_id
+                else ""
+            )
+            pms_property_zip = reservation.preferred_room_id.zip
+            if reservation.preferred_room_id.image_1920:
+                pms_room_image = url_image_pms_api_rest(
+                    "pms.room",
+                    reservation.preferred_room_id.id,
+                    "image_1920",
+                )
+                if pms_room_image != '':
+                    pms_property_image = pms_room_image
+
         folio_room_types_description_result = self._build_room_types_description(
             folio_record
         )
@@ -2677,26 +2712,20 @@ class PmsFolioService(Component):
         )
 
         return self.env.datamodels["pms.folio.public.info"](
-            pmsPropertyName=folio_record.pms_property_id.name,
-            pmsPropertyStreet=folio_record.pms_property_id.street,
-            pmsPropertyCity=folio_record.pms_property_id.city,
-            pmsPropertyState=folio_record.pms_property_id.state_id.name
-            if folio_record.pms_property_id.state_id
-            else "",
+            pmsPropertyName=pms_property_name,
+            pmsPropertyStreet=pms_property_street,
+            pmsPropertyCity=pms_property_city,
+            pmsPropertyState=pms_property_state,
             pmsPropertyPhoneNumber=folio_record.pms_property_id.phone,
             pmsPropertyLogo=url_image_pms_api_rest(
                 "pms.property", folio_record.pms_property_id.id, "logo"
             ),
-            pmsPropertyImage=url_image_pms_api_rest(
-                "pms.property",
-                folio_record.pms_property_id.id,
-                "hotel_image_pms_api_rest",
-            ),
+            pmsPropertyImage=pms_property_image,
             pmsPropertyIsOCRAvailable=bool(
                 folio_record.pms_property_id.ocr_checkin_supplier
             ),
             pmsPropertyPrivacyPolicy=folio_record.pms_property_id.privacy_policy or "",
-            pmsPropertyZip=folio_record.pms_property_id.zip,
+            pmsPropertyZip=pms_property_zip,
             pmsPropertyIneCategory=ine_category,
             folioPartnerName=folio_record.partner_name,
             folioReference=folio_record.name,
@@ -2712,3 +2741,30 @@ class PmsFolioService(Component):
             ),
             reservations=reservations,
         )
+
+    def _check_room_addresses(self, folio_record):
+        first_room = folio_record.reservation_ids[0].preferred_room_id
+
+        is_all_rooms_same_addr = all(
+            room.preferred_room_id.address_is_independent
+            and room.preferred_room_id.street == first_room.street
+            and room.preferred_room_id.city == first_room.city
+            and room.preferred_room_id.state_id == first_room.state_id
+            and room.preferred_room_id.zip == first_room.zip
+            and (
+                room.preferred_room_id.street != folio_record.pms_property_id.street
+                or room.preferred_room_id.city != folio_record.pms_property_id.city
+                or room.preferred_room_id.state_id != folio_record.pms_property_id.state_id
+                or room.preferred_room_id.zip != folio_record.pms_property_id.zip
+            )
+            for room in folio_record.reservation_ids
+        )
+
+        is_room_property_same_addr = (
+            first_room.street == folio_record.pms_property_id.street
+            and first_room.city == folio_record.pms_property_id.city
+            and first_room.state_id == folio_record.pms_property_id.state_id
+            and first_room.zip == folio_record.pms_property_id.zip
+        )
+
+        return is_all_rooms_same_addr and not is_room_property_same_addr
