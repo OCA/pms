@@ -47,7 +47,7 @@ class PmsProperty(models.Model):
 
     confirmed_reservation_color = fields.Char(
         string="Confirmed Reservation",
-        default="rgba(1,182,227)",
+        default="rgba(30,158,217)",
         help="Color for confirm reservations in the planning.",
     )
 
