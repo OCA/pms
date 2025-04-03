@@ -14,6 +14,4 @@ def post_init_hook(cr, registry):
 
     if first_subdomain:
         app_url = f"https://{first_subdomain}.roomdoo.com"
-        env["ir.config_parameter"].sudo().set_param(
-            "config_param_roomdoo_app_url", app_url
-        )
+        env["ir.config_parameter"].sudo().set_param("roomdoo_app_url", app_url)
