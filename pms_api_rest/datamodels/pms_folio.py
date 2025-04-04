@@ -115,3 +115,13 @@ class PmsFolioPublicInfo(Datamodel):
         NestedModel("pms.reservation.public.info"), required=True, allow_none=False
     )
     cardexWarning = fields.String(required=False, allow_none=True)
+
+
+class PmsFolioPaymentLinkInfo(Datamodel):
+    _name = "pms.folio.payment.link.info"
+    paymentLink = fields.String(required=True, allow_none=False)
+
+
+class PmsFolioPaymentLinkSearchParam(Datamodel):
+    _name = "pms.folio.payment.link.search.param"
+    amount = fields.Float(required=False, allow_none=True)
