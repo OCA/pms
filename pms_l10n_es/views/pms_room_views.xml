@@ -26,4 +26,16 @@
             </xpath>
         </field>
     </record>
+
+    <record model="ir.ui.view" id="pms_room_view_tree">
+        <field name="name">pms.room.tree</field>
+        <field name="model">pms.room</field>
+        <field name="inherit_id" ref="pms.pms_room_view_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="in_ine" />
+            </xpath>
+        </field>
+    </record>
+
 </odoo>
