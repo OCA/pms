@@ -1,7 +1,6 @@
 # Copyright 2017-2018  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import datetime
 import logging
 
 from odoo import _, api, fields, models
@@ -195,33 +194,13 @@ class PmsServiceLine(models.Model):
                 record.discount = 0
 
     # TODO: Refact method and allowed cancelled single days
-    @api.depends("service_id.reservation_id.reservation_line_ids.cancel_discount")
+    @api.depends("service_id.reservation_id.state")
     def _compute_cancel_discount(self):
         for line in self:
             line.cancel_discount = 0
             reservation = line.reservation_id
             if reservation.state == "cancel":
-                if (
-                    reservation.cancelled_reason
-                    and reservation.pricelist_id
-                    and reservation.pricelist_id.cancelation_rule_id
-                    and reservation.reservation_line_ids.mapped("cancel_discount")
-                ):
-                    if line.is_board_service:
-                        consumed_date = (
-                            line.date
-                            if line.product_id.consumed_on == "before"
-                            else line.date + datetime.timedelta(days=-1)
-                        )
-                        line.cancel_discount = (
-                            reservation.reservation_line_ids.filtered(
-                                lambda l: l.date == consumed_date
-                            ).cancel_discount
-                        )
-                    elif not line.service_id.is_cancel_penalty:
-                        line.cancel_discount = 100
-                else:
-                    line.cancel_discount = 0
+                line.cancel_discount = 100
             else:
                 line.cancel_discount = 0
 
