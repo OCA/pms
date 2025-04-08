@@ -31,6 +31,7 @@
         "partner_identification",
         "analytic",
         "account",
+        "sale",
     ],
     "data": [
         "security/pms_security.xml",
