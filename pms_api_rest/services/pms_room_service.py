@@ -50,13 +50,14 @@ class PmsRoomService(Component):
                 self.env["pms.property"].sudo().browse(room_search_param.pmsPropertyId)
             )
             pms_api_check_access(user=self.env.user, records=pms_property)
-            if not room_search_param.pricelistId:
+            if room_search_param.pricelistId:
                 pms_property = pms_property.with_context(
                     checkin=date_from,
                     checkout=date_to,
                     room_type_id=False,  # Allows to choose any available room
                     current_lines=room_search_param.currentLines,
-                    real_avail=True,
+                    pricelist_id=room_search_param.pricelistId,
+                    real_avail=False,
                 )
             else:
                 pms_property = pms_property.with_context(
@@ -64,7 +65,6 @@ class PmsRoomService(Component):
                     checkout=date_to,
                     room_type_id=False,  # Allows to choose any available room
                     current_lines=room_search_param.currentLines,
-                    pricelist_id=room_search_param.pricelistId,
                     real_avail=True,
                 )
             domain.append(("id", "in", pms_property.free_room_ids.ids))
