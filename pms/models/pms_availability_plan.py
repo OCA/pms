@@ -65,14 +65,14 @@ class PmsAvailabilityPlan(models.Model):
         reservation_len = (checkout - checkin).days
         return any(
             [
-                (0 < item.max_stay < reservation_len),
-                (0 < item.min_stay > reservation_len),
+                (0 < item.max_stay < reservation_len and item.date != checkout),
+                (0 < item.min_stay > reservation_len and item.date != checkout),
                 (0 < item.max_stay_arrival < reservation_len and checkin == item.date),
                 (0 < item.min_stay_arrival > reservation_len and checkin == item.date),
-                item.closed,
+                (item.closed and item.date != checkout),
                 (item.closed_arrival and checkin == item.date),
                 (item.closed_departure and checkout == item.date),
-                (item.quota == 0 or item.max_avail == 0),
+                ((item.quota == 0 or item.max_avail == 0) and item.date != checkout),
             ]
         )
 
