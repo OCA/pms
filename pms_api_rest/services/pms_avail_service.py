@@ -66,3 +66,66 @@ class PmsAvailService(Component):
                 )
             )
         return result_avails
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/count-free-rooms",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.avail.search.param"),
+        output_param=Datamodel("pms.avail.info.room.type", is_list=True),
+        auth="jwt_api_pms",
+    )
+    def get_count_free_rooms(self, avails_search_param):
+        domain = []
+        room_type_dict = {}
+        if avails_search_param.pmsPropertyId:
+            domain.append(("pms_property_id", "=", avails_search_param.pmsPropertyId))
+        if (
+            avails_search_param.availabilityFrom
+            and avails_search_param.availabilityTo
+            and avails_search_param.pmsPropertyId
+        ):
+            date_from = datetime.strptime(
+                avails_search_param.availabilityFrom, "%Y-%m-%d"
+            ).date()
+            date_to = datetime.strptime(
+                avails_search_param.availabilityTo, "%Y-%m-%d"
+            ).date()
+            pms_property = (
+                self.env["pms.property"].sudo().browse(avails_search_param.pmsPropertyId)
+            )
+            pms_api_check_access(user=self.env.user, records=pms_property)
+            room_types = pms_property.room_ids.mapped("room_type_id")
+            for room_type in room_types:
+                if avails_search_param.pricelistId:
+                    pms_property = pms_property.with_context(
+                        checkin=date_from,
+                        checkout=date_to,
+                        room_type_id=room_type.id,
+                        pricelist_id=avails_search_param.pricelistId,
+                        real_avail=False,
+                    )
+                else:
+                    pms_property = pms_property.with_context(
+                        checkin=date_from,
+                        checkout=date_to,
+                        room_type_id=room_type.id,
+                        real_avail=True,
+                    )
+                room_type_dict[room_type.id] = pms_property.availability
+
+        result_rooms = []
+        PmsAvailInfoRoomType = self.env.datamodels["pms.avail.info.room.type"]
+        for room_type_id, count in room_type_dict.items():
+            result_rooms.append(
+                PmsAvailInfoRoomType(
+                    roomTypeId=room_type_id,
+                    count=count,
+                )
+            )
+        return result_rooms
