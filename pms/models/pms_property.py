@@ -419,6 +419,14 @@ class PmsProperty(models.Model):
             if pricelist_id:
                 pricelist = self.env["product.pricelist"].browse(pricelist_id)
             if pricelist and pricelist.availability_plan_id and not real_avail:
+                # The availability between two dates is given in two steps:
+                # 1- the date with minimum availability is obtained for each room_type
+                # 2- the availabilities of the room_type with dispo > 0 are added
+                days = [
+                    checkin + datetime.timedelta(days=i)
+                    for i in range((checkout - checkin).days + 1)
+                ]
+                day_avail = {}
                 domain_rules.append(
                     ("availability_plan_id", "=", pricelist.availability_plan_id.id)
                 )
@@ -428,19 +436,55 @@ class PmsProperty(models.Model):
                     ["date:day"],
                     lazy=False,
                 )
-                if len(rule_groups) > 0:
-                    # If in the group per day, some room type has the sale blocked,
-                    # we must subtract from that day the availability of that room type
-                    for group in rule_groups:
-                        items = self.env["pms.availability.plan.rule"].search(
-                            group["__domain"]
-                        )
-                        for item in items:
-                            if pricelist.availability_plan_id.any_rule_applies(
-                                checkin, checkout, item
-                            ):
-                                group["plan_avail"] -= item.plan_avail
-                    count_free_rooms = min(i["plan_avail"] for i in rule_groups)
+                grouped_rules = {}
+                for group in rule_groups:
+                    date = group["date"]
+                    rt_id = (
+                        group["room_type_id"][0] if group.get("room_type_id") else None
+                    )
+                    group_avail = group["plan_avail"]
+                    items = self.env["pms.availability.plan.rule"].search(
+                        group["__domain"]
+                    )
+                    for item in items:
+                        if pricelist.availability_plan_id.any_rule_applies(
+                            checkin, checkout, item
+                        ):
+                            group_avail -= item.plan_avail
+                    grouped_rules[(date, rt_id)] = (
+                        grouped_rules.get((date, rt_id), 0) + group_avail
+                    )
+                room_types = (
+                    [self.env["pms.room.type"].browse(room_type_id)]
+                    if room_type_id
+                    else record.room_ids.mapped("room_type_id")
+                )
+                for day in days:
+                    total_avail_day = 0
+                    for rt in room_types:
+                        key = (day, rt.id)
+                        if key in grouped_rules:
+                            total_avail_day += grouped_rules[key]
+                        else:
+                            # If not rule found for the any date/room_type
+                            # we need take account the default availability
+                            # of the room type
+                            default_avail = min(
+                                filter(
+                                    lambda x: x != -1,
+                                    [
+                                        rt.default_quota,
+                                        rt.default_max_avail,
+                                        rt.total_rooms_count.filtered(
+                                            lambda r: r.pms_property_id.id == record.id
+                                        ),
+                                    ],
+                                )
+                            )
+                            total_avail_day += default_avail
+                    day_avail[day] = total_avail_day
+                if day_avail:
+                    count_free_rooms = min(day_avail.values())
             record.availability = count_free_rooms
 
     @api.model
