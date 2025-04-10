@@ -415,6 +415,12 @@ class PmsProperty(models.Model):
             if room_type_id:
                 domain_rules.append(("room_type_id", "=", room_type_id))
 
+            room_types = (
+                [self.env["pms.room.type"].browse(room_type_id)]
+                if room_type_id
+                else record.room_ids.mapped("room_type_id")
+            )
+
             pricelist = False
             if pricelist_id:
                 pricelist = self.env["product.pricelist"].browse(pricelist_id)
@@ -438,27 +444,22 @@ class PmsProperty(models.Model):
                 )
                 grouped_rules = {}
                 for group in rule_groups:
-                    date = group["date"]
-                    rt_id = (
-                        group["room_type_id"][0] if group.get("room_type_id") else None
-                    )
-                    group_avail = group["plan_avail"]
-                    items = self.env["pms.availability.plan.rule"].search(
-                        group["__domain"]
-                    )
-                    for item in items:
-                        if pricelist.availability_plan_id.any_rule_applies(
-                            checkin, checkout, item
-                        ):
-                            group_avail -= item.plan_avail
-                    grouped_rules[(date, rt_id)] = (
-                        grouped_rules.get((date, rt_id), 0) + group_avail
-                    )
-                room_types = (
-                    [self.env["pms.room.type"].browse(room_type_id)]
-                    if room_type_id
-                    else record.room_ids.mapped("room_type_id")
-                )
+                    date = datetime.datetime.strptime(
+                        group["date:day"], "%d %b %Y"
+                    ).date()
+                    for rt in room_types:
+                        group_avail = group["plan_avail"]
+                        items = self.env["pms.availability.plan.rule"].search(
+                            group["__domain"]
+                        )
+                        for item in items:
+                            if pricelist.availability_plan_id.any_rule_applies(
+                                checkin, checkout, item
+                            ):
+                                group_avail -= item.plan_avail
+                        grouped_rules[(date, rt.id)] = (
+                            grouped_rules.get((date, rt.id), 0) + group_avail
+                        )
                 for day in days:
                     total_avail_day = 0
                     for rt in room_types:
@@ -475,8 +476,15 @@ class PmsProperty(models.Model):
                                     [
                                         rt.default_quota,
                                         rt.default_max_avail,
-                                        rt.total_rooms_count.filtered(
-                                            lambda r: r.pms_property_id.id == record.id
+                                        len(
+                                            record.with_context(
+                                                checkin=day,
+                                                checkout=day + datetime.timedelta(1),
+                                                room_type_id=rt.id,
+                                                current_lines=current_lines,
+                                                pricelist_id=pricelist.id,
+                                                real_avail=True,
+                                            ).free_room_ids
                                         ),
                                     ],
                                 )
