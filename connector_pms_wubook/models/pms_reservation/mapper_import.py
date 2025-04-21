@@ -20,7 +20,7 @@ def get_room_type(mapper, room_id):
     return room_type
 
 
-def get_board_service_room_type(mapper, room_type, board):
+def get_board_service_room_type(mapper, room_type, board, pricelist_id=False):
     bd_binder = mapper.binder_for("channel.wubook.pms.board.service")
     board_service = bd_binder.to_internal(board, unwrap=True)
     assert board_service, (
@@ -28,21 +28,36 @@ def get_board_service_room_type(mapper, room_type, board):
         "PmsRoomTypeImporter._import_dependencies or "
         "PmsFolioImporter._import_dependencies.\n" % (board,)
     )
-    board_service_room_type_id = room_type.board_service_room_type_ids.filtered(
+    board_services_candidates = room_type.board_service_room_type_ids.filtered(
         lambda x: x.pms_board_service_id == board_service
         and x.pms_property_id == mapper.backend_record.pms_property_id
     )
-    if not board_service_room_type_id:
+    if pricelist_id:
+        board_services_candidates = board_services_candidates.filtered(
+            lambda x: pricelist_id in x.pricelist_ids.ids or not x.pricelist_ids
+        )
+    if not board_services_candidates:
         raise ValidationError(
             _("The Board Service '%s' is not available in Room Type '%s'")
             % (board_service.default_code, room_type.default_code)
         )
-    elif len(board_service_room_type_id) > 1:
-        raise ValidationError(
-            _("The Board Service '%s' is duplicated in Room Type '%s'")
-            % (board_service.default_code, room_type.default_code)
-        )
+    elif len(board_services_candidates) > 1:
+        board_service_room_type_id = board_services_candidates.filtered(
+            lambda x: x.pricelist_ids and pricelist_id in x.pricelist_ids.ids
+        ) or board_services_candidates.filtered(lambda x: not x.pricelist_ids)
+    else:
+        board_service_room_type_id = board_services_candidates[0]
     return board_service_room_type_id
+
+
+def get_pricelist(mapper, rate_id):
+    binder = mapper.binder_for("channel.wubook.product.pricelist")
+    pricelist = binder.to_internal(rate_id, unwrap=True)
+    assert pricelist, (
+        "rate_id %s should have been imported in "
+        "ProductPricelistImporter._import_dependencies" % (rate_id,)
+    )
+    return pricelist
 
 
 class ChannelWubookPmsReservationMapperImport(Component):
@@ -84,9 +99,12 @@ class ChannelWubookPmsReservationMapperImport(Component):
     def room_type_board_service(self, record):
         if record["board"]:
             room_type = get_room_type(self, record["room_id"])
+            pricelist_id = False
+            if record["rate_id"]:
+                pricelist_id = get_pricelist(self, record["rate_id"]).id
             return {
                 "board_service_room_id": get_board_service_room_type(
-                    self, room_type, record["board"]
+                    self, room_type, record["board"], pricelist_id
                 ).id
             }
 
@@ -109,14 +127,7 @@ class ChannelWubookPmsReservationMapperImport(Component):
     def pricelist_id(self, record):
         pricelist_id = False
         if record["rate_id"]:
-            binder = self.binder_for("channel.wubook.product.pricelist")
-            pricelist = binder.to_internal(record["rate_id"], unwrap=True)
-            assert pricelist, (
-                "rate_id %s should have been imported in "
-                "ProductPricelistImporter._import_dependencies" % (record["rate_id"],)
-            )
-            pricelist_id = pricelist.id
-
+            pricelist_id = get_pricelist(self, record["rate_id"]).id
             if pricelist_id:
                 return {"pricelist_id": pricelist_id}
 

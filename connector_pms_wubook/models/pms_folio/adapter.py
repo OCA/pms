@@ -314,6 +314,7 @@ class ChannelWubookPmsFolioAdapter(Component):
                             "board_included": id_channel != 0,
                             "vat_included": vat_included,
                             "agency_id": agency.id if agency else False,
+                            "rate_id": rate_id,
                         }
                     )
 

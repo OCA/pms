@@ -6,6 +6,7 @@ from odoo.addons.connector.components.mapper import mapping
 
 from ...models.pms_reservation.mapper_import import (
     get_board_service_room_type,
+    get_pricelist,
     get_room_type,
 )
 
@@ -44,8 +45,9 @@ class ChannelWubookPmsReservationLineMapperImport(Component):
         if commision_percent_to_deduct:
             price -= price * commision_percent_to_deduct / 100
         if record["board"] and record["board_included"]:
+            pricelist = get_pricelist(self, record["rate_id"])
             board_service_room = get_board_service_room_type(
-                self, room_type, record["board"]
+                self, room_type, record["board"], pricelist.id
             )
             # occupancy is the adults in the reservation
             board_day_price_adults = (
