@@ -199,7 +199,7 @@ class PmsServiceLine(models.Model):
         for line in self:
             line.cancel_discount = 0
             reservation = line.reservation_id
-            if reservation.state == "cancel":
+            if reservation.state == "cancel" and not line.service_id.is_cancel_penalty:
                 line.cancel_discount = 100
             else:
                 line.cancel_discount = 0
