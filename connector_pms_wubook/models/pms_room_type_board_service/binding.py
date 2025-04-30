@@ -4,7 +4,7 @@
 from odoo import fields, models
 
 
-class ChannelWubookPmsRoomTypeBoardServiceBinding(models.AbstractModel):
+class ChannelWubookPmsRoomTypeBoardServiceBinding(models.Model):
     _name = "channel.wubook.pms.room.type.board.service"
     _inherit = "channel.wubook.binding"
     _inherits = {"pms.board.service.room.type": "odoo_id"}
