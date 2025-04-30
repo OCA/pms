@@ -4,7 +4,7 @@
 from odoo import fields, models
 
 
-class ChannelWubookPmsReservationLineBinding(models.AbstractModel):
+class ChannelWubookPmsReservationLineBinding(models.Model):
     _name = "channel.wubook.pms.reservation.line"
     _inherit = "channel.wubook.binding"
     _inherits = {"pms.reservation.line": "odoo_id"}
