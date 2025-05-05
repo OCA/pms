@@ -436,11 +436,16 @@ class PmsProperty(models.Model):
                 domain_rules.append(
                     ("availability_plan_id", "=", pricelist.availability_plan_id.id)
                 )
-                rule_groups = self.env["pms.availability.plan.rule"].read_group(
-                    domain_rules,
-                    ["plan_avail:sum"],
-                    ["date:day"],
-                    lazy=False,
+                rule_groups = (
+                    self.env["pms.availability.plan.rule"]
+                    .sudo()
+                    .with_context(lang="en_US")
+                    .read_group(
+                        domain_rules,
+                        ["plan_avail:sum"],
+                        ["date:day"],
+                        lazy=False,
+                    )
                 )
                 grouped_rules = {}
                 for group in rule_groups:
@@ -460,7 +465,8 @@ class PmsProperty(models.Model):
                         grouped_rules[(date, rt.id)] = (
                             grouped_rules.get((date, rt.id), 0) + group_avail
                         )
-                for day in days:
+                # Avoid take account availability for checkout date
+                for day in days[:-1]:
                     total_avail_day = 0
                     for rt in room_types:
                         key = (day, rt.id)
@@ -470,6 +476,7 @@ class PmsProperty(models.Model):
                             # If not rule found for the any date/room_type
                             # we need take account the default availability
                             # of the room type
+                            # ATENTION: default avail not apply for checkout date
                             default_avail = min(
                                 filter(
                                     lambda x: x != -1,
