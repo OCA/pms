@@ -1561,7 +1561,7 @@ class PmsReservationService(Component):
                 "('folio_payment_state', 'in', ['not_paid', 'partial']),"
                 "]",
                 "filtered": "lambda r: r.service_ids.filtered(lambda s: s.is_cancel_penalty and s.price_total > 0)",
-                "text": f"La reserva de {reservation.partner_name} ha sido cancelada con una penalización de {reservation.service_ids.filtered(lambda s: s.is_cancel_penalty).price_total}€, "
+                "text": f"La reserva de {reservation.partner_name} ha sido cancelada con una penalización de {reservation.service_ids.filtered(lambda s: s.is_cancel_penalty).price_total:.2f}€, "
                 "puedes eliminar la penalización en caso de que no se vaya a cobrar.",
                 "priority": 700,
             },
@@ -1571,7 +1571,7 @@ class PmsReservationService(Component):
                 "domain": "[('state', 'in', ['onboard', 'departure_delayed']),"
                 "('folio_payment_state', 'in', ['not_paid', 'partial'])"
                 "]",
-                "text": f"En esta reserva tenemos un pago pendiente de {reservation.folio_pending_amount}. "
+                "text": f"En esta reserva tenemos un pago pendiente de {reservation.folio_pending_amount:.2f}. "
                 "Puedes registrar el pago desde aquí.",
                 "priority": 800,
             },
@@ -1581,7 +1581,7 @@ class PmsReservationService(Component):
                 "domain": "[('state', '=', 'done'),"
                 "('folio_payment_state', 'in', ['not_paid', 'partial'])"
                 "]",
-                "text": f"Esta reserva ha quedado con un cargo pendiente de {reservation.folio_pending_amount}€. "
+                "text": f"Esta reserva ha quedado con un cargo pendiente de {reservation.folio_pending_amount:.2f}€. "
                 "Cuando gestiones el cobro puedes registrarlo desde aquí.",
                 "priority": 900,
             },
@@ -1733,7 +1733,7 @@ class PmsReservationService(Component):
                 reservation_record.preferred_room_id.id,
                 "image_1920",
             )
-            if pms_room_image != '':
+            if pms_room_image != "":
                 pms_property_image = pms_room_image
 
         return self.env.datamodels["pms.folio.public.info"](
