@@ -403,7 +403,7 @@ class PmsProperty(models.Model):
                 overnight_rooms=overnight_rooms,
                 capacity=capacity,
             )
-            count_free_rooms = len(pms_property.free_room_ids)
+            count_avail_rooms = len(pms_property.free_room_ids)
             if current_lines and not isinstance(current_lines, list):
                 current_lines = [current_lines]
 
@@ -499,8 +499,8 @@ class PmsProperty(models.Model):
                             total_avail_day += default_avail
                     day_avail[day] = total_avail_day
                 if day_avail:
-                    count_free_rooms = min(day_avail.values())
-            record.availability = count_free_rooms
+                    count_avail_rooms = min(day_avail.values())
+            record.availability = count_avail_rooms
 
     @api.model
     def splitted_availability(
