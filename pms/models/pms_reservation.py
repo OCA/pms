@@ -1712,11 +1712,7 @@ class PmsReservation(models.Model):
         3.-Check the reservation dates are not occuped
         """
         for record in self:
-            if (
-                record.checkout
-                and record.checkout
-                and record.checkin >= record.checkout
-            ):
+            if record.checkout and record.checkin and record.checkin >= record.checkout:
                 raise UserError(
                     _(
                         "Room line Check In Date Should be \
