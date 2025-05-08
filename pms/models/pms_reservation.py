@@ -2561,19 +2561,22 @@ class PmsReservation(models.Model):
         )
 
     def _get_product_price(self, product, quantity, night_date):
-        priced = product.with_context(
+        product = product.with_context(
             lang=self.partner_id.lang,
-            partner=self.partner_id.id,
-            quantity=quantity,
-            date=fields.Date.today(),
-            consumption_date=night_date,
-            pricelist=self.pricelist_id.id,
-            uom=product.uom_id.id,
             property=self.pms_property_id.id,
         )
+        pricelist = self.pricelist_id
+        price = pricelist._get_product_price(
+            product=product,
+            partner=self.partner_id,
+            quantity=quantity,
+            consumption_date=night_date,
+            uom=product.uom_id,
+            pms_property_id=self.pms_property_id.id,
+        )
         return self.env["account.tax"]._fix_tax_included_price_company(
-            priced.price,
-            priced.taxes_id,
+            price,
+            product.taxes_id,
             self.tax_ids,
             self.pms_property_id.company_id,
         )
