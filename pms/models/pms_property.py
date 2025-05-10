@@ -797,6 +797,7 @@ class PmsProperty(models.Model):
                 ("state", "=", "draft"),
                 ("invoice_date_due", "=", date_reference),
                 ("folio_ids", "!=", False),
+                ("amount_total", ">", 0),
             ]
         )
         for invoice in draft_invoices_to_post:
