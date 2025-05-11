@@ -176,12 +176,14 @@ class AccountMoveLine(models.Model):
         """Inherited from account.move.line
         to avoid to lock partner_id in reconciliation_fnames
         """
-        tax_fnames, fiscal_fnames, reconciliation_fnames = super(
-            AccountMoveLine, self
-        )._get_lock_date_protected_fields()
-        reconciliation_fnames.remove("partner_id")
+        lock_types = super(AccountMoveLine, self)._get_lock_date_protected_fields()
+        reconciliation_fnames = lock_types.get("reconciliation", [])
+        # Remove partner_id from reconciliation_fnames
+        # because it is not a protected field
+        if "partner_id" in reconciliation_fnames:
+            reconciliation_fnames.remove("partner_id")
         return {
-            "tax": tax_fnames,
-            "fiscal": fiscal_fnames,
+            "tax": lock_types.get("tax", []),
+            "fiscal": lock_types.get("fiscal", []),
             "reconciliation": reconciliation_fnames,
         }
