@@ -1149,11 +1149,15 @@ class TravellerReport(models.TransientModel):
         domain = [
             ("state", "=", "to_send"),
             ("entity", "=", entity),
+            ("send_attempt_count", "<", 3),
         ]
         if pms_ses_communication_id:
-            domain.append(("id", "=", pms_ses_communication_id))
+            # Send by 100 at a time
+            # to avoid sending too many requests at once
+            domain.append(("id", "=", pms_ses_communication_id), limit=100)
         for communication in self.env["pms.ses.communication"].search(domain):
             data = False
+            communication.send_attempt_count += 1
             try:
                 if (
                     communication.room_id
@@ -1261,6 +1265,7 @@ class TravellerReport(models.TransientModel):
                     time_difference.days * 24 + time_difference.seconds // 3600
                 )
                 if hours_difference > hours_after_first_checkin_to_inform:
+                    communication.send_attempt_count += 1
                     # add a note to the reservation
                     communication.reservation_id.sudo().message_post(
                         body=_(
