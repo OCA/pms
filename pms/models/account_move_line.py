@@ -172,3 +172,17 @@ class AccountMoveLine(models.Model):
                         )
         res = super(AccountMoveLine, self).reconcile()
         return res
+
+    def _get_lock_date_protected_fields(self):
+        """Inherited from account.move.line
+        to avoid to lock partner_id in reconciliation_fnames
+        """
+        tax_fnames, fiscal_fnames, reconciliation_fnames = super(
+            AccountMoveLine, self
+        )._get_lock_date_protected_fields()
+        reconciliation_fnames.remove("partner_id")
+        return {
+            "tax": tax_fnames,
+            "fiscal": fiscal_fnames,
+            "reconciliation": reconciliation_fnames,
+        }
