@@ -1857,6 +1857,33 @@ class PmsReservation(models.Model):
     #                     )
     #                 )
 
+    @api.constrains(
+        "reservation_line_ids", "reservation_line_ids.room_id", "room_type_id"
+    )
+    def _check_room_class_compatibility(self):
+        for record in self:
+            if (
+                record.room_type_id
+                and record.reservation_line_ids
+                and all(line.room_id for line in record.reservation_line_ids)
+            ):
+                for line in record.reservation_line_ids:
+                    if (
+                        line.room_id.room_type_id.class_id
+                        != record.room_type_id.class_id
+                    ):
+                        raise ValidationError(
+                            _(
+                                """The room %(room)s (type: %(room_type)s)
+                                is not compatible with the room type %(record_room_type)s
+                                (type: %(record_room_class)s)""",
+                                room=line.room_id.name,
+                                room_type=line.room_id.room_type_id.class_id.name,
+                                record_room_type=record.room_type_id.name,
+                                record_room_class=record.room_type_id.class_id.name,
+                            )
+                        )
+
     # Action methods
     def open_partner(self):
         """Utility method used to add an "View Customer" button in reservation views"""
