@@ -139,7 +139,6 @@ class AccountMoveLine(models.Model):
                 if (
                     old_payment_partner != new_payment_partner
                     and len(new_payment_partner) == 1
-                    and not record.payment_id.has_reconciled_entries
                 ):
                     record.payment_id.partner_id = new_payment_partner
                     if old_payment_partner:
