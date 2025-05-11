@@ -19,6 +19,7 @@
                         <!-- results -->
                         <field name="state" />
                         <field name="sending_result" />
+                        <field name="send_attempt_count" />
                         <field name="processing_result" />
                         <!-- communication soap, xml (request) & soap (response) -->
                         <field name="communication_xml" widget="CopyClipboardChar" />
