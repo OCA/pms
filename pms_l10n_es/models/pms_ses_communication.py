@@ -97,6 +97,10 @@ class PmsSesCommunication(models.Model):
         string="SOAP Resp. Status",
         help="SOAP response status query",
     )
+    send_attempt_count = fields.Integer(
+        help="Number of attempts to send the communication",
+        default=0,
+    )
 
     def force_send_communication(self):
         for record in self:
