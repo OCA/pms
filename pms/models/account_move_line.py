@@ -130,6 +130,7 @@ class AccountMoveLine(models.Model):
         Reconcile the account move
         """
         # Update partner in payments and statement lines
+        res = super(AccountMoveLine, self).reconcile()
         for record in self:
             if record.payment_id:
                 old_payment_partner = record.payment_id.partner_id
@@ -169,7 +170,6 @@ class AccountMoveLine(models.Model):
                                 """
                             )
                         )
-        res = super(AccountMoveLine, self).reconcile()
         return res
 
     def _get_lock_date_protected_fields(self):
