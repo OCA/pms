@@ -817,7 +817,6 @@ class PmsFolioService(Component):
                         pms_property_id=pms_folio_info.pmsPropertyId,
                         board_service_id=reservation.boardServiceId,
                     ),
-                    "preferred_room_id": reservation.preferredRoomId,
                     "adults": reservation.adults,
                     "reservation_type": pms_folio_info.reservationType or "normal",
                     "children": reservation.children,
@@ -825,6 +824,8 @@ class PmsFolioService(Component):
                     "blocked": True if external_app else False,
                     "partner_requests": reservation.partnerRequests or "",
                 }
+                if reservation.preferredRoomId:
+                    vals["preferred_room_id"] = reservation.preferredRoomId
                 if reservation.reservationLines:
                     vals_lines = []
                     board_day_price = 0
@@ -2222,7 +2223,7 @@ class PmsFolioService(Component):
                         raise ValidationError(
                             _(
                                 "No payment journal configured for this property for %s"
-                                % ota_conf.name
+                                % ota_conf.pms_property_id.name
                             )
                         )
                     transaction.journalId = ota_conf.pms_api_payment_journal_id.id
