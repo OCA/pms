@@ -1,0 +1,227 @@
+<odoo noupdate="1">
+
+        <!-- Hoteles -->
+        <record
+        id="pms_tourism_classification_hotel_1"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Hotel 1 estrella</field>
+            <field name="code">HOTEL_1</field>
+            <field
+            name="description"
+        >Establecimiento hotelero que ofrece servicios básicos de alojamiento y limpieza diaria.</field>
+        </record>
+        <record
+        id="pms_tourism_classification_hotel_2"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Hotel 2 estrellas</field>
+            <field name="code">HOTEL_2</field>
+            <field
+            name="description"
+        >Hotel con servicios adicionales como recepción 24 horas y habitaciones con baño privado.</field>
+        </record>
+        <record
+        id="pms_tourism_classification_hotel_3"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Hotel 3 estrellas</field>
+            <field name="code">HOTEL_3</field>
+            <field
+            name="description"
+        >Hotel que ofrece mayor confort, incluyendo restaurante y servicios de habitación.</field>
+        </record>
+        <record
+        id="pms_tourism_classification_hotel_4"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Hotel 4 estrellas</field>
+            <field name="code">HOTEL_4</field>
+            <field
+            name="description"
+        >Establecimiento de alta calidad con instalaciones y servicios superiores.</field>
+        </record>
+        <record
+        id="pms_tourism_classification_hotel_5"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Hotel 5 estrellas</field>
+            <field name="code">HOTEL_5</field>
+            <field
+            name="description"
+        >Hotel de lujo que ofrece servicios exclusivos y atención personalizada.</field>
+        </record>
+
+        <!-- Hostales -->
+        <record
+        id="pms_tourism_classification_hostal_1"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Hostal 1 estrella</field>
+            <field name="code">HOSTAL_1</field>
+            <field
+            name="description"
+        >Alojamiento económico con servicios básicos y habitaciones privadas o compartidas.</field>
+        </record>
+        <record
+        id="pms_tourism_classification_hostal_2"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Hostal 2 estrellas</field>
+            <field name="code">HOSTAL_2</field>
+            <field
+            name="description"
+        >Hostal que ofrece mayor comodidad, incluyendo baño privado y servicio de limpieza.</field>
+        </record>
+        <record
+        id="pms_tourism_classification_hostal_3"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Hostal 3 estrellas</field>
+            <field name="code">HOSTAL_3</field>
+            <field
+            name="description"
+        >Hostal con servicios adicionales como recepción 24 horas y desayuno incluido.</field>
+        </record>
+
+        <!-- Pensiones -->
+        <record
+        id="pms_tourism_classification_pension_1"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Pensión 1 estrella</field>
+            <field name="code">PENSION_1</field>
+            <field
+            name="description"
+        >Alojamiento sencillo que ofrece habitaciones privadas y servicios básicos.</field>
+        </record>
+        <record
+        id="pms_tourism_classification_pension_2"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Pensión 2 estrellas</field>
+            <field name="code">PENSION_2</field>
+            <field
+            name="description"
+        >Pensión con servicios adicionales como limpieza diaria y baño privado.</field>
+        </record>
+
+        <!-- Apartamentos turísticos -->
+        <record
+        id="pms_tourism_classification_apartamento_1"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Apartamento turístico 1 llave</field>
+            <field name="code">APT_1</field>
+            <field
+            name="description"
+        >Apartamento con equipamiento básico para estancias cortas.</field>
+        </record>
+        <record
+        id="pms_tourism_classification_apartamento_2"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Apartamento turístico 2 llaves</field>
+            <field name="code">APT_2</field>
+            <field
+            name="description"
+        >Apartamento con mayor confort y servicios adicionales.</field>
+        </record>
+        <record
+        id="pms_tourism_classification_apartamento_3"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Apartamento turístico 3 llaves</field>
+            <field name="code">APT_3</field>
+            <field
+            name="description"
+        >Apartamento de alta calidad con equipamiento completo y servicios superiores.</field>
+        </record>
+
+        <!-- Casas rurales -->
+        <record
+        id="pms_tourism_classification_casa_rural_1"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Casa rural 1 espiga</field>
+            <field name="code">CR_1</field>
+            <field
+            name="description"
+        >Alojamiento rural básico en entorno natural.</field>
+        </record>
+        <record
+        id="pms_tourism_classification_casa_rural_2"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Casa rural 2 espigas</field>
+            <field name="code">CR_2</field>
+            <field
+            name="description"
+        >Casa rural con mayor confort y servicios adicionales.</field>
+        </record>
+        <record
+        id="pms_tourism_classification_casa_rural_3"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Casa rural 3 espigas</field>
+            <field name="code">CR_3</field>
+            <field
+            name="description"
+        >Alojamiento rural de alta calidad con equipamiento completo.</field>
+        </record>
+
+        <!-- Campings -->
+        <record
+        id="pms_tourism_classification_camping_1"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Camping 1 estrella</field>
+            <field name="code">CAMPING_1</field>
+            <field name="description">Área de acampada con servicios básicos.</field>
+        </record>
+        <record
+        id="pms_tourism_classification_camping_2"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Camping 2 estrellas</field>
+            <field name="code">CAMPING_2</field>
+            <field
+            name="description"
+        >Camping con instalaciones adicionales como baños y duchas.</field>
+        </record>
+        <record
+        id="pms_tourism_classification_camping_3"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Camping 3 estrellas</field>
+            <field name="code">CAMPING_3</field>
+            <field
+            name="description"
+        >Camping con servicios completos y actividades recreativas.</field>
+        </record>
+
+        <!-- Albergues -->
+        <record
+        id="pms_tourism_classification_albergue"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Albergue</field>
+            <field name="code">ALBERGUE</field>
+            <field
+            name="description"
+        >Alojamiento económico, generalmente con habitaciones compartidas, destinado a viajeros y grupos.</field>
+        </record>
+
+        <!-- Paradores -->
+        <record
+        id="pms_tourism_classification_parador"
+        model="pms.tourism.classification"
+    >
+            <field name="name">Parador</field>
+            <field name="code">PARADOR</field>
+            <field
+            name="description"
+        >Establecimiento hotelero ubicado en edificios históricos o emblemáticos, gestionado por el Estado.</field>
+        </record>
+
+</odoo>
