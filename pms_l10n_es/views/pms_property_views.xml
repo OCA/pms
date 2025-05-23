@@ -7,8 +7,14 @@
         <field name="model">pms.property</field>
         <field name="inherit_id" ref="pms.pms_property_views_form" />
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='pms_property_code']" position="after">
+                <label
+                    for="spanish_tourism_classification_id"
+                    string="Tourism Classification"
+                />
+                <field name="spanish_tourism_classification_id" />
+            </xpath>
             <xpath expr="//page[@name='property_settings']" position="inside">
-
                 <div class="row">
                     <div class="col-12">
                         <div class="o_horizontal_separator">
