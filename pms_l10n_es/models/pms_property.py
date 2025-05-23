@@ -59,6 +59,11 @@ class PmsProperty(models.Model):
         comodel_name="pms.ine.tourism.type.category",
         help="Hotel category in the Ministry of Tourism. Used for INE statistics.",
     )
+    spanish_tourism_classification_id = fields.Many2one(
+        comodel_name="pms.tourism.classification",
+        string="Spanish Tourism Classification",
+        help="Spanish tourism classification.",
+    )
 
     def test_connection(self):
         headers = {

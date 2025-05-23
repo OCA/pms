@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="pms_tourism_classification_view_tree">
+        <field name="name">pms.tourism.classification.tree</field>
+        <field name="model">pms.tourism.classification</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="name" />
+                <field name="code" />
+                <field name="description" />
+            </tree>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="open_pms_tourism_classification">
+        <field name="name">Tourism Classification</field>
+        <field name="res_model">pms.tourism.classification</field>
+        <field name="view_mode">tree</field>
+    </record>
+    <menuitem
+        name="Tourism Classification"
+        id="menu_open_pms_tourism_classification_form_tree"
+        action="open_pms_tourism_classification"
+        parent="pms.pms_configuration_menu"
+        sequence="300"
+    />
+</odoo>
