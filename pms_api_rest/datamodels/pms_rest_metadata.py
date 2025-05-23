@@ -8,3 +8,4 @@ class PmsRestMetadata(Datamodel):
     orderBy = fields.String(required=False, allow_none=True)
     limit = fields.Integer(required=False, allow_none=True)
     offset = fields.Integer(required=False, allow_none=True)
+    orderDesc = fields.Boolean(required=False, allow_none=True)
