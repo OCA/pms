@@ -334,6 +334,11 @@ class FolioSaleLine(models.Model):
         compute="_compute_autoinvoice_date",
         store=True,
     )
+    auto_reservation_note = fields.Boolean(
+        help="Indicates if the folio sale line is an auto reservation note",
+        default=False,
+        readonly=True,
+    )
 
     @api.depends(
         "folio_id.agency_id",

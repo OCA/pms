@@ -227,6 +227,13 @@ class PmsProperty(models.Model):
         help="Block the creation of reservations in the past",
         default=False,
     )
+    invoice_reservation_note_template = fields.Text(
+        translate=True,
+        help="""
+            Template for reservation note to be added in the invoice.
+            You can use variables like {{ object.checkin }}, etc.
+        """,
+    )
 
     @api.depends_context(
         "checkin",
