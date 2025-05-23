@@ -122,6 +122,7 @@
                                 />
                                 <field name="max_amount_simplified_invoice" />
                                 <field name="avoid_simplified_max_amount_downpayment" />
+                                <field name="invoice_reservation_note_template" />
                             </group>
                         </page>
                         <page string="Email Configuration">

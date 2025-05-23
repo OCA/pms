@@ -2286,6 +2286,9 @@ class PmsFolio(models.Model):
                     },
                 )
             )
+            note_vals = self._get_reservation_note_vals(reservation, sequence)
+            if note_vals:
+                sale_reservation_vals.append(note_vals)
         else:
             sequence += 1
             sale_reservation_vals.append(
@@ -2299,6 +2302,15 @@ class PmsFolio(models.Model):
                     },
                 )
             )
+            # delete old auto reservation note
+            old_note = reservation.sale_line_ids.filtered(
+                lambda x: x.auto_reservation_note
+            )
+            if old_note:
+                sale_reservation_vals.append((2, old_note.id))
+            note_vals = self._get_reservation_note_vals(reservation, sequence)
+            if note_vals:
+                sale_reservation_vals.append(note_vals)
         expected_reservation_lines = self.env["pms.reservation.line"].read_group(
             [
                 ("reservation_id", "=", reservation.id),
@@ -2359,6 +2371,37 @@ class PmsFolio(models.Model):
                 if index > (len(expected_reservation_lines) - 1)
             ]
         return sale_reservation_vals, folio_sale_lines_to_remove
+
+    def _get_reservation_note_vals(self, reservation, sequence):
+        try:
+            note = self.get_reservation_notes(reservation)
+            if note:
+                sequence += 1
+                return (
+                    0,
+                    0,
+                    {
+                        "name": note,
+                        "display_type": "line_note",
+                        "product_id": False,
+                        "product_uom_qty": 0,
+                        "discount": 0,
+                        "price_unit": 0,
+                        "tax_ids": False,
+                        "folio_id": reservation.folio_id.id,
+                        "reservation_id": reservation.id,
+                        "auto_reservation_note": True,
+                        "sequence": sequence,
+                    },
+                )
+            else:
+                return False
+        except Exception as e:
+            _logger.error(
+                "Error while getting reservation notes for folio %s: %s",
+                folio.id,
+                e,
+            )
 
     @api.model
     def _get_service_sale_lines(self, folio, reservation, sequence):
@@ -2682,3 +2725,10 @@ class PmsFolio(models.Model):
             ),
             "amount_max": self.pending_amount,
         }
+
+    def get_reservation_notes(self, reservation):
+        """
+        Add folio line note with reservation content
+        """
+        if reservation.pms_property_id.invoice_reservation_note_template:
+            return reservation._render_invoice_note()

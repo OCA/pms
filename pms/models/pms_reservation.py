@@ -2703,3 +2703,15 @@ class PmsReservation(models.Model):
             return start_md <= check_md <= end_md
         else:
             return check_md >= start_md or check_md <= end_md
+
+    def _render_invoice_note(self):
+        self.ensure_one()
+        template_str = self.pms_property_id.invoice_reservation_note_template or ""
+        # `lang` puede venir del cliente o configurarse por defecto
+        lang = self.partner_id.lang or self.env.user.lang
+        rendered = (
+            self.env["mail.render.mixin"]
+            .with_context(lang=lang)
+            ._render_template(template_str, "pms.reservation", self.ids)
+        )
+        return rendered.get(self.id, "")
