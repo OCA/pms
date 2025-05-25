@@ -32,32 +32,40 @@ class RestApiDispatcherPms(RestApiDispatcher):
             # we don't want to return the login form as plain html page
             # we want to raise a proper exception
             return wrapJsonException(Unauthorized(ustr(exception)))
-        try:
-            return super(RestApiDispatcher, self).handle_error(exception)
-        except MissingError as e:
-            extra_info = getattr(e, "rest_json_info", None)
+        # try:
+        #     return super(RestApiDispatcher, self).handle_error(exception)
+        if isinstance(exception, MissingError):
+            extra_info = getattr(exception, "rest_json_info", None)
             return wrapJsonException(
-                NotFound(ustr(e)), include_description=True, extra_info=extra_info
+                NotFound(ustr(exception)),
+                include_description=True,
+                extra_info=extra_info,
             )
-        except (AccessError, AccessDenied) as e:
-            extra_info = getattr(e, "rest_json_info", None)
+        if isinstance(exception, (AccessError, AccessDenied)):
+            extra_info = getattr(exception, "rest_json_info", None)
             return wrapJsonException(
-                Forbidden(ustr(e)), include_description=True, extra_info=extra_info
+                Forbidden(ustr(exception)),
+                include_description=True,
+                extra_info=extra_info,
             )
-        except (UserError, ValidationError, ValueError) as e:
-            extra_info = getattr(e, "rest_json_info", None)
+        if isinstance(exception, (UserError, ValidationError, ValueError)):
+            extra_info = getattr(exception, "rest_json_info", None)
             return wrapJsonException(
-                BadRequest(e.args[0]), include_description=True, extra_info=extra_info
+                BadRequest(exception.args[0]),
+                include_description=True,
+                extra_info=extra_info,
             )
-        except HTTPException as e:
-            extra_info = getattr(e, "rest_json_info", None)
-            return wrapJsonException(e, include_description=True, extra_info=extra_info)
-        except Unauthorized as e:
-            extra_info = getattr(e, "rest_json_info", None)
+        if isinstance(exception, HTTPException):
+            extra_info = getattr(exception, "rest_json_info", None)
+            return wrapJsonException(
+                exception, include_description=True, extra_info=extra_info
+            )
+        if isinstance(exception, Unauthorized):
+            extra_info = getattr(exception, "rest_json_info", None)
             return (
-                wrapJsonException(e, include_description=True, extra_info=extra_info),
+                wrapJsonException(
+                    exception, include_description=True, extra_info=extra_info
+                ),
             )
-
-        except Exception as e:  # flake8: noqa: E722
-            extra_info = getattr(e, "rest_json_info", None)
-            return wrapJsonException(InternalServerError(e), extra_info=extra_info)
+        extra_info = getattr(exception, "rest_json_info", None)
+        return wrapJsonException(InternalServerError(exception), extra_info=extra_info)
