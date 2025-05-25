@@ -7,7 +7,6 @@ from odoo.addons.account.controllers.portal import PortalAccount
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.controllers import portal as payment_portal
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
-from odoo.addons.portal.models.portal_mixin import PortalMixin
 
 
 class PortalFolio(CustomerPortal):
@@ -151,7 +150,22 @@ class PortalFolio(CustomerPortal):
                 report_ref="pms.action_report_folio",
                 download=download,
             )
-        values = self._folio_get_page_view_values(folio_sudo, access_token, **kw)
+        backend_url = (
+            f"/web#model={folio_sudo._name}"
+            f"&id={folio_sudo.id}"
+            f"&action={folio_sudo._get_portal_return_action().id}"
+            f"&view_type=form"
+        )
+        values = {
+            "folio": folio_sudo,
+            "message": "",
+            "report_type": "html",
+            "backend_url": backend_url,
+            "res_company": folio_sudo.company_id,
+        }
+        values = self._get_page_view_values(
+            folio_sudo, access_token, values, "my_folios_history", False, **kw
+        )
         if "custom_amount" in kw:
             values["custom_amount"] = float(kw["custom_amount"])
         return request.render("pms.folio_portal_template", values)
@@ -410,253 +424,6 @@ class PortalReservation(CustomerPortal):
             reservation_sudo, access_token, **kw
         )
         return request.render("pms.portal_my_reservation_detail", values)
-
-
-class PortalPrecheckin(CustomerPortal):
-    def _precheckin_get_page_view_values(
-        self, checkin_partner_id, access_token, **kwargs
-    ):
-        checkin_partner = request.env["pms.checkin.partner"].browse(checkin_partner_id)
-        values = {"checkin_partner_id": checkin_partner, "token": access_token}
-        return self._get_page_view_values(
-            checkin_partner,
-            access_token,
-            values,
-            "my_precheckins_history",
-            False,
-            **kwargs,
-        )
-
-    @http.route(
-        ["/my/folios/<int:folio_id>/precheckin"],
-        type="http",
-        auth="public",
-        website=True,
-    )
-    def portal_my_precheckin(
-        self,
-        folio_id,
-        access_token=None,
-    ):
-        country_ids = request.env["res.country"].search([])
-        state_ids = request.env["res.country.state"].search([])
-        doc_type_ids = request.env["res.partner.id_category"].sudo().search([])
-        values = self._prepare_portal_layout_values()
-        try:
-            folio_sudo = self._document_check_access(
-                "pms.folio",
-                folio_id,
-                access_token=access_token,
-            )
-        except (AccessError, MissingError):
-            return request.render("pms.portal_not_checkin", values)
-        available_checkins = folio_sudo.checkin_partner_ids.filtered(
-            lambda c: c.state in ["dummy", "draft"]
-        )
-        checkin_partner = (
-            available_checkins[0]
-            if available_checkins
-            else folio_sudo.checkin_partner_ids[0]
-        )
-        values.update(
-            {
-                "error": {},
-                "country_ids": country_ids,
-                "state_ids": state_ids,
-                "doc_type_ids": doc_type_ids,
-                "folio": folio_sudo,
-                "checkin_partner_id": checkin_partner,
-            }
-        )
-        if checkin_partner.state not in ["dummy", "draft"]:
-            return request.render("pms.portal_not_checkin", values)
-        return request.render("pms.portal_my_reservation_precheckin", values)
-
-    @http.route(
-        ["/my/folios/<int:folio_id>/reservations"],
-        type="http",
-        auth="public",
-        website=True,
-        csrf=False,
-    )
-    def portal_precheckin_folio(self, folio_id, access_token=None, **kw):
-        values = self._prepare_portal_layout_values()
-        try:
-            folio_sudo = self._document_check_access(
-                "pms.folio",
-                folio_id,
-                access_token=access_token,
-            )
-        except (AccessError, MissingError):
-            return request.redirect("/my")
-        values.update({"no_breadcrumbs": True, "folio": folio_sudo})
-        return request.render("pms.portal_my_prechekin_folio", values)
-
-    @http.route(
-        ["/my/folios/<int:folio_id>/reservations/<int:reservation_id>/checkins"],
-        type="http",
-        auth="public",
-        website=True,
-        csrf=False,
-    )
-    def portal_precheckin_reservation(
-        self, folio_id, reservation_id, access_token=None, **kw
-    ):
-        folio = request.env["pms.folio"].sudo().browse(folio_id)
-        reservation = request.env["pms.reservation"].sudo().browse(reservation_id)
-        values = {}
-        values.update({"folio": folio})
-        values.update(
-            {
-                "no_breadcrumbs": True,
-                "folio_access_token": access_token,
-                "reservation": reservation,
-            }
-        )
-        return request.render("pms.portal_my_prechekin_reservation", values)
-
-    @http.route(
-        [
-            "/my/folios/<int:folio_id>"
-            "/reservations/<int:reservation_id>"
-            "/checkins/<int:checkin_partner_id>"
-        ],
-        type="http",
-        auth="public",
-        website=True,
-        csrf=False,
-    )
-    def portal_precheckin(
-        self, folio_id, reservation_id, checkin_partner_id, access_token=None, **kw
-    ):
-        folio = request.env["pms.folio"].sudo().browse(folio_id)
-        reservation = request.env["pms.reservation"].sudo().browse(reservation_id)
-        try:
-            checkin_sudo = self._document_check_access(
-                "pms.checkin.partner",
-                checkin_partner_id,
-                access_token=access_token,
-            )
-        except (AccessError, MissingError):
-            return request.render("pms.portal_not_checkin", kw)
-        values = {}
-        zip_ids = request.env["res.city.zip"].search([])
-        country_ids = request.env["res.country"].search([])
-        state_ids = request.env["res.country.state"].search([])
-        city_ids = request.env["res.city"].search([])
-        doc_type_ids = request.env["res.partner.id_category"].sudo().search([])
-        access_token = checkin_sudo.access_token
-        if not checkin_sudo.access_token:
-            access_token = PortalMixin._portal_ensure_token(checkin_sudo)
-        values.update(
-            self._precheckin_get_page_view_values(checkin_sudo.id, access_token)
-        )
-        values.update(
-            {
-                "folio_access_token": kw.get("folio_access_token"),
-                "no_breadcrumbs": True,
-                "folio": folio,
-                "reservation": reservation,
-                "checkin_partner": checkin_sudo,
-                "zip_ids": zip_ids,
-                "country_ids": country_ids,
-                "state_ids": state_ids,
-                "city_ids": city_ids,
-                "doc_type_ids": doc_type_ids,
-            }
-        )
-        if checkin_sudo.state not in ["dummy", "draft"]:
-            return request.render("pms.portal_not_checkin", values)
-
-        return request.render("pms.portal_my_precheckin_detail", values)
-
-    @http.route(
-        [
-            "/my/folios/<int:folio_id>"
-            "/reservations/<int:reservation_id>"
-            "/checkins/<int:checkin_partner_id>/submit"
-        ],
-        type="http",
-        auth="public",
-        website=True,
-        csrf=False,
-    )
-    def portal_precheckin_submit(
-        self, folio_id, reservation_id, checkin_partner_id, **kw
-    ):
-        checkin_partner = (
-            request.env["pms.checkin.partner"].sudo().browse(checkin_partner_id)
-        )
-
-        values = kw
-        values.update(
-            {
-                "checkin_partner": checkin_partner,
-            }
-        )
-        folio_access_token = values.get("folio_access_token")
-        request.env["pms.checkin.partner"]._save_data_from_portal(kw)
-        folio = request.env["pms.folio"].sudo().browse(folio_id)
-        reservation = request.env["pms.reservation"].sudo().browse(reservation_id)
-        values.update(
-            {
-                "no_breadcrumbs": True,
-                "folio": folio,
-                "reservation": reservation,
-            }
-        )
-
-        if folio_access_token:
-            return request.render("pms.portal_my_prechekin_reservation", values)
-        else:
-            return request.render("pms.portal_my_precheckin_end", values)
-
-    @http.route(
-        ["/my/folios/<int:folio_id>/invitations"],
-        type="http",
-        auth="public",
-        website=True,
-        csrf=False,
-    )
-    def portal_precheckin_invitation(self, folio_id, access_token=None, **kw):
-        try:
-            folio_sudo = self._document_check_access(
-                "pms.folio",
-                folio_id,
-                access_token=access_token,
-            )
-        except (AccessError, MissingError):
-            return request.redirect("/my")
-        web_url = (
-            request.env["ir.config_parameter"]
-            .sudo()
-            .search([("key", "=", "web.base.url")])
-        )
-        values = self._folio_get_page_view_values(folio_sudo, access_token, **kw)
-        values.update({"no_breadcrumbs": True, "error": {}, "web_url": web_url.value})
-        return request.render("pms.portal_my_folio_invitations", values)
-
-    @http.route(
-        ["/my/precheckin/send_invitation"],
-        auth="public",
-        type="json",
-        website=True,
-        csrf=False,
-    )
-    def portal_precheckin_folio_send_invitation(self, **kw):
-        if kw.get("folio_id"):
-            folio = request.env["pms.folio"].browse(int(kw.get("folio_id")))
-            kw.update({"folio": folio})
-        checkin_partner = (
-            request.env["pms.checkin.partner"]
-            .sudo()
-            .browse(int(kw["checkin_partner_id"]))
-        )
-        firstname = kw["firstname"]
-        email = kw["email"]
-        if firstname and email:
-            checkin_partner.write({"firstname": firstname, "email": email})
-            checkin_partner.send_portal_invitation_email(firstname, email)
 
 
 class PortalAccount(PortalAccount):

@@ -2732,3 +2732,8 @@ class PmsFolio(models.Model):
         """
         if reservation.pms_property_id.invoice_reservation_note_template:
             return reservation._render_invoice_note()
+
+    def _get_portal_return_action(self):
+        """Return the action used to display orders when returning from customer portal."""
+        self.ensure_one()
+        return self.env.ref("pms.open_pms_folio1_form_tree_all")
