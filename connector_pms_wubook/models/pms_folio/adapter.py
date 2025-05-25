@@ -341,7 +341,6 @@ class ChannelWubookPmsFolioAdapter(Component):
             value["reservations"] = reservations
         return values
 
-    @api.model
     def apply_gross_prices_airbnb(self, room, commission):
         """
         Update 'price' in-place inside room['roomdays'], adding a proportional share of the total commission.
