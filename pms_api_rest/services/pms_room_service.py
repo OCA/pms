@@ -51,13 +51,21 @@ class PmsRoomService(Component):
             )
             pms_api_check_access(user=self.env.user, records=pms_property)
             if room_search_param.pricelistId:
+                apply_availability_rules = (
+                    self.env.registry["ir.config_parameter"]
+                    .sudo()
+                    .get_param(
+                        "apply_internal_availability_rules",
+                        default=False,
+                    )
+                )
                 pms_property = pms_property.with_context(
                     checkin=date_from,
                     checkout=date_to,
                     room_type_id=False,  # Allows to choose any available room
                     current_lines=room_search_param.currentLines,
                     pricelist_id=room_search_param.pricelistId,
-                    real_avail=False,
+                    real_avail=False if apply_availability_rules else True,
                 )
             else:
                 pms_property = pms_property.with_context(
