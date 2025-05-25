@@ -286,7 +286,14 @@ class ChannelWubookPmsFolioAdapter(Component):
                     guests_children = room.get("ancillary", {}).get("guests_children")
                     if guests_children:
                         occupancies_d_children[room_id] = guests_children
-
+                if id_channel == 43:  # AirBnb
+                    # Add commission in price
+                    self.apply_gross_prices_airbnb(
+                        room=room,
+                        commission=float(
+                            value.get("ancillary", {}).get("Commission", 0)
+                        ),
+                    )
                 lines = []
                 room_rate_id = None
                 for days in room["roomdays"]:
@@ -333,3 +340,23 @@ class ChannelWubookPmsFolioAdapter(Component):
                 )
             value["reservations"] = reservations
         return values
+
+    @api.model
+    def apply_gross_prices_airbnb(self, room, commission):
+        """
+        Update 'price' in-place inside room['roomdays'], adding a proportional share of the total commission.
+
+        :param room: A single booked_rooms entry (dict with 'roomdays' list).
+        :param commission: Total commission amount (float) to be distributed proportionally across nights.
+        """
+        net_prices = [day["price"] for day in room.get("roomdays", [])]
+        net_total = sum(net_prices)
+        gross_total = net_total + commission
+
+        # Avoid division by zero
+        coef = gross_total / net_total if net_total else 1.0
+
+        # Update each day's price to include the proportional commission
+        for day in room["roomdays"]:
+            day["price"] = round(day["price"] * coef, 2)
+        return True
