@@ -2670,7 +2670,11 @@ class PmsFolioService(Component):
     )
     def get_folio_public_info(self, folio_id, token):
         folio_record = self._get_folio_or_404(folio_id)
-
+        # check if the folio is accessible with the provided token
+        if not token:
+            raise MissingError(_("Access token is required"))
+        if not folio_record.access_token or folio_record.access_token != token:
+            raise MissingError(_("Invalid or expired access token"))
         self._check_folio_access(folio_record, token)
         folio_payment_link = self._generate_payment_link(folio_record)
         reservations = self._get_folio_reservations(folio_record)
