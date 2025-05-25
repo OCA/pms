@@ -97,18 +97,28 @@ class PmsAvailService(Component):
                 avails_search_param.availabilityTo, "%Y-%m-%d"
             ).date()
             pms_property = (
-                self.env["pms.property"].sudo().browse(avails_search_param.pmsPropertyId)
+                self.env["pms.property"]
+                .sudo()
+                .browse(avails_search_param.pmsPropertyId)
             )
             pms_api_check_access(user=self.env.user, records=pms_property)
             room_types = pms_property.room_ids.mapped("room_type_id")
             for room_type in room_types:
                 if avails_search_param.pricelistId:
+                    apply_availability_rules = (
+                        self.env.registry["ir.config_parameter"]
+                        .sudo()
+                        .get_param(
+                            "apply_internal_availability_rules",
+                            default=False,
+                        )
+                    )
                     pms_property = pms_property.with_context(
                         checkin=date_from,
                         checkout=date_to,
                         room_type_id=room_type.id,
                         pricelist_id=avails_search_param.pricelistId,
-                        real_avail=False,
+                        real_avail=False if apply_availability_rules else True,
                     )
                 else:
                     pms_property = pms_property.with_context(
