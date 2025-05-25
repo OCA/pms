@@ -75,134 +75,6 @@
       </t>
     </template>
 
-      <template id="portal_folio_payment" name="Folio Payment">
-        <div
-            class="row"
-            t-if="folio.payment_state in ('not_paid', 'partial') and folio.pending_amount"
-            id="portal_pay"
-        >
-            <div class="modal fade" id="pay_with" role="dialog">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3 class="modal-title">Pay with</h3>
-                            <button
-                                type="button"
-                                class="close"
-                                data-dismiss="modal"
-                                aria-label="Close"
-                            >×</button>
-                        </div>
-                        <div class="modal-body">
-                            <div
-                                t-if="pms or acquirers"
-                                id="payment_method"
-                                class="text-left col-md-13"
-                            >
-                                <t t-call="payment.payment_tokens_list">
-                                    <t t-set="mode" t-value="'payment'" />
-                                    <t
-                                        t-set="partner_id"
-                                        t-value="folio.partner_id.id if request.env.user._is_public() else request.env.user.partner_id.id"
-                                    />
-                                    <t
-                                        t-set="success_url"
-                                        t-value="folio.get_portal_url()"
-                                    />
-                                    <t
-                                        t-set="error_url"
-                                        t-value="folio.get_portal_url()"
-                                    />
-                                    <t
-                                        t-set="access_token"
-                                        t-value="access_token or ''"
-                                    />
-                                    <t
-                                        t-set="custom_amount"
-                                        t-value="custom_amount or ''"
-                                    />
-                                    <t t-set="callback_method" t-value="''" />
-                                    <t
-                                        t-set="form_action"
-                                        t-value="'/folio/pay/' + str(folio.id) + '/s2s_token_tx/'"
-                                    />
-                                    <t
-                                        t-set="prepare_tx_url"
-                                        t-value="'/folio/pay/' + str(folio.id) + '/form_tx/'"
-                                    />
-                                    <t t-if="custom_amount" t.set="submit_txt">
-                                            Pay <t t-esc="custom_amount" />
-                                    </t>
-                                    <t t-else="" t-set="submit_txt">
-                                            Pay Now
-                                    </t>
-                                    <t t-set="icon_class" t-value="'fa-lock'" />
-                                </t>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <template id="portal_folio_page_payment" name="Payment on My Folios">
-        <t
-            t-set="tx_ids"
-            t-value="folio.transaction_ids.filtered(lambda tx: tx.state in ('pending', 'authorized', 'done'))"
-        />
-        <t
-            t-set="pending_manual_txs"
-            t-value="tx_ids.filtered(lambda tx: tx.state == 'pending' and tx.acquirer_id.provider in ('transfer', 'manual'))"
-        />
-        <t t-set="custom_amount" t-value="custom_amount or ''" />
-        <div>
-            <a
-                href="#"
-                t-if="folio.payment_state in ('not_paid', 'partial') and folio.pending_amount and custom_amount"
-                class="btn btn-primary btn-block mb-2"
-                data-toggle="modal"
-                data-target="#pay_with"
-            >
-                <i class="fa fa-fw fa-arrow-circle-right" /> Pay Now <t
-                    t-esc="custom_amount"
-                    t-options="{'widget': 'monetary', 'display_currency': folio.currency_id}"
-                />
-            </a>
-            <a
-                href="#"
-                t-if="folio.payment_state in ('not_paid', 'partial') and folio.pending_amount"
-                class="btn btn-primary btn-block mb-2"
-                data-toggle="modal"
-                data-target="#pay_with"
-            >
-                <i class="fa fa-fw fa-arrow-circle-right" /> Pay Now <t
-                    t-esc="folio.pending_amount"
-                    t-options="{'widget': 'monetary', 'display_currency': folio.currency_id}"
-                />
-            </a>
-            <div
-                t-if="folio.payment_state in ('paid', 'overpayment')"
-                class="alert alert-success py-1 mb-2"
-            >
-                <i class="fa fa-fw fa-check-circle" /> Paid
-            </div>
-        </div>
-
-        <t
-            t-set="tx_ids"
-            t-value="folio.transaction_ids.filtered(lambda tx: tx.state in ('authorized', 'done'))"
-        />
-        <div
-            t-if="folio.payment_state in ('not_paid', 'partial') and folio.pending_amount"
-            id="portal_pay"
-        >
-            <div t-if="pms or acquirers" id="payment_method">
-                <t t-call="pms.portal_folio_payment" />
-            </div>
-        </div>
-
-    </template>
     <template
         id="folio_portal_template"
         name="Folio Portal Template"
@@ -242,9 +114,6 @@
                             class="list-group list-group-flush flex-wrap flex-row flex-lg-column"
                         >
                             <li class="list-group-item flex-grow-1">
-                                <div>
-                                    <div t-call="pms.portal_folio_page_payment" />
-                                </div>
                                 <div class="o_download_pdf btn-toolbar flex-sm-nowrap">
                                     <div class="btn-group flex-grow-1  mr-1 mb-1">
                                         <a
@@ -262,21 +131,6 @@
                                             target="_blank"
                                         ><i class="fa fa-print" /> Print</a>
                                     </div>
-                                </div>
-                                <t
-                                    t-set="rooms_to_checkin"
-                                    t-value="len(folio.checkin_partner_ids.filtered(lambda r: r.state in ['draft','dummy']))"
-                                />
-                                <div t-if="rooms_to_checkin">
-                                    <a
-                                        class="btn btn-primary btn-block "
-                                        t-att-href="folio.get_portal_url(suffix='/precheckin')"
-                                        t-att-title="Precheckin"
-                                    >
-                                        <t
-                                            t-esc="rooms_to_checkin"
-                                        /> Guests to Precheckin
-                                    </a>
                                 </div>
                             </li>
 
