@@ -2309,40 +2309,39 @@ class PmsFolioService(Component):
                 and r.room_type_id.id == info_reservation.roomTypeId
                 and r.adults == info_reservation.adults
                 and r.children == info_reservation.children
+                and r.state != "cancel"
             )
             if proposed_reservation:
                 proposed_reservation = proposed_reservation[0]
-                saved_reservations -= proposed_reservation
+                saved_reservations -= proposed_reservation[0]
             vals = {}
             new_res = not proposed_reservation
             if new_res:
                 vals.update({"folio_id": folio.id})
             if info_reservation.roomTypeId:
-                if (
-                    new_res
-                    or proposed_reservation.room_type_id.id
-                    != info_reservation.roomTypeId
+                if new_res or (
+                    proposed_reservation.room_type_id.id != info_reservation.roomTypeId
+                    and proposed_reservation.state in ["draft", "confirm"]
                 ):
                     vals.update({"room_type_id": info_reservation.roomTypeId})
             if info_reservation.checkin:
-                if (
-                    new_res
-                    or proposed_reservation.checkin
+                if new_res or (
+                    proposed_reservation.checkin
                     != datetime.strptime(info_reservation.checkin, "%Y-%m-%d").date()
+                    and proposed_reservation.state in ["draft", "confirm"]
                 ):
                     vals.update({"checkin": info_reservation.checkin})
             if info_reservation.checkout:
-                if (
-                    new_res
-                    or proposed_reservation.checkout
+                if new_res or (
+                    proposed_reservation.checkout
                     != datetime.strptime(info_reservation.checkout, "%Y-%m-%d").date()
+                    and proposed_reservation.state in ["draft", "confirm"]
                 ):
                     vals.update({"checkout": info_reservation.checkout})
             if info_reservation.pricelistId:
-                if (
-                    new_res
-                    or proposed_reservation.pricelist_id.id
-                    != info_reservation.pricelistId
+                if new_res or (
+                    proposed_reservation.pricelist_id.id != info_reservation.pricelistId
+                    and proposed_reservation.state in ["draft", "confirm"]
                 ):
                     vals.update({"pricelist_id": info_reservation.pricelistId})
             board_service_id = self.get_board_service_room_type_id(
@@ -2380,9 +2379,14 @@ class PmsFolioService(Component):
                     or proposed_reservation.children != info_reservation.children
                 ):
                     vals.update({"children": info_reservation.children})
-            if new_res or info_reservation.stateCode != proposed_reservation.state:
+            if new_res or (
+                info_reservation.stateCode != proposed_reservation.state
+                and proposed_reservation.state in ["draft", "confirm"]
+            ):
                 vals.update({"state": info_reservation.stateCode})
-            if info_reservation.reservationLines:
+            if info_reservation.reservationLines and (
+                new_res or proposed_reservation.state in ["draft", "confirm"]
+            ):
                 # The service price is included in day price when it is a board service (external api)
                 board_day_price = 0
                 if external_app:
