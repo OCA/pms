@@ -97,7 +97,9 @@ class PmsAvailService(Component):
                 avails_search_param.availabilityTo, "%Y-%m-%d"
             ).date()
             pms_property = (
-                self.env["pms.property"].sudo().browse(avails_search_param.pmsPropertyId)
+                self.env["pms.property"]
+                .sudo()
+                .browse(avails_search_param.pmsPropertyId)
             )
             pms_api_check_access(user=self.env.user, records=pms_property)
             room_types = pms_property.room_ids.mapped("room_type_id")

@@ -1121,11 +1121,11 @@ class PmsFolioService(Component):
             raise MissingError(_("Folio not found"))
         pms_api_check_access(user=self.env.user, records=folio_record)
         pms_folio_info = self.adjust_board_services_input(pms_folio_info)
-        folio_vals = self.env['pms.folio'].create_folio_vals(folio_record=folio_record, pms_folio_info=pms_folio_info)
+        folio_vals = self.env["pms.folio"].create_folio_vals(
+            folio_record=folio_record, pms_folio_info=pms_folio_info
+        )
         if folio_vals:
-            folio_record.with_context(
-                skip_compute_service_ids=True
-            ).write(folio_vals)
+            folio_record.with_context(skip_compute_service_ids=True).write(folio_vals)
 
     # ------------------------------------------------------------------------------------
     # FOLIO SERVICES----------------------------------------------------------------
@@ -2759,10 +2759,12 @@ class PmsFolioService(Component):
                     and reservation.services is not None
                 ):
                     if external_app:
-                        reservation.boardServiceId = self.get_board_service_room_type_id(
-                            reservation.boardServiceId,
-                            reservation.roomTypeId,
-                            pms_folio_info.pmsPropertyId,
+                        reservation.boardServiceId = (
+                            self.get_board_service_room_type_id(
+                                reservation.boardServiceId,
+                                reservation.roomTypeId,
+                                pms_folio_info.pmsPropertyId,
+                            )
                         )
                     for service in reservation.services:
                         if service.isBoardService:
@@ -2773,10 +2775,14 @@ class PmsFolioService(Component):
                     and reservation.boardServiceId != 0
                     and not res_has_bs
                 ):
-                    board_service_record = self.env["pms.board.service.room.type"].search(
+                    board_service_record = self.env[
+                        "pms.board.service.room.type"
+                    ].search(
                         [
                             (
-                                "id", "=", reservation.boardServiceId,
+                                "id",
+                                "=",
+                                reservation.boardServiceId,
                             )
                         ]
                     )

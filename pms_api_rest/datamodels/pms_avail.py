@@ -1,8 +1,6 @@
 from marshmallow import fields
 
 from odoo.addons.datamodel.core import Datamodel
-from odoo.addons.datamodel.fields import NestedModel
-
 
 
 class PmsAvailSearchParam(Datamodel):
@@ -26,4 +24,3 @@ class PmsAvailInfoRoomType(Datamodel):
     _name = "pms.avail.info.room.type"
     roomTypeId = fields.Integer(required=True, allow_none=False)
     count = fields.Integer(required=True, allow_none=False)
-
