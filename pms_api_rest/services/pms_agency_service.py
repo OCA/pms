@@ -45,7 +45,7 @@ class PmsAgencyService(Component):
                     imageUrl=url_image_pms_api_rest(
                         "res.partner", agency.id, "image_128"
                     ),
-                    saleChannelId=agency.sale_channel_id.id
+                    saleChannelId=agency.sale_channel_id.id,
                 )
             )
         return result_agencies
@@ -80,7 +80,7 @@ class PmsAgencyService(Component):
                 id=agency.id,
                 name=agency.name if agency.name else None,
                 imageUrl=url_image_pms_api_rest("res.partner", agency.id, "image_128"),
-                saleChannelId=agency.sale_channel_id.id
+                saleChannelId=agency.sale_channel_id.id,
             )
         else:
             raise MissingError(_("Agency not found"))
