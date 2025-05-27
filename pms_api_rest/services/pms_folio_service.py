@@ -1117,71 +1117,16 @@ class PmsFolioService(Component):
     )
     # flake8:noqa=C901
     def update_folio(self, folio_id, pms_folio_info):
-        folio = self.env["pms.folio"].sudo().browse(folio_id)
-        pms_api_check_access(user=self.env.user, records=folio)
-        folio_vals = {}
-        if not folio:
+        folio_record = self.env["pms.folio"].search([("id", "=", folio_id)])
+        if not folio_record:
             raise MissingError(_("Folio not found"))
-        if pms_folio_info.cancelReservations:
-            folio.action_cancel()
-        if pms_folio_info.confirmReservations:
-            for reservation in folio.reservation_ids:
-                reservation.action_confirm()
-        if pms_folio_info.internalComment is not None:
-            folio_vals.update({"internal_comment": pms_folio_info.internalComment})
-        if pms_folio_info.partnerId:
-            folio_vals.update({"partner_id": pms_folio_info.partnerId})
-        else:
-            if folio.partner_id:
-                folio.partner_id = False
-        if pms_folio_info.partnerName is not None:
-            folio_vals.update({"partner_name": pms_folio_info.partnerName})
-        if pms_folio_info.partnerEmail is not None:
-            folio_vals.update({"email": pms_folio_info.partnerEmail})
-        if pms_folio_info.partnerPhone is not None:
-            folio_vals.update({"mobile": pms_folio_info.partnerPhone})
-        if pms_folio_info.language:
-            folio_vals.update({"lang": pms_folio_info.language})
-        if pms_folio_info.reservations:
-            for reservation in pms_folio_info.reservations:
-                vals = {
-                    "folio_id": folio.id,
-                    "room_type_id": reservation.roomTypeId,
-                    "checkin": reservation.checkin,
-                    "checkout": reservation.checkout,
-                    "pms_property_id": pms_folio_info.pmsPropertyId,
-                    "pricelist_id": pms_folio_info.pricelistId,
-                    "external_reference": pms_folio_info.externalReference,
-                    "board_service_room_id": reservation.boardServiceId,
-                    "preferred_room_id": reservation.preferredRoomId,
-                    "adults": reservation.adults,
-                    "reservation_type": pms_folio_info.reservationType,
-                    "children": reservation.children,
-                }
-                reservation_record = self.env["pms.reservation"].sudo().create(vals)
-                if reservation.services:
-                    for service in reservation.services:
-                        vals = {
-                            "product_id": service.productId,
-                            "reservation_id": reservation_record.id,
-                            "is_board_service": False,
-                            "service_line_ids": [
-                                (
-                                    0,
-                                    False,
-                                    {
-                                        "date": line.date,
-                                        "price_unit": line.priceUnit,
-                                        "discount": line.discount or 0,
-                                        "day_qty": line.quantity,
-                                    },
-                                )
-                                for line in service.serviceLines
-                            ],
-                        }
-                        self.env["pms.service"].sudo().create(vals)
+        pms_api_check_access(user=self.env.user, records=folio_record)
+        pms_folio_info = self.adjust_board_services_input(pms_folio_info)
+        folio_vals = self.env['pms.folio'].create_folio_vals(folio_record=folio_record, pms_folio_info=pms_folio_info)
         if folio_vals:
-            folio.write(folio_vals)
+            folio_record.with_context(
+                skip_compute_service_ids=True
+            ).write(folio_vals)
 
     # ------------------------------------------------------------------------------------
     # FOLIO SERVICES----------------------------------------------------------------
@@ -2819,3 +2764,52 @@ class PmsFolioService(Component):
         return PmsFolioPaymentLinkInfo(
             paymentLink=payment_link,
         )
+
+    def adjust_board_services_input(self, pms_folio_info):
+        external_app = self.env.user.pms_api_client
+        # service datamodel
+        PmsServiceInfo = self.env.datamodels["pms.service.info"]
+
+        # add service to reservations which have boardServiceId and not services with field isBoardService = True
+        if pms_folio_info.reservations:
+            for reservation in pms_folio_info.reservations:
+                res_has_bs = False
+                if (
+                    reservation.boardServiceId is not None
+                    and reservation.boardServiceId != 0
+                    and reservation.services is not None
+                ):
+                    if external_app:
+                        reservation.boardServiceId = self.get_board_service_room_type_id(
+                            reservation.boardServiceId,
+                            reservation.roomTypeId,
+                            pms_folio_info.pmsPropertyId,
+                        )
+                    for service in reservation.services:
+                        if service.isBoardService:
+                            res_has_bs = True
+                            break
+                if (
+                    reservation.boardServiceId is not None
+                    and reservation.boardServiceId != 0
+                    and not res_has_bs
+                ):
+                    board_service_record = self.env["pms.board.service.room.type"].search(
+                        [
+                            (
+                                "id", "=", reservation.boardServiceId,
+                            )
+                        ]
+                    )
+                    if not board_service_record:
+                        raise MissingError(_("Board Service not found"))
+                    if reservation.services is None:
+                        reservation.services = []
+                    for service in board_service_record.board_service_line_ids:
+                        reservation.services.append(
+                            PmsServiceInfo(
+                                productId=service.product_id.id,
+                                isBoardService=True,
+                            )
+                        )
+        return pms_folio_info
