@@ -40,6 +40,10 @@ class PmsFolioInfo(Datamodel):
     reservations = fields.List(
         NestedModel("pms.reservation.info"), required=False, allow_none=True
     )
+
+    services = fields.List(
+        NestedModel("pms.service.info"), required=False, allow_none=True
+    )
     pricelistId = fields.Integer(required=False, allow_none=True)
     saleChannelId = fields.Integer(required=False, allow_none=True)
     agencyId = fields.Integer(required=False, allow_none=True)

@@ -10,3 +10,4 @@ class PmsServiceLineInfo(Datamodel):
     priceUnit = fields.Float(required=False, allow_none=True)
     discount = fields.Float(required=False, allow_none=True)
     quantity = fields.Integer(required=False, allow_none=True)
+    isBoardService = fields.Boolean(required=False, allow_none=True)
