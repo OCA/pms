@@ -138,11 +138,11 @@ repos:
           - --header
           - "# generated from manifests external_dependencies"
   - repo: https://github.com/PyCQA/flake8
-    rev: 3.9.2
+    rev: 5.0.0
     hooks:
       - id: flake8
         name: flake8
-        additional_dependencies: ["flake8-bugbear==21.9.2"]
+        additional_dependencies: ["flake8-bugbear==21.9.2", "importlib-metadata<5.0.0"]
   - repo: https://github.com/OCA/pylint-odoo
     rev: v8.0.19
     hooks:
