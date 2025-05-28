@@ -5,9 +5,9 @@
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_form_view" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='company_id']" position="after">
+            <field name="currency_id" position="before">
                 <field name="channel_available" />
-            </xpath>
+            </field>
         </field>
     </record>
 
