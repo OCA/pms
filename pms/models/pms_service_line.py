@@ -5,6 +5,7 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools import format_date
 
 _logger = logging.getLogger(__name__)
 
@@ -218,6 +219,7 @@ class PmsServiceLine(models.Model):
     @api.constrains("day_qty")
     def no_free_resources(self):
         for record in self:
+            record = record.with_context(property=record.pms_property_id.id)
             limit = record.product_id.daily_limit
             if limit > 0:
                 out_qty = sum(
@@ -236,7 +238,7 @@ class PmsServiceLine(models.Model):
                         _("%(product_name)s limit exceeded for %(date)s")
                         % {
                             "product_name": record.service_id.product_id.name,
-                            "date": record.date,
+                            "date": format_date(self.env, record.date),
                         }
                     )
 
