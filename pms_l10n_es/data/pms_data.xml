@@ -41,11 +41,10 @@ if dni_number.isdigit() and not dni_letter.isdigit():
 else:
     failed = True
             </field>
-<!--            <field name="has_unique_numbers">True</field>-->
         </record>
 
     <record id="document_type_spanish_residence" model="res.partner.id_category">
-            <field name="name">Spanish Residence permit</field>
+            <field name="name">NIE</field>
             <field name="code">N</field>
             <field name="priority">30</field>
             <field name="country_ids" eval="[(6, 0, [ref('base.es')])]" />
@@ -54,12 +53,11 @@ permit_first_letter=id_number.name[0:1]
 permit_last_letter = id_number.name[
     len(id_number.name) - 1 : len(id_number.name)
 ]
-if (permit_first_letter.upper() in ['X','Y']) and id_number.name[1:8].isdigit() and not permit_last_letter.isdigit():
+if (permit_first_letter.upper() in ['X','Y' 'Z']) and id_number.name[1:8].isdigit() and not permit_last_letter.isdigit():
     failed = False
 else:
     failed = True
             </field>
-<!--            <field name="has_unique_numbers">True</field>-->
         </record>
 
         <record id="base.es" model="res.country">

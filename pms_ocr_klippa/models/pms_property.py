@@ -340,7 +340,7 @@ class PmsProperty(models.Model):
                 document_subtype[0] if document_subtype else document_type[0]
             )
         if not document_type:
-            document_type = self.env.ref("pms.document_type_identification_document")
+            document_type = self.env.ref("pms.document_type_other")
         return document_type[0] if document_type else False
 
     def _get_country_id(self, country_code):

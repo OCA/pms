@@ -17,24 +17,5 @@
             <field name="klippa_code">P</field>
             <field name="klippa_subtype_code">P</field>
         </record>
-        <record
-            id="pms.document_type_identification_document"
-            model="res.partner.id_category"
-        >
-            <field name="klippa_code">I</field>
-            <field name="klippa_subtype_code">I</field>
-        </record>
-        <!-- TODO: ADD to new autoinstall module klippa pms_l10n_es -->
-        <!-- <record id="pms_l10n_es.document_type_dni" model="res.partner.id_category">
-            <field name="klippa_code">I</field>
-            <field name="klippa_subtype_code">D</field>
-        </record>
-        <record
-            id="pms_l10n_es.document_type_spanish_residence"
-            model="res.partner.id_category"
-        >
-            <field name="klippa_code">I</field>
-            <field name="klippa_subtype_code">R</field>
-        </record> -->
     </data>
 </odoo>

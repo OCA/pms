@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="pms_l10n_es.document_type_dni" model="res.partner.id_category">
+        <field name="klippa_code">I</field>
+        <field name="klippa_subtype_code">D</field>
+    </record>
+    <record
+        id="pms_l10n_es.document_type_spanish_residence"
+        model="res.partner.id_category"
+    >
+        <field name="klippa_code">I</field>
+        <field name="klippa_subtype_code">R</field>
+    </record>
+</odoo>
