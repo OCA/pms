@@ -8459,6 +8459,7 @@ msgstr "Agencia de origen"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_checkin_partner__gender__other
+#: model:res.partner.id_category,name:pms.document_type_other
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid "Other"
 msgstr "Otro"
