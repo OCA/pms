@@ -521,116 +521,100 @@
                                     <field name="pms_property_id" invisible="1" />
                                 </tree>
                             </field>
-                            <group
+                            <separator
                                 string="Services"
-                                name="reservation_services"
                                 attrs="{'invisible':[('reservation_type', 'in', ('out'))]}"
+                            />
+                            <field
+                                name="service_ids"
+                                attrs="{'invisible':[('reservation_type', 'in', ('out'))]}"
+                                context="{'default_reservation_id': active_id, 'default_folio_id': folio_id, 'form_view_ref':'pms.pms_service_view_form'}"
                             >
-                                <field
-                                    name="service_ids"
-                                    context="{'default_reservation_id': active_id, 'default_folio_id': folio_id, 'form_view_ref':'pms.pms_service_view_form'}"
-                                    nolabel="1"
+                                <!-- If charge this view with tree_view_ref, its !crash! (field not found) when open reservation form from folio form... ¿?-->
+                                <tree
+                                    name="Services"
+                                    editable="bottom"
+                                    decoration-success="is_board_service == True"
                                 >
-                                    <!-- If charge this view with tree_view_ref, its !crash! (field not found) when open reservation form from folio form... ¿?-->
-                                    <tree
-                                        name="Services"
-                                        editable="bottom"
-                                        decoration-success="is_board_service == True"
+                                    <field name="is_board_service" invisible="1" />
+                                    <field
+                                        name="company_id"
+                                        invisible="1"
+                                        readonly="1"
+                                    />
+                                    <field
+                                        name="pms_property_id"
+                                        invisible="1"
+                                        readonly="1"
+                                    />
+                                    <button
+                                        title="Open Services"
+                                        type="object"
+                                        class="oe_stat_button"
+                                        icon="fa-1x fa-bed"
+                                        name="open_service_ids"
+                                        attrs="{'invisible':[('is_board_service','=', False)]}"
+                                    />
+                                    <field name="per_day" invisible="1" readonly="1" />
+                                    <field name="folio_id" invisible="1" readonly="1" />
+                                    <field
+                                        name="reservation_id"
+                                        invisible="1"
+                                        attrs="{'required': [('per_day','=',True)]}"
+                                    />
+                                    <field
+                                        name="product_id"
+                                        domain="[('sale_ok', '=', True)]"
+                                        options="{'no_create': True,'no_open': True}"
+                                    />
+                                    <field name="name" />
+                                    <field
+                                        name="product_qty"
+                                        attrs="{'readonly': [('per_day','=',True)]}"
+                                        force_save="1"
+                                    />
+                                    <field name="sale_channel_origin_id" />
+                                    <field name="default_invoice_to" optional="hide" />
+                                    <button
+                                        title="Open Services"
+                                        type="object"
+                                        class="oe_stat_button"
+                                        icon="fa-2x fa-bars"
+                                        name="open_service_ids"
+                                        attrs="{'invisible': [('per_day','=',False)]}"
+                                    />
+                                    <field
+                                        name="tax_ids"
+                                        widget="many2many_tags"
+                                        optional="show"
+                                    />
+                                    <field name="board_service_line_id" invisible="1" />
+                                    <field name="price_subtotal" optional="hide" />
+                                    <field name="price_tax" optional="hide" />
+                                    <field name="discount" />
+                                    <field name="price_total" />
+                                    <field
+                                        name="service_line_ids"
+                                        invisible="1"
+                                        readonly="1"
                                     >
-                                        <field name="is_board_service" invisible="1" />
-                                        <field
-                                            name="company_id"
-                                            invisible="1"
-                                            readonly="1"
-                                        />
-                                        <field
-                                            name="pms_property_id"
-                                            invisible="1"
-                                            readonly="1"
-                                        />
-                                        <button
-                                            title="Open Services"
-                                            type="object"
-                                            class="oe_stat_button"
-                                            icon="fa-1x fa-bed"
-                                            name="open_service_ids"
-                                            attrs="{'invisible':[('is_board_service','=', False)]}"
-                                        />
-                                        <field
-                                            name="per_day"
-                                            invisible="1"
-                                            readonly="1"
-                                        />
-                                        <field
-                                            name="folio_id"
-                                            invisible="1"
-                                            readonly="1"
-                                        />
-                                        <field
-                                            name="reservation_id"
-                                            invisible="1"
-                                            attrs="{'required': [('per_day','=',True)]}"
-                                        />
-                                        <field
-                                            name="product_id"
-                                            domain="[('sale_ok', '=', True)]"
-                                            options="{'no_create': True,'no_open': True}"
-                                        />
-                                        <field name="name" />
-                                        <field
-                                            name="product_qty"
-                                            attrs="{'readonly': [('per_day','=',True)]}"
-                                            force_save="1"
-                                        />
-                                        <field name="sale_channel_origin_id" />
-                                        <field
-                                            name="default_invoice_to"
-                                            optional="hide"
-                                        />
-                                        <button
-                                            title="Open Services"
-                                            type="object"
-                                            class="oe_stat_button"
-                                            icon="fa-2x fa-bars"
-                                            name="open_service_ids"
-                                            attrs="{'invisible': [('per_day','=',False)]}"
-                                        />
-                                        <field
-                                            name="tax_ids"
-                                            widget="many2many_tags"
-                                            optional="show"
-                                        />
-                                        <field
-                                            name="board_service_line_id"
-                                            invisible="1"
-                                        />
-                                        <field name="price_subtotal" optional="hide" />
-                                        <field name="price_tax" optional="hide" />
-                                        <field name="discount" />
-                                        <field name="price_total" />
-                                        <field
-                                            name="service_line_ids"
-                                            invisible="1"
-                                            readonly="1"
-                                        >
-                                            <tree name="Days">
-                                                <field name="date" />
-                                                <field name="day_qty" />
-                                                <field
-                                                    name="discount"
-                                                    attrs="{'readonly':[('is_board_service','=', True)]}"
-                                                />
-                                                <field name="price_unit" />
-                                                <field name="price_day_total" />
-                                                <field
-                                                    name="is_board_service"
-                                                    invisible="1"
-                                                />
-                                            </tree>
-                                        </field>
-                                    </tree>
-                                </field>
-                            </group>
+                                        <tree name="Days">
+                                            <field name="date" />
+                                            <field name="day_qty" />
+                                            <field
+                                                name="discount"
+                                                attrs="{'readonly':[('is_board_service','=', True)]}"
+                                            />
+                                            <field name="price_unit" />
+                                            <field name="price_day_total" />
+                                            <field
+                                                name="is_board_service"
+                                                invisible="1"
+                                            />
+                                        </tree>
+                                    </field>
+                                </tree>
+                            </field>
                             <group
                                 class="oe_subtotal_footer oe_right"
                                 name="reservation_total"
