@@ -2,7 +2,7 @@
 bs4
 geopy
 jose
-jwt
+pyjwt
 marshmallow
 pycountry
 simplejson
