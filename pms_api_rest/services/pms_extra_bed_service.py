@@ -1,3 +1,6 @@
+from odoo import _
+from odoo.exceptions import ValidationError
+
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
@@ -28,6 +31,7 @@ class PmsExtraBedService(Component):
         domain = [("is_extra_bed", "=", True)]
         if extra_beds_search_param.name:
             domain.append(("name", "like", extra_beds_search_param.name))
+        property_obj = None
         if extra_beds_search_param.pmsPropertyId:
             domain.extend(
                 [
@@ -36,10 +40,26 @@ class PmsExtraBedService(Component):
                     ("pms_property_ids", "=", False),
                 ]
             )
+            property_obj = (
+                self.env["pms.property"]
+                .sudo()
+                .search([("id", "=", extra_beds_search_param.pmsPropertyId)])
+            )
+        if not property_obj:
+            raise ValidationError(
+                _(
+                    "Property not found or not specified. Please provide a valid property ID."
+                )
+            )
 
         result_extra_beds = []
         PmsExtraBed = self.env.datamodels["pms.extra.bed.info"]
-        beds = self.env["product.product"].sudo().search(domain)
+        beds = (
+            self.env["product.product"]
+            .sudo()
+            .with_context(property=property.id)
+            .search(domain)
+        )
         pms_api_check_access(user=self.env.user, records=beds)
         for bed in beds:
             avail = -1
