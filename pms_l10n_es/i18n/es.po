@@ -939,7 +939,7 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: model:res.partner.id_category,name:pms_l10n_es.document_type_spanish_residence
-msgid "Spanish Residence permit"
+msgid "NIE"
 msgstr ""
 
 #. module: pms_l10n_es
