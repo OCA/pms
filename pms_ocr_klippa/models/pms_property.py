@@ -317,7 +317,7 @@ class PmsProperty(models.Model):
         domain = [("klippa_code", "=", klippa_type)]
         if country_id:
             domain.append(("country_ids", "in", country_id))
-        document_type = self.env["res.partner.id_category"].search(domain, limit=1)
+        document_type = self.env["res.partner.id_category"].search(domain)
         if not document_type and country_id:
             document_type = self.env["res.partner.id_category"].search(
                 [
