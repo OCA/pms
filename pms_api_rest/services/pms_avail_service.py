@@ -106,12 +106,9 @@ class PmsAvailService(Component):
             for room_type in room_types:
                 if avails_search_param.pricelistId:
                     apply_availability_rules = (
-                        self.env.registry["ir.config_parameter"]
+                        self.env["pms.availability"]
                         .sudo()
-                        .get_param(
-                            "apply_internal_availability_rules",
-                            default=False,
-                        )
+                        .apply_internal_availability_rules()
                     )
                     pms_property = pms_property.with_context(
                         checkin=date_from,
