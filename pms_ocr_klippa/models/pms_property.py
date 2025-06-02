@@ -337,7 +337,7 @@ class PmsProperty(models.Model):
                 lambda dt: dt.klippa_subtype_code == klippa_subtype
             )
             document_type = (
-                document_subtype[0] if document_subtype else document_type[0]
+                document_subtype[0] if document_subtype else False
             )
         if not document_type:
             document_type = self.env.ref("pms.document_type_other")
