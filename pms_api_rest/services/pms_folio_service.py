@@ -2592,8 +2592,11 @@ class PmsFolioService(Component):
 
     def _get_folio_reservations(self, folio_record):
         reservations = []
-        for reservation in folio_record.reservation_ids.filtered(
-            lambda x: x.state != "cancel" and x.overnight_room
+        for reservation in sorted(
+            folio_record.reservation_ids.filtered(
+                lambda x: x.state != "cancel" and x.overnight_room
+            ),
+            key=lambda r: r.folio_sequence,
         ):
             reservation_checkin_partner_names = [
                 checkin_partner.firstname
@@ -2620,6 +2623,7 @@ class PmsFolioService(Component):
                     ).isoformat(),
                     adults=reservation.adults,
                     children=reservation.children,
+                    folio_sequence=reservation.folio_sequence,
                 )
             )
         return reservations

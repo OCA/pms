@@ -134,6 +134,7 @@ class PmsReservationPublicInfo(Datamodel):
     adults = fields.Integer(required=False, allow_none=True)
     children = fields.Integer(required=False, allow_none=True)
     reservationAmount = fields.Float(required=False, allow_none=True)
+    folio_sequence = fields.Integer(required=False, allow_none=True)
     checkinPartners = fields.List(
         NestedModel("pms.checkin.partner.info"), required=False, allow_none=False
     )
