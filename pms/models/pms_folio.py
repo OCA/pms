@@ -1389,12 +1389,22 @@ class PmsFolio(models.Model):
     def _compute_last_checkout(self):
         for record in self:
             if record.reservation_ids:
-                checkouts = record.reservation_ids.mapped("checkout")
-                record.last_checkout = max(checkouts)
+                checkouts = [
+                    reservation.checkout
+                    for reservation in record.reservation_ids
+                    if reservation.checkout
+                ]
+                record.last_checkout = max(checkouts) if checkouts else None
 
     def _compute_days_to_checkout(self):
         for record in self:
-            record.days_to_checkout = (record.last_checkout - fields.Date.today()).days
+            if not record.last_checkout:
+                record.days_to_checkout = 0
+            else:
+                # Calculate the number of days until the last checkout date
+                record.days_to_checkout = (
+                    record.last_checkout - fields.Date.today()
+                ).days
 
     def _search_days_to_checkout(self, operator, value):
         target_date = fields.Date.today() + datetime.timedelta(days=value)
