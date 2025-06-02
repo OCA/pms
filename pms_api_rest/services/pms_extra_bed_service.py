@@ -57,7 +57,7 @@ class PmsExtraBedService(Component):
         beds = (
             self.env["product.product"]
             .sudo()
-            .with_context(property=property.id)
+            .with_context(property=property_obj.id)
             .search(domain)
         )
         pms_api_check_access(user=self.env.user, records=beds)
