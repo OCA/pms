@@ -18,3 +18,4 @@ class PmsFolioSaleInfo(Datamodel):
     displayType = fields.String(required=False, allow_none=True)
     defaultInvoiceTo = fields.Integer(required=False, allow_none=True)
     isDownPayment = fields.Boolean(required=False, allow_none=True)
+    sectionId = fields.Integer(required=False, allow_none=True)

@@ -1397,6 +1397,7 @@ class PmsFolioService(Component):
                             if sale_line.default_invoice_to
                             else None,
                             isDownPayment=sale_line.is_downpayment,
+                            sectionId= sale_line.section_id.id
                         )
                     )
 
@@ -1528,6 +1529,12 @@ class PmsFolioService(Component):
             if line.section_id and line.section_id.id not in sale_lines_to_invoice.ids:
                 sale_lines_to_invoice |= line.section_id
                 lines_to_invoice_dict[line.section_id.id] = 0
+        line_notes = self.env["folio.sale.line"].sudo().search([
+            ("display_type", "=", "line_note"),
+        ]).filtered(lambda l: l.section_id in sale_lines_to_invoice)
+        for line_note in line_notes:
+            if line_note.id not in lines_to_invoice_dict:
+                lines_to_invoice_dict[line_note.id] = 0
         folios_to_invoice = sale_lines_to_invoice.folio_id
         invoices = folios_to_invoice._create_invoices(
             lines_to_invoice=lines_to_invoice_dict,
