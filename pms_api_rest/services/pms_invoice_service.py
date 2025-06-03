@@ -637,7 +637,6 @@ class PmsInvoiceService(Component):
                 )
                 .mapped("section_id.id")
             )
-            pms_api_check_access(user=self.env.user, records=new_section_ids)
             if new_section_ids:
                 lines_to_invoice.update(
                     {section_id: 0 for section_id in new_section_ids}
@@ -650,7 +649,7 @@ class PmsInvoiceService(Component):
                 )
             ][0]
             # Update name of new invoice lines
-            for item in filter(lambda l: not l[2]["display_type"], new_invoice_lines):
+            for item in filter(lambda l: not l[2].get("display_type"), new_invoice_lines):
                 item[2]["name"] = [
                     line.name
                     for line in newInvoiceLinesInfo
