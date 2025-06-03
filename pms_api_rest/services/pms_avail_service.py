@@ -71,7 +71,7 @@ class PmsAvailService(Component):
         [
             (
                 [
-                    "/count-free-rooms",
+                    "/count-avail-rooms",
                 ],
                 "GET",
             )
@@ -80,7 +80,7 @@ class PmsAvailService(Component):
         output_param=Datamodel("pms.avail.info.room.type", is_list=True),
         auth="jwt_api_pms",
     )
-    def get_count_free_rooms(self, avails_search_param):
+    def get_count_avail_rooms(self, avails_search_param):
         domain = []
         room_type_dict = {}
         if avails_search_param.pmsPropertyId:
