@@ -21,13 +21,13 @@ class BaseModel(models.AbstractModel):
 
     @api.model_create_multi
     def create(self, vals_list):
-        records = super(BaseModel, self).create(vals_list)
+        records = super().create(vals_list)
         if self._check_pms_properties_auto:
             records._check_pms_properties()
         return records
 
     def write(self, vals):
-        res = super(BaseModel, self).write(vals)
+        res = super().write(vals)
         check_pms_properties = False
         for fname in vals:
             field = self._fields.get(fname)
