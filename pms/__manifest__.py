@@ -92,7 +92,6 @@
         "views/res_company_views.xml",
         "views/traveller_report_template.xml",
         "wizards/wizard_split_join_swap_reservation.xml",
-        "views/precheckin_portal_templates.xml",
         "wizards/wizard_massive_changes.xml",
         "wizards/wizard_advanced_filters.xml",
         "wizards/folio_payment_link_views.xml",

@@ -130,7 +130,7 @@ class ProductTemplate(models.Model):
             vals["is_pms_available"] = True
             vals["per_day"] = True
             vals["consumed_on"] = "before"
-        return super(ProductTemplate, self).write(vals)
+        return super().write(vals)
 
     def _get_mmdd_selection(self):
         lang = self.env.lang or "en_US"
@@ -152,7 +152,7 @@ class ProductTemplate(models.Model):
         options = []
         for month in range(1, 13):
             for day in range(1, days_by_month[month] + 1):
-                mmdd = f"{month:02d}-{day:02d}"
+                mmdd = "{month:02d}-{day:02d}".format(month=month, day=day)
                 dt = date(2024, month, day)  # Dummy year
                 label = babel.dates.format_date(dt, format="d MMMM", locale=lang)
                 options.append((mmdd, label.capitalize()))
