@@ -20,11 +20,11 @@ odoo.define("pms.payment_form", (require) => {
          * @returns {Object} The extended transaction route params
          */
         _prepareTransactionRouteParams: function (code, paymentOptionId, flow) {
-            const transactionRouteParams = this._super(...arguments);
+            const transactionRouteParams = this._super(code, paymentOptionId, flow);
             return {
                 ...transactionRouteParams,
                 pms_folio_id: this.txContext.pmsFolioId
-                    ? parseInt(this.txContext.pmsFolioId)
+                    ? parseInt(this.txContext.pmsFolioId, 10)
                     : undefined,
             };
         },
