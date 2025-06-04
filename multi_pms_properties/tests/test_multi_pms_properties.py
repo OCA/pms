@@ -12,10 +12,10 @@ _logger = logging.getLogger(__name__)
 
 
 @common.tagged("-at_install", "post_install")
-class TestMultiPMSProperties(common.SavepointCase):
+class TestMultiPMSProperties(common.TransactionCase):
     @classmethod
     def setUpClass(cls):
-        super(TestMultiPMSProperties, cls).setUpClass()
+        super().setUpClass()
         model_classes = [ParentTester, ChildTester]
         setup_test_model(cls.env, model_classes)
         for mdl_cls in model_classes:
