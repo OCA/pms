@@ -119,11 +119,11 @@ class BookingEngine(models.TransientModel):
         else:
             return self.env.user.pms_property_id.id
 
-    @api.depends("availability_results.value_num_rooms_selected")
+    @api.depends("availability_results.rooms_selected_qty")
     def _compute_can_create_folio(self):
         for record in self:
             record.can_create_folio = any(
-                record.availability_results.mapped("value_num_rooms_selected")
+                record.availability_results.mapped("rooms_selected_qty")
             )
 
     @api.depends("partner_id")
@@ -200,7 +200,7 @@ class BookingEngine(models.TransientModel):
                         room_type_id=room_type_iterator.id,
                         pricelist_id=record.pricelist_id.id,
                     )
-                    num_rooms_available = pms_property.availability
+                    rooms_available_qty = pms_property.availability
 
                     cmds.append(
                         (
@@ -211,7 +211,7 @@ class BookingEngine(models.TransientModel):
                                 "checkin": record.start_date,
                                 "checkout": record.end_date,
                                 "room_type_id": room_type_iterator.id,
-                                "num_rooms_available": num_rooms_available,
+                                "rooms_available_qty": rooms_available_qty,
                             },
                         )
                     )
@@ -223,7 +223,7 @@ class BookingEngine(models.TransientModel):
                     record.availability_results = cmds
 
                     record.availability_results = record.availability_results.sorted(
-                        key=lambda s: s.num_rooms_available, reverse=True
+                        key=lambda s: s.rooms_available_qty, reverse=True
                     )
 
     def create_folio(self):
@@ -248,7 +248,7 @@ class BookingEngine(models.TransientModel):
                 folio = record.folio_id
             reservation_values = []
             for line in record.availability_results:
-                for _reservations_to_create in range(0, line.value_num_rooms_selected):
+                for _reservations_to_create in range(0, line.rooms_selected_qty):
                     res_dict = {
                         "folio_id": folio.id,
                         "checkin": line.checkin,
@@ -281,19 +281,6 @@ class BookingEngine(models.TransientModel):
             return action
 
 
-class NumRoomsSelectionModel(models.TransientModel):
-    _name = "pms.num.rooms.selection"
-    _description = "Dinamic Selection based on avails room"
-    _rec_name = "value"
-
-    value = fields.Integer()
-    room_type_id = fields.Char()
-    booking_engine_id = fields.One2many(
-        comodel_name="pms.folio.availability.wizard",
-        inverse_name="num_rooms_selected",
-    )
-
-
 class AvailabilityWizard(models.TransientModel):
     _name = "pms.folio.availability.wizard"
     _description = "Room type line in Booking Engine"
@@ -320,27 +307,13 @@ class AvailabilityWizard(models.TransientModel):
         check_pms_properties=True,
     )
 
-    num_rooms_available = fields.Integer(
+    rooms_available_qty = fields.Integer(
         string="Available rooms",
         help="Number of rooms that are available",
         store=True,
-        compute="_compute_num_rooms_available",
+        compute="_compute_rooms_available_qty",
     )
-    num_rooms_selected = fields.Many2one(
-        string="Selected rooms",
-        readonly=False,
-        store=True,
-        comodel_name="pms.num.rooms.selection",
-        domain="[('value', '<=', num_rooms_available), "
-        "('room_type_id', '=', room_type_id)]",
-        compute="_compute_num_rooms_selected",
-    )
-    value_num_rooms_selected = fields.Integer(
-        string="Number of Rooms Selected",
-        readonly=False,
-        store=True,
-        compute="_compute_value_num_rooms_selected",
-    )
+    rooms_selected_qty = fields.Integer(string="Number of Rooms Selected")
     price_per_room = fields.Float(
         string="Price per room",
         help="Price per room in folio",
@@ -369,8 +342,22 @@ class AvailabilityWizard(models.TransientModel):
         check_pms_properties=True,
     )
 
+    @api.onchange("rooms_selected_qty")
+    def onchange_rooms_selected_qty(self):
+        for record in self:
+            if record.rooms_selected_qty > record.rooms_available_qty:
+                raise models.ValidationError(
+                    _(
+                        "The number of selected rooms ({selected_qty}) cannot be "
+                        "greater than the number of available rooms ({available_qty})."
+                    ).format(
+                        selected_qty=record.rooms_selected_qty,
+                        available_qty=record.rooms_available_qty,
+                    )
+                )
+
     @api.depends("room_type_id", "checkin", "checkout")
-    def _compute_num_rooms_available(self):
+    def _compute_rooms_available_qty(self):
         for record in self:
             pms_property = record.booking_engine_id.pms_property_id
             pms_property = pms_property.with_context(
@@ -379,38 +366,7 @@ class AvailabilityWizard(models.TransientModel):
                 room_type_id=record.room_type_id.id,
                 pricelist_id=record.booking_engine_id.pricelist_id.id,
             )
-            record.num_rooms_available = pms_property.availability
-
-    @api.depends("num_rooms_available")
-    def _compute_num_rooms_selected(self):
-        for record in self:
-            for elem_to_insert in range(0, record.num_rooms_available + 1):
-                if (
-                    self.env["pms.num.rooms.selection"].search_count(
-                        [
-                            ("value", "=", elem_to_insert),
-                            ("room_type_id", "=", record.room_type_id.id),
-                        ]
-                    )
-                    == 0
-                ):
-                    self.env["pms.num.rooms.selection"].create(
-                        {
-                            "value": elem_to_insert,
-                            "room_type_id": record.room_type_id.id,
-                        }
-                    )
-            record.num_rooms_selected = self.env["pms.num.rooms.selection"].search(
-                [("value", "=", 0), ("room_type_id", "=", record.room_type_id.id)]
-            )
-
-    @api.depends("num_rooms_selected")
-    def _compute_value_num_rooms_selected(self):
-        for record in self:
-            if record.num_rooms_selected:
-                record.value_num_rooms_selected = record.num_rooms_selected.value
-            elif not record.value_num_rooms_selected:
-                record.value_num_rooms_selected = 0
+            record.rooms_available_qty = pms_property.availability
 
     @api.depends("room_type_id", "board_service_room_id", "checkin", "checkout")
     def _compute_price_per_room(self):
@@ -424,10 +380,10 @@ class AvailabilityWizard(models.TransientModel):
                 pms_property_id=record.booking_engine_id.pms_property_id.id,
             )
 
-    @api.depends("price_per_room", "value_num_rooms_selected")
+    @api.depends("price_per_room", "rooms_selected_qty")
     def _compute_price_total(self):
         for record in self:
-            record.price_total = record.price_per_room * record.value_num_rooms_selected
+            record.price_total = record.price_per_room * record.rooms_selected_qty
 
     @api.model
     def _get_price_by_room_type(
@@ -440,23 +396,32 @@ class AvailabilityWizard(models.TransientModel):
         pms_property_id,
         adults=False,
     ):
+        if not room_type_id:
+            return 0
         room_type_total_price_per_room = 0
         room_type = self.env["pms.room.type"].browse(room_type_id)
         pms_property = self.env["pms.property"].browse(pms_property_id)
+        pricelist = self.env["product.pricelist"].browse(pricelist_id)
+
+        product = room_type.product_id
         for date_iterator in [
             checkin + datetime.timedelta(days=x)
             for x in range(0, (checkout - checkin).days)
         ]:
-            product = room_type.product_id
-            product = product.with_company(pms_property.company_id).with_context(
+            price = pricelist._get_product_price(
+                product=product,
                 quantity=1,
-                date=fields.Date.today(),
                 consumption_date=date_iterator,
-                pricelist=pricelist_id,
-                uom=product.uom_id.id,
-                property=pms_property_id,
+                pms_property_id=pms_property_id,
             )
-            room_type_total_price_per_room += product.lst_price
+            room_type_total_price_per_room += self.env[
+                "account.tax"
+            ]._fix_tax_included_price_company(
+                price,
+                product.taxes_id,
+                product.taxes_id,  # Not exist service line, we repeat product taxes
+                pms_property.company_id,
+            )
 
         if board_service_room_id:
             board_service_room = self.env["pms.board.service.room.type"].browse(

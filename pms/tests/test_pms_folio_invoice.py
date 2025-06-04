@@ -1,14 +1,20 @@
 import datetime
 
 from odoo import fields
+from odoo.tests import tagged
+
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 from .common import TestPms
 
 
-class TestPmsFolioInvoice(TestPms):
+@tagged("post_install", "-at_install")
+class TestPmsFolioInvoice(TestPms, AccountTestInvoicingCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        user = cls.env["res.users"].browse(1)
+        cls.env = cls.env(user=user)
         # create a room type availability
         cls.room_type_availability = cls.env["pms.availability.plan"].create(
             {"name": "Availability plan for TEST"}
@@ -41,7 +47,7 @@ class TestPmsFolioInvoice(TestPms):
                 "name": "Double Test",
                 "default_code": "DBL_Test",
                 "class_id": cls.room_type_class1.id,
-                "price": 25,
+                "list_price": 25,
             }
         )
 
@@ -116,7 +122,7 @@ class TestPmsFolioInvoice(TestPms):
                 "name": "Double Test",
                 "default_code": "Demo_DBL_Test",
                 "class_id": self.room_type_class1.id,
-                "price": 25,
+                "list_price": 25,
             }
         )
         # create rooms
@@ -168,7 +174,7 @@ class TestPmsFolioInvoice(TestPms):
         state_expected = "invoiced"
         # ACT
         r1.folio_id._create_invoices()
-        r1.flush()
+        r1.flush_recordset()
         # ASSERT
         self.assertEqual(
             state_expected,
@@ -234,7 +240,7 @@ class TestPmsFolioInvoice(TestPms):
         )
 
         # test does not work without invalidating cache
-        self.env["account.move"].invalidate_cache()
+        self.env["account.move"].invalidate_recordset()
 
         self.assertNotEqual(
             "invoiced",

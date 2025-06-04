@@ -95,7 +95,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r1.flush()
+        r1.flush_recordset()
         r1.reservation_line_ids[0].room_id = self.room2
         # ACT
         self.env["pms.reservation.split.join.swap.wizard"].reservation_join(
@@ -154,7 +154,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r2.flush()
+        r2.flush_recordset()
         # ACT & ASSERT
         with self.assertRaises(UserError):
             self.env["pms.reservation.split.join.swap.wizard"].reservation_join(
@@ -191,7 +191,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r2.flush()
+        r2.flush_recordset()
         with self.assertRaises(UserError):
             self.env["pms.reservation.split.join.swap.wizard"].reservation_join(
                 r2, self.env["pms.room"]
@@ -244,8 +244,8 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r1.flush()
-        r2.flush()
+        r1.flush_recordset()
+        r2.flush_recordset()
         # ACT
         self.env["pms.reservation.split.join.swap.wizard"].reservations_swap(
             datetime.datetime.now(),
@@ -305,8 +305,8 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r1.flush()
-        r2.flush()
+        r1.flush_recordset()
+        r2.flush_recordset()
         # ACT
         self.env["pms.reservation.split.join.swap.wizard"].reservations_swap(
             datetime.datetime.now(),
@@ -365,8 +365,8 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r1.flush()
-        r2.flush()
+        r1.flush_recordset()
+        r2.flush_recordset()
         # ACT
         self.env["pms.reservation.split.join.swap.wizard"].reservations_swap(
             datetime.datetime.now(),
@@ -429,8 +429,8 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r1.flush()
-        r2.flush()
+        r1.flush_recordset()
+        r2.flush_recordset()
         # ACT
         self.env["pms.reservation.split.join.swap.wizard"].reservations_swap(
             datetime.datetime.now(),
@@ -493,8 +493,8 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r1.flush()
-        r2.flush()
+        r1.flush_recordset()
+        r2.flush_recordset()
         # ACT
         self.env["pms.reservation.split.join.swap.wizard"].reservations_swap(
             datetime.datetime.now(),
@@ -613,8 +613,8 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r1.flush()
-        r2.flush()
+        r1.flush_recordset()
+        r2.flush_recordset()
         # ACT
         self.env["pms.reservation.split.join.swap.wizard"].reservations_swap(
             datetime.datetime.now(),
@@ -688,8 +688,8 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r1.flush()
-        r2.flush()
+        r1.flush_recordset()
+        r2.flush_recordset()
         # ACT
         self.env["pms.reservation.split.join.swap.wizard"].reservations_swap(
             datetime.datetime.now(),
@@ -772,7 +772,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r1.flush()
+        r1.flush_recordset()
         # ACT
         self.env["pms.reservation.split.join.swap.wizard"].reservation_split(
             r1, datetime.date.today(), self.room2
@@ -810,7 +810,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r1.flush()
+        r1.flush_recordset()
         # ACT
         self.env["pms.reservation.split.join.swap.wizard"].reservation_split(
             r1,
@@ -857,7 +857,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r1.flush()
+        r1.flush_recordset()
         # ACT
         self.env["pms.reservation.split.join.swap.wizard"].reservation_split(
             r1,
@@ -900,7 +900,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r1.flush()
+        r1.flush_recordset()
         room_not_exist = self.room3 = self.env["pms.room"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -940,7 +940,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r1.flush()
+        r1.flush_recordset()
         # ACT & ASSERT
         with self.assertRaises(UserError):
             self.env["pms.reservation.split.join.swap.wizard"].reservation_split(
@@ -971,7 +971,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r1.flush()
+        r1.flush_recordset()
         # ACT & ASSERT
         with self.assertRaises(UserError):
             self.env["pms.reservation.split.join.swap.wizard"].reservation_split(
@@ -1012,7 +1012,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r1.flush()
+        r1.flush_recordset()
         # ACT & ASSERT
         with self.assertRaises(UserError):
             self.env["pms.reservation.split.join.swap.wizard"].reservation_split(

@@ -1,7 +1,7 @@
 from odoo.tests import common
 
 
-class TestPms(common.SavepointCase):
+class TestPms(common.TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

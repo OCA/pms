@@ -611,7 +611,7 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r1.flush()
+        r1.flush_recordset()
         with self.assertRaises(
             ValidationError,
             msg="The quota shouldnt be enough to create a new reservation",

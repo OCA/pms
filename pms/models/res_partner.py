@@ -751,7 +751,7 @@ class ResPartner(models.Model):
             check_missing_document = self._check_document_partner_required(vals)
             if check_missing_document:
                 raise ValidationError(_("A document identification is required"))
-        return super(ResPartner, self).create(vals_list)
+        return super().create(vals_list)
 
     def write(self, vals):
         check_missing_document = self._check_document_partner_required(

@@ -20,7 +20,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "name": "Double Test",
                 "default_code": "DBL_Test",
                 "class_id": cls.room_type_class1.id,
-                "price": 25,
+                "list_price": 25,
             }
         )
         # create room
@@ -288,7 +288,7 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ACT
         r_test.reservation_line_ids[0].cancel_discount = 100.0
-        r_test.flush()
+        r_test.flush_recordset()
 
         # ASSERT
         self.assertEqual(
@@ -322,14 +322,14 @@ class TestPmsFolioSaleLine(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r_test.flush()
+        r_test.flush_recordset()
         previous_folio_sale_line = r_test.folio_id.sale_line_ids.filtered(
             lambda x: not x.display_type
         )[0]
 
         # ACT
         r_test.checkout = datetime.datetime.now() + datetime.timedelta(days=4)
-        r_test.flush()
+        r_test.flush_recordset()
 
         # ASSERT
         self.assertEqual(
@@ -361,14 +361,14 @@ class TestPmsFolioSaleLine(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r_test.flush()
+        r_test.flush_recordset()
         previous_folio_sale_line = r_test.folio_id.sale_line_ids.filtered(
             lambda x: not x.display_type
         )[0]
 
         # ACT
         r_test.checkout = datetime.datetime.now() + datetime.timedelta(days=2)
-        r_test.flush()
+        r_test.flush_recordset()
 
         # ASSERT
         self.assertEqual(
@@ -403,14 +403,14 @@ class TestPmsFolioSaleLine(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        r_test.flush()
+        r_test.flush_recordset()
         previous_folio_sale_line = r_test.folio_id.sale_line_ids.filtered(
             lambda x: not x.display_type
         )[0]
 
         # ACT
         r_test.reservation_line_ids.price = 50
-        r_test.flush()
+        r_test.flush_recordset()
 
         # ASSERT
         self.assertEqual(
@@ -787,7 +787,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
         # ACT
         r_test.service_ids = [(4, self.extra_service.id)]
-        r_test.service_ids.service_line_ids.flush()
+        r_test.service_ids.service_line_ids.flush_recordset()
 
         # ASSERT
         self.assertEqual(
@@ -828,11 +828,11 @@ class TestPmsFolioSaleLine(TestPms):
             }
         )
         r_test.service_ids = [(4, self.extra_service.id)]
-        r_test.service_ids.service_line_ids.flush()
+        r_test.service_ids.service_line_ids.flush_recordset()
 
         # ACT
         r_test.service_ids.service_line_ids[0].price_unit = 44.5
-        r_test.service_ids.service_line_ids.flush()
+        r_test.service_ids.service_line_ids.flush_recordset()
 
         # ASSERT
         self.assertEqual(
@@ -873,11 +873,11 @@ class TestPmsFolioSaleLine(TestPms):
             }
         )
         r_test.service_ids = [(4, self.extra_service.id)]
-        r_test.service_ids.service_line_ids.flush()
+        r_test.service_ids.service_line_ids.flush_recordset()
 
         # ACT
         r_test.service_ids.service_line_ids[0].discount = 44.5
-        r_test.service_ids.service_line_ids.flush()
+        r_test.service_ids.service_line_ids.flush_recordset()
 
         # ASSERT
         self.assertEqual(
@@ -919,11 +919,11 @@ class TestPmsFolioSaleLine(TestPms):
             }
         )
         r_test.service_ids = [(4, self.extra_service.id)]
-        r_test.service_ids.service_line_ids.flush()
+        r_test.service_ids.service_line_ids.flush_recordset()
 
         # ACT
         r_test.service_ids.service_line_ids[0].cancel_discount = 44.5
-        r_test.service_ids.service_line_ids.flush()
+        r_test.service_ids.service_line_ids.flush_recordset()
 
         # ASSERT
         self.assertEqual(
@@ -963,11 +963,11 @@ class TestPmsFolioSaleLine(TestPms):
             }
         )
         r_test.service_ids = [(4, self.extra_service.id)]
-        r_test.service_ids.service_line_ids.flush()
+        r_test.service_ids.service_line_ids.flush_recordset()
 
         # ACT
         r_test.service_ids.service_line_ids[0].cancel_discount = 100
-        r_test.service_ids.service_line_ids.flush()
+        r_test.service_ids.service_line_ids.flush_recordset()
 
         # ASSERT
         self.assertEqual(
@@ -1008,14 +1008,14 @@ class TestPmsFolioSaleLine(TestPms):
             }
         )
         r_test.service_ids = [(4, self.extra_service.id)]
-        r_test.service_ids.service_line_ids.flush()
+        r_test.service_ids.service_line_ids.flush_recordset()
         previous_folio_extra_service_sale_line = r_test.folio_id.sale_line_ids.filtered(
             lambda x: x.service_id == self.extra_service
         )[0]
 
         # ACT
         r_test.checkout = datetime.datetime.now() + datetime.timedelta(days=4)
-        r_test.service_ids.service_line_ids.flush()
+        r_test.service_ids.service_line_ids.flush_recordset()
 
         # ASSERT
         self.assertEqual(
@@ -1052,14 +1052,14 @@ class TestPmsFolioSaleLine(TestPms):
             }
         )
         r_test.service_ids = [(4, self.extra_service.id)]
-        r_test.service_ids.service_line_ids.flush()
+        r_test.service_ids.service_line_ids.flush_recordset()
         previous_folio_extra_service_sale_line = r_test.folio_id.sale_line_ids.filtered(
             lambda x: x.service_id == self.extra_service
         )[0]
 
         # ACT
         r_test.checkout = datetime.datetime.now() + datetime.timedelta(days=2)
-        r_test.service_ids.service_line_ids.flush()
+        r_test.service_ids.service_line_ids.flush_recordset()
 
         # ASSERT
         self.assertEqual(
@@ -1103,7 +1103,7 @@ class TestPmsFolioSaleLine(TestPms):
             }
         )
         r_test.service_ids = [(4, self.extra_service.id)]
-        r_test.service_ids.service_line_ids.flush()
+        r_test.service_ids.service_line_ids.flush_recordset()
         previous_folio_extra_service_sale_line = r_test.folio_id.sale_line_ids.filtered(
             lambda x: x.service_id == self.extra_service
         )[0]
@@ -1112,7 +1112,7 @@ class TestPmsFolioSaleLine(TestPms):
         r_test.service_ids.filtered(
             lambda x: x.id == self.extra_service.id
         ).service_line_ids.price_unit = 50
-        r_test.service_ids.service_line_ids.flush()
+        r_test.service_ids.service_line_ids.flush_recordset()
 
         # ASSERT
         self.assertEqual(
@@ -1154,7 +1154,7 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ACT
         r_test.folio_id.service_ids = [(4, self.extra_service.id)]
-        r_test.folio_id.service_ids.service_line_ids.flush()
+        r_test.folio_id.service_ids.service_line_ids.flush_recordset()
 
         # ASSERT
         self.assertEqual(
@@ -1209,7 +1209,7 @@ class TestPmsFolioSaleLine(TestPms):
         # ACT
         r_test.folio_id.service_ids = [(4, self.extra_service.id)]
         r_test.folio_id.service_ids = [(4, extra_service2.id)]
-        r_test.folio_id.service_ids.service_line_ids.flush()
+        r_test.folio_id.service_ids.service_line_ids.flush_recordset()
 
         # ASSERT
         self.assertEqual(

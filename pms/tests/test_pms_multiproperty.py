@@ -90,7 +90,7 @@ class TestPmsMultiproperty(TestPms):
             {
                 "availability_plan_id": self.availability_plan1.id,
                 "room_type_id": self.room_type1.id,
-                "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
+                "date": (fields.datetime.today() + datetime.timedelta(days=1)).date(),
                 "closed": True,
                 "pms_property_id": self.pms_property1.id,
             }
@@ -101,11 +101,10 @@ class TestPmsMultiproperty(TestPms):
             {
                 "availability_plan_id": self.availability_plan1.id,
                 "room_type_id": self.room_type1.id,
-                "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
+                "date": (fields.datetime.today() + datetime.timedelta(days=1)).date(),
                 "pms_property_id": self.pms_property2.id,
             }
         )
-
         properties = [
             {"property": self.pms_property1.id, "value": False},
             {"property": self.pms_property2.id, "value": True},
@@ -378,7 +377,7 @@ class TestPmsMultiproperty(TestPms):
                 "name": "Double Test",
                 "default_code": "DBL_Test",
                 "class_id": self.room_type_class1.id,
-                "price": 25,
+                "list_price": 25,
             }
         )
         board_service_test = self.board_service = self.env["pms.board.service"].create(
@@ -425,7 +424,7 @@ class TestPmsMultiproperty(TestPms):
                 "name": "Double Test",
                 "default_code": "DBL_Test",
                 "class_id": self.room_type_class1.id,
-                "price": 25,
+                "list_price": 25,
             }
         )
         board_service1 = self.board_service = self.env["pms.board.service"].create(
@@ -466,7 +465,7 @@ class TestPmsMultiproperty(TestPms):
                 "name": "Double Test",
                 "default_code": "DBL_Test",
                 "class_id": self.room_type_class1.id,
-                "price": 25,
+                "list_price": 25,
             }
         )
         board_service1 = self.board_service = self.env["pms.board.service"].create(
@@ -505,7 +504,7 @@ class TestPmsMultiproperty(TestPms):
                 "name": "Double Test",
                 "default_code": "DBL_Test",
                 "class_id": self.room_type_class1.id,
-                "price": 25,
+                "list_price": 25,
             }
         )
         board_service1 = self.board_service = self.env["pms.board.service"].create(
@@ -552,7 +551,7 @@ class TestPmsMultiproperty(TestPms):
                 "name": "Double Test",
                 "default_code": "DBL_Test",
                 "class_id": self.room_type_class1.id,
-                "price": 25,
+                "list_price": 25,
             }
         )
         board_service1 = self.board_service = self.env["pms.board.service"].create(
@@ -591,7 +590,7 @@ class TestPmsMultiproperty(TestPms):
                 "name": "Double Test",
                 "default_code": "DBL_Test",
                 "class_id": self.room_type_class1.id,
-                "price": 25,
+                "list_price": 25,
             }
         )
         board_service1 = self.board_service = self.env["pms.board.service"].create(
