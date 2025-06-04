@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="pms_property_views_form" model="ir.ui.view">
         <field name="name">pms_property_views_form</field>
@@ -106,7 +106,10 @@
                                 </page>
                                 <page string="Email Configuration">
                                     <group>
-                                        <group string="Email Templates" name="email_templates">
+                                        <group
+                                            string="Email Templates"
+                                            name="email_templates"
+                                        >
                                             <field
                                                 string="Confirmation Email"
                                                 name="property_confirmed_template"
@@ -151,6 +154,35 @@
                                         <field name="privacy_policy" />
                                     </group>
                                 </page>
+                                <page string="Invoicing" name="property_invoicing">
+                                    <group>
+                                        <field name="default_invoicing_policy" />
+                                        <field
+                                            name="margin_days_autoinvoice"
+                                            attrs="{'invisible': [('default_invoicing_policy', '=', 'manual')]}"
+                                        />
+                                        <field
+                                            name="journal_normal_invoice_id"
+                                            attrs="{'required': [('default_invoicing_policy', '!=', 'manual')]}"
+                                            domain="[
+                                        ('type', '=', 'sale'),
+                                        ('company_id','=',company_id),
+                                    ]"
+                                        />
+                                        <field
+                                            name="journal_simplified_invoice_id"
+                                            attrs="{'required': [('default_invoicing_policy', '!=', 'manual')]}"
+                                            domain="[
+                                        ('type', '=', 'sale'),
+                                        ('company_id','=',company_id),
+                                    ]"
+                                        />
+                                        <field name="max_amount_simplified_invoice" />
+                                        <field
+                                            name="avoid_simplified_max_amount_downpayment"
+                                        />
+                                    </group>
+                                </page>
                                 <page string="Others" name="property_settings_other">
                                 </page>
                             </notebook>
@@ -160,33 +192,7 @@
                                 <field name="room_ids" />
                             </group>
                         </page>
-                        <page string="Invoicing" name="property_invoicing">
-                            <group>
-                                <field name="default_invoicing_policy" />
-                                <field
-                                    name="margin_days_autoinvoice"
-                                    attrs="{'invisible': [('default_invoicing_policy', '=', 'manual')]}"
-                                />
-                                <field
-                                    name="journal_normal_invoice_id"
-                                    attrs="{'required': [('default_invoicing_policy', '!=', 'manual')]}"
-                                    domain="[
-                                        ('type', '=', 'sale'),
-                                        ('company_id','=',company_id),
-                                    ]"
-                                />
-                                <field
-                                    name="journal_simplified_invoice_id"
-                                    attrs="{'required': [('default_invoicing_policy', '!=', 'manual')]}"
-                                    domain="[
-                                        ('type', '=', 'sale'),
-                                        ('company_id','=',company_id),
-                                    ]"
-                                />
-                                <field name="max_amount_simplified_invoice" />
-                                <field name="avoid_simplified_max_amount_downpayment" />
-                            </group>
-                        </page>
+
 
                         <page name="members" string="Team Members">
                             <label for="user_id" string="Team Leader" />
