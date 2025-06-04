@@ -18,19 +18,6 @@
                                 string="Massive changes"
                             />
                         </button>
-
-                        <button
-                            name="toggle_active"
-                            type="object"
-                            class="oe_stat_button"
-                            icon="fa-archive"
-                        >
-                            <field
-                                name="active"
-                                widget="boolean_button"
-                                options='{"terminology": "archive"}'
-                            />
-                        </button>
                     </div>
                     <div class="oe_title">
                         <group>
@@ -41,6 +28,7 @@
                         </group>
                     </div>
                     <group>
+                        <field name="active" widget="boolean_toggle" />
                         <field
                             name="pms_property_ids"
                             widget="many2many_tags"
