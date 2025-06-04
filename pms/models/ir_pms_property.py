@@ -136,4 +136,4 @@ class IrPmsProperty(models.Model):
                         "field_id": field_id.id,
                     }
                 )
-        return super(IrPmsProperty, self).create(vals)
+        return super().create(vals)

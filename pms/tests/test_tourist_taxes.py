@@ -5,8 +5,8 @@ from odoo.tests.common import TransactionCase
 
 
 class TestTouristTaxes(TransactionCase):
-    def setUp(self):
-        super(TestTouristTaxes, self).setUp()
+    def setUpClass(self):
+        super().setUpClass()
         self.product_tourist_tax = self.env["product.product"].create(
             {
                 "name": "Tourist Tax",

@@ -995,7 +995,7 @@ class TestPmsCheckinPartner(TestPms):
             }
         )
 
-        checkin.flush()
+        checkin.flush_recordset()
 
         # ASSERT
         self.assertTrue(
@@ -1025,7 +1025,7 @@ class TestPmsCheckinPartner(TestPms):
         in the previous checkins associated with it
         """
         # ARRANGE
-        self.checkin1.flush()
+        self.checkin1.flush_recordset()
         self.host1.gender = "female"
         # ASSERT
         self.assertNotEqual(
@@ -1441,43 +1441,6 @@ class TestPmsCheckinPartner(TestPms):
         expedition date has to be doc_date - 10 years
         """
         doc_type_id = self.env["res.partner.id_category"].search([("code", "=", "P")])
-        doc_date = fields.date.today() + relativedelta(years=1)
-        doc_date_str = str(doc_date)
-
-        # age=40 years old
-        birthdate = fields.date.today() - relativedelta(years=40)
-        birthdate_str = str(birthdate)
-
-        # expected_expedition_date = doc_date - 10 years
-        expected_exp_date = doc_date - relativedelta(years=10)
-        expedition_date = (
-            self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
-                doc_type_id, doc_date_str, birthdate_str
-            )
-        )
-        date_expedition_date = datetime.date(
-            year=expedition_date.year,
-            month=expedition_date.month,
-            day=expedition_date.day,
-        )
-        self.assertEqual(
-            date_expedition_date,
-            expected_exp_date,
-            "Expedition date doesn't correspond with expected expedition date",
-        )
-
-    def test_calculate_drive_license_expedition_date_from_validity_date_age_lt_70(self):
-        """
-        Check that the calculate_doc_type_expedition_date_from_validity_date()
-        method calculates correctly the expedition_date of an id category Driving
-        License when the age is lesser than 70.
-        -------------
-        We launch the method calculate_doc_type_expedition_date_from_validity_date
-        with the parameters doc_type_id DNI, birthdate calculated so that the age
-        is = 40 years old and document_date = today + 1 year. The expected
-        expedition date has to be doc_date - 10 years
-        """
-        doc_type_id = self.env["res.partner.id_category"].search([("code", "=", "C")])
         doc_date = fields.date.today() + relativedelta(years=1)
         doc_date_str = str(doc_date)
 

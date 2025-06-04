@@ -8,8 +8,6 @@ class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
     _check_pms_properties_auto = True
 
-    # Fields declaration
-    # TODO: REVIEW why not a Many2one?
     name = fields.Char(
         compute="_compute_name",
         store=True,
@@ -59,7 +57,6 @@ class AccountMoveLine(models.Model):
     )
     move_id = fields.Many2one(check_pms_properties=True)
 
-    # pylint: disable=W8110
     @api.depends("account_id", "partner_id", "product_id", "pms_property_id")
     def _compute_analytic_distribution(self):
         properties = self.mapped("pms_property_id")
@@ -70,6 +67,7 @@ class AccountMoveLine(models.Model):
             super(
                 AccountMoveLine, records.with_context(pms_property_id=pms_property.id)
             )._compute_analytic_distribution()
+        return
 
     @api.depends("move_id.payment_reference", "quantity")
     def _compute_name(self):
@@ -130,7 +128,7 @@ class AccountMoveLine(models.Model):
         Reconcile the account move
         """
         # Update partner in payments and statement lines
-        res = super(AccountMoveLine, self).reconcile()
+        res = super().reconcile()
         for record in self:
             if record.payment_id:
                 old_payment_partner = record.payment_id.partner_id
@@ -145,10 +143,11 @@ class AccountMoveLine(models.Model):
                     if old_payment_partner:
                         record.payment_id.message_post(
                             body=_(
-                                f"""
-                                Partner modify automatically from invoice:
-                                {old_payment_partner.name} to {new_payment_partner.name}
-                                """
+                                "Partner modify automatically from"
+                                " invoice: {old_partner} to {new_partner}"
+                            ).format(
+                                old_partner=old_payment_partner.name,
+                                new_partner=new_payment_partner.name,
                             )
                         )
             if record.statement_line_id:
@@ -164,10 +163,11 @@ class AccountMoveLine(models.Model):
                     if old_statement_partner:
                         record.statement_line_id.message_post(
                             body=_(
-                                f"""
-                                Partner modify automatically from invoice:
-                                {old_statement_partner.name} to {new_payment_partner.name}
-                                """
+                                "Partner modify automatically from "
+                                "invoice: {old_partner} to {new_partner}"
+                            ).format(
+                                old_partner=old_statement_partner.name,
+                                new_partner=new_payment_partner.name,
                             )
                         )
         return res
@@ -176,7 +176,7 @@ class AccountMoveLine(models.Model):
         """Inherited from account.move.line
         to avoid to lock partner_id in reconciliation_fnames
         """
-        lock_types = super(AccountMoveLine, self)._get_lock_date_protected_fields()
+        lock_types = super()._get_lock_date_protected_fields()
         reconciliation_fnames = lock_types.get("reconciliation", [])
         # Remove partner_id from reconciliation_fnames
         # because it is not a protected field

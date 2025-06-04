@@ -552,9 +552,7 @@ class PmsService(models.Model):
                 ("reservation_id.name", operator, name),
                 ("name", operator, name),
             ]
-        return super(PmsService, self).name_search(
-            name="", args=args, operator="ilike", limit=limit
-        )
+        return super().name_search(name="", args=args, operator="ilike", limit=limit)
 
     def _get_display_price(self, product):
         folio = self.folio_id
@@ -638,14 +636,14 @@ class PmsService(models.Model):
                 folio = self.env["pms.folio"].browse(vals["folio_id"])
                 if folio.sale_channel_origin_id:
                     vals["sale_channel_origin_id"] = folio.sale_channel_origin_id.id
-        return super(PmsService, self).create(vals_list)
+        return super().create(vals_list)
 
     def write(self, vals):
         folios_to_update_channel = self.env["pms.folio"]
         lines_to_update_channel = self.env["pms.service.line"]
         if "sale_channel_origin_id" in vals:
             folios_to_update_channel = self.get_folios_to_update_channel(vals)
-        res = super(PmsService, self).write(vals)
+        res = super().write(vals)
         if folios_to_update_channel:
             folios_to_update_channel.sale_channel_origin_id = vals[
                 "sale_channel_origin_id"

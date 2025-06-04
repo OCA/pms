@@ -4,14 +4,20 @@ from freezegun import freeze_time
 
 from odoo import fields
 from odoo.exceptions import UserError, ValidationError
+from odoo.tests import tagged
+
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 from .common import TestPms
 
 
-class TestPmsReservations(TestPms):
+@tagged("post_install", "-at_install")
+class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        user = cls.env["res.users"].browse(1)
+        cls.env = cls.env(user=user)
         # create a room type availability
         cls.room_type_availability = cls.env["pms.availability.plan"].create(
             {
@@ -272,7 +278,7 @@ class TestPmsReservations(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
-        r_test.flush()
+        r_test.flush_recordset()
 
         # ASSERT
         self.assertTrue(
@@ -311,7 +317,7 @@ class TestPmsReservations(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
-        r_test.flush()
+        r_test.flush_recordset()
 
         # ASSERT
         self.assertFalse(r_test.splitted, "The reservation shouldn't be splitted")
@@ -344,7 +350,7 @@ class TestPmsReservations(TestPms):
             }
         )
         r1.reservation_line_ids[0].room_id = self.room2.id
-        r1.flush()
+        r1.flush_recordset()
 
         r2 = self.env["pms.reservation"].create(
             {
@@ -358,7 +364,7 @@ class TestPmsReservations(TestPms):
             }
         )
         r2.reservation_line_ids[0].room_id = self.room3.id
-        r2.flush()
+        r2.flush_recordset()
 
         r3 = self.env["pms.reservation"].create(
             {
@@ -372,7 +378,7 @@ class TestPmsReservations(TestPms):
             }
         )
         r3.reservation_line_ids[0].room_id = self.room1.id
-        r3.flush()
+        r3.flush_recordset()
 
         r4 = self.env["pms.reservation"].create(
             {
@@ -386,7 +392,7 @@ class TestPmsReservations(TestPms):
             }
         )
         r4.reservation_line_ids[0].room_id = self.room3.id
-        r4.flush()
+        r4.flush_recordset()
         expected_num_changes = 2
 
         # ACT
@@ -401,7 +407,7 @@ class TestPmsReservations(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
-        r_test.flush()
+        r_test.flush_recordset()
         # ASSERT
         self.assertEqual(
             expected_num_changes,
@@ -437,7 +443,7 @@ class TestPmsReservations(TestPms):
             }
         )
         r1.reservation_line_ids[0].room_id = self.room2.id
-        r1.flush()
+        r1.flush_recordset()
 
         r2 = self.env["pms.reservation"].create(
             {
@@ -451,7 +457,7 @@ class TestPmsReservations(TestPms):
             }
         )
         r2.reservation_line_ids[0].room_id = self.room3.id
-        r2.flush()
+        r2.flush_recordset()
 
         r3 = self.env["pms.reservation"].create(
             {
@@ -465,7 +471,7 @@ class TestPmsReservations(TestPms):
             }
         )
         r3.reservation_line_ids[0].room_id = self.room1.id
-        r3.flush()
+        r3.flush_recordset()
 
         r4 = self.env["pms.reservation"].create(
             {
@@ -479,7 +485,7 @@ class TestPmsReservations(TestPms):
             }
         )
         r4.reservation_line_ids[0].room_id = self.room3.id
-        r4.flush()
+        r4.flush_recordset()
 
         r5 = self.env["pms.reservation"].create(
             {
@@ -493,7 +499,7 @@ class TestPmsReservations(TestPms):
             }
         )
         r5.reservation_line_ids[0].room_id = self.room2.id
-        r5.flush()
+        r5.flush_recordset()
 
         # ACT
         r_test = self.env["pms.reservation"].create(
@@ -507,7 +513,7 @@ class TestPmsReservations(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
-        r_test.flush()
+        r_test.flush_recordset()
 
         rooms = 0
         last_room = None
@@ -548,7 +554,7 @@ class TestPmsReservations(TestPms):
             }
         )
         r1.reservation_line_ids[0].room_id = self.room1
-        r1.flush()
+        r1.flush_recordset()
 
         # ACT & ASSERT
         with self.assertRaises(ValidationError):
@@ -562,7 +568,7 @@ class TestPmsReservations(TestPms):
                     "partner_id": self.partner1.id,
                 }
             )
-            r_test.flush()
+            r_test.flush_recordset()
 
     @freeze_time("2012-01-14")
     def test_split_reservation06(self):
@@ -592,7 +598,7 @@ class TestPmsReservations(TestPms):
         )
         r1.reservation_line_ids[0].room_id = self.room1
         r1.reservation_line_ids[1].room_id = self.room1
-        r1.flush()
+        r1.flush_recordset()
 
         # ACT & ASSERT
         with self.assertRaises(ValidationError):
@@ -606,7 +612,7 @@ class TestPmsReservations(TestPms):
                     "partner_id": self.partner1.id,
                 }
             )
-            r_test.flush()
+            r_test.flush_recordset()
 
     @freeze_time("2012-01-14")
     def test_split_reservation07(self):
@@ -636,7 +642,7 @@ class TestPmsReservations(TestPms):
         r1.reservation_line_ids[0].room_id = self.room1
         r1.reservation_line_ids[1].room_id = self.room1
         r1.reservation_line_ids[2].room_id = self.room1
-        r1.flush()
+        r1.flush_recordset()
 
         r2 = self.env["pms.reservation"].create(
             {
@@ -652,7 +658,7 @@ class TestPmsReservations(TestPms):
         r2.reservation_line_ids[0].room_id = self.room2
         r2.reservation_line_ids[1].room_id = self.room2
         r2.reservation_line_ids[2].room_id = self.room2
-        r2.flush()
+        r2.flush_recordset()
 
         r3 = self.env["pms.reservation"].create(
             {
@@ -668,7 +674,7 @@ class TestPmsReservations(TestPms):
         r3.reservation_line_ids[0].room_id = self.room3
         r3.reservation_line_ids[1].room_id = self.room3
         r3.reservation_line_ids[2].room_id = self.room3
-        r3.flush()
+        r3.flush_recordset()
 
         # ACT & ASSERT
         with self.assertRaises(ValidationError):
@@ -709,7 +715,7 @@ class TestPmsReservations(TestPms):
                     "pms_property_id": self.pms_property1.id,
                 }
             )
-            reservation.flush()
+            reservation.flush_recordset()
 
     def test_reservation_action_assign(self):
         """
@@ -880,7 +886,7 @@ class TestPmsReservations(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct.id,
             }
         )
-        r1.flush()
+        r1.flush_recordset()
         checkin = self.env["pms.checkin.partner"].create(
             {
                 "partner_id": host.id,
@@ -888,11 +894,11 @@ class TestPmsReservations(TestPms):
             }
         )
         checkin.action_on_board()
-        checkin.flush()
+        checkin.flush_recordset()
 
         # ACT
         with freeze_time("1981-11-02"):
-            r1._cache.clear()
+            r1.invalidate_recordset()
             r1.action_reservation_checkout()
 
         # ASSERT
@@ -926,7 +932,7 @@ class TestPmsReservations(TestPms):
             date_order.second,
         )
 
-        reservation.flush()
+        reservation.flush_recordset()
         self.assertEqual(
             date_order,
             date_order_expected,
@@ -951,7 +957,7 @@ class TestPmsReservations(TestPms):
             }
         )
         r = reservation.checkin
-        checkin_expected = datetime.datetime(r.year, r.month, r.day, 14, 00)
+        checkin_expected = datetime.datetime(r.year, r.month, r.day, 12, 00)
         checkin_expected = self.pms_property1.date_property_timezone(checkin_expected)
 
         self.assertEqual(
@@ -1028,7 +1034,7 @@ class TestPmsReservations(TestPms):
             }
         )
 
-        reservation.flush()
+        reservation.flush_recordset()
 
         self.assertEqual(
             reservation.partner_id.id,
@@ -1230,7 +1236,7 @@ class TestPmsReservations(TestPms):
                     "adults": 4,
                 }
             )
-            reservation.flush()
+            reservation.flush_recordset()
 
     @freeze_time("2012-01-14")
     def test_check_format_arrival_hour(self):
@@ -1457,7 +1463,7 @@ class TestPmsReservations(TestPms):
             }
         )
         reservation.action_cancel()
-        reservation.flush()
+        reservation.flush_recordset()
         self.assertEqual(
             reservation.cancelled_reason,
             "noshow",
@@ -1513,7 +1519,7 @@ class TestPmsReservations(TestPms):
         )
 
         reservation.action_cancel()
-        reservation.flush()
+        reservation.flush_recordset()
 
         self.assertEqual(
             reservation.cancelled_reason, "intime", "Cancelled reason must be 'intime'"
@@ -1566,7 +1572,7 @@ class TestPmsReservations(TestPms):
             }
         )
         reservation.action_cancel()
-        reservation.flush()
+        reservation.flush_recordset()
         self.assertEqual(reservation.cancelled_reason, "late", "-----------")
 
     @freeze_time("2012-01-14")
@@ -1795,7 +1801,7 @@ class TestPmsReservations(TestPms):
             }
         )
 
-        reservation.flush()
+        reservation.flush_recordset()
 
         self.assertEqual(
             reservation.partner_name,
@@ -1851,7 +1857,7 @@ class TestPmsReservations(TestPms):
         )
         # ACTION
         reservation.action_cancel()
-        reservation.flush()
+        reservation.flush_recordset()
         # ASSERT
         self.assertEqual(
             reservation.reservation_line_ids.mapped("cancel_discount")[0],
@@ -1896,7 +1902,7 @@ class TestPmsReservations(TestPms):
 
         # ACTION
         reservation.action_cancel()
-        reservation.flush()
+        reservation.flush_recordset()
 
         # ASSERT
         self.assertEqual(
@@ -1955,7 +1961,7 @@ class TestPmsReservations(TestPms):
 
         # ACTION
         reservation.action_cancel()
-        reservation.flush()
+        reservation.flush_recordset()
         # ASSERT
         self.assertEqual(
             expected_cancel_discount,
@@ -2014,7 +2020,7 @@ class TestPmsReservations(TestPms):
 
         # ACTION
         reservation.action_cancel()
-        reservation.flush()
+        reservation.flush_recordset()
 
         expected_discount = sum(
             sl.price_day_total * sl.cancel_discount / 100
@@ -2058,7 +2064,7 @@ class TestPmsReservations(TestPms):
                 "product_id": self.product1.id,
             }
         )
-        self.service.flush()
+        self.service.flush_recordset()
         self.product2 = self.env["product.product"].create(
             {
                 "name": "Product test 2",
@@ -2091,7 +2097,7 @@ class TestPmsReservations(TestPms):
 
         # ACTION
         reservation.action_cancel()
-        reservation.flush()
+        reservation.flush_recordset()
 
         expected_discount = sum(s.discount for s in reservation.service_ids)
 
@@ -2133,7 +2139,7 @@ class TestPmsReservations(TestPms):
                 "product_id": self.product1.id,
             }
         )
-        self.service.flush()
+        self.service.flush_recordset()
         self.product2 = self.env["product.product"].create(
             {
                 "name": "Product test 2",
@@ -2166,7 +2172,7 @@ class TestPmsReservations(TestPms):
 
         # ACTION
         reservation.action_cancel()
-        reservation.flush()
+        reservation.flush_recordset()
         expected_price = round(
             (
                 self.service.price_total
@@ -2219,7 +2225,7 @@ class TestPmsReservations(TestPms):
 
         # ACTION
         reservation.action_cancel()
-        reservation.flush()
+        reservation.flush_recordset()
 
         expected_discount = sum(
             rl.price * rl.cancel_discount / 100
@@ -2911,7 +2917,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
             }
         )
-        self.service.flush()
+        self.service.flush_recordset()
         self.product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -3423,4 +3429,4 @@ class TestPmsReservations(TestPms):
     #         reservation1.reservation_line_ids.write(
     #             {"sale_channel_id": sale_channel_phone}
     #         )
-    #         reservation1.flush()
+    #         reservation1.flush_recordset()

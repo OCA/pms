@@ -21,7 +21,7 @@ class ProductProduct(models.Model):
     @api.depends_context("consumption_date", "board_service_line_id")
     # pylint: disable=W8110
     def _compute_product_price(self):
-        super(ProductProduct, self)._compute_product_price()
+        super()._compute_product_price()
 
     @api.depends_context("consumption_date", "board_service_line_id")
     def _compute_board_price(self):
@@ -56,6 +56,4 @@ class ProductProduct(models.Model):
     ):
         if self._context.get("board_service_line_id"):
             price_type = "board_price"
-        return super(ProductProduct, self).price_compute(
-            price_type, uom, currency, company, date
-        )
+        return super().price_compute(price_type, uom, currency, company, date)

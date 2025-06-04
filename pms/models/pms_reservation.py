@@ -1111,7 +1111,7 @@ class PmsReservation(models.Model):
 
     # pylint: disable=W8110
     def _compute_access_url(self):
-        super(PmsReservation, self)._compute_access_url()
+        super()._compute_access_url()
         for reservation in self:
             reservation.access_url = "/my/reservations/%s" % (reservation.id)
 
@@ -1162,7 +1162,7 @@ class PmsReservation(models.Model):
 
     # pylint: disable=W8110
     def _compute_precheckin_url(self):
-        super(PmsReservation, self)._compute_access_url()
+        super()._compute_access_url()
         for reservation in self:
             reservation.access_url = "/my/reservations/precheckin/%s" % (reservation.id)
 
@@ -1990,9 +1990,7 @@ class PmsReservation(models.Model):
                 ("folio_id.name", operator, name),
                 ("preferred_room_id.name", operator, name),
             ]
-        return super(PmsReservation, self).name_search(
-            name="", args=args, operator="ilike", limit=limit
-        )
+        return super().name_search(name="", args=args, operator="ilike", limit=limit)
 
     def name_get(self):
         result = []
@@ -2073,7 +2071,7 @@ class PmsReservation(models.Model):
             if "state" in vals:
                 reservation_state = vals["state"]
                 vals.pop("state")
-        records = super(PmsReservation, self).create(vals_list)
+        records = super().create(vals_list)
         for record in records:
             record._check_capacity()
             if (
@@ -2143,7 +2141,7 @@ class PmsReservation(models.Model):
             folios_to_update_channel = self.get_folios_to_update_channel(vals)
             lines_to_update_channel = self.get_lines_to_update_channel(vals)
             services_to_update_channel = self.get_services_to_update_channel(vals)
-        res = super(PmsReservation, self).write(vals)
+        res = super().write(vals)
         if folios_to_update_channel:
             folios_to_update_channel.sale_channel_origin_id = vals[
                 "sale_channel_origin_id"

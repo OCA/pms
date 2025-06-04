@@ -83,9 +83,7 @@ class AccountPayment(models.Model):
                 rec.folio_ids = False
 
     def _prepare_move_line_default_vals(self, write_off_line_vals=None):
-        line_vals_list = super(AccountPayment, self)._prepare_move_line_default_vals(
-            write_off_line_vals
-        )
+        line_vals_list = super()._prepare_move_line_default_vals(write_off_line_vals)
         if self.folio_ids:
             for line in line_vals_list:
                 line.update(
@@ -97,7 +95,7 @@ class AccountPayment(models.Model):
 
     # pylint: disable=W8110
     def _synchronize_to_moves(self, changed_fields):
-        super(AccountPayment, self)._synchronize_to_moves(changed_fields)
+        super()._synchronize_to_moves(changed_fields)
         if "folio_ids" in changed_fields:
             for pay in self.with_context(skip_account_move_synchronization=True):
                 pay.move_id.write(
@@ -124,7 +122,7 @@ class AccountPayment(models.Model):
                     )
                 else:
                     downpayment_invoices.unlink()
-        return super(AccountPayment, self).action_draft()
+        return super().action_draft()
 
     @api.model
     def auto_invoice_downpayments(self, offset=0):

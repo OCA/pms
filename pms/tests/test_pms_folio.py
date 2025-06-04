@@ -4,12 +4,15 @@ from freezegun import freeze_time
 
 from odoo import fields
 from odoo.exceptions import ValidationError
-from odoo.tests import Form
+from odoo.tests import Form, tagged
+
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 from .common import TestPms
 
 
-class TestPmsFolio(TestPms):
+@tagged("post_install", "-at_install")
+class TestPmsFolio(TestPms, AccountTestInvoicingCommon):
 
     # SetUp and Common Scenarios methods
 
@@ -19,7 +22,8 @@ class TestPmsFolio(TestPms):
         - common + room_type_double with 2 rooms (double1 and double2) in pms_property1
         """
         super().setUpClass()
-
+        user = cls.env["res.users"].browse(1)
+        cls.env = cls.env(user=user)
         # create room type
         cls.room_type_double = cls.env["pms.room.type"].create(
             {
@@ -27,7 +31,7 @@ class TestPmsFolio(TestPms):
                 "name": "Double Test",
                 "default_code": "DBL_Test",
                 "class_id": cls.room_type_class1.id,
-                "price": 25,
+                "list_price": 25,
             }
         )
         # create room
@@ -110,7 +114,7 @@ class TestPmsFolio(TestPms):
                 "name": "Double Test",
                 "default_code": "Demo_DBL_Test",
                 "class_id": self.room_type_class1.id,
-                "price": 25,
+                "list_price": 25,
             }
         )
         # create rooms

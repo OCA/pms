@@ -75,7 +75,7 @@ class PmsBoardServiceLine(models.Model):
                         "pms_property_ids": properties,
                     }
                 )
-        return super(PmsBoardServiceLine, self).create(vals_list)
+        return super().create(vals_list)
 
     def write(self, vals):
         properties = False
@@ -90,7 +90,7 @@ class PmsBoardServiceLine(models.Model):
                     "pms_property_ids": properties,
                 }
             )
-        return super(PmsBoardServiceLine, self).write(vals)
+        return super().write(vals)
 
     @api.constrains("adults", "children")
     def _check_adults_children(self):

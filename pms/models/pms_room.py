@@ -311,7 +311,7 @@ class PmsRoom(models.Model):
                     vals.update({"short_name": short_name})
                 else:
                     vals.update({"short_name": vals["name"]})
-        return super(PmsRoom, self).create(vals_list)
+        return super().create(vals_list)
 
     def write(self, vals):
         if vals.get("name") and not vals.get("short_name"):
@@ -320,7 +320,7 @@ class PmsRoom(models.Model):
                 vals.update({"short_name": short_name})
             else:
                 vals.update({"short_name": vals["name"]})
-        return super(PmsRoom, self).write(vals)
+        return super().write(vals)
 
     def calculate_short_name(self, vals):
         short_name = vals["name"][:2].upper()

@@ -620,7 +620,7 @@ class PmsCheckinPartner(models.Model):
 
     # pylint: disable=W8110
     def _compute_access_url(self):
-        super(PmsCheckinPartner, self)._compute_access_url()
+        super()._compute_access_url()
         for checkin in self:
             checkin.access_url = "/my/folios/%s/reservations/%s/checkins/%s" % (
                 checkin.folio_id.id,
@@ -787,7 +787,7 @@ class PmsCheckinPartner(models.Model):
             if len(reservation.checkin_partner_ids) < (
                 reservation.adults + reservation.children
             ):
-                records += super(PmsCheckinPartner, self).create(vals)
+                records += super().create(vals)
             elif len(dummy_checkins) > 0:
                 dummy_checkins[0].write(vals)
                 records += dummy_checkins[0]

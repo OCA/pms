@@ -232,7 +232,7 @@ class TestPmsSharedRoom(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        res1.flush()
+        res1.flush_recordset()
         # ASSERT
         self.assertEqual(
             self.pms_property1.with_context(
@@ -390,7 +390,7 @@ class TestPmsSharedRoom(TestPms):
                     "sale_channel_origin_id": self.sale_channel_direct1.id,
                 }
             )
-            r_test.flush()
+            r_test.flush_recordset()
 
     def test_not_allowed_reservation_in_shared_room_with_bed_occuppied(self):
         """
@@ -432,7 +432,7 @@ class TestPmsSharedRoom(TestPms):
                     "sale_channel_origin_id": self.sale_channel_direct1.id,
                 }
             )
-            r_test.flush()
+            r_test.flush_recordset()
 
     def check_room_shared_availability_released_when_canceling_bed_reservations(self):
         """

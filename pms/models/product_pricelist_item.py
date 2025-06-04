@@ -5,6 +5,9 @@ from odoo import api, fields, models, tools
 
 class ProductPricelistItem(models.Model):
     _inherit = "product.pricelist.item"
+    _order = (
+        "applied_on, min_quantity desc, categ_id desc, has_properties desc, id desc"
+    )
     _check_pms_properties_auto = True
 
     pms_property_ids = fields.Many2many(
@@ -40,10 +43,7 @@ class ProductPricelistItem(models.Model):
         check_pms_properties=True,
     )
     product_id = fields.Many2one(
-        string="Product",
-        help="Product associated with the item",
-        index=True,
-        check_pms_properties=True,
+        string="Product", help="Product associated with the item", index=True
     )
     product_tmpl_id = fields.Many2one(
         string="Product Template",
@@ -66,6 +66,13 @@ class ProductPricelistItem(models.Model):
         readonly=False,
         compute="_compute_allowed_board_service_room_type_ids",
     )
+    has_properties = fields.Boolean(compute="_compute_has_properties", store=True)
+
+    @api.depends("pms_property_ids")
+    def _compute_has_properties(self):
+        """Compute if the pricelist has properties associated."""
+        for record in self:
+            record.has_properties = len(record.pms_property_ids) != 0
 
     @api.depends("board_service_room_type_id")
     def _compute_allowed_board_service_product_ids(self):

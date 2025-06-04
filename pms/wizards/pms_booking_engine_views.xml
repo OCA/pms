@@ -74,61 +74,54 @@
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <group>
-                            <field name="availability_results" nolabel="1">
-                                 <tree
-                                    editable="bottom"
-                                    create="false"
-                                    delete="false"
-                                    decoration-muted="num_rooms_available &lt; 1"
-                                    decoration-primary="value_num_rooms_selected &gt; 0"
-                                    decoration-bf="value_num_rooms_selected &gt; 0"
-                                >
-                                    <field name="pms_property_id" invisible="1" />
-                                     <field
-                                        name="room_type_id"
-                                        readonly="1"
-                                        options="{'no_open': True}"
-                                        force_save="1"
-                                    />
+                        <field name="availability_results" nolabel="1">
+                                <tree
+                                editable="bottom"
+                                create="false"
+                                delete="false"
+                                decoration-muted="rooms_available_qty &lt; 1"
+                                decoration-primary="rooms_selected_qty &gt; 0"
+                                decoration-bf="rooms_selected_qty &gt; 0"
+                            >
+                                <field name="pms_property_id" invisible="1" />
+                                    <field
+                                    name="room_type_id"
+                                    readonly="1"
+                                    options="{'no_open': True}"
+                                    force_save="1"
+                                />
 
-                                     <field name="checkin" />
-                                     <field name="checkout" />
-                                     <field
-                                        name="num_rooms_available"
-                                        readonly="1"
-                                        force_save="1"
-                                    />
-                                     <field
-                                        name="value_num_rooms_selected"
-                                        invisible="1"
-                                    />
-                                     <field
-                                        name="num_rooms_selected"
-                                        options="{'no_create': True, 'no_open' : True, 'no_edit': True}"
-                                        attrs="{'readonly':[('num_rooms_available','&lt;',1)]}"
-                                        force_save="1"
-                                    />
+                                    <field name="checkin" />
+                                    <field name="checkout" />
                                     <field
-                                        name="board_service_room_id"
-                                        attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
-                                    />
+                                    name="rooms_available_qty"
+                                    readonly="1"
+                                    force_save="1"
+                                />
                                     <field
-                                        name="price_per_room"
-                                        readonly="1"
-                                        force_save="1"
-                                        attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
-                                    />
-                                    <field
-                                        name="price_total"
-                                        readonly="1"
-                                        force_save="1"
-                                        attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
-                                    />
+                                    name="rooms_selected_qty"
+                                    attrs="{'readonly':[('rooms_available_qty','&lt;',1)]}"
+                                    force_save="1"
+                                />
+                                <field
+                                    name="board_service_room_id"
+                                    attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
+                                />
+                                <field
+                                    name="price_per_room"
+                                    readonly="1"
+                                    force_save="1"
+                                    attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
+                                />
+                                <field
+                                    name="price_total"
+                                    readonly="1"
+                                    force_save="1"
+                                    attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
+                                />
 
-                                 </tree>
-                            </field>
-                        </group>
+                                </tree>
+                        </field>
                     </div>
                 </div>
                 <div>

@@ -263,7 +263,6 @@ class PmsProperty(models.Model):
         current_lines = self.env.context.get("current_lines", False)
         if current_lines and not isinstance(current_lines, list):
             current_lines = [current_lines]
-
         pricelist_id = self.env.context.get("pricelist_id", False)
         room_type_id = self.env.context.get("room_type_id", False)
         class_id = self._context.get("class_id", False)

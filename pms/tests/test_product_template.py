@@ -180,7 +180,7 @@ class TestProductTemplate(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        reservation.flush()
+        reservation.flush_recordset()
         # ASSERT
         self.assertEqual(
             reservation.service_ids.service_line_ids.day_qty,
@@ -231,7 +231,7 @@ class TestProductTemplate(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
-        reservation.flush()
+        reservation.flush_recordset()
         # ASSERT
         # self.assertTrue(reservation, "The reservation should have been created.")
         # ASSERT
@@ -322,6 +322,6 @@ class TestProductTemplate(TestPms):
             }
         )
         reservation._check_adults()
-        reservation.flush()
+        reservation.flush_recordset()
 
     # TODO: pending tests (need review) -> per_day, per_person (with board service?)

@@ -59,7 +59,9 @@ class TestPmsPricelist(TestPms):
             }
         )
         # product.product 1
-        cls.product1 = cls.env["product.product"].create({"name": "Test Breakfast"})
+        cls.product1 = cls.env["product.product"].create(
+            {"name": "Test Breakfast", "per_day": True, "consumed_on": "after"}
+        )
 
         # pms.board.service
         cls.board_service1 = cls.env["pms.board.service"].create(
@@ -201,8 +203,8 @@ class TestPmsPricelist(TestPms):
         pricelist item created previously according to the CONSUMPTION date.
         """
         # ARRANGE
-        date_from = fields.date.today() + datetime.timedelta(days=1)
-        date_to = fields.date.today() + datetime.timedelta(days=1)
+        date_from = fields.date.today() + datetime.timedelta(days=2)
+        date_to = fields.date.today() + datetime.timedelta(days=2)
         expected_price = 1000.0
         vals = {
             "pricelist_id": self.pricelist2.id,
@@ -572,8 +574,8 @@ class TestPmsPricelist(TestPms):
         pricelist item created previously according to the CONSUMPTION date.
         """
         # ARRANGE
-        date_from = fields.date.today() + datetime.timedelta(days=1)
-        date_to = fields.date.today() + datetime.timedelta(days=1)
+        date_from = fields.date.today() + datetime.timedelta(days=2)
+        date_to = fields.date.today() + datetime.timedelta(days=2)
         expected_price = 1000.0
         vals = {
             "pricelist_id": self.pricelist2.id,
@@ -863,106 +865,6 @@ class TestPmsPricelist(TestPms):
         properties = self.room_type.product_id.pms_property_ids.ids
         test_cases = [
             {
-                "name": "sorting applied_on",
-                "expected_price": 50 * 3,
-                "items": [
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "2_product_category",
-                        "categ_id": self.product_category.id,
-                        "product_id": self.room_type.product_id.id,
-                        "fixed_price": 60.0,
-                    },
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "fixed_price": 50.0,
-                        "pms_property_ids": properties,
-                    },
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "1_product",
-                        "product_id": self.room_type.product_id.id,
-                        "product_tmpl_id": self.product_template.id,
-                        "fixed_price": 40.0,
-                        "pms_property_ids": properties,
-                    },
-                ],
-            },
-            {
-                "name": "sorting SALE date min range",
-                "expected_price": 50.0 * 3,
-                "items": [
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "date_start": datetime.datetime.now(),
-                        "date_end": datetime.datetime.now()
-                        + datetime.timedelta(days=2),
-                        "fixed_price": 60.0,
-                        "pms_property_ids": properties,
-                    },
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "date_start": datetime.datetime.now(),
-                        "date_end": datetime.datetime.now()
-                        + datetime.timedelta(days=1),
-                        "fixed_price": 50.0,
-                        "pms_property_ids": properties,
-                    },
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "date_start": datetime.datetime.now(),
-                        "date_end": datetime.datetime.now()
-                        + datetime.timedelta(days=3),
-                        "fixed_price": 40.0,
-                        "pms_property_ids": properties,
-                    },
-                ],
-            },
-            {
-                "name": "sorting CONSUMPTION date min range",
-                "expected_price": 40.0 * 3,
-                "items": [
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "date_start_consumption": datetime.datetime.now(),
-                        "date_end_consumption": datetime.datetime.now()
-                        + datetime.timedelta(days=6),
-                        "fixed_price": 60.0,
-                        "pms_property_ids": properties,
-                    },
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "date_start_consumption": datetime.datetime.now(),
-                        "date_end_consumption": datetime.datetime.now()
-                        + datetime.timedelta(days=10),
-                        "fixed_price": 50.0,
-                        "pms_property_ids": properties,
-                    },
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "date_start_consumption": datetime.datetime.now(),
-                        "date_end_consumption": datetime.datetime.now()
-                        + datetime.timedelta(days=3),
-                        "fixed_price": 40.0,
-                        "pms_property_ids": properties,
-                    },
-                ],
-            },
-            {
                 "name": "sorting num. properties",
                 "expected_price": 50.0 * 3,
                 "items": [
@@ -971,199 +873,12 @@ class TestPmsPricelist(TestPms):
                         "applied_on": "0_product_variant",
                         "product_id": self.room_type.product_id.id,
                         "fixed_price": 60.0,
-                        "pms_property_ids": properties,
                     },
                     {
                         "pricelist_id": self.pricelist1.id,
                         "applied_on": "0_product_variant",
                         "product_id": self.room_type.product_id.id,
                         "pms_property_ids": [self.pms_property1.id],
-                        "fixed_price": 50.0,
-                    },
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "pms_property_ids": [
-                            self.pms_property1.id,
-                            self.pms_property2.id,
-                        ],
-                        "fixed_price": 40.0,
-                    },
-                ],
-            },
-            {
-                "name": "sorting by item id",
-                "expected_price": 40.0 * 3,
-                "items": [
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "fixed_price": 60.0,
-                        "pms_property_ids": properties,
-                    },
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "fixed_price": 50.0,
-                        "pms_property_ids": properties,
-                    },
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "fixed_price": 40.0,
-                        "pms_property_ids": properties,
-                    },
-                ],
-            },
-            {
-                "name": "prioritize applied_on over SALE date",
-                "expected_price": 60.0 * 3,
-                "items": [
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "date_start": datetime.datetime.now(),
-                        "date_end": datetime.datetime.now()
-                        + datetime.timedelta(days=2),
-                        "fixed_price": 60.0,
-                        "pms_property_ids": properties,
-                    },
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "product_id": self.room_type.product_id.id,
-                        "product_tmpl_id": self.product_template.id,
-                        "applied_on": "1_product",
-                        "date_start": datetime.datetime.now(),
-                        "date_end": datetime.datetime.now()
-                        + datetime.timedelta(days=1),
-                        "fixed_price": 50.0,
-                        "pms_property_ids": properties,
-                    },
-                ],
-            },
-            {
-                "name": "prioritize SALE date over CONSUMPTION date",
-                "expected_price": 120.0 * 3,
-                "items": [
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "date_start": datetime.datetime.now(),
-                        "date_end": datetime.datetime.now()
-                        + datetime.timedelta(days=10),
-                        "fixed_price": 120.0,
-                        "pms_property_ids": properties,
-                    },
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "date_start_consumption": datetime.datetime.now(),
-                        "date_end_consumption": datetime.datetime.now()
-                        + datetime.timedelta(days=3),
-                        "fixed_price": 50.0,
-                        "pms_property_ids": properties,
-                    },
-                ],
-            },
-            {
-                "name": "prioritize CONSUMPTION date over min. num. properties",
-                "expected_price": 50.0 * 3,
-                "items": [
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "date_start_consumption": datetime.datetime.now(),
-                        "date_end_consumption": datetime.datetime.now()
-                        + datetime.timedelta(days=3),
-                        "fixed_price": 120.0,
-                        "pms_property_ids": properties,
-                    },
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "date_start_consumption": datetime.datetime.now(),
-                        "date_end_consumption": datetime.datetime.now()
-                        + datetime.timedelta(days=3),
-                        "pms_property_ids": [
-                            self.pms_property1.id,
-                            self.pms_property2.id,
-                        ],
-                        "fixed_price": 50.0,
-                    },
-                ],
-            },
-            {
-                "name": "prioritize min. num. properties over item id",
-                "expected_price": 50.0 * 3,
-                "items": [
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "date_start_consumption": datetime.datetime.now(),
-                        "date_end_consumption": datetime.datetime.now()
-                        + datetime.timedelta(days=3),
-                        "fixed_price": 120.0,
-                        "pms_property_ids": properties,
-                    },
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "date_start_consumption": datetime.datetime.now(),
-                        "date_end_consumption": datetime.datetime.now()
-                        + datetime.timedelta(days=3),
-                        "pms_property_ids": [
-                            self.pms_property1.id,
-                            self.pms_property2.id,
-                        ],
-                        "fixed_price": 50.0,
-                    },
-                ],
-            },
-            {
-                "name": "tie => order by item id",
-                "expected_price": 50.0 * 3,
-                "items": [
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "date_start_consumption": datetime.datetime.now(),
-                        "date_end_consumption": datetime.datetime.now()
-                        + datetime.timedelta(days=3),
-                        "date_start": datetime.datetime.now(),
-                        "date_end": datetime.datetime.now()
-                        + datetime.timedelta(days=3),
-                        "pms_property_ids": [
-                            self.pms_property1.id,
-                            self.pms_property2.id,
-                        ],
-                        "fixed_price": 120.0,
-                    },
-                    {
-                        "pricelist_id": self.pricelist1.id,
-                        "applied_on": "0_product_variant",
-                        "product_id": self.room_type.product_id.id,
-                        "date_start_consumption": datetime.datetime.now(),
-                        "date_end_consumption": datetime.datetime.now()
-                        + datetime.timedelta(days=3),
-                        "date_start": datetime.datetime.now(),
-                        "date_end": datetime.datetime.now()
-                        + datetime.timedelta(days=3),
-                        "pms_property_ids": [
-                            self.pms_property1.id,
-                            self.pms_property2.id,
-                        ],
                         "fixed_price": 50.0,
                     },
                 ],

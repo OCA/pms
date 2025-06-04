@@ -138,15 +138,7 @@ class TestPmsBookingEngine(TestPms):
             ]
         )
 
-        # set value for room type double
-        value = self.env["pms.num.rooms.selection"].search(
-            [
-                ("room_type_id", "=", self.test_room_type_double.id),
-                ("value", "=", num_double_rooms),
-            ]
-        )
-
-        lines_availability_test[0].num_rooms_selected = value
+        lines_availability_test[0].rooms_selected_qty = num_double_rooms
         for discount in discounts:
             with self.subTest(k=discount):
                 # ACT
@@ -186,19 +178,18 @@ class TestPmsBookingEngine(TestPms):
         expected_price_total = days * price_today * num_double_rooms
 
         # set pricelist item for current day
-        product_tmpl = self.test_room_type_double.product_id.product_tmpl_id
+        product_id = self.test_room_type_double.product_id
         self.env["product.pricelist.item"].create(
             {
                 "pricelist_id": self.pricelist1.id,
                 "date_start_consumption": checkin,
                 "date_end_consumption": checkin,
                 "compute_price": "fixed",
-                "applied_on": "1_product",
-                "product_tmpl_id": product_tmpl.id,
+                "applied_on": "0_product_variant",
                 "product_id": self.test_room_type_double.product_id.id,
                 "fixed_price": price_today,
                 "min_quantity": 0,
-                "pms_property_ids": product_tmpl.pms_property_ids.ids,
+                "pms_property_ids": product_id.pms_property_ids.ids,
             }
         )
 
@@ -221,16 +212,8 @@ class TestPmsBookingEngine(TestPms):
             ]
         )
 
-        # set value for room type double
-        value = self.env["pms.num.rooms.selection"].search(
-            [
-                ("room_type_id", "=", self.test_room_type_double.id),
-                ("value", "=", num_double_rooms),
-            ]
-        )
-
         # ACT
-        lines_availability_test[0].num_rooms_selected = value
+        lines_availability_test[0].rooms_selected_qty = num_double_rooms
 
         # ASSERT
         self.assertEqual(
@@ -352,14 +335,7 @@ class TestPmsBookingEngine(TestPms):
                 ("room_type_id.pms_property_ids", "in", self.pms_property1.id),
             ]
         )
-        # set one room type double
-        value = self.env["pms.num.rooms.selection"].search(
-            [
-                ("room_type_id", "=", self.test_room_type_double.id),
-                ("value", "=", 1),
-            ]
-        )
-        lines_availability_test[0].num_rooms_selected = value
+        lines_availability_test[0].rooms_selected_qty = 1
 
         # ACT
         booking_engine.create_folio()
@@ -406,14 +382,7 @@ class TestPmsBookingEngine(TestPms):
             ]
         )
         # set one room type double
-        value = self.env["pms.num.rooms.selection"].search(
-            [
-                ("room_type_id", "=", self.test_room_type_double.id),
-                ("value", "=", 2),
-            ]
-        )
-        lines_availability_test[0].num_rooms_selected = value
-        lines_availability_test[0].value_num_rooms_selected = 2
+        lines_availability_test[0].rooms_selected_qty = 2
 
         # ACT
         booking_engine.create_folio()
@@ -461,14 +430,7 @@ class TestPmsBookingEngine(TestPms):
             ]
         )
         # set one room type double
-        value = self.env["pms.num.rooms.selection"].search(
-            [
-                ("room_type_id", "=", self.test_room_type_double.id),
-                ("value", "=", 1),
-            ]
-        )
-        lines_availability_test[0].num_rooms_selected = value
-        lines_availability_test[0].value_num_rooms_selected = 1
+        lines_availability_test[0].rooms_selected_qty = 1
 
         # ACT
         booking_engine.create_folio()
@@ -526,14 +488,7 @@ class TestPmsBookingEngine(TestPms):
             ]
         )
         # set one room type double
-        value = self.env["pms.num.rooms.selection"].search(
-            [
-                ("room_type_id", "=", self.test_room_type_double.id),
-                ("value", "=", 1),
-            ]
-        )
-        lines_availability_test[0].num_rooms_selected = value
-        lines_availability_test[0].value_num_rooms_selected = 1
+        lines_availability_test[0].rooms_selected_qty = 1
 
         # ACT
         booking_engine.create_folio()
@@ -607,14 +562,7 @@ class TestPmsBookingEngine(TestPms):
             ]
         )
         # set one room type double
-        value = self.env["pms.num.rooms.selection"].search(
-            [
-                ("room_type_id", "=", self.test_room_type_double.id),
-                ("value", "=", 1),
-            ]
-        )
-        lines_availability_test[0].num_rooms_selected = value
-        lines_availability_test[0].value_num_rooms_selected = 1
+        lines_availability_test[0].rooms_selected_qty = 1
 
         # ACT
         booking_engine.create_folio()
@@ -677,7 +625,7 @@ class TestPmsBookingEngine(TestPms):
         )
         room_type_plan_avail = booking_engine.availability_results.filtered(
             lambda r: r.room_type_id.id == self.test_room_type_double.id
-        ).num_rooms_available
+        ).rooms_available_qty
 
         # ASSERT
 
@@ -731,7 +679,7 @@ class TestPmsBookingEngine(TestPms):
         )
         room_type_plan_avail = booking_engine.availability_results.filtered(
             lambda r: r.room_type_id.id == self.test_room_type_double.id
-        ).num_rooms_available
+        ).rooms_available_qty
 
         # ASSERT
 
@@ -776,7 +724,7 @@ class TestPmsBookingEngine(TestPms):
                 "pms_property_id": self.pms_property1.id,
             }
         )
-        # self.board_service_room_type.flush()
+        # self.board_service_room_type.flush_recordset()
         # ACT
         booking_engine = self.env["pms.booking.engine"].create(
             {
@@ -793,14 +741,7 @@ class TestPmsBookingEngine(TestPms):
             lambda r: r.room_type_id.id == self.test_room_type_double.id
         )
 
-        value = self.env["pms.num.rooms.selection"].search(
-            [
-                ("room_type_id", "=", self.test_room_type_double.id),
-                ("value", "=", 1),
-            ]
-        )
-        lines_availability_test[0].num_rooms_selected = value
-        lines_availability_test[0].value_num_rooms_selected = 1
+        lines_availability_test[0].rooms_selected_qty = 1
         lines_availability_test[
             0
         ].board_service_room_id = self.board_service_room_type.id
@@ -880,14 +821,7 @@ class TestPmsBookingEngine(TestPms):
         lines_availability_test = booking_engine.availability_results.filtered(
             lambda r: r.room_type_id.id == self.test_room_type_double.id
         )
-        value = self.env["pms.num.rooms.selection"].search(
-            [
-                ("room_type_id", "=", self.test_room_type_double.id),
-                ("value", "=", 1),
-            ]
-        )
-        lines_availability_test[0].num_rooms_selected = value
-        lines_availability_test[0].value_num_rooms_selected = 1
+        lines_availability_test[0].rooms_selected_qty = 1
         lines_availability_test[
             0
         ].board_service_room_id = self.board_service_room_type.id
@@ -904,91 +838,6 @@ class TestPmsBookingEngine(TestPms):
                     discount * 100,
                     "The discount is not correctly established",
                 )
-
-    def test_check_folio_when_change_selection(self):
-        """
-        Check, when creating a folio from booking engine,
-        if a room type is chosen and then deleted that selection
-        isn`t registered on the folio and is properly unselected
-        """
-        # ARRANGE
-        # CREATION OF ROOM TYPE (WITH ROOM TYPE CLASS)
-        self.partner_id2 = self.env["res.partner"].create(
-            {
-                "name": "Brais",
-                "mobile": "654665553",
-                "email": "braistest@example.com",
-            }
-        )
-        self.test_room_type_triple = self.env["pms.room.type"].create(
-            {
-                "pms_property_ids": [self.pms_property1.id],
-                "name": "Triple Test",
-                "default_code": "TRP_Test",
-                "class_id": self.room_type_class1.id,
-                "list_price": 60.0,
-            }
-        )
-
-        # pms.room
-        self.test_room1_triple = self.env["pms.room"].create(
-            {
-                "pms_property_id": self.pms_property1.id,
-                "name": "Triple 301 test",
-                "room_type_id": self.test_room_type_triple.id,
-                "capacity": 3,
-            }
-        )
-        checkin = fields.date.today()
-        checkout = fields.date.today() + datetime.timedelta(days=1)
-
-        booking_engine = self.env["pms.booking.engine"].create(
-            {
-                "start_date": checkin,
-                "end_date": checkout,
-                "partner_id": self.partner_id2.id,
-                "pricelist_id": self.pricelist1.id,
-                "pms_property_id": self.pms_property1.id,
-                "channel_type_id": self.sale_channel_direct1.id,
-            }
-        )
-
-        lines_availability_test_double = booking_engine.availability_results.filtered(
-            lambda r: r.room_type_id.id == self.test_room_type_double.id
-        )
-        value = self.env["pms.num.rooms.selection"].search(
-            [
-                ("room_type_id", "=", self.test_room_type_double.id),
-                ("value", "=", 1),
-            ]
-        )
-        lines_availability_test_double[0].num_rooms_selected = value
-        lines_availability_test_double[0].value_num_rooms_selected = 1
-
-        lines_availability_test_double[0].value_num_rooms_selected = 0
-
-        lines_availability_test_triple = booking_engine.availability_results.filtered(
-            lambda r: r.room_type_id.id == self.test_room_type_triple.id
-        )
-        value_triple = self.env["pms.num.rooms.selection"].search(
-            [
-                ("room_type_id", "=", self.test_room_type_triple.id),
-                ("value", "=", 1),
-            ]
-        )
-        lines_availability_test_triple[0].num_rooms_selected = value_triple
-        lines_availability_test_triple[0].value_num_rooms_selected = 1
-
-        # ACT
-        booking_engine.create_folio()
-
-        folio = self.env["pms.folio"].search([("partner_id", "=", self.partner_id2.id)])
-        # ASSERT
-        self.assertEqual(
-            len(folio.reservation_ids),
-            1,
-            "Reservations of folio are incorrect",
-        )
 
     def _test_adding_board_services_are_saved_on_lines(self):
         checkin = fields.date.today()

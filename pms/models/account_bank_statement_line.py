@@ -37,9 +37,7 @@ class AccountBankStatementLine(models.Model):
 
     @api.model
     def _prepare_move_line_default_vals(self, counterpart_account_id=None):
-        line_vals_list = super(
-            AccountBankStatementLine, self
-        )._prepare_move_line_default_vals(counterpart_account_id)
+        line_vals_list = super()._prepare_move_line_default_vals(counterpart_account_id)
         if self.folio_ids:
             for line in line_vals_list:
                 line.update(
@@ -48,36 +46,6 @@ class AccountBankStatementLine(models.Model):
                     }
                 )
         return line_vals_list
-
-    def _get_payment_move_lines_to_reconcile(self):
-        self.ensure_one()
-        payment_move_line = False
-        folio_ids = self.folio_ids and self.folio_ids.ids or False
-        domain = [("move_id.folio_ids", "in", folio_ids)] if folio_ids else []
-        domain.extend(
-            [
-                ("move_id.ref", "=", self.payment_ref),
-                ("date", "=", self.date),
-                ("reconciled", "=", False),
-                "|",
-                (
-                    "account_id",
-                    "=",
-                    self.journal_id.payment_debit_account_id.id,
-                ),
-                (
-                    "account_id",
-                    "=",
-                    self.journal_id.payment_credit_account_id.id,
-                ),
-                ("journal_id", "=", self.journal_id.id),
-            ]
-        )
-        to_reconcile_move_lines = self.env["account.move.line"].search(domain)
-        # We try to reconcile by amount
-        for record in to_reconcile_move_lines:
-            payment_move_line = record if record.balance == self.amount else False
-        return payment_move_line
 
     def _create_counterpart_and_new_aml(
         self, counterpart_moves, counterpart_aml_dicts, new_aml_dicts
