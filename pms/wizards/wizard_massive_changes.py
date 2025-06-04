@@ -12,9 +12,6 @@ class AvailabilityWizard(models.TransientModel):
     pms_property_ids = fields.Many2many(
         string="Property",
         comodel_name="pms.property",
-        default=lambda self: self.env["pms.property"].browse(
-            self.env.user.get_active_property_id.id
-        ),
         check_pms_properties=True,
         required=True,
     )
