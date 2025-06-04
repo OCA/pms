@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="pms_property_views_form" model="ir.ui.view">
         <field name="name">pms_property_views_form</field>
@@ -67,30 +67,93 @@
                             </div>
                         </page>
                         <page string="Settings" name="property_settings">
-                            <group
-                                colspan="4"
-                                col="4"
-                                string="Price and Availability Plans"
-                            >
-                                <field name="default_pricelist_id" required="True" />
-                            </group>
-                            <group string="Reservation">
-                                <field name="block_create_past_reservations" />
-                            </group>
-                            <group string="Timezone">
-                                <field name="tz" widget="timezone_mismatch" />
-                            </group>
-                            <group string="Sequences">
-                                <field name="folio_sequence_id" />
-                                <field name="checkin_sequence_id" />
-                            </group>
-                            <group colspan="4" col="4" string="Check-in hours">
-                                <field name="default_arrival_hour" />
-                                <field name="default_departure_hour" />
-                            </group>
-                            <group string="Print in cardex">
-                                <field name="cardex_warning" />
-                            </group>
+                            <notebook>
+                                <page string="General" name="property_settings_general">
+                                    <group string="Timezone">
+                                        <field name="tz" widget="timezone_mismatch" />
+                                    </group>
+                                    <group colspan="4" col="4" string="Check-in hours">
+                                        <field name="default_arrival_hour" />
+                                        <field name="default_departure_hour" />
+                                    </group>
+                                    <group string="Sequences">
+                                        <field name="folio_sequence_id" />
+                                        <field name="checkin_sequence_id" />
+                                    </group>
+                                </page>
+                                <page
+                                    string="Reservations"
+                                    name="property_settings_reservations"
+                                >
+                                    <group
+                                        colspan="4"
+                                        col="4"
+                                        string="Price and Availability Plans"
+                                    >
+                                        <field
+                                            name="default_pricelist_id"
+                                            required="True"
+                                        />
+                                    </group>
+                                    <group string="Reservation">
+                                        <field name="block_create_past_reservations" />
+                                    </group>
+                                </page>
+                                <page string="Legal" name="property_settings_legal">
+                                    <group string="Print in cardex">
+                                        <field name="cardex_warning" />
+                                    </group>
+                                </page>
+                                <page string="Email Configuration">
+                                    <group>
+                                        <group string="Email Templates" name="email_templates">
+                                            <field
+                                                string="Confirmation Email"
+                                                name="property_confirmed_template"
+                                            />
+                                            <field
+                                                string="Modification Email"
+                                                name="property_modified_template"
+                                            />
+                                            <field
+                                                string="Cancellation Email"
+                                                name="property_canceled_template"
+                                            />
+                                            <field
+                                                string="Exit Email"
+                                                name="property_exit_template"
+                                            />
+                                        </group>
+                                        <group string="Auto Send Email">
+                                            <field
+                                                name="is_confirmed_auto_mail"
+                                                string="Confirmation Email"
+                                            />
+                                            <field
+                                                name="is_modified_auto_mail"
+                                                string="Modification Email"
+                                            />
+                                            <field
+                                                name="is_canceled_auto_mail"
+                                                string="Cancellation Email"
+                                            />
+                                        </group>
+                                    </group>
+                                    <group
+                                        string="Mail Information"
+                                        name="mail_information"
+                                        colspan="4"
+                                    >
+                                        <field
+                                            name="mail_information"
+                                            string="Aditional Mail Information"
+                                        />
+                                        <field name="privacy_policy" />
+                                    </group>
+                                </page>
+                                <page string="Others" name="property_settings_other">
+                                </page>
+                            </notebook>
                         </page>
                         <page string="Rooms" name="property_rooms">
                             <group>
@@ -124,53 +187,7 @@
                                 <field name="avoid_simplified_max_amount_downpayment" />
                             </group>
                         </page>
-                        <page string="Email Configuration">
-                            <group>
-                                <group string="Email Templates" name="email_templates">
-                                    <field
-                                        string="Confirmation Email"
-                                        name="property_confirmed_template"
-                                    />
-                                    <field
-                                        string="Modification Email"
-                                        name="property_modified_template"
-                                    />
-                                    <field
-                                        string="Cancellation Email"
-                                        name="property_canceled_template"
-                                    />
-                                    <field
-                                        string="Exit Email"
-                                        name="property_exit_template"
-                                    />
-                                </group>
-                                <group string="Auto Send Email">
-                                    <field
-                                        name="is_confirmed_auto_mail"
-                                        string="Confirmation Email"
-                                    />
-                                    <field
-                                        name="is_modified_auto_mail"
-                                        string="Modification Email"
-                                    />
-                                    <field
-                                        name="is_canceled_auto_mail"
-                                        string="Cancellation Email"
-                                    />
-                                </group>
-                            </group>
-                            <group
-                                string="Mail Information"
-                                name="mail_information"
-                                colspan="4"
-                            >
-                                <field
-                                    name="mail_information"
-                                    string="Aditional Mail Information"
-                                />
-                                <field name="privacy_policy" />
-                            </group>
-                        </page>
+
                         <page name="members" string="Team Members">
                             <label for="user_id" string="Team Leader" />
                             <h3>
