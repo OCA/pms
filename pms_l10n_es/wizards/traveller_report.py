@@ -126,7 +126,7 @@ def _ses_xml_person_names_elements(persona, reservation, checkin_partner):
             ]
         elif (
             reservation.partner_name
-            and len(replace_multiple_spaces(reservation.partner_name).split(" ")) > 1
+            and len(replace_multiple_spaces(reservation.partner_name.rstrip()).split(" ")) > 1
         ):
             ses_lastname = clean_string_only_letters(
                 replace_multiple_spaces(reservation.partner_name)
