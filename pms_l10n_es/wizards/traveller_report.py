@@ -772,22 +772,12 @@ class TravellerReport(models.TransientModel):
                         communication.reservation_id.pms_property_id.institution_lessor_id
                     )
                     ses_url = communication.reservation_id.pms_property_id.ses_url
-                if communication.operation == DELETE_OPERATION_CODE:
-                    communication_to_cancel = self.env["pms.ses.communication"].search(
-                        [
-                            ("reservation_id", "=", communication.reservation_id.id),
-                            ("state", "!=", "to_send"),
-                            ("entity", "=", communication.entity),
-                            ("operation", "=", CREATE_OPERATION_CODE),
-                        ],
-                        order="id desc",
-                        limit=1,
-                    )
+                if communication.operation == DELETE_OPERATION_CODE and communication.communication_id_to_cancel:
                     data = (
                         "<anul:comunicaciones "
                         'xmlns:anul="http://www.neg.hospedajes.mir.es/anularComunicacion">'
                         + "<anul:codigoComunicacion>"
-                        + communication_to_cancel.communication_id
+                        + communication.communication_id_to_cancel.communication_id
                         + "</anul:codigoComunicacion>"
                         + "</anul:comunicaciones>"
                     )

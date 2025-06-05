@@ -90,7 +90,7 @@ class PmsReservation(models.Model):
             )
 
     @api.model
-    def create_communication(self, reservation_id, operation, entity):
+    def create_communication(self, reservation_id, operation, entity, communication_id_to_cancel=False):
         reservation = self.env["pms.reservation"].browse(reservation_id)
         self.env["pms.ses.communication"].create(
             {
@@ -98,6 +98,7 @@ class PmsReservation(models.Model):
                 "operation": operation,
                 "entity": entity,
                 "room_id": reservation.preferred_room_id.id,
+                "communication_id_to_cancel": communication_id_to_cancel,
             }
         )
 
@@ -152,7 +153,10 @@ class PmsReservation(models.Model):
                     and last_communication.operation == CREATE_OPERATION_CODE
                 ):
                     self.create_communication(
-                        reservation.id, DELETE_OPERATION_CODE, "RH"
+                        reservation.id,
+                        DELETE_OPERATION_CODE,
+                        "RH",
+                        last_communication.id,
                     )
                 elif vals["state"] != "cancel" and (
                     last_communication.operation == DELETE_OPERATION_CODE
@@ -164,7 +168,10 @@ class PmsReservation(models.Model):
             elif check_changed:
                 if last_communication.operation == CREATE_OPERATION_CODE:
                     self.create_communication(
-                        reservation.id, DELETE_OPERATION_CODE, "RH"
+                        reservation.id,
+                        DELETE_OPERATION_CODE,
+                        "RH",
+                        last_communication.id,
                     )
                 self.create_communication(reservation.id, CREATE_OPERATION_CODE, "RH")
 

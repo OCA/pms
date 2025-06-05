@@ -101,7 +101,11 @@ class PmsSesCommunication(models.Model):
         help="Number of attempts to send the communication",
         default=0,
     )
-
+    communication_id_to_cancel = fields.Many2one(
+        comodel_name="pms.ses.communication",
+        string="Communication to Cancel",
+        help="Communication to cancel if this is a cancellation operation",
+    )
     def force_send_communication(self):
         for record in self:
             self.env["traveller.report.wizard"].ses_send_communications(
