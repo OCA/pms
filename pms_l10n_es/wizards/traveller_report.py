@@ -78,7 +78,9 @@ def _ses_xml_contract_elements(comunicacion, reservation, people=False):
     if people:
         ET.SubElement(contrato, "numPersonas").text = str(people)
     else:
-        ET.SubElement(contrato, "numPersonas").text = str(reservation.adults)
+        ET.SubElement(contrato, "numPersonas").text = str(
+            reservation.adults + reservation.children if reservation.children else 0
+        )
     _ses_xml_payment_elements(contrato, reservation)
 
 
