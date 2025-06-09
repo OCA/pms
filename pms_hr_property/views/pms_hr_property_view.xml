@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="pms_hr_property_form" model="ir.ui.view">
+        <field name="name">pms.hr.property.form</field>
+        <field name="model">pms.property</field>
+        <field name="inherit_id" ref="pms.pms_property_views_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="staff_property">
+                    <field name="employee_ids">
+                        <tree>
+                            <field name="job_id" />
+                            <field name="name" />
+                            <field name="work_email" />
+                            <field name="work_phone" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

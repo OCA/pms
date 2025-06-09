@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="hr_property_employee_view_form" model="ir.ui.view">
+        <field name="name">hr.property.employee.form</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='coach_id']" position="after">
+                <field
+                    name="property_ids"
+                    widget="many2many_tags"
+                    options="{'no_create': True}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="hr_property_employee_view_tree">
+        <field name="name">hr.property.employee.tree</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='job_id']" position="after">
+                <field
+                    name="property_ids"
+                    widget="many2many_tags"
+                    options="{'no_create': True}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="hr_property_employee_view_kanban">
+        <field name="name">hr.property.employee.kanban</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.hr_kanban_view_employees" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='work_phone']" position="after">
+                <div role="separator" class="dropdown-divider" />
+                <field
+                    name="property_ids"
+                    widget="many2many_tags"
+                    options="{'no_create': True}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="hr_property_employee_filter">
+        <field name="name">hr.property.employee.filter</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_filter" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field
+                    name="property_ids"
+                    string="Workplace"
+                    enable_counters="1"
+                    select="multi"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>
