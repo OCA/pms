@@ -1,0 +1,120 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="product_pricelist_view_form" model="ir.ui.view">
+        <field name="model">product.pricelist</field>
+        <field name="inherit_id" ref="product.product_pricelist_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="is_pms_available" />
+                <field
+                    name="pms_property_ids"
+                    widget="many2many_tags"
+                    options="{'no_create': True,'no_open': True}"
+                    attrs="{'invisible': [('is_pms_available', '=', False)]}"
+                />
+            </xpath>
+            <xpath expr="//field[@name='country_group_ids']" position="before">
+                <field
+                    name="pricelist_type"
+                    attrs="{'invisible': [('is_pms_available', '=', False)]}"
+                />
+                <field
+                    name="cancelation_rule_id"
+                    attrs="{'invisible': [('is_pms_available', '=', False)]}"
+                />
+                <field
+                    name="availability_plan_id"
+                    attrs="{'invisible': [('is_pms_available', '=', False)]}"
+                />
+                <field
+                    name="pms_sale_channel_ids"
+                    widget="many2many_tags"
+                    attrs="{'invisible': [('is_pms_available', '=', False)]}"
+                />
+            </xpath>
+            <xpath
+                expr="//page[@name='pricelist_rules']
+                     /field[@name='item_ids']
+                     /tree[@groups='!product.group_sale_pricelist']
+                     /field[@name='fixed_price']"
+                position="after"
+            >
+                <field
+                    name="date_start_consumption"
+                    attrs="{'column_invisible': [('parent.is_pms_available', '=', False)]}"
+                />
+                <field
+                    name="date_end_consumption"
+                    attrs="{'column_invisible': [('parent.is_pms_available', '=', False)]}"
+                />
+                <field
+                    name="pms_property_ids"
+                    widget="many2many_tags"
+                    options="{'no_create': True,'no_open': True}"
+                    attrs="{'column_invisible': [('parent.is_pms_available', '=', False)]}"
+                />
+                <!-- <field
+                    name="board_service_room_type_id"
+                    options="{'no_create': True, 'no_open': True}"
+                    attrs="{'invisible': [('parent.is_pms_available', '=', False)]}"
+                /> -->
+            </xpath>
+
+
+            <xpath
+                expr="//page[@name='pricelist_rules']
+                     /field[@name='item_ids']
+                     /tree[@groups='product.group_sale_pricelist']
+                     /field[@name='name']"
+                position="after"
+            >
+                <field
+                    name="date_start_consumption"
+                    attrs="{'column_invisible': [('parent.is_pms_available', '=', False)]}"
+                />
+                <field
+                    name="date_end_consumption"
+                    attrs="{'column_invisible': [('parent.is_pms_available', '=', False)]}"
+                />
+                <field
+                    name="pms_property_ids"
+                    widget="many2many_tags"
+                    options="{'no_create': True,'no_open': True}"
+                    attrs="{'column_invisible': [('parent.is_pms_available', '=', False)]}"
+                />
+                <!-- <field
+                    name="board_service_room_type_id"
+                    options="{'no_create': True, 'no_open': True}"
+                    attrs="{'invisible': [('parent.is_pms_available', '=', False)]}"
+                /> -->
+            </xpath>
+
+
+
+            <xpath expr="//widget[@name='web_ribbon']" position="after">
+                <div class="oe_button_box " name="button_box">
+                    <button
+                        name="open_massive_changes_wizard"
+                        type="object"
+                        class="oe_stat_button mr-5"
+                        icon="fa-magic"
+                        attrs="{'invisible': [('is_pms_available', '=', False)]}"
+                    >
+                        <label
+                            for="open_massive_changes_wizard"
+                            string="Massive changes"
+                        />
+                    </button>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <menuitem
+        name="Pricelists"
+        id="pricelist_menu"
+        action="product.product_pricelist_action2"
+        sequence="15"
+        parent="pms.revenue_management_menu"
+    />
+</odoo>

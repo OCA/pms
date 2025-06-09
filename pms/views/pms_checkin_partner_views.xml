@@ -1,0 +1,664 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record model="ir.actions.act_window" id="action_checkin_partner">
+        <field name="name">Checkins</field>
+        <field name="res_model">pms.checkin.partner</field>
+        <field name="view_mode">kanban,tree,form,calendar,graph,pivot</field>
+        <field name="context">{'search_default_hide_strangers':1, }</field>
+    </record>
+    <menuitem
+        id="menu_pms_checkin_partner"
+        name="Checkins"
+        sequence="25"
+        action="action_checkin_partner"
+        parent="pms.menu_reservations"
+    />
+    <record id="pms_checkin_partner_view_form" model="ir.ui.view">
+        <field name="name">Checkin Form</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="arch" type="xml">
+            <form create="false">
+                <header>
+                    <field name="state" widget="statusbar" />
+                </header>
+                <sheet>
+                    <div
+                        class="alert alert-warning"
+                        role="alert"
+                        style="margin-bottom:0px;"
+                        attrs="{'invisible': [('partner_incongruences','=',False)]}"
+                    >
+                        <field name="partner_incongruences" />
+                        <bold>
+                            <button
+                                title="View Customer"
+                                class="alert-link"
+                                type="object"
+                                name="open_partner"
+                                string="View Customer"
+                            />
+                        </bold>
+                    </div>
+                    <div
+                        class="alert alert-warning"
+                        role="alert"
+                        style="margin-bottom:0px;"
+                        attrs="{'invisible': [('possible_existing_customer_ids','=',[])]}"
+                    >
+                        A customer/s has this email or mobile, do you want to add it?
+                        <field name="possible_existing_customer_ids" invisible="1" />
+                        <button
+                            title="Add customer"
+                            name="open_wizard_several_partners"
+                            string="Add customer"
+                            type="object"
+                        />
+                    </div>
+                    <group name="group_top">
+                        <group name="group_left">
+                            <field
+                                name="partner_id"
+                                domain="[('is_company','=', False)]"
+                            />
+                            <field name="firstname" />
+                            <field name="lastname" />
+                            <field name="lastname2" />
+                            <field name="gender" />
+                            <field name="birthdate_date" />
+                            <field name="document_country_id" />
+                            <field name="document_type" />
+                            <field name="document_number" />
+                            <field name="document_expedition_date" />
+                            <field name="nationality_id" />
+                            <field name="email" />
+                            <field name="mobile" />
+                            <field name="phone" />
+                            <field name="document_id" invisible="1" />
+                            <field name="pms_property_id" invisible="1" />
+                            <label for="residence_street" string="Residence Address" />
+                            <div class="o_address_format">
+                                <field
+                                    name="residence_street"
+                                    placeholder="Street..."
+                                    class="o_address_street"
+                                />
+                                <field
+                                    name="residence_street2"
+                                    placeholder="Street 2..."
+                                    class="o_address_street"
+                                />
+                                <field
+                                    name="residence_city"
+                                    placeholder="City"
+                                    class="o_address_city"
+                                />
+                                <field
+                                    name="residence_state_id"
+                                    class="o_address_state"
+                                    placeholder="State"
+                                    options="{'no_open': True, 'no_quick_create': True}"
+                                />
+                                <field
+                                    name="residence_zip"
+                                    placeholder="ZIP"
+                                    class="o_address_zip"
+                                />
+                                <field
+                                    name="residence_country_id"
+                                    placeholder="Country"
+                                    class="o_address_country"
+                                    options='{"no_open": True, "no_create": True}'
+                                />
+                            </div>
+                            <field name="arrival" />
+                            <field name="departure" />
+                        </group>
+                        <group name="group_left">
+                            <field name="reservation_id" />
+                            <field name="folio_id" />
+                            <field name="identifier" />
+                            <field name="partner_relationship" />
+                            <field name="signature" />
+                            <field name="sign_on" />
+                            <field name="pms_property_id" invisible="1" />
+                        </group>
+                    </group>
+                    <button
+                        type="action"
+                        class="btn-primary float-right"
+                        icon="fa-file-pdf-o"
+                        name="%(action_traveller_report)d"
+                        string="Print in PDF"
+                        attrs="{'invisible': [('state','not in', ('precheckin','onboard','done'))]}"
+                    />
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="pms_checkin_partner_reservation_view_tree" model="ir.ui.view">
+        <field name="name">pms.checkin.partner.reservation.view.tree</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <tree
+                editable="bottom"
+                decoration-danger="state == 'dummy'"
+                decoration-info="state == 'done'"
+                decoration-muted="state == 'cancel'"
+                decoration-success="state == 'onboard'"
+            >
+                <button
+                    title="Checkin"
+                    type="object"
+                    class="oe_read_only oe_stat_button"
+                    icon="fa-2x fa-check-circle"
+                    name="action_on_board"
+                    help="Get in"
+                    attrs="{'invisible': [('state','!=','precheckin')]}"
+                />
+                <field name="identifier" />
+                <field name="partner_id" />
+                <field name="firstname" />
+                <field name="lastname" />
+                <field name="lastname2" />
+                <field name="gender" />
+                <field name="birthdate_date" />
+                <field name="document_country_id" />
+                <field name="document_type" />
+                <field name="document_number" />
+                <field name="document_expedition_date" />
+                <field name="nationality_id" />
+                <field name="residence_state_id" />
+                <field name="mobile" />
+                <field name="email" />
+                <field name="arrival" />
+                <field name="departure" />
+                <field name="reservation_id" invisible="1" />
+                <field name="folio_id" force_save="1" invisible="1" />
+                <field name="state" invisible="0" />
+                <field name="pms_property_id" invisible="1" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="pms_checkin_partner_folio_view_tree" model="ir.ui.view">
+        <field name="name">pms.checkin.partner.folio.view.tree</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <tree
+                editable="bottom"
+                create="false"
+                decoration-danger="state == 'dummy'"
+                decoration-info="state == 'done'"
+                decoration-muted="state == 'cancel'"
+                decoration-success="state == 'onboard'"
+            >
+                <button
+                    title="Checkin"
+                    type="object"
+                    class="oe_read_only oe_stat_button"
+                    icon="fa-2x fa-check-circle"
+                    name="action_on_board"
+                    help="Get in"
+                    attrs="{'invisible': [('state','!=','precheckin')]}"
+                />
+                <field name="reservation_id" />
+                <field name="pms_property_id" invisible="1" />
+                <field name="partner_id" domain="[('is_company','=', False)]" />
+                <field name="firstname" />
+                <field name="lastname" />
+                <field name="lastname2" />
+                <field name="gender" />
+                <field name="birthdate_date" />
+                <field name="document_country_id" />
+                <field name="document_type" />
+                <field name="document_number" />
+                <field name="document_expedition_date" />
+                <field name="nationality_id" />
+                <field name="residence_state_id" />
+                <field name="mobile" />
+                <field name="email" />
+                <field name="arrival" invisible="1" />
+                <field name="departure" invisible="1" />
+                <field name="folio_id" force_save="1" invisible="1" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="pms_checkin_partner_view_tree" model="ir.ui.view">
+        <field name="name">pms.checkin.partner.view.tree</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <tree
+                create="false"
+                decoration-danger="state == 'draft'"
+                decoration-muted="state == 'cancel' or state =='done'"
+                decoration-success="state == 'onboard'"
+            >
+                <button
+                    title="Checkin"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa fa-2x fa-check-circle"
+                    name="action_on_board"
+                    attrs="{'invisible':[('state','not in', ['preconfirm'])]}"
+                    help="Get in"
+                />
+                <field name="identifier" />
+                <field name="partner_id" domain="[('is_company','=', False)]" />
+                <field name="reservation_id" />
+                <field name="pms_property_id" invisible="1" />
+                <field name="firstname" />
+                <field name="lastname" />
+                <field name="lastname2" />
+                <field name="gender" />
+                <field name="birthdate_date" />
+                <field name="document_country_id" />
+                <field name="document_type" />
+                <field name="document_number" />
+                <field name="document_expedition_date" />
+                <field name="nationality_id" />
+                <field name="residence_state_id" />
+                <field name="mobile" />
+                <field name="email" />
+                <field name="arrival" />
+                <field name="departure" />
+                <field name="folio_id" force_save="1" invisible="1" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="pms_checkin_partner_kanban_view">
+        <field name="name">pms.checkin.partner.kanban</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="arch" type="xml">
+            <kanban
+                default_group_by="state"
+                class="o_res_partner_kanban"
+                sample="1"
+                create="false"
+                group_create="false"
+                group_delete="false"
+                group_edit="false"
+                records_draggable="false"
+            >
+                <field name="id" />
+                <field name="identifier" />
+                <field name="reservation_id" />
+                <field name="folio_id" />
+                <field name="pms_property_id" invisible="1" />
+                <field name="partner_id" domain="[('is_company','=', False)]" />
+                <field name="firstname" />
+                <field name="lastname" />
+                <field name="lastname2" />
+                <field name="gender" />
+                <field name="birthdate_date" />
+                <field name="document_country_id" />
+                <field name="document_type" />
+                <field name="document_number" />
+                <field name="document_expedition_date" />
+                <field name="nationality_id" />
+                <field name="residence_state_id" />
+                <field name="email" />
+                <field name="mobile" />
+                <field name="arrival" />
+                <field name="departure" />
+                <field name="state" />
+                <field name="image_128" />
+                <templates>
+                    <t t-name="kanban-box">
+                        <div
+                            class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban"
+                        >
+                            <div class="o_kanban_image">
+                                <img
+                                    alt="Contact image"
+                                    t-if="record.image_128.raw_value"
+                                    t-att-src="kanban_image('pms.checkin.partner', 'image_128', record.id.raw_value)"
+                                />
+                                <t t-if="!record.image_128.raw_value">
+                                    <!--TODO: Use npm avatar generation? https://github.com/Ashwinvalento/cartoon-avatar-->
+                                    <img
+                                        alt="Draft"
+                                        t-if="record.state.raw_value === 'dummy'"
+                                        t-att-src="&quot;pms/static/description/avatar.png&quot;"
+                                    />
+                                    <img
+                                        alt="Cancelled"
+                                        t-if="record.state.raw_value === 'cancel'"
+                                        t-att-src="&quot;pms/static/description/avatar.png&quot;"
+                                    />
+                                </t>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <div class="float-right">
+                                                <field
+                                                    name="state"
+                                                    widget="label_selection"
+                                                    options="{'classes': {'dummy': 'default', 'precheckin': 'info', 'onboard': 'warning', 'onboard': 'success', 'done': 'secondary'}}"
+                                                />
+                                            </div>
+                                            <field
+                                                name="name"
+                                                placeholder="Hosted's Name"
+                                            />
+                                            <field
+                                                name="reservation_id"
+                                                placeholder="Room Reservation"
+                                            />
+                                            <field
+                                                name="pms_property_id"
+                                                invisible="1"
+                                            />
+                                        </strong>
+                                        <span
+                                            t-if="record.arrival.raw_value"
+                                            class="o_kanban_record_subtitle"
+                                        >
+                                            <field name="arrival" />
+                                        </span>
+                                        <span
+                                            t-if="record.departure.raw_value"
+                                            class="o_kanban_record_subtitle"
+                                        >
+                                            <field name="departure" />
+                                        </span>
+                                    </div>
+                                </div>
+                                <field
+                                    name="segmentation_ids"
+                                    widget="many2many_tags"
+                                    options="{'color_field': 'color'}"
+                                />
+                                <ul>
+                                    <li
+                                        t-if="record.email.raw_value"
+                                        class="o_kanban_record_subtitle"
+                                    >
+                                        <field name="email" />
+                                    </li>
+                                    <li
+                                        t-if="record.mobile.raw_value"
+                                        class="o_kanban_record_subtitle"
+                                    >
+                                        <field name="mobile" />
+                                    </li>
+                                </ul>
+                                <div class="oe_kanban_bottom_right">
+                                    <a
+                                        name="action_on_board"
+                                        tabindex="-1"
+                                        type="object"
+                                        attrs="{'invisible': [('state', '!=', 'precheckin')]}"
+                                        class="o_project_kanban_box"
+                                    >
+                                        <div>
+                                            <span class="o_label">
+                                                <i
+                                                    class="fa fa-lg fa-play-circle text-success"
+                                                />
+                                                Check-in
+                                            </span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="pms_checkin_partner_view_search">
+        <field name="name">pms.checkin.partner.search</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="arch" type="xml">
+            <search string="Checkin Detail">
+                <field name="partner_id" />
+                <field name="reservation_id" />
+                <field name="pms_property_id" />
+                <filter
+                    string="On Board"
+                    name="on_board"
+                    domain="[('state','=','onboard')]"
+                    help="Current Booking"
+                />
+                <filter
+                    string="To enter"
+                    name="to_enter"
+                    domain="[('state', '=', 'precheckin')]"
+                />
+                <separator />
+                <filter
+                    string="Hide Strangers"
+                    name="hide_strangers"
+                    domain="[('firstname', '!=', False)]"
+                />
+                <filter string="Out" name="out" domain="[('state', '=', 'done')]" />
+                <separator />
+                <filter
+                    string="Checkins Today"
+                    name="enter_tomorrow"
+                    domain="[('checkin', '=', context_today().strftime('%Y-%m-%d'))]"
+                    help="Show all checkins for enter tomorrow"
+                />
+                <filter
+                    string="Checkins Tomorrow"
+                    name="enter_tomorrow"
+                    domain="[('checkin', '=', (context_today()+datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"
+                    help="Show all checkins for enter tomorrow"
+                />
+                <filter
+                    string="Checkins to 7 days"
+                    name="next_res_week"
+                    domain="[
+                        ('checkin', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d')),
+                        ('checkin', '&gt;=', context_today().strftime('%Y-%m-%d'))
+                        ]"
+                    help="Show all reservations for which date enter is before than 7 days"
+                />
+                <separator />
+                <filter
+                    string="Future"
+                    name="future"
+                    domain="[('checkin', '&gt;=', context_today().strftime('%Y-%m-%d')),
+                        ('state', 'not in', ['cancel'])]"
+                    help="Show all future checkins"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Folio"
+                        name="folio_group"
+                        context="{'group_by':'folio_id', 'default_order': 'checkin asc'}"
+                    />
+                    <filter
+                        string="Room"
+                        name="reservation_group"
+                        context="{'group_by':'reservation_id', 'default_order': 'checkin asc'}"
+                    />
+                    <separator />
+                    <filter
+                        string="Create by"
+                        name="create_date_group"
+                        context="{'group_by':'create_date', 'default_order': 'create_date asc'}"
+                    />
+                    <filter
+                        string="Checkin by"
+                        name="checkin_group"
+                        context="{'group_by':'checkin', 'default_order': 'checkin asc'}"
+                    />
+                    <filter
+                        string="Checkout by"
+                        name="checkout_group"
+                        context="{'group_by':'checkout', 'default_order': 'checkout asc'}"
+                    />
+                </group>
+                <searchpanel>
+                    <field
+                        name="pms_property_id"
+                        string="Property"
+                        enable_counters="1"
+                        icon="fa-h-square"
+                    />
+                    <field
+                        name="state"
+                        string="State"
+                        enable_counters="1"
+                        select="multi"
+                    />
+                    <field
+                        name="nationality_id"
+                        string="Country"
+                        enable_counters="1"
+                        icon="fa-globe"
+                        select="multi"
+                    />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="pms_checkin_partner_view_folio_search">
+        <field name="name">pms.checkin.partner.search</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="arch" type="xml">
+            <search string="Checkin Detail">
+                <field name="partner_id" />
+                <field name="reservation_id" />
+                <filter
+                    string="On Board"
+                    name="on_board"
+                    domain="[('state','=','onboard')]"
+                    help="Current Booking"
+                />
+                <filter
+                    string="To enter"
+                    name="to_enter"
+                    domain="[('state', '=', 'draft')]"
+                />
+                <filter string="Out" name="out" domain="[('state', '=', 'done')]" />
+                <filter
+                    string="Checkins Tomorrow"
+                    name="enter_tomorrow"
+                    domain="[('arrival', '=', (context_today()+datetime.timedelta(days=1)).strftime('%Y-%m-%d')),
+                        ('state', '=', 'confirm')]"
+                    help="Show all checkins for enter tomorrow"
+                />
+                <filter
+                    string="Checkins to 7 days"
+                    name="next_res_week"
+                    domain="[('arrival', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d')),
+                        ('state', '=', 'confirm')]"
+                    help="Show all reservations for which date enter is before than 7 days"
+                />
+                <filter
+                    string="On Board Tomorrow"
+                    name="next_res_2week"
+                    domain="[('arrival', '&lt;', (context_today()+datetime.timedelta(days=14)).strftime('%Y-%m-%d')),
+                        ('state', 'in', ['confirm','onboard'])]"
+                    help="Show all checkins for Tomorrow"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Create by Month"
+                        name="create_date_by_month"
+                        context="{'group_by':'create_date', 'default_order': 'create_date asc'}"
+                    />
+                    <filter
+                        string="Create by Week"
+                        name="create_date_by_week"
+                        context="{'group_by':'create_date:week', 'default_order': 'create_date'}"
+                    />
+                    <filter
+                        string="Create by Day"
+                        name="create_date_by_week"
+                        context="{'group_by':'create_date:day', 'default_order': 'create_date'}"
+                    />
+                    <separator />
+                    <filter
+                        string="Checkin by Month"
+                        name="checkin_by_month"
+                        context="{'group_by':'arrival', 'default_order': 'arrival asc'}"
+                    />
+                    <filter
+                        string="Checkin by Week"
+                        name="checkin_by_week"
+                        context="{'group_by':'arrival:week', 'default_order': 'arrival'}"
+                    />
+                    <filter
+                        string="Checkin by Day"
+                        name="checkin_by_week"
+                        context="{'group_by':'arrival:day', 'default_order': 'arrival'}"
+                    />
+                    <separator />
+                    <filter
+                        string="Checkout by Month"
+                        name="checkout_by_month"
+                        context="{'group_by':'departure', 'default_order': 'departure asc'}"
+                    />
+                    <filter
+                        string="Checkout by Week"
+                        name="checkout_by_week"
+                        context="{'group_by':'departure:week', 'default_order': 'departure'}"
+                    />
+                    <filter
+                        string="Checkout by Day"
+                        name="checkout_by_week"
+                        context="{'group_by':'departure:day', 'default_order': 'departure'}"
+                    />
+                    <separator />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="pms_checkin_partner_view_calendar" model="ir.ui.view">
+        <field name="name">pms.checkin.partner.view.calendar</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="arch" type="xml">
+            <calendar
+                date_start="checkin"
+                date_stop="checkout"
+                string="Hosts"
+                quick_add="False"
+                mode="month"
+                color="folio_id"
+                scales="week,month,year"
+            >
+                <field name="partner_id" />
+                <field name="name" />
+                <field name="reservation_id" />
+                <field name="folio_id" />
+                <field name="state" filters="1" />
+                <field name="pms_property_id" invisible="1" />
+            </calendar>
+        </field>
+    </record>
+
+    <record id="pms_checkin_partner_pivot" model="ir.ui.view">
+        <field name="name">pms.checkin.partner.pivot</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="arch" type="xml">
+            <pivot string="Hosts">
+                <field name="checkin" type="row" interval="day" />
+            </pivot>
+        </field>
+    </record>
+
+    <record id="pms_checkin_partner_graph" model="ir.ui.view">
+        <field name="name">pms.checkin.partner.graph</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="arch" type="xml">
+            <graph string="Hosts">
+                <field name="checkin" type="row" interval="day" />
+            </graph>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+        <!-- account.analytic.plan -->
+        <record id="main_pms_analytic_plan" model="account.analytic.plan">
+            <field name="name">Properties</field>
+            <field name="company_id" eval="False" />
+        </record>
+        <!-- Basic pms  -->
+        <record id="main_pms_availability_plan" model="pms.availability.plan">
+            <field name="name">Availability Plan</field>
+        </record>
+        <record id="main_pms_property" model="pms.property">
+            <field name="name">My Property</field>
+            <field name="company_id" ref="base.main_company" />
+            <field name="default_pricelist_id" ref="product.list0" />
+            <field name="street">Rua Street Demo, s/n</field>
+            <field name="city">Commitsun city</field>
+            <field name="country_id" ref="base.es" />
+            <field name="zip">15703</field>
+            <field name="phone">+34 123 456 879</field>
+            <field name="email">commitsun@hootel.com</field>
+            <field name="website">https://www.commitsun.com</field>
+            <field name="folio_sequence_id" ref="pms.seq_pms_folio" />
+            <field name="checkin_sequence_id" ref="pms.seq_pms_checkin" />
+        </record>
+        <record id="product.list0" model="product.pricelist">
+            <field name="availability_plan_id" ref="main_pms_availability_plan" />
+            <field name="is_pms_available" eval="True" />
+        </record>
+        <!-- default partner simplified invoices -->
+        <record id="various_pms_partner" model="res.partner">
+            <field name="name">Various Clients</field>
+            <field
+            name="comment"
+        >Contact used for simplified invoices where no customer is available</field>
+        </record>
+        <!-- pms.users -->
+        <record id="base.user_root" model="res.users">
+            <field name="company_id" ref="base.main_company" />
+            <field name="company_ids" eval="[(4, ref('base.main_company'))]" />
+            <field name="pms_property_id" ref="main_pms_property" />
+            <field name="pms_property_ids" eval="[(4, ref('main_pms_property'))]" />
+            <field name="groups_id" eval="[(4,ref('pms.group_pms_manager'))]" />
+        </record>
+        <record id="base.user_admin" model="res.users">
+            <field name="company_id" ref="base.main_company" />
+            <field name="company_ids" eval="[(4, ref('base.main_company'))]" />
+            <field name="pms_property_id" ref="main_pms_property" />
+            <field name="pms_property_ids" eval="[(4, ref('main_pms_property'))]" />
+            <field name="groups_id" eval="[(4,ref('pms.group_pms_manager'))]" />
+        </record>
+        <!-- pms.sale.channel-->
+        <record id="main_pms_sale_channel_door" model="pms.sale.channel">
+            <field name="name">Door</field>
+            <field name="channel_type">direct</field>
+            <field name="icon" type="base64" file="pms/static/img/icon-door.svg" />
+        </record>
+        <record id="main_pms_sale_channel_phone" model="pms.sale.channel">
+            <field name="name">Phone</field>
+            <field name="channel_type">direct</field>
+            <field name="icon" type="base64" file="pms/static/img/icon-phone.svg" />
+        </record>
+        <record id="main_pms_sale_channel_mail" model="pms.sale.channel">
+            <field name="name">Mail</field>
+            <field name="channel_type">direct</field>
+            <field name="icon" type="base64" file="pms/static/img/icon-mail.svg" />
+        </record>
+        <record id="main_pms_sale_channel_agency" model="pms.sale.channel">
+            <field name="name">Agency</field>
+            <field name="channel_type">indirect</field>
+        </record>
+        <record id="document_type_passport" model="res.partner.id_category">
+            <field name="name">Passport</field>
+            <field name="code">P</field>
+            <field name="priority">20</field>
+        </record>
+
+        <record id="document_type_other" model="res.partner.id_category">
+            <field name="name">Other</field>
+            <field name="code">O</field>
+            <field name="priority">90</field>
+        </record>
+</odoo>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="pms_board_service_form">
+        <field name="name">pms.board.service.form</field>
+        <field name="model">pms.board.service</field>
+        <field name="arch" type="xml">
+            <form string="Board Service Line">
+                <group>
+                    <field name="name" />
+                    <field name="default_code" />
+                    <field
+                        name="pms_property_ids"
+                        widget="many2many_tags"
+                        options="{'no_create': True,'no_open': True}"
+                    />
+                    <field name="amount" />
+                    <field name="board_service_line_ids">
+                        <tree editable="bottom">
+                            <field name="product_id" />
+                            <field name="amount" />
+                            <field name="adults" />
+                            <field name="children" />
+                            <field name="pms_property_ids" invisible="1" />
+                        </tree>
+                    </field>
+                    <field name="show_detail_report" />
+                </group>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="pms_board_service_view_tree">
+        <field name="name">pms.board.service.tree</field>
+        <field name="model">pms.board.service</field>
+        <field name="arch" type="xml">
+            <tree name="Board Services">
+                <field name="name" />
+                <field name="default_code" />
+                <field name="amount" />
+                <field name="show_detail_report" />
+                <field name="pms_property_ids" invisible="1" />
+            </tree>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="open_pms_board_service_form_tree">
+        <field name="name">Board Services</field>
+        <field name="res_model">pms.board.service</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem
+        name="Board Services"
+        id="menu_open_pms_board_service_form_tree"
+        action="open_pms_board_service_form_tree"
+        sequence="25"
+        parent="pms.pms_services_menu"
+    />
+</odoo>

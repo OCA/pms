@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="pms_partner_reservations" model="ir.actions.act_window">
+        <field name="name">Reservations</field>
+        <field name="res_model">pms.reservation</field>
+        <field
+            name="domain"
+        >[('folio_id.partner_id', 'in', "TODO: O2m de partner a folios")]</field>
+    </record>
+    <record id="pms_partner_folios" model="ir.actions.act_window">
+        <field name="name">Folios</field>
+        <field name="res_model">pms.folio</field>
+        <field name="domain">[('partner_id', '=',active_id)]</field>
+    </record>
+    <record id="pms_customer_action" model="ir.actions.act_window">
+        <field name="name">Customers</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('is_agency', '=',False)]</field>
+    </record>
+    <record id="pms_agency_action" model="ir.actions.act_window">
+        <field name="name">Agencies</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('is_agency', '=',True)]</field>
+        <field
+            name="context"
+            eval="{
+                'default_is_agency': True,
+            }"
+        />
+    </record>
+    <record id="res_partner_view_form" model="ir.ui.view">
+        <field name="name">res.partner.view.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <!--<field name="groups_id" eval="[(4, ref('pms.group_pms_user'))]" />-->
+        <field name="arch" type="xml">
+            <xpath expr='//div[@name="button_box"]' position='inside'>
+                <button
+                    class="oe_stat_button"
+                    type="object"
+                    icon="fa-bed"
+                    name="action_partner_reservations"
+                    help="Reservations related with this contact"
+                >
+                    <field
+                        string="Reservations"
+                        name="reservations_count"
+                        widget="statinfo"
+                    />
+                </button>
+                <button
+                    class="oe_stat_button"
+                    type="object"
+                    icon="fa-file"
+                    name="action_partner_folios"
+                    help="Folios related with this contact"
+                >
+                    <field string="Folios" name="folios_count" widget="statinfo" />
+                </button>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="after">
+                <group>
+                    <field name="is_agency" />
+                </group>
+            </xpath>
+            <xpath
+                expr="//notebook/page[@name='sales_purchases']/group/group/field[@name='company_id']"
+                position="after"
+            >
+                <field name="pms_property_ids" widget="many2many_tags" />
+            </xpath>
+            <xpath expr="//page[@name='internal_notes']" position="after">
+                <page
+                    name="agency"
+                    string="Agency"
+                    attrs="{'invisible':[('is_agency','!=',True)]}"
+                >
+                    <group>
+                        <field
+                            name="sale_channel_id"
+                            options="{'no_create': True,'no_open': True}"
+                        />
+                        <field name="commission_type" />
+                        <field name="default_commission" />
+                        <!--  <label for="price_discount"/>
+                          <div class="o_row">
+                              <field name="price_discount"/>
+                              <span>%%</span>
+                          </div>-->
+                        <field name="apply_pricelist" />
+                        <field name="invoice_to_agency" />
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='personal_information_page']">
+                <group>
+                    <label for="residence_street" string="Residence Address" />
+                    <div class="o_address_format">
+                        <field
+                            name="residence_street"
+                            placeholder="Street..."
+                            class="o_address_street"
+                        />
+                        <field
+                            name="residence_street2"
+                            placeholder="Street 2..."
+                            class="o_address_street"
+                        />
+                        <field
+                            name="residence_city"
+                            placeholder="City"
+                            class="o_address_city"
+                        />
+                        <field
+                            name="residence_state_id"
+                            class="o_address_state"
+                            placeholder="State"
+                            options="{'no_open': True, 'no_quick_create': True}"
+                        />
+                        <field
+                            name="residence_zip"
+                            placeholder="ZIP"
+                            class="o_address_zip"
+                        />
+                        <field
+                            name="residence_country_id"
+                            placeholder="Country"
+                            class="o_address_country"
+                            options='{"no_open": True, "no_create": True}'
+                        />
+                    </div>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_partner_property_form" model="ir.ui.view">
+        <field name="name">view.partner.property.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account.view_partner_property_form" />
+        <field name="arch" type="xml">
+            <xpath expr='//group[@name="accounting_entries"]' position='after'>
+                <group string="PMS Invoice policy" name="pms_invoice_policy">
+                    <field name="invoicing_policy" />
+                    <field
+                        name="invoicing_month_day"
+                        attrs="{'invisible': [('invoicing_policy', '!=', 'month_day')]}"
+                    />
+                    <field
+                        name="margin_days_autoinvoice"
+                        attrs="{'invisible': [('invoicing_policy', '!=', 'checkout')]}"
+                    />
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_partner_data_form" model="ir.ui.view">
+            <field name="name">res.partner.form.data</field>
+            <field name="model">res.partner</field>
+            <field name="priority" eval="20" />
+            <field name="arch" type="xml">
+                <form string="Partner">
+                    <field
+                    name="image_1920"
+                    widget='image'
+                    class="oe_avatar"
+                    options='{"preview_image": "image_128"}'
+                    readonly="1"
+                />
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group name="group_top">
+                        <group name="group_left">
+
+                            <field name="firstname" />
+                            <field name="lastname" />
+                            <field name="lastname2" />
+                            <field name="gender" />
+                            <field name="birthdate_date" />
+                            <field name="id_numbers" />
+                            <field name="nationality_id" />
+                            <field name="email" />
+                            <field name="mobile" />
+                        </group>
+                    </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+    <menuitem
+        id="pms_customer_meu"
+        name="Customers"
+        action="pms.pms_customer_action"
+        sequence="10"
+        parent="pms_contacts_menu"
+    />
+    <menuitem
+        id="pms_agency_menu"
+        name="Agencies"
+        action="pms.pms_agency_action"
+        sequence="10"
+        parent="pms_contacts_menu"
+    />
+</odoo>

@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--room_type:economic-->
+    <record id="availability_rule_economic_2" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(1)" />
+        <field name="quota">5</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_3" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(2)" />
+        <field name="max_stay_arrival">7</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_4" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(3)" />
+        <field name="max_stay_arrival">7</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_5" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(4)" />
+        <field name="max_stay_arrival">7</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_6" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(7)" />
+        <field name="max_stay">7</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_7" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(9)" />
+        <field name="max_stay">7</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_8" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(10)" />
+        <field name="quota">5</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_9" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(11)" />
+        <field name="quota">5</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_10" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(12)" />
+        <field name="min_stay">2</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_11" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(14)" />
+        <field name="quota">10</field>
+        <field name="max_stay">5</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_12" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(15)" />
+        <field name="quota">10</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_13" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(18)" />
+        <field name="max_stay_arrival">3</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_14" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(20)" />
+        <field name="quota">1</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_15" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(21)" />
+        <field name="quota">3</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_16" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(24)" />
+        <field name="quota">3</field>
+        <field name="max_stay">5</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_17" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(25)" />
+        <field name="quota">3</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_18" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(29)" />
+        <field name="min_stay">3</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_19" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(31)" />
+        <field name="min_stay_arrival">2</field>
+        <field name="max_stay">5</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+
+    <record id="availability_rule_economic_20" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(34)" />
+        <field name="min_stay_arrival">2</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+
+    <record id="availability_rule_economic_21" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(36)" />
+        <field name="min_stay_arrival">2</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_22" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(37)" />
+        <field name="quota">2</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_23" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(41)" />
+        <field name="quota">2</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_24" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(42)" />
+        <field name="quota">2</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_25" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(43)" />
+        <field name="min_stay">3</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_26" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(46)" />
+        <field name="min_stay">2</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_27" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(47)" />
+        <field name="min_stay">3</field>
+        <field name="max_stay">5</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_28" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(48)" />
+        <field name="min_stay">3</field>
+        <field name="max_stay">5</field>
+        <field name="quota">3</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_29" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(49)" />
+        <field name="min_stay">2</field>
+        <field name="quota">5</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_30" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(53)" />
+        <field name="min_stay">2</field>
+        <field name="quota">5</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_31" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(54)" />
+        <field name="min_stay">2</field>
+        <field name="quota">5</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_32" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(55)" />
+        <field name="min_stay">2</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_33" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(56)" />
+        <field name="closed">True</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_34" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(59)" />
+        <field name="closed">True</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+    <record id="availability_rule_economic_35" model="pms.availability.plan.rule">
+        <field name="availability_plan_id" ref="demo_pms_availability" />
+        <field name="room_type_id" ref="pms_room_type_economic" />
+        <field name="date" eval="DateTime.today() + timedelta(60)" />
+        <field name="closed">True</field>
+        <field name="pms_property_id" ref="main_pms_property" />
+    </record>
+
+</odoo>

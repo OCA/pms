@@ -1,0 +1,250 @@
+<odoo>
+    <template
+        id="portal_my_home_menu_folio"
+        name="Portal layout : folio menu entries"
+        inherit_id="portal.portal_breadcrumbs"
+        priority="20"
+    >
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li
+                t-if="page_name == 'folios'"
+                t-attf-class="breadcrumb-item #{'active ' if not folios else ''}"
+            >
+                <a t-attf-href="/my/folios?{{ keep_query() }}">Folios</a>
+            </li>
+            <li t-if="folio" class="breadcrumb-item active">
+                 <a t-attf-href="/my/folios?{{ keep_query() }}">Folios/</a>
+                <t t-esc="folio.name" />
+            </li>
+        </xpath>
+    </template>
+    <template
+        id="portal_my_folios"
+        name="Folios"
+        inherit_id="portal.portal_my_home"
+        customize_show="True"
+        priority="30"
+    >
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Folios</t>
+                <t t-set="url" t-value="'/my/folios'" />
+                <t t-set="placeholder_count" t-value="'folio_count'" />
+            </t>
+        </xpath>
+    </template>
+
+
+    <template id="portal_my_folio" name="My Folios">
+      <t t-call="portal.portal_layout">
+        <t t-set="breadcrumbs_searchbar" t-value="True" />
+
+        <t t-call="portal.portal_searchbar">
+            <t t-set="title">Folios</t>
+        </t>
+        <t t-if="not folios">
+            <p>There are currently no folios for your account.</p>
+        </t>
+        <t t-if="folios" t-call="portal.portal_table">
+            <thead>
+                <tr class="active">
+                    <th>Folio #</th>
+                    <th>Order Date</th>
+                    <th class="text-right">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-foreach="folios" t-as="folio">
+                    <tr>
+                        <td>
+                            <a
+                                    t-att-href="folio.get_portal_url()"
+                                    t-att-title="folio.name"
+                                >
+                                <t t-esc="folio.name" />
+                            </a>
+                        </td>
+                        <td><span t-field="folio.date_order" /></td>
+                        <td t-if="folio.amount_total > 0" class="text-right"><span
+                                    t-field="folio.amount_total"
+                                /></td>
+                    </tr>
+                </t>
+            </tbody>
+        </t>
+      </t>
+    </template>
+
+    <template
+        id="folio_portal_template"
+        name="Folio Portal Template"
+        inherit_id="portal.portal_sidebar"
+        primary="True"
+    >
+        <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
+
+            <div class="row mt16 o_portal_folio_sidebar">
+                <!-- Sidebar -->
+                <t t-call="portal.portal_record_sidebar">
+                    <t t-set="classes" t-value="'col-lg-auto d-print-none'" />
+                    <t t-set="title">
+                        <h2 class="mb-0">
+                            <b
+                                t-if="folio.reservation_type == 'normal' and folio.pending_amount > 0"
+                                t-field="folio.pending_amount"
+                            />
+                            <b
+                                t-if="folio.reservation_type == 'normal' and folio.pending_amount &lt;= 0"
+                                t-field="folio.amount_total"
+                            />
+                            <b t-if="folio.reservation_type == 'staff'"><span
+                                >Staff</span></b>
+                        </h2>
+                        <div
+                            class="small"
+                            t-if="folio.payment_state not in ('paid', 'in_payment')"
+                        ><i class="fa fa-clock-o" /><span
+                                class="o_portal_sidebar_timeago ml4"
+                                t-att-datetime="folio.last_checkout"
+                            /></div>
+                    </t>
+
+                    <t t-set="entries">
+                        <ul
+                            class="list-group list-group-flush flex-wrap flex-row flex-lg-column"
+                        >
+                            <li class="list-group-item flex-grow-1">
+                                <div class="o_download_pdf btn-toolbar flex-sm-nowrap">
+                                    <div class="btn-group flex-grow-1  mr-1 mb-1">
+                                        <a
+                                            class="btn btn-secondary btn-block o_download_btn"
+                                            t-att-href="folio.get_portal_url(report_type='pdf', download=True)"
+                                            title="Download"
+                                        ><i class="fa fa-download" /> Download</a>
+                                    </div>
+                                    <div class="btn-group flex-grow-1  mb-1">
+                                        <a
+                                            class="btn btn-secondary btn-block o_print_btn o_portal_folio_print"
+                                            t-att-href="folio.get_portal_url(report_type='pdf')"
+                                            id="print_folio_report"
+                                            title="Print"
+                                            target="_blank"
+                                        ><i class="fa fa-print" /> Print</a>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li
+                                t-if="folio.user_id.name"
+                                class="list-group-item flex-grow-1"
+                            >
+                                <div class="small mb-1">
+                                    <strong class="text-muted">
+                                        Salesperson
+                                    </strong>
+                                </div>
+                                <div class="row">
+                                    <div class="col flex-grow-0 pr-2">
+                                        <img
+                                            t-if="folio.user_id.image_1024"
+                                            class="rounded-circle mt-1 o_portal_contact_img"
+                                            t-att-src="image_data_uri(folio.user_id.image_1024)"
+                                            alt="Contact"
+                                        />
+                                        <img
+                                            t-else=""
+                                            class="rounded-circle mt-1 o_portal_contact_img"
+                                            src="/web/static/src/img/user_menu_avatar.png"
+                                            alt="Contact"
+                                        />
+                                    </div>
+                                    <div class="col pl-0">
+                                        <span
+                                            t-field="folio.user_id"
+                                            t-options='{"widget": "contact", "fields": ["name", "phone"], "no_marker": True}'
+                                        />
+                                        <a href="#discussion" class="small"><i
+                                                class="fa fa-fw fa-comments"
+                                            /><b>Send message</b></a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </t>
+                </t>
+                <!-- main content-->
+                <div id="folio_content" class="col-12 col-lg">
+                    <t t-if="error or warning" t-call="pms.portal_folio_error" />
+                    <t
+                        t-if="success and (not error and not warning)"
+                        t-call="pms.portal_folio_success"
+                    />
+
+                    <div class="o_portal_html_view shadow p-3">
+                        <div class="o_portal_html_loader text-center">
+                            <i
+                                class="fa fa-circle-o-notch fa-spin fa-2x fa-fw text-black-50"
+                            />
+                        </div>
+                        <!-- TODO: real values: height="100%" and scrolling="no",
+                            temp -> fixed height, review why dont launch
+                            autoresize FolioPortalSidebar.js-->
+                        <iframe
+                            id="folio_html"
+                            class="mt8 mb8"
+                            width="100%"
+                            height="800px"
+                            frameborder="0"
+                            scrolling="yes"
+                            t-att-src="folio.get_portal_url(report_type='html')"
+                        />
+                    </div>
+                    <!-- chatter -->
+                    <div id="invoice_communication" class="mt-4">
+                        <h2>History</h2>
+                        <t t-call="portal.message_thread">
+                            <t t-set="object" t-value="folio" />
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="portal_folio_error" name="Folio error/warning display">
+        <div class="row mr16">
+            <div
+                t-attf-class="'col-lg-12 mr16 ml16 alert alert-dismissable' #{'alert-danger' if error else 'alert-warning'}"
+                role="alert"
+            >
+                <a
+                    href="#"
+                    class="close"
+                    data-dismiss="alert"
+                    aria-label="close"
+                    title="close"
+                >×</a>
+                <t t-if="error == 'generic'" name="generic">
+                    There was an error processing this page.
+                </t>
+            </div>
+        </div>
+    </template>
+
+    <template id="portal_folio_success" name="Invoice success display">
+        <div class="row mr16">
+            <div
+                class="col-lg-12 mr16 ml16 alert alert-dismissable alert-success"
+                role="status"
+            >
+                <a
+                    href="#"
+                    class="close"
+                    data-dismiss="alert"
+                    aria-label="close"
+                    title="close"
+                >×</a>
+            </div>
+        </div>
+    </template>
+</odoo>

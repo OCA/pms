@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="pms_room_view_form">
+        <field name="name">pms.room.form</field>
+        <field name="model">pms.room</field>
+        <field name="priority" eval="30" />
+        <field name="arch" type="xml">
+            <form string="Property Room">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="toggle_active"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-archive"
+                        >
+                            <field
+                                name="active"
+                                widget="boolean_button"
+                                options='{"terminology": "archive"}'
+                            />
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Name" />
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="sequence" />
+                    </group>
+                    <notebook>
+                        <page name="information_pms_room" string="Information">
+                            <group colspan="4" col="4">
+                                <field
+                                    name="pms_property_id"
+                                    invisible="0"
+                                    force_save="1"
+                                />
+                                <field name="ubication_id" string="Ubication" />
+                                <field name="address_is_independent" />
+                                <field name="address_id" invisible="1" force_save="1" />
+                                <!-- <field name="categ_id" select="1" domain="[('isroomtype','=',True)]" string="Room Type" /> -->
+                                <field name="room_type_id" string="Room Type" />
+                                <field name="is_shared_room" />
+                                <field
+                                    name="parent_id"
+                                    attrs="{'invisible':[('parent_id', '=', False)]}"
+                                />
+                                <field name="capacity" />
+                                <field name="extra_beds_allowed" />
+                                <field name="short_name" />
+                                <!-- <field name="uom_id" invisible="1" /> -->
+                            </group>
+                            <group>
+                                <!-- <field name="sale_price_type" /> -->
+                                <!--field name="price_room_type_domain" invisible="1" /-->
+                                <!-- <field name="price_room_type" domain="[('room_ids.id', '=', active_id)]" attrs="{'invisible':[('sale_price_type', '!=', 'room_type')], 'required': [('sale_price_type', '=', 'room_type')]}" /> -->
+                                <!-- <field name="price_room_type" domain="[('room_ids.id', '=', active_id)]" attrs="{'invisible':[('sale_price_type', '!=', 'room_type')], 'required': [('sale_price_type', '=', 'room_type')]}" /> -->
+                            </group>
+                            <newline />
+                            <!-- <separator colspan='4' string="Customer Taxes" /> -->
+                            <!-- <field name="taxes_id" colspan="4" nolabel='1'
+                                help='Customer taxes apply on the perticular room. ' /> -->
+                        </page>
+                        <page string="Descriptions">
+                            <group>
+                                <field
+                                    name="description_sale"
+                                    colspan="2"
+                                    string="Name in reports"
+                                />
+                                <!-- <field name="description" colspan="2" string="Description Sales"/> -->
+                            </group>
+                        </page>
+                        <page string="Amenities">
+                            <field name="room_amenity_ids" />
+                        </page>
+                        <page
+                            string="Address"
+                            attrs="{'invisible':[('address_is_independent', '=', False)]}"
+                        >
+                            <field
+                                name="image_1920"
+                                widget='image'
+                                class="oe_avatar"
+                                options='{"preview_image": "image_128"}'
+                            />
+                            <group>
+                                <group>
+                                    <label for="street" string="Address" />
+                                    <div class="o_address_format">
+                                        <field
+                                            name="street"
+                                            placeholder="Street..."
+                                            class="o_address_street"
+                                        />
+                                        <field
+                                            name="street2"
+                                            placeholder="Street 2..."
+                                            class="o_address_street"
+                                        />
+                                        <field
+                                            name="city"
+                                            placeholder="City"
+                                            class="o_address_city"
+                                        />
+                                        <field
+                                            name="state_id"
+                                            class="o_address_state"
+                                            placeholder="State"
+                                            options="{'no_open': True, 'no_quick_create': True}"
+                                            context="{'default_country_id': country_id}"
+                                        />
+                                        <field
+                                            name="zip"
+                                            placeholder="ZIP"
+                                            class="o_address_zip"
+                                        />
+                                        <field
+                                            name="country_id"
+                                            placeholder="Country"
+                                            class="o_address_country"
+                                            options='{"no_open": True, "no_create": True}'
+                                        />
+                                    </div>
+                                    <field
+                                        name="website"
+                                        widget="url"
+                                        placeholder="e.g. https://www.odoo.com"
+                                    />
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                        </page>
+                        <page
+                            string="Shared Room"
+                            attrs="{'invisible':[('is_shared_room', '=', False)]}"
+                        >
+                            <group>
+                                <field
+                                    name="child_ids"
+                                    context="{'default_parent_id': active_id}"
+                                    nolabel="1"
+                                >
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle" />
+                                        <field name="name" />
+                                        <field name="room_type_id" />
+                                        <field name="capacity" />
+                                        <field name="parent_id" invisible="1" />
+                                        <field name="pms_property_id" invisible="1" />
+                                    </tree>
+                                </field>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="pms_room_view_kanban">
+        <field name="name">pms.room.kanban</field>
+        <field name="model">pms.room</field>
+        <field name="type">kanban</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <attribute name="group_create">false</attribute>
+                <field name="id" />
+                <field name="name" />
+                <field name="extra_beds_allowed" />
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_global_click">
+                            <div class="oe_kanban_details">
+                                <ul>
+                                    <li class="mb4">
+                                        <strong>
+                                            <field name="name" />
+                                        </strong>
+                                    </li>
+                                    <li class="mb4">
+                                        Room Type:
+                                        <field name="room_type_id" />
+                                    </li>
+                                    <li class="badge mb4">
+                                        <strong>
+                                            Capacity
+                                            <field name="capacity" />
+                                        </strong>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="pms_room_view_search">
+        <field name="name">pms.room.search</field>
+        <field name="model">pms.room</field>
+        <field name="arch" type="xml">
+            <search string="Room">
+                <field name="name" />
+                <field name="room_type_id" />
+                <field name="capacity" />
+                <field name="room_amenity_ids" />
+                <newline />
+                <searchpanel>
+                    <field
+                        name="pms_property_id"
+                        string="Property"
+                        enable_counters="1"
+                        select="multi"
+                    />
+                    <field
+                        name="room_type_id"
+                        string="Room Type"
+                        enable_counters="1"
+                        icon="fa-hotel"
+                        color="#784f73"
+                    />
+                    <field
+                        name="ubication_id"
+                        string="Ubication"
+                        enable_counters="1"
+                        color="#875A7B"
+                    />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="pms_room_view_tree">
+        <field name="name">pms.room.tree</field>
+        <field name="model">pms.room</field>
+        <field name="arch" type="xml">
+            <tree name="Property Room" editable="bottom" multi_edit="1" sample="1">
+                <field name="sequence" widget="handle" />
+                <field name="pms_property_id" />
+                <field name="name" />
+                <field name="room_type_id" />
+                <field name="ubication_id" />
+                <field name="capacity" />
+                <field name="extra_beds_allowed" />
+                <field name="room_amenity_ids" widget="many2many_tags" />
+                <field name="short_name" />
+                <field name="parent_id" optional="hide" />
+            </tree>
+        </field>
+    </record>
+    <!-- <record model="ir.ui.view" id="view_pms_room_kanban">
+        <field name="name">pms.room.kanban</field>
+        <field name="model">pms.room</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="name" />
+                <field name="lst_price" />
+                <templates>
+                    <t t-name="kanban-box">
+                        <div
+                            t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card oe_kanban_global_click">
+
+                            <div class="o_dropdown_kanban dropdown" groups="base.group_user">
+                                <a class="dropdown-toggle btn" data-toggle="dropdown" href="#">
+                                    <span class="fa fa-bars fa-lg" />
+                                </a>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                    <t t-if="widget.editable">
+                                        <li>
+                                            <a type="edit">Edit</a>
+                                        </li>
+                                    </t>
+                                    <t t-if="widget.deletable">
+                                        <li>
+                                            <a type="delete">Delete</a>
+                                        </li>
+                                    </t>
+                                    <li>
+                                        <ul class="oe_kanban_colorpicker" data-field="color" />
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="oe_kanban_details" style='margin-top: -5px;'>
+                                <div class="oe_kanban_content">
+                                    <div class="oe_kanban_project_list">
+                                        <H3>
+                                            <a type="open">
+                                                <t t-if="record.code.raw_value" style="margin-right: 10px">
+                                                    [
+                                                    <field name="code" />
+                                                    ]
+                                                </t>
+                                                <field name="name" />
+                                            </a>
+                                        </H3>
+                                    </div>
+                                    <div name="tags" />
+                                    <ul>
+                                        <li>
+                                            Rate:
+                                            <field name="lst_price"></field>
+                                        </li>
+                                        <li>
+                                            Capacity:
+                                            <field name="capacity"></field>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="oe_clear"></div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record> -->
+    <record model="ir.actions.act_window" id="action_pms_room_form">
+        <field name="name">pms Room</field>
+        <field name="res_model">pms.room</field>
+        <!-- <field name="context">{'default_isroom':1,'default_rental':1}
+        </field> -->
+        <field name="view_id" ref="pms_room_view_tree" />
+        <field name="view_mode">kanban,tree,form</field>
+    </record>
+    <menuitem
+        name="Rooms"
+        id="menu_open_pms_room_form"
+        action="action_pms_room_form"
+        sequence="5"
+        parent="pms.pms_rooms_menu"
+    />
+    <!-- Room Categories -->
+    <!-- <record id="product_category_tree_view" model="ir.ui.view">
+        <field name="name">product.category.tree</field>
+        <field name="model">product.category</field>
+        <field name="field_parent">child_id</field>
+        <field name="arch" type="xml">
+            <tree toolbar="True" string="Product Categories">
+                <field name="name" />
+            </tree>
+        </field>
+    </record> -->
+    <!-- <record model="ir.actions.act_window" id="pms_room_category_action">
+        <field name="name">Rooms by Category</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.category</field>
+        <field name="domain">[('parent_id','=',False),('isroomtype','=',True)]</field>
+        <field name="view_type">tree</field>
+        <field name="view_id" ref="product_category_tree_view" />
+    </record> -->
+    <!-- <record id="action_room_cate" model="ir.actions.act_window">
+        <field name="name">Category Items</field>
+        <field name="res_model">product.product</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">['|','|',('isroom','=',True), ('iscategid' , '=', True), ('isservice', '=', True)]</field>
+        <field name="context">{'search_default_categ_id':active_id, 'default_categ_id':active_id}</field>
+    </record> -->
+    <!--record id="ir_room_category_open" model="ir.default">
+        <field eval="'tree_but_open'" name="key2"/>
+        <field eval="'product.category'" name="model"/>
+        <field name="name">Rooms</field>
+        <field eval="'ir.actions.act_window,%d'%action_room_cate" name="value"/>
+    </record-->
+    <!-- <menuitem name="Room by Type" id="menu_pms_room_category_action"
+        action="pms_room_category_action" sequence="7" parent="pms.menu_pms_room" /> -->
+</odoo>

@@ -1,0 +1,69 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="availability_plan_rule_view_form" model="ir.ui.view">
+        <field name="name">pms.availability.plan.rule.form</field>
+        <field name="model">pms.availability.plan.rule</field>
+        <field name="arch" type="xml">
+            <form string="Availability Plans">
+                <group>
+                    <field name="room_type_id" required="True" />
+                    <field name="date" />
+                </group>
+                <group>
+                    <group>
+                        <field name="min_stay" />
+                        <field name="min_stay_arrival" />
+                    </group>
+                    <group>
+                        <field name="max_stay" />
+                        <field name="max_stay_arrival" />
+                    </group>
+                    <group>
+                        <field name="quota" />
+                        <field name="max_avail" />
+                    </group>
+                    <group>
+                        <field name="closed" />
+                        <field name="closed_departure" />
+                        <field name="closed_arrival" />
+                    </group>
+                    <group>
+                        <field
+                            name="pms_property_id"
+                            options="{'no_create': True,'no_open': True}"
+                        />
+                    </group>
+                </group>
+            </form>
+        </field>
+    </record>
+    <record id="availability_plan_rule_view_tree" model="ir.ui.view">
+        <field name="name">pms.availability.plan.rule.tree</field>
+        <field name="model">pms.availability.plan.rule</field>
+        <field name="arch" type="xml">
+            <tree name="Availability rules">
+                <field name="availability_plan_id" />
+                <field name="date" />
+                <field name="room_type_id" />
+                <field name="quota" />
+                <field name="max_avail" />
+                <field name="min_stay" />
+                <field name="max_stay" />
+                <field name="min_stay_arrival" />
+                <field name="max_stay_arrival" />
+                <field name="closed" />
+                <field name="closed_arrival" />
+                <field name="closed_departure" />
+                <field name="pms_property_id" />
+            </tree>
+        </field>
+    </record>
+    <record id="availability_plan_rule_view_tree_action" model="ir.actions.act_window">
+        <field name="name">Availability Plan Rules</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pms.availability.plan.rule</field>
+        <field name="context">{'group_by':'availability_plan_id'}</field>
+        <field name="view_id" ref="availability_plan_rule_view_tree" />
+        <field name="view_mode">tree</field>
+    </record>
+</odoo>

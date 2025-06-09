@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="product_template_view_form" model="ir.ui.view">
+        <field name="name">view.product.template.form.inherited</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_tag_ids']" position="after">
+                <field name="is_pms_available" />
+                <field
+                    name="pms_property_ids"
+                    widget="many2many_tags"
+                    options="{'no_create': True,'no_open': True}"
+                    attrs="{'invisible': [('is_pms_available', '=', False)]}"
+                />
+            </xpath>
+            <xpath expr="//page[@name='sales']" position="before">
+                <page
+                    string="PMS Service"
+                    attrs="{'invisible': [('is_pms_available', '=', False)]}"
+                >
+                    <group colspan="4">
+                        <group>
+                            <field name="is_extra_bed" />
+                            <field name="is_crib" />
+                        </group>
+                        <group>
+                            <field name="per_day" />
+                            <field name="per_person" />
+                            <field name="is_tourist_tax" />
+                            <field
+                                name="consumed_on"
+                                widget="radio"
+                                attrs="{'invisible': [('per_day','!=',True)]}"
+                            />
+                        </group>
+                    </group>
+                    <group
+                        string="Tourist Tax"
+                        colspan="4"
+                        attrs="{'invisible': [('is_tourist_tax', '=', False)]}"
+                    >
+                        <group>
+                            <field name="tourist_tax_date_start" />
+                            <field name="tourist_tax_date_end" />
+                        </group>
+                        <group>
+                            <field name="tourist_tax_apply_from_night" />
+                            <field name="tourist_tax_apply_to_night" />
+                        </group>
+                        <group>
+                            <field
+                                name="tourist_tax_min_age"
+                                attrs="{'invisible': [('per_person', '=', False)]}"
+                            />
+                            <field
+                                name="tourist_tax_max_age"
+                                attrs="{'invisible': [('per_person', '=', False)]}"
+                            />
+                        </group>
+                    </group>
+                    <group>
+                        <field
+                            name="property_daily_limits"
+                            context="{
+                                'default_model_name': 'product.template',
+                                'default_field_name': 'daily_limit',
+                                'record_id': id
+                            }"
+                        >
+                            <tree editable="bottom">
+                                <field name="pms_property_id" />
+                                <field name="value_integer" string="Daily Limit" />
+                                <field name="model_name" invisible="1" />
+                                <field name="field_name" invisible="1" />
+                            </tree>
+                        </field>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <menuitem
+        name="Services"
+        id="menu_services_pms"
+        action="product.product_template_action"
+        sequence="15"
+        parent="pms.pms_services_menu"
+    />
+</odoo>

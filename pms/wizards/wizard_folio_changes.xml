@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="wizard_folio_changes_view_form" model="ir.ui.view">
+        <field name="name">wizard.folio.changes.view.form</field>
+        <field name="model">wizard.folio.changes</field>
+        <field name="arch" type="xml">
+            <form string="Folio Changes" class="pt-1">
+                <group>
+                    <field name="modification_type" />
+                </group>
+                <group attrs="{'invisible':[('modification_type', '=', 'dates')]}">
+                    <field name="change_from_date" />
+                    <field name="change_to_date" />
+                </group>
+
+                <div
+                    class="col-12"
+                    attrs="{'invisible':[('modification_type', '=', 'dates')]}"
+                >
+                    <table class="table table-bordered text-center">
+                        <thead>
+                            <tr>
+                                <th>All days</th>
+                                <th>Sunday</th>
+                                <th>Monday</th>
+                                <th>Tuesday</th>
+                                <th>Wednesday</th>
+                                <th>Thursday</th>
+                                <th>Friday</th>
+                                <th>Saturday</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <field
+                                        name="apply_on_all_week"
+                                        widget="boolean_toggle"
+                                    />
+                                </td>
+                                <td>
+                                    <field
+                                        name="apply_on_sunday"
+                                        widget="boolean_toggle"
+                                        attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                    />
+                                </td>
+                                <td>
+                                    <field
+                                        name="apply_on_monday"
+                                        widget="boolean_toggle"
+                                        attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                    />
+                                </td>
+                                <td>
+                                    <field
+                                        name="apply_on_tuesday"
+                                        widget="boolean_toggle"
+                                        attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                    />
+                                </td>
+                                <td>
+                                    <field
+                                        name="apply_on_wednesday"
+                                        widget="boolean_toggle"
+                                        attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                    />
+                                </td>
+                                <td>
+                                    <field
+                                        name="apply_on_thursday"
+                                        widget="boolean_toggle"
+                                        attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                    />
+                                </td>
+                                <td>
+                                    <field
+                                        name="apply_on_friday"
+                                        widget="boolean_toggle"
+                                        attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                    />
+                                </td>
+                                <td>
+                                    <field
+                                        name="apply_on_saturday"
+                                        widget="boolean_toggle"
+                                        attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                    />
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <group>
+                    <field name="folio_id" invisible="1" />
+                    <field name="allowed_reservation_ids" invisible="1" />
+                    <field name="allowed_service_ids" invisible="1" />
+                    <field name="allowed_room_type_ids" invisible="1" />
+                    <field name="room_type_filter_ids" widget="many2many_tags" />
+                    <field
+                        name="reservation_ids"
+                        attrs="{'invisible':[('modification_type','=','services')]}"
+                        widget="many2many_tags"
+                    />
+                    <field
+                        name="service_ids"
+                        attrs="{'invisible':[('modification_type','!=','services')]}"
+                        widget="many2many_tags"
+                    />
+                </group>
+                <field name="dates_incongruence" invisible="1" force_save="1" />
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    attrs="{'invisible': [('dates_incongruence','=',False)]}"
+                >
+                    Selected reservations with different dates
+                </div>
+                <div
+                    class="row"
+                    attrs="{'invisible':[('modification_type', '!=', 'dates')]}"
+                >
+
+                    <div class="col-4 pr-0">
+                        <div class="border h-100 pt-2 px-2">
+                            <div class="row">
+                                <div class="col-2">
+                                    <field
+                                        name="apply_new_checkin"
+                                        widget="boolean_toggle"
+                                    />
+                                </div>
+                                <div class="col-6">
+                                    <label for="new_checkin" />
+                                </div>
+                                <div class="col-4">
+                                    <field
+                                        name="new_checkin"
+                                        nolabel="1"
+                                        attrs="{'invisible':[('apply_new_checkin','=',False)], 'required':[('apply_new_checkin','=',True)]}"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 pr-0">
+                        <div class="border h-100 pt-2 px-2">
+                            <div class="row">
+                                <div class="col-2">
+                                    <field
+                                        name="apply_new_checkout"
+                                        widget="boolean_toggle"
+                                    />
+                                </div>
+                                <div class="col-6">
+                                    <label for="new_checkout" />
+                                </div>
+                                <div class="col-4">
+                                    <field
+                                        name="new_checkout"
+                                        nolabel="1"
+                                        attrs="{'invisible':[('apply_new_checkout','=',False)], 'required':[('apply_new_checkout','=',True)]}"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 pr-0">
+                        <div class="border h-100 pt-2 px-2">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for="nights" />
+                                </div>
+                                <div class="col-4">
+                                    <field name="nights" nolabel="1" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="row"
+                    attrs="{'invisible':[('modification_type','=','dates')]}"
+                >
+                    <div class="col-4 pr-0">
+                        <div class="border h-100 pt-2 px-2">
+                            <div class="row">
+                                <div class="col-2">
+                                    <field name="apply_price" widget="boolean_toggle" />
+                                </div>
+                                <div class="col-6">
+                                    <label for="new_price" />
+                                </div>
+                                <div class="col-4">
+                                    <field
+                                        name="new_price"
+                                        nolabel="1"
+                                        attrs="{'invisible':[('apply_price','=',False)], 'required':[('apply_price','=',True)]}"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 pr-0">
+                        <div class="border h-100 pt-2 px-2">
+                            <div class="row">
+                                <div class="col-2">
+                                    <field
+                                        name="apply_discount"
+                                        widget="boolean_toggle"
+                                    />
+                                </div>
+                                <div class="col-6">
+                                    <label for="new_discount" />
+                                </div>
+                                <div class="col-4">
+                                    <field
+                                        name="new_discount"
+                                        nolabel="1"
+                                        attrs="{'invisible':[('apply_discount','=',False)], 'required':[('apply_discount','=',True)]}"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="col-4 pr-0"
+                        attrs="{'invisible':[('modification_type','!=','reservations')]}"
+                    >
+                        <div class="border h-100 pt-2 px-2">
+                            <div class="row">
+                                <div class="col-2">
+                                    <field
+                                        name="apply_board_service"
+                                        widget="boolean_toggle"
+                                    />
+                                </div>
+                                <div class="col-6">
+                                    <label for="new_board_service_id" />
+                                </div>
+                                <div class="col-4">
+                                    <field
+                                        name="new_board_service_id"
+                                        nolabel="1"
+                                        attrs="{'invisible':[('apply_board_service','=',False)], 'required':[('apply_board_service','=',True)]}"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="col-4 pr-0"
+                        attrs="{'invisible':[('modification_type','!=','reservations')]}"
+                    >
+                        <div class="border h-100 pt-2 px-2">
+                            <div class="row">
+                                <div class="col-2">
+                                    <field
+                                        name="apply_partner_id"
+                                        widget="boolean_toggle"
+                                    />
+                                </div>
+                                <div class="col-6">
+                                    <label for="new_partner_id" />
+                                </div>
+                                <div class="col-4">
+                                    <field
+                                        name="new_partner_id"
+                                        nolabel="1"
+                                        attrs="{'invisible':[('apply_partner_id','=',False)], 'required':[('apply_partner_id','=',True)]}"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="col-4 pr-0"
+                        attrs="{'invisible':[('modification_type','!=','reservations')]}"
+                    >
+                        <div class="border h-100 pt-2 px-2">
+                            <div class="row">
+                                <div class="col-2">
+                                    <field
+                                        name="apply_pricelist_id"
+                                        widget="boolean_toggle"
+                                    />
+                                </div>
+                                <div class="col-6">
+                                    <label for="new_pricelist_id" />
+                                </div>
+                                <div class="col-4">
+                                    <field
+                                        name="new_pricelist_id"
+                                        nolabel="1"
+                                        attrs="{'invisible':[('apply_pricelist_id','=',False)], 'required':[('apply_pricelist_id','=',True)]}"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 pr-0">
+                        <div
+                            class="border h-100 pt-2 px-2"
+                            attrs="{'invisible':[('modification_type','!=','reservations')]}"
+                        >
+                            <div class="row">
+                                <div class="col-2">
+                                    <field
+                                        name="apply_service"
+                                        widget="boolean_toggle"
+                                    />
+                                </div>
+                                <div class="col-6">
+                                    <label for="new_service_id" />
+                                </div>
+                                <div class="col-4">
+                                    <field
+                                        name="new_service_id"
+                                        nolabel="1"
+                                        attrs="{'invisible':[('apply_service','=',False)], 'required':[('apply_service','=',True)]}"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="col-4 pr-0"
+                        attrs="{'invisible':[('modification_type','!=','services')]}"
+                    >
+                        <div class="border h-100 pt-2 px-2">
+                            <div class="row">
+                                <div class="col-2">
+                                    <field
+                                        name="apply_day_qty"
+                                        widget="boolean_toggle"
+                                    />
+                                </div>
+                                <div class="col-6">
+                                    <label for="day_qty" />
+                                </div>
+                                <div class="col-4">
+                                    <field
+                                        name="day_qty"
+                                        nolabel="1"
+                                        attrs="{'invisible':[('apply_day_qty','=',False)], 'required':[('apply_day_qty','=',True)]}"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <footer>
+                    <button
+                        type="object"
+                        class="btn-primary"
+                        id="payment"
+                        name="button_change"
+                        string="Change"
+                    />
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_folio_changes" model="ir.actions.act_window">
+        <field name="name">Folio Changes</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">wizard.folio.changes</field>
+        <field name="view_id" ref="wizard_folio_changes_view_form" />
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

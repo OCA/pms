@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+        <record id="cancelled_reservation_email" model="mail.template">
+            <field name="name">Cancelled Reservation</field>
+            <field name="model_id" ref="pms.model_pms_reservation" />
+            <field
+            name="subject"
+        >Your reservation in ${object.pms_property_id.name} has been cancelled</field>
+            <field
+            name="email_from"
+        >${object.pms_property_id.partner_id.email | safe}</field>
+            <field
+            name="email_to"
+        >${(object.email and '"%s" &lt;%s&gt;' % (object.name, object.email) or object.partner_id.email_formatted or '') | safe}</field>
+            <field name="body_html" type="html">
+                <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                style="padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;"
+            ><tr><td align="center">
+                    <table
+                            border="0"
+                            cellpadding="0"
+                            cellspacing="0"
+                            width="590"
+                            style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;"
+                        >
+                        <tbody>
+                            <!-- HEADER -->
+                            <!-- PROPERTY DESCRIPTION -->
+                            <tr>
+                                <td align="center" style="min-width: 590px;">
+                                    <table
+                                            width="590"
+                                            border="0"
+                                            cellpadding="0"
+                                            cellspacing="0"
+                                            style="min-width: 590px; background-color: white; padding: 0px 0px 0px 0px; border-collapse:separate;"
+                                        >
+                                        <tr><td align="right">
+                                            <div class="col-sm-4">
+                                                % if object.pms_property_id.partner_id.street
+                                                <p
+                                                        >${object.pms_property_id.partner_id.street}</p>
+                                                % endif
+                                                % if object.pms_property_id.partner_id.street2
+                                                <p
+                                                        >${object.pms_property_id.partner_id.street2}</p>
+                                                % endif
+                                                <p
+                                                        >${object.pms_property_id.partner_id.zip}</p>
+                                                <p
+                                                        >${object.pms_property_id.partner_id.city}</p>
+                                                <p
+                                                        >${object.pms_property_id.partner_id.country_id.name}</p>
+                                            </div>
+                                        </td></tr>
+                                        <tr><td valign="top" style="font-size: 14px;">
+                                            <hr
+                                                        width="100%"
+                                                        style="background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;"
+                                                    />
+                                            <div>
+                                                Hello ${object.partner_id.name or ''},<br
+                                                        />
+                                                Your reservation at ${object.pms_property_id.name} has been cancelled.
+                                            </div>
+                                        </td></tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <!-- DETAILS -->
+                            <tr>
+                                <td align="center" style="min-width: 590px;">
+                                    <table
+                                            width="590"
+                                            border="0"
+                                            cellpadding="0"
+                                            cellspacing="0"
+                                            style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;"
+                                        >
+                                        <tr><td valign="top" style="font-size: 14px;">
+                                            <hr
+                                                        width="100%"
+                                                        style="background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;"
+                                                    />
+                                            <!-- CONTACT -->
+                                            <div>
+                                                <div
+                                                        >If you have questions please contact with us:</div>
+                                                <ul>
+                                                    <li
+                                                            >${object.pms_property_id.name}</li>
+                                                    % if object.pms_property_id.partner_id.email
+                                                    <li>Mail: <a
+                                                                    href="mailto:${object.pms_property_id.partner_id.email}"
+                                                                    style="text-decoration:none;color:#875A7B;"
+                                                                >${object.pms_property_id.partner_id.email}</a></li>
+                                                    % endif
+                                                    % if object.pms_property_id.partner_id.phone
+                                                    <li
+                                                            >Phone: ${object.pms_property_id.partner_id.phone}</li>
+                                                    % endif
+                                                    % if object.pms_property_id.partner_id.mobile
+                                                    <li
+                                                            >Mobile: ${object.pms_property_id.partner_id.mobile}</li>
+                                                    % endif
+                                                </ul>
+                                            </div>
+                                        </td></tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td></tr>
+                    <!-- FOOTER -->
+                    <tr><td align="center" style="min-width: 590px;">
+                        % if object.pms_property_id.privacy_policy
+                        <table
+                            width="590"
+                            border="0"
+                            cellpadding="0"
+                            cellspacing="0"
+                            style="min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;"
+                        >
+                            <tr><td style="font-size: 10px;">
+                                ${object.pms_property_id.privacy_policy}
+                            </td></tr>
+                        </table>
+                        % endif
+                    </td></tr>
+                    <tr><td align="center" style="min-width: 590px;">
+                        % if object.company_id
+                        <table
+                            width="590"
+                            border="0"
+                            cellpadding="0"
+                            cellspacing="0"
+                            style="min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;"
+                        >
+                            <tr><td style="text-align: center; font-size: 10px;">
+                                Sent by <a
+                                        target="_blank"
+                                        href="${object.company_id.website}"
+                                        style="color: #875A7B;"
+                                    >${object.company_id.name}</a>
+                                <br />
+                            </td></tr>
+                        </table>
+                        % endif
+                    </td></tr>
+                </table>
+            </field>
+            <field name="lang">${object.partner_id.lang}</field>
+        </record>
+</odoo>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+        <!-- Set reservation like No Show if the client does not show up  -->
+        <record model="ir.cron" id="noshow_reservations">
+            <field name="name">Automatic No Show Reservation</field>
+            <field name="interval_number">1</field>
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False" />
+            <field name="state">code</field>
+            <field name="model_id" ref="model_pms_reservation" />
+            <field
+            name="nextcall"
+            eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 09:00:00')"
+        />
+            <field name="code">model.auto_arrival_delayed()</field>
+        </record>
+        <!-- Set reservation like No Checout if checkout is not confirmed-->
+        <record model="ir.cron" id="nocheckout_reservations">
+            <field name="name">Automatic No Checkout Reservations</field>
+            <field name="interval_number">5</field>
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False" />
+            <field name="state">code</field>
+            <field name="model_id" ref="model_pms_reservation" />
+            <field name="nextcall" eval="DateTime.now()" />
+            <field name="code">model.auto_departure_delayed()</field>
+        </record>
+
+        <!-- Scheduler for send confirmed email -->
+        <!-- <record model="ir.cron" id="send_confirmation_email_folio">
+            <field name="name">Send Confirmation Email</field>
+            <field name="interval_number">5</field>
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_type">minutes</field>
+            <field name="active" eval="False" />
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False" />
+            <field name="state">code</field>
+            <field name="model_id" ref="model_pms_folio" />
+            <field name="nextcall" eval="DateTime.now() + timedelta(days=1)" />
+            <field name="code">model.send_confirmation_mail()</field>
+        </record>
+        <record model="ir.cron" id="send_modification_email_folio">
+            <field name="name">Send Modification Email</field>
+            <field name="interval_number">5</field>
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_type">minutes</field>
+            <field name="active" eval="False" />
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False" />
+            <field name="state">code</field>
+            <field name="model_id" ref="model_pms_folio" />
+            <field name="nextcall" eval="DateTime.now()" />
+            <field name="code">model.send_modification_mail()</field>
+        </record>
+        <record model="ir.cron" id="send_cancelation_email_folio">
+            <field name="name">Send Cancellation Email</field>
+            <field name="interval_number">5</field>
+            <field name="user_id" ref="base.user_root" />
+            <field name="active" eval="False" />
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False" />
+            <field name="state">code</field>
+            <field name="model_id" ref="model_pms_folio" />
+            <field name="nextcall" eval="DateTime.now()" />
+            <field name="code">model.send_cancelation_mail()</field>
+        </record> -->
+        <record model="ir.cron" id="autoinvoicing_folios">
+            <field name="name">Auto Invoicing Folios</field>
+            <field name="interval_number">1</field>
+            <field name="user_id" ref="base.user_root" />
+            <field name="active" eval="False" />
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False" />
+            <field name="state">code</field>
+            <field name="model_id" ref="model_pms_property" />
+            <field
+            name="nextcall"
+            eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 23:30:00')"
+        />
+            <field name="code">model.autoinvoicing()</field>
+        </record>
+        <record model="ir.cron" id="autoinvoicing_downpayments">
+            <field name="name">Auto Invoicing DownPayments</field>
+            <field name="interval_number">1</field>
+            <field name="user_id" ref="base.user_root" />
+            <field name="active" eval="False" />
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False" />
+            <field name="state">code</field>
+            <field name="model_id" ref="model_account_payment" />
+            <field
+            name="nextcall"
+            eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 04:30:00')"
+        />
+            <field name="code">model.auto_invoice_downpayments(offset=1)</field>
+        </record>
+</odoo>

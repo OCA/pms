@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+        <record id="action_report_folio" model="ir.actions.report">
+            <field name="name">Report Folio</field>
+            <field name="model">pms.folio</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pms.report_folio</field>
+            <field name="report_file">pms.report_folio</field>
+            <field
+            name="print_report_name"
+        >(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or 'Order - %s' % (object.name)</field>
+        </record>
+</odoo>

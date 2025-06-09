@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="pms_service_view_form">
+        <field name="name">.pms.service.form</field>
+        <field name="model">pms.service</field>
+        <field name="arch" type="xml">
+            <form string="Reservation Service">
+                <sheet>
+                    <h1>
+                        <field name="name" readonly="1" />
+                    </h1>
+                    <field name="per_day" invisible="1" />
+                    <field name="is_board_service" invisible="1" />
+                    <field name="folio_id" invisible="1" />
+                    <field name="company_id" invisible="1" />
+                    <field name="pms_property_id" invisible="1" />
+                    <field
+                        name="product_id"
+                        domain="[('sale_ok', '=', True)]"
+                        options="{'create': False, 'create_edit': False}"
+                        invisible="1"
+                    />
+                    <!-- <field name="layout_category_id" groups="sale.group_sale_layout"/> -->
+                    <group>
+                        <field
+                            name="product_qty"
+                            attrs="{'readonly': [('per_day','=',True)]}"
+                            force_save="1"
+                        />
+                        <field name="sale_channel_origin_id" />
+                        <field name="default_invoice_to" />
+                    </group>
+
+                    <field name="tax_ids" widget="many2many_tags" invisible="1" />
+                    <field name="price_subtotal" invisible="1" />
+                    <field name="price_tax" invisible="1" />
+                    <field name="price_total" invisible="1" />
+                    <field name="service_line_ids" nolabel="1">
+                        <tree name="Days" editable="bottom">
+                            <field name="date" />
+                            <field name="day_qty" />
+                            <field name="price_unit" />
+                            <field
+                                name="discount"
+                                attrs="{'readonly':[('is_board_service','=', True)]}"
+                            />
+                            <field name="price_day_total" />
+                            <field name="is_board_service" invisible="1" />
+                            <field name="pms_property_id" invisible="1" />
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="pms_service_view_tree">
+        <field name="name">.pms.service.view.tree</field>
+        <field name="model">pms.service</field>
+        <field name="arch" type="xml">
+            <tree
+                name="Services"
+                editable="bottom"
+                decoration-success="is_board_service == True"
+            >
+                <field name="is_board_service" invisible="1" />
+                <button
+                    title="View Services"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-1x fa-bed"
+                    name="open_service_ids"
+                    attrs="{'invisible':[('is_board_service','=', False)]}"
+                />
+                <field name="per_day" invisible="1" readonly="1" />
+                <field name="folio_id" invisible="1" />
+                <field name="company_id" invisible="1" />
+                <field name="pms_property_id" invisible="1" />
+                <field
+                    name="reservation_id"
+                    attrs="{'required': [('per_day','=',True)]}"
+                />
+                <field
+                    name="product_id"
+                    domain="[('sale_ok', '=', True)]"
+                    options="{'create': False, 'create_edit': False}"
+                />
+                <field name="name" />
+                <field
+                    name="product_qty"
+                    attrs="{'readonly': [('per_day','=',True)]}"
+                    force_save="1"
+                />
+                <field name="sale_channel_origin_id" />
+                <field name="default_invoice_to" />
+                <button
+                    title="View Services"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-2x fa-bars"
+                    name="open_service_ids"
+                    attrs="{'invisible': [('per_day','=',False)]}"
+                />
+                <field name="tax_ids" widget="many2many_tags" />
+                <field name="price_subtotal" />
+                <field name="price_tax" />
+                <field name="price_total" />
+                <field name="service_line_ids" invisible="1">
+                    <tree name="Days">
+                        <field name="date" />
+                        <field name="day_qty" />
+                        <field
+                            name="discount"
+                            attrs="{'readonly':[('is_board_service','=', True)]}"
+                        />
+                        <field name="price_unit" />
+                        <field name="is_board_service" invisible="1" />
+                        <field name="pms_property_id" invisible="1" />
+                    </tree>
+                </field>
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="pms_service_view_search">
+        <field name="name">pms.service.search</field>
+        <field name="model">pms.service</field>
+        <field name="arch" type="xml">
+            <search string="Reservation Service">
+                <field name="name" />
+                <field name="folio_id" />
+                <field name="product_id" />
+                <field name="product_qty" />
+                <newline />
+                <group expand="0" string="Group By...">
+                    <!--    <filter name="categ_id" string="Catagory"
+                        icon="terp-stock_symbol-selection" domain="[]"
+                        context="{'group_by':'categ_id'}" /> -->
+                </group>
+            </search>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="action_pms_services_form">
+        <field name="name">Services</field>
+        <field name="res_model">pms.service</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

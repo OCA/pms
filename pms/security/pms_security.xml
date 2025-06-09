@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="0">
+        <!--Group for pms user -->
+        <record id="group_pms_user" model="res.groups">
+            <field name="name">Property Management / User</field>
+        </record>
+        <!--Group for pms manager -->
+        <record id="group_pms_manager" model="res.groups">
+            <field name="name">Property Management/ Manager</field>
+            <field name="implied_ids" eval="[(4, ref('pms.group_pms_user'))]" />
+        </record>
+        <!--Group for pms user -->
+        <record id="group_pms_call" model="res.groups">
+            <field name="name">Property Management / CallCenter</field>
+        </record>
+    </data>
+    <data noupdate="0">
+        <!-- Company Rules -->
+        <record id="pms_folio_company_rule" model="ir.rule">
+            <field name="name">PMS Folio Company Rule</field>
+            <field name="model_id" ref="model_pms_folio" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('company_id','=',False),('company_id', 'in', company_ids)]
+            </field>
+        </record>
+        <record id="pms_reservation_company_rule" model="ir.rule">
+            <field name="name">PMS Reservation Company Rule</field>
+            <field name="model_id" ref="model_pms_reservation" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('company_id','=',False),('company_id', 'in', company_ids)]
+            </field>
+        </record>
+        <!-- Property Rules -->
+        <record id="pms_folio_property_rule" model="ir.rule">
+            <field name="name">PMS Folio Property Rule</field>
+            <field name="model_id" ref="model_pms_folio" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_id','=',False),('pms_property_id', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_reservation_property_rule" model="ir.rule">
+            <field name="name">PMS Reservation Property Rule</field>
+            <field name="model_id" ref="model_pms_reservation" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_id','=',False),('pms_property_id', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_checkin_property_rule" model="ir.rule">
+            <field name="name">PMS Checkin Property Rule</field>
+            <field name="model_id" ref="model_pms_checkin_partner" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_id','=',False),('pms_property_id', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_amenity_property_rule" model="ir.rule">
+            <field name="name">PMS Amenity Property Rule</field>
+            <field name="model_id" ref="model_pms_amenity" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_amenity_type_property_rule" model="ir.rule">
+            <field name="name">PMS Amenity Type Property Rule</field>
+            <field name="model_id" ref="model_pms_amenity_type" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_board_service_property_rule" model="ir.rule">
+            <field name="name">PMS Board Service Property Rule</field>
+            <field name="model_id" ref="model_pms_board_service" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_board_service_line_property_rule" model="ir.rule">
+            <field name="name">PMS Board Service Line Property Rule</field>
+            <field name="model_id" ref="model_pms_board_service_line" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_board_service_room_type_property_rule" model="ir.rule">
+            <field name="name">PMS Board Service Room Type Property Rule</field>
+            <field name="model_id" ref="model_pms_board_service_room_type" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_id','=',False),('pms_property_id', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_cancelation_rule_property_rule" model="ir.rule">
+            <field name="name">PMS Cancelation Rule Property Rule</field>
+            <field name="model_id" ref="model_pms_cancelation_rule" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_ubication_property_rule" model="ir.rule">
+            <field name="name">PMS Ubication Property Rule</field>
+            <field name="model_id" ref="model_pms_ubication" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_reservation_line_property_rule" model="ir.rule">
+            <field name="name">PMS Reservation Line Property Rule</field>
+            <field name="model_id" ref="model_pms_reservation_line" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_id','=',False),('pms_property_id', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_clousure_reason_property_rule" model="ir.rule">
+            <field name="name">PMS Clousure Reason Property Rule</field>
+            <field name="model_id" ref="model_room_closure_reason" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_room_type_property_rule" model="ir.rule">
+            <field name="name">PMS Room Type Property Rule</field>
+            <field name="model_id" ref="model_pms_room_type" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_availability_plan_property_rule" model="ir.rule">
+            <field name="name">PMS Room Type Availability Plan Property Rule</field>
+            <field name="model_id" ref="model_pms_availability_plan" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_availability_plan_rule_property_rule" model="ir.rule">
+            <field name="name">PMS Room Type Availability Rule Property Rule</field>
+            <field name="model_id" ref="model_pms_availability_plan_rule" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_id','=',False),('pms_property_id', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_service_property_rule" model="ir.rule">
+            <field name="name">PMS Service Property Rule</field>
+            <field name="model_id" ref="model_pms_service" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_id','=',False),('pms_property_id', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+         <record id="pms_service_line_property_rule" model="ir.rule">
+            <field name="name">PMS Service Line Property Rule</field>
+            <field name="model_id" ref="model_pms_service_line" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_id','=',False),('pms_property_id', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_product_pricelist_property_rule" model="ir.rule">
+            <field name="name">PMS Product Pricelist Property Rule</field>
+            <field name="model_id" ref="model_product_pricelist" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_product_pricelist_item_property_rule" model="ir.rule">
+            <field name="name">PMS Room Type Class Property Rule</field>
+            <field name="model_id" ref="model_pms_availability_plan" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_res_users_property_rule" model="ir.rule">
+            <field name="name">PMS Users Property Rule</field>
+            <field name="model_id" ref="model_res_users" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_account_move_property_rule" model="ir.rule">
+            <field name="name">PMS Account Move Property Rule</field>
+            <field name="model_id" ref="model_account_move" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_id','=',False),('pms_property_id', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_account_journal_property_rule" model="ir.rule">
+            <field name="name">PMS Account Journal Property Rule</field>
+            <field name="model_id" ref="model_account_journal" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_folio_rule_portal" model="ir.rule">
+            <field name="name">Portal Personal Folios</field>
+            <field name="model_id" ref="model_pms_folio" />
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]" />
+            <field name="perm_read" eval="True" />
+        </record>
+        <record id="pms_reservation_rule_portal" model="ir.rule">
+            <field name="name">Portal Personal Reservation</field>
+            <field name="model_id" ref="model_pms_reservation" />
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]" />
+            <field name="perm_read" eval="True" />
+        </record>
+        <record id="pms_precheckin_rule_portal" model="ir.rule">
+            <field name="name">Portal Personal Pre-checkin</field>
+            <field name="model_id" ref="model_pms_checkin_partner" />
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]" />
+            <field name="perm_read" eval="True" />
+        </record>
+        <record id="res_partner_rule_portal" model="ir.rule">
+            <field name="name">Res Partner Rule</field>
+            <field name="model_id" ref="model_res_partner" />
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]" />
+            <field name="perm_read" eval="True" />
+        </record>
+        <record id="res_checkin_partner_rule_portal" model="ir.rule">
+            <field name="name">Portal Checkin Partner Rule</field>
+            <field name="model_id" ref="model_pms_checkin_partner" />
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]" />
+            <field name="perm_read" eval="True" />
+        </record>
+    </data>
+</odoo>

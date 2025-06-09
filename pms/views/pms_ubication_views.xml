@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="pms_ubication_view_form">
+        <field name="name">pms.ubication.form</field>
+        <field name="model">pms.ubication</field>
+        <field name="arch" type="xml">
+            <form string="Property Ubication">
+                <sheet>
+                    <group>
+                        <field name="name" colspan="1" />
+                        <field name="sequence" select="1" />
+                        <field
+                            name="pms_property_ids"
+                            widget="many2many_tags"
+                            options="{'no_create': True,'no_open': True}"
+                        />
+                        <field name="pms_room_ids" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="pms_ubication_view_tree">
+        <field name="name">pms.ubication.tree</field>
+        <field name="model">pms.ubication</field>
+        <field name="arch" type="xml">
+            <tree name=" Property Ubications">
+                <field name="name" colspan="1" />
+                <field name="sequence" select="1" />
+            </tree>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="open_pms_ubication_form_tree">
+        <field name="name">Ubication Structure</field>
+        <field name="res_model">pms.ubication</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem
+        name="Ubications"
+        id="menu_open_pms_ubication_form_tree"
+        action="open_pms_ubication_form_tree"
+        sequence="65"
+        parent="pms.pms_rooms_menu"
+    />
+</odoo>

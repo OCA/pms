@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="pms_room_closure_reason_view_form">
+        <field name="name">pms.room.closure.reason.form</field>
+        <field name="model">room.closure.reason</field>
+        <field name="arch" type="xml">
+            <form string="Room Closure Reason">
+                <sheet>
+                    <field name="name" />
+                    <field name="description" />
+                    <field
+                        name="pms_property_ids"
+                        widget="many2many_tags"
+                        options="{'no_create': True,'no_open': True}"
+                    />
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="pms_room_closure_reason_view_tree">
+        <field name="name">>pms.room.closure.reason.tree</field>
+        <field name="model">room.closure.reason</field>
+        <field name="arch" type="xml">
+            <tree name="Room Closure Reason">
+                <field name="name" />
+                <field name="description" />
+            </tree>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="open_pms_room_closure_reason_form_tree">
+        <field name="name">Room Closure Reason</field>
+        <field name="res_model">room.closure.reason</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem
+        name="Closure Reasons"
+        id="menu_pms_room_closure_reason_form_tree"
+        action="open_pms_room_closure_reason_form_tree"
+        sequence="25"
+        parent="pms.pms_configuration_menu"
+    />
+</odoo>

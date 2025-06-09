@@ -1,0 +1,885 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="pms_folio_view_form">
+        <field name="name">pms.folio.form</field>
+        <field name="model">pms.folio</field>
+        <field name="arch" type="xml">
+            <form string="Folio">
+                <header>
+                    <button
+                        name="action_confirm"
+                        states="draft"
+                        string="Confirm Sale"
+                        class="btn-primary"
+                        type="object"
+                    />
+                    <button
+                        name="action_cancel"
+                        string="Cancel Folio"
+                        attrs="{'invisible': [('state', 'not in', ('confirm','draft'))]}"
+                        type="object"
+                    />
+                    <button
+                        name="action_done"
+                        type="object"
+                        string="Set to Done"
+                        help="If a Folio is done, you cannot modify it manually anymore. However, you will still be able to invoice. This is used to freeze the Folio."
+                    />
+                    <button
+                        name="%(pms.action_view_folio_advance_payment_inv)d"
+                        string="Create Invoice"
+                        type="action"
+                        class="btn-primary"
+                        attrs="{'invisible': [('invoice_status', '!=', 'to_invoice')]}"
+                    />
+                    <field
+                        name="state"
+                        select="2"
+                        widget="statusbar"
+                        statusbar_visible="draft,sent,sale,done"
+                    />
+                </header>
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('partner_incongruences','=',False)]}"
+                >
+                    <field name="partner_incongruences" />
+                    <bold>
+                        <button
+                            class="alert-link"
+                            type="object"
+                            name="open_partner"
+                            string="View Customer"
+                        />
+                    </bold>
+                </div>
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('payment_multi','=',False)]}"
+                >
+                    This folio has payments assigned to multiple folios (through an invoice or directly).
+                    The Folio will only be considered paid if all the folios with the same associated
+                    payment are paid, or if a specific payment is assigned to this folio.
+                    <field name="payment_multi" invisible="1" />
+                </div>
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('possible_existing_customer_ids','=',[])]}"
+                >
+                    A customer/s has this email or mobile, do you want to add it?
+                    <field name="possible_existing_customer_ids" invisible="1" />
+                    <button
+                        name="open_wizard_several_partners"
+                        string="Add customer"
+                        type="object"
+                    />
+                </div>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            type="action"
+                            class="oe_stat_button"
+                            name="%(open_pms_reservation_form_tree_all)d"
+                            icon="fa-bed"
+                            context="{'search_default_folio_id': id, 'default_folio_id': id}"
+                            attrs="{'invisible': [('number_of_rooms', '=', 0)]}"
+                        >
+                            <field
+                                name="number_of_rooms"
+                                widget="statinfo"
+                                string="Rooms"
+                            />
+                        </button>
+                        <button
+                            type="action"
+                            class="oe_stat_button"
+                            name="%(open_pms_reservation_form_tree_all)d"
+                            icon="fa-window-close"
+                            context="{'search_default_folio_id': id, 'default_folio_id': id, 'search_default_cancel': True}"
+                            attrs="{'invisible': [('number_of_cancelled_rooms', '=', 0)]}"
+                        >
+                            <field
+                                name="number_of_cancelled_rooms"
+                                widget="statinfo"
+                                string="Cancelled Rooms"
+                            />
+                        </button>
+                        <button
+                            type="action"
+                            class="oe_stat_button"
+                            name="%(action_pms_services_form)d"
+                            icon="fa-coffee"
+                            context="{'search_default_folio_id': id, 'default_folio_id': id}"
+                            attrs="{'invisible': [('number_of_services', '=', 0)]}"
+                        >
+                            <field
+                                name="number_of_services"
+                                widget="statinfo"
+                                string="Services"
+                            />
+                        </button>
+                        <button
+                            type="object"
+                            class="oe_stat_button"
+                            id="payment_smart_button"
+                            icon="fa-money"
+                            name="action_pay"
+                            attrs="{'invisible': [('pending_amount','&lt;=',0)]}"
+                        >
+                            <div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field
+                                        name="pending_amount"
+                                        nolabel="1"
+                                        widget="monetary"
+                                        options="{'currency_field': 'currency_id'}"
+                                    />
+                                </span>
+                                <span class="o_stat_text">Pending Payment</span>
+                            </div>
+                        </button>
+                        <button
+                            type="object"
+                            class="oe_stat_button"
+                            name="action_checks"
+                            attrs="{'invisible': [('reservation_type', 'in', 'out')]}"
+                        >
+                            <field
+                                name="ratio_checkin_data"
+                                string="Checkin Data"
+                                widget="percentpie"
+                            />
+                        </button>
+                        <button
+                            name="action_view_invoice"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-pencil-square-o"
+                            attrs="{'invisible': [('invoice_count', '=', 0)]}"
+                        >
+                            <field
+                                name="invoice_count"
+                                widget="statinfo"
+                                string="Invoices"
+                            />
+                        </button>
+                        <button
+                            name="folio_multi_changes"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-magic"
+                            attrs="{'invisible': [('reservation_type', 'not in', 'normal')]}"
+                        >
+                            <span class="o_stat_text">Change in Group</span>
+                        </button>
+                        <button
+                            type="action"
+                            class="oe_stat_button"
+                            name="%(action_booking_engine)d"
+                            icon="fa-users"
+                            context="{'default_folio_id': id, 'default_partner_id': partner_id, 'default_pricelist_id': pricelist_id}"
+                        >
+                            <span class="o_stat_text">New Booking Group</span>
+                        </button>
+                        <button
+                            type="action"
+                            class="oe_stat_button"
+                            name="%(action_booking_duplicate)d"
+                            icon="fa-clone"
+                            context="{'default_reference_folio_id': id}"
+                        >
+                            <span class="o_stat_text">Duplicate Booking</span>
+                        </button>
+                        <button
+                            name="preview_folio"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-globe icon"
+                            attrs="{'invisible': [('reservation_type', '!=', 'normal')]}"
+                        >
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Customer</span>
+                                <span class="o_stat_text">Preview</span>
+                            </div>
+                        </button>
+                    </div>
+                    <widget
+                        name="web_ribbon"
+                        title="Paid"
+                        attrs="{'invisible': [('payment_state', '!=', 'paid')]}"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Partial"
+                        bg_color="bg-warning"
+                        attrs="{'invisible': [('payment_state', '!=', 'partial')]}"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Overpayment!"
+                        bg_color="bg-info"
+                        attrs="{'invisible': [('payment_state', '!=', 'overpayment')]}"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Staff"
+                        bg_color="bg-info"
+                        attrs="{'invisible': [('reservation_type', 'not in', 'staff')]}"
+                    />
+
+                    <widget
+                        name="web_ribbon"
+                        title="Out of Service"
+                        bg_color="bg-dark"
+                        attrs="{'invisible': [('reservation_type', 'not in', 'out')]}"
+                    />
+                    <group>
+                        <group>
+                            <h2>
+                                <field name="name" />
+                            </h2>
+                        </group>
+                        <group
+                            class="oe_subtotal_footer oe_right oe_inline"
+                            name="folio_total"
+                            attrs="{'invisible':[('reservation_type', '!=', 'normal')]}"
+                        >
+                            <field
+                                name="amount_untaxed"
+                                widget="monetary"
+                                options="{'currency_field': 'currency_id'}"
+                            />
+                            <field
+                                name="amount_tax"
+                                widget="monetary"
+                                options="{'currency_field': 'currency_id'}"
+                            />
+                            <div
+                                class="oe_subtotal_footer_separator oe_inline o_td_label"
+                            >
+                                <label for="amount_total" />
+                            </div>
+                            <field
+                                name="amount_total"
+                                nolabel="1"
+                                class="oe_subtotal_footer_separator"
+                                widget="monetary"
+                                options="{'currency_field': 'currency_id'}"
+                            />
+                            <field
+                                name="commission"
+                                widget='monetary'
+                                options="{'currency_field': 'currency_id'}"
+                            />
+                        </group>
+                    </group>
+                    <group>
+                        <group string="General Info" name="contact_details">
+                            <field name="days_to_checkin" invisible="1" />
+                            <field name="days_to_checkout" invisible="1" />
+                            <field name="partner_id" />
+                            <field
+                                name="partner_name"
+                                placeholder="Guest"
+                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                            />
+                            <field
+                                name="email"
+                                placeholder="email"
+                                widget="email"
+                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                            />
+                            <field
+                                name="mobile"
+                                placeholder="mobile"
+                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                            />
+                            <field
+                                name="lang"
+                                placeholder="Language"
+                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                            />
+                            <field
+                                name="partner_internal_comment"
+                                placeholder="Comments about the customer"
+                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                            />
+                            <field
+                                name="closure_reason_id"
+                                placeholder="Closure reason"
+                                attrs="{'invisible':[('reservation_type','not in',('out'))]}"
+                            />
+                            <field
+                                name="segmentation_ids"
+                                widget="many2many_tags"
+                                placeholder="Segmentation..."
+                                options="{'no_create': True,'no_open': True}"
+                            />
+                            <field
+                                name="cancelled_reason"
+                                attrs="{'invisible':[('state','not in',('cancel'))]}"
+                            />
+                            <field name="internal_comment" />
+                        </group>
+                        <group string="Sale Details" name="sale_details">
+                            <field name="pms_property_id" />
+                            <field
+                                name="pricelist_id"
+                                attrs="{'invisible': [('reservation_type', 'not in', 'normal')]}"
+                            />
+                            <field name="company_id" options="{'no_create': True}" />
+                            <field
+                                name="reservation_type"
+                                attrs="{'readonly':[('state','not in',('draft'))]}"
+                            />
+                            <field
+                                name="agency_id"
+                                attrs="{'invisible': [('reservation_type', 'not in', 'normal')]}"
+                            />
+                            <field name="sale_channel_origin_id" />
+                            <field
+                                name="external_reference"
+                                attrs="{'invisible': [('agency_id', '=', False)]}"
+                            />
+                            <field
+                                name="sale_channel_ids"
+                                widget="many2many_tags"
+                                options="{'no_create': True,'no_open': True}"
+                            />
+                        </group>
+                        <div class="oe_clear" />
+
+                    </group>
+                    <group invisible="1">
+                        <field name="payment_state" invisible="1" force_save="1" />
+                        <field name="move_ids" invisible="1" />
+                        <field name="invoice_status" invisible="1" />
+                        <field name="currency_id" invisible="1" />
+                        <!--<field name="refund_amount" invisible="1" />-->
+                        <field name="invoices_paid" invisible="1" />
+                    </group>
+                    <notebook colspan="4" col="1">
+                        <page
+                            string="Sale Lines"
+                            attrs="{'invisible':[('reservation_type', '!=', 'normal')]}"
+                        >
+                            <field
+                                name="sale_line_ids"
+                                widget="section_and_note_one2many"
+                                default_order="folio_id, sequence, reservation_id asc, service_order, date_order, display_type"
+                            >
+                                <tree name="Sales Lines" editable="bottom">
+                                    <control>
+                                        <create
+                                            name="add_product_control"
+                                            string="Add a product"
+                                        />
+                                        <create
+                                            name="add_section_control"
+                                            string="Add a section"
+                                            context="{'default_display_type': 'line_section'}"
+                                        />
+                                        <create
+                                            name="add_note_control"
+                                            string="Add a note"
+                                            context="{'default_display_type': 'line_note'}"
+                                        />
+                                    </control>
+                                    <field name="service_order" invisible="1" />
+                                    <field name="date_order" invisible="1" />
+                                    <field name="reservation_id" invisible="1" />
+                                    <field name="service_id" invisible="1" />
+                                    <field name="sequence" widget="handle" />
+                                    <!-- We do not display the type because we don't want the user to be bothered with that information if he has no section or note. -->
+                                    <field name="display_type" invisible="1" />
+                                    <field name="is_board_service" invisible="1" />
+
+                                    <!-- <field name="product_updatable" invisible="1"/> -->
+                                    <button
+                                        title="Room"
+                                        class="oe_stat_button"
+                                        icon="fa-1x fa-bed"
+                                        attrs="{'invisible':[('service_id','!=', False)]}"
+                                    />
+                                    <button
+                                        title="Board Service"
+                                        class="oe_stat_button"
+                                        icon="fa-1x fa-cutlery"
+                                        attrs="{'invisible':[('is_board_service','=', False)]}"
+                                    />
+                                     <button
+                                        title="Extra Service"
+                                        class="oe_stat_button"
+                                        icon="fa-1x fa-tags"
+                                        attrs="{'invisible':['|',('is_board_service','=',True),('service_id','=',False)]}"
+                                    />
+                                    <field
+                                        name="product_id"
+                                        options="{'no_open': True}"
+                                        force_save="1"
+                                    />
+                                    <field
+                                        name="name"
+                                        widget="section_and_note_text"
+                                        optional="show"
+                                    />
+                                    <!-- <field
+                                        name="analytic_tag_ids"
+                                        optional="hide"
+                                        groups="analytic.group_analytic_tags"
+                                        widget="many2many_tags"
+                                        options="{'color_field': 'color'}"
+                                        domain="['|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"
+                                    /> -->
+                                    <field
+                                        name="product_uom_qty"
+                                        decoration-info="(not display_type and invoice_status == '')"
+                                        decoration-bf="(not display_type and invoice_status == '')"
+                                        context="{
+                                            'partner_id': parent.partner_id,
+                                            'quantity': product_uom_qty,
+                                            'pricelist': parent.pricelist_id,
+                                            'uom': product_uom,
+                                            'company_id': parent.company_id
+                                        }"
+                                    />
+                                    <field
+                                        name="qty_invoiced"
+                                        decoration-info="(not display_type and invoice_status == '')"
+                                        decoration-bf="(not display_type and invoice_status == '')"
+                                        string="Invoiced"
+                                        attrs="{'column_invisible': [('parent.state', '=', 'draft')]}"
+                                        optional="show"
+                                    />
+                                    <field name="qty_to_invoice" invisible="1" />
+                                    <field name="product_uom_readonly" invisible="1" />
+                                    <field name="reservation_line_ids" invisible="1" />
+                                    <field
+                                        name="product_uom"
+                                        force_save="1"
+                                        string="UoM"
+                                        options='{"no_open": True}'
+                                        optional="hide"
+                                    />
+                                    <field name="price_unit" />
+                                    <field
+                                        name="tax_ids"
+                                        widget="many2many_tags"
+                                        options="{'no_create': True}"
+                                        domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"
+                                        optional="show"
+                                    />
+                                    <field
+                                        name="discount"
+                                        string="Disc.%"
+                                        optional="show"
+                                        widget="product_discount"
+                                    />
+                                    <field
+                                        name="price_subtotal"
+                                        widget="monetary"
+                                        optional="show"
+                                    />
+                                    <field name="price_total" widget="monetary" />
+                                    <field name="default_invoice_to" optional="show" />
+                                    <field name="state" invisible="1" />
+                                    <field name="invoice_status" invisible="1" />
+                                    <field name="currency_id" invisible="1" />
+                                    <field name="price_tax" invisible="1" />
+                                    <field name="company_id" invisible="1" />
+                                </tree>
+                            </field>
+                        </page>
+                        <!-- REVIEW: its necesary? -->
+                        <page string="Reservation Rooms" invisible="1">
+                            <field
+                                name="reservation_ids"
+                                colspan="4"
+                                string="Room Line"
+                                nolabel="1"
+                                context="{'reservation_ids':reservation_ids,'folio_id': id,'tree_view_ref':'pms.pms_reservation_view_bottom_tree', 'form_view_ref':'pms.pms_reservation_view_form'}"
+                            />
+                        </page>
+                        <!-- REVIEW: its necesary? -->
+                        <page string="Services" invisible="1">
+                            <separator string="Service Lines" colspan="4" />
+                            <field
+                                name="service_ids"
+                                context="{'folio_id': id,'tree_view_ref':'pms.pms_service_view_tree', 'form_view_ref':'pms.pms_service_view_form'}"
+                                nolabel="1"
+                            />
+                        </page>
+                        <!--TODO: Add precheckin with indeterminate select room?? -->
+                        <page name="persons" string="Rooming">
+                            <field
+                                name="checkin_partner_ids"
+                                options="{'no_create': True, 'no_delete': True}"
+                                context="{
+                                    'default_folio_id': id,
+                                    'folio_id': id,
+                                    'tree_view_ref':'pms.pms_checkin_partner_folio_view_tree',
+                                    }"
+                            />
+                        </page>
+                        <page
+                            name="invoicing"
+                            string="Invoicing"
+                            attrs="{'invisible':[('reservation_type', '!=', 'normal')]}"
+                        >
+                            <div
+                                class="alert alert-info"
+                                role="alert"
+                                style="margin-bottom:0px;"
+                            >
+                                these are the billing information associated with the
+                                booking client or the company (if a company is
+                                assigned). If you want to bill an independent contact,
+                                you can select it in the billing assistant
+                            </div>
+                            <group>
+                                <field
+                                    name="partner_invoice_ids"
+                                    string="Contact Invoiced"
+                                />
+                            </group>
+                        </page>
+                        <page string="Payments">
+                            <field name="payment_ids" nolabel="1">
+                                <tree>
+                                    <field name="journal_id" string="Payment Mode" />
+                                    <field name="create_uid" />
+                                    <field name="date" />
+                                    <field name="payment_type" />
+                                    <field name="amount" />
+                                    <field name="partner_id" invisible="1" />
+                                    <field
+                                        name="state"
+                                        decoration-success="state == 'posted'"
+                                        decoration-danger="state == 'cancel'"
+                                        decoration-warning="state == 'draft'"
+                                        widget="badge"
+                                    />
+                                </tree>
+                            </field>
+                            <!-- REVIEW: transations has a payment related -->
+                            <!-- <field
+                                name="transaction_ids"
+                                nolabel="1"
+                            >
+                                <tree>
+                                    <field name="journal_id" />
+                                    <field name="date" />
+                                    <field name="amount" />
+                                    <field name="partner_id" />
+                                </tree>
+                            </field> -->
+                        </page>
+                        <page string="Other data">
+                            <group>
+                                <field name="user_id" />
+                                <field name="manager_user_id" />
+                                <field name="revenue_user_id" />
+                                <field name="administrative_user_id" />
+                            </group>
+                            <group>
+                                <field name="force_nothing_to_invoice" />
+                            </group>
+                        </page>
+                        <!-- <page string="Foreign Exchange" name="foreign exchange" invisible="1">
+                            <separator string="Foreign Exchange" colspan="4" />
+                            <field name="currrency_ids" colspan="4" nolabel="1">
+                                <tree>
+                                    <field name="name" />
+                                    <field name="today_date" />
+                                    <field name="type" />
+                                    <field name="in_amount" />
+                                    <field name="input_curr" />
+                                    <field name="total" sum="Total Amount" />
+                                    <field name="out_curr" />
+                                </tree>
+                            </field>
+                        </page> -->
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="pms_folio_view_tree">
+        <field name="name">pms.folio.tree</field>
+        <field name="model">pms.folio</field>
+        <field name="arch" type="xml">
+            <tree
+                name="Folio"
+                multi_edit="1"
+                sample="1"
+                create="false"
+                class="o_sale_order"
+                decoration-info="state == 'draft'"
+                decoration-muted="state == 'cancel'"
+                default_order="create_date desc"
+            >
+                <field
+                    name="name"
+                    decoration-info="reservation_type == 'staff'"
+                    decoration-bf="reservation_type == 'out'"
+                />
+                <field name="partner_id" invisible="1" />
+                <field name="partner_name" select="1" />
+                <field name="date_order" select="1" />
+                <field name="user_id" widget="many2one_avatar_user" optional="show" />
+                <field name="reservation_ids" widget="many2many_tags" optional="hide" />
+                <field name="reservation_type" invisible="1" />
+                <field
+                    name="amount_total"
+                    sum="Total amount"
+                    widget="monetary"
+                    decoration-bf="1"
+                    optional="show"
+                />
+                <field
+                    name="pending_amount"
+                    sum="Total Pending"
+                    widget="monetary"
+                    decoration-bf="1"
+                    optional="show"
+                />
+                <field
+                    name="commission"
+                    sum="Commission"
+                    widget="monetary"
+                    optional="hide"
+                />
+                <field
+                    name="state"
+                    decoration-success="state == 'done'"
+                    decoration-info="state == 'confirm'"
+                    decoration-primary="state == 'sent'"
+                    decoration-danger="state == 'cancel'"
+                    decoration-bf="state == 'draft'"
+                    widget="badge"
+                    optional="show"
+                />
+                <field
+                    name="invoice_status"
+                    widget="badge"
+                    decoration-success="invoice_status == 'invoiced'"
+                    decoration-info="invoice_status == ''"
+                    optional="show"
+                />
+                <field
+                    name="payment_state"
+                    decoration-success="payment_state in ['paid', 'nothing_to_pay']"
+                    decoration-danger="payment_state == 'not_paid'"
+                    decoration-info="payment_state == 'overpayment'"
+                    decoration-warning="payment_state == 'partial'"
+                    widget="badge"
+                    optional="show"
+                />
+                <field name="company_id" optional="show" readonly="1" />
+                <field name="pms_property_id" optional="show" readonly="1" />
+            </tree>
+        </field>
+    </record>
+    <!-- Folio Kanban View -->
+    <record model="ir.ui.view" id="pms_folio_view_kanban">
+        <field name="name">pms.folio.kanban</field>
+        <field name="model">pms.folio</field>
+        <field name="arch" type="xml">
+            <kanban class="o_res_partner_kanban" limit="80">
+                <field name="name" />
+                <field name="partner_id" invisible="1" />
+                <field name="partner_name" />
+                <field name="reservation_ids" />
+                <field name="service_ids" />
+                <field name="pending_amount" />
+                <!-- <field name="refund_amount" /> -->
+                <field name="invoices_paid" />
+                <field name="partner_internal_comment" />
+                <field name="cancelled_reason" />
+                <field name="prepaid_warning_days" />
+                <field name="date_order" />
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_res_partner_kanban">
+                            <div
+                                class="o_kanban_tags_section oe_kanban_partner_categories"
+                            />
+                            <div class="oe_kanban_details">
+                                <strong class="oe_partner_heading">
+                                    <field name="partner_name" />
+                                    <field name="partner_id" invisible="1" />
+                                </strong>
+                                <div class="oe_kanban_partner_links" />
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="pms_folio_view_search">
+        <field name="name">pms.folio.search</field>
+        <field name="model">pms.folio</field>
+        <field name="arch" type="xml">
+            <search string="Tables Detail">
+                <field
+                    name="name"
+                    string="Name"
+                    filter_domain="[
+                        '|', '|', '|',
+                        ('name', 'ilike', self),
+                        ('partner_name', 'ilike', self),
+                        ('partner_id.vat', 'ilike', self),
+                        ('mobile', 'ilike', self),
+                    ]"
+                />
+                <field name="partner_id" />
+                <field name="pms_property_id" />
+                <field name="partner_invoice_ids" />
+                <field name="agency_id" />
+                <filter
+                    name="to_invoice"
+                    string="To invoice"
+                    domain="[('invoice_status', '=', 'to_invoice')]"
+                />
+                <filter
+                    name="payment_pending"
+                    string="Payment Pending"
+                    domain="[('pending_amount', '&gt;', 0)]"
+                />
+                <filter
+                    string="Create Date"
+                    name="filter_create_date"
+                    date="create_date"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Customer"
+                        icon="terp-stock_symbol-selection"
+                        name="group_customer"
+                        context="{'group_by':'partner_id'}"
+                    />
+<!--                    <filter-->
+<!--                        string="Channel"-->
+<!--                        domain="[]"-->
+<!--                        name="group_channel"-->
+<!--                        context="{'group_by':'sale_channel_ids'}"-->
+<!--                    />-->
+                    <filter
+                        string="Agency"
+                        domain="[]"
+                        name="group_agency"
+                        context="{'group_by':'agency_id'}"
+                    />
+                    <filter
+                        string="Creation Date"
+                        domain="[]"
+                        name="creation_date"
+                        context="{'group_by':'create_date'}"
+                    />
+                    <filter
+                        string="Created By"
+                        domain="[]"
+                        name="created_by"
+                        context="{'group_by':'user_id'}"
+                    />
+                </group>
+                <searchpanel>
+                    <field
+                        name="company_id"
+                        string="Company"
+                        enable_counters="1"
+                        icon="fa-building"
+                    />
+                    <field
+                        name="pms_property_id"
+                        string="Property"
+                        enable_counters="1"
+                        icon="fa-h-square"
+                    />
+                    <field
+                        name="state"
+                        string="State"
+                        enable_counters="1"
+                        select="multi"
+                    />
+                    <field
+                        name="payment_state"
+                        string="Payment State"
+                        enable_counters="1"
+                        select="multi"
+                    />
+                    <field
+                        name="invoice_status"
+                        string="Invoice Status"
+                        enable_counters="1"
+                        select="multi"
+                    />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record id="pms_folio_pivot" model="ir.ui.view">
+        <field name="name">pms.folio.pivot</field>
+        <field name="model">pms.folio</field>
+        <field name="arch" type="xml">
+            <pivot string="Folios">
+                <field name="pricelist_id" type="row" />
+                <field name="pms_property_id" type="col" />
+                <field name="amount_total" type="measure" />
+            </pivot>
+        </field>
+    </record>
+
+    <record id="pms_folio_view_graph" model="ir.ui.view">
+        <field name="name">view.pms.folio.graph</field>
+        <field name="model">pms.folio</field>
+        <field name="arch" type="xml">
+            <graph type="bar">
+
+            </graph>
+        </field>
+    </record>
+    <!-- Add create invoice merge folio -->
+    <!-- <act_window
+        name="Send Confirm Mail"
+        res_model="mail.compose.message"
+        binding_model="pms.folio"
+        view_mode="form"
+        target="new"
+        id="action_view_folio_send_confirm_mail"
+        context="{
+            'default_model': 'pms.folio',
+            'default_res_id': active_id,
+            'default_use_template': True,
+            'default_template_id': ref('pms.email_template_reservation'),
+            'default_composition_mode': 'comment',
+            'force_send': True,
+            'mark_so_as_sent': True,
+        }"
+    /> -->
+    <record model="ir.actions.act_window" id="open_pms_folio1_form_tree_all">
+        <field name="name">Folio</field>
+        <field name="res_model">pms.folio</field>
+        <field name="view_mode">tree,form,graph,pivot</field>
+    </record>
+    <menuitem
+        name="Folios"
+        id="pms_folio_menu"
+        action="open_pms_folio1_form_tree_all"
+        sequence="5"
+        parent="pms_sales_menu"
+    />
+</odoo>

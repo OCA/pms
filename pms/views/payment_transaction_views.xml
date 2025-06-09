@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="payment_transaction_inherit_view_form" model="ir.ui.view">
+        <field name="model">payment.transaction</field>
+        <field name="inherit_id" ref="payment.payment_transaction_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <button
+                    name="action_view_folios"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-money"
+                    attrs="{'invisible': [('folio_ids_nbr', '=', 0)]}"
+                >
+                    <field name="folio_ids_nbr" widget="statinfo" string="Folio(s)" />
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>
