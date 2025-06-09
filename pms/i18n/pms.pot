@@ -1723,6 +1723,11 @@ msgid "Assign Room"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__employee_ids
+msgid "Assigned Employees"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__pms_folio_ids
 #: model:ir.model.fields,help:pms.field_res_partner__pms_folio_ids
 #: model:ir.model.fields,help:pms.field_res_users__pms_folio_ids
@@ -3989,6 +3994,11 @@ msgid "Employee"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__employees_count
+msgid "Employees Count"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__tourist_tax_date_end
 #: model:ir.model.fields,field_description:pms.field_product_product__tourist_tax_date_end
 #: model:ir.model.fields,field_description:pms.field_product_template__tourist_tax_date_end
@@ -4594,7 +4604,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__gender
 #: model:ir.model.fields,field_description:pms.field_pms_property__gender
 #: model:ir.model.fields,field_description:pms.field_res_partner__gender
-#: model:ir.model.fields,field_description:pms.field_res_users__gender
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Gender"
 msgstr ""
