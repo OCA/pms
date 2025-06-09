@@ -92,7 +92,6 @@ class PmsCheckinPartner(models.Model):
                     [
                         "document_number",
                         "document_type",
-                        "document_expedition_date",
                         "document_country_id",
                     ]
                 )
