@@ -1253,6 +1253,16 @@ msgid "A transaction can't be linked to folios having different partners."
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__aeat_anonymous_cash_customer
+msgid "AEAT - Anonymous customer"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__aeat_identification_type
+msgid "AEAT Identification type"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__user_ids
 msgid "Accepted Users"
 msgstr ""
@@ -1466,6 +1476,16 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.advanced_filters_wizard
 msgid "Advanced filters"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__aeat_identification
+msgid "Aeat Identification"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__aeat_sending_enabled
+msgid "Aeat Sending Enabled"
 msgstr ""
 
 #. module: pms
@@ -2724,6 +2744,11 @@ msgid "Check this box if this contact is an Employee."
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__aeat_anonymous_cash_customer
+msgid "Check this for anonymous cash customer. AEAT communication"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 msgid "Check-in hours"
 msgstr ""
@@ -2852,6 +2877,13 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__name
 msgid "Checkin partner name"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__aeat_simplified_invoice
+msgid ""
+"Checking this mark, invoices done to this partner will be sent to AEAT as "
+"simplified invoices."
 msgstr ""
 
 #. module: pms
@@ -5150,6 +5182,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__default_code
 msgid "Identification code for a room type"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__aeat_identification
+msgid "Identification for AEAT purposes"
 msgstr ""
 
 #. module: pms
@@ -9374,6 +9411,11 @@ msgid "Rules to overwrite on massive changes"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__sii_exempt_cause
+msgid "SII Exempt Cause"
+msgstr ""
+
+#. module: pms
 #: model:ir.actions.act_window,name:pms.open_pms_sale_channel_form_tree
 #: model:ir.model.fields,field_description:pms.field_pms_property__sale_channel_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__sale_channel_id
@@ -10038,6 +10080,11 @@ msgid "Signup URL"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__sii_enabled
+msgid "Sii Enabled"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.report_invoice_document
 msgid "Simplified Invoice"
 msgstr ""
@@ -10053,6 +10100,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_account_move__is_simplified_invoice
 #: model:ir.model.fields,field_description:pms.field_account_payment__is_simplified_invoice
 msgid "Simplified invoice"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__aeat_simplified_invoice
+msgid "Simplified invoices in AEAT?"
 msgstr ""
 
 #. module: pms
@@ -10435,6 +10487,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__document_id
 msgid "Technical field"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__vies_failed_message
+msgid "Technical field display a message to the user if the VIES check fails."
 msgstr ""
 
 #. module: pms
@@ -11760,6 +11817,18 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__shared_folio
 msgid "Used to notify is the reservation folio has other reservations/services"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__aeat_identification_type
+msgid ""
+"Used to specify an identification type to send to AEAT. Normally for sending "
+"national and export invoices to AEAT where the customer country is not "
+"Spain, it would calculate an identification type of 04 if the VAT field is "
+"filled and 06 if it was not. This field is to specify types of 03 through "
+"05, in the event that the customer doesn't identify with a foreign VAT and "
+"instead with their passport or residential certificate. If there is no value "
+"it will work as before."
 msgstr ""
 
 #. module: pms

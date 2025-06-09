@@ -1326,6 +1326,16 @@ msgstr ""
 "Una transacción no se puede vincular a folios que tengan diferentes socios."
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__aeat_anonymous_cash_customer
+msgid "AEAT - Anonymous customer"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__aeat_identification_type
+msgid "AEAT Identification type"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__user_ids
 msgid "Accepted Users"
 msgstr "Usuarios Aceptados"
@@ -1540,6 +1550,16 @@ msgstr "Filtros Avanzados"
 #: model_terms:ir.ui.view,arch_db:pms.advanced_filters_wizard
 msgid "Advanced filters"
 msgstr "Filtros Avanzados"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__aeat_identification
+msgid "Aeat Identification"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__aeat_sending_enabled
+msgid "Aeat Sending Enabled"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__age
@@ -2812,6 +2832,11 @@ msgid "Check this box if this contact is an Employee."
 msgstr "Marque esta casilla si este contacto es un Empleado."
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__aeat_anonymous_cash_customer
+msgid "Check this for anonymous cash customer. AEAT communication"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 msgid "Check-in hours"
 msgstr "Horas del Check-in"
@@ -2942,6 +2967,13 @@ msgstr "Fecha y hora de salida del Checkin Partner"
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__name
 msgid "Checkin partner name"
 msgstr "Cliente del Checkin"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__aeat_simplified_invoice
+msgid ""
+"Checking this mark, invoices done to this partner will be sent to AEAT as "
+"simplified invoices."
+msgstr ""
 
 #. module: pms
 #. odoo-python
@@ -5280,6 +5312,11 @@ msgstr "Números de documentos"
 #: model:ir.model.fields,help:pms.field_pms_room_type__default_code
 msgid "Identification code for a room type"
 msgstr "Código de identificación del tipo de habitación"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__aeat_identification
+msgid "Identification for AEAT purposes"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__identifier
@@ -9611,6 +9648,11 @@ msgid "Rules to overwrite on massive changes"
 msgstr "Reglas para sobrescribir en los cambios masivos"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__sii_exempt_cause
+msgid "SII Exempt Cause"
+msgstr ""
+
+#. module: pms
 #: model:ir.actions.act_window,name:pms.open_pms_sale_channel_form_tree
 #: model:ir.model.fields,field_description:pms.field_pms_property__sale_channel_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__sale_channel_id
@@ -10290,6 +10332,11 @@ msgid "Signup URL"
 msgstr "URL de Inscripción"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__sii_enabled
+msgid "Sii Enabled"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.report_invoice_document
 msgid "Simplified Invoice"
 msgstr "Factura Simplificada"
@@ -10306,6 +10353,11 @@ msgstr "Diario de Facturas Simplificado"
 #: model:ir.model.fields,field_description:pms.field_account_payment__is_simplified_invoice
 msgid "Simplified invoice"
 msgstr "Factura simplificada"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__aeat_simplified_invoice
+msgid "Simplified invoices in AEAT?"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__sales_count
@@ -10700,6 +10752,11 @@ msgstr ""
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__document_id
 msgid "Technical field"
 msgstr "Computación técnica"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__vies_failed_message
+msgid "Technical field display a message to the user if the VIES check fails."
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_folio_sale_line__display_type
@@ -12134,6 +12191,18 @@ msgid "Used to notify is the reservation folio has other reservations/services"
 msgstr ""
 "Se utiliza para notificar si la ficha de reservas tiene otras reservas/"
 "servicios"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__aeat_identification_type
+msgid ""
+"Used to specify an identification type to send to AEAT. Normally for sending "
+"national and export invoices to AEAT where the customer country is not "
+"Spain, it would calculate an identification type of 04 if the VAT field is "
+"filled and 06 if it was not. This field is to specify types of 03 through "
+"05, in the event that the customer doesn't identify with a foreign VAT and "
+"instead with their passport or residential certificate. If there is no value "
+"it will work as before."
+msgstr ""
 
 #. module: pms
 #: model:ir.model,name:pms.model_res_users
