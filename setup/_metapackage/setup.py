@@ -11,6 +11,7 @@ setuptools.setup(
         'odoo-addon-multi_pms_properties>=16.0dev,<16.1dev',
         'odoo-addon-pms>=16.0dev,<16.1dev',
         'odoo-addon-pms_hr_property>=16.0dev,<16.1dev',
+        'odoo-addon-pms_l10n_es_sii>=16.0dev,<16.1dev',
     ],
     classifiers=[
         'Programming Language :: Python',
