@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+        <!-- default partner simplified invoices -->
+        <record id="pms.various_pms_partner" model="res.partner">
+            <field name="aeat_anonymous_cash_customer">True</field>
+        </record>
+</odoo>
