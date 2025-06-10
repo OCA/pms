@@ -1,9 +1,8 @@
 /** @odoo-module **/
 
-import Registries from "point_of_sale.Registries";
 import PosComponent from "point_of_sale.PosComponent";
 import ProductScreen from "point_of_sale.ProductScreen";
-import {_t} from "web.core";
+import Registries from "point_of_sale.Registries";
 
 class ReservationSelectionButton extends PosComponent {
     get currentOrder() {

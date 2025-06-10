@@ -39,6 +39,4 @@ class PMSServiceLine(models.Model):
                 .search_read(domain, fields, offset, limit, order)
             )
         else:
-            return super(PMSServiceLine, self).search_read(
-                domain, fields, offset, limit, order
-            )
+            return super().search_read(domain, fields, offset, limit, order)

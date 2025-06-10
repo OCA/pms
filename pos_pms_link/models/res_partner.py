@@ -14,6 +14,4 @@ class ResPartner(models.Model):
                 .search_read(domain, fields, offset, limit, order)
             )
         else:
-            return super(ResPartner, self).search_read(
-                domain, fields, offset, limit, order
-            )
+            return super().search_read(domain, fields, offset, limit, order)

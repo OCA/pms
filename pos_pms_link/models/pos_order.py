@@ -30,25 +30,25 @@ class PosOrder(models.Model):
     pms_reservation_id = fields.Many2one("pms.reservation", string="PMS reservation")
 
     def _get_fields_for_draft_order(self):
-        res = super(PosOrder, self)._get_fields_for_draft_order()
+        res = super()._get_fields_for_draft_order()
         res.append("paid_on_reservation")
         res.append("pms_reservation_id")
         return res
 
     @api.model
     def _order_fields(self, ui_order):
-        order_fields = super(PosOrder, self)._order_fields(ui_order)
+        order_fields = super()._order_fields(ui_order)
         order_fields["paid_on_reservation"] = ui_order.get("paid_on_reservation", False)
         order_fields["pms_reservation_id"] = ui_order.get("pms_reservation_id", False)
         return order_fields
 
     def _get_fields_for_order_line(self):
-        res = super(PosOrder, self)._get_fields_for_order_line()
+        res = super()._get_fields_for_order_line()
         res.append("pms_service_line_id")
         return res
 
     def _get_order_lines(self, orders):
-        super(PosOrder, self)._get_order_lines(orders)
+        res = super()._get_order_lines(orders)
         for order in orders:
             if "lines" in order:
                 for line in order["lines"]:
@@ -57,6 +57,7 @@ class PosOrder(models.Model):
                         if line[2]["pms_service_line_id"]
                         else False
                     )
+        return res
 
     @api.model
     def _process_order(self, pos_order, draft, existing_order):
@@ -67,7 +68,7 @@ class PosOrder(models.Model):
             and data.get("pms_reservation_id", False)
         ):
             pms_reservation_id = data.pop("pms_reservation_id")
-            res = super(PosOrder, self)._process_order(pos_order, draft, existing_order)
+            res = super()._process_order(pos_order, draft, existing_order)
             order_id = self.env["pos.order"].browse(res)
             pms_reservation_id = (
                 self.sudo().env["pms.reservation"].browse(pms_reservation_id)

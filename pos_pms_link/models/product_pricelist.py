@@ -33,9 +33,7 @@ class ProductPricelist(models.Model):
                 .search_read(domain, fields, offset, limit, order)
             )
         else:
-            return super(ProductPricelist, self).search_read(
-                domain, fields, offset, limit, order
-            )
+            return super().search_read(domain, fields, offset, limit, order)
 
 
 class ProductPricelistItem(models.Model):
@@ -51,6 +49,4 @@ class ProductPricelistItem(models.Model):
                 .search_read(domain, fields, offset, limit, order)
             )
         else:
-            return super(ProductPricelistItem, self).search_read(
-                domain, fields, offset, limit, order
-            )
+            return super().search_read(domain, fields, offset, limit, order)

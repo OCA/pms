@@ -31,12 +31,12 @@ class PosSession(models.Model):
     _inherit = "pos.session"
 
     def _load_model(self, model):
-        ctx = self.env.context.copy()
-        ctx.update({"pos_user_force": True})
-        return super(PosSession, self.with_context(ctx))._load_model(model)
+        return super(PosSession, self.with_context(pos_user_force=True))._load_model(
+            model
+        )
 
     def _accumulate_amounts(self, data):  # noqa: C901  # too-complex
-        res = super(PosSession, self)._accumulate_amounts(data)
+        res = super()._accumulate_amounts(data)
         if (
             self.config_id.pay_on_reservation
             and self.config_id.pay_on_reservation_method_id
@@ -213,13 +213,12 @@ class PosSession(models.Model):
         }
 
     def _get_pos_ui_pms_reservation(self, params):
-        ctx = self.env.context.copy()
-        ctx.update({"pos_user_force": True})
+        ctx = {"pos_user_force": True}
 
         # 1. Obtener las reservas con `search_read` para todos los campos que necesitas
         reservations = (
             self.env["pms.reservation"]
-            .with_context(ctx)
+            .with_context(**ctx)
             .search_read(**params["search_params"])
         )
         reservation_ids = [r["id"] for r in reservations]
@@ -234,7 +233,7 @@ class PosSession(models.Model):
         ]
         services = (
             self.env["pms.service"]
-            .with_context(ctx)
+            .with_context(**ctx)
             .search_read(
                 service_params["search_params"]["domain"],
                 fields=service_params["search_params"]["fields"],
@@ -249,7 +248,7 @@ class PosSession(models.Model):
         ]
         service_lines = (
             self.env["pms.service.line"]
-            .with_context(ctx)
+            .with_context(**ctx)
             .search_read(
                 service_line_params["search_params"]["domain"],
                 fields=service_line_params["search_params"]["fields"],
@@ -264,7 +263,7 @@ class PosSession(models.Model):
         ]
         pos_order_lines = (
             self.env["pos.order.line"]
-            .with_context(ctx)
+            .with_context(**ctx)
             .search_read(
                 pos_order_line_params["search_params"]["domain"],
                 fields=pos_order_line_params["search_params"]["fields"],
@@ -305,30 +304,6 @@ class PosSession(models.Model):
 
         return reservations
 
-    # def get_pos_ui_pms_reservation_by_params(self, custom_search_params):
-    #     """
-    #     :param custom_search_params: a dictionary containing params of a search_read()
-    #     """
-
-    #     ctx = self.env.context.copy()
-    #     ctx.update({"pos_user_force": True})
-    #     params = self._loader_params_pms_reservation()
-    #     params['search_params'] = {**params['search_params'], **custom_search_params}
-    #     reservations = self.env['pms.reservation'].with_context(ctx).search_read(**params['search_params'])
-    #     reservation_ids = [r["id"] for r in reservations]
-    #     service_params = self._loader_params_pms_service()
-    #     service_params["search_params"]["domain"] =  [('reservation_id', 'in', reservation_ids)]
-    #     services = self.env["pms.service"].with_context(ctx).search(service_params["search_params"]["domain"])
-    #     services_by_reservation = {}
-    #     for reservation_id, service_group in groupby(services, key=lambda service: service.reservation_id):
-    #         reservation_services = self.env['pms.service'].concat(*service_group)
-    #         services_by_reservation[reservation_id.id] = reservation_services.read(service_params['search_params']['fields'])
-
-    #     for reservation in reservations:
-    #         reservation['services'] = services_by_reservation.get(reservation['id'], [])
-
-    #     return reservations
-
     def try_cash_in_out(self, _type, amount, reason, extras):
         sign = 1 if _type == "in" else -1
         sessions = self.filtered("cash_journal_id")
@@ -360,12 +335,16 @@ class PosSession(models.Model):
         self.message_post(body="<br/>\n".join(message_content))
 
     def set_cashbox_pos(self, cashbox_value, notes):
-        super().set_cashbox_pos(cashbox_value, notes)
+        res = super().set_cashbox_pos(cashbox_value, notes)
         cashier = self.env.context.get("cashier", False)
         if cashier:
             self.message_post(
-                body=f'Session opened by cashier: <strong style="text-transform:uppercase;">{cashier}<strong/>'
+                body=_(
+                    "Session opened by cashier: "
+                    '<strong style="text-transform:uppercase;">{cashier}<strong/>'
+                ).format(cashier=cashier)
             )
+        return res
 
     def close_session_from_ui(self, bank_payment_method_diff_pairs=None):
         result = super().close_session_from_ui(bank_payment_method_diff_pairs)
@@ -373,6 +352,9 @@ class PosSession(models.Model):
             cashier = self.env.context.get("cashier", False)
             if cashier:
                 self.message_post(
-                    body=f'Session ended by cashier: <strong style="text-transform:uppercase;">{cashier}<strong/>'
+                    body=_(
+                        "Session ended by cashier: "
+                        '<strong style="text-transform:uppercase;">{cashier}<strong/>'
+                    ).format(cashier=cashier)
                 )
         return result

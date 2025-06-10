@@ -1,8 +1,7 @@
 /** @odoo-module **/
 
-import Registries from "point_of_sale.Registries";
 import CashMovePopup from "point_of_sale.CashMovePopup";
-
+import Registries from "point_of_sale.Registries";
 
 const PosPmsLinkCashMovePopup = (CashMovePopup) =>
     class extends CashMovePopup {
@@ -21,7 +20,7 @@ const PosPmsLinkCashMovePopup = (CashMovePopup) =>
             return cash_move_partner;
         }
 
-        async onClickPartner(ev) {
+        async onClickPartner() {
             // IMPROVEMENT: This code snippet is very similar to selectPartner of PaymentScreen.
             const currentPartner = this.state.partner;
             const {confirmed, payload: newPartner} = await this.showPopup(
@@ -39,12 +38,12 @@ const PosPmsLinkCashMovePopup = (CashMovePopup) =>
 
         getPayload() {
             var res = super.getPayload();
-            res["partner"] = this.state.partner;
+            res.partner = this.state.partner;
             return res;
         }
 
         confirm() {
-            if(this.showPartnerButton()) {
+            if (this.showPartnerButton()) {
                 if (this.state.no_partner_cash_move) {
                     if (!this.state.inputReason) {
                         this.state.inputHasError = true;
@@ -53,25 +52,24 @@ const PosPmsLinkCashMovePopup = (CashMovePopup) =>
                     }
                 } else if (!this.state.partner) {
                     this.state.inputHasError = true;
-                    this.errorMessage = this.env._t("Select a partner before confirming.");
+                    this.errorMessage = this.env._t(
+                        "Select a partner before confirming."
+                    );
                     return;
                 }
             }
             return super.confirm();
         }
-        onClickNoPartnerCashMove(ev) {
+        onClickNoPartnerCashMove() {
             this.state.no_partner_cash_move = !this.state.no_partner_cash_move;
-            var $button = $('#cash-partner');
+            var $button = $("#cash-partner");
             if (this.state.no_partner_cash_move) {
                 this.state.partner = null;
-                if ($button){
-                    $button.css('display', 'none');
+                if ($button) {
+                    $button.css("display", "none");
                 }
-            }
-            else {
-                if ($button){
-                    $button.css('display', 'block');
-                }
+            } else if ($button) {
+                $button.css("display", "block");
             }
             this.state.inputHasError = false;
         }

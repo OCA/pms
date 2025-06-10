@@ -33,9 +33,7 @@ class PMSService(models.Model):
                 .search_read(domain, fields, offset, limit, order)
             )
         else:
-            return super(PMSService, self).search_read(
-                domain, fields, offset, limit, order
-            )
+            return super().search_read(domain, fields, offset, limit, order)
 
     @api.model
     def create_from_ui(self, reservation):

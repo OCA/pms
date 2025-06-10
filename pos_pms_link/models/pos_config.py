@@ -51,6 +51,4 @@ class PosConfig(models.Model):
                 .search_read(domain, fields, offset, limit, order)
             )
         else:
-            return super(PosConfig, self).search_read(
-                domain, fields, offset, limit, order
-            )
+            return super().search_read(domain, fields, offset, limit, order)

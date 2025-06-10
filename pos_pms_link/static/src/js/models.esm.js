@@ -23,7 +23,7 @@
 */
 
 import Registries from "point_of_sale.Registries";
-import {PosGlobalState, Order, Orderline} from "point_of_sale.models";
+import {Order, Orderline, PosGlobalState} from "point_of_sale.models";
 
 const PosPmsGlobalState = (PosGlobalState) =>
     class extends PosGlobalState {
@@ -31,7 +31,7 @@ const PosPmsGlobalState = (PosGlobalState) =>
             super(obj);
         }
 
-        //@override
+        // @override
         async _processData(loadedData) {
             await super._processData(...arguments);
             if (this.config.pay_on_reservation) {
@@ -45,9 +45,9 @@ const PosPmsGlobalState = (PosGlobalState) =>
             if (this.config.pay_on_reservation) {
                 this.reservations_by_id = {};
                 this.services_by_id = {};
-                for (let reservation of this.reservations) {
+                for (const reservation of this.reservations) {
                     this.reservations_by_id[reservation.id] = reservation;
-                    for (let service of reservation.services) {
+                    for (const service of reservation.services) {
                         this.services_by_id[service.id] = service;
                         service.reservation = reservation;
                     }
@@ -183,10 +183,10 @@ const PosPmsOrder = (Order) =>
                         }
                         var r_service_line_id = reservation.services
                             .map((x) => x.service_lines)[0]
-                            .find((x) => x.id == service_line_id.id);
+                            .find((x) => x.id === service_line_id.id);
                         if (
                             r_service_line_id &&
-                            r_service_line_id.pos_order_lines.length == 0
+                            r_service_line_id.pos_order_lines.length === 0
                         ) {
                             r_service_line_id.pos_order_lines.push({
                                 id: 0,
@@ -194,13 +194,13 @@ const PosPmsOrder = (Order) =>
                             });
                         } else if (
                             r_service_line_id &&
-                            r_service_line_id.pos_order_lines.length == 1 &&
-                            r_service_line_id.pos_order_lines[0].id == 0
+                            r_service_line_id.pos_order_lines.length === 1 &&
+                            r_service_line_id.pos_order_lines[0].id === 0
                         ) {
                             r_service_line_id.pos_order_lines[0].qty = parseInt(qty);
                         } else if (
                             r_service_line_id &&
-                            r_service_line_id.pos_order_lines.length == 1 &&
+                            r_service_line_id.pos_order_lines.length === 1 &&
                             r_service_line_id.pos_order_lines[0].id != 0
                         ) {
                             r_service_line_id.pos_order_lines.push({

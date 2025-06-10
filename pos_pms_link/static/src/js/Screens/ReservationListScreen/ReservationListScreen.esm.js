@@ -1,18 +1,19 @@
 /** @odoo-module **/
 
+import {debounce} from "@web/core/utils/timing";
+
+import {isConnectionError} from "point_of_sale.utils";
+import {onWillUnmount, useRef} from "@odoo/owl";
 import PosComponent from "point_of_sale.PosComponent";
 import Registries from "point_of_sale.Registries";
 import {useAsyncLockedMethod} from "point_of_sale.custom_hooks";
-import {useListener, useAutofocus} from "@web/core/utils/hooks";
-import {onWillUnmount, useRef} from "@odoo/owl";
-import {debounce} from "@web/core/utils/timing";
-import {_t} from "web.core";
+import {useAutofocus, useListener} from "@web/core/utils/hooks";
 
 class ReservationListScreen extends PosComponent {
     setup() {
         super.setup();
         useAutofocus({refName: "search-word-input-reservation"});
-        // useListener("click-save", () => this.env.bus.trigger("save-partner"));
+        // UseListener("click-save", () => this.env.bus.trigger("save-partner"));
         // useListener("click-edit", () => this.editReservation());
         useListener("save-changes", useAsyncLockedMethod(this.saveChanges));
         this.searchWordInputRef = useRef("search-word-input-reservation");
@@ -136,7 +137,7 @@ class ReservationListScreen extends PosComponent {
 
     async saveChanges(event) {
         try {
-            let reservartionId = await this.rpc({
+            const reservartionId = await this.rpc({
                 model: "pm.reservation",
                 method: "create_from_ui",
                 args: [event.detail.processedChanges],
@@ -161,7 +162,7 @@ class ReservationListScreen extends PosComponent {
         if (this.state.previousQuery != this.state.query) {
             this.state.currentOffset = 0;
         }
-        let result = await this.getNewReservations();
+        const result = await this.getNewReservations();
         this.env.pos.addReservations(result);
         this.render(true);
         if (this.state.previousQuery == this.state.query) {

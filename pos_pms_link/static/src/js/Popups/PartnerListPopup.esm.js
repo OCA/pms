@@ -2,57 +2,55 @@
 
 import AbstractAwaitablePopup from "point_of_sale.AbstractAwaitablePopup";
 import Registries from "point_of_sale.Registries";
-import { isConnectionError } from "point_of_sale.utils";
-import { useListener, useAutofocus } from "@web/core/utils/hooks";
-import { session } from "@web/session";
-import { debounce } from "@web/core/utils/timing";
-import { useAsyncLockedMethod } from "point_of_sale.custom_hooks";
-import { useRef, onWillUnmount } from "@odoo/owl";
+import {isConnectionError} from "point_of_sale.utils";
+import {useAutofocus, useListener} from "@web/core/utils/hooks";
+import {session} from "@web/session";
+import {debounce} from "@web/core/utils/timing";
+import {useAsyncLockedMethod} from "point_of_sale.custom_hooks";
+import {onWillUnmount, useRef} from "@odoo/owl";
 
-
-class PartnerListPopup extends AbstractAwaitablePopup{
-    setup(){
+class PartnerListPopup extends AbstractAwaitablePopup {
+    setup() {
         super.setup();
-            useAutofocus({refName: 'search-word-input-partner'});
-            useListener('click-save', () => this.env.bus.trigger('save-partner'));
-            useListener('save-changes', useAsyncLockedMethod(this.saveChanges));
-            this.searchWordInputRef = useRef('search-word-input-partner');
+        useAutofocus({refName: "search-word-input-partner"});
+        useListener("click-save", () => this.env.bus.trigger("save-partner"));
+        useListener("save-changes", useAsyncLockedMethod(this.saveChanges));
+        this.searchWordInputRef = useRef("search-word-input-partner");
 
-            // We are not using useState here because the object
-            // passed to useState converts the object and its contents
-            // to Observer proxy. Not sure of the side-effects of making
-            // a persistent object, such as pos, into Observer. But it
-            // is better to be safe.
-            this.state = {
-                query: null,
-                selectedPartner: this.props.partner,
-                detailIsShown: false,
-                editModeProps: {
-                    partner: null,
-                },
-                previousQuery: "",
-                currentOffset: 0,
-            };
-            this.updatePartnerList = debounce(this.updatePartnerList, 70);
-            onWillUnmount(this.updatePartnerList.cancel);
+        // We are not using useState here because the object
+        // passed to useState converts the object and its contents
+        // to Observer proxy. Not sure of the side-effects of making
+        // a persistent object, such as pos, into Observer. But it
+        // is better to be safe.
+        this.state = {
+            query: null,
+            selectedPartner: this.props.partner,
+            detailIsShown: false,
+            editModeProps: {
+                partner: null,
+            },
+            previousQuery: "",
+            currentOffset: 0,
+        };
+        this.updatePartnerList = debounce(this.updatePartnerList, 70);
+        onWillUnmount(this.updatePartnerList.cancel);
     }
 
     // Usar cancel() para cerrar el popup si no está en modo edición
     cancel() {
-        if(this.state.detailIsShown) {
+        if (this.state.detailIsShown) {
             this.state.detailIsShown = false;
             this.render(true);
         } else {
             super.cancel();
         }
     }
-    //getPayload() para obtener el payload del popup cuando se confirma
+    // GetPayload() para obtener el payload del popup cuando se confirma
     async getPayload() {
         return this.state.selectedPartner;
     }
 
-
-    // confirm() {
+    // Confirm() {
     //     this.props.resolve({ confirmed: true, payload: this.state.selectedPartner });
     //     this.trigger('close-temp-screen');
     // }
@@ -64,24 +62,26 @@ class PartnerListPopup extends AbstractAwaitablePopup{
     // Getters
 
     get partners() {
-        let res;
-        if (this.state.query && this.state.query.trim() !== '') {
+        let res = null;
+        if (this.state.query && this.state.query.trim() !== "") {
             res = this.env.pos.db.search_partner(this.state.query.trim());
         } else {
             res = this.env.pos.db.get_partners_sorted(1000);
         }
-        res.sort(function (a, b) { return (a.name || '').localeCompare(b.name || '') });
-        // the selected partner (if any) is displayed at the top of the list
+        res.sort(function (a, b) {
+            return (a.name || "").localeCompare(b.name || "");
+        });
+        // The selected partner (if any) is displayed at the top of the list
         if (this.state.selectedPartner) {
-            let indexOfSelectedPartner = res.findIndex( partner => 
-                partner.id === this.state.selectedPartner.id
+            const indexOfSelectedPartner = res.findIndex(
+                (partner) => partner.id === this.state.selectedPartner.id
             );
             if (indexOfSelectedPartner !== -1) {
                 res.splice(indexOfSelectedPartner, 1);
             }
             res.unshift(this.state.selectedPartner);
         }
-        return res
+        return res;
     }
     get isBalanceDisplayed() {
         return false;
@@ -113,11 +113,10 @@ class PartnerListPopup extends AbstractAwaitablePopup{
                 3000
             );
         }
-        
     }
     _clearSearch() {
-        this.searchWordInputRef.el.value = '';
-        this.state.query = '';
+        this.searchWordInputRef.el.value = "";
+        this.state.query = "";
         this.render(true);
     }
     // We declare this event handler as a debounce function in
@@ -127,7 +126,10 @@ class PartnerListPopup extends AbstractAwaitablePopup{
         this.render(true);
     }
     clickPartner(partner) {
-        if (this.state.selectedPartner && this.state.selectedPartner.id === partner.id) {
+        if (
+            this.state.selectedPartner &&
+            this.state.selectedPartner.id === partner.id
+        ) {
             this.state.selectedPartner = null;
         } else {
             this.state.selectedPartner = partner;
@@ -139,19 +141,19 @@ class PartnerListPopup extends AbstractAwaitablePopup{
         this.activateEditMode();
     }
     createPartner() {
-        // initialize the edit screen with default details about country, state & lang
+        // Initialize the edit screen with default details about country, state & lang
         this.state.editModeProps.partner = {
             country_id: this.env.pos.company.country_id,
             state_id: this.env.pos.company.state_id,
             lang: session.user_context.lang,
-        }
+        };
         this.activateEditMode();
     }
     async saveChanges(event) {
         try {
-            let partnerId = await this.rpc({
-                model: 'res.partner',
-                method: 'create_from_ui',
+            const partnerId = await this.rpc({
+                model: "res.partner",
+                method: "create_from_ui",
                 args: [event.detail.processedChanges],
             });
             await this.env.pos._loadPartners([partnerId]);
@@ -159,9 +161,9 @@ class PartnerListPopup extends AbstractAwaitablePopup{
             this.confirm();
         } catch (error) {
             if (isConnectionError(error)) {
-                await this.showPopup('OfflineErrorPopup', {
-                    title: this.env._t('Offline'),
-                    body: this.env._t('Unable to save changes.'),
+                await this.showPopup("OfflineErrorPopup", {
+                    title: this.env._t("Offline"),
+                    body: this.env._t("Unable to save changes."),
                 });
             } else {
                 throw error;
@@ -172,7 +174,7 @@ class PartnerListPopup extends AbstractAwaitablePopup{
         if (this.state.previousQuery != this.state.query) {
             this.state.currentOffset = 0;
         }
-        let result = await this.getNewPartners();
+        const result = await this.getNewPartners();
         this.env.pos.addPartners(result);
         this.render(true);
         if (this.state.previousQuery == this.state.query) {
@@ -186,7 +188,7 @@ class PartnerListPopup extends AbstractAwaitablePopup{
     async getNewPartners() {
         let domain = [];
         const limit = 30;
-        if(this.state.query) {
+        if (this.state.query) {
             const search_fields = [
                 "name",
                 "parent_name",
@@ -195,14 +197,18 @@ class PartnerListPopup extends AbstractAwaitablePopup{
                 "vat",
             ];
             domain = [
-                ...Array(search_fields.length - 1).fill('|'),
-                ...search_fields.map(field => [field, "ilike", this.state.query + "%"])
+                ...Array(search_fields.length - 1).fill("|"),
+                ...search_fields.map((field) => [
+                    field,
+                    "ilike",
+                    this.state.query + "%",
+                ]),
             ];
         }
         const result = await this.env.services.rpc(
             {
-                model: 'pos.session',
-                method: 'get_pos_ui_res_partner_by_params',
+                model: "pos.session",
+                method: "get_pos_ui_res_partner_by_params",
                 args: [
                     [odoo.pos_session_id],
                     {
@@ -221,8 +227,6 @@ class PartnerListPopup extends AbstractAwaitablePopup{
         return result;
     }
 }
-PartnerListPopup.template = 'PartnerListPopup';
+PartnerListPopup.template = "PartnerListPopup";
 
 Registries.Component.add(PartnerListPopup);
-
-return PartnerListPopup;

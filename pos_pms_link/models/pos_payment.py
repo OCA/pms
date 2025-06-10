@@ -34,3 +34,4 @@ class PosPayment(models.Model):
                 continue
             else:
                 super(PosPayment, payment)._check_payment_method_id()
+        return

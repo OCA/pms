@@ -1,21 +1,21 @@
-.cash-partner-container{
+.cash-partner-container {
     display: flex;
     flex-direction: row;
     justify-content: start;
     align-items: center;
     gap: 10px;
-    .button{
+    .button {
         min-width: 30%;
         border-radius: 5px;
         padding: 0;
     }
 }
-#partner-popup{
-    &.screen{
+#partner-popup {
+    &.screen {
         top: 5% !important;
     }
 }
-#no-partner-move{
+#no-partner-move {
     display: flex;
     flex-direction: row;
     justify-content: start;

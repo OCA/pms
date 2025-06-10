@@ -29,7 +29,7 @@ patch(PosDB.prototype, "pos_pms_link.PosDB", {
         this._super(options);
         this.reservation_sorted = [];
         this.reservation_by_id = {};
-        // this.reservation_search_string = "";
+        // This.reservation_search_string = "";
         this.reservation_search_strings = {};
         this.reservation_id = null;
     },
@@ -91,14 +91,12 @@ patch(PosDB.prototype, "pos_pms_link.PosDB", {
     },
     add_reservations(reservations) {
         var updated = {};
-        var reservation;
+        var reservation = null;
         for (var i = 0, len = reservations.length; i < len; i++) {
             reservation = reservations[i];
 
             if (!this.reservation_by_id[reservation.id]) {
                 this.reservation_sorted.push(reservation.id);
-            } else {
-                const oldReservation = this.reservation_by_id[reservation.id];
             }
             updated[reservation.id] = reservation;
             this.reservation_by_id[reservation.id] = reservation;
@@ -109,7 +107,7 @@ patch(PosDB.prototype, "pos_pms_link.PosDB", {
         for (const id in updated) {
             const chunkId = Math.floor(id / CHUNK_SIZE);
             if (updatedChunks.has(chunkId)) {
-                // another reservation in this chunk was updated and we already rebuild the chunk
+                // Another reservation in this chunk was updated and we already rebuild the chunk
                 continue;
             }
             updatedChunks.add(chunkId);

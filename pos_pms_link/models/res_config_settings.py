@@ -2,7 +2,6 @@ from odoo import fields, models
 
 
 class ResConfigSettings(models.TransientModel):
-
     _inherit = "res.config.settings"
 
     pos_pay_on_reservation = fields.Boolean(
