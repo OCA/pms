@@ -37,13 +37,6 @@
                             <field name="institution_user" />
                             <field name="institution_password" password="True" />
                          </group>
-                         <button
-                            name="test_connection"
-                            class="btn btn-primary btn-sm"
-                            type="object"
-                            string="Test user/password"
-                            attrs="{'invisible': [('institution','=','ses')]}"
-                        />
                     </div>
                 </div>
                 <div class="row">

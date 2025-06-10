@@ -103,7 +103,7 @@ class PmsReservation(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        reservations = super(PmsReservation, self).create(vals_list)
+        reservations = super().create(vals_list)
         for reservation in reservations:
             if (
                 reservation.pms_property_id.institution == "ses"
@@ -172,4 +172,4 @@ class PmsReservation(models.Model):
         for record in self:
             if record.is_ses and record.reservation_type != "out":
                 self.create_communication_after_update_reservation(record, vals)
-        return super(PmsReservation, self).write(vals)
+        return super().write(vals)

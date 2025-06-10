@@ -13,11 +13,11 @@ class ResPartnerIdNumber(models.Model):
         compute="_compute_support_number",
     )
 
-    # pylint: disable=W8110
     @api.depends("partner_id", "partner_id.pms_checkin_partner_ids.support_number")
     def _compute_support_number(self):
+        res = None
         if hasattr(super(), "_compute_support_number"):
-            super()._compute_support_number()
+            res = super()._compute_support_number()
         for record in self:
             if record.partner_id.pms_checkin_partner_ids:
                 last_update_support_number = (
@@ -36,3 +36,4 @@ class ResPartnerIdNumber(models.Model):
                     and last_update_support_number[0].support_number
                 ):
                     record.support_number = last_update_support_number[0].support_number
+        return res
