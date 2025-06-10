@@ -589,7 +589,7 @@ class PmsInvoiceService(Component):
                     line_values["quantity"] = line_info.quantity
                 if line_values:
                     cmd_invoice_lines.append((1, line.id, line_values))
-            elif not line.display_type:
+            elif line.display_type == "product":
                 cmd_invoice_lines.append((2, line.id))
         # Get the new lines to add in invoice
         newInvoiceLinesInfo = list(
@@ -649,7 +649,9 @@ class PmsInvoiceService(Component):
                 )
             ][0]
             # Update name of new invoice lines
-            for item in filter(lambda l: not l[2].get("display_type"), new_invoice_lines):
+            for item in filter(
+                lambda l: not l[2].get("display_type"), new_invoice_lines
+            ):
                 item[2]["name"] = [
                     line.name
                     for line in newInvoiceLinesInfo
