@@ -184,6 +184,9 @@ class PmsReservationService(Component):
                     line.is_reselling for line in reservation.reservation_line_ids
                 ),
                 isBlocked=reservation.blocked,
+                cancelledReason=reservation.cancelled_reason
+                if reservation.cancelled_reason
+                else None
             )
         return res
 

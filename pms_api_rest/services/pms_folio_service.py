@@ -1121,6 +1121,11 @@ class PmsFolioService(Component):
         if not folio_record:
             raise MissingError(_("Folio not found"))
         pms_api_check_access(user=self.env.user, records=folio_record)
+        if pms_folio_info.cancelReservations:
+            folio_record.action_cancel()
+        elif pms_folio_info.confirmReservations:
+            for reservation in folio_record.reservation_ids:
+                reservation.action_confirm()
         pms_folio_info = self.adjust_board_services_input(pms_folio_info)
         folio_vals = self.env["pms.folio"].create_folio_vals(
             folio_record=folio_record, pms_folio_info=pms_folio_info

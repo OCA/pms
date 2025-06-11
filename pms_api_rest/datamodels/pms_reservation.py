@@ -78,6 +78,7 @@ class PmsReservationInfo(Datamodel):
     externalReference = fields.String(required=False, allow_none=True)
     stateCode = fields.String(required=False, allow_none=True)
     stateDescription = fields.String(required=False, allow_none=True)
+    cancelledReason = fields.String(required=False, allow_none=True)
     children = fields.Integer(required=False, allow_none=True)
     readyForCheckin = fields.Boolean(required=False, allow_none=True)
     checkinPartnerCount = fields.Integer(required=False, allow_none=True)
