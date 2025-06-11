@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-06-11 12:26+0000\n"
+"PO-Revision-Date: 2025-06-11 15:27+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -906,6 +906,227 @@ msgid ""
 "                </table>\n"
 "            "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: "
+"16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; "
+"color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\""
+"center\">\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"width=\"590\" style=\"padding: 16px; background-color: white; color: #454748;"
+" border-collapse:separate;\">\n"
+"                        <head>\n"
+"                            <link rel=\"stylesheet\" href="
+"\"https://use.fontawesome.com/releases/v5.8.1/css/all.css\" integrity="
+"\"sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf\" "
+"crossorigin=\"anonymous\">\n"
+"                        </head>\n"
+"                        <tbody>\n"
+"                            <!-- HEADER -->\n"
+"                            <!-- PROPERTY DESCRIPTION -->\n"
+"                            <tr>\n"
+"                                <td align=\"center\" style=\"min-width: "
+"590px;\">\n"
+"                                    <table width=\"590\" border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 590px; background-"
+"color: white; padding: 0px 0px 0px 0px; border-collapse:separate;\">\n"
+"                                        <tr><td align=\"right\">\n"
+"                                            <div class=\"col-sm-4\">\n"
+"                                                % if "
+"object.pms_property_id.partner_id.street\n"
+"                                                "
+"<p>${object.pms_property_id.partner_id.street}</p>\n"
+"                                                % endif\n"
+"                                                % if "
+"object.pms_property_id.partner_id.street2\n"
+"                                                "
+"<p>${object.pms_property_id.partner_id.street2}</p>\n"
+"                                                % endif\n"
+"                                                "
+"<p>${object.pms_property_id.partner_id.zip}</p>\n"
+"                                                "
+"<p>${object.pms_property_id.partner_id.city}</p>\n"
+"                                                "
+"<p>${object.pms_property_id.partner_id.country_id.name}</p>\n"
+"                                            </div>\n"
+"                                        </td></tr>\n"
+"                                        <tr><td valign=\"top\" style=\"font-"
+"size: 14px;\">\n"
+"                                            <hr width=\"100%\" style"
+"=\"background-color:rgb(204,204,204);border:medium "
+"none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; "
+"margin: 16px 0px 16px 0px;\">\n"
+"                                            <div>\n"
+"                                                Salve ${"
+"object.partner_id.name or ''},<br>\n"
+"                                                la sua prenotazione in "
+"${object.pms_property_id.name} è stata modificata\n"
+"                                            </div>\n"
+"                                            <div>\n"
+"                                                a presto,<br>\n"
+"                                                <span style="
+"\"color: #454748;\">\n"
+"                                                    <br>\n"
+"                                                    ${object.company_id.name}"
+"\n"
+"                                                </span>\n"
+"                                            </div>\n"
+"                                        </td></tr>\n"
+"                                    </table>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                            <!-- DETAILS -->\n"
+"                            <tr>\n"
+"                                <td align=\"center\" style=\"min-width: "
+"590px;\">\n"
+"                                    <hr width=\"100%\" style=\"background-"
+"color:rgb(204,204,204);border:medium none;clear:both;display:block;font-"
+"size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
+"                                    <div align=\"left\" style="
+"\"margin: 16px 0px 16px 0px;\"><strong>Dettagli prenotazione</strong></div>\n"
+"                                    <table width=\"590\" border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 590px; background-"
+"color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                                        <tr><td valign=\"top\" style=\"font-"
+"size: 14px;\">\n"
+"                                            <table style=\"width:50%;\">\n"
+"                                                 <tr>\n"
+"                                                    <td>\n"
+"                                                        <div class="
+"\"far fa-calendar-alt fa-2x\" style=\"margin: 0px 16px 0px 0px;\"></div>\n"
+"                                                    </td>\n"
+"                                                    <td style="
+"\"margin: 16px 0px 16px 0px; font-size: 14px;\">\n"
+"                                                        <div><strong>From</"
+"strong> ${object.first_checkin}</div>\n"
+"                                                        <div><strong>To</"
+"strong> ${object.last_checkout}</div>\n"
+"                                                        <div style=\"font-"
+"size:12px;color:#9e9e9e\"><i><strong>TZ</strong> "
+"${object.pms_property_id.tz}</i></div>\n"
+"                                                    </td>\n"
+"                                                </tr>\n"
+"                                                <tr>\n"
+"                                                    <td style="
+"\"margin: 16px 0px 16px 0px;\">\n"
+"                                                        <br>\n"
+"                                                        <div class="
+"\"fas fa-bed fa-2x\" style=\"margin: 0px 16px 0px 0px;\"></div>\n"
+"                                                    </td>\n"
+"                                                    <td style=\"vertical-"
+"align:top;\">\n"
+"                                                        <br>\n"
+"                                                        <div><strong>Camere: "
+"</strong></div><div>\n"
+"                                                            % for "
+"reservation in object.reservation_ids:\n"
+"                                                            "
+"${reservation.room_type_id.name}<br></div>\n"
+"                                                            % endfor\n"
+"                                                    </td>\n"
+"                                                </tr>\n"
+"                                                <tr>\n"
+"                                                    <td style="
+"\"margin: 16px 0px 16px 0px;\">\n"
+"                                                        <br>\n"
+"                                                        <div class="
+"\"fas fa-coins fa-2x\" style=\"margin: 0px 16px 0px 0px;\"></div>\n"
+"                                                    </td>\n"
+"                                                    <td style="
+"\"margin: 16px 0px 16px 0px; font-size: 14px;\">\n"
+"                                                        <br>\n"
+"                                                            "
+"<div><strong>Prezzo: </strong> ${object.amount_total} "
+"${object.pms_property_id.country_id.currency_id.symbol}</div>\n"
+"                                                    </td>\n"
+"                                                </tr>\n"
+"                                            </table>\n"
+"                                        </td></tr>\n"
+"                                        <tr><td valign=\"top\" style=\"font-"
+"size: 14px;\">\n"
+"                                            <div>\n"
+"                                                % if object.pms_property_id."
+"mail_information\n"
+"                                                <hr width=\"100%\" style"
+"=\"background-color:rgb(204,204,204);border:medium "
+"none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; "
+"margin: 16px 0px 16px 0px;\">\n"
+"                                                <div align=\"left\" style="
+"\"margin: 16px 0px 16px 0px;\"><strong>Informazioni aggiuntive</strong></div>"
+"\n"
+"                                                "
+"<p>${object.pms_property_id.mail_information|safe}</p>\n"
+"                                                % endif\n"
+"                                            </div>\n"
+"                                        </td></tr>\n"
+"                                        <tr><td valign=\"top\" style=\"font-"
+"size: 14px;\">\n"
+"                                            <hr width=\"100%\" style"
+"=\"background-color:rgb(204,204,204);border:medium "
+"none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; "
+"margin: 16px 0px 16px 0px;\">\n"
+"                                            <!-- CONTACT -->\n"
+"                                            <div>\n"
+"                                                <span style=\"font-"
+"weight:300;margin:10px 0px\">Domande sulla prenotazione?</span>\n"
+"                                                <div>Ci contatti:</div>\n"
+"                                                <ul>\n"
+"                                                    "
+"<li>${object.pms_property_id.name}</li>\n"
+"                                                    % if "
+"object.pms_property_id.partner_id.email\n"
+"                                                    <li>E-mail: <a href="
+"\"mailto:%24%7Bobject.pms_property_id.partner_id.email%7D\" style=\"text-"
+"decoration:none;color:#875A7B;\""
+">${object.pms_property_id.partner_id.email}</a></li>\n"
+"                                                    % endif\n"
+"                                                    % if "
+"object.pms_property_id.partner_id.phone\n"
+"                                                    <li>Telefono: "
+"${object.pms_property_id.partner_id.phone}</li>\n"
+"                                                    % endif\n"
+"                                                    % if "
+"object.pms_property_id.partner_id.mobile\n"
+"                                                    <li>Mobile: "
+"${object.pms_property_id.partner_id.mobile}</li>\n"
+"                                                    % endif\n"
+"                                                </ul>\n"
+"                                            </div>\n"
+"                                        </td></tr>\n"
+"                                    </table>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                        </tbody>\n"
+"                    </table>\n"
+"                </td></tr>\n"
+"                    <!-- FOOTER -->\n"
+"                    <tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"                        % if object.pms_property_id.privacy_policy\n"
+"                        <table width=\"590\" border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" style=\"min-width: 590px; background-color: #F1F1F1; color:"
+" #454748; padding: 8px; border-collapse:separate;\">\n"
+"                            <tr><td style=\"font-size: 10px;\">\n"
+"                                ${object.pms_property_id.privacy_policy|safe}"
+"\n"
+"                            </td></tr>\n"
+"                        </table>\n"
+"                        % endif\n"
+"                    </td></tr>\n"
+"                    <tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"                        % if object.company_id\n"
+"                        <table width=\"590\" border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" style=\"min-width: 590px; background-color: #F1F1F1; color:"
+" #454748; padding: 8px; border-collapse:separate;\">\n"
+"                            <tr><td style=\"text-align: center; font-size: "
+"10px;\">\n"
+"                                Sent by <a target=\"_blank\" href="
+"\"%24%7Bobject.company_id.website%7D\" style=\"color: #875A7B;\""
+">${object.company_id.name}</a>\n"
+"                                <br>\n"
+"                            </td></tr>\n"
+"                        </table>\n"
+"                        % endif\n"
+"                    </td></tr>\n"
+"                </table>\n"
+"            "
 
 #. module: pms
 #: model:mail.template,body_html:pms.confirmed_reservation_email
@@ -1177,6 +1398,273 @@ msgid ""
 "                </table>\n"
 "            "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: "
+"16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; "
+"color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\""
+"center\">\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"width=\"590\" style=\"padding: 16px; background-color: white; color: #454748;"
+" border-collapse:separate;\">\n"
+"                        <head>\n"
+"                            <link rel=\"stylesheet\" href="
+"\"https://use.fontawesome.com/releases/v5.8.1/css/all.css\" integrity="
+"\"sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf\" "
+"crossorigin=\"anonymous\">\n"
+"                        </head>\n"
+"                        <tbody>\n"
+"                            <!-- PROPERTY DESCRIPTION -->\n"
+"                            <tr>\n"
+"                                <td align=\"center\" style=\"min-width: "
+"590px;\">\n"
+"                                    <table width=\"590\" border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 590px; background-"
+"color: white; padding: 0px 0px 0px 0px; border-collapse:separate;\">\n"
+"                                        <tr><td align=\"right\">\n"
+"                                            <div class=\"col-sm-4\">\n"
+"                                                % if "
+"object.pms_property_id.partner_id.street\n"
+"                                                "
+"<p>${object.pms_property_id.partner_id.street}</p>\n"
+"                                                % endif\n"
+"                                                % if "
+"object.pms_property_id.partner_id.street2\n"
+"                                                "
+"<p>${object.pms_property_id.partner_id.street2}</p>\n"
+"                                                % endif\n"
+"                                                "
+"<p>${object.pms_property_id.partner_id.zip}</p>\n"
+"                                                "
+"<p>${object.pms_property_id.partner_id.city}</p>\n"
+"                                                "
+"<p>${object.pms_property_id.partner_id.country_id.name}</p>\n"
+"                                            </div>\n"
+"                                        </td></tr>\n"
+"                                        <tr><td valign=\"top\" style=\"font-"
+"size: 14px;\">\n"
+"                                            <hr width=\"100%\" style"
+"=\"background-color:rgb(204,204,204);border:medium "
+"none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; "
+"margin: 16px 0px 16px 0px;\">\n"
+"                                            <div>\n"
+"                                                Salve ${"
+"object.partner_id.name or ''},<br>\n"
+"                                                siamo lieti di confermare la "
+"sua prenotazione in ${object.pms_property_id.name}\n"
+"                                            </div>\n"
+"                                            <div>\n"
+"                                                A presto,<br>\n"
+"                                                <span style="
+"\"color: #454748;\">\n"
+"                                                    <br>\n"
+"                                                    ${object.company_id.name}"
+"\n"
+"                                                </span>\n"
+"                                            </div>\n"
+"                                        </td></tr>\n"
+"                                    </table>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                            <!-- DETAILS -->\n"
+"                            <tr>\n"
+"                                <td align=\"center\" style=\"min-width: "
+"590px;\">\n"
+"                                    <hr width=\"100%\" style=\"background-"
+"color:rgb(204,204,204);border:medium none;clear:both;display:block;font-"
+"size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
+"                                    <div align=\"left\" style="
+"\"margin: 16px 0px 16px 0px;\"><strong>Dettagli prenotazione</strong></div>\n"
+"                                    <table width=\"590\" border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 590px; background-"
+"color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                                        <tr><td valign=\"top\" style=\"font-"
+"size: 14px;\">\n"
+"                                            <table style=\"width:50%;\">\n"
+"                                                <tr>\n"
+"                                                    <td>\n"
+"                                                        <div class="
+"\"far fa-calendar-alt fa-2x\" style=\"margin: 0px 16px 0px 0px;\"></div>\n"
+"                                                    </td>\n"
+"                                                    <td style="
+"\"margin: 16px 0px 16px 0px; font-size: 14px;\">\n"
+"                                                        <div><strong>From</"
+"strong> ${object.first_checkin}</div>\n"
+"                                                        <div><strong>To</"
+"strong> ${object.last_checkout}</div>\n"
+"                                                        <div style=\"font-"
+"size:12px;color:#9e9e9e\"><i><strong>TZ</strong> "
+"${object.pms_property_id.tz}</i></div>\n"
+"                                                    </td>\n"
+"                                                </tr>\n"
+"                                                <tr>\n"
+"                                                    <td style="
+"\"margin: 16px 0px 16px 0px;\">\n"
+"                                                        <br>\n"
+"                                                        <div class="
+"\"fas fa-bed fa-2x\" style=\"margin: 0px 16px 0px 0px;\"></div>\n"
+"                                                    </td>\n"
+"                                                    <td style=\"vertical-"
+"align:top;\">\n"
+"                                                        <br>\n"
+"                                                        <div><strong>Camere: "
+"</strong></div><div>\n"
+"                                                            % for "
+"reservation in object.reservation_ids:\n"
+"                                                            "
+"${reservation.room_type_id.name}<br></div>\n"
+"                                                            % endfor\n"
+"                                                    </td>\n"
+"                                                </tr>\n"
+"                                                <tr>\n"
+"                                                    <td style="
+"\"margin: 16px 0px 16px 0px;\">\n"
+"                                                        <br>\n"
+"                                                        <div class="
+"\"fas fa-coins fa-2x\" style=\"margin: 0px 16px 0px 0px;\"></div>\n"
+"                                                    </td>\n"
+"                                                    <td style="
+"\"margin: 16px 0px 16px 0px; font-size: 14px;\">\n"
+"                                                        <br>\n"
+"                                                        <div><strong>Price: "
+"</strong> ${object.amount_total} "
+"${object.pms_property_id.country_id.currency_id.symbol}</div>\n"
+"                                                    </td>\n"
+"                                                </tr>\n"
+"                                            </table>\n"
+"                                        </td></tr>\n"
+"\n"
+"                                        <tr><td valign=\"top\" style=\"font-"
+"size: 14px;\">\n"
+"                                            <div>\n"
+"                                                % if object.pms_property_id."
+"mail_information\n"
+"                                                <hr width=\"100%\" style"
+"=\"background-color:rgb(204,204,204);border:medium "
+"none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; "
+"margin: 16px 0px 16px 0px;\">\n"
+"                                                <div align=\"left\" style="
+"\"margin: 16px 0px 16px 0px;\"><strong>Informazioni aggiuntive</strong></div>"
+"\n"
+"                                                "
+"${object.pms_property_id.mail_information|safe}\n"
+"                                                % endif\n"
+"                                            </div>\n"
+"                                        </td></tr>\n"
+"                                        <tr>\n"
+"                                            <td align=\"center\" style="
+"\"padding: 20px 0 0px 0; \">\n"
+"                                                <div>\n"
+"                                                    <hr width=\"100%\" style"
+"=\"background-color:rgb(204,204,204);border:medium "
+"none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; "
+"margin: 16px 0px 16px 0px;\">\n"
+"                                                    Eseguire adesso il check-"
+"in per risparmiare tempo.\n"
+"                                                    <br>\n"
+"                                                    Acceda al "
+"nostro<strong>sistema di registrazione rapida</strong>. In pochi passi potrà "
+"inserire i suoi dati in modo agile, semplice e sicuro, <strong>evitando le "
+"code alla reception</strong>.\n"
+"                                                    Se registra i suoi dati "
+"nel nostro sistema, <strong>i suoi passaggi alla reception saranno più "
+"veloci</strong>, potendo godere subito del comfort delle sua camera.\n"
+"                                                    <table border=\"0\" "
+"cellspacing=\"0\" cellpadding=\"0\">\n"
+"                                                        <tr>\n"
+"                                                            <td align="
+"\"center\">\n"
+"                                                                <a href=\"/"
+"my/folios/%24%7Bobject.id%7D/"
+"precheckin?access_token=%24%7Bobject.access_token%7D\" target=\"_blank\" "
+"style=\"text-decoration: none; color: #FFFFFF; font-size: 2em; padding: 10px "
+"20px 10px 20px;\">\n"
+"                                                                    <div "
+"style=\"padding: 0.5em; background-color: #45C2B1; border-color: #45C2B1; "
+"border-width: 2px;border-style:solid; border-bottom-style: solid;border-left-"
+"style: solid;border-right-style: solid;border-top-style: solid;-webkit-"
+"border-radius: 10; -moz-border-radius: 10; border-radius: 10px;font-size: "
+"12px;\">Check-in\n"
+"                                                                    </div>\n"
+"                                                                    "
+"<center><img src="
+"\"https://www.aldahotels.es/firma/email/llegada/check-in.png\" alt="
+"\"Hacer check-in\" width=\"80px\" height=\"80px\" href="
+"\"%24%7Bobject.url%7D\"></center></a>\n"
+"                                                            </td>\n"
+"                                                        </tr>\n"
+"                                                    </table>\n"
+"                                                </div>\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                        <tr><td valign=\"top\" style=\"font-"
+"size: 14px;\">\n"
+"                                            <hr width=\"100%\" style"
+"=\"background-color:rgb(204,204,204);border:medium "
+"none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; "
+"margin: 16px 0px 16px 0px;\">\n"
+"                                            <!-- CONTACT -->\n"
+"                                            <div>\n"
+"                                                <span style=\"font-"
+"weight:300;margin:10px 0px\">Questions about the reservation?</span>\n"
+"                                                <div>Ci contatti:</div>\n"
+"                                                <ul>\n"
+"                                                    "
+"<li>${object.pms_property_id.name}</li>\n"
+"                                                    % if "
+"object.pms_property_id.partner_id.email\n"
+"                                                    <li>E-mail: <a href="
+"\"mailto:%24%7Bobject.pms_property_id.partner_id.email%7D\" style=\"text-"
+"decoration:none;color:#875A7B;\""
+">${object.pms_property_id.partner_id.email}</a></li>\n"
+"                                                    % endif\n"
+"                                                    % if "
+"object.pms_property_id.partner_id.phone\n"
+"                                                    <li>Telefono: "
+"${object.pms_property_id.partner_id.phone}</li>\n"
+"                                                    % endif\n"
+"                                                    % if "
+"object.pms_property_id.partner_id.mobile\n"
+"                                                    <li>Cellulare: "
+"${object.pms_property_id.partner_id.mobile}</li>\n"
+"                                                    % endif\n"
+"                                                </ul>\n"
+"                                            </div>\n"
+"                                        </td></tr>\n"
+"                                    </table>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                        </tbody>\n"
+"                    </table>\n"
+"                </td></tr>\n"
+"                    <!-- FOOTER -->\n"
+"                    <tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"                        % if object.pms_property_id.privacy_policy\n"
+"                        <table width=\"590\" border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" style=\"min-width: 590px; background-color: #F1F1F1; color:"
+" #454748; padding: 8px; border-collapse:separate;\">\n"
+"                            <tr><td style=\"font-size: 10px;\">\n"
+"                                ${object.pms_property_id.privacy_policy|safe}"
+"\n"
+"                            </td></tr>\n"
+"                        </table>\n"
+"                        % endif\n"
+"                    </td></tr>\n"
+"                    <tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"                        % if object.company_id\n"
+"                        <table width=\"590\" border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" style=\"min-width: 590px; background-color: #F1F1F1; color:"
+" #454748; padding: 8px; border-collapse:separate;\">\n"
+"                            <tr><td style=\"text-align: center; font-size: "
+"10px;\">\n"
+"                                Inviato da <a target=\"_blank\" href="
+"\"%24%7Bobject.company_id.website%7D\" style=\"color: #875A7B;\""
+">${object.company_id.name}</a>\n"
+"                                <br>\n"
+"                            </td></tr>\n"
+"                        </table>\n"
+"                        % endif\n"
+"                    </td></tr>\n"
+"                </table>\n"
+"            "
 
 #. module: pms
 #: model:mail.template,body_html:pms.cancelled_reservation_email
@@ -1316,13 +1804,15 @@ msgstr ""
 #, python-format
 msgid "A closure reason is mandatory when reservation type is 'out of service'"
 msgstr ""
+"Il motivo di chiusura è obbligatorio quando il tipo di prenotazione è 'fuori "
+"servizio'"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "A customer/s has this email or mobile, do you want to add it?"
-msgstr ""
+msgstr "Un cliente a questa e-mail o cellulare, la si vuole aggiunger?"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room__description_sale
@@ -1331,6 +1821,9 @@ msgid ""
 "customers. This description will be copied to every Sales  Order, Delivery "
 "Order and Customer Invoice/Credit Note"
 msgstr ""
+"Una descrizione del prodotto che si vuole comunicare al cliente. Questa "
+"descrizione verrà copiata in ogni ordine di vendita, ordine di spedizione e "
+"fattura/nota di credito del cliente"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__description_sale
@@ -1339,27 +1832,30 @@ msgid ""
 "This description will be copied to every Sales Order, Delivery Order and "
 "Customer Invoice/Credit Note"
 msgstr ""
+"Una descrizione del prodotto che si vuole comunicare al cliente. Questa "
+"descrizione verrà copiata in ogni ordine di vendita, ordine di spedizione e "
+"fattura/nota di credito del cliente"
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/res_partner.py:0
 #, python-format
 msgid "A document identification is required"
-msgstr ""
+msgstr "È richiesto un documento di identificazione"
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/pms_folio.py:0
 #, python-format
 msgid "A journal must be specified for the acquirer %s."
-msgstr ""
+msgstr "Deve essere indicato un registro per l'acquisitore %s."
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/pms_folio.py:0
 #, python-format
 msgid "A payment acquirer is required to create a transaction."
-msgstr ""
+msgstr "È richiesto un metodo di pagamento per creare la transazione."
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_folio_advance_payment_inv__advance_payment_method
@@ -1368,6 +1864,9 @@ msgid ""
 "for invoicing,                 according to their invoicing "
 "policy                 (based on ordered or delivered quantity)."
 msgstr ""
+"Una fattura standard è creata con tutte le righe d'ordine                 "
+"pronte per fatturazione,                 in accordo con la sua politica di "
+"fatturazione                 (in base alle quantità ordinate o consegnate)."
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__detailed_type
@@ -1377,62 +1876,67 @@ msgid ""
 "A consumable product is a product for which stock is not managed.\n"
 "A service is a non-material product you provide."
 msgstr ""
+"Un prodotto stoccabile è un prodotto per il quale si gestiscono le giacenze. "
+"Deve essere installata l'app Magazzino.\n"
+"Un prodotto consumabile è un prodotto per il quale non sono gestite le "
+"giacenze.\n"
+"Un servizio è un prodotto non materiale che viene fornito."
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/pms_folio.py:0
 #, python-format
 msgid "A transaction can't be linked to folios having different currencies."
-msgstr ""
+msgstr "Una transazione non può essere collegata a fogli con valute diverse."
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/pms_folio.py:0
 #, python-format
 msgid "A transaction can't be linked to folios having different partners."
-msgstr ""
+msgstr "Una transizione non può essere collegata a fogli con partner diversi."
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__aeat_anonymous_cash_customer
 msgid "AEAT - Anonymous customer"
-msgstr ""
+msgstr "AEAT - cliente anonimo"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__aeat_identification_type
 msgid "AEAT Identification type"
-msgstr ""
+msgstr "Tipo identificazione AEAT"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__user_ids
 msgid "Accepted Users"
-msgstr ""
+msgstr "Utenti accettati"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__access_warning
 #: model:ir.model.fields,field_description:pms.field_pms_folio__access_warning
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__access_warning
 msgid "Access warning"
-msgstr ""
+msgstr "Avviso accesso"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__property_account_payable_id
 msgid "Account Payable"
-msgstr ""
+msgstr "Conto di debito"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__property_account_receivable_id
 msgid "Account Receivable"
-msgstr ""
+msgstr "Conto di credito"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__account_tag_ids
 msgid "Account Tags"
-msgstr ""
+msgstr "Etichette conto"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_folio_advance_payment_inv__deposit_account_id
 msgid "Account used for deposits"
-msgstr ""
+msgstr "Conto usato per le cauzioni"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_needaction
@@ -1441,7 +1945,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__message_needaction
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__message_needaction
 msgid "Action Needed"
-msgstr ""
+msgstr "Azione richiesta"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__active
@@ -1455,12 +1959,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_sale_channel__active
 #: model:ir.model.fields,field_description:pms.field_pms_team_member__active
 msgid "Active"
-msgstr ""
+msgstr "Attiva"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__active_lang_count
 msgid "Active Lang Count"
-msgstr ""
+msgstr "Numero lingue attive"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__activity_ids
@@ -1469,7 +1973,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__activity_ids
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__activity_ids
 msgid "Activities"
-msgstr ""
+msgstr "Attività"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__activity_exception_decoration
@@ -1478,7 +1982,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__activity_exception_decoration
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__activity_exception_decoration
 msgid "Activity Exception Decoration"
-msgstr ""
+msgstr "Decorazione eccezione attività"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__activity_state
@@ -1487,7 +1991,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__activity_state
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__activity_state
 msgid "Activity State"
-msgstr ""
+msgstr "Stato attività"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__activity_type_icon
@@ -1496,100 +2000,100 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__activity_type_icon
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__activity_type_icon
 msgid "Activity Type Icon"
-msgstr ""
+msgstr "Icona tipo attività"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_board_service
 msgid "Add Board Service to reservations"
-msgstr ""
+msgstr "Aggiungere servizi forniti alla prenotazione"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.several_partners_wizard
 msgid "Add Customer"
-msgstr ""
+msgstr "Aggiungi cliente"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_service
 msgid "Add Service to reservations"
-msgstr ""
+msgstr "Aggiungere servizi alla prenotazione"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 msgid "Add a note"
-msgstr ""
+msgstr "Aggiungi una nota"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 msgid "Add a product"
-msgstr ""
+msgstr "Aggiungi un prodotto"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 msgid "Add a section"
-msgstr ""
+msgstr "Aggiungi una sezione"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Add customer"
-msgstr ""
+msgstr "Aggiungi cliente"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__is_add_code_room_name
 msgid "Add in room name"
-msgstr ""
+msgstr "Aggiungi il nome camera"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.booking_engine
 msgid "Add to Folio"
-msgstr ""
+msgstr "Aggiungi al foglio"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__additional_product_tag_ids
 msgid "Additional Product Tag"
-msgstr ""
+msgstr "Etichetta prodotto aggiuntiva"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__mail_information
 msgid "Additional information of the mail"
-msgstr ""
+msgstr "Informazione aggiuntiva della e-mail"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room__address_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
 msgid "Address"
-msgstr ""
+msgstr "Indirizzo"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room__address_is_independent
 msgid "Address Is Independent"
-msgstr ""
+msgstr "L'indirizzo è indipendente"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__type
 msgid "Address Type"
-msgstr ""
+msgstr "Tipo indirizzo"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room__address_id
 msgid "Address of the room"
-msgstr ""
+msgstr "Indirizzo della camera"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 msgid "Aditional Mail Information"
-msgstr ""
+msgstr "Informazione aggiuntiva e-mail"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_team_member__pms_role__administrative
 msgid "Administrative"
-msgstr ""
+msgstr "Amministrativo"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__administrative_user_id
 msgid "Administrative Manager"
-msgstr ""
+msgstr "Responsabile amministrativo"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_line__adults
@@ -1597,7 +2101,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__adults
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__adults
 msgid "Adults"
-msgstr ""
+msgstr "Adulti"
 
 #. module: pms
 #. odoo-python
@@ -1605,7 +2109,7 @@ msgstr ""
 #: code:addons/pms/models/pms_board_service_room_type_line.py:0
 #, python-format
 msgid "Adults or Children must be checked"
-msgstr ""
+msgstr "Adulti o bambini devono essere controllati"
 
 #. module: pms
 #: model:ir.actions.act_window,name:pms.action_advanced_filters_wizard
