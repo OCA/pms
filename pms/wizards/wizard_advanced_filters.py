@@ -13,7 +13,6 @@ PMS_BUSINESS_MODELS = [
 
 
 class AdvancedFiltersWizard(models.TransientModel):
-
     _name = "pms.advanced.filters.wizard"
     _description = "Wizard for advanced filters"
 

@@ -75,8 +75,9 @@ class AccountPayment(models.Model):
             # we do not want it to be associated with others
             if folio_ids and len(set(rec.folio_ids.ids) & set(folio_ids)) == 0:
                 folios = self.env["pms.folio"].browse(folio_ids)
-                # If the payment is in a new invoice, we want it to be associated with all
-                # folios of the invoice that don't are paid yet
+                # If the payment is in a new invoice, we want it to be
+                # associated with all folios of the invoice
+                # that don't are paid yet
                 folio_ids = folios.filtered(lambda f: f.pending_amount > 0).ids
                 rec.write({"folio_ids": [(6, 0, folio_ids)]})
             elif not rec.folio_ids:
@@ -197,7 +198,7 @@ class AccountPayment(models.Model):
         if payment.payment_type == "outbound":
             move.action_switch_invoice_into_refund_credit_note()
         move.action_post()
-        for invoice, payment_move in zip(move, payment.move_id):
+        for invoice, payment_move in zip(move, payment.move_id, strict=True):
             group = defaultdict(list)
             for line in (invoice.line_ids + payment_move.line_ids).filtered(
                 lambda r: not r.reconciled

@@ -586,7 +586,8 @@ class TestPmsFolioInvoice(TestPms, AccountTestInvoicingCommon):
         self.assertEqual(
             expected_qty_invoiced,
             sum(self.reservation1.folio_id.sale_line_ids.mapped("qty_invoiced")),
-            "The quantity of invoiced board services don't match between folio and invoice",
+            "The quantity of invoiced board services "
+            "don't match between folio and invoice",
         )
 
     def test_qty_to_invoice_board_service(self):

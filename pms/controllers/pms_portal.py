@@ -6,7 +6,8 @@ from odoo.http import request
 from odoo.addons.account.controllers.portal import PortalAccount
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.controllers import portal as payment_portal
-from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
+from odoo.addons.portal.controllers.portal import CustomerPortal
+from odoo.addons.portal.controllers.portal import pager as portal_pager
 
 
 class PortalFolio(CustomerPortal):

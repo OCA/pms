@@ -33,7 +33,7 @@ class ResPartner(models.Model):
 
     def _check_enought_invoice_data(self):
         self.ensure_one()
-        res = super(ResPartner, self)._check_enought_invoice_data()
+        res = super()._check_enought_invoice_data()
         if not res:
             return res
         if not self.country_id or not self.city or not (self.street or self.street2):
@@ -46,7 +46,7 @@ class ResPartner(models.Model):
         return True
 
     def write(self, vals):
-        res = super(ResPartner, self).write(vals)
+        res = super().write(vals)
         # REVIEW: Force Contrain vat
         # https://github.com/odoo/odoo/issues/23242
         for partner in self:
@@ -62,7 +62,7 @@ class ResPartner(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        records = super(ResPartner, self).create(vals_list)
+        records = super().create(vals_list)
         # REVIEW: Force Constrain vat
         # https://github.com/odoo/odoo/issues/23242
         for record in records:
@@ -120,7 +120,7 @@ class ResPartner(models.Model):
         return self.with_context(active_test=False).search(domain, limit=1)
 
     def _missing_document(self, vals, partners=False):
-        res = super(ResPartner, self)._missing_document(vals, partners)
+        res = super()._missing_document(vals, partners)
         if not res:
             return res
         if (

@@ -247,6 +247,6 @@ class PmsServiceLine(models.Model):
         for record in self:
             if record.reservation_id:
                 day = record.reservation_id.reservation_line_ids.filtered(
-                    lambda d: d.date == record.date
+                    lambda d, r=record: d.date == r.date
                 )
                 record.cancel_discount = day.cancel_discount

@@ -253,8 +253,8 @@ class ResPartner(models.Model):
         for record in self:
             if record.pms_checkin_partner_ids:
                 last_update_gender = record.pms_checkin_partner_ids.filtered(
-                    lambda x: x.write_date
-                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                    lambda x, r=record: x.write_date
+                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
                 )
                 if last_update_gender and last_update_gender[0].gender:
                     record.gender = last_update_gender[0].gender
@@ -267,8 +267,8 @@ class ResPartner(models.Model):
         for record in self:
             if record.pms_checkin_partner_ids:
                 last_update_birthdate = record.pms_checkin_partner_ids.filtered(
-                    lambda x: x.write_date
-                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                    lambda x, r=record: x.write_date
+                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
                 )
                 if last_update_birthdate and last_update_birthdate[0].birthdate_date:
                     record.birthdate_date = last_update_birthdate[0].birthdate_date
@@ -281,8 +281,8 @@ class ResPartner(models.Model):
         for record in self:
             if record.pms_checkin_partner_ids:
                 last_update_nationality = record.pms_checkin_partner_ids.filtered(
-                    lambda x: x.write_date
-                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                    lambda x, r=record: x.write_date
+                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
                 )
                 if (
                     last_update_nationality
@@ -300,8 +300,8 @@ class ResPartner(models.Model):
         for record in self:
             if record.pms_checkin_partner_ids:
                 last_update_phone = record.pms_checkin_partner_ids.filtered(
-                    lambda x: x.write_date
-                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                    lambda x, r=record: x.write_date
+                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
                 )
                 if last_update_phone and last_update_phone[0].phone:
                     record.phone = last_update_phone[0].phone
@@ -314,8 +314,8 @@ class ResPartner(models.Model):
         for record in self:
             if record.pms_checkin_partner_ids:
                 last_update_street = record.pms_checkin_partner_ids.filtered(
-                    lambda x: x.write_date
-                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                    lambda x, r=record: x.write_date
+                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
                 )
                 if last_update_street and last_update_street[0].residence_street:
                     record.residence_street = last_update_street[0].residence_street
@@ -328,8 +328,8 @@ class ResPartner(models.Model):
         for record in self:
             if record.pms_checkin_partner_ids:
                 last_update_street2 = record.pms_checkin_partner_ids.filtered(
-                    lambda x: x.write_date
-                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                    lambda x, r=record: x.write_date
+                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
                 )
                 if last_update_street2 and last_update_street2[0].residence_street2:
                     record.residence_street2 = last_update_street2[0].residence_street2
@@ -342,8 +342,8 @@ class ResPartner(models.Model):
         for record in self:
             if record.pms_checkin_partner_ids:
                 last_update_zip = record.pms_checkin_partner_ids.filtered(
-                    lambda x: x.write_date
-                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                    lambda x, r=record: x.write_date
+                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
                 )
                 if last_update_zip and last_update_zip[0].residence_zip:
                     record.residence_zip = last_update_zip[0].residence_zip
@@ -356,8 +356,8 @@ class ResPartner(models.Model):
         for record in self:
             if record.pms_checkin_partner_ids:
                 last_update_city = record.pms_checkin_partner_ids.filtered(
-                    lambda x: x.write_date
-                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                    lambda x, r=record: x.write_date
+                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
                 )
                 if last_update_city and last_update_city[0].residence_city:
                     record.residence_city = last_update_city[0].residence_city
@@ -374,8 +374,8 @@ class ResPartner(models.Model):
         for record in self:
             if record.pms_checkin_partner_ids:
                 last_update_country = record.pms_checkin_partner_ids.filtered(
-                    lambda x: x.write_date
-                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                    lambda x, r=record: x.write_date
+                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
                 )
                 if last_update_country and last_update_country[0].residence_country_id:
                     record.residence_country_id = last_update_country[
@@ -392,8 +392,8 @@ class ResPartner(models.Model):
         for record in self:
             if record.pms_checkin_partner_ids:
                 last_update_state = record.pms_checkin_partner_ids.filtered(
-                    lambda x: x.write_date
-                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                    lambda x, r=record: x.write_date
+                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
                 )
                 if last_update_state and last_update_state[0].residence_state_id:
                     record.residence_state_id = last_update_state[0].residence_state_id
@@ -413,8 +413,8 @@ class ResPartner(models.Model):
         for record in self:
             if record.pms_checkin_partner_ids:
                 last_update_checkin_mail = record.pms_checkin_partner_ids.filtered(
-                    lambda x: x.write_date
-                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                    lambda x, r=record: x.write_date
+                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
                 )
                 if last_update_checkin_mail and last_update_checkin_mail[0].email:
                     record.email = last_update_checkin_mail[0].email
@@ -434,8 +434,8 @@ class ResPartner(models.Model):
         for record in self:
             if record.pms_checkin_partner_ids:
                 last_update_mobile = record.pms_checkin_partner_ids.filtered(
-                    lambda x: x.write_date
-                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                    lambda x, r=record: x.write_date
+                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
                 )
                 if last_update_mobile and last_update_mobile[0].mobile:
                     record.mobile = last_update_mobile[0].mobile
@@ -448,8 +448,8 @@ class ResPartner(models.Model):
         for record in self:
             if record.pms_checkin_partner_ids:
                 last_update_firstname = record.pms_checkin_partner_ids.filtered(
-                    lambda x: x.write_date
-                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                    lambda x, r=record: x.write_date
+                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
                 )
                 if last_update_firstname and last_update_firstname[0].firstname:
                     record.firstname = last_update_firstname[0].firstname
@@ -462,8 +462,8 @@ class ResPartner(models.Model):
         for record in self:
             if record.pms_checkin_partner_ids:
                 last_update_lastname = record.pms_checkin_partner_ids.filtered(
-                    lambda x: x.write_date
-                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                    lambda x, r=record: x.write_date
+                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
                 )
                 if last_update_lastname and last_update_lastname[0].lastname:
                     record.lastname = last_update_lastname[0].lastname
@@ -476,8 +476,8 @@ class ResPartner(models.Model):
         for record in self:
             if record.pms_checkin_partner_ids:
                 last_update_lastname2 = record.pms_checkin_partner_ids.filtered(
-                    lambda x: x.write_date
-                    == max(record.pms_checkin_partner_ids.mapped("write_date"))
+                    lambda x, r=record: x.write_date
+                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
                 )
                 if last_update_lastname2 and last_update_lastname2[0].lastname2:
                     record.lastname2 = last_update_lastname2[0].lastname2
@@ -727,7 +727,7 @@ class ResPartner(models.Model):
 
     @api.model
     def _get_key_fields(self):
-        key_fields = super(ResPartner, self)._get_key_fields()
+        key_fields = super()._get_key_fields()
         key_fields.extend(["document_number"])
         return key_fields
 
@@ -789,7 +789,8 @@ class ResPartner(models.Model):
 
     @api.model
     def _missing_document(self, vals, partners=False):
-        # If not is a partner contact and not have vat, then return missing document True
+        # If not is a partner contact and not have vat,
+        # then return missing document True
         if (
             not vals.get("parent_id")
             or (partners and any([not partner.parent_id for partner in partners]))

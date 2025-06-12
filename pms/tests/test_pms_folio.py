@@ -13,7 +13,6 @@ from .common import TestPms
 
 @tagged("post_install", "-at_install")
 class TestPmsFolio(TestPms, AccountTestInvoicingCommon):
-
     # SetUp and Common Scenarios methods
 
     @classmethod
@@ -684,7 +683,8 @@ class TestPmsFolio(TestPms, AccountTestInvoicingCommon):
         )
         with self.assertRaises(
             ValidationError,
-            msg="You cannot create reservations with different reservation_type for a folio",
+            msg="You cannot create reservations with different "
+            "reservation_type for a folio",
         ):
             self.env["pms.reservation"].create(
                 {
@@ -1167,8 +1167,8 @@ class TestPmsFolio(TestPms, AccountTestInvoicingCommon):
          reservation1 -->   sale_channel_direct1
          reservation2 -->   sale_channel_direct1
 
-         Then, reservation2 update sale_channel_origin_id for a diferent one. So the folio
-         has several reservations with different sale_channel_origin_id.
+         Then, reservation2 update sale_channel_origin_id for a diferent one.
+         So the folio has several reservations with different sale_channel_origin_id.
          It should be noted that the check would force having to update
          the folio sale_channel_origin_id (force_update_origin) isn't marked.
 
@@ -1176,7 +1176,8 @@ class TestPmsFolio(TestPms, AccountTestInvoicingCommon):
 
                           sale_channel_origin_id        sale_channel_ids
                           ----------------------
-         Folio1 -------->  sale_channel_direct1 | (sale_channel_direct1, sale_channel_phone)
+         Folio1 -------->  sale_channel_direct1 |
+             (sale_channel_direct1, sale_channel_phone)
          reservation1 -->  sale_channel_direct1
          reservation2 -->  sale_channel_phone
 
@@ -1251,8 +1252,8 @@ class TestPmsFolio(TestPms, AccountTestInvoicingCommon):
          reservation1 -->   sale_channel_direct1
          reservation2 -->   sale_channel_direct1
 
-         Then, reservation2 update sale_channel_origin_id for a diferent one. So the folio
-         has several reservations with different sale_channel_origin_id.
+         Then, reservation2 update sale_channel_origin_id for a diferent one.
+         So the folio has several reservations with different sale_channel_origin_id.
          And the check would force having to update
          the folio sale_channel_origin_id (force_update_origin) isn't marked.
          So sale_channel_origin_id of folio shouldn't change.
@@ -1330,8 +1331,8 @@ class TestPmsFolio(TestPms, AccountTestInvoicingCommon):
          reservation1 -->   sale_channel_direct1
          reservation2 -->   sale_channel_direct1
 
-         Then, reservation2 update sale_channel_origin_id for a diferent one. So the folio
-         has several reservations with different sale_channel_origin_id.
+         Then, reservation2 update sale_channel_origin_id for a diferent one.
+         So the folio has several reservations with different sale_channel_origin_id.
          And the check would force having to update
          the folio sale_channel_origin_id (force_update_origin) is marked.
          So sale_channel_origin_id of folio must change.

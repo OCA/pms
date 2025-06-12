@@ -70,7 +70,7 @@ class PmsCheckinPartner(models.Model):
     def _checkin_mandatory_fields(
         self, residence_country=False, document_type=False, birthdate_date=False
     ):
-        mandatory_fields = super(PmsCheckinPartner, self)._checkin_mandatory_fields(
+        mandatory_fields = super()._checkin_mandatory_fields(
             residence_country, document_type
         )
         mandatory_fields.extend(
@@ -128,7 +128,7 @@ class PmsCheckinPartner(models.Model):
 
     @api.model
     def _checkin_manual_fields(self, country=False):
-        manual_fields = super(PmsCheckinPartner, self)._checkin_manual_fields()
+        manual_fields = super()._checkin_manual_fields()
         manual_fields.extend(
             [
                 "support_number",
@@ -139,12 +139,12 @@ class PmsCheckinPartner(models.Model):
         return manual_fields
 
     def get_document_vals(self):
-        vals = super(PmsCheckinPartner, self).get_document_vals()
+        vals = super().get_document_vals()
         vals["support_number"] = self.support_number
         return vals
 
     def write(self, vals):
-        result = super(PmsCheckinPartner, self).write(vals)
+        result = super().write(vals)
         for record in self:
             if (
                 "state" in vals

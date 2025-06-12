@@ -229,7 +229,8 @@ class PmsCheckinPartner(models.Model):
         index=True,
         comodel_name="res.partner.id_category",
         compute="_compute_document_type",
-        domain="['|', ('country_ids', '=', False), ('country_ids', 'in', document_country_id)]",
+        domain="['|', ('country_ids', '=', False),"
+        " ('country_ids', 'in', document_country_id)]",
     )
     document_expedition_date = fields.Date(
         string="Expedition Date",
@@ -289,7 +290,7 @@ class PmsCheckinPartner(models.Model):
         for record in self:
             if not record.document_number and record.partner_id.id_numbers:
                 last_update_document = record.partner_id.id_numbers.filtered(
-                    lambda x: x.write_date
+                    lambda x, record=record: x.write_date
                     == max(record.partner_id.id_numbers.mapped("write_date"))
                 )
                 if last_update_document and last_update_document[0].name:
@@ -300,7 +301,7 @@ class PmsCheckinPartner(models.Model):
         for record in self:
             if not record.document_type and record.partner_id.id_numbers:
                 last_update_document = record.partner_id.id_numbers.filtered(
-                    lambda x: x.write_date
+                    lambda x, record=record: x.write_date
                     == max(record.partner_id.id_numbers.mapped("write_date"))
                 )
                 if last_update_document and last_update_document[0].category_id:
@@ -311,7 +312,7 @@ class PmsCheckinPartner(models.Model):
         for record in self:
             if not record.document_expedition_date and record.partner_id.id_numbers:
                 last_update_document = record.partner_id.id_numbers.filtered(
-                    lambda x: x.write_date
+                    lambda x, record=record: x.write_date
                     == max(record.partner_id.id_numbers.mapped("write_date"))
                 )
                 if last_update_document and last_update_document[0].valid_from:
@@ -322,7 +323,7 @@ class PmsCheckinPartner(models.Model):
         for record in self:
             if not record.document_country_id and record.partner_id.id_numbers:
                 last_update_document = record.partner_id.id_numbers.filtered(
-                    lambda x: x.write_date
+                    lambda x, record=record: x.write_date
                     == max(record.partner_id.id_numbers.mapped("write_date"))
                 )
                 if last_update_document and last_update_document[0].country_id:
@@ -622,7 +623,7 @@ class PmsCheckinPartner(models.Model):
     def _compute_access_url(self):
         super()._compute_access_url()
         for checkin in self:
-            checkin.access_url = "/my/folios/%s/reservations/%s/checkins/%s" % (
+            checkin.access_url = "/my/folios/{}/reservations/{}/checkins/{}".format(
                 checkin.folio_id.id,
                 checkin.reservation_id.id,
                 checkin.id,
@@ -636,7 +637,8 @@ class PmsCheckinPartner(models.Model):
             if record.departure and record.arrival > record.departure:
                 raise ValidationError(
                     _(
-                        "Departure date (%(departure)s) is prior to arrival on %(arrival)s",
+                        "Departure date (%(departure)s) is prior to"
+                        " arrival on %(arrival)s",
                         departure=record.departure,
                         arrival=record.arrival,
                     )
@@ -647,38 +649,13 @@ class PmsCheckinPartner(models.Model):
         for record in self:
             if record.partner_id:
                 indoor_partner_ids = record.reservation_id.checkin_partner_ids.filtered(
-                    lambda r: r.id != record.id
+                    lambda r, record=record: r.id != record.id
                 ).mapped("partner_id.id")
                 if indoor_partner_ids.count(record.partner_id.id) > 1:
                     record.partner_id = None
                     raise ValidationError(
                         _("This guest is already registered in the room")
                     )
-
-    # REVIEW: Redesign email & mobile control (res.partner? other module in OCA?)
-    # @api.constrains("email")
-    # def check_email_pattern(self):
-    #     for record in self:
-    #         if record.email:
-    #             if not re.search(
-    #                 r"^[a-zA-Z0-9]([a-zA-z0-9\-\_]*[\.]?[a-zA-Z0-9\-\_]+)*"
-    #                 r"@([a-zA-z0-9\-]+([\.][a-zA-Z0-9\-\_]+)?\.[a-zA-Z0-9]+)+$",
-    #                 record.email,
-    #             ):
-    #                 raise ValidationError(_("'%s' is not a valid email", record.email))
-
-    # @api.constrains("mobile")
-    # def check_phone_pattern(self):
-
-    #     for record in self:
-    #         if record.mobile:
-
-    #             if not re.search(
-    #                 r"^(\d{3}[\-\s]?\d{2}[\-\s]?\d{2}[\-\s]?\d{2}[\-\s]?|"
-    #                 r"\d{3}[\-\s]?\d{3}[\-\s]?\d{3})$",
-    #                 str(record.mobile),
-    #             ):
-    #                 raise ValidationError(_("'%s' is not a valid phone", record.mobile))
 
     @api.constrains("document_number")
     def check_document_number(self):
@@ -794,7 +771,8 @@ class PmsCheckinPartner(models.Model):
             else:
                 raise ValidationError(
                     _(
-                        "Is not possible to create the proposed check-in in this reservation"
+                        "Is not possible to create the proposed "
+                        "check-in in this reservation"
                     )
                 )
         return records
@@ -957,7 +935,8 @@ class PmsCheckinPartner(models.Model):
         return True
 
     def open_partner(self):
-        """Utility method used to add an "View Customer" button in checkin partner views"""
+        """Utility method used to add an "View Customer" button
+        in checkin partner views"""
         self.ensure_one()
         partner_form_id = self.env.ref("pms.view_partner_data_form").id
         return {

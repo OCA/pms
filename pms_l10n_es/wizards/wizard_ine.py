@@ -60,7 +60,6 @@ class WizardIne(models.TransientModel):
             start_date + datetime.timedelta(days=x)
             for x in range(0, (end_date - start_date).days + 1)
         ]:
-
             # rooms with capacity 2 but only 1 adult using them
             double_rooms_single_use = (
                 self.env["pms.reservation.line"]
@@ -137,7 +136,7 @@ class WizardIne(models.TransientModel):
             # get num. extra beds
             for ebsl in extra_bed_service_lines:
                 reservation_lines = ebsl.reservation_id.reservation_line_ids.filtered(
-                    lambda x: x.date == ebsl.date
+                    lambda x, ebsl=ebsl: x.date == ebsl.date
                     and x.room_id.in_ine
                     and x.occupies_availability
                 )
@@ -259,7 +258,6 @@ class WizardIne(models.TransientModel):
                 )
                 # all countries except Spain
                 if residence_country_id_code != CODE_SPAIN:
-
                     # get count of each result
                     num = entry["__count"]
 
@@ -290,7 +288,8 @@ class WizardIne(models.TransientModel):
                             )
                             raise ValidationError(
                                 _(
-                                    "The following spanish guests have no state set :%s.",
+                                    "The following spanish guests have no "
+                                    "state set :%s.",
                                     spanish_guests_with_no_state,
                                 )
                             )
@@ -344,7 +343,9 @@ class WizardIne(models.TransientModel):
             )
 
             # arrivals
-            arrivals = hosts.filtered(lambda x: x.reservation_id.checkin == p_date)
+            arrivals = hosts.filtered(
+                lambda x, p_date=p_date: x.reservation_id.checkin == p_date
+            )
 
             # arrivals grouped by residence_country_id
             read_by_arrivals = self.env["pms.checkin.partner"].read_group(
@@ -356,7 +357,9 @@ class WizardIne(models.TransientModel):
             )
 
             # departures
-            departures = hosts.filtered(lambda x: x.reservation_id.checkout == p_date)
+            departures = hosts.filtered(
+                lambda x, p_date=p_date: x.reservation_id.checkout == p_date
+            )
 
             # departures grouped by residence_country_id
             read_by_departures = self.env["pms.checkin.partner"].read_group(
@@ -493,7 +496,6 @@ class WizardIne(models.TransientModel):
             raise ValidationError(_("The property category is not established."))
 
     def ine_generate_xml(self):
-
         self.check_ine_mandatory_fields(self.pms_property_id)
 
         number_of_rooms = sum(
@@ -511,7 +513,8 @@ class WizardIne(models.TransientModel):
             raise ValidationError(
                 _(
                     "The number of seats, excluding extra beds ({num_rooms})"
-                    + " exceeds the number of seats established in the property ({ine_seats})"
+                    + " exceeds the number of seats "
+                    "established in the property ({ine_seats})"
                 ).format(
                     num_rooms=str(number_of_rooms),
                     ine_seats=str(self.pms_property_id.ine_seats),
@@ -579,7 +582,6 @@ class WizardIne(models.TransientModel):
             self.start_date, self.end_date, self.pms_property_id.id
         )
         for key_country, value_country in countries.items():
-
             country = self.env["res.country"].search([("code", "=", key_country)])
 
             if key_country != CODE_SPAIN:
@@ -733,9 +735,10 @@ class WizardIne(models.TransientModel):
             )
 
         # In this point, the groups adrs and percents are well calculated.... but,
-        # our statist friends want the total of the percentage groupings to add up = 100%,
-        # without conceiving that the groupings overlap, so they cannot receive real data
-        # and force us to pervert the original data so that it fits in their grid notebook.
+        # our statist friends want the total of the percentage groupings to add
+        # up = 100%, without conceiving that the groupings overlap, so they cannot
+        # receive real data and force us to pervert the original data so that
+        # it fits in their grid notebook.
         # The purpose of the following lines of code is only to show the inefficiency
         # of the state statistics,
         # so at least I will feel that the effort made some sense :)

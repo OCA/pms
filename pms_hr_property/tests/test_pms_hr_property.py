@@ -7,7 +7,7 @@ from odoo.tests.common import TransactionCase
 
 class TestPmsHrProperty(TransactionCase):
     def setUp(self):
-        super(TestPmsHrProperty, self).setUp()
+        super().setUp()
         self.PmsProperty = self.env["pms.property"]
         self.HrEmployee = self.env["hr.employee"]
         self.Company = self.env["res.company"]

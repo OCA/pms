@@ -201,7 +201,6 @@ def _ses_xml_municipality_code(residence_zip, pms_property):
         get_module_resource(
             "pms_l10n_es", "static/src/", "pms.ine.zip.municipality.ine.relation.csv"
         ),
-        "r",
         newline="",
     ) as f:
         lector = csv.reader(f)
@@ -309,12 +308,10 @@ def _ses_xml_person_elements(comunicacion, checkin_partner):
 
 
 def _get_auth_headers(communication):
-    if (
-        communication.reservation_id.preferred_room_id
-        and communication.reservation_id.preferred_room_id.institution_independent_account
-    ):
-        user = communication.reservation_id.preferred_room_id.institution_user
-        password = communication.reservation_id.preferred_room_id.institution_password
+    prefered_room_id = communication.reservation_id.preferred_room_id
+    if prefered_room_id and prefered_room_id.institution_independent_account:
+        user = prefered_room_id.institution_user
+        password = prefered_room_id.institution_password
     else:
         user = communication.reservation_id.pms_property_id.institution_user
         password = communication.reservation_id.pms_property_id.institution_password
@@ -702,7 +699,8 @@ class TravellerReport(models.TransientModel):
                 if len(institution_property_ids) != 1:
                     raise ValidationError(
                         _(
-                            "All reservation rooms must have the same institution property id."
+                            "All reservation rooms must have the same "
+                            "institution property id."
                         )
                     )
                 institution_property_id = institution_property_ids[0]
@@ -772,10 +770,9 @@ class TravellerReport(models.TransientModel):
                     institution_lessor_id = communication.room_id.institution_lessor_id
                     ses_url = communication.room_id.ses_url
                 else:
-                    institution_lessor_id = (
-                        communication.reservation_id.pms_property_id.institution_lessor_id
-                    )
-                    ses_url = communication.reservation_id.pms_property_id.ses_url
+                    property_obj = communication.reservation_id.pms_property_id
+                    institution_lessor_id = property_obj.institution_lessor_id
+                    ses_url = property_obj.ses_url
                 if (
                     communication.operation == DELETE_OPERATION_CODE
                     and communication.communication_id_to_cancel
@@ -855,10 +852,9 @@ class TravellerReport(models.TransientModel):
                     institution_lessor_id = communication.room_id.institution_lessor_id
                     ses_url = communication.room_id.ses_url
                 else:
-                    institution_lessor_id = (
-                        communication.reservation_id.pms_property_id.institution_lessor_id
-                    )
-                    ses_url = communication.reservation_id.pms_property_id.ses_url
+                    property_obj = communication.reservation_id.pms_property_id
+                    institution_lessor_id = property_obj.institution_lessor_id
+                    ses_url = property_obj.ses_url
                 time_difference = fields.Datetime.now() - communication.create_date
                 hours_difference = (
                     time_difference.days * 24 + time_difference.seconds // 3600
@@ -930,10 +926,9 @@ class TravellerReport(models.TransientModel):
                     institution_lessor_id = communication.room_id.institution_lessor_id
                     ses_url = communication.room_id.ses_url
                 else:
-                    institution_lessor_id = (
-                        communication.reservation_id.pms_property_id.institution_lessor_id
-                    )
-                    ses_url = communication.reservation_id.pms_property_id.ses_url
+                    property_obj = communication.reservation_id.pms_property_id
+                    institution_lessor_id = property_obj.institution_lessor_id
+                    ses_url = property_obj.ses_url
                 var_xml_get_batch = f"""
                     <con:lotes
                     xmlns:con="http://www.neg.hospedajes.mir.es/consultarComunicacion">

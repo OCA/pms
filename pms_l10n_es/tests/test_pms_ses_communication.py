@@ -170,7 +170,8 @@ class TestPmsSesCommunication(TestPms):
                 self.assertEqual(
                     ["A"],
                     last_notification_operations,
-                    "Update adults should create 2 notifications with operations A and B",
+                    "Update adults should create 2 notifications "
+                    "with operations A and B",
                 )
 
     def test_create_notification_when_modify_reservation_and_is_sent(self):
@@ -219,5 +220,6 @@ class TestPmsSesCommunication(TestPms):
                 self.assertEqual(
                     ["A", "B", "A"],
                     reservation_communications,
-                    "Update adults should create 2 notifications with operations A and B",
+                    "Update adults should create 2 "
+                    "notifications with operations A and B",
                 )

@@ -190,8 +190,8 @@ class TestPmsPricelist(TestPms):
         self.assertNotEqual(
             reservation_created.service_ids.price_subtotal,
             not_expected_price,
-            "The reservation created shouldnt take into account the board service pricelist"
-            " item created previously according to the SALE date.",
+            "The reservation created shouldnt take into account the board "
+            "service pricelist item created previously according to the SALE date.",
         )
 
     @freeze_time("2000-01-01")
@@ -663,7 +663,8 @@ class TestPmsPricelist(TestPms):
         (Test case1): item has two properties and a items daily pricelist only
                       can has a one property.
         (Test case2): item has all properties(pms_property_ids = False indicates
-                      all properties)and a items daily pricelist only can has a one property.
+                      all properties)and a items daily pricelist only
+                      can has a one property.
         (Test case3): item compute_price is 'percentage' and only can be 'fixed'
                       for items daily pricelist.
         (Test case4): item compute_price is 'percentage' and has two properties
@@ -959,7 +960,6 @@ class TestPmsPricelist(TestPms):
 
         for tc in test_cases:
             with self.subTest(k=tc):
-
                 # ARRANGE
                 items = []
                 for item in tc["items"]:

@@ -6,7 +6,6 @@ _logger = logging.getLogger(__name__)
 
 
 class WizardPaymentFolio(models.TransientModel):
-
     _name = "wizard.payment.folio"
     _description = "Payments"
 

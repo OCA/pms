@@ -125,15 +125,17 @@ class TestPmsService(TestPms):
     def test_change_origin_board_service_not_change_reservation_origin(self):
         """
         When you change the sale_channel_origin_id of a board_service in a reservation
-        that matched the origin of its reservation, if that reservation has reservation_lines
-        with that sale_channel_id, it doesn't change the origin of reservation
+        that matched the origin of its reservation, if that reservation
+        has reservation_lines with that sale_channel_id, it doesn't
+        change the origin of reservation
 
         Reservation --> sale_channel_origin = Door          sale_channel_ids = Door
                     |
                     --> board_services.sale_channel_origin = Door
 
         Change board_service origin to Mail
-        Reservation --> sale_channel_origin = Door          sale_channel_ids = {Door, Mail}
+        Reservation --> sale_channel_origin = Door
+        sale_channel_ids = {Door, Mail}
                     |
                     --> board_services.sale_channel_origin = Mail
 
@@ -195,7 +197,8 @@ class TestPmsService(TestPms):
     def test_change_origin_board_service_in_sale_channels(self):
         """
         When sale_channel_origin_id of board_service is changed, the sale_channel_ids
-        of its reservation and folio are recalculated. Check that these calculations are correct
+        of its reservation and folio are recalculated.
+        Check that these calculations are correct
 
         Reservation --> sale_channel_origin = Door        sale_channel_ids = Door
                     |
@@ -203,7 +206,8 @@ class TestPmsService(TestPms):
 
         Change origin of board services to Phone and
         check sale_channel_ids of reservation and folio:
-        Reservation --> sale_channel_origin = Door        sale_channel_ids = {Door, Phone}
+        Reservation --> sale_channel_origin = Door
+        sale_channel_ids = {Door, Phone}
                     |
                     ---> board_service.sale_channel_origin = Phone
 
@@ -270,7 +274,8 @@ class TestPmsService(TestPms):
                 self.assertItemsEqual(
                     sale_channel,
                     expected_sale_channel_ids,
-                    "sale_channel_ids must contain sale_channel_origin_id of all board_service",
+                    "sale_channel_ids must contain sale_channel_origin_id of "
+                    "all board_service",
                 )
 
     @freeze_time("2002-01-19")
@@ -401,7 +406,8 @@ class TestPmsService(TestPms):
                     |
                     --> service.sale_channel_origin = Door
 
-        Add in reservation another service with sale_channel_origin = Phone, expected results:
+        Add in reservation another service with sale_channel_origin = Phone,
+        expected results:
 
         Reservation --> sale_channel_origin = Door    sale_channel_ids = Door, Phone
                     |
@@ -466,15 +472,17 @@ class TestPmsService(TestPms):
                 self.assertItemsEqual(
                     sale_channel,
                     expected_sale_channel_ids,
-                    "sale_channel_ids must contain sale_channel_id of all board_service_lines",
+                    "sale_channel_ids must contain sale_channel_id of all "
+                    "board_service_lines",
                 )
 
     @freeze_time("2002-02-16")
     def test_change_origin_service_not_change_reservation_origin(self):
         """
         When you change the sale_channel_origin_id of a service in a reservation
-        that matched the origin of its reservation, if that reservation has reservation_lines
-        with that sale_channel_id, it doesn't change the origin of reservation
+        that matched the origin of its reservation, if that reservation has
+        reservation_lines with that sale_channel_id, it doesn't change the
+        origin of reservation
 
         Reservation --> sale_channel_origin = Door
                     |
@@ -596,7 +604,8 @@ class TestPmsService(TestPms):
                 self.assertItemsEqual(
                     sale_channel,
                     expected_sale_channel_ids,
-                    "sale_channel_ids must contain sale_channel_origin_id of all services",
+                    "sale_channel_ids must contain sale_channel_origin_id of"
+                    " all services",
                 )
 
     @freeze_time("2002-02-25")
@@ -935,9 +944,10 @@ class TestPmsService(TestPms):
     @freeze_time("2002-03-10")
     def test_change_origin_folio_change_origin_service(self):
         """
-        Check that when a folio has several services with different sale_channel_origin_id
-        and change sale_channel_origin_id of folio, only changes origin of those services that
-        match with the sale_channel_origin changed
+        Check that when a folio has several services with different
+        sale_channel_origin_id and change sale_channel_origin_id of folio,
+        only changes origin of those services that match with
+        the sale_channel_origin changed
 
         Folio ----> sale_channel_origin_id = Door
               |
@@ -997,9 +1007,10 @@ class TestPmsService(TestPms):
     @freeze_time("2002-03-13")
     def test_change_origin_folio_no_change_origin_service(self):
         """
-        Check that when a folio has several services with different sale_channel_origin_id
-        and change sale_channel_origin_id of folio, only changes origin of those services that
-        match with the sale_channel_origin changed. Then services that didn't initially
+        Check that when a folio has several services with different
+        sale_channel_origin_id and change sale_channel_origin_id of folio,
+        only changes origin of those services that match
+        with the sale_channel_origin changed. Then services that didn't initially
         match with sale_channel_origin of folio shouldn't have changed
 
         Folio ----> sale_channel_origin_id = Door

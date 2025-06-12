@@ -6,7 +6,6 @@ from odoo import fields, models
 
 
 class HrEmployeeBase(models.AbstractModel):
-
     _inherit = "hr.employee.base"
 
     property_ids = fields.Many2many(

@@ -508,7 +508,8 @@ class TestPmsAutomatedMails(TestPms):
         Check that when creating an automated mail with parameters
         action = 'checkin' and moment = 'in_act' the filter_domain
         field of the automated_action is
-        [('state', '=', 'onboard'), ('pms_property_id', '=', [value of property_id.id])]].
+        [('state', '=', 'onboard'),
+         ('pms_property_id', '=', [value of property_id.id])]].
         """
         # ARRANGE
         automated_mail_vals = {
@@ -587,5 +588,6 @@ class TestPmsAutomatedMails(TestPms):
             + pms_property_id_str
             + ")]",
             "The filter_pre_domain of the automated action must "
-            "be '[('state', '=', 'out'), ('pms_property_id', '=', [value of property_id.id])]",
+            "be '[('state', '=', 'out'), "
+            "('pms_property_id', '=', [value of property_id.id])]",
         )

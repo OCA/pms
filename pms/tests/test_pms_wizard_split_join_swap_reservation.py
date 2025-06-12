@@ -948,7 +948,6 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
             )
 
     def test_split_reservation_check_room_splitted_not_valid_03(self):
-
         """
         Try to split the reservation for one night and the reservation
         not exists.

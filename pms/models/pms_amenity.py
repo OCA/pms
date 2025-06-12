@@ -42,5 +42,6 @@ class PmsRoomAmenity(models.Model):
     )
     is_add_code_room_name = fields.Boolean(
         string="Add in room name",
-        help="True if the Internal Reference should appear in the display name of the rooms",
+        help="True if the Internal Reference should appear in "
+        "the display name of the rooms",
     )

@@ -241,14 +241,14 @@ class PmsService(models.Model):
                 else service.folio_id.partner_id
             )
             if (
-                service.folio_id.partner_id == service.company_id.partner_id
+                partner == service.company_id.partner_id
                 and service.company_id.self_billed_tax_ids
             ):
                 service.tax_ids = service.company_id.self_billed_tax_ids
             else:
                 service.tax_ids = service.product_id.taxes_id.filtered(
-                    lambda r: not service.company_id
-                    or r.company_id == service.company_id
+                    lambda r, s=service: not s.company_id
+                    or r.company_id == s.company_id
                 )
 
     @api.depends("service_line_ids", "service_line_ids.day_qty")
@@ -349,9 +349,8 @@ class PmsService(models.Model):
         "reservation_id.children",
         "product_qty",
     )
-    # flake8:noqa=C901
+    # ruff: noqa: C901
     def _compute_service_line_ids(self):
-
         for service in self:
             if (
                 service.env.context.get("skip_compute_board_service_ids", False)
@@ -384,7 +383,7 @@ class PmsService(models.Model):
                                 i += 1
                             idate = reservation.checkin + timedelta(days=i)
                             old_line = service.service_line_ids.filtered(
-                                lambda r: r.date == idate
+                                lambda r, idate=idate: r.date == idate
                             )
                             price_unit = service._get_price_unit_line(idate)
                             if old_line and old_line.auto_qty:
@@ -518,9 +517,9 @@ class PmsService(models.Model):
         result = []
         for rec in self:
             name = []
-            name.append("{name}".format(name=rec.name))
+            name.append(f"{rec.name}")
             if rec.reservation_id.name:
-                name.append("{name}".format(name=rec.reservation_id.name))
+                name.append(f"{rec.reservation_id.name}")
             result.append((rec.id, ", ".join(name)))
         return result
 
@@ -658,7 +657,7 @@ class PmsService(models.Model):
             if (
                 any(
                     service.sale_channel_origin_id == folio.sale_channel_origin_id
-                    for service in self.filtered(lambda r: r.folio_id == folio)
+                    for service in self.filtered(lambda r, f=folio: r.folio_id == f)
                 )
                 and vals["sale_channel_origin_id"] != folio.sale_channel_origin_id.id
                 and (len(folio.reservation_ids) == 0)

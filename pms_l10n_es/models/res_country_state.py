@@ -11,8 +11,7 @@ class ResCountryState(models.Model):
         for record in self:
             if record.country_id.code == "ES" and not record.ine_code:
                 raise models.ValidationError(
-                    _(
-                        "The state %(state)s of %(country)s must have an INE code"
-                        % {"state": record.name, "country": record.country_id.name}
+                    _("The state {state} of {country} must have an INE code").format(
+                        state=record.name, country=record.country_id.name
                     )
                 )

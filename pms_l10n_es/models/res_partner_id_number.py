@@ -22,12 +22,10 @@ class ResPartnerIdNumber(models.Model):
             if record.partner_id.pms_checkin_partner_ids:
                 last_update_support_number = (
                     record.partner_id.pms_checkin_partner_ids.filtered(
-                        lambda x: x.document_id == record
+                        lambda x, r=record: x.document_id == r
                         and x.write_date
                         == max(
-                            record.partner_id.pms_checkin_partner_ids.mapped(
-                                "write_date"
-                            )
+                            r.partner_id.pms_checkin_partner_ids.mapped("write_date")
                         )
                     )
                 )

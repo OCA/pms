@@ -592,30 +592,30 @@ class TestWizardINE(TestPms):
 
     def test_arrivals_departures_pernoctations_by_date(self):
         """
-        +===========================+==============+==============+=============+=============+
-        |                           |      01      |      02      |     03      |   04        |
-        +===========================+==============+==============+=============+=============+
-        | r1  2 adults              | italy,russia | italy,russia |             |             |
-        +---------------------------+--------------+--------------+-------------+-------------+
-        | r2  2 adults              |              | italy,italy  | italy,italy |             |
-        +---------------------------+--------------+--------------+-------------+-------------+
-        | r3  1 adult               |              | afghanistan  | afghanistan | afghanistan |
-        +---------------------------+--------------+--------------+-------------+-------------+
-        | r4  2 adults              |              | afghanistan  | afghanistan | afghanistan |
-        |                           |              | afghanistan  | afghanistan | afghanistan |
-        +===========================+==============+==============+=============+=============+
-        | arrivals  Afghanistan     |              | 3            |             |             |
-        | arrivals  Italy           | 1            | 2            |             |             |
-        | arrivals  Russia          | 1            |              |             |             |
-        +===========================+==============+==============+=============+=============+
-        | pernoctations Afghanistan |              | 3            | 3           |             |
-        | pernoctations Italy       | 1            | 2            |             |             |
-        | pernoctations Russia      | 1            |              |             |             |
-        +===========================+==============+==============+=============+=============+
-        | departures Afghanistan    |              |              |             | 3           |
-        | departures Italy          |              | 1            | 2           |             |
-        | departures Russia         |              | 1            |             |             |
-        +===========================+==============+==============+=============+=============+
+        +====================+==============+==============+=============+=============+
+        |                    |      01      |      02      |     03      |   04        |
+        +====================+==============+==============+=============+=============+
+        | r1  2 adults       | italy,russia | italy,russia |             |             |
+        +--------------------+--------------+--------------+-------------+-------------+
+        | r2  2 adults       |              | italy,italy  | italy,italy |             |
+        +--------------------+--------------+--------------+-------------+-------------+
+        | r3  1 adult        |              | afghanistan  | afghanistan | afghanistan |
+        +--------------------+--------------+--------------+-------------+-------------+
+        | r4  2 adults       |              | afghanistan  | afghanistan | afghanistan |
+        |                    |              | afghanistan  | afghanistan | afghanistan |
+        +====================+==============+==============+=============+=============+
+        | arr  Afghanistan   |              | 3            |             |             |
+        | arrivals  Italy    | 1            | 2            |             |             |
+        | arrivals  Russia   | 1            |              |             |             |
+        +====================+==============+==============+=============+=============+
+        | pernoc Afghanistan |              | 3            | 3           |             |
+        | pernoctations Italy| 1            | 2            |             |             |
+        | pernoc Russia      | 1            |              |             |             |
+        +====================+==============+==============+=============+=============+
+        | depar Afghanistan  |              |              |             | 3           |
+        | departures Italy   |              | 1            | 2           |             |
+        | departures Russia  |              | 1            |             |             |
+        +====================+==============+==============+=============+=============+
         """
         # ARRANGE
         self.ideal_scenario()
@@ -930,30 +930,30 @@ class TestWizardINE(TestPms):
         self,
     ):
         """
-        +===========================+==============+==============+=============+=============+
-        |                           |      01      |      02      |     03      |   04        |
-        +===========================+==============+==============+=============+=============+
-        | r1  2 adults              | italy, False | italy, False |             |             |
-        +---------------------------+--------------+--------------+-------------+-------------+
-        | r2  2 adults              |              | italy,italy  | italy,italy |             |
-        +---------------------------+--------------+--------------+-------------+-------------+
-        | r3  1 adult               |              | afghanistan  | afghanistan | afghanistan |
-        +---------------------------+--------------+--------------+-------------+-------------+
-        | r4  2 adults              |              | afghanistan  | afghanistan | afghanistan |
-        |                           |              | afghanistan  | afghanistan | afghanistan |
-        +===========================+==============+==============+=============+=============+
-        | arrivals  Afghanistan     |              | 3            |             |             |
-        | arrivals  Italy           | 1            | 2            |             |             |
-        | arrivals  Russia          | 1            |              |             |             |
-        +===========================+==============+==============+=============+=============+
-        | pernoctations Afghanistan |              | 3            | 3           |             |
-        | pernoctations Italy       | 1            | 2            |             |             |
-        | pernoctations Russia      | 1            |              |             |             |
-        +===========================+==============+==============+=============+=============+
-        | departures Afghanistan    |              |              |             | 3           |
-        | departures Italy          |              | 1            | 2           |             |
-        | departures Russia         |              | 1            |             |             |
-        +===========================+==============+==============+=============+=============+
+        +====================+==============+==============+=============+=============+
+        |                    |      01      |      02      |     03      |   04        |
+        +====================+==============+==============+=============+=============+
+        | r1  2 adults       | italy, False | italy, False |             |             |
+        +--------------------+--------------+--------------+-------------+-------------+
+        | r2  2 adults       |              | italy,italy  | italy,italy |             |
+        +--------------------+--------------+--------------+-------------+-------------+
+        | r3  1 adult        |              | afghanistan  | afghanistan | afghanistan |
+        +--------------------+--------------+--------------+-------------+-------------+
+        | r4  2 adults       |              | afghanistan  | afghanistan | afghanistan |
+        |                    |              | afghanistan  | afghanistan | afghanistan |
+        +====================+==============+==============+=============+=============+
+        | a  Afghanistan     |              | 3            |             |             |
+        | arrivals  Italy    | 1            | 2            |             |             |
+        | arrivals  Russia   | 1            |              |             |             |
+        +====================+==============+==============+=============+=============+
+        | perno Afghanistan  |              | 3            | 3           |             |
+        | pernoctations Italy| 1            | 2            |             |             |
+        | pernoc Russia      | 1            |              |             |             |
+        +====================+==============+==============+=============+=============+
+        | depart Afghanistan |              |              |             | 3           |
+        | departures Italy   |              | 1            | 2           |             |
+        | departures Russia  |              | 1            |             |             |
+        +====================+==============+==============+=============+=============+
         """
         # ARRANGE
         self.ideal_scenario()
@@ -1050,7 +1050,8 @@ class TestWizardINE(TestPms):
         # ACT & ASSERT
         with self.assertRaises(
             ValidationError,
-            msg="Cannot generate INE if some checkin partner from Spain has no nationality",
+            msg="Cannot generate INE if some checkin partner "
+            "from Spain has no nationality",
         ):
             self.env["pms.ine.wizard"].ine_countries(
                 start_date, end_date, self.pms_property1.id

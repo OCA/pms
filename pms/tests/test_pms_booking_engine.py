@@ -451,8 +451,8 @@ class TestPmsBookingEngine(TestPms):
 
     def test_values_reservation_created(self):
         """
-        Check with subtests that the values of the fields of a reservation created through
-        a booking engine wizard are correct.
+        Check with subtests that the values of the fields of a reservation created
+        through a booking engine wizard are correct.
         --------------
         The wizard is created with a partner_id, a pricelist, and start and end
         dates for property1. The availability items are searched for that property
@@ -689,8 +689,8 @@ class TestPmsBookingEngine(TestPms):
     def test_price_total_with_board_service(self):
         """
         In booking engine when in availability results choose a room or several
-        and also choose a board service, the total price is calculated from price of the room,
-        number of nights, board service included price and number of guests
+        and also choose a board service, the total price is calculated from price of the
+        room, number of nights, board service included price and number of guests
         """
         # ARRANGE
         checkin = fields.date.today()
