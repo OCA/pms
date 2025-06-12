@@ -1369,12 +1369,14 @@ class PmsFolio(models.Model):
     @api.depends("reservation_ids", "reservation_ids.checkin")
     def _compute_first_checkin(self):
         for record in self:
-            if record.reservation_ids:
-                checkins = record.reservation_ids.mapped("checkin")
+            checkins = record.reservation_ids.filtered(lambda r: r.checkin).mapped(
+                "checkin"
+            )
+            if checkins:
                 record.first_checkin = min(checkins)
 
     def _compute_days_to_checkin(self):
-        for record in self:
+        for record in self.filtered("first_checkin"):
             record.days_to_checkin = (record.first_checkin - fields.Date.today()).days
 
     def _search_days_to_checkin(self, operator, value):
@@ -1394,14 +1396,13 @@ class PmsFolio(models.Model):
                     for reservation in record.reservation_ids
                     if reservation.checkout
                 ]
-                record.last_checkout = max(checkouts) if checkouts else None
+                record.last_checkout = max(checkouts) if checkouts else False
 
     def _compute_days_to_checkout(self):
         for record in self:
             if not record.last_checkout:
                 record.days_to_checkout = 0
             else:
-                # Calculate the number of days until the last checkout date
                 record.days_to_checkout = (
                     record.last_checkout - fields.Date.today()
                 ).days
