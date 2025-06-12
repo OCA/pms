@@ -163,7 +163,8 @@ class TestTouristTaxComputation(TestPms):
     @freeze_time("2025-07-01")
     def test_tourist_tax_stops_after_max_night(self):
         """
-        Test that tax is not applied beyond the configured max night (apply_to_night = 3).
+        Test that tax is not applied beyond the configured
+        max night (apply_to_night = 3).
         """
         self.env["product.product"].create(
             {

@@ -4,7 +4,6 @@ from odoo import api, fields, models
 
 
 class WizardFolioChanges(models.TransientModel):
-
     _name = "wizard.folio.changes"
     _description = "Folio Changes"
 
@@ -99,7 +98,8 @@ class WizardFolioChanges(models.TransientModel):
         compute="_compute_nights",
     )
     dates_incongruence = fields.Boolean(
-        help="Indicates that there are reservations with different checkin and/or checkout",
+        help="Indicates that there are reservations with different checkin "
+        "and/or checkout",
         compute="_compute_dates_incongruence",
         store=True,
     )
@@ -371,14 +371,12 @@ class WizardFolioChanges(models.TransientModel):
             ):
                 reservation.board_service_room_id = (
                     reservation.room_type_id.board_service_room_type_ids.filtered(
-                        lambda x: x.pms_board_service_id.id == new_board_service_id
-                        and (
-                            reservation.folio_id.pms_property_id.id
-                            == x.pms_property_id.ids
-                        )
+                        lambda x, r=reservation: x.pms_board_service_id.id
+                        == new_board_service_id
+                        and (r.folio_id.pms_property_id.id == x.pms_property_id.ids)
                         and (
                             not x.pricelist_ids
-                            or reservation.pricelist_id.id in x.pricelist_ids.ids
+                            or r.pricelist_id.id in x.pricelist_ids.ids
                         )
                     )
                 )

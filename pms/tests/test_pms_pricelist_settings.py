@@ -7,8 +7,8 @@ class TestPmsPricelistSettings(TestPms):
     def test_advanced_pricelist_exists(self):
         """
         Check if value of Pricelist parameter in sales settings is Advanced Price Rules.
-        Find the value of Pricelist parameter
-        with the key product.product_pricelist_setting and check if is equal to "advanced".
+        Find the value of Pricelist parameter with the key
+        product.product_pricelist_setting and check if is equal to "advanced".
         """
         # ARRANGE
         key = "product.product_pricelist_setting"

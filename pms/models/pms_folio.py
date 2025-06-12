@@ -696,7 +696,7 @@ class PmsFolio(models.Model):
                     {
                         "partner_id": partner.id,
                         "lines": lines_to_invoice.filtered(
-                            lambda r: r.default_invoice_to == partner
+                            lambda r, p=partner: r.default_invoice_to == p
                         ),
                     }
                 )
@@ -949,17 +949,17 @@ class PmsFolio(models.Model):
         for folio in self:
             if folio.partner_id:
                 addr = folio.partner_id.address_get(["invoice"])
-                if not addr["invoice"] in folio.partner_invoice_ids.ids:
+                if addr["invoice"] not in folio.partner_invoice_ids.ids:
                     folio.partner_invoice_ids = [(4, addr["invoice"])]
             for reservation in folio.reservation_ids:
                 if reservation.partner_id:
                     addr = reservation.partner_id.address_get(["invoice"])
-                    if not addr["invoice"] in folio.partner_invoice_ids.ids:
+                    if addr["invoice"] not in folio.partner_invoice_ids.ids:
                         folio.partner_invoice_ids = [(4, addr["invoice"])]
                 for checkin in reservation.checkin_partner_ids:
                     if checkin.partner_id:
                         addr = checkin.partner_id.address_get(["invoice"])
-                        if not addr["invoice"] in folio.partner_invoice_ids.ids:
+                        if addr["invoice"] not in folio.partner_invoice_ids.ids:
                             folio.partner_invoice_ids = [(4, addr["invoice"])]
         self.filtered(lambda f: not f.partner_invoice_ids).partner_invoice_ids = False
 
@@ -1096,8 +1096,8 @@ class PmsFolio(models.Model):
             if record.partner_id and record.partner_id != record.agency_id:
                 record.partner_name = record.partner_id.name
             elif record.agency_id and not record.partner_name:
-                # if the customer not is the agency but we dont know the customer's name,
-                # set the name provisional
+                # if the customer not is the agency but we dont know
+                # the customer's name, set the name provisional
                 record.partner_name = _("Reservation from ") + record.agency_id.name
             elif not record.partner_name:
                 record.partner_name = False
@@ -1436,7 +1436,8 @@ class PmsFolio(models.Model):
                 SELECT array_agg(fo.id)
                     FROM pms_folio fo
                     JOIN folio_sale_line fol ON fol.folio_id = fo.id
-                    JOIN folio_sale_line_invoice_rel foli_rel ON foli_rel.sale_line_id = fol.id
+                    JOIN folio_sale_line_invoice_rel foli_rel
+                        ON foli_rel.sale_line_id = fol.id
                     JOIN account_move_line aml ON aml.id = foli_rel.invoice_line_id
                     JOIN account_move am ON am.id = aml.move_id
                 WHERE
@@ -1835,7 +1836,7 @@ class PmsFolio(models.Model):
             "url": self.get_portal_url(),
         }
 
-    # flake8:noqa=C901
+    # ruff: noqa: C901
     def _create_invoices(
         self,
         grouped=False,
@@ -2084,12 +2085,12 @@ class PmsFolio(models.Model):
         if not journal:
             raise UserError(
                 _(
-                    "Please define an accounting sales journal for the company %(company_name)s (%(company_id)s)."
+                    "Please define an accounting sales journal"
+                    " for the company {company_name} ({company_id})."
+                ).format(
+                    company_name=self.company_id.name,
+                    company_id=self.company_id.id,
                 )
-                % {
-                    "company_name": self.company_id.name,
-                    "company_id": self.company_id.id,
-                }
             )
         ref = ""
         if self.name:
@@ -2146,7 +2147,7 @@ class PmsFolio(models.Model):
         reference = folio.name
         if folio.external_reference:
             reference += " - " + folio.external_reference
-        if ref and not ref in reference:
+        if ref and ref not in reference:
             reference += ": " + ref
         vals = {
             "journal_id": journal.id,
@@ -2218,7 +2219,7 @@ class PmsFolio(models.Model):
         reference = folio.name
         if folio.external_reference:
             reference += " - " + folio.external_reference
-        if ref and not ref in reference:
+        if ref and ref not in reference:
             reference += ": " + ref
         vals = {
             "journal_id": journal.id,
@@ -2409,7 +2410,7 @@ class PmsFolio(models.Model):
         except Exception as e:
             _logger.error(
                 "Error while getting reservation notes for folio %s: %s",
-                folio.id,
+                reservation.folio_id.id,
                 e,
             )
 
@@ -2429,9 +2430,9 @@ class PmsFolio(models.Model):
                 lazy=False,
             )
             current_sale_service_ids = reservation.sale_line_ids.filtered(
-                lambda x: x.reservation_id.id == reservation.id
+                lambda x, s=service: x.reservation_id.id == reservation.id
                 and not x.display_type
-                and x.service_id.id == service.id
+                and x.service_id.id == s.id
             )
 
             for index, item in enumerate(expected_reservation_services):
@@ -2519,10 +2520,10 @@ class PmsFolio(models.Model):
                     lazy=False,
                 )
                 current_folio_service_ids = folio.sale_line_ids.filtered(
-                    lambda x: x.service_id.folio_id.id == folio.id
+                    lambda x, fs=folio_service: x.service_id.folio_id.id == folio.id
                     and not x.display_type
                     and not x.reservation_id
-                    and x.service_id.id == folio_service.id
+                    and x.service_id.id == fs.id
                 )
 
                 for index, item in enumerate(expected_folio_services):
@@ -2605,8 +2606,8 @@ class PmsFolio(models.Model):
     @api.model
     def concat_discounts(self, discount, cancel_discount):
         discount_factor = 1.0
-        for discount in [discount, cancel_discount]:
-            discount_factor = discount_factor * ((100.0 - discount) / 100.0)
+        for discount_item in [discount, cancel_discount]:
+            discount_factor = discount_factor * ((100.0 - discount_item) / 100.0)
         final_discount = 100.0 - (discount_factor * 100.0)
         return final_discount
 
@@ -2643,7 +2644,8 @@ class PmsFolio(models.Model):
         if any(folio.currency_id != currency for folio in self):
             raise ValidationError(
                 _(
-                    "A transaction can't be linked to folios having different currencies."
+                    "A transaction can't be linked to folios"
+                    " having different currencies."
                 )
             )
 
@@ -2668,7 +2670,8 @@ class PmsFolio(models.Model):
                 if payment_token and payment_token.acquirer_id != acquirer:
                     raise ValidationError(
                         _(
-                            "Invalid token found! Token acquirer %(token_acquirer)s != %(acquirer)s"
+                            "Invalid token found! Token"
+                            "acquirer %(token_acquirer)s != %(acquirer)s"
                         )
                         % {
                             "token_acquirer": payment_token.acquirer_id.name,
@@ -2678,7 +2681,8 @@ class PmsFolio(models.Model):
                 if payment_token and payment_token.partner_id != partner:
                     raise ValidationError(
                         _(
-                            "Invalid token found! Token partner %(token_partner)s != %(partner)s"
+                            "Invalid token found! Token"
+                            "partner %(token_partner)s != %(partner)s"
                         )
                         % {
                             "token_partner": payment_token.partner.name,
@@ -2744,6 +2748,7 @@ class PmsFolio(models.Model):
             return reservation._render_invoice_note()
 
     def _get_portal_return_action(self):
-        """Return the action used to display orders when returning from customer portal."""
+        """Return the action used to display orders
+        when returning from customer portal."""
         self.ensure_one()
         return self.env.ref("pms.open_pms_folio1_form_tree_all")

@@ -158,7 +158,7 @@ class PmsReservationLine(models.Model):
         result = []
         for res in self:
             date = fields.Date.from_string(res.date)
-            name = "{}/{}".format(date.day, date.month)
+            name = f"{date.day}/{date.month}"
             result.append((res.id, name))
         return result
 
@@ -248,7 +248,8 @@ class PmsReservationLine(models.Model):
     def _get_product_price_context(self):
         """Gives the context for product price computation.
 
-        :return: additional context to consider extra prices from attributes in the base product price.
+        :return: additional context to consider extra prices from attributes
+            in the base product price.
         :rtype: dict
         """
         self.ensure_one()
@@ -270,7 +271,7 @@ class PmsReservationLine(models.Model):
 
         return res
 
-    # flake8: noqa=C901
+    # ruff: noqa: C901
     @api.depends("reservation_id.room_type_id", "reservation_id.preferred_room_id")
     def _compute_room_id(self):
         for line in self.filtered("reservation_id.room_type_id").sorted(
@@ -320,7 +321,6 @@ class PmsReservationLine(models.Model):
                     reservation = reservation.with_context(not_split=True)
                     # if the reservation has a preferred room
                     if reservation.preferred_room_id:
-
                         # if the preferred room is available
                         if reservation.preferred_room_id in rooms_available:
                             line.room_id = reservation.preferred_room_id
@@ -338,13 +338,13 @@ class PmsReservationLine(models.Model):
                             else:
                                 raise ValidationError(
                                     _(
-                                        "%(room_name)s: No room available in %(checkin)s <-> %(checkout)s."
+                                        "{room_name}: No room available in "
+                                        "{checkin} <-> {checkout}."
+                                    ).format(
+                                        room_name=reservation.preferred_room_id.name,
+                                        checkin=reservation.checkin,
+                                        checkout=reservation.checkout,
                                     )
-                                    % {
-                                        "room_name": reservation.preferred_room_id.name,
-                                        "checkin": reservation.checkin,
-                                        "checkout": reservation.checkout,
-                                    }
                                 )
 
                     # otherwise we assign the first of those
@@ -363,7 +363,8 @@ class PmsReservationLine(models.Model):
                 ):
                     if self.env.context.get("force_overbooking"):
                         line.room_id = reservation.room_type_id.room_ids.filtered(
-                            lambda r: r.pms_property_id == line.pms_property_id
+                            lambda r, line=line: r.pms_property_id
+                            == line.pms_property_id
                         )[0]
                     else:
                         raise ValidationError(
@@ -424,7 +425,6 @@ class PmsReservationLine(models.Model):
 
                         # if there is a tie in the rankings
                         if len(bests) > 1:
-
                             # we get the line from last night
                             date_last_night = line.date + datetime.timedelta(days=-1)
                             line_past_night = self.env["pms.reservation.line"].search(
@@ -509,7 +509,8 @@ class PmsReservationLine(models.Model):
                 )
                 if avail:
                     room_ids = record.room_id.room_type_id.room_ids.filtered(
-                        lambda r: r.pms_property_id == record.pms_property_id
+                        lambda r, record=record: r.pms_property_id
+                        == record.pms_property_id
                     ).ids
                     if (
                         record.occupies_availability
@@ -528,12 +529,12 @@ class PmsReservationLine(models.Model):
                     ):
                         raise ValidationError(
                             _(
-                                "There is no availability for the room type %(room_type)s on %(date)s"
+                                "There is no availability for the room "
+                                "type {room_type} on {date}"
+                            ).format(
+                                room_type=record.room_id.room_type_id.name,
+                                date=record.date,
                             )
-                            % {
-                                "room_type": record.room_id.room_type_id.name,
-                                "date": record.date,
-                            }
                         )
                     record.avail_id = avail.id
                 else:
@@ -648,7 +649,7 @@ class PmsReservationLine(models.Model):
     def constrains_duplicated_date(self):
         for record in self:
             duplicated = record.reservation_id.reservation_line_ids.filtered(
-                lambda r: r.date == record.date and r.id != record.id
+                lambda r, record=record: r.date == record.date and r.id != record.id
             )
             if duplicated:
                 raise ValidationError(_("Duplicated reservation line date"))

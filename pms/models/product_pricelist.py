@@ -118,7 +118,8 @@ class ProductPricelist(models.Model):
         if not pms_property_id:
             raise ValidationError(_("Property is required in pms context"))
 
-        # Fetch all rules potentially matching specified products/templates/categories and date
+        # Fetch all rules potentially matching specified products/templates/categories
+        # and date
         rules = self._get_applicable_rules(products, date, **kwargs)
 
         results = {}
@@ -151,7 +152,7 @@ class ProductPricelist(models.Model):
                 uom=target_uom,
                 date=date,
                 currency=self.currency_id,
-                **kwargs
+                **kwargs,
             )
             results[product.id] = (price, suitable_rule.id)
 
@@ -200,7 +201,6 @@ class ProductPricelist(models.Model):
     #                 )
 
     def open_massive_changes_wizard(self):
-
         if self.ensure_one():
             return {
                 "view_type": "form",

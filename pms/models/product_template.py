@@ -152,7 +152,7 @@ class ProductTemplate(models.Model):
         options = []
         for month in range(1, 13):
             for day in range(1, days_by_month[month] + 1):
-                mmdd = "{month:02d}-{day:02d}".format(month=month, day=day)
+                mmdd = f"{month:02d}-{day:02d}"
                 dt = date(2024, month, day)  # Dummy year
                 label = babel.dates.format_date(dt, format="d MMMM", locale=lang)
                 options.append((mmdd, label.capitalize()))

@@ -25,7 +25,7 @@ class SeveralPartners(models.TransientModel):
 
     @api.model
     def default_get(self, fields):
-        res = super(SeveralPartners, self).default_get(fields)
+        res = super().default_get(fields)
         possibles_customers_ids = self.env["res.partner"].browse(
             self._context.get("possible_existing_customer_ids")
         )
@@ -62,7 +62,8 @@ class SeveralPartners(models.TransientModel):
             if len(record.possible_existing_customer_ids) == 0:
                 raise ValidationError(
                     _(
-                        "You must select a client to be able to add it to the reservation "
+                        "You must select a client to be able to "
+                        "add it to the reservation "
                     )
                 )
             if len(record.possible_existing_customer_ids) > 1:
