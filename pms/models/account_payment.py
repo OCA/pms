@@ -200,7 +200,7 @@ class AccountPayment(models.Model):
         for invoice, payment_move in zip(move, payment.move_id):
             group = defaultdict(list)
             for line in (invoice.line_ids + payment_move.line_ids).filtered(
-                lambda l: not l.reconciled
+                lambda r: not r.reconciled
             ):
                 group[(line.account_id, line.currency_id)].append(line.id)
             for (account, _dummy), line_ids in group.items():
@@ -211,7 +211,7 @@ class AccountPayment(models.Model):
         # Set folio sale lines default_invoice_to to partner downpayment invoice
         for folio in payment.folio_ids:
             for sale_line in folio.sale_line_ids.filtered(
-                lambda l: not l.default_invoice_to
+                lambda r: not r.default_invoice_to
             ):
                 sale_line.default_invoice_to = move.partner_id.id
 

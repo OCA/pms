@@ -2,7 +2,7 @@ import base64
 import calendar
 import datetime
 import math
-import xml.etree.cElementTree as ET
+import xml.etree.ElementTree as ET
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -18,9 +18,6 @@ class WizardIne(models.TransientModel):
     pms_property_id = fields.Many2one(
         string="Property",
         comodel_name="pms.property",
-        default=lambda self: self.env["pms.property"].browse(
-            self.env.user.get_active_property_ids()[0]
-        ),
         check_pms_properties=True,
         required=True,
     )
@@ -83,8 +80,8 @@ class WizardIne(models.TransientModel):
                     ]
                 )
                 .filtered(
-                    lambda l: len(
-                        l.reservation_id.checkin_partner_ids.filtered(
+                    lambda r: len(
+                        r.reservation_id.checkin_partner_ids.filtered(
                             lambda c: c.state
                             not in ["dummy", "draft", "cancel", "precheckin"]
                         )
@@ -113,8 +110,8 @@ class WizardIne(models.TransientModel):
                     ]
                 )
                 .filtered(
-                    lambda l: len(
-                        l.reservation_id.checkin_partner_ids.filtered(
+                    lambda r: len(
+                        r.reservation_id.checkin_partner_ids.filtered(
                             lambda c: c.state
                             not in ["dummy", "draft", "cancel", "precheckin"]
                         )
@@ -169,8 +166,8 @@ class WizardIne(models.TransientModel):
                     ]
                 )
                 .filtered(
-                    lambda l: len(
-                        l.reservation_id.checkin_partner_ids.filtered(
+                    lambda r: len(
+                        r.reservation_id.checkin_partner_ids.filtered(
                             lambda c: c.state
                             not in ["dummy", "draft", "cancel", "precheckin"]
                         )
@@ -305,9 +302,8 @@ class WizardIne(models.TransientModel):
                         if not ine_code:
                             raise ValidationError(
                                 _(
-                                    "%s does not have the INE Code configured"
-                                    % residence_state_id.name
-                                )
+                                    "{state_name} does not have the INE Code configured"
+                                ).format(state_name=residence_state_id.name)
                             )
                         # get count of each result
                         num_spain = entry_from_spain["__count"]
@@ -514,10 +510,11 @@ class WizardIne(models.TransientModel):
         if number_of_rooms > self.pms_property_id.ine_seats:
             raise ValidationError(
                 _(
-                    "The number of seats, excluding extra beds (%s)"
-                    % str(number_of_rooms)
-                    + " exceeds the number of seats established in the property (%s)"
-                    % str(self.pms_property_id.ine_seats)
+                    "The number of seats, excluding extra beds ({num_rooms})"
+                    + " exceeds the number of seats established in the property ({ine_seats})"
+                ).format(
+                    num_rooms=str(number_of_rooms),
+                    ine_seats=str(self.pms_property_id.ine_seats),
                 )
             )
 

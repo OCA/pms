@@ -64,20 +64,6 @@
                             string="Generate file"
                         />
                     </div>
-                    <div class="col-3">
-                        <button
-                            name="send_file_institution"
-                            class="btn btn-primary btn-sm"
-                            type="object"
-                            string="Send file"
-                            attrs="{'invisible': [
-                                '|',
-                                ('txt_message','=',False),
-                                ('is_ses', '=', True),
-                                ]}"
-                        />
-
-                    </div>
                 </div>
             </form>
         </field>

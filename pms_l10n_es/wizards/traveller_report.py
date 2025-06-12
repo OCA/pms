@@ -126,7 +126,10 @@ def _ses_xml_person_names_elements(persona, reservation, checkin_partner):
             ]
         elif (
             reservation.partner_name
-            and len(replace_multiple_spaces(reservation.partner_name.rstrip()).split(" ")) > 1
+            and len(
+                replace_multiple_spaces(reservation.partner_name.rstrip()).split(" ")
+            )
+            > 1
         ):
             ses_lastname = clean_string_only_letters(
                 replace_multiple_spaces(reservation.partner_name)
@@ -327,7 +330,7 @@ def _get_auth_headers(communication):
 
 
 def _generate_payload(lessor_id, operation, entity, data):
-    return f"""
+    payload_str = f"""
         <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
             xmlns:com="http://www.soap.servicios.hospedajes.mir.es/comunicacion">
             <soapenv:Header/>
@@ -338,10 +341,6 @@ def _generate_payload(lessor_id, operation, entity, data):
                             <codigoArrendador>{lessor_id}</codigoArrendador>
                             <aplicacion>Roomdoo</aplicacion>
                             <tipoOperacion>{operation}</tipoOperacion>
-                            {(
-                                '<tipoComunicacion>' + entity + '</tipoComunicacion>'
-                                if entity else ''
-                            )}
                         </cabecera>
                         <solicitud>{data}</solicitud>
                     </peticion>
@@ -349,6 +348,12 @@ def _generate_payload(lessor_id, operation, entity, data):
             </soapenv:Body>
         </soapenv:Envelope>
     """
+    if entity:
+        payload_element = ET.fromstring(payload_str)
+        cabecera = payload_element.find(".//cabecera")
+        ET.SubElement(cabecera, "tipoComunicacion").text = entity
+        payload_str = ET.tostring(payload_element, encoding="unicode")
+    return payload_str
 
 
 def _handle_request_exception(communication, e):
@@ -414,7 +419,6 @@ class TravellerReport(models.TransientModel):
         comodel_name="pms.property",
         string="Property",
         required=True,
-        default=lambda self: self.env.user.get_active_property_ids()[0],
     )
     room_id = fields.Many2one(
         comodel_name="pms.room",
@@ -772,7 +776,10 @@ class TravellerReport(models.TransientModel):
                         communication.reservation_id.pms_property_id.institution_lessor_id
                     )
                     ses_url = communication.reservation_id.pms_property_id.ses_url
-                if communication.operation == DELETE_OPERATION_CODE and communication.communication_id_to_cancel:
+                if (
+                    communication.operation == DELETE_OPERATION_CODE
+                    and communication.communication_id_to_cancel
+                ):
                     data = (
                         "<anul:comunicaciones "
                         'xmlns:anul="http://www.neg.hospedajes.mir.es/anularComunicacion">'

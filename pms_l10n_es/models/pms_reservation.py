@@ -90,7 +90,9 @@ class PmsReservation(models.Model):
             )
 
     @api.model
-    def create_communication(self, reservation_id, operation, entity, communication_id_to_cancel=False):
+    def create_communication(
+        self, reservation_id, operation, entity, communication_id_to_cancel=False
+    ):
         reservation = self.env["pms.reservation"].browse(reservation_id)
         self.env["pms.ses.communication"].create(
             {

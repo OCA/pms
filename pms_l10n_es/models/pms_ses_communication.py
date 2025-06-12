@@ -106,6 +106,7 @@ class PmsSesCommunication(models.Model):
         string="Communication to Cancel",
         help="Communication to cancel if this is a cancellation operation",
     )
+
     def force_send_communication(self):
         for record in self:
             self.env["traveller.report.wizard"].ses_send_communications(
