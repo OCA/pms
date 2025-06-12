@@ -504,11 +504,6 @@ class TravellerReport(models.TransientModel):
                     date_to=self.date_to,
                     room_id=room.id if room else False,
                 )
-        else:
-            content = self.generate_checkin_list(
-                pms_property_id=pms_property.id,
-                date_target=self.date_target,
-            )
 
         if content:
             if self.is_ses:
@@ -532,13 +527,6 @@ class TravellerReport(models.TransientModel):
                         + self.date_to.strftime("%Y%m%d")
                     )
                 self.txt_filename = self.txt_filename + ".xml"
-            else:
-                self.txt_filename = (
-                    pms_property.institution_property_id
-                    + "-"
-                    + self.date_target.strftime("%Y%m%d")
-                    + ".999"
-                )
 
             self.txt_binary = base64.b64encode(str.encode(content))
             self.txt_message = content

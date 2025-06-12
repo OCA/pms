@@ -1,7 +1,7 @@
 from odoo.tests import common
 
 
-class TestPms(common.SavepointCase):
+class TestPms(common.TransactionCase):
     def setUp(self):
         super().setUp()
         self.availability_plan1 = self.env["pms.availability.plan"].create(
