@@ -886,7 +886,7 @@ class PmsProperty(models.Model):
                 # dont work in services (probably cache issue¿?), we ensure that the date is
                 # set or recompute this
                 for line in folio.sale_line_ids.filtered(
-                    lambda l: not l.autoinvoice_date
+                    lambda r: not r.autoinvoice_date
                 ):
                     line._compute_autoinvoice_date()
                 invoices = folio.with_context(autoinvoice=True)._create_invoices(
@@ -894,7 +894,7 @@ class PmsProperty(models.Model):
                     final=False,
                 )
                 downpayments = folio.sale_line_ids.filtered(
-                    lambda l: l.is_downpayment and l.qty_invoiced > 0
+                    lambda r: r.is_downpayment and r.qty_invoiced > 0
                 )
                 for invoice in invoices:
                     if (

@@ -2362,7 +2362,7 @@ class PmsReservation(models.Model):
                         amount_penalty = (
                             sum(
                                 record.reservation_line_ids.filtered(
-                                    lambda l: fields.Date.from_string(l.date) in dates
+                                    lambda r: fields.Date.from_string(r.date) in dates
                                 ).mapped("price")
                             )
                             * penalty_percent

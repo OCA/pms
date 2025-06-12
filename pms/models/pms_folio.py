@@ -607,7 +607,7 @@ class PmsFolio(models.Model):
         invoice_item_sequence = 0
         for folio in self:
             folio_lines_to_invoice = folio.sale_line_ids.filtered(
-                lambda l: l.id in list(lines_to_invoice.keys())
+                lambda r: r.id in list(lines_to_invoice.keys())
             )
             groups_invoice_lines = folio._get_groups_invoice_lines(
                 lines_to_invoice=folio_lines_to_invoice,
@@ -696,7 +696,7 @@ class PmsFolio(models.Model):
                     {
                         "partner_id": partner.id,
                         "lines": lines_to_invoice.filtered(
-                            lambda l: l.default_invoice_to == partner
+                            lambda r: r.default_invoice_to == partner
                         ),
                     }
                 )
@@ -705,7 +705,7 @@ class PmsFolio(models.Model):
                     {
                         "partner_id": self.env.ref("pms.various_pms_partner").id,
                         "lines": lines_to_invoice.filtered(
-                            lambda l: not l.default_invoice_to
+                            lambda r: not r.default_invoice_to
                         ),
                     }
                 )
@@ -1196,7 +1196,7 @@ class PmsFolio(models.Model):
     def _compute_untaxed_amount_to_invoice(self):
         for folio in self:
             folio.untaxed_amount_to_invoice = sum(
-                folio.sale_line_ids.filtered(lambda l: not l.is_downpayment).mapped(
+                folio.sale_line_ids.filtered(lambda r: not r.is_downpayment).mapped(
                     "untaxed_amount_to_invoice"
                 )
             )
@@ -1865,9 +1865,9 @@ class PmsFolio(models.Model):
             self = self.with_context(lines_auto_add=True)
             lines_to_invoice = dict()
             for line in self.sale_line_ids.filtered(
-                lambda l: l.qty_to_invoice > 0
-                or (l.qty_to_invoice < 0 and final)
-                or l.display_type == "line_note"
+                lambda r: r.qty_to_invoice > 0
+                or (r.qty_to_invoice < 0 and final)
+                or r.display_type == "line_note"
             ):
                 if not self._context.get("autoinvoice"):
                     lines_to_invoice[line.id] = (
