@@ -700,6 +700,49 @@ class PmsFolioService(Component):
         [
             (
                 [
+                    "/<int:folio_id>/reservations",
+                ],
+                "POST",
+            )
+        ],
+        input_param=Datamodel("pms.folio.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def create_folio_reservations(self, folio_id, folio_info):
+        folio_record = self.env["pms.folio"].sudo().search([("id", "=", folio_id)])
+        if not folio_record:
+            raise MissingError(_("Folio not found"))
+        pms_api_check_access(user=self.env.user, records=folio_record)
+        for reservation in folio_info.reservations:
+            new_reservation_record = self.env["pms.reservation"].create(
+                {
+                    "folio_id": folio_record.id,
+                    "pricelist_id": folio_info.pricelistId,
+                    "pms_property_id": folio_record.pms_property_id.id,
+                    "checkin": datetime.strptime(
+                        reservation.checkin, "%Y-%m-%d"
+                    ).date(),
+                    "checkout": datetime.strptime(
+                        reservation.checkout, "%Y-%m-%d"
+                    ).date(),
+                    "room_type_id": reservation.roomTypeId,
+                    "adults": reservation.adults,
+                    "children": reservation.children or 0,
+                    "board_service_room_id": reservation.boardServiceId,
+                    "preferred_room_id": reservation.preferredRoomId
+                    if reservation.preferredRoomId
+                    else None,
+                    "splitted": reservation.isSplitted
+                    if reservation.isSplitted
+                    else False,
+                    "reservation_type": reservation.reservationType or "normal",
+                }
+            )
+
+    @restapi.method(
+        [
+            (
+                [
                     "/",
                 ],
                 "POST",
