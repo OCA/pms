@@ -1117,7 +1117,7 @@ class PmsFolioService(Component):
     )
     # flake8:noqa=C901
     def update_folio(self, folio_id, pms_folio_info):
-        folio_record = self.env["pms.folio"].search([("id", "=", folio_id)])
+        folio_record = self.env["pms.folio"].sudo().search([("id", "=", folio_id)])
         if not folio_record:
             raise MissingError(_("Folio not found"))
         pms_api_check_access(user=self.env.user, records=folio_record)
@@ -1347,7 +1347,7 @@ class PmsFolioService(Component):
                             if sale_line.default_invoice_to
                             else None,
                             isDownPayment=sale_line.is_downpayment,
-                            sectionId= sale_line.section_id.id
+                            sectionId=sale_line.section_id.id,
                         )
                     )
 
@@ -1479,9 +1479,16 @@ class PmsFolioService(Component):
             if line.section_id and line.section_id.id not in sale_lines_to_invoice.ids:
                 sale_lines_to_invoice |= line.section_id
                 lines_to_invoice_dict[line.section_id.id] = 0
-        line_notes = self.env["folio.sale.line"].sudo().search([
-            ("display_type", "=", "line_note"),
-        ]).filtered(lambda l: l.section_id in sale_lines_to_invoice)
+        line_notes = (
+            self.env["folio.sale.line"]
+            .sudo()
+            .search(
+                [
+                    ("display_type", "=", "line_note"),
+                ]
+            )
+            .filtered(lambda l: l.section_id in sale_lines_to_invoice)
+        )
         for line_note in line_notes:
             if line_note.id not in lines_to_invoice_dict:
                 lines_to_invoice_dict[line_note.id] = 0

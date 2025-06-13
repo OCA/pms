@@ -17,11 +17,15 @@ class PmsReservation(models.Model):
         for reservation_line in reservation_lines:
             reservation_line_vals = {}
             # search reservation line record
-            reservation_line_record = self.env["pms.reservation.line"].search(
-                [
-                    ("date", "=", reservation_line.date),
-                    ("reservation_id", "=", reservation.id),
-                ]
+            reservation_line_record = (
+                self.env["pms.reservation.line"]
+                .sudo()
+                .search(
+                    [
+                        ("date", "=", reservation_line.date),
+                        ("reservation_id", "=", reservation.id),
+                    ]
+                )
             )
             # add reservation line record id to existing_reservation_line_ids
             if reservation_line_record:

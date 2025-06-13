@@ -128,8 +128,8 @@ class PmsFolio(models.Model):
         existing_reservation_ids = []
 
         for reservation in pms_folio_info.reservations:
-            reservation_record = self.env["pms.reservation"].search(
-                [("id", "=", reservation.id)]
+            reservation_record = (
+                self.env["pms.reservation"].sudo().search([("id", "=", reservation.id)])
             )
             if reservation_record:
                 existing_reservation_ids.append(reservation_record.id)
@@ -156,7 +156,9 @@ class PmsFolio(models.Model):
         existing_service_ids = []
         for service in services:
             # search for existing service
-            service_record = self.env["pms.service"].search([("id", "=", service.id)])
+            service_record = (
+                self.env["pms.service"].sudo().search([("id", "=", service.id)])
+            )
             # if service exists add to existing_service_ids
             if service_record:
                 existing_service_ids.append(service_record.id)
@@ -219,11 +221,15 @@ class PmsFolio(models.Model):
             service_line_record = False
             if service_record:
                 # search for existing service line
-                service_line_record = self.env["pms.service.line"].search(
-                    [
-                        ("date", "=", service_line.date),
-                        ("service_id", "=", service_record.id),
-                    ]
+                service_line_record = (
+                    self.env["pms.service.line"]
+                    .sudo()
+                    .search(
+                        [
+                            ("date", "=", service_line.date),
+                            ("service_id", "=", service_record.id),
+                        ]
+                    )
                 )
             # if service line exists add to existing services lines
             if service_line_record:
@@ -309,8 +315,10 @@ class PmsFolio(models.Model):
 
         # language (special case)
         if pms_folio_info.language:
-            lang_obj = self.env["res.lang"].search(
-                [("iso_code", "=", pms_folio_info.language)], limit=1
+            lang_obj = (
+                self.env["res.lang"]
+                .sudo()
+                .search([("iso_code", "=", pms_folio_info.language)], limit=1)
             )
             lang = lang_obj.code if lang_obj else pms_folio_info.language
             if not folio_record or lang != folio_record.lang:
