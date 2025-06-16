@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-06-11 15:27+0000\n"
+"PO-Revision-Date: 2025-06-16 11:26+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -598,7 +598,7 @@ msgstr "<strong>Assegnato a</strong>"
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_detail
 msgid "<strong>Board Service:</strong>"
-msgstr "<strong>Tipo servizio:</strong>"
+msgstr "<strong>Servizio pensione:</strong>"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_detail
@@ -1797,6 +1797,133 @@ msgid ""
 "                </table>\n"
 "            "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: "
+"16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; "
+"color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\""
+"center\">\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"width=\"590\" style=\"padding: 16px; background-color: white; color: #454748;"
+" border-collapse:separate;\">\n"
+"                        <tbody>\n"
+"                            <!-- HEADER -->\n"
+"                            <!-- PROPERTY DESCRIPTION -->\n"
+"                            <tr>\n"
+"                                <td align=\"center\" style=\"min-width: "
+"590px;\">\n"
+"                                    <table width=\"590\" border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 590px; background-"
+"color: white; padding: 0px 0px 0px 0px; border-collapse:separate;\">\n"
+"                                        <tr><td align=\"right\">\n"
+"                                            <div class=\"col-sm-4\">\n"
+"                                                % if "
+"object.pms_property_id.partner_id.street\n"
+"                                                "
+"<p>${object.pms_property_id.partner_id.street}</p>\n"
+"                                                % endif\n"
+"                                                % if "
+"object.pms_property_id.partner_id.street2\n"
+"                                                "
+"<p>${object.pms_property_id.partner_id.street2}</p>\n"
+"                                                % endif\n"
+"                                                "
+"<p>${object.pms_property_id.partner_id.zip}</p>\n"
+"                                                "
+"<p>${object.pms_property_id.partner_id.city}</p>\n"
+"                                                "
+"<p>${object.pms_property_id.partner_id.country_id.name}</p>\n"
+"                                            </div>\n"
+"                                        </td></tr>\n"
+"                                        <tr><td valign=\"top\" style=\"font-"
+"size: 14px;\">\n"
+"                                            <hr width=\"100%\" style"
+"=\"background-color:rgb(204,204,204);border:medium "
+"none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; "
+"margin: 16px 0px 16px 0px;\">\n"
+"                                            <div>\n"
+"                                                Salve ${"
+"object.partner_id.name or ''},<br>\n"
+"                                                la sua prenotazione in "
+"${object.pms_property_id.name} è stata annullata.\n"
+"                                            </div>\n"
+"                                        </td></tr>\n"
+"                                    </table>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                            <!-- DETAILS -->\n"
+"                            <tr>\n"
+"                                <td align=\"center\" style=\"min-width: "
+"590px;\">\n"
+"                                    <table width=\"590\" border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 590px; background-"
+"color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                                        <tr><td valign=\"top\" style=\"font-"
+"size: 14px;\">\n"
+"                                            <hr width=\"100%\" style"
+"=\"background-color:rgb(204,204,204);border:medium "
+"none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; "
+"margin: 16px 0px 16px 0px;\">\n"
+"                                            <!-- CONTACT -->\n"
+"                                            <div>\n"
+"                                                <div>If you have questions "
+"please contact with us:</div>\n"
+"                                                <ul>\n"
+"                                                    "
+"<li>${object.pms_property_id.name}</li>\n"
+"                                                    % if "
+"object.pms_property_id.partner_id.email\n"
+"                                                    <li>E-mail: <a href="
+"\"mailto:%24%7Bobject.pms_property_id.partner_id.email%7D\" style=\"text-"
+"decoration:none;color:#875A7B;\""
+">${object.pms_property_id.partner_id.email}</a></li>\n"
+"                                                    % endif\n"
+"                                                    % if "
+"object.pms_property_id.partner_id.phone\n"
+"                                                    <li>Telefono: "
+"${object.pms_property_id.partner_id.phone}</li>\n"
+"                                                    % endif\n"
+"                                                    % if "
+"object.pms_property_id.partner_id.mobile\n"
+"                                                    <li>Cellulare: "
+"${object.pms_property_id.partner_id.mobile}</li>\n"
+"                                                    % endif\n"
+"                                                </ul>\n"
+"                                            </div>\n"
+"                                        </td></tr>\n"
+"                                    </table>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                        </tbody>\n"
+"                    </table>\n"
+"                </td></tr>\n"
+"                    <!-- FOOTER -->\n"
+"                    <tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"                        % if object.pms_property_id.privacy_policy\n"
+"                        <table width=\"590\" border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" style=\"min-width: 590px; background-color: #F1F1F1; color:"
+" #454748; padding: 8px; border-collapse:separate;\">\n"
+"                            <tr><td style=\"font-size: 10px;\">\n"
+"                                ${object.pms_property_id.privacy_policy}\n"
+"                            </td></tr>\n"
+"                        </table>\n"
+"                        % endif\n"
+"                    </td></tr>\n"
+"                    <tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"                        % if object.company_id\n"
+"                        <table width=\"590\" border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" style=\"min-width: 590px; background-color: #F1F1F1; color:"
+" #454748; padding: 8px; border-collapse:separate;\">\n"
+"                            <tr><td style=\"text-align: center; font-size: "
+"10px;\">\n"
+"                                Inviato da <a target=\"_blank\" href="
+"\"%24%7Bobject.company_id.website%7D\" style=\"color: #875A7B;\""
+">${object.company_id.name}</a>\n"
+"                                <br>\n"
+"                            </td></tr>\n"
+"                        </table>\n"
+"                        % endif\n"
+"                    </td></tr>\n"
+"                </table>\n"
+"            "
 
 #. module: pms
 #. odoo-python
@@ -2005,7 +2132,7 @@ msgstr "Icona tipo attività"
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_board_service
 msgid "Add Board Service to reservations"
-msgstr "Aggiungere servizi forniti alla prenotazione"
+msgstr "Aggiungere il servizio pensione fornito alle prenotazioni"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.several_partners_wizard
@@ -2115,33 +2242,33 @@ msgstr "Adulti o bambini devono essere controllati"
 #: model:ir.actions.act_window,name:pms.action_advanced_filters_wizard
 #: model:ir.ui.menu,name:pms.menu_pms_advanced_filters
 msgid "Advanced Filters"
-msgstr ""
+msgstr "Filtri avanzati"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.advanced_filters_wizard
 msgid "Advanced filters"
-msgstr ""
+msgstr "Filtri avanzati"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__aeat_identification
 msgid "Aeat Identification"
-msgstr ""
+msgstr "Identificazione AEAT"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__aeat_sending_enabled
 msgid "Aeat Sending Enabled"
-msgstr ""
+msgstr "Abilitato invio AEAT"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__age
 msgid "Age"
-msgstr ""
+msgstr "Età"
 
 #. module: pms
 #: model:ir.actions.act_window,name:pms.pms_agency_action
 #: model:ir.ui.menu,name:pms.pms_agency_menu
 msgid "Agencies"
-msgstr ""
+msgstr "Agenzie"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__agency_id
@@ -2152,46 +2279,46 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 #: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "Agency"
-msgstr ""
+msgstr "Agenzia"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_booking_duplicate__agency_id
 #: model:ir.model.fields,help:pms.field_pms_booking_engine__agency_id
 #: model:ir.model.fields,help:pms.field_pms_reservation__agency_id
 msgid "Agency that made the reservation"
-msgstr ""
+msgstr "Agenzia che ha creato la prenotazione"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__res_company__pms_invoice_downpayment_policy__all
 msgid "All"
-msgstr ""
+msgstr "Tutte"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_cancelation_rule__apply_on_late__all
 #: model:ir.model.fields.selection,name:pms.selection__pms_cancelation_rule__apply_on_noshow__all
 msgid "All Days"
-msgstr ""
+msgstr "Tutti i giorni"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__all_product_tag_ids
 msgid "All Product Tag"
-msgstr ""
+msgstr "Tutte le etichette prodotto"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__product_template__consumed_on__after
 msgid "All after night"
-msgstr ""
+msgstr "Tutto dopo la notte"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__product_template__consumed_on__before
 msgid "All before night"
-msgstr ""
+msgstr "Tutto prima della notte"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
 #: model_terms:ir.ui.view,arch_db:pms.wizard_folio_changes_view_form
 msgid "All days"
-msgstr ""
+msgstr "Tutti i giorni"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__lang
@@ -2199,63 +2326,65 @@ msgid ""
 "All the emails and documents sent to this contact will be translated in this "
 "language."
 msgstr ""
+"Tutte le email e i documenti inviati a questo contatto verranno tradotti in "
+"questa lingua."
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__allowed_method_ids
 msgid "Allowed Method"
-msgstr ""
+msgstr "Metodi consentiti"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.res_users_view_form
 msgid "Allowed Properties"
-msgstr ""
+msgstr "Proprietà consentite"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__allowed_reservation_ids
 msgid "Allowed Reservations"
-msgstr ""
+msgstr "Prenotazioni consentite"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__allowed_room_type_ids
 msgid "Allowed Room Types"
-msgstr ""
+msgstr "Tipi camere consentiti"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__allowed_room_ids
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__allowed_room_ids
 #: model:ir.model.fields,field_description:pms.field_pms_wizard_reservation_lines_split__allowed_room_ids
 msgid "Allowed Rooms"
-msgstr ""
+msgstr "Camere consentite"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_split_join_swap_wizard__allowed_rooms_sources
 msgid "Allowed Rooms Sources"
-msgstr ""
+msgstr "Origini camere consentite"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_split_join_swap_wizard__allowed_rooms_target
 msgid "Allowed Rooms Target"
-msgstr ""
+msgstr "Obiettivo camere consentito"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__allowed_service_ids
 msgid "Allowed Services"
-msgstr ""
+msgstr "Servizi consentiti"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_product_pricelist_item__allowed_board_service_product_ids
 msgid "Allowed board service products"
-msgstr ""
+msgstr "Prodotti servizio pensione consentiti"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_product_pricelist_item__allowed_board_service_room_type_ids
 msgid "Allowed board service room types"
-msgstr ""
+msgstr "Tipi camere servizio pensione consentiti"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__allowed_cancel
 msgid "Allowed cancel"
-msgstr ""
+msgstr "Annullamento consentito"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__allowed_checkin
@@ -2282,7 +2411,7 @@ msgstr "Servizi consentiti"
 #: code:addons/pms/models/pms_board_service.py:0
 #, python-format
 msgid "Already exists another Board Service with the same code and properties"
-msgstr "Esiste già un tipo di servizio con lo stresso codice e proprietà"
+msgstr "Esiste già un servizio pensione con lo stresso codice e proprietà"
 
 #. module: pms
 #. odoo-python
@@ -2322,52 +2451,52 @@ msgstr "Sempre"
 #: model:ir.ui.menu,name:pms.menu_action_pms_room_amenity_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
 msgid "Amenities"
-msgstr "Servizi"
+msgstr "Dotazioni"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_amenity_type__pms_amenity_ids
 msgid "Amenities In This Category"
-msgstr ""
+msgstr "Dotazioni in questa categoria"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_amenity_type__pms_amenity_ids
 msgid "Amenities included in this type"
-msgstr ""
+msgstr "Dotazioni incluse in questo tipo"
 
 #. module: pms
 #: model:ir.ui.menu,name:pms.menu_amenity
 #: model_terms:ir.ui.view,arch_db:pms.pms_amenity_view_form
 msgid "Amenity"
-msgstr ""
+msgstr "Dotazione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__pms_amenity_type_id
 msgid "Amenity Category"
-msgstr ""
+msgstr "Categoria dotazione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__name
 #: model:ir.model.fields,help:pms.field_pms_amenity__name
 msgid "Amenity Name"
-msgstr ""
+msgstr "Nome dotazione"
 
 #. module: pms
 #: model:ir.model,name:pms.model_pms_amenity_type
 #: model_terms:ir.ui.view,arch_db:pms.pms_amenity_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_amenity_type_view_form
 msgid "Amenity Type"
-msgstr ""
+msgstr "Tipo dotazione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_amenity_type__name
 #: model:ir.model.fields,help:pms.field_pms_amenity_type__name
 msgid "Amenity Type Name"
-msgstr ""
+msgstr "Nome tipo dotazione"
 
 #. module: pms
 #: model:ir.ui.menu,name:pms.menu_action_pms_room_amenity_type_view_form
 msgid "Amenity Types"
-msgstr ""
+msgstr "Tipi dotazione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_board_service__amount
@@ -2376,148 +2505,148 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type_line__amount
 #: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__amount
 msgid "Amount"
-msgstr ""
+msgstr "Valore"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__commission_amount
 msgid "Amount corresponding to commission"
-msgstr ""
+msgstr "Valore corrispondente alla commissione"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__invoices_paid
 msgid "Amount of invoices paid"
-msgstr ""
+msgstr "Valore pagato della fattura"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_service_line__day_qty
 msgid "Amount to be consumed per day"
-msgstr ""
+msgstr "Valore da consumare per giorno"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__untaxed_amount_to_invoice
 msgid "Amount to invoice"
-msgstr ""
+msgstr "Importo da fatturare"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Amounts"
-msgstr ""
+msgstr "Importi"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__analytic_account_id
 #: model:ir.model.fields,field_description:pms.field_pms_property__analytic_account_id
 msgid "Analytic Account"
-msgstr ""
+msgstr "Conto analitico"
 
 #. module: pms
 #: model:ir.model,name:pms.model_account_analytic_distribution_model
 msgid "Analytic Distribution Model"
-msgstr ""
+msgstr "Modello distribuzione analitica"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
 #: model_terms:ir.ui.view,arch_db:pms.product_pricelist_item_view_tree
 msgid "Applicable on"
-msgstr ""
+msgstr "Applicabile a"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__tourist_tax_max_age
 #: model:ir.model.fields,help:pms.field_product_product__tourist_tax_max_age
 #: model:ir.model.fields,help:pms.field_product_template__tourist_tax_max_age
 msgid "Applies only to guests up to this age"
-msgstr ""
+msgstr "Si applica solo a ospiti con età superiore a questa"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__tourist_tax_min_age
 #: model:ir.model.fields,help:pms.field_product_product__tourist_tax_min_age
 #: model:ir.model.fields,help:pms.field_product_template__tourist_tax_min_age
 msgid "Applies only to guests with this age or older"
-msgstr ""
+msgstr "Si applica solo ad ospiti di questa età o più anziani"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_on_all_week
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_on_all_week
 msgid "Apply Availability Rule for the whole week"
-msgstr ""
+msgstr "Applica regola disponibilità per tutte la settimana"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_on_friday
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_on_friday
 msgid "Apply Availability Rule on fridays"
-msgstr ""
+msgstr "applica regola disponibilità i venerdì"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_on_monday
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_on_monday
 msgid "Apply Availability Rule on mondays"
-msgstr ""
+msgstr "Applica regola disponibilità i lunedì"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_on_saturday
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_on_saturday
 msgid "Apply Availability Rule on saturdays"
-msgstr ""
+msgstr "Applica regola disponibilità i sabati"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_on_sunday
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_on_sunday
 msgid "Apply Availability Rule on sundays"
-msgstr ""
+msgstr "Applica regola disponibilità le domeniche"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_on_thursday
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_on_thursday
 msgid "Apply Availability Rule on thursdays"
-msgstr ""
+msgstr "Applica regola disponibilità i giovedì"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_on_tuesday
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_on_tuesday
 msgid "Apply Availability Rule on tuesdays"
-msgstr ""
+msgstr "Applica regola disponibilità i martedì"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_on_wednesday
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_on_wednesday
 msgid "Apply Availability Rule on wednesdays"
-msgstr ""
+msgstr "Applica regola disponibilità i mercoledì"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_new_checkin
 msgid "Apply Checkin Update"
-msgstr ""
+msgstr "Applica aggiornamento check-in"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_new_checkout
 msgid "Apply Checkout Update"
-msgstr ""
+msgstr "Applica aggiornamento check-out"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_partner_id
 msgid "Apply Customer"
-msgstr ""
+msgstr "Applica cliente"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_discount
 msgid "Apply Discount update"
-msgstr ""
+msgstr "Applica aggiornamento sconto"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__change_from_date
 msgid "Apply From"
-msgstr ""
+msgstr "Applica da"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__tourist_tax_apply_from_night
 #: model:ir.model.fields,field_description:pms.field_product_product__tourist_tax_apply_from_night
 #: model:ir.model.fields,field_description:pms.field_product_template__tourist_tax_apply_from_night
 msgid "Apply From Night"
-msgstr ""
+msgstr "Applica dalla notte"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_price
 msgid "Apply Price update"
-msgstr ""
+msgstr "Applica aggiornamento prezzo"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__apply_pricelist
@@ -2525,154 +2654,154 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_res_users__apply_pricelist
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_pricelist_id
 msgid "Apply Pricelist"
-msgstr ""
+msgstr "Applica listino"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_pricelists_on
 msgid "Apply Pricelists On"
-msgstr ""
+msgstr "Applica listino su"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_account_journal__room_filter_ids
 msgid "Apply Rooms"
-msgstr ""
+msgstr "Applica camere"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__change_to_date
 msgid "Apply To"
-msgstr ""
+msgstr "Applica a"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__tourist_tax_apply_to_night
 #: model:ir.model.fields,field_description:pms.field_product_product__tourist_tax_apply_to_night
 #: model:ir.model.fields,field_description:pms.field_product_template__tourist_tax_apply_to_night
 msgid "Apply Until Night"
-msgstr ""
+msgstr "Applica fino alla notte"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
 msgid "Apply and close"
-msgstr ""
+msgstr "Applica e chiudi"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
 msgid "Apply and continue"
-msgstr ""
+msgstr "Applica e continua"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type__by_default
 msgid "Apply by Default"
-msgstr ""
+msgstr "Applica in modo predefinito"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_closed
 msgid "Apply changes to Closed"
-msgstr ""
+msgstr "Applica modifiche ai chiusi"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_closed_arrival
 msgid "Apply changes to Closed Arrival"
-msgstr ""
+msgstr "Applica modifiche agli arrivi chiusi"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_closed_departure
 msgid "Apply changes to Closed Departure"
-msgstr ""
+msgstr "Applica modifiche alle partenze chiuse"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_max_avail
 msgid "Apply changes to Max. Avail."
-msgstr ""
+msgstr "Applica modifiche a massima disponibilità"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_max_stay
 msgid "Apply changes to Max. Stay"
-msgstr ""
+msgstr "Applica modifiche a massima permanenza"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_max_stay_arrival
 msgid "Apply changes to Max. Stay Arrival"
-msgstr ""
+msgstr "Applica modifiche all'arrivo massima permanenza"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_min_stay
 msgid "Apply changes to Min. Stay"
-msgstr ""
+msgstr "Applica modifiche a minima permanenza"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_min_stay_arrival
 msgid "Apply changes to Min. Stay Arrival"
-msgstr ""
+msgstr "applica modifiche ad arrivo minima permanenza"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_quota
 msgid "Apply changes to Quota"
-msgstr ""
+msgstr "Applica modifiche alla quota"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_board_service_line__adults
 #: model:ir.model.fields,help:pms.field_pms_board_service_room_type_line__adults
 msgid "Apply service to adults"
-msgstr ""
+msgstr "Applica sevizi agli adulti"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_board_service_line__children
 #: model:ir.model.fields,help:pms.field_pms_board_service_room_type_line__children
 msgid "Apply service to children"
-msgstr ""
+msgstr "Applica servizi ai figli"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_reservation__state__arrival_delayed
 msgid "Arrival Delayed"
-msgstr ""
+msgstr "Arrivo ritardato"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__default_arrival_hour
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__arrival_hour
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Arrival Hour"
-msgstr ""
+msgstr "Ora di arrivo"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__arrival_hour
 msgid "Arrival Hour (HH:MM)"
-msgstr ""
+msgstr "Ora di arrivo (HH:MM)"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Assign Room"
-msgstr ""
+msgstr "Assegna camera"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__employee_ids
 msgid "Assigned Employees"
-msgstr ""
+msgstr "Dipendenti assegnati"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__pms_folio_ids
 #: model:ir.model.fields,help:pms.field_res_partner__pms_folio_ids
 #: model:ir.model.fields,help:pms.field_res_users__pms_folio_ids
 msgid "Associated Folios"
-msgstr ""
+msgstr "Fogli associati"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__pms_checkin_partner_ids
 #: model:ir.model.fields,help:pms.field_res_partner__pms_checkin_partner_ids
 #: model:ir.model.fields,help:pms.field_res_users__pms_checkin_partner_ids
 msgid "Associated checkin partners"
-msgstr ""
+msgstr "Partner check-in associati"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__pms_reservation_ids
 #: model:ir.model.fields,help:pms.field_res_partner__pms_reservation_ids
 #: model:ir.model.fields,help:pms.field_res_users__pms_reservation_ids
 msgid "Associated reservation"
-msgstr ""
+msgstr "Prenotazione associata"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room__ubication_id
 msgid "At which ubication the room is located."
-msgstr ""
+msgstr "Dove si trova la camera."
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_attachment_count
@@ -2681,7 +2810,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__message_attachment_count
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__message_attachment_count
 msgid "Attachment Count"
-msgstr ""
+msgstr "Conteggio allegati"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__product_template_attribute_value_ids
