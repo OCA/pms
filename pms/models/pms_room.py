@@ -101,8 +101,8 @@ class PmsRoom(models.Model):
     )
 
     short_name = fields.Char(
-        help="Four character name, if not set, autocompletes with the first two letters of "
-        "the room name and two incremental numbers",
+        help="Four character name, if not set, autocompletes with the first two "
+        "letters of the room name and two incremental numbers",
     )
     address_is_independent = fields.Boolean(
         help="Indicates that the address of the room is independent of the property",
@@ -280,7 +280,8 @@ class PmsRoom(models.Model):
             num_extra_beds = 0
             if service_line_ids:
                 extra_beds = service_line_ids.filtered(
-                    lambda x: x.date == line.date and x.product_id.is_extra_bed is True
+                    lambda x, line=line: x.date == line.date
+                    and x.product_id.is_extra_bed is True
                 )
                 num_extra_beds = sum(extra_beds.mapped("day_qty")) if extra_beds else 0
             if line.room_id:

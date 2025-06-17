@@ -846,7 +846,7 @@ class PmsReservation(models.Model):
                 for i in range(0, days_diff):
                     idate = reservation.checkin + datetime.timedelta(days=i)
                     old_line = reservation.reservation_line_ids.filtered(
-                        lambda r: r.date == idate
+                        lambda r, idate=idate: r.date == idate
                     )
                     if not old_line:
                         cmds.append(
@@ -1113,7 +1113,7 @@ class PmsReservation(models.Model):
     def _compute_access_url(self):
         super()._compute_access_url()
         for reservation in self:
-            reservation.access_url = "/my/reservations/%s" % (reservation.id)
+            reservation.access_url = f"/my/reservations/{reservation.id}"
 
     @api.depends("reservation_line_ids")
     def _compute_checkin(self):
@@ -1164,7 +1164,7 @@ class PmsReservation(models.Model):
     def _compute_precheckin_url(self):
         super()._compute_access_url()
         for reservation in self:
-            reservation.access_url = "/my/reservations/precheckin/%s" % (reservation.id)
+            reservation.access_url = f"/my/reservations/precheckin/{reservation.id}"
 
     @api.depends("pms_property_id", "folio_id")
     def _compute_arrival_hour(self):
@@ -1365,7 +1365,7 @@ class PmsReservation(models.Model):
             if record.folio_id:
                 record.shared_folio = len(record.folio_id.reservation_ids) > 1 or any(
                     record.folio_id.service_ids.filtered(
-                        lambda x: x.reservation_id.id != record.id
+                        lambda x, r=record: x.reservation_id.id != r.id
                     )
                 )
             else:
@@ -1388,8 +1388,8 @@ class PmsReservation(models.Model):
             ):
                 record.partner_name = record.folio_id.partner_name
             elif record.agency_id and not record.partner_name:
-                # if the customer not is the agency but we dont know the customer's name,
-                # set the name provisional
+                # if the customer not is the agency but we dont know the customer's
+                # name, set the name provisional
                 record.partner_name = _("Reservation from ") + record.agency_id.name
             elif not record.partner_name:
                 record.partner_name = False
@@ -1460,7 +1460,7 @@ class PmsReservation(models.Model):
                     record.room_type_id.product_id.id
                 )
                 record.tax_ids = product.taxes_id.filtered(
-                    lambda t: t.company_id == record.env.company
+                    lambda t, r=record: t.company_id == r.env.company
                 )
 
     @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
@@ -1575,8 +1575,6 @@ class PmsReservation(models.Model):
     @api.depends("agency_id")
     def _compute_sale_channel_origin_id(self):
         for record in self:
-            # if record.folio_id.sale_channel_origin_id and not record.sale_channel_origin_id:
-            #     record.sale_channel_origin_id = record.folio_id.sale_channel_origin_id
             if record.agency_id:
                 record.sale_channel_origin_id = record.agency_id.sale_channel_id
 
@@ -1844,19 +1842,6 @@ class PmsReservation(models.Model):
                             )
                         )
 
-    # @api.constrains("sale_channel_ids")
-    # def _check_lines_with_sale_channel_id(self):
-    #     for record in self.filtered("sale_channel_origin_id"):
-    #         if record.reservation_line_ids:
-    #             if record.sale_channel_origin_id not in record.sale_channel_ids:
-    #                 raise ValidationError(
-    #                     _(
-    #                         "Reservation must have one reservation line "
-    #                         "with sale channel equal to sale channel origin of reservation."
-    #                         "Change sale_channel_origin of reservation before"
-    #                     )
-    #                 )
-
     @api.constrains(
         "reservation_line_ids", "reservation_line_ids.room_id", "room_type_id"
     )
@@ -1874,8 +1859,8 @@ class PmsReservation(models.Model):
                     ):
                         raise ValidationError(
                             _(
-                                """The room %(room)s (type: %(room_type)s)
-                                is not compatible with the room type %(record_room_type)s
+                                """The room %(room)s (type: %(room_type)s) is not
+                                compatible with the room type %(record_room_type)s
                                 (type: %(record_room_class)s)""",
                                 room=line.room_id.name,
                                 room_type=line.room_id.room_type_id.class_id.name,
@@ -2050,7 +2035,8 @@ class PmsReservation(models.Model):
             else:
                 raise ValidationError(
                     _(
-                        "The Property and Sale Channel Origin are mandatory in the reservation"
+                        "The Property and Sale Channel Origin are mandatory "
+                        "in the reservation"
                     )
                 )
             if vals.get("name", _("New")) == _("New") or "name" not in vals:
@@ -2155,8 +2141,8 @@ class PmsReservation(models.Model):
 
         for record in self:
             record._check_services(vals)
-            # Only check if adult to avoid to check capacity in intermediate states (p.e. flush)
-            # that not take access to possible extra beds service in vals
+            # Only check if adult to avoid to check capacity in intermediate states
+            # (p.e. flush) that not take access to possible extra beds service in vals
             if "adults" in vals:
                 record._check_capacity()
             if (
@@ -2201,9 +2187,9 @@ class PmsReservation(models.Model):
             )
 
     def _check_services(self, vals):
-        # If we create a reservation with board service and other service at the same time,
-        # compute_service_ids dont run (compute with readonly to False),
-        # and we must force it to compute the services linked with the board service:
+        # If we create a reservation with board service and other service at the
+        # same time, compute_service_ids dont run (compute with readonly to False), and
+        # we must force it to compute the services linked with the board service:
         if "board_service_room_id" in vals and "service_ids" in vals:
             self._compute_board_service_ids()
 
@@ -2213,7 +2199,7 @@ class PmsReservation(models.Model):
             if (
                 any(
                     res.sale_channel_origin_id == folio.sale_channel_origin_id
-                    for res in self.filtered(lambda r: r.folio_id == folio)
+                    for res in self.filtered(lambda r, f=folio: r.folio_id == f)
                 )
                 and vals["sale_channel_origin_id"] != folio.sale_channel_origin_id.id
                 and (
@@ -2238,12 +2224,8 @@ class PmsReservation(models.Model):
         services_to_update_channel = self.env["pms.service"]
         for record in self:
             for service in record.service_ids:
-                if (
-                    service.sale_channel_origin_id == record.sale_channel_origin_id
-                    and (
-                        vals["sale_channel_origin_id"]
-                        != service.sale_channel_origin_id.id
-                    )
+                if service.sale_channel_origin_id == record.sale_channel_origin_id and (
+                    vals["sale_channel_origin_id"] != service.sale_channel_origin_id.id
                 ):
                     services_to_update_channel += service
         return services_to_update_channel
@@ -2255,8 +2237,8 @@ class PmsReservation(models.Model):
         self.show_update_pricelist = False
         self.message_post(
             body=_(
-                """Prices have been recomputed according to pricelist <b>%(pricelist)s</b>
-                and room type <b>%(room_type)s</b>""",
+                """Prices have been recomputed according to pricelist
+                <b>%(pricelist)s</b> and room type <b>%(room_type)s</b>""",
                 pricelist=self.pricelist_id.display_name,
                 room_type=self.room_type_id.name,
             )
@@ -2362,7 +2344,8 @@ class PmsReservation(models.Model):
                         amount_penalty = (
                             sum(
                                 record.reservation_line_ids.filtered(
-                                    lambda l: fields.Date.from_string(l.date) in dates
+                                    lambda r, d=dates: fields.Date.from_string(r.date)
+                                    in d
                                 ).mapped("price")
                             )
                             * penalty_percent

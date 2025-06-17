@@ -4,7 +4,6 @@ from odoo import _, api, fields, models
 
 
 class AvailabilityWizard(models.TransientModel):
-
     _name = "pms.massive.changes.wizard"
     _description = "Wizard for massive changes on Availability Plans & Pricelists."
     _check_pms_properties_auto = True
@@ -299,12 +298,10 @@ class AvailabilityWizard(models.TransientModel):
                         for (
                             board_service_room_type_id
                         ) in all_board_service_room_type_ids:
-                            if (
-                                record.board_service
-                                in board_service_room_type_id.board_service_line_ids.mapped(
-                                    "product_id"
-                                )
-                            ):
+                            board_lines = (
+                                board_service_room_type_id.board_service_line_ids
+                            )
+                            if record.board_service in board_lines.mapped("product_id"):
                                 allowed_board_service_room_type_ids.append(
                                     board_service_room_type_id.id
                                 )
@@ -548,15 +545,14 @@ class AvailabilityWizard(models.TransientModel):
                         items_filtered = False
                         if record.date_types == "consumption_dates":
                             items_filtered = items.filtered(
-                                lambda x: x.date_end_consumption
-                                and week_days_to_apply[
-                                    x.date_end_consumption.timetuple()[6]
-                                ]
+                                lambda x,
+                                wdta=week_days_to_apply: x.date_end_consumption
+                                and wdta[x.date_end_consumption.timetuple()[6]]
                             )
                         elif record.date_types == "sale_dates":
                             items_filtered = items.filtered(
-                                lambda x: x.date_end
-                                and week_days_to_apply[x.date_end.date().timetuple()[6]]
+                                lambda x, wdta=week_days_to_apply: x.date_end
+                                and wdta[x.date_end.date().timetuple()[6]]
                             )
                         record.pricelist_items_to_overwrite = items_filtered
                     else:
@@ -794,7 +790,7 @@ class AvailabilityWizard(models.TransientModel):
                     "date"
                 ) and room_type in rules_to_overwrite.mapped("room_type_id"):
                     overwrite = rules_to_overwrite.filtered(
-                        lambda x: x.room_type_id == room_type
+                        lambda x, rt=room_type: x.room_type_id == rt
                         and x.date == date
                         and x.pms_property_id.id == pms_property.id
                     )
@@ -880,7 +876,6 @@ class AvailabilityWizard(models.TransientModel):
             self.start_date + datetime.timedelta(days=x)
             for x in range(0, (self.end_date - self.start_date).days + 1)
         ]:
-
             if (
                 not self.apply_on_all_week
                 and not week_days_to_apply[date.timetuple()[6]]
@@ -952,7 +947,6 @@ class AvailabilityWizard(models.TransientModel):
                             )
                             items.append(pricelist_item.id)
                 elif self.massive_changes_on == "availability_plan":
-
                     new_items = self.create_availability_plans_rules(
                         room_types,
                         self.availability_plan_ids,

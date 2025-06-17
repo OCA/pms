@@ -147,7 +147,7 @@ class TestPmsFolioSaleLine(TestPms):
         self.assertEqual(
             expected_sale_lines,
             len(r_test.folio_id.sale_line_ids.filtered(lambda x: not x.display_type)),
-            "Folio should contain {} sale lines".format(expected_sale_lines),
+            f"Folio should contain {expected_sale_lines} sale lines",
         )
 
     def test_comp_fsl_rooms_different_prices(self):
@@ -182,9 +182,7 @@ class TestPmsFolioSaleLine(TestPms):
         self.assertEqual(
             expected_sale_lines,
             len(r_test.folio_id.sale_line_ids.filtered(lambda x: not x.display_type)),
-            "Folio should contain {} reservation sale lines".format(
-                expected_sale_lines
-            ),
+            f"Folio should contain {expected_sale_lines} reservation sale lines",
         )
 
     def test_comp_fsl_rooms_different_discount(self):
@@ -219,9 +217,7 @@ class TestPmsFolioSaleLine(TestPms):
         self.assertEqual(
             expected_sale_lines,
             len(r_test.folio_id.sale_line_ids.filtered(lambda x: not x.display_type)),
-            "Folio should contain {} reservation sale lines".format(
-                expected_sale_lines
-            ),
+            f"Folio should contain {expected_sale_lines} reservation sale lines",
         )
 
     def test_comp_fsl_rooms_different_cancel_discount(self):
@@ -258,9 +254,7 @@ class TestPmsFolioSaleLine(TestPms):
         self.assertEqual(
             expected_sale_lines,
             len(r_test.folio_id.sale_line_ids.filtered(lambda x: not x.display_type)),
-            "Folio should contain {} reservation sale lines".format(
-                expected_sale_lines
-            ),
+            f"Folio should contain {expected_sale_lines} reservation sale lines",
         )
 
     def test_comp_fsl_rooms_one_full_cancel_discount(self):
@@ -294,9 +288,7 @@ class TestPmsFolioSaleLine(TestPms):
         self.assertEqual(
             expected_sale_lines,
             len(r_test.folio_id.sale_line_ids.filtered(lambda x: not x.display_type)),
-            "Folio should contain {} reservation sale lines".format(
-                expected_sale_lines
-            ),
+            f"Folio should contain {expected_sale_lines} reservation sale lines",
         )
 
     def test_comp_fsl_rooms_increase_stay(self):
@@ -346,8 +338,8 @@ class TestPmsFolioSaleLine(TestPms):
         ---------
         Create a reservation of 2 nights for a double room. The value of the sale lines
         of that reservation is stored in a variable. Then it is removed one night at
-        reservation and it is verified that the reservation sale lines are equal to the value of
-        the previously saved variable.
+        reservation and it is verified that the reservation sale lines are
+        equal to the value of the previously saved variable.
         """
         # ARRANGE
         r_test = self.env["pms.reservation"].create(
@@ -422,7 +414,6 @@ class TestPmsFolioSaleLine(TestPms):
 
     # BOARD SERVICES
     def test_comp_fsl_board_services_all_same_group(self):
-
         """
         Check that the board services of reservation with the same price, discount
         and cancel discount values, should only generate one sale line.
@@ -508,9 +499,9 @@ class TestPmsFolioSaleLine(TestPms):
         ----------------
         Create a reservation of 2 nights, for a double room with a board service
         room per night. Then change the discount of the first board service line
-        to 1.0 and it is verified that the length of the sale lines of the board services
-        in the reservation is equal to 2 because there are 2 different board service
-        discounts in the reservation.
+        to 1.0 and it is verified that the length of the sale lines of the
+        board services in the reservation is equal to 2 because there are 2
+        different board service discounts in the reservation.
         """
         # ARRANGE
         expected_board_service_sale_lines = 2
@@ -550,9 +541,9 @@ class TestPmsFolioSaleLine(TestPms):
         ----------------
         Create a reservation of 2 nights, for a double room with a board service
         room per night. Then change the cancel discount of the first board service line
-        to 1.0 and it is verified that the length of the sale lines of the board services
-        in the reservation is equal to 2 because there are 2 different board service
-        cancel discounts in the reservation.
+        to 1.0 and it is verified that the length of the sale lines of the board
+        services in the reservation is equal to 2 because there are 2
+        different board service cancel discounts in the reservation.
         """
 
         # ARRANGE
@@ -593,8 +584,8 @@ class TestPmsFolioSaleLine(TestPms):
         ----------------
         Create a reservation of 2 nights, for a double room with a board service
         room per night. Then change the cancel discount of the first board service line
-        to 100.0 and it is verified that the length of the sale lines of the board services
-        in the reservation is equal to 1.
+        to 100.0 and it is verified that the length of the sale lines of
+        the board services in the reservation is equal to 1.
         """
 
         # ARRANGE
@@ -990,9 +981,9 @@ class TestPmsFolioSaleLine(TestPms):
         ---------
         Create a reservation of 2 nights for a double room and add a service to this
         reservation. The value of the sale lines of that reservation services is stored
-        in a variable. Then one more night is added to the reservation and it is verified
-        that the reservation service sale lines are the same as the value of the previously
-        saved variable.
+        in a variable. Then one more night is added to the reservation and it is
+        verified that the reservation service sale lines are the same as
+        the value of the previously saved variable.
         """
 
         # ARRANGE
@@ -1036,8 +1027,8 @@ class TestPmsFolioSaleLine(TestPms):
         Create a reservation of 2 nights for a double room and add a service to this
         reservation. The value of the sale lines of the services is stored
         in a variable. Then one night is removed to the reservation and it is verified
-        that the reservation service sale lines are the same as the value of the previously
-        saved variable.
+        that the reservation service sale lines are the same as the value
+        of the previously saved variable.
         """
         # ARRANGE
         r_test = self.env["pms.reservation"].create(
@@ -1296,5 +1287,6 @@ class TestPmsFolioSaleLine(TestPms):
         # ASSERT
         self.assertFalse(
             reservation.folio_id.sale_line_ids,
-            "Folio sale lines should not be generated for a out of service type reservation ",
+            "Folio sale lines should not be generated for a out "
+            "of service type reservation",
         )

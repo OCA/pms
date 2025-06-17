@@ -107,7 +107,8 @@ class PmsAvailability(models.Model):
                 ]
             )
             room_ids = record.room_type_id.room_ids.filtered(
-                lambda r: r.pms_property_id == record.pms_property_id and r.active
+                lambda r, record=record: r.pms_property_id == record.pms_property_id
+                and r.active
             ).ids
             count_rooms_not_avail = len(
                 record.get_rooms_not_avail(
@@ -125,7 +126,7 @@ class PmsAvailability(models.Model):
             parent_rooms = record.room_type_id.mapped("room_ids.parent_id")
             if parent_rooms:
                 parent_room_ids = parent_rooms.filtered(
-                    lambda r: r.pms_property_id == record.pms_property_id
+                    lambda r, record=record: r.pms_property_id == record.pms_property_id
                 ).ids
                 for room_id in parent_room_ids:
                     room = self.env["pms.room"].browse(room_id)
@@ -153,7 +154,7 @@ class PmsAvailability(models.Model):
             child_rooms = record.room_type_id.mapped("room_ids.child_ids")
             if child_rooms:
                 child_room_ids = child_rooms.filtered(
-                    lambda r: r.pms_property_id == record.pms_property_id
+                    lambda r, record=record: r.pms_property_id == record.pms_property_id
                 ).ids
                 for room_id in child_room_ids:
                     room = self.env["pms.room"].browse(room_id)

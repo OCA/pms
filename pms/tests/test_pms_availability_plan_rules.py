@@ -123,11 +123,12 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
         Check the availability of rooms in a property with an availability plan without
         availability rules.
         ---------------------
-        The checkin and checkout dates on which the availability will be checked are saved
-        in a variable and in another all the rooms of the property are also saved. Then the
-        free_room_ids compute field is called which should return the number of available rooms
-        of the property and they are saved in another variable with which it is verified that
-        all the rooms have been returned because there are no availability rules for that plan.
+        The checkin and checkout dates on which the availability will be checked are
+        saved in a variable and in another all the rooms of the property are also saved.
+        Then the free_room_ids compute field is called which should return the number of
+        available rooms of the property and they are saved in another variable with
+        which it is verified that all the rooms have been returned because there are no
+        availability rules for that plan.
         """
 
         # ARRANGE
@@ -255,16 +256,17 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
     def test_availability_rooms_all_lines(self):
         """
         Check the availability of rooms in a property with an availability plan without
-        availability rules and passing it the reservation lines of a reservation for that
-        property.
+        availability rules and passing it the reservation lines of a reservation for
+        that property.
         -----------------
-        The checkin and checkout dates on which the availability will be checked are saved
-        in a variable and in another all the rooms of the property are also saved. Then create
-        a reservation for this property and the free_room_ids compute field is called with the
-        parameters checkin, checkout and the reservation lines of the reservation as a curent
-        lines, this method should return the number of available rooms of the property. Then the
-        result is saved in another variable with which it is verified that all the rooms have
-        been returned because there are no availability rules for that plan.
+        The checkin and checkout dates on which the availability will be checked are
+        saved in a variable and in another all the rooms of the property are also saved.
+        Then create a reservation for this property and the free_room_ids compute field
+        is called with the parameters checkin, checkout and the reservation lines of the
+        reservation as a curent lines, this method should return the number of available
+        rooms of the property. Then the result is saved in another variable with which
+        it is verified that all the rooms have been returned because there are no
+        availability rules for that plan.
         """
 
         # ARRANGE
@@ -304,10 +306,10 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
         """
         Check the availability of a room type for a property.
         ----------------
-        Double rooms of a property are saved in a variable. The free_room_ids compute field
-        is called giving as parameters checkin, checkout and the type of room (in this
-        case double). Then with the all () function we check that all rooms of this type
-        were returned.
+        Double rooms of a property are saved in a variable. The free_room_ids compute
+        field is called giving as parameters checkin, checkout and the type of room
+        (in this case double). Then with the all () function we check that all rooms of
+        this type were returned.
         """
 
         # ARRANGE
@@ -510,7 +512,6 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
 
         for test_case in test_cases:
             with self.subTest(k=test_case):
-
                 # ACT
                 self.test_room_type_availability_rule1.write(test_case)
 

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+        <record model="ir.cron" id="autosend_incomplete_traveller_report_com">
+            <field name="name">
+                SES Automatic Sending Incomplete Traveller Reports
+            </field>
+            <field name="active" eval="False" />
+            <field name="interval_number">1</field>
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False" />
+            <field name="state">code</field>
+            <field name="model_id" ref="model_traveller_report_wizard" />
+            <field
+            name="nextcall"
+            eval="datetime.now(pytz.timezone('UTC')).strftime('%Y-%m-%d %H:%M:%S')"
+        />
+            <field name="code">
+                model.ses_send_incomplete_traveller_reports(20)
+            </field>
+        </record>
+
+        <record model="ir.cron" id="autosend_pend_traveller_reports_com">
+            <field name="name">
+                SES Automatic Sending Pending Traveller Reports Communications
+            </field>
+            <field name="active" eval="False" />
+            <field name="interval_number">30</field>
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False" />
+            <field name="state">code</field>
+            <field name="model_id" ref="model_traveller_report_wizard" />
+            <field
+            name="nextcall"
+            eval="(datetime.now(pytz.timezone('UTC')) + timedelta(days=1)).strftime('%Y-%m-%d 00:05:00')"
+        />
+            <field name="code">model.ses_send_communications('PV')</field>
+        </record>
+
+        <record model="ir.cron" id="autosend_pending_reservation_com">
+            <field name="name">
+                SES Automatic Sending Pending Reservation Communications
+            </field>
+            <field name="active" eval="False" />
+            <field name="interval_number">30</field>
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False" />
+            <field name="state">code</field>
+            <field name="model_id" ref="model_traveller_report_wizard" />
+            <field
+            name="nextcall"
+            eval="(datetime.now(pytz.timezone('UTC')) + timedelta(days=1)).strftime('%Y-%m-%d 00:00:00')"
+        />
+            <field name="code">model.ses_send_communications('RH')</field>
+        </record>
+
+        <record model="ir.cron" id="autoprocess_sent_com">
+            <field name="name">
+                SES Automatic Process Sent Communications
+            </field>
+            <field name="active" eval="False" />
+            <field name="interval_number">30</field>
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False" />
+            <field name="state">code</field>
+            <field name="model_id" ref="model_traveller_report_wizard" />
+            <field
+            name="nextcall"
+            eval="(datetime.now(pytz.timezone('UTC')) + timedelta(days=1)).strftime('%Y-%m-%d 00:30:00')"
+        />
+            <field name="code">model.ses_process_communications()</field>
+        </record>
+</odoo>

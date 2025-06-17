@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="pms_ine_tourism_category_view_form">
+        <field name="name">pms.ine.tourism.category.form</field>
+        <field name="model">pms.ine.tourism.type.category</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="type" />
+                        <field name="category" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="pms_ine_tourism_category_view_tree">
+        <field name="name">pms.ine.tourism.category.tree</field>
+        <field name="model">pms.ine.tourism.type.category</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="type" />
+                <field name="category" />
+            </tree>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="open_pms_ine_tourism_category">
+        <field name="name">INE Categories</field>
+        <field name="res_model">pms.ine.tourism.type.category</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <!--    <menuitem-->
+    <!--        name="INE Tourism Categories"-->
+    <!--        id="menu_open_pms_ine_tourism_category_form_tree"-->
+    <!--        action="open_pms_ine_tourism_category"-->
+    <!--        parent="pms.menu_reservations"-->
+    <!--        sequence="30"-->
+    <!--    />-->
+</odoo>

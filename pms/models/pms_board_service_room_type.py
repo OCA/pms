@@ -92,7 +92,7 @@ class PmsBoardServiceRoomType(models.Model):
             )
             if any(
                 default_boards.filtered(
-                    lambda board: board.id != record.id
+                    lambda board, record=record: board.id != record.id
                     and board.pms_property_id == record.pms_property_id
                     and board.pricelist_ids == record.pricelist_ids
                 )

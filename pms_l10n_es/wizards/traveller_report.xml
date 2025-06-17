@@ -1,0 +1,86 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="traveller_report_wizard" model="ir.ui.view">
+        <field name="name">Traveller Report</field>
+        <field name="model">traveller.report.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="txt_filename" invisible="1" />
+                <div class="row">
+                    <div class="col-12">
+                        <group>
+                            <field name="is_ses" invisible="1" />
+                            <field name="pms_property_id" />
+                            <field
+                                name="report_type"
+                                attrs="{'invisible': [('is_ses', '=', False)]}"
+                            />
+                            <field
+                                name="date_target"
+                                attrs="{'invisible': [('is_ses', '=', True), ('report_type', '=', 'reservations')]}"
+                            />
+                            <field
+                                name="date_from"
+                                attrs="{'invisible': [
+                                '|',
+                                '&amp;',
+                                ('is_ses', '=', True),
+                                ('report_type', '=', 'travellers'),
+                                ('is_ses', '=', False),
+                                ]}"
+                            />
+                            <field
+                                name="date_to"
+                                attrs="{'invisible': [
+                                '|',
+                                '&amp;',
+                                ('is_ses', '=', True),
+                                ('report_type', '=', 'travellers'),
+                                ('is_ses', '=', False),
+                                ]}"
+                            />
+                        </group>
+                        <group
+                            attrs="{'invisible': ['|', ('txt_message','=',False), ('is_ses', '=', True)]}"
+                        >
+                            <field name="txt_message" readonly="1" />
+                        </group>
+                        <group attrs="{'invisible': [('txt_message','=',False)]}">
+                            <field
+                                name="txt_binary"
+                                filename="txt_filename"
+                                readonly="1"
+                            />
+                        </group>
+                    </div>
+
+                </div>
+                <div class="row ">
+                    <div class="col-3">
+                        <button
+                            name="generate_file_from_user_action"
+                            class="btn btn-primary btn-sm"
+                            type="object"
+                            string="Generate file"
+                        />
+                    </div>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="action_traveller_report" model="ir.actions.act_window">
+        <field name="name">Traveller Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">traveller.report.wizard</field>
+        <field name="view_id" ref="traveller_report_wizard" />
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    <menuitem
+        id="menu_traveller_report"
+        name="Traveller Report"
+        sequence="27"
+        parent="pms.menu_reservations"
+        action="action_traveller_report"
+    />
+</odoo>

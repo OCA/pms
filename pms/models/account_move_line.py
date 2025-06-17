@@ -63,10 +63,11 @@ class AccountMoveLine(models.Model):
         if not properties:
             super()._compute_analytic_distribution()
         for pms_property in properties:
-            records = self.filtered(lambda x: x.pms_property_id == pms_property)
-            super(
-                AccountMoveLine, records.with_context(pms_property_id=pms_property.id)
-            )._compute_analytic_distribution()
+            records = self.filtered(
+                lambda x, pmsp=pms_property: x.pms_property_id == pmsp
+            )
+            records = records.with_context(pms_property_id=pms_property.id)
+            super(AccountMoveLine, records)._compute_analytic_distribution()
         return
 
     @api.depends("move_id.payment_reference", "quantity")

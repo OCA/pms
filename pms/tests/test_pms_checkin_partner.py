@@ -965,12 +965,12 @@ class TestPmsCheckinPartner(TestPms):
         If the checkin_partner has some data that the partner doesn't have,
         these are saved in the partner
 
-        In this case, host1 hasn't mobile but the checkin_partner associated with it does,
-        so the mobile of checkin_partner is added to the partner data
+        In this case, host1 hasn't mobile but the checkin_partner associated with it
+        does, so the mobile of checkin_partner is added to the partner data
 
-        Note that if the mobile is entered before partnee was associated, this or other fields
-        are overwritten by the partner's fields. In this case it is entered once the partner has
-        already been associated
+        Note that if the mobile is entered before partnee was associated, this or other
+        fields are overwritten by the partner's fields. In this case it is entered once
+        the partner has already been associated
         """
         # ARRANGE
         self.checkin1.mobile = "666777888"
@@ -979,10 +979,10 @@ class TestPmsCheckinPartner(TestPms):
 
     def test_partner_id_numbers_created_from_checkin(self):
         """
-        Some of the required data of the checkin_partner to create the partner are document_type
-        and document_number, with them an id_number is created associated with the partner that
-        has just been created.
-        In this test it is verified that this document has been created correctly
+        Some of the required data of the checkin_partner to create the partner are
+        document_type and document_number, with them an id_number is created associated
+        with the partner that has just been created. In this test it is verified that
+        this document has been created correctly
         """
         # ACT & ARRANGE
         checkin = self.env["pms.checkin.partner"].create(
@@ -1224,9 +1224,9 @@ class TestPmsCheckinPartner(TestPms):
         ---------------
         Two res.partner are created with name, email and mobile. A checkin partner is
         created with the email field equal to that of the partner1 created before.
-        The wizard is created with the checkin partner id and the two partners added to the
-        possible_existing_customer_ids field. The add_partner method of the wizard
-        is launched and it is verified that a Validation_Error was raised.
+        The wizard is created with the checkin partner id and the two partners added
+        to the possible_existing_customer_ids field. The add_partner method of the
+        wizard is launched and it is verified that a Validation_Error was raised.
         """
         # ARRANGE
         partner1 = self.env["res.partner"].create(
@@ -1558,14 +1558,15 @@ class TestPmsCheckinPartner(TestPms):
 
     def test_compute_partner_fields(self):
         """
-        Check that the computes of the checkin_partner fields related to your partner correctly
-        add these fields to the checkin_partner.
+        Check that the computes of the checkin_partner fields related to your partner
+        correctly add these fields to the checkin_partner.
         ---------------------------------------
-        A reservation is created with an adult (checkin_partner) ql which is saved in the
-        checkin_partner_id variable, a partner is also created with all the fields that are
-        related to the checkin_partner fields. The partner is added to the partner_id field
-        of the checkin_partner and, through subtests, it is verified that the fields of the
-        partner and the associated checkin_partner match.
+        A reservation is created with an adult (checkin_partner) ql which is
+        saved in the checkin_partner_id variable, a partner is also created with all
+        the fields that are related to the checkin_partner fields. The partner is added
+        to the partner_id field of the checkin_partner and, through subtests, it is
+        verified that the fields of the partner and the associated checkin_partner
+        match.
         """
         self.reservation = self.env["pms.reservation"].create(
             {

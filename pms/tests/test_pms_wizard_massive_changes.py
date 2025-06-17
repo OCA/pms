@@ -1059,7 +1059,6 @@ class TestPmsWizardMassiveChanges(TestPms):
         )
 
     def test_several_board_service_room_type_with_board_service(self):
-
         """
         Call to wizard with several board service room types and
         board service.

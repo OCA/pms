@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_room_form_pms_l10n_es" model="ir.ui.view">
+        <field name="name">Property Form l10n_es</field>
+        <field name="model">pms.room</field>
+        <field name="inherit_id" ref="pms.pms_room_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='sequence']" position="after">
+                 <field name="in_ine" />
+                 <field name="institution_independent_account" />
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page
+                    string="Travel record institution"
+                    attrs="{'invisible': [('institution_independent_account', '=', False)]}"
+                >
+                    <group>
+                        <field name="institution" />
+                        <field name="institution_property_id" />
+                        <field name="institution_lessor_id" />
+                        <field name="ses_url" />
+                        <field name="institution_user" />
+                        <field name="institution_password" />
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="pms_room_view_tree">
+        <field name="name">pms.room.tree</field>
+        <field name="model">pms.room</field>
+        <field name="inherit_id" ref="pms.pms_room_view_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="in_ine" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -128,7 +128,8 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
         # ACT & ASSERT
         with self.assertRaises(
             ValidationError,
-            msg="Error, it has been allowed to create a reservation with non-consecutive days",
+            msg="Error, it has been allowed to create a reservation with "
+            "non-consecutive days",
         ):
             self.env["pms.reservation"].create(
                 {
@@ -693,7 +694,8 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
     def test_manage_children_raise(self):
         # TEST CASE
         """
-        Check if the error occurs when trying to put more people than the capacity of the room.
+        Check if the error occurs when trying to put more people than the
+        capacity of the room.
         --------------
          Create a reservation with a double room whose capacity is two and try to create
          it with two adults and a child occupying the room.
@@ -910,7 +912,8 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
         """
         Check that the date order of a reservation is correct.
         ---------------
-        Create a reservation with today's date and then check that the date order is also today
+        Create a reservation with today's date and then check that the
+        date order is also today
         """
         reservation = self.env["pms.reservation"].create(
             {
@@ -1087,7 +1090,8 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
 
     def test_compute_access_url(self):
         """
-        Check that the access_url field of the reservation is created with a correct value.
+        Check that the access_url field of the reservation is
+        created with a correct value.
         -------------
         Create a reservation and then check that the access_url field has the value
         my/reservation/(reservation.id)
@@ -1103,7 +1107,7 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
             }
         )
 
-        url = "/my/reservations/%s" % reservation.id
+        url = f"/my/reservations/{reservation.id}"
         self.assertEqual(reservation.access_url, url, "Reservation url isn't correct")
 
     @freeze_time("2012-01-14")
@@ -1764,7 +1768,8 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
         self.assertEqual(
             self.folio1.partner_name,
             self.reservation.partner_name,
-            "The folio partner name and the reservation partner name doesn't correspond",
+            "The folio partner name and the reservation partner name "
+            "doesn't correspond",
         )
 
     @freeze_time("2012-01-14")
@@ -1777,7 +1782,8 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
         Create an agency with invoice_to_agency = False
         and then create a reservation to which that agency
         assigns but does not associate any partner.
-        Then check that the partner_name of that reservation is "Reservation from (agency name)"
+        Then check that the partner_name of that reservation is
+        "Reservation from (agency name)"
         """
         sale_channel1 = self.env["pms.sale.channel"].create(
             {"name": "Test Indirect", "channel_type": "indirect"}
@@ -1908,7 +1914,8 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
         self.assertEqual(
             set(reservation.reservation_line_ids.mapped("cancel_discount")),
             {self.cancelation_rule.penalty_noshow},
-            "Cancel discount of reservation_lines must be equal than cancellation rule penalty",
+            "Cancel discount of reservation_lines must be equal than "
+            "cancellation rule penalty",
         )
 
     @freeze_time("2011-11-11")
@@ -3346,7 +3353,8 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
         # ACT & ASSERT
         with self.assertRaises(
             ValidationError,
-            msg="Error, it has been allowed to create a reservation without sale channel",
+            msg="Error, it has been allowed to create a reservation "
+            "without sale channel",
         ):
             self.env["pms.reservation"].create(
                 {
@@ -3391,42 +3399,3 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
             "Sale_channel_origin_id of folio must be the same as "
             "sale_channel_origin of rservation",
         )
-
-    # TEMPORAL UNABLE (_check_lines_with_sale_channel_id in pms_reservation.py
-    # unable to allow updagrade version)
-    # @freeze_time("2000-12-10")
-    # def test_check_sale_channel_origin_in_reservation_lines(self):
-    #     """
-    #     Check that a reservation has at least one reservation_line woth the
-    #     same sale_channel_id as its sale_channel_origin_id
-    #     """
-    #     # ARRANGE
-    #     sale_channel_phone = self.env["pms.sale.channel"].create(
-    #         {
-    #             "name": "phone",
-    #             "channel_type": "direct",
-    #         }
-    #     )
-    #     reservation_vals = {
-    #         "checkin": datetime.datetime.now(),
-    #         "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
-    #         "room_type_id": self.room_type_double.id,
-    #         "partner_id": self.partner1.id,
-    #         "pms_property_id": self.pms_property1.id,
-    #         "sale_channel_origin_id": self.sale_channel_direct.id,
-    #     }
-    #     reservation1 = self.env["pms.reservation"].create(reservation_vals)
-    #     reservation1.fetch()
-    #     # ACT & ASSERT
-    #     with self.assertRaises(
-    #         ValidationError,
-    #         msg="""
-    #             Error, there cannot be a reservation
-    #             in which at least one of its reservation
-    #         """
-    #         "lines doesn't have as sale_channel_id the sale_channel_origin_id of reservation",
-    #     ):
-    #         reservation1.reservation_line_ids.write(
-    #             {"sale_channel_id": sale_channel_phone}
-    #         )
-    #         reservation1.flush_recordset()

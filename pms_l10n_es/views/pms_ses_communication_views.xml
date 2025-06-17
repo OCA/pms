@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="pms_ses_communication_view_form">
+        <field name="name">pms.ses.communication.form</field>
+        <field name="model">pms.ses.communication</field>
+        <field name="arch" type="xml">
+            <form string="Log institution traveller report detail">
+                <sheet>
+                    <group>
+                        <field name="reservation_id" />
+                        <field name="batch_id" />
+                        <field name="communication_id" />
+                        <field name="operation" />
+                        <field name="entity" />
+                        <!-- times -->
+                        <field name="create_date" />
+                        <field name="communication_time" />
+                        <field name="query_status_time" />
+                        <!-- results -->
+                        <field name="state" />
+                        <field name="sending_result" />
+                        <field name="send_attempt_count" />
+                        <field name="processing_result" />
+                        <!-- communication soap, xml (request) & soap (response) -->
+                        <field name="communication_xml" widget="CopyClipboardChar" />
+                        <field name="communication_soap" widget="CopyClipboardChar" />
+                        <field
+                            name="response_communication_soap"
+                            widget="CopyClipboardChar"
+                        />
+                        <!-- processing soap, xml (request) & soap (response) -->
+                        <field name="query_status_xml" widget="CopyClipboardChar" />
+                        <field name="query_status_soap" widget="CopyClipboardChar" />
+                        <field
+                            name="response_query_status_soap"
+                            widget="CopyClipboardChar"
+                        />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="pms_ses_communication_view_tree">
+        <field name="name">pms.ses.communication.tree</field>
+        <field name="model">pms.ses.communication</field>
+        <field name="arch" type="xml">
+            <tree
+                name="Property Ubications"
+                create="false"
+                decoration-danger="state in ('error_sending', 'error_processing')"
+                decoration-muted="state=='processed'"
+                decoration-info="state=='incomplete'"
+                decoration-success="state=='to_process'"
+            >
+                <field name="pms_property_id" />
+                <field name="reservation_id" />
+                <field name="batch_id" />
+                <field name="communication_id" />
+                <field name="operation" />
+                <field name="entity" />
+                <!-- times -->
+                <field name="create_date" />
+                <field name="communication_time" />
+                <field name="query_status_time" />
+                <!-- results -->
+                <field name="state" />
+                <field name="sending_result" />
+                <field name="processing_result" />
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="pms_ses_communication_view_search">
+        <field name="name">pms.ses.communication.search</field>
+        <field name="model">pms.ses.communication</field>
+        <field name="arch" type="xml">
+            <search string="Log SES Communications">
+                <field name="pms_property_id" widget="selection" />
+                <field name="batch_id" />
+                <field name="communication_id" />
+                <field name="reservation_id" />
+                <!-- filters -->
+                <separator string="Results" colspan="4" />
+                <filter
+                    string="To Process"
+                    name="to_process"
+                    domain="[('state', '=', 'to_process')]"
+                />
+                <filter
+                    string="Processed"
+                    name="processed"
+                    domain="[('state', '=', 'processed')]"
+                />
+                <filter
+                    string="Error Sending"
+                    name="error_sending"
+                    domain="[('state', '=', 'error_sending')]"
+                />
+                <filter
+                    string="Error Processing"
+                    name="error_processing"
+                    domain="[('state', '=', 'error_processing')]"
+                />
+                <filter
+                    string="Wait checkins"
+                    name="incomplete"
+                    domain="[('state', '=', 'incomplete')]"
+                />
+                <separator string="Times" colspan="4" />
+                <filter
+                    string="Today"
+                    name="today"
+                    domain="[('create_date', '&gt;=', (context_today() + ' 00:00:00'))]"
+                />
+                <filter
+                    string="This Week"
+                    name="this_week"
+                    domain="[('create_date', '&gt;=', (context_today() + ' 00:00:00'))]"
+                />
+                <filter
+                    string="This Month"
+                    name="this_month"
+                    domain="[('create_date', '&gt;=', (context_today() + ' 00:00:00'))]"
+                />
+                <!-- groups -->
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_by_pms_property_id"
+                        string="Property"
+                        context="{'group_by': 'pms_property_id'}"
+                    />
+                    <filter
+                        name="group_by_state"
+                        string="State"
+                        context="{'group_by': 'state'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- action to force_send_communication -->
+    <record
+        model="ir.actions.server"
+        id="pms_ses_communication_force_send_communication"
+    >
+        <field name="name">Force Send Communication</field>
+        <field name="model_id" ref="model_pms_ses_communication" />
+        <field name="state">code</field>
+        <field name="code">
+            records.force_send_communication()
+        </field>
+        <field name="binding_model_id" ref="model_pms_ses_communication" />
+        <field name="binding_view_types">form,list</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="open_pms_ses_communication_form_tree">
+        <field name="name">SES Communications</field>
+        <field name="res_model">pms.ses.communication</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem
+        name="SES Communications"
+        id="menu_open_pms_ses_communication_form_tree"
+        action="open_pms_ses_communication_form_tree"
+        parent="pms.menu_reservations"
+        sequence="29"
+    />
+</odoo>

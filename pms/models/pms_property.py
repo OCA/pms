@@ -300,7 +300,8 @@ class PmsProperty(models.Model):
                             ):
                                 room_types_to_remove.append(item.room_type_id.id)
                         free_rooms = free_rooms.filtered(
-                            lambda x: x.room_type_id.id not in room_types_to_remove
+                            lambda x, rttr=room_types_to_remove: x.room_type_id.id
+                            not in rttr
                         )
             if class_id:
                 free_rooms = free_rooms.filtered(
@@ -555,7 +556,8 @@ class PmsProperty(models.Model):
                 if duplicated:
                     raise ValidationError(
                         _(
-                            "Alreay exist other property with this ref: %(name)s (%(ref)s)",
+                            "Alreay exist other property "
+                            "with this ref: %(name)s (%(ref)s)",
                             name=duplicated.name,
                             ref=duplicated.ref,
                         )
@@ -574,7 +576,8 @@ class PmsProperty(models.Model):
                 if duplicated:
                     raise ValidationError(
                         _(
-                            "Alreay exist other property with this code: %(name)s (%(code)s)",
+                            "Alreay exist other property "
+                            "with this code: %(name)s (%(code)s)",
                             name=duplicated.name,
                             code=duplicated.pms_property_code,
                         )
@@ -883,10 +886,10 @@ class PmsProperty(models.Model):
         try:
             with self.env.cr.savepoint():
                 # REVIEW: folio sale line "_compute_auotinvoice_date" sometimes
-                # dont work in services (probably cache issue¿?), we ensure that the date is
-                # set or recompute this
+                # dont work in services (probably cache issue¿?),
+                # we ensure that the date is set or recompute this
                 for line in folio.sale_line_ids.filtered(
-                    lambda l: not l.autoinvoice_date
+                    lambda r: not r.autoinvoice_date
                 ):
                     line._compute_autoinvoice_date()
                 invoices = folio.with_context(autoinvoice=True)._create_invoices(
@@ -894,7 +897,7 @@ class PmsProperty(models.Model):
                     final=False,
                 )
                 downpayments = folio.sale_line_ids.filtered(
-                    lambda l: l.is_downpayment and l.qty_invoiced > 0
+                    lambda r: r.is_downpayment and r.qty_invoiced > 0
                 )
                 for invoice in invoices:
                     if (
@@ -914,17 +917,19 @@ class PmsProperty(models.Model):
                             )
                         else:
                             mens = _(
-                                "The total amount of the simplified invoice is higher than the "
-                                "maximum amount allowed for simplified invoices, and dont have "
-                                "enought data in hosts to create a normal invoice."
+                                "The total amount of the simplified invoice is "
+                                "higher than the maximum amount allowed for "
+                                "simplified invoices, and dont have enought data"
+                                " in hosts to create a normal invoice."
                             )
                             folio.sudo().message_post(body=mens)
                             raise ValidationError(mens)
                     for downpayment in downpayments.filtered(
-                        lambda d: d.default_invoice_to == invoice.partner_id
+                        lambda d, i=invoice: d.default_invoice_to == i.partner_id
                     ):
                         # If the downpayment invoice partner is the same that the
-                        # folio partner, we include the downpayment in the normal invoice
+                        # folio partner, we include the downpayment in the
+                        #  normal invoice
                         invoice_down_payment_vals = downpayment._prepare_invoice_line(
                             sequence=max(invoice.invoice_line_ids.mapped("sequence"))
                             + 1,
@@ -933,7 +938,8 @@ class PmsProperty(models.Model):
                             {"invoice_line_ids": [(0, 0, invoice_down_payment_vals)]}
                         )
                     invoice.action_post()
-                # The downpayment invoices that not was included in final invoice, are reversed
+                # The downpayment invoices that not was included in final
+                # invoice, are reversed
                 downpayment_invoices = (
                     downpayments.filtered(
                         lambda d: d.qty_invoiced > 0

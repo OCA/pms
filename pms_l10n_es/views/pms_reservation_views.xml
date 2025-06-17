@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_pms_reservation_from_pms_l110n_es" model="ir.ui.view">
+        <field name="name">Rerservation Form l10n_es</field>
+        <field name="model">pms.reservation</field>
+        <field name="inherit_id" ref="pms.pms_reservation_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='others']" position="before">
+                <page
+                    string="SES Communications"
+                    name="property_general"
+                    attrs="{'invisible': [('is_ses','!=',True),'|',('is_ses','=',True),('ses_communication_ids','!=',False)]}"
+                >
+                    <field name="is_ses" invisible="1" />
+                    <field name="ses_communication_ids">
+                        <tree>
+                            <field name="reservation_id" />
+                            <field name="communication_id" />
+                            <field name="operation" />
+                            <field name="entity" />
+                            <!-- times -->
+                            <field name="create_date" />
+                            <field name="communication_time" />
+                            <field name="query_status_time" />
+                            <field name="state" />
+                            <field name="sending_result" />
+                            <field name="processing_result" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

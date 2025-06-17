@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Hotel Settings -->
+    <record id="view_property_form_pms_l10n_es" model="ir.ui.view">
+        <field name="name">Property Form l10n_es</field>
+        <field name="model">pms.property</field>
+        <field name="inherit_id" ref="pms.pms_property_views_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='pms_property_code']" position="after">
+                <label
+                    for="spanish_tourism_classification_id"
+                    string="Tourism Classification"
+                />
+                <field name="spanish_tourism_classification_id" />
+            </xpath>
+            <xpath expr="//page[@name='property_settings']" position="inside">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="o_horizontal_separator">
+                            Guest information sending settings
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <group name="property_data">
+                            <field name="institution" />
+                            <field name="institution_lessor_id" />
+                            <field name="institution_property_id" />
+                            <field
+                                name="ses_url"
+                                attrs="{'invisible': [('institution','!=','ses')]}"
+                            />
+                        </group>
+                    </div>
+                    <div class="col-6 px-0">
+                         <group name="property_data">
+                            <field name="institution_user" />
+                            <field name="institution_password" password="True" />
+                         </group>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="o_horizontal_separator">
+                            INE Settings
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <group>
+                            <field name="ine_tourism_number" />
+                            <field name="ine_category_id" />
+                            <field name="website" />
+                        </group>
+                    </div>
+                    <div class="col-6">
+                        <group>
+                            <field name="ine_seats" />
+                            <field name="ine_permanent_staff" />
+                            <field name="ine_eventual_staff" />
+                            <field name="ine_unpaid_staff" />
+                        </group>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

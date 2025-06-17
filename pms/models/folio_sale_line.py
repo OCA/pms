@@ -376,7 +376,7 @@ class FolioSaleLine(models.Model):
                 record.section_id = record.id
             elif record.reservation_id:
                 record.section_id = record.folio_id.sale_line_ids.filtered(
-                    lambda r: r.reservation_id == record.reservation_id
+                    lambda r, rec=record: r.reservation_id == rec.reservation_id
                     and r.display_type == "line_section"
                 )
             else:
@@ -555,7 +555,9 @@ class FolioSaleLine(models.Model):
                     )["total_excluded"]
 
                 if any(
-                    line.invoice_lines.mapped(lambda l: l.discount != line.discount)
+                    line.invoice_lines.mapped(
+                        lambda r, line=line: r.discount != line.discount
+                    )
                 ):
                     # In case of re-invoicing with different
                     # discount we try to calculate manually the
@@ -833,7 +835,7 @@ class FolioSaleLine(models.Model):
                     ["|", ("folio_id.name", operator, name), ("name", operator, name)],
                 ]
             )
-        return super(FolioSaleLine, self)._name_search(
+        return super()._name_search(
             name, args=args, operator=operator, limit=limit, name_get_uid=name_get_uid
         )
 
@@ -877,7 +879,7 @@ class FolioSaleLine(models.Model):
                 else:
                     name += ", " + date.strftime("%d")
 
-            return "{} ({}).".format(product_id.name, name)
+            return f"{product_id.name} ({name})."
         elif service_line_ids:
             month = False
             name = False
@@ -900,7 +902,7 @@ class FolioSaleLine(models.Model):
                     month = date.month
                 else:
                     name += ", " + date.strftime("%d")
-            return "{} ({}).".format(service_id.name, name)
+            return f"{service_id.name} ({name})."
         else:
             return service_id.name
 
@@ -919,7 +921,7 @@ class FolioSaleLine(models.Model):
     def _mens_update_line_quantity(self, values):
         folios = self.mapped("folio_id")
         for order in folios:
-            order_lines = self.filtered(lambda x: x.folio_id == order)
+            order_lines = self.filtered(lambda x, o=order: x.folio_id == o)
             msg = "<b>" + _("The ordered quantity has been updated.") + "</b><ul>"
             for line in order_lines:
                 msg += "<li> %s: <br/>" % line.product_id.display_name
@@ -954,9 +956,9 @@ class FolioSaleLine(models.Model):
             has_locked_folio = "done" in self.mapped(
                 "folio_id.state"
             ) or self.invoice_lines.filtered(
-                lambda l: l.move_id.state == "posted"
-                and l.move_id.move_type == "out_invoice"
-                and l.move_id.payment_state != "reversed"
+                lambda r: r.move_id.state == "posted"
+                and r.move_id.move_type == "out_invoice"
+                and r.move_id.payment_state != "reversed"
             )
             if has_locked_folio:
                 # We check that dont reduced the invoiced quantity in locked folios
@@ -970,14 +972,15 @@ class FolioSaleLine(models.Model):
                         )
                     )
                 # We check that dont modified the protected fields in locked folios
-                # if field is float, we need to round it to compare with the original value
+                # if field is float, we need to round it to
+                # compare with the original value
                 if self.filtered(
-                    lambda l: any(
+                    lambda r: any(
                         round(values.get(field.name), 2)
-                        != round(getattr(l, field.name), 2)
+                        != round(getattr(r, field.name), 2)
                         if isinstance(values.get(field.name), float)
-                        and isinstance(getattr(l, field.name), float)
-                        else values.get(field.name) != getattr(l, field.name)
+                        and isinstance(getattr(r, field.name), float)
+                        else values.get(field.name) != getattr(r, field.name)
                         for field in fields_modified
                     )
                 ):
@@ -1001,9 +1004,9 @@ class FolioSaleLine(models.Model):
                                 )
                             )
                 for line in self.filtered(
-                    lambda l: not l.display_type
+                    lambda r: not r.display_type
                     and not (
-                        l.invoice_lines.filtered(
+                        r.invoice_lines.filtered(
                             lambda inv_line: inv_line.move_id.state == "draft"
                         )
                     )
@@ -1033,7 +1036,7 @@ class FolioSaleLine(models.Model):
                 if draft_moves:
                     draft_moves.name = "/"
 
-        result = super(FolioSaleLine, self).write(values)
+        result = super().write(values)
         return result
 
     def _prepare_invoice_line(self, qty=False, **optional_values):
@@ -1049,7 +1052,7 @@ class FolioSaleLine(models.Model):
             downpayment_invoice = self.folio_id.move_ids.filtered(
                 lambda x: x.payment_state != "reversed"
                 and x.move_type == "out_invoice"
-                and x.line_ids.filtered(lambda l: l.folio_line_ids == self)
+                and x.line_ids.filtered(lambda r: r.folio_line_ids == self)
             )
             name = self.name + " (" + downpayment_invoice.name + ")"
         elif self.display_type == "line_section" and self.reservation_id:
@@ -1082,11 +1085,11 @@ class FolioSaleLine(models.Model):
         for record in self:
             if record.qty_invoiced > 0:
                 # If the invoice line is in draft, unlink it, else raise an error
-                if record.invoice_lines.filtered(lambda l: l.move_id.state == "draft"):
+                if record.invoice_lines.filtered(lambda r: r.move_id.state == "draft"):
                     moves = record.invoice_lines.mapped("move_id")
                     record.invoice_lines.with_context(
                         check_move_validity=False
-                    ).filtered(lambda l: l.move_id.state == "draft").unlink()
+                    ).filtered(lambda r: r.move_id.state == "draft").unlink()
                     moves.flush_recordset()
                 else:
                     raise UserError(
@@ -1095,7 +1098,7 @@ class FolioSaleLine(models.Model):
                             "invoice has been created from it."
                         )
                     )
-        return super(FolioSaleLine, self).unlink()
+        return super().unlink()
 
     def _get_real_price_currency(self, product, rule_id, qty, uom, pricelist_id):
         """Retrieve the price before applying the pricelist

@@ -29,9 +29,9 @@ class TestRoomTypeClass(TestPms):
         Check that a room type class cannot be created with an existing default_code
         in the same property.
         ----------
-        A room type class is created with the default_code = 'c1' in property pms_property1.
-        Then try to create another room type class in the same property with the same code,
-        but this should throw a ValidationError.
+        A room type class is created with the default_code = 'c1' in
+        property pms_property1. Then try to create another room type class in the
+        same property with the same code, but this should throw a ValidationError.
         """
         # ARRANGE
         # room_type_class1
@@ -61,10 +61,11 @@ class TestRoomTypeClass(TestPms):
         Check that a room type class cannot be created with an existing default_code
         in the same property.
         ----------
-        A room type class is created with the default_code = 'c1' in property pms_property1.
-        Then try to create another room type class with the same code in 3 properties and one
-        of them is the same property in which the other room type class was
-        created(pms_property1), but this should throw a ValidationError.
+        A room type class is created with the default_code = 'c1' in
+        property pms_property1. Then try to create another room type class
+        with the same code in 3 properties and one of them is the same property
+          in which the other room type class was created(pms_property1),
+          but this should throw a ValidationError.
         """
         # ARRANGE
         self.pms_property2 = self.env["pms.property"].create(
@@ -112,10 +113,11 @@ class TestRoomTypeClass(TestPms):
         it is in the property in which it was searched through its default code.
         -----------
         Create a room type class with default code as 'c1' for properties 1 and 3
-        (different companies), save the value returned by the get_unique_by_property_code()
-        method, passing  property1 and default_code 'c1' as parameters. It is checked
-        that the id of the room type class created and the id of the record returned by the
-        method match.
+        (different companies), save the value returned by the
+        get_unique_by_property_code()  method, passing  property1 and
+        default_code 'c1' as parameters. It is checked
+        that the id of the room type class created and the id of
+        the record returned by the method match.
         """
         # ARRANGE
         room_type_class1 = self.env["pms.room.type.class"].create(
@@ -148,8 +150,8 @@ class TestRoomTypeClass(TestPms):
         Create a room type class with default code as 'c1' for properties 1 and 3
         (same company), save the value returned by the get_unique_by_property_code()
         method, passing  property1 and default_code 'c1' as parameters. It is checked
-        that the id of the room type class created and the id of the record returned by the
-        method  match.
+        that the id of the room type class created and the id of the
+        record returned by the method  match.
         """
         # ARRANGE
         self.pms_property2 = self.env["pms.property"].create(

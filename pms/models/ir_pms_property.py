@@ -48,9 +48,9 @@ class IrPmsProperty(models.Model):
                 ]
             )
             if ir_pms_property:
-                if value_type == int:
+                if value_type is int:
                     value = ir_pms_property.value_integer
-                elif value_type == float:
+                elif value_type is float:
                     value = ir_pms_property.value_float
                 else:
                     index_bracket = ir_pms_property.value_reference.index("(")
@@ -78,9 +78,9 @@ class IrPmsProperty(models.Model):
                     ("record", "=", record_id),
                 ]
             )
-            if type(value) == int:
+            if isinstance(value, int):
                 value_type = "value_integer"
-            elif type(value) == float:
+            elif isinstance(value, float):
                 value_type = "value_float"
             else:
                 value_type = "value_reference"

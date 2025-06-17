@@ -259,7 +259,7 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
             ):
                 line.room_id = room.id
         else:
-            raise UserError(_("Room {} not available.".format(room.name)))
+            raise UserError(_(f"Room {room.name} not available."))
 
     @api.model
     def reservations_swap(self, checkin, checkout, source, target):

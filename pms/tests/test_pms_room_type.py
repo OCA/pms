@@ -850,7 +850,8 @@ class TestRoomType(TestPms):
         # ACT & ASSERT
         with self.assertRaises(
             UserError,
-            msg="Shouldn't create room type with amenities belonging to other properties",
+            msg="Shouldn't create room type with amenities "
+            "belonging to other properties",
         ):
             self.env["pms.room.type"].create(
                 {

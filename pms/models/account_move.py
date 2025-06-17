@@ -254,7 +254,7 @@ class AccountMove(models.Model):
         for move in self:
             if move.pms_property_id:
                 move.suitable_journal_ids = move.suitable_journal_ids.filtered(
-                    lambda j: not j.pms_property_ids
+                    lambda j, move=move: not j.pms_property_ids
                     or move.pms_property_id.id in j.pms_property_ids.ids
                 )
 
@@ -282,7 +282,9 @@ class AccountMove(models.Model):
                     self.env["account.move"]
                     .browse(list(current_amounts.keys()))
                     .line_ids.filtered(
-                        lambda line: line.account_id == pay_term_lines.account_id
+                        lambda line,
+                        pay_term_lines=pay_term_lines,
+                        move=move: line.account_id == pay_term_lines.account_id
                         and line.folio_ids in move.folio_ids
                     )
                 )
@@ -293,15 +295,12 @@ class AccountMove(models.Model):
                     try:
                         (pay_term_lines + to_reconcile).reconcile()
                     except Exception as e:
-                        message = (
-                            _(
-                                """
+                        message = _(
+                            """
                             An error occurred while reconciling
                             the invoice with the payments: %s
                             """
-                            )
-                            % str(e)
-                        )
+                        ) % str(e)
                         move.message_post(body=message)
         return True
 
@@ -325,7 +324,7 @@ class AccountMove(models.Model):
                 # TODO: compare with currency differences
                 if sum(abs(item.balance) for item in combi) == invoice.amount_residual:
                     return payments.filtered(
-                        lambda p: p.id in [item.id for item in combi]
+                        lambda p, combi=combi: p.id in [item.id for item in combi]
                     )
                 if sum(invoice.folio_ids.mapped("pending_amount")) == 0:
                     return payments
@@ -398,13 +397,13 @@ class AccountMove(models.Model):
         - anchor: string to append after the anchor #
         """
         self.ensure_one()
-        url = self._proforma_access_url() + "%s?access_token=%s%s%s%s%s" % (
+        url = self._proforma_access_url() + "{}?access_token={}{}{}{}{}".format(
             suffix if suffix else "",
             self._portal_ensure_token(),
-            "&report_type=%s" % report_type if report_type else "",
+            f"&report_type={report_type}" if report_type else "",
             "&download=true" if download else "",
             query_string if query_string else "",
-            "#%s" % anchor if anchor else "",
+            f"#{anchor}" if anchor else "",
         )
         return url
 

@@ -48,11 +48,9 @@ class ResPartnerIdNumber(models.Model):
         for record in self:
             if record.partner_id.pms_checkin_partner_ids:
                 last_update_name = record.partner_id.pms_checkin_partner_ids.filtered(
-                    lambda x: x.document_id == record
+                    lambda x, r=record: x.document_id == r
                     and x.write_date
-                    == max(
-                        record.partner_id.pms_checkin_partner_ids.mapped("write_date")
-                    )
+                    == max(r.partner_id.pms_checkin_partner_ids.mapped("write_date"))
                 )
                 if last_update_name and last_update_name[0].document_number:
                     record.name = last_update_name[0].document_number
@@ -68,12 +66,10 @@ class ResPartnerIdNumber(models.Model):
             if record.partner_id.pms_checkin_partner_ids:
                 last_update_valid_from = (
                     record.partner_id.pms_checkin_partner_ids.filtered(
-                        lambda x: x.document_id == record
+                        lambda x, r=record: x.document_id == r
                         and x.write_date
                         == max(
-                            record.partner_id.pms_checkin_partner_ids.mapped(
-                                "write_date"
-                            )
+                            r.partner_id.pms_checkin_partner_ids.mapped("write_date")
                         )
                     )
                 )
@@ -94,12 +90,10 @@ class ResPartnerIdNumber(models.Model):
             if record.partner_id.pms_checkin_partner_ids:
                 last_update_category_id = (
                     record.partner_id.pms_checkin_partner_ids.filtered(
-                        lambda x: x.document_id == record
+                        lambda x, r=record: x.document_id == r
                         and x.write_date
                         == max(
-                            record.partner_id.pms_checkin_partner_ids.mapped(
-                                "write_date"
-                            )
+                            r.partner_id.pms_checkin_partner_ids.mapped("write_date")
                         )
                     )
                 )
@@ -112,12 +106,10 @@ class ResPartnerIdNumber(models.Model):
             if record.partner_id.pms_checkin_partner_ids:
                 last_update_document = (
                     record.partner_id.pms_checkin_partner_ids.filtered(
-                        lambda x: x.document_id == record
+                        lambda x, r=record: x.document_id == r
                         and x.write_date
                         == max(
-                            record.partner_id.pms_checkin_partner_ids.mapped(
-                                "write_date"
-                            )
+                            r.partner_id.pms_checkin_partner_ids.mapped("write_date")
                         )
                     )
                 )

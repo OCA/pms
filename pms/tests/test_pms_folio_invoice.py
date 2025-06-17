@@ -206,7 +206,7 @@ class TestPmsFolioInvoice(TestPms, AccountTestInvoicingCommon):
         dict_lines = dict()
 
         dict_lines[
-            r1.folio_id.sale_line_ids.filtered(lambda l: not l.display_type)[0].id
+            r1.folio_id.sale_line_ids.filtered(lambda r: not r.display_type)[0].id
         ] = 3
         r1.folio_id._create_invoices(lines_to_invoice=dict_lines)
 
@@ -232,7 +232,7 @@ class TestPmsFolioInvoice(TestPms, AccountTestInvoicingCommon):
         dict_lines = dict()
         # qty to 1 to 1st folio sale line
         dict_lines[
-            r1.folio_id.sale_line_ids.filtered(lambda l: not l.display_type)[0].id
+            r1.folio_id.sale_line_ids.filtered(lambda r: not r.display_type)[0].id
         ] = 1
         r1.folio_id._create_invoices(
             lines_to_invoice=dict_lines,
@@ -249,7 +249,7 @@ class TestPmsFolioInvoice(TestPms, AccountTestInvoicingCommon):
         )
         # qty to 2 to 1st folio sale line
         dict_lines[
-            r1.folio_id.sale_line_ids.filtered(lambda l: not l.display_type)[0].id
+            r1.folio_id.sale_line_ids.filtered(lambda r: not r.display_type)[0].id
         ] = 2
         r1.folio_id._create_invoices(
             lines_to_invoice=dict_lines,
@@ -586,7 +586,8 @@ class TestPmsFolioInvoice(TestPms, AccountTestInvoicingCommon):
         self.assertEqual(
             expected_qty_invoiced,
             sum(self.reservation1.folio_id.sale_line_ids.mapped("qty_invoiced")),
-            "The quantity of invoiced board services don't match between folio and invoice",
+            "The quantity of invoiced board services "
+            "don't match between folio and invoice",
         )
 
     def test_qty_to_invoice_board_service(self):
@@ -712,7 +713,7 @@ class TestPmsFolioInvoice(TestPms, AccountTestInvoicingCommon):
         self.assertEqual(
             datetime.date.today() + datetime.timedelta(days=5),
             self.reservation1.folio_id.sale_line_ids.filtered(
-                lambda l: l.invoice_status == "to_invoice"
+                lambda r: r.invoice_status == "to_invoice"
             )[0].autoinvoice_date,
             "The autoinvoice date in folio with property checkout policy is wrong",
         )

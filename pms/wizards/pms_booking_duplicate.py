@@ -223,9 +223,6 @@ class BookingDuplicate(models.TransientModel):
                         "preferred_room_id": reservation.preferred_room_id.id,
                         "room_type_id": reservation.room_type_id.id,
                         "pricelist_id": reservation.pricelist_id.id,
-                        # "arrival_hour": reservation.arrival_hour,
-                        # "departure_hour": reservation.departure_hour,
-                        # "partner_internal_comment": reservation.partner_internal_comment,
                         "board_service_room_id": reservation.board_service_room_id.id,
                         "adults": reservation.adults,
                     },
@@ -290,8 +287,9 @@ class BookingDuplicate(models.TransientModel):
         if any(room.occupied_room for room in self.line_ids):
             raise UserError(
                 _(
-                    """You can not create a new folio because there are rooms already occupied.
-                    Please, check the rooms marked in red and try again."""
+                    """You can not create a new folio because there are rooms
+                    already occupied. Please, check the rooms marked in red
+                    and try again."""
                 )
             )
         folio = self.env["pms.folio"].create(

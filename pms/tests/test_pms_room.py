@@ -111,10 +111,7 @@ class TestPmsRoom(TestPms):
                 "room_type_id": self.room_type1.id,
             }
         )
-        expected_display_name = "%s [%s]" % (
-            self.room1.name,
-            self.room_type1.default_code,
-        )
+        expected_display_name = f"{self.room1.name} [{self.room_type1.default_code}]"
         self.assertEqual(
             self.room1.display_name,
             expected_display_name,
@@ -155,11 +152,10 @@ class TestPmsRoom(TestPms):
                 "room_amenity_ids": [(6, 0, [self.amenity1.id])],
             }
         )
-        expected_display_name = "%s [%s] %s" % (
-            self.room1.name,
-            self.room_type1.default_code,
-            self.amenity1.default_code,
-        )
+        room_name = self.room1.name
+        room_type_code = self.room_type1.default_code
+        amenity_code = self.amenity1.default_code
+        expected_display_name = f"{room_name} [{room_type_code}] {amenity_code}"
         self.assertEqual(
             self.room1.display_name,
             expected_display_name,
@@ -171,10 +167,10 @@ class TestPmsRoom(TestPms):
         Check that the display_name field of a room with several amenities
         is as expected.
         ------------
-        Two amenities are created with diferent default code and with is_add_code_room_name
-        field as True. A room is created in which the amenities created before are added in
-        the room_amenity_ids field and then it is verified that the display name field of this
-        is composed of:
+        Two amenities are created with diferent default code and with
+        is_add_code_room_name field as True. A room is created in which the amenities
+        created before are added in the room_amenity_ids field and then it is verified
+        that the display name field of this is composed of:
         room.name [room_type.default_code] amenity1.default_code amenity2.default_code
         """
         self.amenity_type1 = self.env["pms.amenity.type"].create(
@@ -209,7 +205,7 @@ class TestPmsRoom(TestPms):
                 "room_amenity_ids": [(6, 0, [self.amenity1.id, self.amenity2.id])],
             }
         )
-        expected_display_name = "%s [%s] %s %s" % (
+        expected_display_name = "{} [{}] {} {}".format(
             self.room1.name,
             self.room_type1.default_code,
             self.amenity1.default_code,
