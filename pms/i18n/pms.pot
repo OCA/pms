@@ -163,13 +163,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/pms/models/pms_reservation_line.py:0
 #, python-format
-msgid "%(room_name)s: No room available in %(checkin)s <-> %(checkout)s."
-msgstr ""
-
-#. module: pms
-#. odoo-python
-#: code:addons/pms/models/pms_reservation_line.py:0
-#, python-format
 msgid "%s: No room type available"
 msgstr ""
 
@@ -5463,14 +5456,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/pms/models/pms_folio.py:0
 #, python-format
-msgid "Invalid token found! Token acquirer %(token_acquirer)s != %(acquirer)s"
+msgid "Invalid token found! Tokenacquirer %(token_acquirer)s != %(acquirer)s"
 msgstr ""
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/pms_folio.py:0
 #, python-format
-msgid "Invalid token found! Token partner %(token_partner)s != %(partner)s"
+msgid "Invalid token found! Tokenpartner %(token_partner)s != %(partner)s"
 msgstr ""
 
 #. module: pms
@@ -7654,8 +7647,8 @@ msgstr ""
 #: code:addons/pms/models/pms_folio.py:0
 #, python-format
 msgid ""
-"Please define an accounting sales journal for the company %(company_name)s "
-"(%(company_id)s)."
+"Please define an accounting sales journal for the company {company_name} "
+"({company_id})."
 msgstr ""
 
 #. module: pms
@@ -7950,8 +7943,8 @@ msgstr ""
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid ""
-"Prices have been recomputed according to pricelist <b>%(pricelist)s</b>\n"
-"                and room type <b>%(room_type)s</b>"
+"Prices have been recomputed according to pricelist\n"
+"                <b>%(pricelist)s</b> and room type <b>%(room_type)s</b>"
 msgstr ""
 
 #. module: pms
@@ -9056,13 +9049,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__room_type_filter_ids
 msgid "Room types"
-msgstr ""
-
-#. module: pms
-#. odoo-python
-#: code:addons/pms/wizards/wizard_split_join_swap_reservation.py:0
-#, python-format
-msgid "Room {} not available."
 msgstr ""
 
 #. module: pms
@@ -10752,8 +10738,8 @@ msgstr ""
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid ""
-"The room %(room)s (type: %(room_type)s)\n"
-"                                is not compatible with the room type %(record_room_type)s\n"
+"The room %(room)s (type: %(room_type)s) is not\n"
+"                                compatible with the room type %(record_room_type)s\n"
 "                                (type: %(record_room_class)s)"
 msgstr ""
 
@@ -10888,7 +10874,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/pms/models/pms_reservation_line.py:0
 #, python-format
-msgid "There is no availability for the room type %(room_type)s on %(date)s"
+msgid "There is no availability for the room type {room_type} on {date}"
 msgstr ""
 
 #. module: pms
@@ -10910,13 +10896,6 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_folio_error
 msgid "There was an error processing this page."
-msgstr ""
-
-#. module: pms
-#. odoo-python
-#: code:addons/pms/wizards/wizard_split_join_swap_reservation.py:0
-#, python-format
-msgid "There's no reservations lines with provided room"
 msgstr ""
 
 #. module: pms
@@ -11782,8 +11761,9 @@ msgstr ""
 #: code:addons/pms/wizards/pms_booking_duplicate.py:0
 #, python-format
 msgid ""
-"You can not create a new folio because there are rooms already occupied.\n"
-"                    Please, check the rooms marked in red and try again."
+"You can not create a new folio because there are rooms\n"
+"                    already occupied. Please, check the rooms marked in red\n"
+"                    and try again."
 msgstr ""
 
 #. module: pms
@@ -12077,4 +12057,11 @@ msgid ""
 "                                booking client or the company (if a company is\n"
 "                                assigned). If you want to bill an independent contact,\n"
 "                                you can select it in the billing assistant"
+msgstr ""
+
+#. module: pms
+#. odoo-python
+#: code:addons/pms/models/pms_reservation_line.py:0
+#, python-format
+msgid "{room_name}: No room available in {checkin} <-> {checkout}."
 msgstr ""
