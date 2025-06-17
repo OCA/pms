@@ -12,6 +12,7 @@ setuptools.setup(
         'odoo-addon-pms>=16.0dev,<16.1dev',
         'odoo-addon-pms_account_move_budget>=16.0dev,<16.1dev',
         'odoo-addon-pms_hr_property>=16.0dev,<16.1dev',
+        'odoo-addon-pms_l10n_es>=16.0dev,<16.1dev',
         'odoo-addon-pms_l10n_es_sii>=16.0dev,<16.1dev',
     ],
     classifiers=[
