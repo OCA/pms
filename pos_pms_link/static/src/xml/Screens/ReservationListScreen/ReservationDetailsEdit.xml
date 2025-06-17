@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="ReservationDetailsEdit" owl="1">
+        <section class="partner-details edit">
+            <h3 class="detail partner-name" t-esc="props.reservation.name" />
+            <div class="partner-details-box clearfix">
+                <div class="partner-details-row">
+                    Name: <span
+                        class="detail partner-partner-name"
+                        t-esc="props.reservation.partner_name"
+                    /><br />
+                    Checkin: <span
+                        class="detail partner-aduls"
+                        t-esc="props.reservation.checkin"
+                    /><br />
+                    Checkout: <span
+                        class="detail partner-aduls"
+                        t-esc="props.reservation.checkout"
+                    /><br />
+                    Adults: <span
+                        class="detail partner-aduls"
+                        t-esc="props.reservation.adults"
+                    /><br />
+                    Children: <span
+                        class="detail partner-children"
+                        t-esc="props.reservation.children"
+                    /><br />
+                    Internal comment: <span
+                        class="detail partner-aduls"
+                        t-esc="props.reservation.folio_internal_comment"
+                    /><br />
+                </div>
+                <h3 class="detail partner-name">Services:</h3>
+                <div class="partner-details-row">
+                    <table class="content-row">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Lines</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t
+                                t-foreach="props.reservation.services"
+                                t-as="service"
+                                t-key="service.id"
+                            >
+                                <tr>
+                                    <td t-esc="service_value['name']" />
+                                    <td>
+                                        <ul>
+                                            <t
+                                                t-foreach="service_value['service_lines']"
+                                                t-as="line_service"
+                                                t-key="line_service.id"
+                                            >
+                                                <li>
+                                                    <span
+                                                        t-esc="line_service_value['date']"
+                                                    /> - <span
+                                                        t-esc="line_service_value['product_id'][1]"
+                                                    /> - <span
+                                                        t-esc="line_service_value['day_qty']"
+                                                    />
+                                                </li>
+                                            </t>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </t>
+
+</templates>

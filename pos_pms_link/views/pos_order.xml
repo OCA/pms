@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_pos_pos_form" model="ir.ui.view">
+        <field name="name">inherit.view.pos.pos.form</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//page[@name='products']//field[@name='price_subtotal_incl']"
+                position="after"
+            >
+                <field name="pms_service_line_id" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

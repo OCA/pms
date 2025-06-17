@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+
+    <t
+        t-name="OrderReceipt"
+        t-inherit="point_of_sale.OrderReceipt"
+        t-inherit-mode="extension"
+        owl="1"
+    >
+        <xpath expr="//div[hasclass('before-footer')]" position="before">
+            <t t-if="paid_on_reservation">
+                <br /><br />
+                <div>
+                    Signature: <br /><br />
+                    <span t-esc="reservation_name" style="font-size: 100%;" /><br />
+                    -------------------
+                </div>
+            </t>
+        </xpath>
+    </t>
+
+</templates>

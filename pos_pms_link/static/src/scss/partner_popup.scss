@@ -1,0 +1,40 @@
+.cash-partner-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    gap: 10px;
+    .button {
+        min-width: 30%;
+        border-radius: 5px;
+        padding: 0;
+    }
+}
+#partner-popup {
+    &.screen {
+        top: 5% !important;
+    }
+}
+#no-partner-move {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    gap: 10px;
+    .checkbox {
+        min-height: 0px;
+        height: 20px;
+        border: none;
+        box-shadow: none;
+        display: inline-block;
+        width: fit-content;
+    }
+    /* Estilos para la etiqueta */
+    .custom-label {
+        font-size: 14px;
+        color: #444;
+        margin-left: 8px;
+        cursor: pointer;
+        text-transform: uppercase;
+    }
+}

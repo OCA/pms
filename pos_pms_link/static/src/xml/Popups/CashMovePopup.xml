@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates id="template" xml:space="preserve">
+    <t
+        t-name="CashMovePopup"
+        t-inherit="point_of_sale.CashMovePopup"
+        t-inherit-mode="extension"
+        owl="1"
+    >
+    <xpath expr="//textarea[@name='reason']" position="before">
+        <div class="cash-partner-container" t-if="showPartnerButton()">
+            <button
+                    class="button set-partner"
+                    t-att-class="{'decentered': isLongName}"
+                    t-on-click="() => this.onClickPartner()"
+                    id="cash-partner"
+                >
+                <t t-if="!env.isMobile"><i
+                            class="fa fa-user"
+                            role="img"
+                            aria-label="Customer"
+                            title="Customer"
+                        /></t>
+                <t t-if="state.partner">
+                    <t t-esc="state.partner.name" />
+                </t>
+                <t t-else="">
+                    Customer
+                </t>
+            </button>
+
+        </div>
+
+    </xpath>
+    <xpath expr="//textarea[@name='reason']" position="after">
+        <div id="no-partner-move" t-if="showPartnerButton()">
+            <input
+                    type="checkbox"
+                    id="no-partner"
+                    class="checkbox"
+                    t-on-click="()=> this.onClickNoPartnerCashMove()"
+                />
+            <label class="custom-label" for="no-partner">No Partner</label>
+        </div>
+
+    </xpath>
+
+    </t>
+
+
+</templates>
