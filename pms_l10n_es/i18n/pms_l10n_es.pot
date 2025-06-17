@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -14,19 +14,8 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: pms_l10n_es
-#: model:ir.actions.server,name:pms_l10n_es.autosend_traveller_report_ir_actions_server
-#: model:ir.cron,cron_name:pms_l10n_es.autosend_traveller_report
-#: model:ir.cron,name:pms_l10n_es.autosend_traveller_report
-msgid ""
-"\n"
-"                Automatic Send Traveller Report\n"
-"            "
-msgstr ""
-
-#. module: pms_l10n_es
 #: model:ir.actions.server,name:pms_l10n_es.autoprocess_sent_com_ir_actions_server
 #: model:ir.cron,cron_name:pms_l10n_es.autoprocess_sent_com
-#: model:ir.cron,name:pms_l10n_es.autoprocess_sent_com
 msgid ""
 "\n"
 "                SES Automatic Process Sent Communications\n"
@@ -36,7 +25,6 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.actions.server,name:pms_l10n_es.autosend_incomplete_traveller_report_com_ir_actions_server
 #: model:ir.cron,cron_name:pms_l10n_es.autosend_incomplete_traveller_report_com
-#: model:ir.cron,name:pms_l10n_es.autosend_incomplete_traveller_report_com
 msgid ""
 "\n"
 "                SES Automatic Sending Incomplete Traveller Reports\n"
@@ -46,7 +34,6 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.actions.server,name:pms_l10n_es.autosend_pending_reservation_com_ir_actions_server
 #: model:ir.cron,cron_name:pms_l10n_es.autosend_pending_reservation_com
-#: model:ir.cron,name:pms_l10n_es.autosend_pending_reservation_com
 msgid ""
 "\n"
 "                SES Automatic Sending Pending Reservation Communications\n"
@@ -56,7 +43,6 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.actions.server,name:pms_l10n_es.autosend_pend_traveller_reports_com_ir_actions_server
 #: model:ir.cron,cron_name:pms_l10n_es.autosend_pend_traveller_reports_com
-#: model:ir.cron,name:pms_l10n_es.autosend_pend_traveller_reports_com
 msgid ""
 "\n"
 "                SES Automatic Sending Pending Traveller Reports Communications\n"
@@ -64,32 +50,25 @@ msgid ""
 msgstr ""
 
 #. module: pms_l10n_es
-#: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
-#, python-format
-msgid "%s does not have the INE Code configured"
-msgstr ""
-
-#. module: pms_l10n_es
-#: model:mail.template,body_html:pms_l10n_es.notification_send_error_travel_report_email
-msgid ""
-"<div>\n"
-"                    There was an error sending the traveler report\n"
-"                </div>\n"
-"            "
-msgstr ""
-
-#. module: pms_l10n_es
-#: model:mail.template,body_html:pms_l10n_es.notification_send_success_travel_report_email
-msgid ""
-"<div>\n"
-"                    Traveler report sent successfully\n"
-"                </div>\n"
-"            "
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_report_invoice_document
+msgid "<strong>Tourism Classification:</strong>"
 msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__ab
 msgid "Abuelo/a"
+msgstr ""
+
+#. module: pms_l10n_es
+#. odoo-python
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#, python-format
+msgid "All reservation rooms must have the same institution property id."
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__batch_id
+msgid "Batch"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -113,18 +92,33 @@ msgid "Category"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__target_date
-msgid "Checkins Date"
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification__code
+msgid "Code"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_tourism_classification__code
+msgid "Code of the Spanish tourism classification."
 msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__communication_id
-msgid "Communication ID"
+msgid "Communication"
 msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__communication_time
-msgid "Communication time"
+msgid "Communication Time"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__communication_id_to_cancel
+msgid "Communication to Cancel"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__communication_id_to_cancel
+msgid "Communication to cancel if this is a cancellation operation"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -133,53 +127,8 @@ msgid "Communications related to this reservation"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model_terms:ir.ui.view,arch_db:pms_l10n_es.view_pms_reservation_from_pms_l110n_es
-msgid "Comunicaciones"
-msgstr ""
-
-#. module: pms_l10n_es
-#: code:addons/pms_l10n_es/models/pms_property.py:0
-#: code:addons/pms_l10n_es/models/pms_property.py:0
-#, python-format
-msgid "Connection Established!"
-msgstr ""
-
-#. module: pms_l10n_es
-#: code:addons/pms_l10n_es/models/pms_property.py:0
-#: code:addons/pms_l10n_es/models/pms_property.py:0
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#, python-format
-msgid "Connection could not be established"
-msgstr ""
-
-#. module: pms_l10n_es
-#: code:addons/pms_l10n_es/models/pms_property.py:0
-#: code:addons/pms_l10n_es/models/pms_property.py:0
-#, python-format
-msgid "Connection established succesfully"
-msgstr ""
-
-#. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_res_partner
 msgid "Contact"
-msgstr ""
-
-#. module: pms_l10n_es
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#, python-format
-msgid "Could not get next file name to send."
-msgstr ""
-
-#. module: pms_l10n_es
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#, python-format
-msgid "Could not get token login."
-msgstr ""
-
-#. module: pms_l10n_es
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#, python-format
-msgid "Could not upload file."
 msgstr ""
 
 #. module: pms_l10n_es
@@ -190,8 +139,8 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category__create_uid
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__create_uid
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__create_uid
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__create_uid
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification__create_uid
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__create_uid
 msgid "Created by"
 msgstr ""
@@ -199,8 +148,8 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category__create_date
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__create_date
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__create_date
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__create_date
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification__create_date
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__create_date
 msgid "Created on"
 msgstr ""
@@ -246,27 +195,20 @@ msgid "Delete communication"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__file_incidencies_from_institution
-msgid "Detailed file"
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification__description
+msgid "Description"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__txt_incidencies_from_institution
-msgid "Detailed message"
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_tourism_classification__description
+msgid "Description of the Spanish tourism classification."
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__display_name
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category__display_name
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__display_name
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__display_name
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__display_name
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_reservation__display_name
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__display_name
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__display_name
-#: model:ir.model.fields,field_description:pms_l10n_es.field_res_country_state__display_name
-#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner__display_name
-#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner_id_number__display_name
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification__display_name
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__display_name
 msgid "Display Name"
 msgstr ""
@@ -282,58 +224,35 @@ msgid "Entity of the communication"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_reservation__error_create
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_traveller_report__error_create
+msgid "Error Creating"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_reservation__error_processing
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_traveller_report__error_processing
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_ses_communication__state__error_processing
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "Error Processing"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_reservation__error_sending
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_traveller_report__error_sending
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_ses_communication__state__error_sending
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "Error Sending"
 msgstr ""
 
 #. module: pms_l10n_es
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#, python-format
-msgid "Error in file sended"
-msgstr ""
-
-#. module: pms_l10n_es
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__error_sending_data
-msgid "Error sending data"
-msgstr ""
-
-#. module: pms_l10n_es
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#, python-format
-msgid "Error sending file: %s"
-msgstr ""
-
-#. module: pms_l10n_es
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#, python-format
-msgid "Error!"
-msgstr ""
-
-#. module: pms_l10n_es
-#: model:mail.template,subject:pms_l10n_es.notification_send_error_travel_report_email
-msgid ""
-"Error: ${object.pms_property_id.name}, ${object.target_date} Error sending "
-"the Traveler report"
-msgstr ""
-
-#. module: pms_l10n_es
-#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_property__institution__ertxaintxa
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_room__institution__ertxaintxa
 msgid "Ertxaintxa (soon)"
 msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__ine_eventual_staff
 msgid "Eventual Staff"
-msgstr ""
-
-#. module: pms_l10n_es
-#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_log_institution_traveller_report_view_tree
-msgid "File"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -346,6 +265,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__txt_message
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__txt_message
 msgid "File Preview"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.actions.server,name:pms_l10n_es.pms_ses_communication_force_send_communication
+msgid "Force Send Communication"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -371,8 +295,8 @@ msgid "Generate file"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_property__institution__guardia_civil
-msgid "Guardia Civil"
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
+msgid "Group By"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -397,17 +321,10 @@ msgid "Hotel category in the Ministry of Tourism. Used for INE statistics."
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category__id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__id
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__id
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__id
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_reservation__id
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__id
-#: model:ir.model.fields,field_description:pms_l10n_es.field_res_country_state__id
-#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner__id
-#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner_id_number__id
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification__id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__id
 msgid "ID"
 msgstr ""
@@ -442,22 +359,30 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__institution_lessor_id
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_room__institution_lessor_id
 msgid "Id provided by institution to send data from lessor."
 msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__institution_property_id
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_room__institution_property_id
 msgid "Id provided by institution to send data from property."
 msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__in_ine
-msgid "In INE"
+msgid "In Ine"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_traveller_report__incomplete
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_ses_communication__state__incomplete
 msgid "Incomplete checkin data"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__institution_independent_account
+msgid "Independent account for institution (travel reports)"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -467,52 +392,55 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__institution
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__institution
 msgid "Institution"
 msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__institution_lessor_id
-msgid "Institution lessor id"
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__institution_lessor_id
+msgid "Institution Lessor"
 msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__institution_password
-msgid "Institution password"
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__institution_password
+msgid "Institution Password"
 msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__institution_property_id
-msgid "Institution property id"
-msgstr ""
-
-#. module: pms_l10n_es
-#: model:ir.model.fields,help:pms_l10n_es.field_pms_property__institution
-msgid "Institution to send daily guest data."
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__institution_property_id
+msgid "Institution Property"
 msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__institution_user
-msgid "Institution user"
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__institution_user
+msgid "Institution User"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_property__institution
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_room__institution
+msgid "Institution to send daily guest data."
 msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_reservation__is_ses
-#: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__is_ses
 msgid "Is SES"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner____last_update
+#: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__is_ses
+msgid "Is Ses"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category____last_update
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard____last_update
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report____last_update
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property____last_update
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_reservation____last_update
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room____last_update
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication____last_update
-#: model:ir.model.fields,field_description:pms_l10n_es.field_res_country_state____last_update
-#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner____last_update
-#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner_id_number____last_update
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification____last_update
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard____last_update
 msgid "Last Modified on"
 msgstr ""
@@ -520,8 +448,8 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category__write_uid
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__write_uid
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__write_uid
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__write_uid
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification__write_uid
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__write_uid
 msgid "Last Updated by"
 msgstr ""
@@ -529,15 +457,10 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category__write_date
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__write_date
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__write_date
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__write_date
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification__write_date
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__write_date
 msgid "Last Updated on"
-msgstr ""
-
-#. module: pms_l10n_es
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__txt_message
-msgid "Log Message"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -546,25 +469,23 @@ msgid "Log SES Communications"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:ir.ui.menu,name:pms_l10n_es.menu_open_pms_log_institution_traveller_report_form_tree
-#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_log_institution_traveller_report_view_search
-msgid "Log institution traveller report"
-msgstr ""
-
-#. module: pms_l10n_es
-#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_log_institution_traveller_report_view_form
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_form
 msgid "Log institution traveller report detail"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:ir.actions.act_window,name:pms_l10n_es.open_pms_log_institution_traveller_report_form_tree
-msgid "Log of sending files to institutions"
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_room__institution__mossos
+msgid "Mossos_d'esquadra (soon)"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_property__institution__mossos
-msgid "Mossos_d'esquadra (soon)"
+#: model:res.partner.id_category,name:pms_l10n_es.document_type_spanish_residence
+msgid "NIE"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification__name
+msgid "Name"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -578,6 +499,12 @@ msgid "Nieto/a"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_reservation__not_applicable
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_traveller_report__not_applicable
+msgid "Not Applicable"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__processing_result
 msgid "Notification processing result"
 msgstr ""
@@ -585,6 +512,11 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__sending_result
 msgid "Notification sending result"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__send_attempt_count
+msgid "Number of attempts to send the communication"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -619,15 +551,20 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__institution_password
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_room__institution_password
 msgid "Password provided by institution to send the data."
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_reservation__to_send
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_traveller_report__to_send
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_ses_communication__state__to_send
 msgid "Pending Notification"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_reservation__to_process
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_traveller_report__to_process
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_ses_communication__state__to_process
 msgid "Pending Processing"
 msgstr ""
@@ -638,12 +575,10 @@ msgid "Permanent Staff"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_property__institution__policia_nacional
-msgid "Policía Nacional"
-msgstr ""
-
-#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_reservation__processed
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_traveller_report__processed
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_ses_communication__state__processed
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "Processed"
 msgstr ""
 
@@ -655,8 +590,9 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_pms_property
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__pms_property_id
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__pms_property_id
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__pms_property_id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__pms_property_id
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "Property"
 msgstr ""
 
@@ -666,8 +602,13 @@ msgid "Property Room"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__pms_property_id
+msgid "Property related to this communication"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__query_status_time
-msgid "Query status time"
+msgid "Query Status Time"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -697,11 +638,6 @@ msgid "Report Type"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:ir.model,name:pms_l10n_es.model_pms_log_institution_traveller_report
-msgid "Report of daily sending files of travellers to institutions."
-msgstr ""
-
-#. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_traveller_report_wizard__report_type
 msgid "Report type (reservation/traveller report)"
 msgstr ""
@@ -724,7 +660,24 @@ msgid "Reservations Report"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
+msgid "Results"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__room_id
+#: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__room_id
+msgid "Room"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__room_id
+msgid "Room related to this communication"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_property__institution__ses
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_room__institution__ses
 msgid "SES"
 msgstr ""
 
@@ -742,8 +695,13 @@ msgid "SES Communications"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__ses_url
-msgid "SES URL"
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_reservation__ses_status_reservation
+msgid "SES Status"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_reservation__ses_status_traveller_report
+msgid "SES Status traveller"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -787,13 +745,8 @@ msgid "SOAP response status query"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__date
-msgid "Send Date"
-msgstr ""
-
-#. module: pms_l10n_es
-#: model_terms:ir.ui.view,arch_db:pms_l10n_es.traveller_report_wizard
-msgid "Send file"
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__send_attempt_count
+msgid "Send Attempt Count"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -809,19 +762,14 @@ msgid "Sending Result"
 msgstr ""
 
 #. module: pms_l10n_es
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#, python-format
-msgid "Sent succesfully!"
-msgstr ""
-
-#. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__ses_partners_relationship
 msgid "Ses Partners Relationship"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_log_institution_traveller_report_view_tree
-msgid "Size"
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__ses_url
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__ses_url
+msgid "Ses Url"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -830,12 +778,20 @@ msgid "Sobrino/a"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:res.partner.id_category,name:pms_l10n_es.document_type_spanish_residence
-msgid "Spanish Residence permit"
+#: model:ir.model,name:pms_l10n_es.model_pms_tourism_classification
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__spanish_tourism_classification_id
+msgid "Spanish Tourism Classification"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_property__spanish_tourism_classification_id
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_tourism_classification__name
+msgid "Spanish tourism classification."
 msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__state
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "State"
 msgstr ""
 
@@ -845,17 +801,13 @@ msgid "State of the communication"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:mail.template,subject:pms_l10n_es.notification_send_success_travel_report_email
-msgid ""
-"Succes: ${object.pms_property_id.name}, ${object.target_date} Traveler "
-"report sent successfully"
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_reservation__ses_status_reservation
+msgid "Status of the reservation in SES"
 msgstr ""
 
 #. module: pms_l10n_es
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#, python-format
-msgid "Successful file sending"
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_reservation__ses_status_traveller_report
+msgid "Status of the traveller report in SES"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -875,125 +827,135 @@ msgid "Take it into account to generate INE statistics"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model_terms:ir.ui.view,arch_db:pms_l10n_es.view_property_form_pms_l10n_es
-msgid "Test user/password"
-msgstr ""
-
-#. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/models/res_partner.py:0
 #, python-format
-msgid "The VAT number %s already exists in other contacts: %s"
+msgid ""
+"The VAT number %(number)s already exists in other contacts: %(contact)s"
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The company VAT is not established."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The company name is not established."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The following guests have no residence country set :%s."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The following spanish guests have no state set :%s."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a birthdate."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a city."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a country."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a document number."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a document type."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a lastname."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a name."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a second lastname."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a street."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a support number."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a valid zip code."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a zip code."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#, python-format
-msgid "The guest information sending settings is not complete."
-msgstr ""
-
-#. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest information sending settings is not property set up."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid ""
@@ -1002,26 +964,30 @@ msgid ""
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid ""
-"The number of seats, excluding extra beds (%s) exceeds the number of seats "
-"established in the property (%s)"
+"The number of seats, excluding extra beds ({num_rooms}) exceeds the number "
+"of seats established in the property ({ine_seats})"
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The property category is not established."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The property city is not established."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
@@ -1029,6 +995,7 @@ msgid "The property does not have an institution property id."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
@@ -1036,24 +1003,28 @@ msgid "The property name is not established."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The property phone is not established."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The property state is not established."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The property street is not established."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
@@ -1061,42 +1032,49 @@ msgid "The property tourism number is not established."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The property zip is not established."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The reservation does not have a name."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The reservations must be from the same property."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/models/res_country_state.py:0
 #, python-format
-msgid "The state %s of %s must have an INE code"
+msgid "The state {state} of {country} must have an INE code"
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "There are no guests onboard."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "There are some guests not onboard."
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid ""
@@ -1105,10 +1083,31 @@ msgid ""
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "Theres's no reservation to generate the XML"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
+msgid "This Month"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
+msgid "This Week"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_room__institution_independent_account
+msgid "This room has an independent account"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
+msgid "Times"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -1118,8 +1117,30 @@ msgid "To"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
+msgid "To Process"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
+msgid "Today"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.actions.act_window,name:pms_l10n_es.open_pms_tourism_classification
+#: model:ir.ui.menu,name:pms_l10n_es.menu_open_pms_tourism_classification_form_tree
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.view_property_form_pms_l10n_es
+msgid "Tourism Classification"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__ine_tourism_number
 msgid "Tourism number"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.view_room_form_pms_l10n_es
+msgid "Travel record institution"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -1140,6 +1161,7 @@ msgid "Travellers Report"
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "Travellers ReporttravellersReservations Report"
@@ -1152,7 +1174,6 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__txt_filename
-#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__txt_filename
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__txt_filename
 msgid "Txt Filename"
 msgstr ""
@@ -1169,6 +1190,7 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__ses_url
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_room__ses_url
 msgid "URL to send the data to SES"
 msgstr ""
 
@@ -1187,7 +1209,13 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__institution_user
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_room__institution_user
 msgid "User provided by institution to send the data."
+msgstr ""
+
+#. module: pms_l10n_es
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
+msgid "Wait checkins"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -1218,4 +1246,11 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__yn
 msgid "Yerno o Nuera"
+msgstr ""
+
+#. module: pms_l10n_es
+#. odoo-python
+#: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
+#, python-format
+msgid "{state_name} does not have the INE Code configured"
 msgstr ""
