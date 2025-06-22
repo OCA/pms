@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-06-22 15:25+0000\n"
+"PO-Revision-Date: 2025-06-22 18:33+0000\n"
 "Last-Translator: BitStab <bitstab@users.noreply.translation.odoo-"
 "community.org>\n"
 "Language-Team: none\n"
@@ -1999,7 +1999,7 @@ msgstr "Erweiterte Filter"
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__aeat_identification
 msgid "Aeat Identification"
-msgstr "Aeat Identification"
+msgstr "Aeat Identifikation"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__aeat_sending_enabled
@@ -2159,6 +2159,8 @@ msgstr "Erlaubte Dienstleistungen"
 #, python-format
 msgid "Already exists another Board Service with the same code and properties"
 msgstr ""
+"Es ist bereits ein anderer Board-Dienst mit demselben Code und denselben "
+"Eigenschaften vorhanden"
 
 #. module: pms
 #. odoo-python
