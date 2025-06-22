@@ -53,7 +53,7 @@ permit_first_letter=id_number.name[0:1]
 permit_last_letter = id_number.name[
     len(id_number.name) - 1 : len(id_number.name)
 ]
-if (permit_first_letter.upper() in ['X','Y' 'Z']) and id_number.name[1:8].isdigit() and not permit_last_letter.isdigit():
+if (permit_first_letter.upper() in ['X','Y', 'Z']) and id_number.name[1:8].isdigit() and not permit_last_letter.isdigit():
     failed = False
 else:
     failed = True
