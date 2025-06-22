@@ -1088,12 +1088,7 @@ class PmsReservation(models.Model):
         # Reservations can be cancelled
         for record in self:
             record.allowed_cancel = (
-                True
-                if (
-                    record.state not in ["done"]
-                    and fields.Date.today() <= record.checkout
-                )
-                else False
+                True if (record.state not in ["done", "onboard"]) else False
             )
 
     def _compute_ready_for_checkin(self):
