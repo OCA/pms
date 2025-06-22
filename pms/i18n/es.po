@@ -11998,7 +11998,7 @@ msgstr "Este registro se tiene en cuenta para calcular la disponibilidad"
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid "This reservation cannot be cancelled"
-msgstr "No se puede hacer el checkout de la reserva"
+msgstr "No se puede cancelar esta reserva"
 
 #. module: pms
 #. odoo-python
