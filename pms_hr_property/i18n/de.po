@@ -1,0 +1,42 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pms_hr_property
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#. module: pms_hr_property
+#: model:ir.model.fields,field_description:pms_hr_property.field_pms_property__employee_ids
+msgid "Assigned Employees"
+msgstr ""
+
+#. module: pms_hr_property
+#: model:ir.model,name:pms_hr_property.model_hr_employee_base
+msgid "Basic Employee"
+msgstr ""
+
+#. module: pms_hr_property
+#: model:ir.model,name:pms_hr_property.model_pms_property
+msgid "Property"
+msgstr ""
+
+#. module: pms_hr_property
+#: model_terms:ir.ui.view,arch_db:pms_hr_property.hr_property_employee_filter
+msgid "Workplace"
+msgstr ""
+
+#. module: pms_hr_property
+#: model:ir.model.fields,field_description:pms_hr_property.field_hr_employee__property_ids
+#: model:ir.model.fields,field_description:pms_hr_property.field_hr_employee_base__property_ids
+#: model:ir.model.fields,field_description:pms_hr_property.field_hr_employee_public__property_ids
+msgid "Workplaces asigned"
+msgstr ""
