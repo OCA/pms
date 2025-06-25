@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-06-16 11:26+0000\n"
+"PO-Revision-Date: 2025-06-25 09:25+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -2803,96 +2803,96 @@ msgstr "Conteggio allegati"
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__product_template_attribute_value_ids
 msgid "Attribute Values"
-msgstr ""
+msgstr "Valori attributo"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_res_company__privacy_policy
 msgid "Authorization by the user for themanage of their personal data"
-msgstr ""
+msgstr "Autorizzazione dell'utente per la gestione dei suoi dati personali"
 
 #. module: pms
 #: model:ir.actions.server,name:pms.autoinvoicing_downpayments_ir_actions_server
 #: model:ir.cron,cron_name:pms.autoinvoicing_downpayments
 msgid "Auto Invoicing DownPayments"
-msgstr ""
+msgstr "Auto fatturazione acconti"
 
 #. module: pms
 #: model:ir.actions.server,name:pms.autoinvoicing_folios_ir_actions_server
 #: model:ir.cron,cron_name:pms.autoinvoicing_folios
 msgid "Auto Invoicing Folios"
-msgstr ""
+msgstr "Auto fatturazione fogli"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__auto_reservation_note
 msgid "Auto Reservation Note"
-msgstr ""
+msgstr "Nota prenotazione automatica"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__is_canceled_auto_mail
 msgid "Auto Send Cancellation Mail"
-msgstr ""
+msgstr "Invia automaticamente e-mail annullamento"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__is_confirmed_auto_mail
 msgid "Auto Send Confirmation Mail"
-msgstr ""
+msgstr "Invia automaticamente e-mail di conferma"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 msgid "Auto Send Email"
-msgstr ""
+msgstr "Invia automaticamente e-mail"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__is_exit_auto_mail
 msgid "Auto Send Exit Mail"
-msgstr ""
+msgstr "Invia automaticamente e-mail di uscita"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__is_modified_auto_mail
 msgid "Auto Send Modification Mail"
-msgstr ""
+msgstr "Invia automaticamente e-mail di modifica"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__preconfirm
 msgid "Auto confirm to Save"
-msgstr ""
+msgstr "Conferma automatica da salvare"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__autoinvoice_date
 msgid "Autoinvoice Date"
-msgstr ""
+msgstr "Data autofattura"
 
 #. module: pms
 #: model:ir.model,name:pms.model_pms_automated_mails
 msgid "Automatic Mails"
-msgstr ""
+msgstr "E-mail automatiche"
 
 #. module: pms
 #: model:ir.actions.server,name:pms.nocheckout_reservations_ir_actions_server
 #: model:ir.cron,cron_name:pms.nocheckout_reservations
 msgid "Automatic No Checkout Reservations"
-msgstr ""
+msgstr "Prenotazioni automatiche senza checkout"
 
 #. module: pms
 #: model:ir.actions.server,name:pms.noshow_reservations_ir_actions_server
 #: model:ir.cron,cron_name:pms.noshow_reservations
 msgid "Automatic No Show Reservation"
-msgstr ""
+msgstr "Prenotazione automatica senza visualizzazione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan_rule__avail_id
 msgid "Avail record"
-msgstr ""
+msgstr "Record disponibile"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_availability__avail_rule_ids
 msgid "Avail record rules"
-msgstr ""
+msgstr "Regole record disponibile"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__avail_id
 msgid "Availability Day"
-msgstr ""
+msgstr "Giorno disponibilità"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan_rule__availability_plan_id
@@ -2900,179 +2900,179 @@ msgstr ""
 #: model:ir.model.fields.selection,name:pms.selection__pms_massive_changes_wizard__massive_changes_on__availability_plan
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
 msgid "Availability Plan"
-msgstr ""
+msgstr "Piano disponibilità"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan__name
 msgid "Availability Plan Name"
-msgstr ""
+msgstr "Nome piano disponibilità"
 
 #. module: pms
 #: model:ir.actions.act_window,name:pms.availability_plan_rule_view_tree_action
 msgid "Availability Plan Rules"
-msgstr ""
+msgstr "Regole piano disponibilità"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_product_pricelist__availability_plan_id
 msgid "Availability Plan for which the pricelist is included"
-msgstr ""
+msgstr "Piano disponibilità per il quale è incluso il listino"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__availability_plan_ids
 msgid "Availability Plan to apply massive changes"
-msgstr ""
+msgstr "Piano disponibilità per applicazione modifiche di massa"
 
 #. module: pms
 #: model:ir.ui.menu,name:pms.reservation_availability_plan_rules_menu
 #: model_terms:ir.ui.view,arch_db:pms.availability_plan_rule_view_form
 msgid "Availability Plans"
-msgstr ""
+msgstr "Piani disponibilità"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__availability_results
 #: model:ir.model.fields,help:pms.field_pms_booking_engine__availability_results
 msgid "Availability Results"
-msgstr ""
+msgstr "Risultati disponibilità"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan__rule_ids
 #: model_terms:ir.ui.view,arch_db:pms.availability_view_form
 msgid "Availability Rules"
-msgstr ""
+msgstr "Regole disponibilità"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_product_pricelist__pms_sale_channel_ids
 msgid "Available Channels"
-msgstr ""
+msgstr "Canali disponibili"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_product_pricelist__is_pms_available
 msgid "Available in PMS"
-msgstr ""
+msgstr "Disponibile nel PMS"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__available_in_pos
 msgid "Available in POS"
-msgstr ""
+msgstr "Disponibile nel POS"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio_availability_wizard__rooms_available_qty
 msgid "Available rooms"
-msgstr ""
+msgstr "Camere disponibili"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__avatar_1920
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 msgid "Avatar"
-msgstr ""
+msgstr "Avatar"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__avatar_1024
 msgid "Avatar 1024"
-msgstr ""
+msgstr "Avatar 1024"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__avatar_128
 msgid "Avatar 128"
-msgstr ""
+msgstr "Avatar 128"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__avatar_256
 msgid "Avatar 256"
-msgstr ""
+msgstr "Avatar 256"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__avatar_512
 msgid "Avatar 512"
-msgstr ""
+msgstr "Avatar 512"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__avg_cost
 msgid "Average Cost"
-msgstr ""
+msgstr "Costo medio"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__avail_readonly
 msgid "Avialability Readonly"
-msgstr ""
+msgstr "Disponibilità solo lettura"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_account_journal__avoid_autoinvoice_downpayment
 msgid "Avoid Autoinvoice Downpayment"
-msgstr ""
+msgstr "Evita autofattura acconto"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_account_journal__avoid_autoinvoice_downpayment
 msgid "Avoid autoinvoice downpayment"
-msgstr ""
+msgstr "Evita autofattura acconto"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__avoid_mails
 msgid "Avoid comunication mails"
-msgstr ""
+msgstr "Evita e-mail comunicazione"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__avoid_simplified_max_amount_downpayment
 msgid "Avoid simplified invoice max amount downpayment"
-msgstr ""
+msgstr "Evita fattura semplificata valore massimo acconto"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__bank_account_count
 msgid "Bank"
-msgstr ""
+msgstr "Banca"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__payment_ids
 msgid "Bank Payments"
-msgstr ""
+msgstr "Pagamenti banca"
 
 #. module: pms
 #: model:ir.model,name:pms.model_account_bank_statement
 msgid "Bank Statement"
-msgstr ""
+msgstr "Estratto conto bancario"
 
 #. module: pms
 #: model:ir.model,name:pms.model_account_bank_statement_line
 msgid "Bank Statement Line"
-msgstr ""
+msgstr "Riga estratto conto"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__bank_ids
 msgid "Banks"
-msgstr ""
+msgstr "Banche"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__barcode
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__barcode
 msgid "Barcode"
-msgstr ""
+msgstr "Codice a barre"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__valid_ean
 msgid "Barcode is valid EAN"
-msgstr ""
+msgstr "Il codice a barre è un EAN valido"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_advance_payment_inv__bill_rooms
 #: model:ir.model.fields,help:pms.field_folio_advance_payment_inv__bill_rooms
 msgid "Bill Rooms"
-msgstr ""
+msgstr "Conto camere"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_advance_payment_inv__bill_services
 #: model:ir.model.fields,help:pms.field_folio_advance_payment_inv__bill_services
 msgid "Bill Services"
-msgstr ""
+msgstr "Conto servizi"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__partner_invoice_ids
 msgid "Billing addresses"
-msgstr ""
+msgstr "Indirizzo fatturazione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_advance_payment_inv__partner_invoice_id
 msgid "Billing contact"
-msgstr ""
+msgstr "Contatto fatturazione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__birthdate_date
@@ -3081,12 +3081,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_res_users__birthdate_date
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Birthdate"
-msgstr ""
+msgstr "Data di nascita"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__is_blacklisted
 msgid "Blacklist"
-msgstr ""
+msgstr "Blacklist"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__block_create_past_reservations
