@@ -89,23 +89,21 @@ class PmsAvailability(models.Model):
         "reservation_line_ids",
         "reservation_line_ids.occupies_availability",
         "room_type_id.total_rooms_count",
+        "reservation_line_ids.room_id",
+        "reservation_line_ids.date",
         "parent_avail_id",
         "parent_avail_id.reservation_line_ids",
         "parent_avail_id.reservation_line_ids.occupies_availability",
+        "parent_avail_id.reservation_line_ids.room_id",
+        "parent_avail_id.reservation_line_ids.date",
         "child_avail_ids",
         "child_avail_ids.reservation_line_ids",
         "child_avail_ids.reservation_line_ids.occupies_availability",
+        "child_avail_ids.reservation_line_ids.room_id",
+        "child_avail_ids.reservation_line_ids.date",
     )
     def _compute_real_avail(self):
         for record in self:
-            Rooms = self.env["pms.room"]
-            total_rooms = Rooms.search_count(
-                [
-                    ("active", "=", True),
-                    ("room_type_id", "=", record.room_type_id.id),
-                    ("pms_property_id", "=", record.pms_property_id.id),
-                ]
-            )
             room_ids = record.room_type_id.room_ids.filtered(
                 lambda r, record=record: r.pms_property_id == record.pms_property_id
                 and r.active
@@ -118,7 +116,7 @@ class PmsAvailability(models.Model):
                     pms_property_id=record.pms_property_id.id,
                 )
             )
-            record.real_avail = total_rooms - count_rooms_not_avail
+            record.real_avail = len(room_ids) - count_rooms_not_avail
 
     @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
     def _compute_parent_avail_id(self):
