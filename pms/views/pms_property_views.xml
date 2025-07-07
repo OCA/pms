@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <form string="Property Configuration">
                 <sheet>
+                    <div class="o_button_box" name="button_box" />
                     <label for="name" class="oe_edit_only" />
                     <h1>
                         <field name="name" class="oe_inline" />
