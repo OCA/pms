@@ -1290,9 +1290,7 @@ class PmsReservation(models.Model):
     @api.depends("service_ids.price_total", "services_discount")
     def _compute_price_services(self):
         for record in self:
-            record.price_services = (
-                sum(record.mapped("service_ids.price_total")) - record.services_discount
-            )
+            record.price_services = sum(record.mapped("service_ids.price_total"))
 
     @api.depends("price_services", "price_total")
     def _compute_price_room_services_set(self):
