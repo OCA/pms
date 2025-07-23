@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-07-22 17:25+0000\n"
+"PO-Revision-Date: 2025-07-23 17:25+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -23,6 +23,9 @@ msgid ""
 "- %(record)r belongs to properties %(pms_properties)r and\n"
 "                %(field)r (%(fname)s: %(values)s) belongs to another properties."
 msgstr ""
+"- %(record)r appartiene alle proprietà %(pms_properties)r e\n"
+"                %(field)r (%(fname)s: %(values)s) appartiene ad altre "
+"proprietà."
 
 #. module: multi_pms_properties
 #: code:addons/multi_pms_properties/models.py:0
@@ -31,6 +34,8 @@ msgid ""
 "- Record is properties %(pms_properties)r and %(field)r\n"
 "                (%(fname)s: %(values)s) belongs to another properties."
 msgstr ""
+"- Il record è proprietà %(pms_properties)r e %(field)r\n"
+"                (%(fname)s: %(values)s) appartiene ad altre proprietà."
 
 #. module: multi_pms_properties
 #: model:ir.model,name:multi_pms_properties.model_base
@@ -41,7 +46,7 @@ msgstr "Base"
 #: code:addons/multi_pms_properties/models.py:0
 #, python-format
 msgid "Incompatible properties on records:"
-msgstr ""
+msgstr "Proprietà incompatibili nel record:"
 
 #. module: multi_pms_properties
 #: code:addons/multi_pms_properties/models.py:0
@@ -50,3 +55,5 @@ msgid ""
 "You cannot establish a company other than the one with the established "
 "properties"
 msgstr ""
+"Non è possibile costituire una società diversa da quella con le proprietà "
+"stabilite"
