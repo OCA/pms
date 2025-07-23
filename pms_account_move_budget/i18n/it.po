@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-03-14 15:06+0000\n"
+"PO-Revision-Date: 2025-07-23 17:25+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -14,12 +14,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10.2\n"
+"X-Generator: Weblate 5.10.4\n"
 
 #. module: pms_account_move_budget
 #: model:ir.model,name:pms_account_move_budget.model_account_move_budget_line
 msgid "Account Move Budget Line"
-msgstr ""
+msgstr "Riga budget movimento conto"
 
 #. module: pms_account_move_budget
 #: model:ir.model.fields,field_description:pms_account_move_budget.field_account_move_budget_line__display_name
@@ -29,14 +29,14 @@ msgstr "Nome visualizzato"
 #. module: pms_account_move_budget
 #: model:ir.model.fields,field_description:pms_account_move_budget.field_account_move_budget_line__pms_property_id
 msgid "Hotel"
-msgstr ""
+msgstr "Hotel"
 
 #. module: pms_account_move_budget
 #: model:ir.model.fields,field_description:pms_account_move_budget.field_account_move_budget_line__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: pms_account_move_budget
 #: model:ir.model.fields,field_description:pms_account_move_budget.field_account_move_budget_line____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Ultima modifica il"
