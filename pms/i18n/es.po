@@ -11182,6 +11182,16 @@ msgid "Terms and conditions"
 msgstr "Términos y condiciones"
 
 #. module: pms
+#. odoo-python
+#: code:addons/pms/models/pms_reservation_line.py:0
+#, python-format
+msgid ""
+"The '%(incompatible_class)s' is not compatible with the reservation type "
+"class '%(reservation_class)s'. Please select a compatible class room for "
+"this reservation."
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_res_partner_id_number__name
 msgid "The ID itself. For example, Driver License number of this person"
 msgstr ""
@@ -11647,17 +11657,6 @@ msgstr ""
 #: model:ir.model.fields,help:pms.field_pms_folio__revenue_user_id
 msgid "The revenue manager in the folio"
 msgstr "El gestor de ingresos en el folio"
-
-#. module: pms
-#. odoo-python
-#: code:addons/pms/models/pms_reservation.py:0
-#, python-format
-msgid ""
-"The room %(room)s (type: %(room_type)s) is not\n"
-"                                compatible with the room type "
-"%(record_room_type)s\n"
-"                                (type: %(record_room_class)s)"
-msgstr ""
 
 #. module: pms
 #. odoo-python
