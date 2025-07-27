@@ -45,6 +45,50 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
             }
         )
 
+        # Additional room type class for incompatible test
+        cls.room_type_class_day = cls.env["pms.room.type.class"].create(
+            {
+                "name": "Day Use",
+                "overnight": False,
+                "default_code": "DAY",
+            }
+        )
+        cls.room_type_class_overnight = cls.env["pms.room.type.class"].create(
+            {
+                "name": "Overnight",
+                "overnight": True,
+                "default_code": "OVN",
+            }
+        )
+
+        cls.room_type_day = cls.env["pms.room.type"].create(
+            {
+                "pms_property_ids": [cls.pms_property1.id],
+                "name": "Day Room",
+                "default_code": "DAY_Test",
+                "class_id": cls.room_type_class_day.id,
+            }
+        )
+
+        cls.room_type_overnight = cls.env["pms.room.type"].create(
+            {
+                "pms_property_ids": [cls.pms_property1.id],
+                "name": "Overnight Room",
+                "default_code": "OVN_Test",
+                "class_id": cls.room_type_class_overnight.id,
+            }
+        )
+
+        cls.room_day = cls.env["pms.room"].create(
+            {
+                "pms_property_id": cls.pms_property1.id,
+                "name": "Day 201",
+                "room_type_id": cls.room_type_day.id,
+                "capacity": 1,
+                "extra_beds_allowed": 0,
+            }
+        )
+
         # create rooms
         cls.room1 = cls.env["pms.room"].create(
             {
@@ -3399,3 +3443,63 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
             "Sale_channel_origin_id of folio must be the same as "
             "sale_channel_origin of rservation",
         )
+
+    @freeze_time("2000-12-01")
+    def test_modify_reservation_with_compatible_overnight_classes(self):
+        """
+        Check that when modifying a reservation with compatible overnight
+        classes, the reservation is modified correctly.
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        reservation_vals = {
+            "checkin": checkin,
+            "checkout": checkout,
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+        reservation = self.env["pms.reservation"].create(reservation_vals)
+
+        # ACT
+        reservation.write(
+            {
+                "room_type_id": self.room_type_overnight.id,
+            }
+        )
+
+        # ASSERT
+        self.assertEqual(
+            reservation.room_type_id.id,
+            self.room_type_overnight.id,
+            "The reservation should be modified with the new room type",
+        )
+
+    @freeze_time("2000-12-01")
+    def test_modify_reservation_with_incompatible_overnight_classes(self):
+        """
+        Check that when modifying a reservation with incompatible overnight
+        classes, the reservation raises an error.
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        reservation_vals = {
+            "checkin": checkin,
+            "checkout": checkout,
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "sale_channel_origin_id": self.sale_channel_direct.id,
+        }
+        reservation = self.env["pms.reservation"].create(reservation_vals)
+
+        # ACT & ASSERT
+        with self.assertRaises(ValidationError):
+            reservation.write(
+                {
+                    "room_type_id": self.room_type_day.id,
+                }
+            )

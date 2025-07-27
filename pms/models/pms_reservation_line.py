@@ -660,3 +660,29 @@ class PmsReservationLine(models.Model):
             if record.pms_property_id.block_create_past_reservations:
                 if record.date < fields.Date.today():
                     raise ValidationError(_("You can't create past reservations"))
+
+    @api.constrains("room_id")
+    def _check_room_class_compatibility(self):
+        incompatible_class = False
+        for record in self:
+            if (
+                record.room_id
+                and record.reservation_id.room_type_id
+                and (
+                    record.room_id.room_type_id.class_id.overnight
+                    != record.reservation_id.room_type_id.class_id.overnight
+                )
+            ):
+                incompatible_class = True
+        if incompatible_class:
+            raise ValidationError(
+                _(
+                    "The '%(incompatible_class)s' is not compatible with the "
+                    "reservation type class '%(reservation_class)s'. Please select "
+                    "a compatible class room for this reservation."
+                )
+                % {
+                    "incompatible_class": incompatible_class,
+                    "reservation_class": record.room_id.room_type_id.class_id.name,
+                }
+            )

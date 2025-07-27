@@ -1837,10 +1837,9 @@ class PmsReservation(models.Model):
                             )
                         )
 
-    @api.constrains(
-        "reservation_line_ids", "reservation_line_ids.room_id", "room_type_id"
-    )
+    @api.constrains("reservation_line_ids", "room_type_id")
     def _check_room_class_compatibility(self):
+        incompatible_class = False
         for record in self:
             if (
                 record.room_type_id
@@ -1849,20 +1848,24 @@ class PmsReservation(models.Model):
             ):
                 for line in record.reservation_line_ids:
                     if (
-                        line.room_id.room_type_id.class_id
-                        != record.room_type_id.class_id
+                        line.room_id.room_type_id.class_id.overnight
+                        != record.room_type_id.class_id.overnight
                     ):
-                        raise ValidationError(
-                            _(
-                                """The room %(room)s (type: %(room_type)s) is not
-                                compatible with the room type %(record_room_type)s
-                                (type: %(record_room_class)s)""",
-                                room=line.room_id.name,
-                                room_type=line.room_id.room_type_id.class_id.name,
-                                record_room_type=record.room_type_id.name,
-                                record_room_class=record.room_type_id.class_id.name,
-                            )
-                        )
+                        incompatible_class = line.room_id.room_type_id.class_id.name
+        if incompatible_class:
+            raise ValidationError(
+                _(
+                    (
+                        "The '%(incompatible_class)s' is not compatible with the "
+                        "reservation type class '%(reservation_class)s'. Please select "
+                        "a compatible class room for this reservation."
+                    ),
+                    {
+                        "incompatible_class": incompatible_class,
+                        "reservation_class": record.room_type_id.class_id.name,
+                    },
+                )
+            )
 
     # Action methods
     def open_partner(self):
