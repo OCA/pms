@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -16,7 +16,6 @@ msgstr ""
 #. module: multi_pms_properties
 #. odoo-python
 #: code:addons/multi_pms_properties/models.py:0
-#, python-format
 msgid ""
 "- %(record)r belongs to properties %(pms_properties)r and\n"
 "                %(field)r (%(fname)s: %(values)s) belongs to another properties."
@@ -25,7 +24,6 @@ msgstr ""
 #. module: multi_pms_properties
 #. odoo-python
 #: code:addons/multi_pms_properties/models.py:0
-#, python-format
 msgid ""
 "- Record is properties %(pms_properties)r and %(field)r\n"
 "                (%(fname)s: %(values)s) belongs to another properties."
@@ -39,14 +37,12 @@ msgstr ""
 #. module: multi_pms_properties
 #. odoo-python
 #: code:addons/multi_pms_properties/models.py:0
-#, python-format
 msgid "Incompatible properties on records:"
 msgstr ""
 
 #. module: multi_pms_properties
 #. odoo-python
 #: code:addons/multi_pms_properties/models.py:0
-#, python-format
 msgid ""
 "You cannot establish a company other than the one with the established "
 "properties"
