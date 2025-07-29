@@ -58,7 +58,6 @@ class BaseModel(models.AbstractModel):
         """
         if fnames is None:
             fnames = self._fields
-
         regular_fields = self._get_regular_fields(fnames)
 
         if not regular_fields:
