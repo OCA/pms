@@ -2616,7 +2616,7 @@ class PmsReservation(models.Model):
                             "folio_id": self.folio_id.id,
                             "product_id": product.id,
                             "name": product.name,
-                            "per_day": True,
+                            "per_day": False,
                             "service_line_ids": [(0, 0, line) for line in new_lines],
                         },
                     )
