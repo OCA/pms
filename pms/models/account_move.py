@@ -285,7 +285,7 @@ class AccountMove(models.Model):
                         lambda line,
                         pay_term_lines=pay_term_lines,
                         move=move: line.account_id == pay_term_lines.account_id
-                        and line.folio_ids in move.folio_ids
+                        and line.payment_id.folio_ids in move.folio_ids
                     )
                 )
                 to_reconcile = self.match_pays_by_amount(
