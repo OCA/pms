@@ -2000,9 +2000,9 @@ class PmsReservation(models.Model):
                     folio.sale_channel_origin_id
                     and "sale_channel_origin_id" not in vals
                 ):
-                    default_vals[
-                        "sale_channel_origin_id"
-                    ] = folio.sale_channel_origin_id.id
+                    default_vals["sale_channel_origin_id"] = (
+                        folio.sale_channel_origin_id.id
+                    )
                 vals.update(default_vals)
             elif (
                 "pms_property_id" in vals

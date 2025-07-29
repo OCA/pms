@@ -623,11 +623,7 @@ class PmsCheckinPartner(models.Model):
     def _compute_access_url(self):
         super()._compute_access_url()
         for checkin in self:
-            checkin.access_url = "/my/folios/{}/reservations/{}/checkins/{}".format(
-                checkin.folio_id.id,
-                checkin.reservation_id.id,
-                checkin.id,
-            )
+            checkin.access_url = f"/my/folios/{checkin.folio_id.id}/reservations/{checkin.reservation_id.id}/checkins/{checkin.id}"
 
     # Constraints and onchanges
 

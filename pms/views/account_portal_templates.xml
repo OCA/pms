@@ -1,5 +1,4 @@
 <odoo>
-
     <template
         id="pms_proforma_invoice_template"
         name="Invoice Proforma Portal Template"
@@ -13,5 +12,4 @@
             >invoice.get_proforma_portal_url(report_type='html')</attribute>
         </xpath>
     </template>
-
 </odoo>

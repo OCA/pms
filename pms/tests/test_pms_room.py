@@ -205,12 +205,7 @@ class TestPmsRoom(TestPms):
                 "room_amenity_ids": [(6, 0, [self.amenity1.id, self.amenity2.id])],
             }
         )
-        expected_display_name = "{} [{}] {} {}".format(
-            self.room1.name,
-            self.room_type1.default_code,
-            self.amenity1.default_code,
-            self.amenity2.default_code,
-        )
+        expected_display_name = f"{self.room1.name} [{self.room_type1.default_code}] {self.amenity1.default_code} {self.amenity2.default_code}"
         self.assertEqual(
             self.room1.display_name,
             expected_display_name,

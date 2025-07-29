@@ -75,10 +75,10 @@
                     A customer/s has this email or mobile, do you want to add it?
                     <field name="possible_existing_customer_ids" invisible="1" />
                     <button
-                        name="open_wizard_several_partners"
-                        string="Add customer"
-                        type="object"
-                    />
+                    name="open_wizard_several_partners"
+                    string="Add customer"
+                    type="object"
+                />
                 </div>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -354,7 +354,6 @@
                             />
                         </group>
                         <div class="oe_clear" />
-
                     </group>
                     <group invisible="1">
                         <field name="payment_state" invisible="1" force_save="1" />
@@ -413,7 +412,7 @@
                                         icon="fa-1x fa-cutlery"
                                         attrs="{'invisible':[('is_board_service','=', False)]}"
                                     />
-                                     <button
+                                    <button
                                         title="Extra Service"
                                         class="oe_stat_button"
                                         icon="fa-1x fa-tags"
@@ -770,12 +769,12 @@
                         name="group_customer"
                         context="{'group_by':'partner_id'}"
                     />
-<!--                    <filter-->
-<!--                        string="Channel"-->
-<!--                        domain="[]"-->
-<!--                        name="group_channel"-->
-<!--                        context="{'group_by':'sale_channel_ids'}"-->
-<!--                    />-->
+                    <!--                    <filter-->
+                    <!--                        string="Channel"-->
+                    <!--                        domain="[]"-->
+                    <!--                        name="group_channel"-->
+                    <!--                        context="{'group_by':'sale_channel_ids'}"-->
+                    <!--                    />-->
                     <filter
                         string="Agency"
                         domain="[]"
@@ -847,9 +846,7 @@
         <field name="name">view.pms.folio.graph</field>
         <field name="model">pms.folio</field>
         <field name="arch" type="xml">
-            <graph type="bar">
-
-            </graph>
+            <graph type="bar" />
         </field>
     </record>
     <!-- Add create invoice merge folio -->

@@ -131,8 +131,7 @@
                                         placeholder="e.g. https://www.odoo.com"
                                     />
                                 </group>
-                                <group>
-                                </group>
+                                <group />
                             </group>
                         </page>
                         <page

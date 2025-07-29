@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record id="action_folio_generate_link" model="ir.actions.act_window">
         <field name="name">Generate a Payment Link</field>
         <field name="res_model">payment.link.wizard</field>
@@ -10,5 +9,4 @@
         <field name="binding_model_id" ref="model_pms_folio" />
         <field name="binding_view_types">form</field>
     </record>
-
 </odoo>

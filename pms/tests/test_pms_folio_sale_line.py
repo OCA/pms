@@ -447,9 +447,7 @@ class TestPmsFolioSaleLine(TestPms):
                     lambda x: x.reservation_id and x.service_id and x.is_board_service
                 )
             ),
-            "Folio should contain {} board service sale lines".format(
-                expected_board_service_sale_lines
-            ),
+            f"Folio should contain {expected_board_service_sale_lines} board service sale lines",
         )
 
     def test_comp_fsl_board_services_different_prices(self):
@@ -487,9 +485,7 @@ class TestPmsFolioSaleLine(TestPms):
                     lambda x: not x.display_type and x.is_board_service
                 )
             ),
-            "Folio should contain {} board service sale lines".format(
-                expected_board_service_sale_lines
-            ),
+            f"Folio should contain {expected_board_service_sale_lines} board service sale lines",
         )
 
     def test_comp_fsl_board_services_different_discount(self):
@@ -529,9 +525,7 @@ class TestPmsFolioSaleLine(TestPms):
                     lambda x: not x.display_type and x.is_board_service
                 )
             ),
-            "Folio should contain {} board service sale lines".format(
-                expected_board_service_sale_lines
-            ),
+            f"Folio should contain {expected_board_service_sale_lines} board service sale lines",
         )
 
     def test_comp_fsl_board_services_different_cancel_discount(self):
@@ -572,9 +566,7 @@ class TestPmsFolioSaleLine(TestPms):
                     lambda x: not x.display_type and x.is_board_service
                 )
             ),
-            "Folio should contain {} board service sale lines".format(
-                expected_board_service_sale_lines
-            ),
+            f"Folio should contain {expected_board_service_sale_lines} board service sale lines",
         )
 
     def test_comp_fsl_board_services_one_full_cancel_discount(self):
@@ -614,9 +606,7 @@ class TestPmsFolioSaleLine(TestPms):
                     lambda x: not x.display_type and x.is_board_service
                 )
             ),
-            "Folio should contain {} board service sale lines".format(
-                expected_board_service_sale_lines
-            ),
+            f"Folio should contain {expected_board_service_sale_lines} board service sale lines",
         )
 
     def test_comp_fsl_board_services_increase_stay(self):
@@ -788,9 +778,7 @@ class TestPmsFolioSaleLine(TestPms):
                     lambda x: x.service_id == self.extra_service
                 )
             ),
-            "Folio should contain {} reservation service sale lines".format(
-                expected_extra_service_sale_lines
-            ),
+            f"Folio should contain {expected_extra_service_sale_lines} reservation service sale lines",
         )
 
     def test_comp_fsl_res_extra_services_different_prices(self):
@@ -833,9 +821,7 @@ class TestPmsFolioSaleLine(TestPms):
                     lambda x: x.service_id == self.extra_service
                 )
             ),
-            "Folio should contain {} reservation service sale lines".format(
-                expected_extra_service_sale_lines
-            ),
+            f"Folio should contain {expected_extra_service_sale_lines} reservation service sale lines",
         )
 
     def test_comp_fsl_res_extra_services_different_discount(self):
@@ -878,9 +864,7 @@ class TestPmsFolioSaleLine(TestPms):
                     lambda x: x.service_id == self.extra_service
                 )
             ),
-            "Folio should contain {} reservation service sale lines".format(
-                expected_extra_service_sale_lines
-            ),
+            f"Folio should contain {expected_extra_service_sale_lines} reservation service sale lines",
         )
 
     def test_comp_fsl_res_extra_services_different_cancel_discount(self):
@@ -924,9 +908,7 @@ class TestPmsFolioSaleLine(TestPms):
                     lambda x: x.service_id == self.extra_service
                 )
             ),
-            "Folio should contain {} reservation service sale lines".format(
-                expected_extra_service_sale_lines
-            ),
+            f"Folio should contain {expected_extra_service_sale_lines} reservation service sale lines",
         )
 
     def test_comp_fsl_res_extra_services_one_full_cancel_discount(self):
@@ -968,9 +950,7 @@ class TestPmsFolioSaleLine(TestPms):
                     lambda x: x.service_id == self.extra_service
                 )
             ),
-            "Folio should contain {} reservation service sale lines".format(
-                expected_extra_service_sale_lines
-            ),
+            f"Folio should contain {expected_extra_service_sale_lines} reservation service sale lines",
         )
 
     def test_comp_fsl_res_extra_services_increase_stay(self):
@@ -1155,9 +1135,7 @@ class TestPmsFolioSaleLine(TestPms):
                     lambda x: x.service_id == self.extra_service
                 )
             ),
-            "Folio should contain {} folio service sale lines".format(
-                expected_folio_service_sale_lines
-            ),
+            f"Folio should contain {expected_folio_service_sale_lines} folio service sale lines",
         )
 
     def test_comp_fsl_fol_extra_services_two(self):
@@ -1210,9 +1188,7 @@ class TestPmsFolioSaleLine(TestPms):
                     lambda x: not x.reservation_id and not x.display_type
                 )
             ),
-            "Folio should contain {} folio service sale lines".format(
-                expected_folio_service_sale_lines
-            ),
+            f"Folio should contain {expected_folio_service_sale_lines} folio service sale lines",
         )
 
     def test_no_sale_lines_staff_reservation(self):

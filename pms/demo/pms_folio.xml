@@ -4,10 +4,10 @@
         pms.folio
         folio demo data for bookings starting within 15 days
     -->
-        <record id="pms_folio_eco_01" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_27" />
-            <field name="user_id" ref="base.user_demo" />
-            <field
+    <record id="pms_folio_eco_01" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_address_27" />
+        <field name="user_id" ref="base.user_demo" />
+        <field
             name="reservation_ids"
             eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -19,25 +19,22 @@
                     'partner_requests': 'Vegan breakfast',
                     })]"
         />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_eco_01'))]"
         />
-        </function>
-        <record id="pms_folio_sngx3" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_10" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.agency_booking" />
-            <field
-            name="sale_channel_origin_id"
-            ref="pms.main_pms_sale_channel_phone"
-        />
-            <field
+    </function>
+    <record id="pms_folio_sngx3" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_address_10" />
+        <field name="user_id" ref="base.user_admin" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="agency_id" ref="pms.agency_booking" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_phone" />
+        <field
             name="reservation_ids"
             eval="[(5, 0),
                     (0, 0, {
@@ -65,19 +62,19 @@
                     'partner_requests': 'Quite room.'
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_sngx3'))]"
         />
-        </function>
-        <record id="pms_folio_trp_01" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_12" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
-            <field
+    </function>
+    <record id="pms_folio_trp_01" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_12" />
+        <field name="user_id" ref="base.user_admin" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
+        <field
             name="reservation_ids"
             eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -88,17 +85,14 @@
                     'board_service_room_id': ref('pms_board_service_room_triple_full_board'),
                     })]"
         />
-        </record>
-        <record id="pms_folio_cancel_trp_01" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_15" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.agency_airbnb" />
-            <field
-            name="sale_channel_origin_id"
-            ref="pms.main_pms_sale_channel_phone"
-        />
-            <field
+    </record>
+    <record id="pms_folio_cancel_trp_01" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_address_15" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="agency_id" ref="pms.agency_airbnb" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_phone" />
+        <field
             name="reservation_ids"
             eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -110,20 +104,17 @@
                     'children':1,
                     })]"
         />
-        </record>
-        <function model="pms.folio" name="action_cancel">
-            <value eval="[ref('pms_folio_cancel_trp_01')]" />
-        </function>
-        <record id="pms_folio_cancel_trp_02" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_15" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.agency_airbnb" />
-            <field
-            name="sale_channel_origin_id"
-            ref="pms.main_pms_sale_channel_phone"
-        />
-            <field
+    </record>
+    <function model="pms.folio" name="action_cancel">
+        <value eval="[ref('pms_folio_cancel_trp_01')]" />
+    </function>
+    <record id="pms_folio_cancel_trp_02" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_address_15" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="agency_id" ref="pms.agency_airbnb" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_phone" />
+        <field
             name="reservation_ids"
             eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -135,21 +126,18 @@
                     'children':1,
                     })]"
         />
-        </record>
-        <function model="pms.folio" name="action_cancel">
-            <value eval="[ref('pms_folio_cancel_trp_02')]" />
-        </function>
-        <record id="pms_folio_qdpx2" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_28" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="agency_booking" />
-            <field
-            name="sale_channel_origin_id"
-            ref="pms.main_pms_sale_channel_phone"
-        />
-            <field name="internal_comment">Each guest pays his bill</field>
-            <field
+    </record>
+    <function model="pms.folio" name="action_cancel">
+        <value eval="[ref('pms_folio_cancel_trp_02')]" />
+    </function>
+    <record id="pms_folio_qdpx2" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_address_28" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="agency_id" ref="agency_booking" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_phone" />
+        <field name="internal_comment">Each guest pays his bill</field>
+        <field
             name="reservation_ids"
             eval="[(5, 0),
                     (0, 0, {
@@ -169,16 +157,13 @@
                     'adults': 4,
                     })]"
         />
-        </record>
-        <record id="pms_folio_dbl_01" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_15" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field
-            name="sale_channel_origin_id"
-            ref="pms.main_pms_sale_channel_phone"
-        />
-            <field
+    </record>
+    <record id="pms_folio_dbl_01" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_address_15" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_phone" />
+        <field
             name="reservation_ids"
             eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -192,19 +177,19 @@
 
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_dbl_01'))]"
         />
-        </function>
-        <record id="pms_folio_trp_02" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_4" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
-            <field
+    </function>
+    <record id="pms_folio_trp_02" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_4" />
+        <field name="user_id" ref="base.user_admin" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
+        <field
             name="reservation_ids"
             eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -215,23 +200,20 @@
                     'board_service_room_id': ref('pms_board_service_room_triple_full_board'),
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_trp_02'))]"
         />
-        </function>
-        <record id="pms_folio_cnf_01" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_12" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.agency_airbnb" />
-            <field
-            name="sale_channel_origin_id"
-            ref="pms.main_pms_sale_channel_phone"
-        />
-            <field
+    </function>
+    <record id="pms_folio_cnf_01" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_12" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="agency_id" ref="pms.agency_airbnb" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_phone" />
+        <field
             name="reservation_ids"
             eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -242,23 +224,20 @@
                     'partner_requests': '10 bottles of water, 10 notebooks and 10 pens.'
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_cnf_01'))]"
         />
-        </function>
-        <record id="pms_folio_out_01" model="pms.folio">
-            <field name="partner_id" ref="main_pms_property" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="reservation_type">out</field>
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field
-            name="sale_channel_origin_id"
-            ref="pms.main_pms_sale_channel_phone"
-        />
-            <field
+    </function>
+    <record id="pms_folio_out_01" model="pms.folio">
+        <field name="partner_id" ref="main_pms_property" />
+        <field name="user_id" ref="base.user_admin" />
+        <field name="reservation_type">out</field>
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_phone" />
+        <field
             name="reservation_ids"
             eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -271,19 +250,19 @@
                     'out_service_description': 'Change of lighting',
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_out_01'))]"
         />
-        </function>
-        <record id="pms_folio_trp_03" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_12" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
-            <field
+    </function>
+    <record id="pms_folio_trp_03" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_12" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
+        <field
             name="reservation_ids"
             eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -296,20 +275,17 @@
                     'partner_requests': 'Soy milf for breakfast.'
                     })]"
         />
-        </record>
-        <record id="pms_folio_eco_sngx3_dblx2_trp_cnf" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_10" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.agency_booking" />
-            <field
-            name="sale_channel_origin_id"
-            ref="pms.main_pms_sale_channel_phone"
-        />
-            <field
+    </record>
+    <record id="pms_folio_eco_sngx3_dblx2_trp_cnf" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_10" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="agency_id" ref="pms.agency_booking" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_phone" />
+        <field
             name="internal_comment"
         >Do not allow guests to pay anything. The company pays for everything.</field>
-            <field
+        <field
             name="reservation_ids"
             eval="[(5, 0),
                     (0, 0, {
@@ -372,24 +348,21 @@
                     'adults': 1,
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_eco_sngx3_dblx2_trp_cnf'))]"
         />
-        </function>
-        <record id="pms_folio_eco_02" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_1" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.agency_booking" />
+    </function>
+    <record id="pms_folio_eco_02" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_1" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="agency_id" ref="pms.agency_booking" />
 
-            <field
-            name="sale_channel_origin_id"
-            ref="pms.main_pms_sale_channel_phone"
-        />
-            <field
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_phone" />
+        <field
             name="reservation_ids"
             eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -412,20 +385,20 @@
                     'adults': 1,
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_eco_02'))]"
         />
-        </function>
-        <record id="pms_folio_sng_out_01" model="pms.folio">
-            <field name="partner_id" ref="main_pms_property" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="reservation_type">out</field>
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
-            <field
+    </function>
+    <record id="pms_folio_sng_out_01" model="pms.folio">
+        <field name="partner_id" ref="main_pms_property" />
+        <field name="user_id" ref="base.user_admin" />
+        <field name="reservation_type">out</field>
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
+        <field
             name="reservation_ids"
             eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -438,23 +411,20 @@
                     'out_service_description': 'Room next to noisy guests.',
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_sng_out_01'))]"
         />
-        </function>
-        <record id="pms_folio_sngx2_trp" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_10" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field
-            name="sale_channel_origin_id"
-            ref="pms.main_pms_sale_channel_phone"
-        />
-            <field name="internal_comment">Each guest pays his bill</field>
-            <field
+    </function>
+    <record id="pms_folio_sngx2_trp" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_address_10" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_phone" />
+        <field name="internal_comment">Each guest pays his bill</field>
+        <field
             name="reservation_ids"
             eval="[(5, 0),
                     (0, 0, {
@@ -481,23 +451,20 @@
                     'partner_requests': '1 extra towel.'
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_sngx2_trp'))]"
         />
-        </function>
-        <record id="pms_folio_dblx2_01" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_33" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field
-            name="sale_channel_origin_id"
-            ref="pms.main_pms_sale_channel_phone"
-        />
-            <field name="internal_comment">Each guest pays his bill</field>
-            <field
+    </function>
+    <record id="pms_folio_dblx2_01" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_address_33" />
+        <field name="user_id" ref="base.user_admin" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_phone" />
+        <field name="internal_comment">Each guest pays his bill</field>
+        <field
             name="reservation_ids"
             eval="[(5, 0),
                     (0, 0, {
@@ -516,19 +483,19 @@
                     'sale_channel_origin_id': ref('pms.main_pms_sale_channel_door'),
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_dblx2_01'))]"
         />
-        </function>
-        <record id="pms_folio_cnf_02" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_main2" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
-            <field
+    </function>
+    <record id="pms_folio_cnf_02" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_main2" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
+        <field
             name="reservation_ids"
             eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -539,20 +506,20 @@
                     'partner_requests': 'Smart screen, projector and sound system.'
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_cnf_02'))]"
         />
-        </function>
-        <record id="pms_folio_trp_04" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_32" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="reservation_type">normal</field>
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
-            <field
+    </function>
+    <record id="pms_folio_trp_04" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_address_32" />
+        <field name="user_id" ref="base.user_admin" />
+        <field name="reservation_type">normal</field>
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
+        <field
             name="reservation_ids"
             eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -563,14 +530,14 @@
                     'state': 'draft',
                     })]"
         />
-        </record>
-        <record id="pms_folio_dbl_02" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_18" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="reservation_type">normal</field>
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
-            <field
+    </record>
+    <record id="pms_folio_dbl_02" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_18" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="reservation_type">normal</field>
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
+        <field
             name="reservation_ids"
             eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -585,24 +552,21 @@
                     'partner_requests': 'allergic to nuts.'
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_dbl_02'))]"
         />
-        </function>
-        <record id="pms_folio_cnf_03" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_12" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="reservation_type">normal</field>
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.agency_airbnb" />
-            <field
-            name="sale_channel_origin_id"
-            ref="pms.main_pms_sale_channel_phone"
-        />
-            <field
+    </function>
+    <record id="pms_folio_cnf_03" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_12" />
+        <field name="user_id" ref="base.user_admin" />
+        <field name="reservation_type">normal</field>
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="agency_id" ref="pms.agency_airbnb" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_phone" />
+        <field
             name="reservation_ids"
             eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -613,44 +577,44 @@
                     'closure_reason_id': ref('pms_room_closure_reason_vip_privacy'),
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_cnf_03'))]"
         />
-        </function>
-<!--        <record id="pms_folio_cnf_04" model="pms.folio">-->
-<!--            <field name="partner_id" ref="base.res_partner_18" />-->
-<!--            <field name="user_id" ref="base.user_demo" />-->
-<!--            <field name="reservation_type">normal</field>-->
-<!--            <field name="pms_property_id" ref="pms.main_pms_property" />-->
-<!--            <field name="agency_id" ref="pms.agency_booking" />-->
-<!--            <field-->
-<!--                name="sale_channel_origin_id"-->
-<!--                ref="pms.main_pms_sale_channel_phone"-->
-<!--            />-->
-<!--            <field-->
-<!--                name="reservation_ids"-->
-<!--                eval="[(5, 0), (0, 0, {-->
-<!--                    'pricelist_id': ref('product.list0'),-->
-<!--                    'room_type_id': ref ('pms_room_type_conference_room'),-->
-<!--                    'checkin': (DateTime.today() + timedelta(days=22)),-->
-<!--                    'checkout': (DateTime.today() + timedelta(days=23)),-->
-<!--                    'adults': 1,-->
-<!--                    'state': 'cancel',-->
-<!--                    'partner_requests': 'Sound system.'-->
-<!--                    })]"-->
-<!--            />-->
-<!--        </record>-->
-        <record id="pms_folio_eco_sngx3" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_18" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.agency_booking" />
-            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
-            <field name="internal_comment">Each guest pays his bill</field>
-            <field
+    </function>
+    <!--        <record id="pms_folio_cnf_04" model="pms.folio">-->
+    <!--            <field name="partner_id" ref="base.res_partner_18" />-->
+    <!--            <field name="user_id" ref="base.user_demo" />-->
+    <!--            <field name="reservation_type">normal</field>-->
+    <!--            <field name="pms_property_id" ref="pms.main_pms_property" />-->
+    <!--            <field name="agency_id" ref="pms.agency_booking" />-->
+    <!--            <field-->
+    <!--                name="sale_channel_origin_id"-->
+    <!--                ref="pms.main_pms_sale_channel_phone"-->
+    <!--            />-->
+    <!--            <field-->
+    <!--                name="reservation_ids"-->
+    <!--                eval="[(5, 0), (0, 0, {-->
+    <!--                    'pricelist_id': ref('product.list0'),-->
+    <!--                    'room_type_id': ref ('pms_room_type_conference_room'),-->
+    <!--                    'checkin': (DateTime.today() + timedelta(days=22)),-->
+    <!--                    'checkout': (DateTime.today() + timedelta(days=23)),-->
+    <!--                    'adults': 1,-->
+    <!--                    'state': 'cancel',-->
+    <!--                    'partner_requests': 'Sound system.'-->
+    <!--                    })]"-->
+    <!--            />-->
+    <!--        </record>-->
+    <record id="pms_folio_eco_sngx3" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_18" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="agency_id" ref="pms.agency_booking" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
+        <field name="internal_comment">Each guest pays his bill</field>
+        <field
             name="reservation_ids"
             eval="[(5, 0),
                     (0, 0, {
@@ -687,20 +651,20 @@
                     'sale_channel_origin_id': ref('pms.main_pms_sale_channel_phone')
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_eco_sngx3'))]"
         />
-        </function>
-        <record id="pms_folio_dblx2_trp" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_30" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
-            <field name="internal_comment">Each guest pays his bill</field>
-            <field
+    </function>
+    <record id="pms_folio_dblx2_trp" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_address_30" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
+        <field name="internal_comment">Each guest pays his bill</field>
+        <field
             name="reservation_ids"
             eval="[(5, 0),
                     (0, 0, {
@@ -731,20 +695,20 @@
                     'sale_channel_origin_id': ref('main_pms_sale_channel_mail')
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_dblx2_trp'))]"
         />
-        </function>
-        <record id="pms_folio_sngx2" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_25" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
-            <field name="internal_comment">Each guest pays his bill</field>
-            <field
+    </function>
+    <record id="pms_folio_sngx2" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_address_25" />
+        <field name="user_id" ref="base.user_admin" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
+        <field name="internal_comment">Each guest pays his bill</field>
+        <field
             name="reservation_ids"
             eval="[(5, 0),
                     (0, 0, {
@@ -768,24 +732,21 @@
                     'board_service_room_id': ref('pms_board_service_room_single_full_board'),
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_sngx2'))]"
         />
-        </function>
-        <record id="pms_folio_dblx2_02" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_32" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.agency_booking" />
-            <field
-            name="sale_channel_origin_id"
-            ref="pms.main_pms_sale_channel_phone"
-        />
-            <field name="internal_comment">Each guest pays his bill</field>
-            <field
+    </function>
+    <record id="pms_folio_dblx2_02" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_address_32" />
+        <field name="user_id" ref="base.user_admin" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="agency_id" ref="pms.agency_booking" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_phone" />
+        <field name="internal_comment">Each guest pays his bill</field>
+        <field
             name="reservation_ids"
             eval="[(5, 0),
                     (0, 0, {
@@ -809,22 +770,19 @@
                     'departure_hour': '11:15',
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_dblx2_02'))]"
         />
-        </function>
-        <record id="pms_folio_cnf_05" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_10" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field
-            name="sale_channel_origin_id"
-            ref="pms.main_pms_sale_channel_phone"
-        />
-            <field
+    </function>
+    <record id="pms_folio_cnf_05" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_10" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_phone" />
+        <field
             name="reservation_ids"
             eval="[(5, 0),
                     (0, 0, {
@@ -837,19 +795,19 @@
                     'departure_hour': '12:00',
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_cnf_05'))]"
         />
-        </function>
-        <record id="pms_folio_eco_03" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_4" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
-            <field
+    </function>
+    <record id="pms_folio_eco_03" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_4" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
+        <field
             name="reservation_ids"
             eval="[(5, 0),
                     (0, 0, {
@@ -862,22 +820,19 @@
                     'partner_requests': 'Vegan food.'
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_eco_03'))]"
         />
-        </function>
-        <record id="pms_folio_sng_01" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_27" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field
-            name="sale_channel_origin_id"
-            ref="pms.main_pms_sale_channel_phone"
-        />
-            <field
+    </function>
+    <record id="pms_folio_sng_01" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_address_27" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_phone" />
+        <field
             name="reservation_ids"
             eval="[(5, 0),
                     (0, 0, {
@@ -890,22 +845,19 @@
                     'board_service_room_id': ref('pms_board_service_room_single_half_board'),
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_sng_01'))]"
         />
-        </function>
-        <record id="pms_folio_sng_02" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_12" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field
-            name="sale_channel_origin_id"
-            ref="pms.main_pms_sale_channel_phone"
-        />
-            <field
+    </function>
+    <record id="pms_folio_sng_02" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_12" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_phone" />
+        <field
             name="reservation_ids"
             eval="[(5, 0),
                     (0, 0, {
@@ -918,23 +870,20 @@
                     'partner_requests': 'picnic for 1st lunch'
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_sng_02'))]"
         />
-        </function>
-        <record id="pms_folio_dblx2_03" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_27" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.agency_airbnb" />
-            <field
-            name="sale_channel_origin_id"
-            ref="pms.main_pms_sale_channel_phone"
-        />
-            <field
+    </function>
+    <record id="pms_folio_dblx2_03" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_address_27" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="agency_id" ref="pms.agency_airbnb" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_phone" />
+        <field
             name="reservation_ids"
             eval="[(5, 0),
                     (0, 0, {
@@ -954,19 +903,19 @@
                     'board_service_room_id': ref('pms_board_service_room_double_half_board'),
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_dblx2_03'))]"
         />
-        </function>
-        <record id="pms_folio_trp_05" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_17" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
-            <field
+    </function>
+    <record id="pms_folio_trp_05" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_address_17" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_door" />
+        <field
             name="reservation_ids"
             eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -979,16 +928,13 @@
                     'partner_requests': 'Seafood meals are needed for at least one day'
                     })]"
         />
-        </record>
-        <record id="pms_folio_cnf_06" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_3" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field
-            name="sale_channel_origin_id"
-            ref="pms.main_pms_sale_channel_phone"
-        />
-            <field
+    </record>
+    <record id="pms_folio_cnf_06" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_3" />
+        <field name="user_id" ref="base.user_admin" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_phone" />
+        <field
             name="reservation_ids"
             eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -999,19 +945,19 @@
                     'closure_reason_id': ref('pms_room_closure_reason_vip_privacy'),
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_cnf_06'))]"
         />
-        </function>
-        <record id="pms_folio_trp_06" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_25" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
-            <field
+    </function>
+    <record id="pms_folio_trp_06" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_address_25" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_mail" />
+        <field
             name="reservation_ids"
             eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -1026,17 +972,14 @@
                     'partner_requests': '1 extra towel needed.'
                     })]"
         />
-        </record>
-        <record id="pms_folio_trp_07" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_15" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.agency_airbnb" />
-            <field
-            name="sale_channel_origin_id"
-            ref="pms.main_pms_sale_channel_phone"
-        />
-            <field
+    </record>
+    <record id="pms_folio_trp_07" model="pms.folio">
+        <field name="partner_id" ref="base.res_partner_address_15" />
+        <field name="user_id" ref="base.user_demo" />
+        <field name="pms_property_id" ref="pms.main_pms_property" />
+        <field name="agency_id" ref="pms.agency_airbnb" />
+        <field name="sale_channel_origin_id" ref="pms.main_pms_sale_channel_phone" />
+        <field
             name="reservation_ids"
             eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -1048,11 +991,11 @@
                     'children':1,
                     })]"
         />
-        </record>
-        <function model="pms.reservation" name="action_confirm">
-            <value
+    </record>
+    <function model="pms.reservation" name="action_confirm">
+        <value
             model="pms.reservation"
             search="[('folio_id', '=', ref('pms_folio_trp_07'))]"
         />
-        </function>
+    </function>
 </odoo>

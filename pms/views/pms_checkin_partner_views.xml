@@ -48,11 +48,11 @@
                         A customer/s has this email or mobile, do you want to add it?
                         <field name="possible_existing_customer_ids" invisible="1" />
                         <button
-                            title="Add customer"
-                            name="open_wizard_several_partners"
-                            string="Add customer"
-                            type="object"
-                        />
+                        title="Add customer"
+                        name="open_wizard_several_partners"
+                        string="Add customer"
+                        type="object"
+                    />
                     </div>
                     <group name="group_top">
                         <group name="group_left">
@@ -402,8 +402,8 @@
                                         <div>
                                             <span class="o_label">
                                                 <i
-                                                    class="fa fa-lg fa-play-circle text-success"
-                                                />
+                                                class="fa fa-lg fa-play-circle text-success"
+                                            />
                                                 Check-in
                                             </span>
                                         </div>

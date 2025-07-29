@@ -13,7 +13,7 @@
                 <a t-attf-href="/my/folios?{{ keep_query() }}">Folios</a>
             </li>
             <li t-if="folio" class="breadcrumb-item active">
-                 <a t-attf-href="/my/folios?{{ keep_query() }}">Folios/</a>
+                <a t-attf-href="/my/folios?{{ keep_query() }}">Folios/</a>
                 <t t-esc="folio.name" />
             </li>
         </xpath>
@@ -34,45 +34,46 @@
         </xpath>
     </template>
 
-
     <template id="portal_my_folio" name="My Folios">
-      <t t-call="portal.portal_layout">
-        <t t-set="breadcrumbs_searchbar" t-value="True" />
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True" />
 
-        <t t-call="portal.portal_searchbar">
-            <t t-set="title">Folios</t>
-        </t>
-        <t t-if="not folios">
-            <p>There are currently no folios for your account.</p>
-        </t>
-        <t t-if="folios" t-call="portal.portal_table">
-            <thead>
-                <tr class="active">
-                    <th>Folio #</th>
-                    <th>Order Date</th>
-                    <th class="text-right">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                <t t-foreach="folios" t-as="folio">
-                    <tr>
-                        <td>
-                            <a
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Folios</t>
+            </t>
+            <t t-if="not folios">
+                <p>There are currently no folios for your account.</p>
+            </t>
+            <t t-if="folios" t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th>Folio #</th>
+                        <th>Order Date</th>
+                        <th class="text-right">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="folios" t-as="folio">
+                        <tr>
+                            <td>
+                                <a
                                     t-att-href="folio.get_portal_url()"
                                     t-att-title="folio.name"
                                 >
-                                <t t-esc="folio.name" />
-                            </a>
-                        </td>
-                        <td><span t-field="folio.date_order" /></td>
-                        <td t-if="folio.amount_total > 0" class="text-right"><span
-                                    t-field="folio.amount_total"
-                                /></td>
-                    </tr>
-                </t>
-            </tbody>
+                                    <t t-esc="folio.name" />
+                                </a>
+                            </td>
+                            <td>
+                                <span t-field="folio.date_order" />
+                            </td>
+                            <td t-if="folio.amount_total > 0" class="text-right">
+                                <span t-field="folio.amount_total" />
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </t>
         </t>
-      </t>
     </template>
 
     <template
@@ -82,7 +83,6 @@
         primary="True"
     >
         <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
-
             <div class="row mt16 o_portal_folio_sidebar">
                 <!-- Sidebar -->
                 <t t-call="portal.portal_record_sidebar">
@@ -97,16 +97,20 @@
                                 t-if="folio.reservation_type == 'normal' and folio.pending_amount &lt;= 0"
                                 t-field="folio.amount_total"
                             />
-                            <b t-if="folio.reservation_type == 'staff'"><span
-                                >Staff</span></b>
+                            <b t-if="folio.reservation_type == 'staff'">
+                                <span>Staff</span>
+                            </b>
                         </h2>
                         <div
                             class="small"
                             t-if="folio.payment_state not in ('paid', 'in_payment')"
-                        ><i class="fa fa-clock-o" /><span
+                        >
+                            <i class="fa fa-clock-o" />
+                            <span
                                 class="o_portal_sidebar_timeago ml4"
                                 t-att-datetime="folio.last_checkout"
-                            /></div>
+                            />
+                        </div>
                     </t>
 
                     <t t-set="entries">
@@ -163,9 +167,10 @@
                                             t-field="folio.user_id"
                                             t-options='{"widget": "contact", "fields": ["name", "phone"], "no_marker": True}'
                                         />
-                                        <a href="#discussion" class="small"><i
-                                                class="fa fa-fw fa-comments"
-                                            /><b>Send message</b></a>
+                                        <a href="#discussion" class="small">
+                                            <i class="fa fa-fw fa-comments" />
+                                            <b>Send message</b>
+                                        </a>
                                     </div>
                                 </div>
                             </li>

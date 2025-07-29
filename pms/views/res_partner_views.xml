@@ -158,27 +158,26 @@
     </record>
 
     <record id="view_partner_data_form" model="ir.ui.view">
-            <field name="name">res.partner.form.data</field>
-            <field name="model">res.partner</field>
-            <field name="priority" eval="20" />
-            <field name="arch" type="xml">
-                <form string="Partner">
-                    <field
+        <field name="name">res.partner.form.data</field>
+        <field name="model">res.partner</field>
+        <field name="priority" eval="20" />
+        <field name="arch" type="xml">
+            <form string="Partner">
+                <field
                     name="image_1920"
                     widget='image'
                     class="oe_avatar"
                     options='{"preview_image": "image_128"}'
                     readonly="1"
                 />
-                    <div class="oe_title">
-                        <h1>
-                            <field name="name" readonly="1" />
-                        </h1>
-                    </div>
-                    <group>
-                        <group name="group_top">
+                <div class="oe_title">
+                    <h1>
+                        <field name="name" readonly="1" />
+                    </h1>
+                </div>
+                <group>
+                    <group name="group_top">
                         <group name="group_left">
-
                             <field name="firstname" />
                             <field name="lastname" />
                             <field name="lastname2" />
@@ -190,10 +189,10 @@
                             <field name="mobile" />
                         </group>
                     </group>
-                    </group>
-                </form>
-            </field>
-        </record>
+                </group>
+            </form>
+        </field>
+    </record>
     <menuitem
         id="pms_customer_meu"
         name="Customers"

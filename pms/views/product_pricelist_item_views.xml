@@ -13,7 +13,6 @@
                     options="{'no_create': True,'no_open': True}"
                     domain="[('id', 'in',allowed_board_service_room_type_ids)]"
                 />
-
             </xpath>
             <xpath expr="//field[@name='min_quantity']" position="before">
                 <field

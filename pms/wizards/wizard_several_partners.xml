@@ -5,10 +5,10 @@
         <field name="model">pms.several.partners.wizard</field>
         <field name="arch" type="xml">
             <form string="Possibles customers" colspan="4">
-                    <h6> Choose a customer if you want to add it to the reservation</h6>
-                    <group>
-                        <field name="possible_existing_customer_ids" />
-                    </group>
+                <h6> Choose a customer if you want to add it to the reservation</h6>
+                <group>
+                    <field name="possible_existing_customer_ids" />
+                </group>
                 <footer>
                     <button
                         type="object"

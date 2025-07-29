@@ -178,7 +178,7 @@
                 user.pms_property_ids.ids)]
             </field>
         </record>
-         <record id="pms_service_line_property_rule" model="ir.rule">
+        <record id="pms_service_line_property_rule" model="ir.rule">
             <field name="name">PMS Service Line Property Rule</field>
             <field name="model_id" ref="model_pms_service_line" />
             <field name="global" eval="True" />

@@ -14,7 +14,7 @@
                 <a t-attf-href="/my/reservations?{{ keep_query() }}">Reservations</a>
             </li>
             <li t-if="reservation" class="breadcrumb-item active">
-                 <a t-attf-href="/my/reservations?{{ keep_query() }}">Reservations/</a>
+                <a t-attf-href="/my/reservations?{{ keep_query() }}">Reservations/</a>
                 <t t-esc="reservation.name" />
             </li>
         </xpath>
@@ -36,65 +36,72 @@
     </template>
 
     <template id="portal_my_reservation" name="My Reservations">
-      <t t-call="portal.portal_layout">
-        <t t-set="breadcrumbs_searchbar" t-value="True" />
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True" />
 
-        <t t-call="portal.portal_searchbar">
-            <t t-set="title">Reservations</t>
-        </t>
-        <t t-if="not reservations">
-            <p>There are currently no reservations for your account.</p>
-        </t>
-        <t t-if="reservations" t-call="portal.portal_table">
-            <thead>
-                <tr class="active">
-                    <th>Reservation #</th>
-                    <th>Checkin</th>
-                    <th>Checkout</th>
-                    <th class="text-right">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                <t t-set="folio_old" t-value="" />
-                <t t-foreach="folios_dict" t-as="folio">
-                    <t t-foreach="folio.reservation_ids" t-as="reservation">
-                        <t t-if="reservation.partner_id == partner">
-                            <t t-if="folio != folio_old">
-                                <tr class="bg-light">
-                                    <td colspan="4"><em
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Reservations</t>
+            </t>
+            <t t-if="not reservations">
+                <p>There are currently no reservations for your account.</p>
+            </t>
+            <t t-if="reservations" t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th>Reservation #</th>
+                        <th>Checkin</th>
+                        <th>Checkout</th>
+                        <th class="text-right">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-set="folio_old" t-value="" />
+                    <t t-foreach="folios_dict" t-as="folio">
+                        <t t-foreach="folio.reservation_ids" t-as="reservation">
+                            <t t-if="reservation.partner_id == partner">
+                                <t t-if="folio != folio_old">
+                                    <tr class="bg-light">
+                                        <td colspan="4">
+                                            <em
                                                 class="font-weight-normal text-muted"
                                             ><span /> Reservations by folio: </em>
-                                    <a
+                                            <a
                                                 t-att-href="folio.get_portal_url()"
                                                 t-att-title="folio.name"
                                             >
-                                        <t t-esc="folio.name" />
-                                    </a>
-                                    </td>
-                                </tr>
-                            </t>
-                            <t t-set="folio_old" t-value="folio" />
-                            <tr>
-                                <td>
-                                    <a
+                                                <t t-esc="folio.name" />
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <t t-set="folio_old" t-value="folio" />
+                                <tr>
+                                    <td>
+                                        <a
                                             t-att-href="reservation.get_portal_url()"
                                             t-att-title="reservation.name"
                                         >
-                                        <t t-esc="reservation.name" />
-                                    </a>
-                                </td>
-                                <td><span t-field="reservation.checkin" /></td>
-                                <td><span t-field="reservation.checkout" /></td>
-                                <td class="text-right"><span
+                                            <t t-esc="reservation.name" />
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span t-field="reservation.checkin" />
+                                    </td>
+                                    <td>
+                                        <span t-field="reservation.checkout" />
+                                    </td>
+                                    <td class="text-right">
+                                        <span
                                             t-field="reservation.price_room_services_set"
-                                        /></td>
-                            </tr>
+                                        />
+                                    </td>
+                                </tr>
+                            </t>
                         </t>
                     </t>
-                </t>
-            </tbody>
+                </tbody>
+            </t>
         </t>
-      </t>
     </template>
 
     <template id="portal_my_reservation_detail" name="My Reservation">
@@ -123,43 +130,43 @@
                 <t t-set="card_body">
                     <div class="row mb-4">
                         <div class="col-12 col-md-6">
-                            <strong>Checkin:</strong> <span
+                            <strong>Checkin:</strong>
+                            <span
                                 t-field="reservation.checkin"
                                 t-options='{"widget": "date"}'
                             />
                         </div>
                         <div class="col-12 col-md-6 mb-1">
-                            <strong>Checkout:</strong> <span
+                            <strong>Checkout:</strong>
+                            <span
                                 t-field="reservation.checkout"
                                 t-options='{"widget": "date"}'
                             />
                         </div>
                     </div>
-                     <div class="row mb-4">
+                    <div class="row mb-4">
                         <div class="col-12 col-md-6">
-                            <strong>Arrival hour:</strong> <span
-                                t-field="reservation.arrival_hour"
-                            />
+                            <strong>Arrival hour:</strong>
+                            <span t-field="reservation.arrival_hour" />
                         </div>
                         <div class="col-12 col-md-6 mb-1">
-                            <strong>Departure hour:</strong> <span
-                                t-field="reservation.departure_hour"
-                            />
+                            <strong>Departure hour:</strong>
+                            <span t-field="reservation.departure_hour" />
                         </div>
                     </div>
 
                     <div class="row mb-4">
                         <div class="col-12 col-md-6">
-                            <strong>Room:</strong> <span
-                                t-field="reservation.preferred_room_id"
-                            />
+                            <strong>Room:</strong>
+                            <span t-field="reservation.preferred_room_id" />
                         </div>
-                       <div class="col-12 col-md-6 mb-1">
-                           <t t-if="reservation.board_service_room_id">
-                               <strong>Board Service:</strong> <span
+                        <div class="col-12 col-md-6 mb-1">
+                            <t t-if="reservation.board_service_room_id">
+                                <strong>Board Service:</strong>
+                                <span
                                     t-field="reservation.board_service_room_id.pms_board_service_id.name"
                                 />
-                           </t>
+                            </t>
                         </div>
                     </div>
                     <t t-set="service_price" t-value="0" />
@@ -180,57 +187,67 @@
                     </t>
                     <div class="row mb-4">
                         <div class="col-12 col-md-6">
-                            <strong>Room price:</strong> <span
+                            <strong>Room price:</strong>
+                            <span
                                 t-esc="reservation.price_total + board_service_price"
                                 t-options='{"widget": "monetary", "display_currency": reservation.pricelist_id.currency_id}'
                             />
                         </div>
-                       <div class="col-12 col-md-6 mb-1">
-                           <t t-if="service_price!=0">
-                                <strong>Service total:</strong> <span
+                        <div class="col-12 col-md-6 mb-1">
+                            <t t-if="service_price!=0">
+                                <strong>Service total:</strong>
+                                <span
                                     t-esc="service_price"
                                     t-options='{"widget": "monetary", "display_currency": reservation.pricelist_id.currency_id}'
                                 />
-                           </t>
+                            </t>
                         </div>
                     </div>
                     <t t-if="reservation.service_ids">
                         <t t-if="service_price!=0">
-                        <table class="table">
-                            <thead style="display:table-row-group">
-                                <th name="th_services">
+                            <table class="table">
+                                <thead style="display:table-row-group">
+                                    <th name="th_services">
                                     Services
                                 </th>
-                                <th name="th_qty">
+                                    <th name="th_qty">
                                     Quantity
                                 </th>
-                                <th name="th_price_total">
+                                    <th name="th_price_total">
                                     Price Total
                                 </th>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="reservation.service_ids" t-as="service">
-                                    <t t-if="not service.is_board_service">
-                                        <tr>
-                                            <td><span t-esc="service.name" /></td>
-                                            <td><span
+                                </thead>
+                                <tbody>
+                                    <t
+                                        t-foreach="reservation.service_ids"
+                                        t-as="service"
+                                    >
+                                        <t t-if="not service.is_board_service">
+                                            <tr>
+                                                <td>
+                                                    <span t-esc="service.name" />
+                                                </td>
+                                                <td>
+                                                    <span
                                                         t-field="service.product_qty"
-                                                    /></td>
-                                            <td><span
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <span
                                                         t-field="service.price_total"
                                                         t-options='{"widget": "monetary", "display_currency": reservation.pricelist_id.currency_id}'
-                                                    /></td>
-                                        </tr>
+                                                    />
+                                                </td>
+                                            </tr>
+                                        </t>
                                     </t>
-                                </t>
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
                         </t>
                         <div class="row mb-4 justify-content-start">
                             <div class="h3 text-info">
-                               <strong>Reservation total:</strong> <span
-                                    t-field="reservation.price_room_services_set"
-                                />
+                                <strong>Reservation total:</strong>
+                                <span t-field="reservation.price_room_services_set" />
                             </div>
                         </div>
                     </t>
@@ -269,7 +286,9 @@
             </t>
 
             <div class="mt32">
-                <h4><strong>Message and communication history</strong></h4>
+                <h4>
+                    <strong>Message and communication history</strong>
+                </h4>
                 <t t-call="portal.message_thread">
                     <t t-set="object" t-value="reservation" />
                     <t t-set="token" t-value="reservation.access_token" />

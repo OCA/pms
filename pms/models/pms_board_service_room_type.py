@@ -76,8 +76,8 @@ class PmsBoardServiceRoomType(models.Model):
     def name_get(self):
         res = []
         for record in self:
-            name = "{} - {}".format(
-                record.pms_board_service_id.name, record.pms_room_type_id.name
+            name = (
+                f"{record.pms_board_service_id.name} - {record.pms_room_type_id.name}"
             )
             res.append((record.id, name))
         return res

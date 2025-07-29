@@ -9,7 +9,7 @@
             <t t-if="o.pms_property_id">
                 <t t-set="information_block">
                     <div name="pms_property_address_block">
-                       <div
+                        <div
                             t-field="o.pms_property_id.partner_id"
                             t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: True}"
                         />
@@ -29,7 +29,7 @@
                 </t>
             </t>
         </xpath>
-<!-- fixme Dangerous use of "replace". Only replace as a last resort.
+        <!-- fixme Dangerous use of "replace". Only replace as a last resort.
      Try position="attributes", position="move" or t-if="False" first - [xml-dangerous-qweb-replace-low-priority]
 -->
         <xpath expr="//div[hasclass('page')]//h2" position="replace">

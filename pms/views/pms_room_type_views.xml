@@ -10,8 +10,7 @@
         <field name="arch" type="xml">
             <form string="Property Room Type">
                 <sheet>
-                    <div class="oe_button_box" name="button_box">
-                    </div>
+                    <div class="oe_button_box" name="button_box" />
                     <group colspan="4">
                         <group>
                             <field name="name" />

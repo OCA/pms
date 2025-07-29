@@ -75,7 +75,7 @@
                 <div class="row">
                     <div class="col-12">
                         <field name="availability_results" nolabel="1">
-                                <tree
+                            <tree
                                 editable="bottom"
                                 create="false"
                                 delete="false"
@@ -84,21 +84,21 @@
                                 decoration-bf="rooms_selected_qty &gt; 0"
                             >
                                 <field name="pms_property_id" invisible="1" />
-                                    <field
+                                <field
                                     name="room_type_id"
                                     readonly="1"
                                     options="{'no_open': True}"
                                     force_save="1"
                                 />
 
-                                    <field name="checkin" />
-                                    <field name="checkout" />
-                                    <field
+                                <field name="checkin" />
+                                <field name="checkout" />
+                                <field
                                     name="rooms_available_qty"
                                     readonly="1"
                                     force_save="1"
                                 />
-                                    <field
+                                <field
                                     name="rooms_selected_qty"
                                     attrs="{'readonly':[('rooms_available_qty','&lt;',1)]}"
                                     force_save="1"
@@ -119,8 +119,7 @@
                                     force_save="1"
                                     attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
                                 />
-
-                                </tree>
+                            </tree>
                         </field>
                     </div>
                 </div>

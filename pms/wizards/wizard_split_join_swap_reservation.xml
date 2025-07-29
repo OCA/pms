@@ -15,24 +15,30 @@
                     </div>
                     <div class="col-5">
                         <span attrs="{'invisible': [('operation','=','swap')]}">
-                            <label for="reservation_id" /> <br />
-                            <field name="reservation_id" readonly="1" /><br />
+                            <label for="reservation_id" />
+                            <br />
+                            <field name="reservation_id" readonly="1" />
+                            <br />
                         </span>
                         <span attrs="{'invisible': [('operation','!=','swap')]}">
                             <div class="row">
                                 <div class="col-6">
-                                    <label for="checkin" /> <br />
+                                    <label for="checkin" />
+                                    <br />
                                     <field
                                         name="checkin"
                                         widget="daterange"
                                         options="{'related_end_date': 'checkout'}"
-                                    /><br />
-                                    <label for="checkout" /> <br />
+                                    />
+                                    <br />
+                                    <label for="checkout" />
+                                    <br />
                                     <field
                                         name="checkout"
                                         widget="daterange"
                                         options="{'related_start_date': 'checkin'}"
-                                    /><br />
+                                    />
+                                    <br />
                                 </div>
                             </div>
                         </span>
@@ -59,7 +65,6 @@
                                 name="room_target"
                                 attrs="{'invisible': [('operation','=','split')]}"
                             />
-
                         </div>
                     </div>
                     <div
@@ -100,26 +105,26 @@
                     <button string="Cancel" class="oe_link border" special="cancel" />
                     or
                     <button
-                        name="action_join"
-                        attrs="{'invisible': [('operation','!=','join')]}"
-                        string="Join reservation"
-                        type="object"
-                        class="oe_highlight"
-                    />
+                    name="action_join"
+                    attrs="{'invisible': [('operation','!=','join')]}"
+                    string="Join reservation"
+                    type="object"
+                    class="oe_highlight"
+                />
                     <button
-                        name="action_split"
-                        attrs="{'invisible': [('operation','!=','split')]}"
-                        string="Split reservation"
-                        type="object"
-                        class="oe_highlight"
-                    />
+                    name="action_split"
+                    attrs="{'invisible': [('operation','!=','split')]}"
+                    string="Split reservation"
+                    type="object"
+                    class="oe_highlight"
+                />
                     <button
-                        name="action_swap"
-                        attrs="{'invisible': [('operation','!=','swap')]}"
-                        string="Swap reservation rooms"
-                        type="object"
-                        class="oe_highlight"
-                    />
+                    name="action_swap"
+                    attrs="{'invisible': [('operation','!=','swap')]}"
+                    string="Swap reservation rooms"
+                    type="object"
+                    class="oe_highlight"
+                />
                 </footer>
             </form>
         </field>

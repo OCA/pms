@@ -624,9 +624,9 @@ class PmsService(models.Model):
             if vals.get("reservation_id") and not vals.get("sale_channel_origin_id"):
                 reservation = self.env["pms.reservation"].browse(vals["reservation_id"])
                 if reservation.sale_channel_origin_id:
-                    vals[
-                        "sale_channel_origin_id"
-                    ] = reservation.sale_channel_origin_id.id
+                    vals["sale_channel_origin_id"] = (
+                        reservation.sale_channel_origin_id.id
+                    )
             elif (
                 vals.get("folio_id")
                 and not vals.get("reservation_id")

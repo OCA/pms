@@ -76,7 +76,7 @@
                     <div class="col-12">
                         <group>
                             <field name="line_ids" nolabel="1">
-                                 <tree
+                                <tree
                                     editable="bottom"
                                     create="false"
                                     delete="false"
@@ -128,7 +128,7 @@
                                         force_save="1"
                                         attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
                                     />
-                                 </tree>
+                                </tree>
                             </field>
                         </group>
                     </div>
@@ -190,5 +190,4 @@
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
-
 </odoo>

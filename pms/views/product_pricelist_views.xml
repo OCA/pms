@@ -60,7 +60,6 @@
                 /> -->
             </xpath>
 
-
             <xpath
                 expr="//page[@name='pricelist_rules']
                      /field[@name='item_ids']
@@ -88,8 +87,6 @@
                     attrs="{'invisible': [('parent.is_pms_available', '=', False)]}"
                 /> -->
             </xpath>
-
-
 
             <xpath expr="//widget[@name='web_ribbon']" position="after">
                 <div class="oe_button_box " name="button_box">

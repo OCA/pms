@@ -250,5 +250,4 @@
         <field name="closed">True</field>
         <field name="pms_property_id" ref="main_pms_property" />
     </record>
-
 </odoo>

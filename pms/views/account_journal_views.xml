@@ -29,7 +29,9 @@
         <field name="inherit_id" ref="account.account_journal_dashboard_kanban_view" />
         <field name="arch" type="xml">
             <xpath expr="//a[@name='open_action']" position="after">
-                <span class="small"> <field name="pms_property_ids" /></span>
+                <span class="small">
+                    <field name="pms_property_ids" />
+                </span>
             </xpath>
         </field>
     </record>
