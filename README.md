@@ -17,7 +17,11 @@ pms
 
 [//]: # (addons)
 
-This part will be replaced when running the oca-gen-addons-table script from OCA/maintainer-tools.
+Available addons
+----------------
+addon | version | maintainers | summary
+--- | --- | --- | ---
+[multi_pms_properties](multi_pms_properties/) | 18.0.1.0.0 |  | Multi Properties Manager
 
 [//]: # (end addons)
 
