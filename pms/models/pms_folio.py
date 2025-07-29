@@ -609,6 +609,10 @@ class PmsFolio(models.Model):
             folio_lines_to_invoice = folio.sale_line_ids.filtered(
                 lambda r: r.id in list(lines_to_invoice.keys())
             )
+            # Avoid create invoices without invoicing lines
+            # (display_type is False)
+            if not folio_lines_to_invoice.filtered(lambda r: not r.display_type):
+                continue
             groups_invoice_lines = folio._get_groups_invoice_lines(
                 lines_to_invoice=folio_lines_to_invoice,
                 partner_invoice_id=partner_invoice_id,
