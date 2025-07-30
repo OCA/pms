@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="pms_sale_channel_view_form" model="ir.ui.view">
+        <field name="name">pms.sale.channel.form</field>
+        <field name="model">pms.sale.channel</field>
+        <field name="arch" type="xml">
+            <form string="Sale Channel">
+                <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="text-bg-danger"
+                        invisible="active"
+                    />
+                    <field name="icon" widget="image" class="oe_avatar" />
+                    <div class="oe_title">
+                        <label for="name" />
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="channel_type" />
+                        <field name="is_on_line" />
+                        <!-- <field name="product_pricelist_ids" widget="many2many_tags" /> -->
+                        <field name="pms_property_ids" widget="many2many_tags" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="pms_sale_channel_view_list" model="ir.ui.view">
+        <field name="name">pms.sale.channel.list</field>
+        <field name="model">pms.sale.channel</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" />
+                <field name="channel_type" />
+                <field name="is_on_line" />
+                <!-- <field name="product_pricelist_ids" widget="many2many_tags" /> -->
+                <field name="pms_property_ids" />
+            </list>
+        </field>
+    </record>
+    <record id="open_pms_sale_channel_form_list" model="ir.actions.act_window">
+        <field name="name">Sale Channel</field>
+        <field name="res_model">pms.sale.channel</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <menuitem
+        name="Sale Channels"
+        id="menu_open_pms_sale_channel_form_list"
+        action="open_pms_sale_channel_form_list"
+        sequence="55"
+        parent="pms.revenue_management_menu"
+    />
+</odoo>

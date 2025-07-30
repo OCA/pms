@@ -20,12 +20,15 @@ from . import pms_board_service_room_type_line
 from . import pms_room_closure_reason
 from . import pms_board_service
 from . import pms_board_service_line
+from . import pms_sale_channel
+from . import pms_availability_plan
+from . import pms_availability_plan_rule
+
 
 # Inherit
 from . import res_company
+from . import res_users
 
-
-# from . import res_users
 # from . import pms_folio
 # from . import pms_reservation
 # from . import pms_service
@@ -33,14 +36,11 @@ from . import res_company
 # from . import product_template
 # from . import product_product
 # from . import account_payment
-# from . import pms_availability_plan
-# from . import pms_availability_plan_rule
 # from . import pms_reservation_line
 # from . import pms_checkin_partner
 # from . import product_pricelist
 # from . import product_pricelist_item
 # from . import res_partner
-# from . import pms_sale_channel
 # from . import mail_compose_message
 # from . import pms_service_line
 # from . import account_move_line

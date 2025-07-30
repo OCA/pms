@@ -46,8 +46,12 @@
         "views/pms_room_closure_reason_views.xml",
         "views/pms_board_service_views.xml",
         "views/pms_board_service_room_type_views.xml",
+        "views/pms_sale_channel.xml",
+        "views/pms_availability_plan_views.xml",
+        "views/pms_availability_plan_rule_views.xml",
         # --
         "views/res_company_views.xml",
+        "views/res_users_views.xml",
     ],
     "assets": {
         "web.assets_frontend": [
