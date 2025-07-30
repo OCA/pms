@@ -1,28 +1,20 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record model="ir.ui.view" id="pms_room_view_form">
+    <record id="pms_room_view_form" model="ir.ui.view">
         <field name="name">pms.room.form</field>
         <field name="model">pms.room</field>
-        <field name="priority" eval="30" />
         <field name="arch" type="xml">
             <form string="Property Room">
                 <sheet>
-                    <div class="oe_button_box" name="button_box">
-                        <button
-                            name="toggle_active"
-                            type="object"
-                            class="oe_stat_button"
-                            icon="fa-archive"
-                        >
-                            <field
-                                name="active"
-                                widget="boolean_button"
-                                options='{"terminology": "archive"}'
-                            />
-                        </button>
-                    </div>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        invisible="active"
+                    />
+                    <div class="oe_button_box" name="button_box" />
                     <div class="oe_title">
-                        <label for="name" string="Name" />
+                        <label for="name" />
                         <h1>
                             <field name="name" />
                         </h1>
@@ -46,23 +38,13 @@
                                 <field name="is_shared_room" />
                                 <field
                                     name="parent_id"
-                                    attrs="{'invisible':[('parent_id', '=', False)]}"
+                                    invisible="not parent_id"
                                 />
                                 <field name="capacity" />
                                 <field name="extra_beds_allowed" />
                                 <field name="short_name" />
                                 <!-- <field name="uom_id" invisible="1" /> -->
                             </group>
-                            <group>
-                                <!-- <field name="sale_price_type" /> -->
-                                <!--field name="price_room_type_domain" invisible="1" /-->
-                                <!-- <field name="price_room_type" domain="[('room_ids.id', '=', active_id)]" attrs="{'invisible':[('sale_price_type', '!=', 'room_type')], 'required': [('sale_price_type', '=', 'room_type')]}" /> -->
-                                <!-- <field name="price_room_type" domain="[('room_ids.id', '=', active_id)]" attrs="{'invisible':[('sale_price_type', '!=', 'room_type')], 'required': [('sale_price_type', '=', 'room_type')]}" /> -->
-                            </group>
-                            <newline />
-                            <!-- <separator colspan='4' string="Customer Taxes" /> -->
-                            <!-- <field name="taxes_id" colspan="4" nolabel='1'
-                                help='Customer taxes apply on the perticular room. ' /> -->
                         </page>
                         <page string="Descriptions">
                             <group>
@@ -74,12 +56,12 @@
                                 <!-- <field name="description" colspan="2" string="Description Sales"/> -->
                             </group>
                         </page>
-                        <page string="Amenities">
+                        <!-- <page string="Amenities">
                             <field name="room_amenity_ids" />
                         </page>
                         <page
                             string="Address"
-                            attrs="{'invisible':[('address_is_independent', '=', False)]}"
+                            invisible="not address_is_independent"
                         >
                             <field
                                 name="image_1920"
@@ -133,10 +115,10 @@
                                 </group>
                                 <group />
                             </group>
-                        </page>
-                        <page
+                        </page> -->
+                        <!-- <page
                             string="Shared Room"
-                            attrs="{'invisible':[('is_shared_room', '=', False)]}"
+                            invisible="not is_shared_room"
                         >
                             <group>
                                 <field
@@ -144,23 +126,23 @@
                                     context="{'default_parent_id': active_id}"
                                     nolabel="1"
                                 >
-                                    <tree editable="bottom">
+                                    <list editable="bottom">
                                         <field name="sequence" widget="handle" />
                                         <field name="name" />
                                         <field name="room_type_id" />
                                         <field name="capacity" />
                                         <field name="parent_id" invisible="1" />
                                         <field name="pms_property_id" invisible="1" />
-                                    </tree>
+                                    </list>
                                 </field>
                             </group>
-                        </page>
+                        </page> -->
                     </notebook>
                 </sheet>
             </form>
         </field>
     </record>
-    <record model="ir.ui.view" id="pms_room_view_kanban">
+    <record id="pms_room_view_kanban" model="ir.ui.view">
         <field name="name">pms.room.kanban</field>
         <field name="model">pms.room</field>
         <field name="type">kanban</field>
@@ -198,7 +180,7 @@
             </kanban>
         </field>
     </record>
-    <record model="ir.ui.view" id="pms_room_view_search">
+    <record id="pms_room_view_search" model="ir.ui.view">
         <field name="name">pms.room.search</field>
         <field name="model">pms.room</field>
         <field name="arch" type="xml">
@@ -207,8 +189,7 @@
                 <field name="room_type_id" />
                 <field name="capacity" />
                 <field name="room_amenity_ids" />
-                <newline />
-                <searchpanel>
+                <!-- <searchpanel>
                     <field
                         name="pms_property_id"
                         string="Property"
@@ -228,15 +209,15 @@
                         enable_counters="1"
                         color="#875A7B"
                     />
-                </searchpanel>
+                </searchpanel> -->
             </search>
         </field>
     </record>
-    <record model="ir.ui.view" id="pms_room_view_tree">
-        <field name="name">pms.room.tree</field>
+    <record id="pms_room_view_list" model="ir.ui.view">
+        <field name="name">pms.room.list</field>
         <field name="model">pms.room</field>
         <field name="arch" type="xml">
-            <tree name="Property Room" editable="bottom" multi_edit="1" sample="1">
+            <list name="Property Room" editable="bottom" multi_edit="1" sample="1">
                 <field name="sequence" widget="handle" />
                 <field name="pms_property_id" />
                 <field name="name" />
@@ -247,7 +228,7 @@
                 <field name="room_amenity_ids" widget="many2many_tags" />
                 <field name="short_name" />
                 <field name="parent_id" optional="hide" />
-            </tree>
+            </list>
         </field>
     </record>
     <!-- <record model="ir.ui.view" id="view_pms_room_kanban">
@@ -319,10 +300,8 @@
     <record model="ir.actions.act_window" id="action_pms_room_form">
         <field name="name">pms Room</field>
         <field name="res_model">pms.room</field>
-        <!-- <field name="context">{'default_isroom':1,'default_rental':1}
-        </field> -->
-        <field name="view_id" ref="pms_room_view_tree" />
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_id" ref="pms_room_view_list" />
+        <field name="view_mode">kanban,list,form</field>
     </record>
     <menuitem
         name="Rooms"
@@ -337,9 +316,9 @@
         <field name="model">product.category</field>
         <field name="field_parent">child_id</field>
         <field name="arch" type="xml">
-            <tree toolbar="True" string="Product Categories">
+            <list toolbar="True" string="Product Categories">
                 <field name="name" />
-            </tree>
+            </list>
         </field>
     </record> -->
     <!-- <record model="ir.actions.act_window" id="pms_room_category_action">
@@ -347,13 +326,13 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">product.category</field>
         <field name="domain">[('parent_id','=',False),('isroomtype','=',True)]</field>
-        <field name="view_type">tree</field>
+        <field name="view_type">list</field>
         <field name="view_id" ref="product_category_tree_view" />
     </record> -->
     <!-- <record id="action_room_cate" model="ir.actions.act_window">
         <field name="name">Category Items</field>
         <field name="res_model">product.product</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="domain">['|','|',('isroom','=',True), ('iscategid' , '=', True), ('isservice', '=', True)]</field>
         <field name="context">{'search_default_categ_id':active_id, 'default_categ_id':active_id}</field>
     </record> -->

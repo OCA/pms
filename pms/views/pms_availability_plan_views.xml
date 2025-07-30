@@ -51,7 +51,7 @@
         <field name="model">pms.availability.plan</field>
 
         <field name="arch" type="xml">
-            <tree name="Availability Plans">
+            <list name="Availability Plans">
                 <field name="name" />
                 <field name="pms_property_ids" widget="many2many_tags" />
                 <field
@@ -60,14 +60,14 @@
                     options="{'no_create': True,'no_open': True}"
                 />
                 <field name="active" />
-            </tree>
+            </list>
         </field>
     </record>
     <!-- Action of reservation availability plan-->
     <record model="ir.actions.act_window" id="availability_action">
         <field name="name">Reservation Availability Plans</field>
         <field name="res_model">pms.availability.plan</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
     <!-- MENUS -->
     <menuitem

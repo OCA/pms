@@ -2,30 +2,37 @@
 <odoo>
     <!--==================================================== Cancelation Rules ==================================================== -->
     <!-- Form view of cancelation rules -->
-    <record model="ir.ui.view" id="pms_cancelation_rule_form">
+    <record id="pms_cancelation_rule_form" model="ir.ui.view">
         <field name="name">pms.cancelation.rule.form</field>
         <field name="model">pms.cancelation.rule</field>
         <field name="arch" type="xml">
             <form string="Cancelation Rules">
                 <sheet>
-                    <h3>
-                        <field name="name" />
-                        <field
-                            name="pms_property_ids"
-                            widget="many2many_tags"
-                            options="{'no_create': True,'no_open': True}"
-                        />
-                        <separator />
-                        <label for="name" string="Max. days InTime before Checkin" />
-                        <field name="days_intime" />
-                    </h3>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                        <group>
+                            <field
+                                name="pms_property_ids"
+                                widget="many2many_tags"
+                                options="{'no_create': True,'no_open': True}"
+                            />
+                            <label for="days_intime" />
+                            <div>
+                                <field name="days_intime" class="oe_inline" string="Free Cancellation"/>
+                                <span>Day(s) before check-in</span>
+                            </div>
+                        </group>
+                    </div>
                     <group>
                         <group string="Late">
                             <field name="penalty_late" />
                             <field name="apply_on_late" />
                             <field
                                 name="days_late"
-                                attrs="{'invisible': [('apply_on_late','not in',('days'))]}"
+                                invisible="apply_on_late != 'days'"
                             />
                         </group>
                         <group string="No Show">
@@ -33,7 +40,7 @@
                             <field name="apply_on_noshow" />
                             <field
                                 name="days_noshow"
-                                attrs="{'invisible': [('apply_on_noshow','not in',('days'))]}"
+                                invisible="apply_on_noshow != 'days'"
                             />
                         </group>
                     </group>
@@ -41,26 +48,27 @@
             </form>
         </field>
     </record>
-    <!-- Tree view of cancelation rules -->
-    <record model="ir.ui.view" id="pms_cancelation_rule_view_tree">
-        <field name="name">pms.cancelation.rule.tree</field>
+    <!-- List view of cancelation rules -->
+    <record id="pms_cancelation_rule_view_list" model="ir.ui.view">
+        <field name="name">pms.cancelation.rule.list</field>
         <field name="model">pms.cancelation.rule</field>
         <field name="arch" type="xml">
-            <tree name="Cancelation Rules">
+            <list name="Cancelation Rules">
                 <field name="name" />
-                <field name="days_intime" />
-                <field name="penalty_late" />
-                <field name="apply_on_late" />
-                <field name="penalty_noshow" />
-                <field name="apply_on_noshow" />
-            </tree>
+                <field name="days_intime" string="Free Cancellation" optional="show" />
+                <field name="penalty_late" optional="show" />
+                <field name="apply_on_late" optional="show" />
+                <field name="penalty_noshow" optional="show" />
+                <field name="apply_on_noshow" optional="show" />
+                <field name="pms_property_ids" widget="many2many_tags" optional="show" />
+            </list>
         </field>
     </record>
     <!-- Action of pms cancelation rules -->
-    <record model="ir.actions.act_window" id="action_pms_cancelation_rule">
+    <record id="action_pms_cancelation_rule" model="ir.actions.act_window">
         <field name="name">Cancelation Rules</field>
         <field name="res_model">pms.cancelation.rule</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
     <menuitem
         name="Cancelation Rules"

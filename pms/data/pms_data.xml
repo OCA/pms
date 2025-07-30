@@ -3,16 +3,21 @@
     <!-- account.analytic.plan -->
     <record id="main_pms_analytic_plan" model="account.analytic.plan">
         <field name="name">Properties</field>
-        <field name="company_id" eval="False" />
     </record>
     <!-- Basic pms  -->
     <record id="main_pms_availability_plan" model="pms.availability.plan">
         <field name="name">Availability Plan</field>
     </record>
+    <record id="list0" model="product.pricelist">
+            <field name="name">Public Pricelist</field>
+            <field name="sequence">1</field>
+            <field name="availability_plan_id" ref="main_pms_availability_plan" />
+            <field name="is_pms_available" eval="True" />
+        </record>
     <record id="main_pms_property" model="pms.property">
         <field name="name">My Property</field>
         <field name="company_id" ref="base.main_company" />
-        <field name="default_pricelist_id" ref="product.list0" />
+        <field name="default_pricelist_id" ref="list0" />
         <field name="street">Rua Street Demo, s/n</field>
         <field name="city">Commitsun city</field>
         <field name="country_id" ref="base.es" />
@@ -22,10 +27,6 @@
         <field name="website">https://www.commitsun.com</field>
         <field name="folio_sequence_id" ref="pms.seq_pms_folio" />
         <field name="checkin_sequence_id" ref="pms.seq_pms_checkin" />
-    </record>
-    <record id="product.list0" model="product.pricelist">
-        <field name="availability_plan_id" ref="main_pms_availability_plan" />
-        <field name="is_pms_available" eval="True" />
     </record>
     <!-- default partner simplified invoices -->
     <record id="various_pms_partner" model="res.partner">

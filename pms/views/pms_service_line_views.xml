@@ -12,7 +12,7 @@
                     <field name="price_unit" />
                     <field
                         name="discount"
-                        attrs="{'readonly':[('is_board_service','=', True)]}"
+                        readonly="is_board_service"
                     />
                     <field name="price_day_total" />
                     <field name="pms_property_id" invisible="1" />
@@ -25,31 +25,31 @@
         <field name="name">pms.service.line.tree</field>
         <field name="model">pms.service.line</field>
         <field name="arch" type="xml">
-            <tree name="Service By Day">
+            <list name="Service By Day">
                 <field name="product_id" />
                 <field name="day_qty" />
                 <field name="date" />
                 <field name="price_unit" />
                 <field
                     name="discount"
-                    attrs="{'readonly':[('is_board_service','=', True)]}"
+                    readonly="is_board_service"
                 />
                 <field name="price_day_total" />
                 <field name="pms_property_id" invisible="1" />
                 <field name="is_board_service" invisible="1" />
-            </tree>
+            </list>
         </field>
     </record>
     <record model="ir.ui.view" id="pms_service_line_report_view_tree">
         <field name="name">pms.service.line.report.tree</field>
         <field name="model">pms.service.line</field>
         <field name="arch" type="xml">
-            <tree name="Service By Day">
+            <list name="Service By Day">
                 <button
                     class="oe_stat_button"
                     icon="fa-1x fa-bed"
                     name="open_service_ids"
-                    attrs="{'invisible':[('is_board_service','=', False)]}"
+                    invisible="not is_board_service"
                     title="Board Service"
                 />
                 <field name="is_board_service" invisible="1" />
@@ -58,14 +58,14 @@
                 <field name="day_qty" />
                 <field
                     name="price_unit"
-                    attrs="{'invisible':[('is_board_service','=', True)]}"
+                    invisible="is_board_service"
                 />
                 <field name="service_id" optional="show" />
                 <field name="reservation_id" />
                 <field name="tax_ids" optional="show" />
                 <field name="discount" optional="show" />
                 <field name="price_day_total" optional="show" />
-            </tree>
+            </list>
         </field>
     </record>
     <!-- Search Views -->
@@ -201,7 +201,7 @@
     <record model="ir.actions.act_window" id="action_pms_service_line_form">
         <field name="name">Services</field>
         <field name="res_model">pms.service.line</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
     <!--
     <menuitem name="Services as Products" id="menu_open_pms_service_line_form"
@@ -211,7 +211,7 @@
     <record model="ir.actions.act_window" id="action_service_line">
         <field name="name">Services By Day</field>
         <field name="res_model">pms.service.line</field>
-        <field name="view_mode">tree,form,calendar,pivot,graph</field>
+        <field name="view_mode">list,form,calendar,pivot,graph</field>
         <field name="view_id" ref="pms.pms_service_line_report_view_tree" />
         <field name="context">{
             'search_default_next_7_days': 1,

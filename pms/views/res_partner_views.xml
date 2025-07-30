@@ -15,13 +15,13 @@
     <record id="pms_customer_action" model="ir.actions.act_window">
         <field name="name">Customers</field>
         <field name="res_model">res.partner</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="domain">[('is_agency', '=',False)]</field>
     </record>
     <record id="pms_agency_action" model="ir.actions.act_window">
         <field name="name">Agencies</field>
         <field name="res_model">res.partner</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="domain">[('is_agency', '=',True)]</field>
         <field
             name="context"
@@ -75,7 +75,7 @@
                 <page
                     name="agency"
                     string="Agency"
-                    attrs="{'invisible':[('is_agency','!=',True)]}"
+                    invisible="not is_agency"
                 >
                     <group>
                         <field
@@ -146,11 +146,11 @@
                     <field name="invoicing_policy" />
                     <field
                         name="invoicing_month_day"
-                        attrs="{'invisible': [('invoicing_policy', '!=', 'month_day')]}"
+                        invisible="invoicing_policy != 'month_day'"
                     />
                     <field
                         name="margin_days_autoinvoice"
-                        attrs="{'invisible': [('invoicing_policy', '!=', 'checkout')]}"
+                        invisible="invoicing_policy != 'checkout'"
                     />
                 </group>
             </xpath>

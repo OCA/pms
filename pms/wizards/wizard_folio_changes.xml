@@ -8,14 +8,14 @@
                 <group>
                     <field name="modification_type" />
                 </group>
-                <group attrs="{'invisible':[('modification_type', '=', 'dates')]}">
+                <group invisible="modification_type == 'dates'">
                     <field name="change_from_date" />
                     <field name="change_to_date" />
                 </group>
 
                 <div
                     class="col-12"
-                    attrs="{'invisible':[('modification_type', '=', 'dates')]}"
+                    invisible="modification_type == 'dates'"
                 >
                     <table class="table table-bordered text-center">
                         <thead>
@@ -42,49 +42,49 @@
                                     <field
                                         name="apply_on_sunday"
                                         widget="boolean_toggle"
-                                        attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        invisible="apply_on_all_week"
                                     />
                                 </td>
                                 <td>
                                     <field
                                         name="apply_on_monday"
                                         widget="boolean_toggle"
-                                        attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        invisible="apply_on_all_week"
                                     />
                                 </td>
                                 <td>
                                     <field
                                         name="apply_on_tuesday"
                                         widget="boolean_toggle"
-                                        attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        invisible="apply_on_all_week"
                                     />
                                 </td>
                                 <td>
                                     <field
                                         name="apply_on_wednesday"
                                         widget="boolean_toggle"
-                                        attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        invisible="apply_on_all_week"
                                     />
                                 </td>
                                 <td>
                                     <field
                                         name="apply_on_thursday"
                                         widget="boolean_toggle"
-                                        attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        invisible="apply_on_all_week"
                                     />
                                 </td>
                                 <td>
                                     <field
                                         name="apply_on_friday"
                                         widget="boolean_toggle"
-                                        attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        invisible="apply_on_all_week"
                                     />
                                 </td>
                                 <td>
                                     <field
                                         name="apply_on_saturday"
                                         widget="boolean_toggle"
-                                        attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        invisible="apply_on_all_week"
                                     />
                                 </td>
                             </tr>
@@ -100,12 +100,12 @@
                     <field name="room_type_filter_ids" widget="many2many_tags" />
                     <field
                         name="reservation_ids"
-                        attrs="{'invisible':[('modification_type','=','services')]}"
+                        invisible="modification_type == 'services'"
                         widget="many2many_tags"
                     />
                     <field
                         name="service_ids"
-                        attrs="{'invisible':[('modification_type','!=','services')]}"
+                        invisible="modification_type != 'services'"
                         widget="many2many_tags"
                     />
                 </group>
@@ -113,13 +113,13 @@
                 <div
                     class="alert alert-warning"
                     role="alert"
-                    attrs="{'invisible': [('dates_incongruence','=',False)]}"
+                    invisible="not dates_incongruence"
                 >
                     Selected reservations with different dates
                 </div>
                 <div
                     class="row"
-                    attrs="{'invisible':[('modification_type', '!=', 'dates')]}"
+                    invisible="modification_type != 'dates'"
                 >
                     <div class="col-4 pr-0">
                         <div class="border h-100 pt-2 px-2">
@@ -137,7 +137,8 @@
                                     <field
                                         name="new_checkin"
                                         nolabel="1"
-                                        attrs="{'invisible':[('apply_new_checkin','=',False)], 'required':[('apply_new_checkin','=',True)]}"
+                                        invisible="not apply_new_checkin"
+                                        required="apply_new_checkin"
                                     />
                                 </div>
                             </div>
@@ -159,7 +160,8 @@
                                     <field
                                         name="new_checkout"
                                         nolabel="1"
-                                        attrs="{'invisible':[('apply_new_checkout','=',False)], 'required':[('apply_new_checkout','=',True)]}"
+                                        invisible="not apply_new_checkout"
+                                        required="apply_new_checkout"
                                     />
                                 </div>
                             </div>
@@ -181,7 +183,7 @@
 
                 <div
                     class="row"
-                    attrs="{'invisible':[('modification_type','=','dates')]}"
+                    invisible="modification_type == 'dates'"
                 >
                     <div class="col-4 pr-0">
                         <div class="border h-100 pt-2 px-2">
@@ -196,7 +198,8 @@
                                     <field
                                         name="new_price"
                                         nolabel="1"
-                                        attrs="{'invisible':[('apply_price','=',False)], 'required':[('apply_price','=',True)]}"
+                                        invisible="not apply_price"
+                                        required="apply_price"
                                     />
                                 </div>
                             </div>
@@ -218,7 +221,8 @@
                                     <field
                                         name="new_discount"
                                         nolabel="1"
-                                        attrs="{'invisible':[('apply_discount','=',False)], 'required':[('apply_discount','=',True)]}"
+                                        invisible="not apply_discount"
+                                        required="apply_discount"
                                     />
                                 </div>
                             </div>
@@ -226,7 +230,7 @@
                     </div>
                     <div
                         class="col-4 pr-0"
-                        attrs="{'invisible':[('modification_type','!=','reservations')]}"
+                        invisible="modification_type != 'reservations'"
                     >
                         <div class="border h-100 pt-2 px-2">
                             <div class="row">
@@ -243,7 +247,8 @@
                                     <field
                                         name="new_board_service_id"
                                         nolabel="1"
-                                        attrs="{'invisible':[('apply_board_service','=',False)], 'required':[('apply_board_service','=',True)]}"
+                                        invisible="not apply_board_service"
+                                        required="apply_board_service"
                                     />
                                 </div>
                             </div>
@@ -251,7 +256,7 @@
                     </div>
                     <div
                         class="col-4 pr-0"
-                        attrs="{'invisible':[('modification_type','!=','reservations')]}"
+                        invisible="modification_type != 'reservations'"
                     >
                         <div class="border h-100 pt-2 px-2">
                             <div class="row">
@@ -268,7 +273,8 @@
                                     <field
                                         name="new_partner_id"
                                         nolabel="1"
-                                        attrs="{'invisible':[('apply_partner_id','=',False)], 'required':[('apply_partner_id','=',True)]}"
+                                        invisible="not apply_partner_id"
+                                        required="apply_partner_id"
                                     />
                                 </div>
                             </div>
@@ -276,7 +282,7 @@
                     </div>
                     <div
                         class="col-4 pr-0"
-                        attrs="{'invisible':[('modification_type','!=','reservations')]}"
+                        invisible="modification_type != 'reservations'"
                     >
                         <div class="border h-100 pt-2 px-2">
                             <div class="row">
@@ -293,7 +299,8 @@
                                     <field
                                         name="new_pricelist_id"
                                         nolabel="1"
-                                        attrs="{'invisible':[('apply_pricelist_id','=',False)], 'required':[('apply_pricelist_id','=',True)]}"
+                                        invisible="not apply_pricelist_id"
+                                        required="apply_pricelist_id"
                                     />
                                 </div>
                             </div>
@@ -302,7 +309,7 @@
                     <div class="col-4 pr-0">
                         <div
                             class="border h-100 pt-2 px-2"
-                            attrs="{'invisible':[('modification_type','!=','reservations')]}"
+                            invisible="modification_type != 'reservations'"
                         >
                             <div class="row">
                                 <div class="col-2">
@@ -318,7 +325,8 @@
                                     <field
                                         name="new_service_id"
                                         nolabel="1"
-                                        attrs="{'invisible':[('apply_service','=',False)], 'required':[('apply_service','=',True)]}"
+                                        invisible="not apply_service"
+                                        required="apply_service"
                                     />
                                 </div>
                             </div>
@@ -326,7 +334,7 @@
                     </div>
                     <div
                         class="col-4 pr-0"
-                        attrs="{'invisible':[('modification_type','!=','services')]}"
+                        invisible="modification_type != 'services'"
                     >
                         <div class="border h-100 pt-2 px-2">
                             <div class="row">
@@ -343,7 +351,8 @@
                                     <field
                                         name="day_qty"
                                         nolabel="1"
-                                        attrs="{'invisible':[('apply_day_qty','=',False)], 'required':[('apply_day_qty','=',True)]}"
+                                        invisible="not apply_day_qty"
+                                        required="apply_day_qty"
                                     />
                                 </div>
                             </div>

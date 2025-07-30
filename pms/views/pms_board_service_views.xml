@@ -15,13 +15,13 @@
                     />
                     <field name="amount" />
                     <field name="board_service_line_ids">
-                        <tree editable="bottom">
+                        <list editable="bottom">
                             <field name="product_id" />
                             <field name="amount" />
                             <field name="adults" />
                             <field name="children" />
                             <field name="pms_property_ids" invisible="1" />
-                        </tree>
+                        </list>
                     </field>
                     <field name="show_detail_report" />
                 </group>
@@ -32,19 +32,19 @@
         <field name="name">pms.board.service.tree</field>
         <field name="model">pms.board.service</field>
         <field name="arch" type="xml">
-            <tree name="Board Services">
+            <list name="Board Services">
                 <field name="name" />
                 <field name="default_code" />
                 <field name="amount" />
                 <field name="show_detail_report" />
                 <field name="pms_property_ids" invisible="1" />
-            </tree>
+            </list>
         </field>
     </record>
     <record model="ir.actions.act_window" id="open_pms_board_service_form_tree">
         <field name="name">Board Services</field>
         <field name="res_model">pms.board.service</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
     <menuitem
         name="Board Services"

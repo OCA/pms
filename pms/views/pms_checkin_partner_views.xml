@@ -3,7 +3,7 @@
     <record model="ir.actions.act_window" id="action_checkin_partner">
         <field name="name">Checkins</field>
         <field name="res_model">pms.checkin.partner</field>
-        <field name="view_mode">kanban,tree,form,calendar,graph,pivot</field>
+        <field name="view_mode">kanban,list,form,calendar,graph,pivot</field>
         <field name="context">{'search_default_hide_strangers':1, }</field>
     </record>
     <menuitem
@@ -26,7 +26,7 @@
                         class="alert alert-warning"
                         role="alert"
                         style="margin-bottom:0px;"
-                        attrs="{'invisible': [('partner_incongruences','=',False)]}"
+                        invisible="not partner_incongruences"
                     >
                         <field name="partner_incongruences" />
                         <bold>
@@ -43,7 +43,7 @@
                         class="alert alert-warning"
                         role="alert"
                         style="margin-bottom:0px;"
-                        attrs="{'invisible': [('possible_existing_customer_ids','=',[])]}"
+                        invisible="not possible_existing_customer_ids"
                     >
                         A customer/s has this email or mobile, do you want to add it?
                         <field name="possible_existing_customer_ids" invisible="1" />
@@ -129,7 +129,7 @@
                         icon="fa-file-pdf-o"
                         name="%(action_traveller_report)d"
                         string="Print in PDF"
-                        attrs="{'invisible': [('state','not in', ('precheckin','onboard','done'))]}"
+                        invisible="state not in ('precheckin', 'onboard', 'done')"
                     />
                 </sheet>
             </form>
@@ -141,7 +141,7 @@
         <field name="model">pms.checkin.partner</field>
         <field name="priority">20</field>
         <field name="arch" type="xml">
-            <tree
+            <list
                 editable="bottom"
                 decoration-danger="state == 'dummy'"
                 decoration-info="state == 'done'"
@@ -155,7 +155,7 @@
                     icon="fa-2x fa-check-circle"
                     name="action_on_board"
                     help="Get in"
-                    attrs="{'invisible': [('state','!=','precheckin')]}"
+                    invisible="state != 'precheckin'"
                 />
                 <field name="identifier" />
                 <field name="partner_id" />
@@ -178,7 +178,7 @@
                 <field name="folio_id" force_save="1" invisible="1" />
                 <field name="state" invisible="0" />
                 <field name="pms_property_id" invisible="1" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -187,7 +187,7 @@
         <field name="model">pms.checkin.partner</field>
         <field name="priority">20</field>
         <field name="arch" type="xml">
-            <tree
+            <list
                 editable="bottom"
                 create="false"
                 decoration-danger="state == 'dummy'"
@@ -202,7 +202,7 @@
                     icon="fa-2x fa-check-circle"
                     name="action_on_board"
                     help="Get in"
-                    attrs="{'invisible': [('state','!=','precheckin')]}"
+                    invisible="state != 'precheckin'"
                 />
                 <field name="reservation_id" />
                 <field name="pms_property_id" invisible="1" />
@@ -224,7 +224,7 @@
                 <field name="departure" invisible="1" />
                 <field name="folio_id" force_save="1" invisible="1" />
                 <field name="state" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -233,7 +233,7 @@
         <field name="model">pms.checkin.partner</field>
         <field name="priority">10</field>
         <field name="arch" type="xml">
-            <tree
+            <list
                 create="false"
                 decoration-danger="state == 'draft'"
                 decoration-muted="state == 'cancel' or state =='done'"
@@ -245,7 +245,7 @@
                     class="oe_stat_button"
                     icon="fa fa-2x fa-check-circle"
                     name="action_on_board"
-                    attrs="{'invisible':[('state','not in', ['preconfirm'])]}"
+                    invisible="state != 'preconfirm'"
                     help="Get in"
                 />
                 <field name="identifier" />
@@ -269,7 +269,7 @@
                 <field name="departure" />
                 <field name="folio_id" force_save="1" invisible="1" />
                 <field name="state" />
-            </tree>
+            </list>
         </field>
     </record>
     <record model="ir.ui.view" id="pms_checkin_partner_kanban_view">
@@ -396,7 +396,7 @@
                                         name="action_on_board"
                                         tabindex="-1"
                                         type="object"
-                                        attrs="{'invisible': [('state', '!=', 'precheckin')]}"
+                                        invisible="state != 'precheckin'"
                                         class="o_project_kanban_box"
                                     >
                                         <div>
@@ -623,7 +623,7 @@
         <field name="name">pms.checkin.partner.view.calendar</field>
         <field name="model">pms.checkin.partner</field>
         <field name="arch" type="xml">
-            <calendar
+            <!-- <calendar
                 date_start="checkin"
                 date_stop="checkout"
                 string="Hosts"
@@ -631,7 +631,11 @@
                 mode="month"
                 color="folio_id"
                 scales="week,month,year"
+            > -->
+            <calendar
+                string="Hosts"
             >
+
                 <field name="partner_id" />
                 <field name="name" />
                 <field name="reservation_id" />

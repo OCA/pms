@@ -9,7 +9,7 @@
                     name="folio_ids"
                     widget="many2many_tags"
                     readonly="1"
-                    attrs="{'invisible':[('move_type','not in',('out_invoice','out_refund','out_receipt'))]}"
+                    invisible="move_type not in ('out_invoice', 'out_refund', 'out_receipt')"
                 />
                 <field
                     name="pms_property_id"
@@ -20,23 +20,23 @@
                 <field name="origin_agency_id" />
             </xpath>
             <xpath
-                expr="//field[@name='invoice_line_ids']/tree/field[@name='quantity']"
+                expr="//field[@name='invoice_line_ids']/list/field[@name='quantity']"
                 position="before"
             >
                 <field name="name_changed_by_user" invisible="0" />
                 <field
                     name="pms_property_id"
-                    attrs="{'column_invisible':[('parent.pms_property_id','!=',False)]}"
+                    column_invisible="parent.pms_property_id"
                 />
             </xpath>
             <xpath
-                expr="//notebook//field[@name='line_ids']/tree/field[@name='date_maturity']"
+                expr="//notebook//field[@name='line_ids']/list/field[@name='date_maturity']"
                 position="after"
             >
                 <field name="name_changed_by_user" invisible="1" />
                 <field
                     name="pms_property_id"
-                    attrs="{'column_invisible':[('parent.pms_property_id','!=',False)]}"
+                    column_invisible="parent.pms_property_id"
                     optional="hide"
                 />
             </xpath>
@@ -101,7 +101,7 @@
     <record id="action_pms_move_out_invoice_type" model="ir.actions.act_window">
         <field name="name">PMS Invoices</field>
         <field name="res_model">account.move</field>
-        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_mode">list,kanban,form</field>
         <field name="view_id" ref="account.view_out_invoice_tree" />
         <field name="search_view_id" ref="view_account_invoice_filter" />
         <field name="domain">[('move_type', 'in', ('out_invoice','out_refund'))]</field>

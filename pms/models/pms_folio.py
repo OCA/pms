@@ -1589,7 +1589,7 @@ class PmsFolio(models.Model):
         return {
             "name": _("Checkins"),
             "view_type": "form",
-            "view_mode": "tree,form",
+            "view_mode": "list,form",
             "res_model": "pms.checkin.partner",
             "type": "ir.actions.act_window",
             "domain": [("reservation_id", "in", rooms)],
@@ -1605,7 +1605,7 @@ class PmsFolio(models.Model):
         reservations = self.reservation_ids.filtered(
             lambda c: c.state in ("draf", "confirm", "arrival_delayed")
         )
-        action = self.env.ref("pms.open_pms_reservation_form_tree_all").read()[0]
+        action = self.env.ref("pms.open_pms_reservation_form_list_all").read()[0]
         action["domain"] = [("id", "in", reservations.ids)]
         return action
 
@@ -2752,4 +2752,4 @@ class PmsFolio(models.Model):
         """Return the action used to display orders
         when returning from customer portal."""
         self.ensure_one()
-        return self.env.ref("pms.open_pms_folio1_form_tree_all")
+        return self.env.ref("pms.open_pms_folio1_form_list_all")

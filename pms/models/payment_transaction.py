@@ -71,6 +71,6 @@ class PaymentTransaction(models.Model):
             action["res_id"] = folio_ids[0]
             action["view_mode"] = "form"
         else:
-            action["view_mode"] = "tree,form"
+            action["view_mode"] = "list,form"
             action["domain"] = [("id", "in", folio_ids)]
         return action

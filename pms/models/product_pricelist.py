@@ -13,32 +13,25 @@ class ProductPricelist(models.Model):
     A pricelist marked as daily is used as a daily rate plan for room types and
     therefore is related only with one property.
     """
-
     _inherit = "product.pricelist"
     _check_pms_properties_auto = True
 
     # Fields declaration
     pms_property_ids = fields.Many2many(
-        string="Properties",
-        help="Properties with access to the element;"
-        " if not set, all properties can access",
-        required=False,
         comodel_name="pms.property",
         relation="product_pricelist_pms_property_rel",
         column1="product_pricelist_id",
         column2="pms_property_id",
+        string="Properties",
         ondelete="restrict",
         check_pms_properties=True,
-    )
-    company_id = fields.Many2one(
-        string="Company",
-        help="Company to which the pricelist belongs",
-        index=True,
+        help="Properties with access to the element;"
+        " if not set, all properties can access",
     )
     cancelation_rule_id = fields.Many2one(
+        comodel_name="pms.cancelation.rule",
         string="Cancelation Policy",
         help="Cancelation Policy included in the room",
-        comodel_name="pms.cancelation.rule",
         index=True,
         check_pms_properties=True,
     )

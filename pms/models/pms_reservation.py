@@ -2413,10 +2413,10 @@ class PmsReservation(models.Model):
 
     def action_checkin_partner_view(self):
         self.ensure_one()
-        tree_id = self.env.ref("pms.pms_checkin_partner_reservation_view_tree").id
+        list_id = self.env.ref("pms.pms_checkin_partner_reservation_view_tree").id
         return {
             "name": _("Register Partners"),
-            "views": [[tree_id, "tree"]],
+            "views": [[list_id, "list"]],
             "res_model": "pms.checkin.partner",
             "type": "ir.actions.act_window",
             "context": {

@@ -4,7 +4,7 @@
      Copyright 2021 Eric Antones <eantones@nuobit.com>
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
-    <record model="ir.ui.view" id="pms_room_type_view_form">
+    <record id="pms_room_type_view_form" model="ir.ui.view">
         <field name="name">pms.room_type.form</field>
         <field name="model">pms.room.type</field>
         <field name="arch" type="xml">
@@ -15,17 +15,17 @@
                         <group>
                             <field name="name" />
                             <field name="default_code" />
-                            <field name="class_id" />
+                            <!-- <field name="class_id" /> -->
                         </group>
                         <group>
-                            <field name="pms_property_ids" widget="many2many_tags" />
+                            <!-- <field name="pms_property_ids" widget="many2many_tags" /> -->
                             <field name="company_id" />
                         </group>
                     </group>
                     <group colspan="2">
                         <group name="room_ids_group">
-                            <field name="room_ids" widget="many2many_tags" />
-                            <field name="total_rooms_count" />
+                            <!-- <field name="room_ids" widget="many2many_tags" /> -->
+                            <!-- <field name="total_rooms_count" /> -->
                             <field name="default_max_avail" />
                             <field name="default_quota" />
                             <field name="min_price" />
@@ -42,14 +42,14 @@
                     </group>
                     <notebook>
                         <page string="Board Services">
-                            <separator string="Board Services" />
+                            <!-- <separator string="Board Services" />
                             <field
                                 name="board_service_room_type_ids"
                                 colspan="4"
                                 nolabel="1"
                                 context="{'default_pms_room_type_id':id}"
                             >
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="by_default" />
                                     <field name="pms_room_type_id" invisible="1" />
                                     <field name="pms_board_service_id" />
@@ -67,8 +67,8 @@
                                         name="pricelist_ids"
                                         widget="many2many_tags"
                                     />
-                                </tree>
-                            </field>
+                                </list>
+                            </field> -->
                         </page>
                         <page string="Room Amenities">
                             <separator string="Room Amenities" />
@@ -80,29 +80,29 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="pms_room_type_view_tree">
-        <field name="name">pms.room_type.tree</field>
+    <record id="pms_room_type_view_list" model="ir.ui.view">
+        <field name="name">pms.room_type.list</field>
         <field name="model">pms.room.type</field>
         <field name="arch" type="xml">
-            <tree name=" Property Room Type">
+            <list name=" Property Room Type">
                 <field name="sequence" widget="handle" />
-                <field name="pms_property_ids" widget="many2many_tags" />
+                <!-- <field name="pms_property_ids" widget="many2many_tags" /> -->
                 <field name="name" />
                 <field name="default_code" />
                 <field name="list_price" />
-                <field name="room_ids" widget="many2many_tags" />
-                <field name="total_rooms_count" />
-            </tree>
+                <!-- <field name="room_ids" widget="many2many_tags" /> -->
+                <!-- <field name="total_rooms_count" /> -->
+            </list>
         </field>
     </record>
 
-    <record model="ir.ui.view" id="pms_room_type_view_search">
+    <record id="pms_room_type_view_search" model="ir.ui.view">
         <field name="name">pms.room.type.search</field>
         <field name="model">pms.room.type</field>
         <field name="arch" type="xml">
             <search string="Room Type">
                 <field name="name" />
-                <field
+                <!-- <field
                     name="pms_property_ids"
                     string="Property"
                     filter_domain="[
@@ -110,21 +110,21 @@
                         ('pms_property_ids', 'ilike', self),
                         ('pms_property_ids', '=', False),
                     ]"
-                />
+                /> -->
             </search>
         </field>
     </record>
 
-    <record model="ir.actions.act_window" id="open_pms_room_type_form_tree">
+    <record id="open_pms_room_type_form_list" model="ir.actions.act_window">
         <field name="name">Room Type</field>
         <field name="res_model">pms.room.type</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <menuitem
         name="Room Types"
-        id="menu_open_pms_room_type_form_tree"
-        action="open_pms_room_type_form_tree"
+        id="menu_open_pms_room_type_form_list"
+        action="open_pms_room_type_form_list"
         sequence="15"
         parent="pms.pms_rooms_menu"
     />

@@ -58,7 +58,7 @@
     <record id="pms_reservation_eco_01" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_27" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_economic" />
         <field name="adults">1</field>
         <field name="checkin" eval="DateTime.today() + timedelta(-8)" />
@@ -88,7 +88,7 @@
     <record id="pms_reservation_eco_02" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_27" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_economic" />
         <field name="adults">1</field>
         <field name="checkin" eval="DateTime.today() + timedelta(-7)" />
@@ -117,7 +117,7 @@
     <record id="pms_reservation_eco_03" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_27" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_economic" />
         <field name="adults">1</field>
         <field name="checkin" eval="DateTime.today() + timedelta(-7)" />
@@ -148,7 +148,7 @@
     <record id="pms_reservation_eco_04" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_27" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_economic" />
         <field name="adults">1</field>
         <field name="checkin" eval="DateTime.today() + timedelta(-7)" />
@@ -175,7 +175,7 @@
     <record id="pms_reservation_eco_05" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_27" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_economic" />
         <field name="adults">1</field>
         <field name="checkin" eval="DateTime.today() + timedelta(-7)" />
@@ -202,7 +202,7 @@
     <record id="pms_reservation_eco_06" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_27" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="preferred_room_id" ref="pms.pms_room_eco_03" />
         <field name="adults">1</field>
         <field name="checkin" eval="DateTime.today() + timedelta(-4)" />
@@ -230,7 +230,7 @@
     <record id="pms_reservation_eco_07" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_28" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_economic" />
         <field name="adults">2</field>
         <field name="state">onboard</field>
@@ -322,7 +322,7 @@
     <record id="pms_reservation_eco_13" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_13" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_economic" />
         <field name="adults">1</field>
         <field name="checkin" eval="DateTime.today() + timedelta(1)" />
@@ -334,7 +334,7 @@
     <record id="pms_reservation_eco_14" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_16" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_economic" />
         <field name="adults">2</field>
         <field name="checkin" eval="DateTime.today() + timedelta(4)" />
@@ -348,7 +348,7 @@
     <record id="pms_reservation_eco_15" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_33" />
         <field name="user_id" ref="base.user_demo" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_economic" />
         <field name="adults">1</field>
         <field name="checkin" eval="DateTime.today() + timedelta(5)" />
@@ -361,7 +361,7 @@
     <record id="pms_reservation_sng_01" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_27" />
         <field name="user_id" ref="base.user_demo" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_single" />
         <field name="adults">1</field>
         <field name="checkin" eval="DateTime.today() + timedelta(-9)" />
@@ -389,7 +389,7 @@
     <record id="pms_reservation_sng_02" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_27" />
         <field name="user_id" ref="base.user_demo" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="preferred_room_id" ref="pms.pms_room_single_04" />
         <field name="adults">1</field>
         <field name="checkin" eval="DateTime.today() + timedelta(-5)" />
@@ -416,7 +416,7 @@
     <record id="pms_reservation_sng_03" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_27" />
         <field name="user_id" ref="base.user_demo" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="preferred_room_id" ref="pms.pms_room_single_05" />
         <field name="adults">1</field>
         <field name="checkin" eval="DateTime.today() + timedelta(-1)" />
@@ -443,7 +443,7 @@
     <record id="pms_reservation_sng_04" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_27" />
         <field name="user_id" ref="base.user_demo" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_single" />
         <field name="adults">1</field>
         <field
@@ -469,7 +469,7 @@
     <record id="pms_reservation_sng_05" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_10" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_single" />
         <field name="adults">1</field>
         <field
@@ -494,7 +494,7 @@
     <record id="pms_reservation_sng_06" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_10" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_single" />
         <field name="adults">1</field>
         <field name="checkin" eval="DateTime.today()" />
@@ -511,7 +511,7 @@
     <record id="pms_reservation_sng_07" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_13" />
         <field name="user_id" ref="base.user_demo" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_single" />
         <field name="adults">1</field>
         <field name="checkin" eval="DateTime.today() + timedelta(7)" />
@@ -528,7 +528,7 @@
     <record id="pms_reservation_sng_08" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_10" />
         <field name="user_id" ref="base.user_demo" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_single" />
         <field name="adults">1</field>
         <field name="checkin" eval="DateTime.today() + timedelta(6)" />
@@ -542,7 +542,7 @@
     <record id="pms_reservation_sng_09" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_15" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_single" />
         <field name="adults">1</field>
         <field name="checkin" eval="DateTime.today() + timedelta(9)" />
@@ -554,7 +554,7 @@
     <record id="pms_reservation_sng_10" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_10" />
         <field name="user_id" ref="base.user_demo" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_single" />
         <field name="adults">1</field>
         <field name="children">1</field>
@@ -570,7 +570,7 @@
     <record id="pms_reservation_dbl_cancel_01" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_32" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_double" />
         <field name="checkin" eval="DateTime.today() + timedelta(+8)" />
         <field name="checkout" eval="DateTime.today() + timedelta(+9)" />
@@ -584,7 +584,7 @@
     <record id="pms_reservation_dbl_cancel_02" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_12" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_double" />
         <field name="checkin" eval="DateTime.today() + timedelta(+7)" />
         <field name="checkout" eval="DateTime.today() + timedelta(+8)" />
@@ -609,7 +609,7 @@
     <record id="pms_reservation_dbl_01" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_12" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="preferred_room_id" ref="pms.pms_room_double_02" />
         <field name="adults">2</field>
         <field name="checkin" eval="DateTime.today() + timedelta(-3)" />
@@ -622,7 +622,7 @@
     <record id="pms_reservation_dbl_02" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_12" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="preferred_room_id" ref="pms.pms_room_double_04" />
         <field name="adults">2</field>
         <field name="checkin" eval="DateTime.today() + timedelta(-1)" />
@@ -634,7 +634,7 @@
     <record id="pms_reservation_dbl_03" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_15" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_double" />
         <field name="adults">2</field>
         <field name="checkin" eval="DateTime.today()" />
@@ -652,7 +652,7 @@
     <record id="pms_reservation_dbl_04" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_13" />
         <field name="user_id" ref="base.user_demo" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_double" />
         <field name="adults">2</field>
         <field name="checkin" eval="DateTime.today() + timedelta(4)" />
@@ -664,7 +664,7 @@
     <record id="pms_reservation_dbl_05" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_3" />
         <field name="user_id" ref="base.user_demo" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_double" />
         <field name="adults">2</field>
         <field name="checkin" eval="DateTime.today() + timedelta(4)" />
@@ -682,7 +682,7 @@
     <record id="pms_reservation_dbl_06" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_33" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_double" />
         <field name="adults">2</field>
         <field
@@ -702,7 +702,7 @@
     <record id="pms_reservation_dbl_07" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_32" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_double" />
         <field name="adults">2</field>
         <field name="checkin" eval="DateTime.today() + timedelta(6)" />
@@ -719,7 +719,7 @@
     <record id="pms_reservation_dbl_08" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_10" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_double" />
         <field name="adults">1</field>
         <field name="children">1</field>
@@ -736,7 +736,7 @@
     <record id="pms_reservation_dbl_09" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_15" />
         <field name="user_id" ref="base.user_demo" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_double" />
         <field name="adults">1</field>
         <field name="children">1</field>
@@ -750,7 +750,7 @@
     <record id="pms_reservation_dbl_10" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_12" />
         <field name="user_id" ref="base.user_demo" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_double" />
         <field name="adults">2</field>
         <field name="checkin" eval="DateTime.today() + timedelta(11)" />
@@ -766,7 +766,7 @@
     <record id="pms_reservation_dbl_11" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_12" />
         <field name="user_id" ref="base.user_demo" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_double" />
         <field name="adults">2</field>
         <field
@@ -787,7 +787,7 @@
     <record id="pms_reservation_trp_01" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_4" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="preferred_room_id" ref="pms_room_triple_03" />
         <field name="adults">3</field>
         <field name="checkin" eval="DateTime.today() + timedelta(-9)" />
@@ -814,7 +814,7 @@
     <record id="pms_reservation_trp_02" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_12" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_triple" />
         <field name="adults">2</field>
         <field name="children">1</field>
@@ -858,7 +858,7 @@
     <record id="pms_reservation_trp_04" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_16" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_triple" />
         <field name="adults">3</field>
         <field
@@ -879,7 +879,7 @@
     <record id="pms_reservation_trp_05" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_12" />
         <field name="user_id" ref="base.user_demo" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_triple" />
         <field name="adults">3</field>
         <field
@@ -899,7 +899,7 @@
     <record id="pms_reservation_trp_06" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_28" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_triple" />
         <field name="adults">1</field>
         <field
@@ -923,7 +923,7 @@
     <record id="pms_reservation_trp_07" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_4" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_triple" />
         <field name="adults">3</field>
         <field name="checkin" eval="DateTime.today() + timedelta(11)" />
@@ -1090,7 +1090,7 @@
     <record id="pms_reservation_cnf_01" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_33" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_conference_room" />
         <field name="checkin" eval="DateTime.today() + timedelta(-10)" />
         <field name="checkout" eval="DateTime.today() + timedelta(-5)" />
@@ -1116,7 +1116,7 @@
     <record id="pms_reservation_cnf_02" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_32" />
         <field name="user_id" ref="base.user_demo" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_conference_room" />
         <field name="checkin" eval="DateTime.today() + timedelta(1)" />
         <field name="checkout" eval="DateTime.today() + timedelta(4)" />
@@ -1128,7 +1128,7 @@
     <record id="pms_reservation_cnf_03" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_33" />
         <field name="user_id" ref="base.user_admin" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_conference_room" />
         <field name="checkin" eval="DateTime.today() + timedelta(6)" />
         <field name="checkout" eval="DateTime.today() + timedelta(8)" />
@@ -1153,7 +1153,7 @@
     <record id="pms_reservation_cnf_04" model="pms.reservation">
         <field name="partner_id" ref="base.res_partner_address_27" />
         <field name="user_id" ref="base.user_demo" />
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="room_type_id" ref="pms_room_type_conference_room" />
         <field name="checkin" eval="DateTime.today() + timedelta(10)" />
         <field name="checkout" eval="DateTime.today() + timedelta(12)" />

@@ -8,15 +8,15 @@
                 <field
                     name="folio_ids"
                     widget="many2many_tags"
-                    attrs="{'invisible':[('partner_type','!=','customer')]}"
+                    invisible="partner_type != 'customer'"
                 />
                 <field
                     name="origin_agency_id"
-                    attrs="{'invisible':[('origin_agency_id','=',False)]}"
+                    invisible="not origin_agency_id"
                 />
                 <field
                     name="origin_reference"
-                    attrs="{'invisible':[('origin_agency_id','=',False)]}"
+                    invisible="not origin_agency_id"
                 />
             </xpath>
         </field>

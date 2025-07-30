@@ -112,7 +112,7 @@ class TestPmsFolioInvoice(TestPms, AccountTestInvoicingCommon):
             {
                 "name": "Property Based on Comapany Demo",
                 "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.env.ref("product.list0").id,
+                "default_pricelist_id": self.env.ref("list0").id,
             }
         )
         # create room type

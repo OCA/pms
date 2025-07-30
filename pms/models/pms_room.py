@@ -11,7 +11,6 @@ class PmsRoom(models.Model):
     and also for speeches (conference rooms), parking,
     relax with cafe con leche, spa...
     """
-
     _name = "pms.room"
     _description = "Property Room"
     _order = "sequence, room_type_id, name"
@@ -19,8 +18,8 @@ class PmsRoom(models.Model):
 
     name = fields.Char(
         string="Room Name",
-        help="Room Name",
         required=True,
+        help="Room Name",
     )
     active = fields.Boolean(help="Determines if room is active", default=True)
     sequence = fields.Integer(
@@ -29,43 +28,43 @@ class PmsRoom(models.Model):
         default=0,
     )
     pms_property_id = fields.Many2one(
+        comodel_name="pms.property",
         string="Property",
+        required=True,
+        index=True,
+        ondelete="restrict",
         help="Properties with access to the element;"
         " if not set, all properties can access",
-        required=True,
-        comodel_name="pms.property",
-        index=True,
-        ondelete="restrict",
     )
     room_type_id = fields.Many2one(
-        string="Property Room Type",
-        help="Unique room type for the rooms",
-        required=True,
         comodel_name="pms.room.type",
+        string="Property Room Type",
+        required=True,
         ondelete="restrict",
         index=True,
+        help="Unique room type for the rooms",
         check_pms_properties=True,
     )
     parent_id = fields.Many2one(
-        string="Parent Room",
-        help="Indicates that this room is a child of another room",
         comodel_name="pms.room",
+        string="Parent Room",
         ondelete="restrict",
         index=True,
+        help="Indicates that this room is a child of another room",
         check_pms_properties=True,
     )
     child_ids = fields.One2many(
-        string="Child Rooms",
-        help="Child rooms of the room",
         comodel_name="pms.room",
         inverse_name="parent_id",
+        string="Child Rooms",
+        help="Child rooms of the room",
         check_pms_properties=True,
     )
     ubication_id = fields.Many2one(
-        string="Ubication",
-        help="At which ubication the room is located.",
         comodel_name="pms.ubication",
+        string="Ubication",
         index=True,
+        help="At which ubication the room is located.",
         check_pms_properties=True,
     )
     capacity = fields.Integer(
@@ -77,20 +76,20 @@ class PmsRoom(models.Model):
         default="0",
     )
     room_amenity_ids = fields.Many2many(
-        string="Room Amenities",
-        help="List of amenities included in room",
         comodel_name="pms.amenity",
         relation="pms_room_amenity_rel",
         column1="room_id",
         column2="amenity_id",
+        string="Room Amenities",
+        help="List of amenities included in room",
         check_pms_properties=True,
     )
     is_shared_room = fields.Boolean(
-        string="Is a Shared Room",
-        help="allows you to reserve units " " smaller than the room itself (eg beds)",
         compute="_compute_is_shared_room",
-        readonly=False,
         store=True,
+        string="Is a Shared Room",
+        readonly=False,
+        help="allows you to reserve units " " smaller than the room itself (eg beds)",
     )
     description_sale = fields.Text(
         string="Sale Description",
@@ -108,13 +107,13 @@ class PmsRoom(models.Model):
         help="Indicates that the address of the room is independent of the property",
     )
     address_id = fields.Many2one(
-        string="Address",
-        help="Address of the room",
         comodel_name="res.partner",
-        index=True,
         compute="_compute_address_id",
+        string="Address",
+        index=True,
         store=True,
         ondelete="restrict",
+        help="Address of the room",
     )
     street = fields.Char(
         related="address_id.street",
@@ -133,7 +132,7 @@ class PmsRoom(models.Model):
         readonly=False,
     )
     state_id = fields.Many2one(
-        "res.country.state",
+        comodel_name="res.country.state",
         related="address_id.state_id",
         string="State",
         ondelete="restrict",
@@ -141,7 +140,7 @@ class PmsRoom(models.Model):
         readonly=False,
     )
     country_id = fields.Many2one(
-        "res.country",
+        comodel_name="res.country",
         related="address_id.country_id",
         string="Country",
         ondelete="restrict",
@@ -238,18 +237,17 @@ class PmsRoom(models.Model):
                 room.address_id.email_formatted() if room.address_id else False
             )
 
-    def name_get(self):
-        result = []
+    @api.depends("name", "room_type_id", "room_amenity_ids")
+    def _compute_display_name(self):
         for room in self:
             name = room.name
             if room.room_type_id:
-                name += " [%s]" % room.room_type_id.default_code
+                name += f" [{room.room_type_id.default_code}]"
             if room.room_amenity_ids:
                 for amenity in room.room_amenity_ids:
                     if amenity.is_add_code_room_name:
-                        name += " %s" % amenity.default_code
-            result.append((room.id, name))
-        return result
+                        name += f" [{amenity.default_code}]"
+            room.display_name = name
 
     # Constraints and onchanges
     @api.constrains("capacity")
@@ -257,7 +255,7 @@ class PmsRoom(models.Model):
         for record in self:
             if record.capacity < 1:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "The capacity of the \
                         room must be greater than 0."
                     )
@@ -268,7 +266,7 @@ class PmsRoom(models.Model):
         for record in self:
             if record.is_shared_room and not record.child_ids:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "The reservation units are required \
                         on shared rooms."
                     )
@@ -289,7 +287,7 @@ class PmsRoom(models.Model):
                     reservation.adults + reservation.children_occupying
                 ) > line.room_id.get_capacity(num_extra_beds):
                     raise ValidationError(
-                        _(
+                        self.env._(
                             "Persons can't be higher than room capacity (%s)",
                             reservation.name,
                         )
@@ -300,7 +298,7 @@ class PmsRoom(models.Model):
         for record in self:
             if len(record.short_name) > 4:
                 raise ValidationError(
-                    _("The short name can't contain more than 4 characters")
+                    self.env._("The short name can't contain more than 4 characters")
                 )
 
     @api.model_create_multi
@@ -349,6 +347,6 @@ class PmsRoom(models.Model):
         for record in self:
             if extra_bed > record.extra_beds_allowed:
                 raise ValidationError(
-                    _("Extra beds can't be greater than allowed beds for this room")
+                    self.env._("Extra beds can't be greater than allowed beds for this room")
                 )
             return record.capacity + extra_bed

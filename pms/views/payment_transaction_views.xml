@@ -10,7 +10,7 @@
                     type="object"
                     class="oe_stat_button"
                     icon="fa-money"
-                    attrs="{'invisible': [('folio_ids_nbr', '=', 0)]}"
+                    invisible="not folio_ids_nbr"
                 >
                     <field name="folio_ids_nbr" widget="statinfo" string="Folio(s)" />
                 </button>

@@ -7,74 +7,50 @@
             <form string="Property Configuration">
                 <sheet>
                     <div class="o_button_box" name="button_box" />
-                    <label for="name" class="oe_edit_only" />
-                    <h1>
-                        <field name="name" class="oe_inline" />
-                    </h1>
-                    <label for="company_id" />
-                    <field name="company_id" class="oe_inline" />
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
                     <field name="logo" widget="image" class="oe_avatar" />
-                    <div class="col-6">
-                        <label for="ref" />
-                        <field name="ref" />
-                    </div>
-                    <div class="col-6">
-                        <label for="pms_property_code" />
-                        <field name="pms_property_code" />
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                        <group>
+                            <field name="company_id" />
+                            <field name="ref" />
+                            <field name="pms_property_code" />
+                        </group>
                     </div>
                     <notebook>
-                        <page string="General Information" name="property_general">
-                            <div class="o_address_format">
-                                <field
-                                    name="street"
-                                    placeholder="Street..."
-                                    class="o_address_street"
-                                />
-                                <field
-                                    name="street2"
-                                    placeholder="Street 2..."
-                                    class="o_address_street"
-                                />
-                                <field
-                                    name="city"
-                                    placeholder="City"
-                                    class="o_address_city"
-                                />
-                                <field
-                                    name="state_id"
-                                    class="o_address_state"
-                                    placeholder="State"
-                                />
-                                <field
-                                    name="zip"
-                                    placeholder="ZIP"
-                                    class="o_address_zip"
-                                />
-                                <field
-                                    name="country_id"
-                                    placeholder="Country"
-                                    class="o_address_country"
-                                />
-                            </div>
-                            <div class="row">
-                                <div class="col-6">
-                                    <label for="phone" />
-                                    <field name="phone" />
-                                    <label for="email" />
-                                    <field name="email" />
-                                    <label for="website" />
-                                    <field name="website" />
-                                </div>
-                            </div>
-                        </page>
-                        <page string="Settings" name="property_settings">
-                            <group
-                                colspan="4"
-                                col="4"
-                                string="Price and Availability Plans"
-                            >
-                                <field name="default_pricelist_id" required="True" />
+                        <page name="property_general" string="General Information">
+                            <group>
+                                <group>
+                                    <label for="street" string="Address"/>
+                                    <div class="o_address_format">
+                                        <field name="street" placeholder="Street..." class="o_address_street"/>
+                                        <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                        <field name="city" placeholder="City" class="o_address_city"/>
+                                        <field name="state_id" class="o_address_state" placeholder="State" options='{"no_open": True}'/>
+                                        <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                        <field name="country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'/>
+                                    </div>
+                                </group>
+                                <group>
+                                    <field name="phone" class="o_force_ltr"/>
+                                    <field name="mobile" class="o_force_ltr"/>
+                                    <field name="email"/>
+                                    <field name="website" string="Website" widget="url" placeholder="e.g. https://www.odoo.com"/>
+                                    <field name="color" widget="color_picker"/>
+                                </group>
                             </group>
+                        </page>
+                        <page name="property_settings" string="Settings">
+                            <group string="Price and Availability Plans">
+                                <!-- <field name="default_pricelist_id" required="True" /> -->
+                            </group>
+                        </page>
+                    </notebook>
+                    <!--
+                        <page string="Settings" name="property_settings">
                             <group string="Reservation">
                                 <field name="block_create_past_reservations" />
                             </group>
@@ -103,11 +79,11 @@
                                 <field name="default_invoicing_policy" />
                                 <field
                                     name="margin_days_autoinvoice"
-                                    attrs="{'invisible': [('default_invoicing_policy', '=', 'manual')]}"
+                                    invisible="default_invoicing_policy == 'manual'"
                                 />
                                 <field
                                     name="journal_normal_invoice_id"
-                                    attrs="{'required': [('default_invoicing_policy', '!=', 'manual')]}"
+                                    required="default_invoicing_policy != 'manual'"
                                     domain="[
                                         ('type', '=', 'sale'),
                                         ('company_id','=',company_id),
@@ -115,7 +91,7 @@
                                 />
                                 <field
                                     name="journal_simplified_invoice_id"
-                                    attrs="{'required': [('default_invoicing_policy', '!=', 'manual')]}"
+                                    required="default_invoicing_policy != 'manual'"
                                     domain="[
                                         ('type', '=', 'sale'),
                                         ('company_id','=',company_id),
@@ -242,32 +218,29 @@
                                 </form>
                             </field>
                         </page>
-                    </notebook>
+                    </notebook> -->
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers" />
-                    <field name="message_ids" widget="mail_thread" />
-                </div>
+                <chatter />
             </form>
         </field>
     </record>
-    <record id="pms_property_views_tree" model="ir.ui.view">
-        <field name="name">pms_property_views_tree</field>
+    <record id="pms_property_views_list" model="ir.ui.view">
+        <field name="name">pms_property_views_list</field>
         <field name="model">pms.property</field>
         <field name="arch" type="xml">
-            <tree name="Property settings summary">
+            <list name="Property settings summary">
                 <field name="name" />
                 <field name="company_id" />
-            </tree>
+            </list>
         </field>
     </record>
     <!-- actions -->
     <record id="pms_property_action" model="ir.actions.act_window">
         <field name="name">Properties</field>
         <field name="res_model">pms.property</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
-    <!-- menus -->
+    <!-- Menu on Users & Companies -->
     <menuitem
         action="pms_property_action"
         id="general_property_menu"
@@ -275,6 +248,7 @@
         sequence="10"
         name="Properties"
     />
+    <!-- Menu on PMS Configuration -->
     <menuitem
         action="pms_property_action"
         id="pms_property_menu"

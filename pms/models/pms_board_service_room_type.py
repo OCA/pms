@@ -6,7 +6,6 @@ from odoo.exceptions import UserError
 
 class PmsBoardServiceRoomType(models.Model):
     _name = "pms.board.service.room.type"
-    _table = "pms_board_service_room_type_rel"
     _rec_name = "pms_board_service_id"
     _log_access = False
     _description = "Board Service included in Room"

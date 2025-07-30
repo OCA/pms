@@ -22,19 +22,19 @@
         <field name="name">pms.sale.channel.tree</field>
         <field name="model">pms.sale.channel</field>
         <field name="arch" type="xml">
-            <tree name=" Sale Channel">
+            <list name=" Sale Channel">
                 <field name="name" />
                 <field name="channel_type" />
                 <field name="is_on_line" />
                 <field name="product_pricelist_ids" widget="many2many_tags" />
                 <field name="pms_property_ids" />
-            </tree>
+            </list>
         </field>
     </record>
     <record model="ir.actions.act_window" id="open_pms_sale_channel_form_tree">
         <field name="name">Sale Channel</field>
         <field name="res_model">pms.sale.channel</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
     <menuitem
         name="Sale Channels"

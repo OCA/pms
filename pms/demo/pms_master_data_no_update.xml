@@ -7,7 +7,7 @@
     <record id="demo_pms_availability_2" model="pms.availability.plan">
         <field name="name">Availability Plan Demo</field>
     </record>
-    <record id="product.list0" model="product.pricelist">
+    <record id="list0" model="product.pricelist">
         <field name="availability_plan_id" ref="demo_pms_availability_2" />
         <field name="is_pms_available" eval="True" />
     </record>
@@ -46,7 +46,7 @@
     <record id="san_carlos_property" model="pms.property">
         <field name="name">San Carlos</field>
         <field name="company_id" ref="base.main_company" />
-        <field name="default_pricelist_id" ref="product.list0" />
+        <field name="default_pricelist_id" ref="list0" />
         <field name="folio_sequence_id" ref="pms.seq_pms_folio" />
         <field name="checkin_sequence_id" ref="pms.seq_pms_checkin" />
     </record>
@@ -1064,7 +1064,7 @@
     <!--pricelist_items-->
     <!--room_type: economic-->
     <record id="pms_pricelist_item_economic_1" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1075,7 +1075,7 @@
         <field name="fixed_price">30.00</field>
     </record>
     <record id="pms_pricelist_item_economic_2" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1086,7 +1086,7 @@
         <field name="fixed_price">27.00</field>
     </record>
     <record id="pms_pricelist_item_economic_3" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1097,7 +1097,7 @@
         <field name="fixed_price">35.00</field>
     </record>
     <record id="pms_pricelist_item_economic_4" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1108,7 +1108,7 @@
         <field name="fixed_price">29.00</field>
     </record>
     <record id="pms_pricelist_item_economic_5" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1119,7 +1119,7 @@
         <field name="fixed_price">29.00</field>
     </record>
     <record id="pms_pricelist_item_economic_6" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1130,7 +1130,7 @@
         <field name="fixed_price">31.00</field>
     </record>
     <record id="pms_pricelist_item_economic_7" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1141,7 +1141,7 @@
         <field name="fixed_price">26.00</field>
     </record>
     <record id="pms_pricelist_item_economic_8" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1152,7 +1152,7 @@
         <field name="fixed_price">26.00</field>
     </record>
     <record id="pms_pricelist_item_economic_9" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1163,7 +1163,7 @@
         <field name="fixed_price">26.00</field>
     </record>
     <record id="pms_pricelist_item_economic_10" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1174,7 +1174,7 @@
         <field name="fixed_price">24.00</field>
     </record>
     <record id="pms_pricelist_item_economic_11" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1185,7 +1185,7 @@
         <field name="fixed_price">30.00</field>
     </record>
     <record id="pms_pricelist_item_economic_12" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1196,7 +1196,7 @@
         <field name="fixed_price">35.00</field>
     </record>
     <record id="pms_pricelist_item_economic_13" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1207,7 +1207,7 @@
         <field name="fixed_price">35.00</field>
     </record>
     <record id="pms_pricelist_item_economic_14" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1218,7 +1218,7 @@
         <field name="fixed_price">35.00</field>
     </record>
     <record id="pms_pricelist_item_economic_15" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1229,7 +1229,7 @@
         <field name="fixed_price">39.00</field>
     </record>
     <record id="pms_pricelist_item_economic_16" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1240,7 +1240,7 @@
         <field name="fixed_price">35.00</field>
     </record>
     <record id="pms_pricelist_item_economic_17" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1251,7 +1251,7 @@
         <field name="fixed_price">39.00</field>
     </record>
     <record id="pms_pricelist_item_economic_18" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1262,7 +1262,7 @@
         <field name="fixed_price">40.00</field>
     </record>
     <record id="pms_pricelist_item_economic_19" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1273,7 +1273,7 @@
         <field name="fixed_price">42.00</field>
     </record>
     <record id="pms_pricelist_item_economic_20" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1284,7 +1284,7 @@
         <field name="fixed_price">38.00</field>
     </record>
     <record id="pms_pricelist_item_economic_21" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1295,7 +1295,7 @@
         <field name="fixed_price">33.00</field>
     </record>
     <record id="pms_pricelist_item_economic_22" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1306,7 +1306,7 @@
         <field name="fixed_price">33.00</field>
     </record>
     <record id="pms_pricelist_item_economic_23" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1317,7 +1317,7 @@
         <field name="fixed_price">30.00</field>
     </record>
     <record id="pms_pricelist_item_economic_24" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1328,7 +1328,7 @@
         <field name="fixed_price">30.00</field>
     </record>
     <record id="pms_pricelist_item_economic_25" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1339,7 +1339,7 @@
         <field name="fixed_price">35.00</field>
     </record>
     <record id="pms_pricelist_item_economic_26" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1350,7 +1350,7 @@
         <field name="fixed_price">39.00</field>
     </record>
     <record id="pms_pricelist_item_economic_27" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1361,7 +1361,7 @@
         <field name="fixed_price">39.00</field>
     </record>
     <record id="pms_pricelist_item_economic_28" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1372,7 +1372,7 @@
         <field name="fixed_price">33.00</field>
     </record>
     <record id="pms_pricelist_item_economic_29" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1383,7 +1383,7 @@
         <field name="fixed_price">29.00</field>
     </record>
     <record id="pms_pricelist_item_economic_30" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1394,7 +1394,7 @@
         <field name="fixed_price">27.00</field>
     </record>
     <record id="pms_pricelist_item_economic_31" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1405,7 +1405,7 @@
         <field name="fixed_price">27.00</field>
     </record>
     <record id="pms_pricelist_item_economic_32" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1418,7 +1418,7 @@
 
     <!--room_type:single-->
     <record id="pms_pricelist_item_single_1" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1429,7 +1429,7 @@
         <field name="fixed_price">23.00</field>
     </record>
     <record id="pms_pricelist_item_single_2" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1440,7 +1440,7 @@
         <field name="fixed_price">26.00</field>
     </record>
     <record id="pms_pricelist_item_single_3" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1451,7 +1451,7 @@
         <field name="fixed_price">23.00</field>
     </record>
     <record id="pms_pricelist_item_single_4" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1462,7 +1462,7 @@
         <field name="fixed_price">23.00</field>
     </record>
     <record id="pms_pricelist_item_single_5" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1473,7 +1473,7 @@
         <field name="fixed_price">23.00</field>
     </record>
     <record id="pms_pricelist_item_single_6" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1484,7 +1484,7 @@
         <field name="fixed_price">25.00</field>
     </record>
     <record id="pms_pricelist_item_single_7" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1495,7 +1495,7 @@
         <field name="fixed_price">25.00</field>
     </record>
     <record id="pms_pricelist_item_single_8" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1506,7 +1506,7 @@
         <field name="fixed_price">25.00</field>
     </record>
     <record id="pms_pricelist_item_single_9" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1517,7 +1517,7 @@
         <field name="fixed_price">27.00</field>
     </record>
     <record id="pms_pricelist_item_single_10" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1528,7 +1528,7 @@
         <field name="fixed_price">28.00</field>
     </record>
     <record id="pms_pricelist_item_single_11" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1539,7 +1539,7 @@
         <field name="fixed_price">30.00</field>
     </record>
     <record id="pms_pricelist_item_single_12" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1550,7 +1550,7 @@
         <field name="fixed_price">30.00</field>
     </record>
     <record id="pms_pricelist_item_single_13" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1561,7 +1561,7 @@
         <field name="fixed_price">32.00</field>
     </record>
     <record id="pms_pricelist_item_single_14" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1572,7 +1572,7 @@
         <field name="fixed_price">32.00</field>
     </record>
     <record id="pms_pricelist_item_single_15" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1583,7 +1583,7 @@
         <field name="fixed_price">28.00</field>
     </record>
     <record id="pms_pricelist_item_single_16" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1594,7 +1594,7 @@
         <field name="fixed_price">25.00</field>
     </record>
     <record id="pms_pricelist_item_single_17" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1605,7 +1605,7 @@
         <field name="fixed_price">22.00</field>
     </record>
     <record id="pms_pricelist_item_single_18" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1616,7 +1616,7 @@
         <field name="fixed_price">22.00</field>
     </record>
     <record id="pms_pricelist_item_single_19" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1627,7 +1627,7 @@
         <field name="fixed_price">24.00</field>
     </record>
     <record id="pms_pricelist_item_single_20" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1638,7 +1638,7 @@
         <field name="fixed_price">30.00</field>
     </record>
     <record id="pms_pricelist_item_single_21" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1649,7 +1649,7 @@
         <field name="fixed_price">32.00</field>
     </record>
     <record id="pms_pricelist_item_single_22" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1660,7 +1660,7 @@
         <field name="fixed_price">35.00</field>
     </record>
     <record id="pms_pricelist_item_single_23" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1671,7 +1671,7 @@
         <field name="fixed_price">35.00</field>
     </record>
     <record id="pms_pricelist_item_single_24" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1682,7 +1682,7 @@
         <field name="fixed_price">27.00</field>
     </record>
     <record id="pms_pricelist_item_single_25" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1693,7 +1693,7 @@
         <field name="fixed_price">25.00</field>
     </record>
     <record id="pms_pricelist_item_single_26" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1704,7 +1704,7 @@
         <field name="fixed_price">25.00</field>
     </record>
     <record id="pms_pricelist_item_single_27" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1715,7 +1715,7 @@
         <field name="fixed_price">28.00</field>
     </record>
     <record id="pms_pricelist_item_single_28" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1726,7 +1726,7 @@
         <field name="fixed_price">30.00</field>
     </record>
     <record id="pms_pricelist_item_single_29" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1737,7 +1737,7 @@
         <field name="fixed_price">32.00</field>
     </record>
     <record id="pms_pricelist_item_single_30" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1748,7 +1748,7 @@
         <field name="fixed_price">32.00</field>
     </record>
     <record id="pms_pricelist_item_single_31" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1759,7 +1759,7 @@
         <field name="fixed_price">27.00</field>
     </record>
     <record id="pms_pricelist_item_single_32" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1772,7 +1772,7 @@
 
     <!--room_type:double-->
     <record id="pms_pricelist_item_double_1" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1789,7 +1789,7 @@
         <field name="fixed_price">30.00</field>
     </record>
     <record id="pms_pricelist_item_double_2" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1806,7 +1806,7 @@
         <field name="fixed_price">32.00</field>
     </record>
     <record id="pms_pricelist_item_double_3" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1817,7 +1817,7 @@
         <field name="fixed_price">32.00</field>
     </record>
     <record id="pms_pricelist_item_double_4" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1828,7 +1828,7 @@
         <field name="fixed_price">35.00</field>
     </record>
     <record id="pms_pricelist_item_double_5" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1839,7 +1839,7 @@
         <field name="fixed_price">36.00</field>
     </record>
     <record id="pms_pricelist_item_double_6" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1850,7 +1850,7 @@
         <field name="fixed_price">38.00</field>
     </record>
     <record id="pms_pricelist_item_double_7" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1867,7 +1867,7 @@
         <field name="fixed_price">40.00</field>
     </record>
     <record id="pms_pricelist_item_double_8" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1878,7 +1878,7 @@
         <field name="fixed_price">43.00</field>
     </record>
     <record id="pms_pricelist_item_double_9" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1889,7 +1889,7 @@
         <field name="fixed_price">43.00</field>
     </record>
     <record id="pms_pricelist_item_double_10" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1900,7 +1900,7 @@
         <field name="fixed_price">45.00</field>
     </record>
     <record id="pms_pricelist_item_double_11" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1911,7 +1911,7 @@
         <field name="fixed_price">42.00</field>
     </record>
     <record id="pms_pricelist_item_double_12" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1922,7 +1922,7 @@
         <field name="fixed_price">42.00</field>
     </record>
     <record id="pms_pricelist_item_double_13" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1933,7 +1933,7 @@
         <field name="fixed_price">40.00</field>
     </record>
     <record id="pms_pricelist_item_double_14" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1944,7 +1944,7 @@
         <field name="fixed_price">40.00</field>
     </record>
     <record id="pms_pricelist_item_double_15" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1955,7 +1955,7 @@
         <field name="fixed_price">36.00</field>
     </record>
     <record id="pms_pricelist_item_double_16" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1966,7 +1966,7 @@
         <field name="fixed_price">32.00</field>
     </record>
     <record id="pms_pricelist_item_double_17" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1977,7 +1977,7 @@
         <field name="fixed_price">32.00</field>
     </record>
     <record id="pms_pricelist_item_double_18" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1988,7 +1988,7 @@
         <field name="fixed_price">30.00</field>
     </record>
     <record id="pms_pricelist_item_double_19" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -1999,7 +1999,7 @@
         <field name="fixed_price">28.00</field>
     </record>
     <record id="pms_pricelist_item_double_20" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2010,7 +2010,7 @@
         <field name="fixed_price">28.00</field>
     </record>
     <record id="pms_pricelist_item_double_21" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2021,7 +2021,7 @@
         <field name="fixed_price">28.00</field>
     </record>
     <record id="pms_pricelist_item_double_22" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2032,7 +2032,7 @@
         <field name="fixed_price">34.00</field>
     </record>
     <record id="pms_pricelist_item_double_23" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2043,7 +2043,7 @@
         <field name="fixed_price">36.00</field>
     </record>
     <record id="pms_pricelist_item_double_24" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2054,7 +2054,7 @@
         <field name="fixed_price">38.00</field>
     </record>
     <record id="pms_pricelist_item_double_25" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2065,7 +2065,7 @@
         <field name="fixed_price">38.00</field>
     </record>
     <record id="pms_pricelist_item_double_26" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2076,7 +2076,7 @@
         <field name="fixed_price">42.00</field>
     </record>
     <record id="pms_pricelist_item_double_27" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2087,7 +2087,7 @@
         <field name="fixed_price">44.00</field>
     </record>
     <record id="pms_pricelist_item_double_28" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2098,7 +2098,7 @@
         <field name="fixed_price">44.00</field>
     </record>
     <record id="pms_pricelist_item_double_29" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2109,7 +2109,7 @@
         <field name="fixed_price">35.00</field>
     </record>
     <record id="pms_pricelist_item_double_30" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2120,7 +2120,7 @@
         <field name="fixed_price">33.00</field>
     </record>
     <record id="pms_pricelist_item_double_31" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2131,7 +2131,7 @@
         <field name="fixed_price">30.00</field>
     </record>
     <record id="pms_pricelist_item_double_32" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2144,7 +2144,7 @@
 
     <!--room_type:triple-->
     <record id="pms_pricelist_item_triple_1" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2155,7 +2155,7 @@
         <field name="fixed_price">40.00</field>
     </record>
     <record id="pms_pricelist_item_triple_2" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2166,7 +2166,7 @@
         <field name="fixed_price">44.00</field>
     </record>
     <record id="pms_pricelist_item_triple_3" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2177,7 +2177,7 @@
         <field name="fixed_price">48.00</field>
     </record>
     <record id="pms_pricelist_item_triple_4" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2188,7 +2188,7 @@
         <field name="fixed_price">50.00</field>
     </record>
     <record id="pms_pricelist_item_triple_5" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2199,7 +2199,7 @@
         <field name="fixed_price">52.00</field>
     </record>
     <record id="pms_pricelist_item_triple_6" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2210,7 +2210,7 @@
         <field name="fixed_price">52.00</field>
     </record>
     <record id="pms_pricelist_item_triple_7" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2221,7 +2221,7 @@
         <field name="fixed_price">55.00</field>
     </record>
     <record id="pms_pricelist_item_triple_8" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2232,7 +2232,7 @@
         <field name="fixed_price">50.00</field>
     </record>
     <record id="pms_pricelist_item_triple_9" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2243,7 +2243,7 @@
         <field name="fixed_price">48.00</field>
     </record>
     <record id="pms_pricelist_item_triple_10" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2254,7 +2254,7 @@
         <field name="fixed_price">48.00</field>
     </record>
     <record id="pms_pricelist_item_triple_11" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2265,7 +2265,7 @@
         <field name="fixed_price">48.00</field>
     </record>
     <record id="pms_pricelist_item_triple_12" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2276,7 +2276,7 @@
         <field name="fixed_price">54.00</field>
     </record>
     <record id="pms_pricelist_item_triple_13" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2287,7 +2287,7 @@
         <field name="fixed_price">52.00</field>
     </record>
     <record id="pms_pricelist_item_triple_14" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2298,7 +2298,7 @@
         <field name="fixed_price">50.00</field>
     </record>
     <record id="pms_pricelist_item_triple_15" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2309,7 +2309,7 @@
         <field name="fixed_price">44.00</field>
     </record>
     <record id="pms_pricelist_item_triple_16" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2320,7 +2320,7 @@
         <field name="fixed_price">40.00</field>
     </record>
     <record id="pms_pricelist_item_triple_17" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2331,7 +2331,7 @@
         <field name="fixed_price">40.00</field>
     </record>
     <record id="pms_pricelist_item_triple_18" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2342,7 +2342,7 @@
         <field name="fixed_price">38.00</field>
     </record>
     <record id="pms_pricelist_item_triple_19" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2353,7 +2353,7 @@
         <field name="fixed_price">38.00</field>
     </record>
     <record id="pms_pricelist_item_triple_20" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2364,7 +2364,7 @@
         <field name="fixed_price">38.00</field>
     </record>
     <record id="pms_pricelist_item_triple_21" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2375,7 +2375,7 @@
         <field name="fixed_price">42.00</field>
     </record>
     <record id="pms_pricelist_item_triple_22" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2386,7 +2386,7 @@
         <field name="fixed_price">45.00</field>
     </record>
     <record id="pms_pricelist_item_triple_23" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2397,7 +2397,7 @@
         <field name="fixed_price">50.00</field>
     </record>
     <record id="pms_pricelist_item_triple_24" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2408,7 +2408,7 @@
         <field name="fixed_price">52.00</field>
     </record>
     <record id="pms_pricelist_item_triple_25" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2419,7 +2419,7 @@
         <field name="fixed_price">52.00</field>
     </record>
     <record id="pms_pricelist_item_triple_26" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2430,7 +2430,7 @@
         <field name="fixed_price">48.00</field>
     </record>
     <record id="pms_pricelist_item_triple_27" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2441,7 +2441,7 @@
         <field name="fixed_price">44.00</field>
     </record>
     <record id="pms_pricelist_item_triple_28" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2452,7 +2452,7 @@
         <field name="fixed_price">44.00</field>
     </record>
     <record id="pms_pricelist_item_triple_29" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2463,7 +2463,7 @@
         <field name="fixed_price">48.00</field>
     </record>
     <record id="pms_pricelist_item_triple_30" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2474,7 +2474,7 @@
         <field name="fixed_price">50.00</field>
     </record>
     <record id="pms_pricelist_item_triple_31" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2485,7 +2485,7 @@
         <field name="fixed_price">55.00</field>
     </record>
     <record id="pms_pricelist_item_triple_32" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2498,7 +2498,7 @@
 
     <!--room_type:grand_suite-->
     <record id="pms_pricelist_item_grand_suite_1" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2509,7 +2509,7 @@
         <field name="fixed_price">120.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_2" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2520,7 +2520,7 @@
         <field name="fixed_price">124.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_3" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2531,7 +2531,7 @@
         <field name="fixed_price">124.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_4" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2542,7 +2542,7 @@
         <field name="fixed_price">120.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_5" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2553,7 +2553,7 @@
         <field name="fixed_price">115.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_6" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2564,7 +2564,7 @@
         <field name="fixed_price">118.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_7" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2575,7 +2575,7 @@
         <field name="fixed_price">118.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_8" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2586,7 +2586,7 @@
         <field name="fixed_price">125.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_9" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2597,7 +2597,7 @@
         <field name="fixed_price">128.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_10" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2608,7 +2608,7 @@
         <field name="fixed_price">130.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_11" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2619,7 +2619,7 @@
         <field name="fixed_price">130.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_12" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2630,7 +2630,7 @@
         <field name="fixed_price">125.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_13" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2641,7 +2641,7 @@
         <field name="fixed_price">120.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_14" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2652,7 +2652,7 @@
         <field name="fixed_price">115.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_15" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2663,7 +2663,7 @@
         <field name="fixed_price">110.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_16" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2674,7 +2674,7 @@
         <field name="fixed_price">110.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_17" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2685,7 +2685,7 @@
         <field name="fixed_price">110.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_18" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2696,7 +2696,7 @@
         <field name="fixed_price">120.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_19" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2707,7 +2707,7 @@
         <field name="fixed_price">125.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_20" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2718,7 +2718,7 @@
         <field name="fixed_price">130.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_21" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2729,7 +2729,7 @@
         <field name="fixed_price">135.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_22" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2740,7 +2740,7 @@
         <field name="fixed_price">125.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_23" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2751,7 +2751,7 @@
         <field name="fixed_price">123.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_24" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2762,7 +2762,7 @@
         <field name="fixed_price">123.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_25" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2773,7 +2773,7 @@
         <field name="fixed_price">123.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_26" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2784,7 +2784,7 @@
         <field name="fixed_price">126.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_27" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2795,7 +2795,7 @@
         <field name="fixed_price">128.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_28" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2806,7 +2806,7 @@
         <field name="fixed_price">135.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_29" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2817,7 +2817,7 @@
         <field name="fixed_price">135.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_30" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2828,7 +2828,7 @@
         <field name="fixed_price">127.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_31" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2839,7 +2839,7 @@
         <field name="fixed_price">122.00</field>
     </record>
     <record id="pms_pricelist_item_grand_suite_32" model="product.pricelist.item">
-        <field name="pricelist_id" ref="product.list0" />
+        <field name="pricelist_id" ref="list0" />
         <field name="applied_on">0_product_variant</field>
         <field name="base">list_price</field>
         <field name="compute_price">fixed</field>
@@ -2862,7 +2862,7 @@
         <field name="pricelist_id" ref="pricelist_discount_10_percent" />
         <field name="applied_on">3_global</field>
         <field name="base">pricelist</field>
-        <field name="base_pricelist_id" ref="product.list0" />
+        <field name="base_pricelist_id" ref="list0" />
         <field name="compute_price">formula</field>
         <field name="price_discount">10.00</field>
     </record>

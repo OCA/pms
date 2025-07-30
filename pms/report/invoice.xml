@@ -32,7 +32,7 @@
         <!-- fixme Dangerous use of "replace". Only replace as a last resort.
      Try position="attributes", position="move" or t-if="False" first - [xml-dangerous-qweb-replace-low-priority]
 -->
-        <xpath expr="//div[hasclass('page')]//h2" position="replace">
+        <!-- <xpath expr="//div[hasclass('page')]//h2" position="replace">
             <h2>
                 <t t-if="not (env.context.get('proforma', False) or is_pro_forma)">
                     <span
@@ -62,6 +62,6 @@
                     <span>Pro-Forma Invoice # </span>
                 </t>
             </h2>
-        </xpath>
+        </xpath> -->
     </template>
 </odoo>

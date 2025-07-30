@@ -10,81 +10,79 @@
                     name="pms_property_ids"
                     widget="many2many_tags"
                     options="{'no_create': True,'no_open': True}"
-                    attrs="{'invisible': [('is_pms_available', '=', False)]}"
+                    invisible="not is_pms_available"
                 />
             </xpath>
             <xpath expr="//field[@name='country_group_ids']" position="before">
                 <field
                     name="pricelist_type"
-                    attrs="{'invisible': [('is_pms_available', '=', False)]}"
+                    invisible="not is_pms_available"
                 />
                 <field
                     name="cancelation_rule_id"
-                    attrs="{'invisible': [('is_pms_available', '=', False)]}"
+                    invisible="not is_pms_available"
                 />
                 <field
                     name="availability_plan_id"
-                    attrs="{'invisible': [('is_pms_available', '=', False)]}"
+                    invisible="not is_pms_available"
                 />
                 <field
                     name="pms_sale_channel_ids"
                     widget="many2many_tags"
-                    attrs="{'invisible': [('is_pms_available', '=', False)]}"
+                    invisible="not is_pms_available"
                 />
             </xpath>
             <xpath
                 expr="//page[@name='pricelist_rules']
                      /field[@name='item_ids']
-                     /tree[@groups='!product.group_sale_pricelist']
-                     /field[@name='fixed_price']"
+                     /list/field[@name='fixed_price']"
                 position="after"
             >
                 <field
                     name="date_start_consumption"
-                    attrs="{'column_invisible': [('parent.is_pms_available', '=', False)]}"
+                    column_invisible="not parent.is_pms_available"
                 />
                 <field
                     name="date_end_consumption"
-                    attrs="{'column_invisible': [('parent.is_pms_available', '=', False)]}"
+                    column_invisible="not parent.is_pms_available"
                 />
                 <field
                     name="pms_property_ids"
                     widget="many2many_tags"
                     options="{'no_create': True,'no_open': True}"
-                    attrs="{'column_invisible': [('parent.is_pms_available', '=', False)]}"
+                    column_invisible="not parent.is_pms_available"
                 />
                 <!-- <field
                     name="board_service_room_type_id"
                     options="{'no_create': True, 'no_open': True}"
-                    attrs="{'invisible': [('parent.is_pms_available', '=', False)]}"
+                    invisible="not parent.is_pms_available"
                 /> -->
             </xpath>
 
             <xpath
                 expr="//page[@name='pricelist_rules']
                      /field[@name='item_ids']
-                     /tree[@groups='product.group_sale_pricelist']
-                     /field[@name='name']"
+                     /list/field[@name='name']"
                 position="after"
             >
                 <field
                     name="date_start_consumption"
-                    attrs="{'column_invisible': [('parent.is_pms_available', '=', False)]}"
+                    column_invisible="not parent.is_pms_available"
                 />
                 <field
                     name="date_end_consumption"
-                    attrs="{'column_invisible': [('parent.is_pms_available', '=', False)]}"
+                    column_invisible="not parent.is_pms_available"
                 />
                 <field
                     name="pms_property_ids"
                     widget="many2many_tags"
                     options="{'no_create': True,'no_open': True}"
-                    attrs="{'column_invisible': [('parent.is_pms_available', '=', False)]}"
+                    column_invisible="not parent.is_pms_available"
                 />
                 <!-- <field
                     name="board_service_room_type_id"
                     options="{'no_create': True, 'no_open': True}"
-                    attrs="{'invisible': [('parent.is_pms_available', '=', False)]}"
+                    column_invisible="not parent.is_pms_available"
                 /> -->
             </xpath>
 
@@ -95,7 +93,7 @@
                         type="object"
                         class="oe_stat_button mr-5"
                         icon="fa-magic"
-                        attrs="{'invisible': [('is_pms_available', '=', False)]}"
+                        invisible="not is_pms_available"
                     >
                         <label
                             for="open_massive_changes_wizard"

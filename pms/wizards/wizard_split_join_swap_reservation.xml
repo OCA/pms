@@ -14,13 +14,13 @@
                         <field name="allowed_rooms_target" invisible="1" />
                     </div>
                     <div class="col-5">
-                        <span attrs="{'invisible': [('operation','=','swap')]}">
+                        <span invisible="operation == 'swap'">
                             <label for="reservation_id" />
                             <br />
                             <field name="reservation_id" readonly="1" />
                             <br />
                         </span>
-                        <span attrs="{'invisible': [('operation','!=','swap')]}">
+                        <span invisible="operation != 'swap'">
                             <div class="row">
                                 <div class="col-6">
                                     <label for="checkin" />
@@ -45,51 +45,51 @@
                     </div>
                     <div class="col-4">
                         <div>
-                            <span attrs="{'invisible': [('operation','!=','swap')]}">
+                            <span invisible="operation != 'swap'">
                                 <label for="room_source" />
                                 <br />
                                 <field name="room_source" />
                                 <br />
                             </span>
                             <label
-                                attrs="{'invisible': [('operation','!=','swap')]}"
+                                invisible="operation != 'swap'"
                                 for="room_target"
                             />
                             <label
-                                attrs="{'invisible': [('operation','!=','join')]}"
+                                invisible="operation != 'join'"
                                 for="room_target"
                                 string="Room"
                             />
                             <br />
                             <field
                                 name="room_target"
-                                attrs="{'invisible': [('operation','=','split')]}"
+                                invisible="operation == 'split'"
                             />
                         </div>
                     </div>
                     <div
                         class="col-12"
-                        attrs="{'invisible': [('operation','!=','swap')]}"
+                        invisible="operation != 'swap'"
                     >
                         <field name="reservation_ids" nolabel="1" readonly="1">
-                            <tree>
+                            <list>
                                 <field string="Reservation" name="name" />
                                 <field name="checkin" />
                                 <field name="checkout" />
                                 <field name="rooms" />
-                            </tree>
+                            </list>
                         </field>
                     </div>
                     <div
                         class="col-12"
-                        attrs="{'invisible': [('operation','!=','split')]}"
+                        invisible="operation != 'split'"
                     >
                         <field
                             name="reservation_lines_to_change"
                             nolabel="1"
                             default_order="rooms"
                         >
-                            <tree editable="bottom" create="false" delete="false">
+                            <list editable="bottom" create="false" delete="false">
                                 <field name="reservation_wizard_id" invisible="1" />
                                 <field name="allowed_room_ids" invisible="1" />
                                 <field name="date" readonly="0" />
@@ -97,7 +97,7 @@
                                     name="room_id"
                                     domain="[('id', 'in', allowed_room_ids)]"
                                 />
-                            </tree>
+                            </list>
                         </field>
                     </div>
                 </div>
@@ -106,21 +106,21 @@
                     or
                     <button
                     name="action_join"
-                    attrs="{'invisible': [('operation','!=','join')]}"
+                    invisible="operation != 'join'"
                     string="Join reservation"
                     type="object"
                     class="oe_highlight"
                 />
                     <button
                     name="action_split"
-                    attrs="{'invisible': [('operation','!=','split')]}"
+                    invisible="operation != 'split'"
                     string="Split reservation"
                     type="object"
                     class="oe_highlight"
                 />
                     <button
                     name="action_swap"
-                    attrs="{'invisible': [('operation','!=','swap')]}"
+                    invisible="operation != 'swap'"
                     string="Swap reservation rooms"
                     type="object"
                     class="oe_highlight"

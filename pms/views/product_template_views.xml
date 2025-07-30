@@ -11,13 +11,13 @@
                     name="pms_property_ids"
                     widget="many2many_tags"
                     options="{'no_create': True,'no_open': True}"
-                    attrs="{'invisible': [('is_pms_available', '=', False)]}"
+                    invisible="not is_pms_available"
                 />
             </xpath>
             <xpath expr="//page[@name='sales']" position="before">
                 <page
                     string="PMS Service"
-                    attrs="{'invisible': [('is_pms_available', '=', False)]}"
+                    invisible="not is_pms_available"
                 >
                     <group colspan="4">
                         <group>
@@ -31,14 +31,14 @@
                             <field
                                 name="consumed_on"
                                 widget="radio"
-                                attrs="{'invisible': [('per_day','!=',True)]}"
+                                invisible="not per_day"
                             />
                         </group>
                     </group>
                     <group
                         string="Tourist Tax"
                         colspan="4"
-                        attrs="{'invisible': [('is_tourist_tax', '=', False)]}"
+                        invisible="not is_tourist_tax"
                     >
                         <group>
                             <field name="tourist_tax_date_start" />
@@ -51,11 +51,11 @@
                         <group>
                             <field
                                 name="tourist_tax_min_age"
-                                attrs="{'invisible': [('per_person', '=', False)]}"
+                                invisible="not per_person"
                             />
                             <field
                                 name="tourist_tax_max_age"
-                                attrs="{'invisible': [('per_person', '=', False)]}"
+                                invisible="not per_person"
                             />
                         </group>
                     </group>
@@ -68,12 +68,12 @@
                                 'record_id': id
                             }"
                         >
-                            <tree editable="bottom">
+                            <list editable="bottom">
                                 <field name="pms_property_id" />
                                 <field name="value_integer" string="Daily Limit" />
                                 <field name="model_name" invisible="1" />
                                 <field name="field_name" invisible="1" />
-                            </tree>
+                            </list>
                         </field>
                     </group>
                 </page>

@@ -16,7 +16,7 @@
                     <button
                         name="action_cancel"
                         string="Cancel Folio"
-                        attrs="{'invisible': [('state', 'not in', ('confirm','draft'))]}"
+                        invisible="state not in ('confirm','draft')"
                         type="object"
                     />
                     <button
@@ -30,7 +30,7 @@
                         string="Create Invoice"
                         type="action"
                         class="btn-primary"
-                        attrs="{'invisible': [('invoice_status', '!=', 'to_invoice')]}"
+                        invisible="invoice_status != 'to_invoice'"
                     />
                     <field
                         name="state"
@@ -43,7 +43,7 @@
                     class="alert alert-warning"
                     role="alert"
                     style="margin-bottom:0px;"
-                    attrs="{'invisible': [('partner_incongruences','=',False)]}"
+                    invisible="not partner_incongruences"
                 >
                     <field name="partner_incongruences" />
                     <bold>
@@ -59,7 +59,7 @@
                     class="alert alert-warning"
                     role="alert"
                     style="margin-bottom:0px;"
-                    attrs="{'invisible': [('payment_multi','=',False)]}"
+                    invisible="not payment_multi"
                 >
                     This folio has payments assigned to multiple folios (through an invoice or directly).
                     The Folio will only be considered paid if all the folios with the same associated
@@ -70,7 +70,7 @@
                     class="alert alert-warning"
                     role="alert"
                     style="margin-bottom:0px;"
-                    attrs="{'invisible': [('possible_existing_customer_ids','=',[])]}"
+                    invisible="not possible_existing_customer_ids"
                 >
                     A customer/s has this email or mobile, do you want to add it?
                     <field name="possible_existing_customer_ids" invisible="1" />
@@ -88,7 +88,7 @@
                             name="%(open_pms_reservation_form_tree_all)d"
                             icon="fa-bed"
                             context="{'search_default_folio_id': id, 'default_folio_id': id}"
-                            attrs="{'invisible': [('number_of_rooms', '=', 0)]}"
+                            invisible="not number_of_rooms"
                         >
                             <field
                                 name="number_of_rooms"
@@ -102,7 +102,7 @@
                             name="%(open_pms_reservation_form_tree_all)d"
                             icon="fa-window-close"
                             context="{'search_default_folio_id': id, 'default_folio_id': id, 'search_default_cancel': True}"
-                            attrs="{'invisible': [('number_of_cancelled_rooms', '=', 0)]}"
+                            invisible="not number_of_cancelled_rooms"
                         >
                             <field
                                 name="number_of_cancelled_rooms"
@@ -116,7 +116,7 @@
                             name="%(action_pms_services_form)d"
                             icon="fa-coffee"
                             context="{'search_default_folio_id': id, 'default_folio_id': id}"
-                            attrs="{'invisible': [('number_of_services', '=', 0)]}"
+                            invisible="not number_of_services"
                         >
                             <field
                                 name="number_of_services"
@@ -130,7 +130,7 @@
                             id="payment_smart_button"
                             icon="fa-money"
                             name="action_pay"
-                            attrs="{'invisible': [('pending_amount','&lt;=',0)]}"
+                            invisible="pending_amount <= 0.0"
                         >
                             <div class="o_form_field o_stat_info">
                                 <span class="o_stat_value">
@@ -148,7 +148,7 @@
                             type="object"
                             class="oe_stat_button"
                             name="action_checks"
-                            attrs="{'invisible': [('reservation_type', 'in', 'out')]}"
+                            invisible="reservation_type == 'out'"
                         >
                             <field
                                 name="ratio_checkin_data"
@@ -161,7 +161,7 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-pencil-square-o"
-                            attrs="{'invisible': [('invoice_count', '=', 0)]}"
+                            invisible="not invoice_count"
                         >
                             <field
                                 name="invoice_count"
@@ -174,7 +174,7 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-magic"
-                            attrs="{'invisible': [('reservation_type', 'not in', 'normal')]}"
+                            invisible="reservation_type != 'normal'"
                         >
                             <span class="o_stat_text">Change in Group</span>
                         </button>
@@ -201,7 +201,7 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-globe icon"
-                            attrs="{'invisible': [('reservation_type', '!=', 'normal')]}"
+                            invisible="reservation_type != 'normal'"
                         >
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_text">Customer</span>
@@ -212,32 +212,32 @@
                     <widget
                         name="web_ribbon"
                         title="Paid"
-                        attrs="{'invisible': [('payment_state', '!=', 'paid')]}"
+                        invisible="payment_state != 'paid'"
                     />
                     <widget
                         name="web_ribbon"
                         title="Partial"
                         bg_color="bg-warning"
-                        attrs="{'invisible': [('payment_state', '!=', 'partial')]}"
+                        invisible="payment_state != 'partial'"
                     />
                     <widget
                         name="web_ribbon"
                         title="Overpayment!"
                         bg_color="bg-info"
-                        attrs="{'invisible': [('payment_state', '!=', 'overpayment')]}"
+                        invisible="payment_state != 'overpayment'"
                     />
                     <widget
                         name="web_ribbon"
                         title="Staff"
                         bg_color="bg-info"
-                        attrs="{'invisible': [('reservation_type', 'not in', 'staff')]}"
+                        invisible="reservation_type != 'staff'"
                     />
 
                     <widget
                         name="web_ribbon"
                         title="Out of Service"
                         bg_color="bg-dark"
-                        attrs="{'invisible': [('reservation_type', 'not in', 'out')]}"
+                        invisible="reservation_type != 'out'"
                     />
                     <group>
                         <group>
@@ -248,7 +248,7 @@
                         <group
                             class="oe_subtotal_footer oe_right oe_inline"
                             name="folio_total"
-                            attrs="{'invisible':[('reservation_type', '!=', 'normal')]}"
+                            invisible="reservation_type != 'normal'"
                         >
                             <field
                                 name="amount_untaxed"
@@ -287,33 +287,33 @@
                             <field
                                 name="partner_name"
                                 placeholder="Guest"
-                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                                invisible="reservation_type == 'out'"
                             />
                             <field
                                 name="email"
                                 placeholder="email"
+                                invisible="reservation_type == 'out'"
                                 widget="email"
-                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
                             />
                             <field
                                 name="mobile"
                                 placeholder="mobile"
-                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                                invisible="reservation_type == 'out'"
                             />
                             <field
                                 name="lang"
                                 placeholder="Language"
-                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                                invisible="reservation_type == 'out'"
                             />
                             <field
                                 name="partner_internal_comment"
                                 placeholder="Comments about the customer"
-                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                                invisible="reservation_type == 'out'"
                             />
                             <field
                                 name="closure_reason_id"
                                 placeholder="Closure reason"
-                                attrs="{'invisible':[('reservation_type','not in',('out'))]}"
+                                invisible="reservation_type != 'out'"
                             />
                             <field
                                 name="segmentation_ids"
@@ -323,7 +323,7 @@
                             />
                             <field
                                 name="cancelled_reason"
-                                attrs="{'invisible':[('state','not in',('cancel'))]}"
+                                invisible="state != 'cancel'"
                             />
                             <field name="internal_comment" />
                         </group>
@@ -331,21 +331,21 @@
                             <field name="pms_property_id" />
                             <field
                                 name="pricelist_id"
-                                attrs="{'invisible': [('reservation_type', 'not in', 'normal')]}"
+                                invisible="reservation_type != 'normal'"
                             />
                             <field name="company_id" options="{'no_create': True}" />
                             <field
                                 name="reservation_type"
-                                attrs="{'readonly':[('state','not in',('draft'))]}"
+                                readonly="state != 'draft'"
                             />
                             <field
                                 name="agency_id"
-                                attrs="{'invisible': [('reservation_type', 'not in', 'normal')]}"
+                                invisible="reservation_type != 'normal'"
                             />
                             <field name="sale_channel_origin_id" />
                             <field
                                 name="external_reference"
-                                attrs="{'invisible': [('agency_id', '=', False)]}"
+                                invisible="not agency_id"
                             />
                             <field
                                 name="sale_channel_ids"
@@ -366,14 +366,14 @@
                     <notebook colspan="4" col="1">
                         <page
                             string="Sale Lines"
-                            attrs="{'invisible':[('reservation_type', '!=', 'normal')]}"
+                            invisible="reservation_type != 'normal'"
                         >
                             <field
                                 name="sale_line_ids"
                                 widget="section_and_note_one2many"
                                 default_order="folio_id, sequence, reservation_id asc, service_order, date_order, display_type"
                             >
-                                <tree name="Sales Lines" editable="bottom">
+                                <list name="Sales Lines" editable="bottom">
                                     <control>
                                         <create
                                             name="add_product_control"
@@ -404,19 +404,19 @@
                                         title="Room"
                                         class="oe_stat_button"
                                         icon="fa-1x fa-bed"
-                                        attrs="{'invisible':[('service_id','!=', False)]}"
+                                        invisible="service_id"
                                     />
                                     <button
                                         title="Board Service"
                                         class="oe_stat_button"
                                         icon="fa-1x fa-cutlery"
-                                        attrs="{'invisible':[('is_board_service','=', False)]}"
+                                        invisible="not is_board_service"
                                     />
                                     <button
                                         title="Extra Service"
                                         class="oe_stat_button"
                                         icon="fa-1x fa-tags"
-                                        attrs="{'invisible':['|',('is_board_service','=',True),('service_id','=',False)]}"
+                                        invisible="is_board_service or not service_id"
                                     />
                                     <field
                                         name="product_id"
@@ -453,7 +453,7 @@
                                         decoration-info="(not display_type and invoice_status == '')"
                                         decoration-bf="(not display_type and invoice_status == '')"
                                         string="Invoiced"
-                                        attrs="{'column_invisible': [('parent.state', '=', 'draft')]}"
+                                        column_invisible="parent.state == 'draft'"
                                         optional="show"
                                     />
                                     <field name="qty_to_invoice" invisible="1" />
@@ -492,7 +492,7 @@
                                     <field name="currency_id" invisible="1" />
                                     <field name="price_tax" invisible="1" />
                                     <field name="company_id" invisible="1" />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <!-- REVIEW: its necesary? -->
@@ -529,7 +529,7 @@
                         <page
                             name="invoicing"
                             string="Invoicing"
-                            attrs="{'invisible':[('reservation_type', '!=', 'normal')]}"
+                            invisible="reservation_type != 'normal'"
                         >
                             <div
                                 class="alert alert-info"
@@ -550,7 +550,7 @@
                         </page>
                         <page string="Payments">
                             <field name="payment_ids" nolabel="1">
-                                <tree>
+                                <list>
                                     <field name="journal_id" string="Payment Mode" />
                                     <field name="create_uid" />
                                     <field name="date" />
@@ -564,19 +564,19 @@
                                         decoration-warning="state == 'draft'"
                                         widget="badge"
                                     />
-                                </tree>
+                                </list>
                             </field>
                             <!-- REVIEW: transations has a payment related -->
                             <!-- <field
                                 name="transaction_ids"
                                 nolabel="1"
                             >
-                                <tree>
+                                <list>
                                     <field name="journal_id" />
                                     <field name="date" />
                                     <field name="amount" />
                                     <field name="partner_id" />
-                                </tree>
+                                </list>
                             </field> -->
                         </page>
                         <page string="Other data">
@@ -593,7 +593,7 @@
                         <!-- <page string="Foreign Exchange" name="foreign exchange" invisible="1">
                             <separator string="Foreign Exchange" colspan="4" />
                             <field name="currrency_ids" colspan="4" nolabel="1">
-                                <tree>
+                                <list>
                                     <field name="name" />
                                     <field name="today_date" />
                                     <field name="type" />
@@ -601,7 +601,7 @@
                                     <field name="input_curr" />
                                     <field name="total" sum="Total Amount" />
                                     <field name="out_curr" />
-                                </tree>
+                                </list>
                             </field>
                         </page> -->
                     </notebook>
@@ -618,7 +618,7 @@
         <field name="name">pms.folio.tree</field>
         <field name="model">pms.folio</field>
         <field name="arch" type="xml">
-            <tree
+            <list
                 name="Folio"
                 multi_edit="1"
                 sample="1"
@@ -687,7 +687,7 @@
                 />
                 <field name="company_id" optional="show" readonly="1" />
                 <field name="pms_property_id" optional="show" readonly="1" />
-            </tree>
+            </list>
         </field>
     </record>
     <!-- Folio Kanban View -->
@@ -870,7 +870,7 @@
     <record model="ir.actions.act_window" id="open_pms_folio1_form_tree_all">
         <field name="name">Folio</field>
         <field name="res_model">pms.folio</field>
-        <field name="view_mode">tree,form,graph,pivot</field>
+        <field name="view_mode">list,form,graph,pivot</field>
     </record>
     <menuitem
         name="Folios"

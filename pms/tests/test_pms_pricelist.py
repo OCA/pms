@@ -18,7 +18,7 @@ class TestPmsPricelist(TestPms):
             {
                 "name": "Property_2",
                 "company_id": cls.env.ref("base.main_company").id,
-                "default_pricelist_id": cls.env.ref("product.list0").id,
+                "default_pricelist_id": cls.env.ref("list0").id,
             }
         )
 
@@ -26,7 +26,7 @@ class TestPmsPricelist(TestPms):
             {
                 "name": "Property_3",
                 "company_id": cls.env.ref("base.main_company").id,
-                "default_pricelist_id": cls.env.ref("product.list0").id,
+                "default_pricelist_id": cls.env.ref("list0").id,
             }
         )
 
