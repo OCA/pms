@@ -8,19 +8,19 @@ class RoomClosureReason(models.Model):
     _description = "Cause of out of service"
 
     name = fields.Char(
-        help="The name that identifies the room closure reason",
         required=True,
         translate=True,
+        help="The name that identifies the room closure reason",
     )
     pms_property_ids = fields.Many2many(
-        string="Properties",
-        help="Properties with access to the element;"
-        " if not set, all properties can access",
         comodel_name="pms.property",
         relation="pms_room_closure_reason_pms_property_rel",
         column1="room_closure_reason_type_id",
         column2="pms_property_id",
+        string="Properties",
         ondelete="restrict",
+        help="Properties with access to the element;"
+        " if not set, all properties can access",
     )
     description = fields.Text(
         help="Explanation of the reason for closing a room",

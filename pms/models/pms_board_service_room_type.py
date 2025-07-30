@@ -12,74 +12,69 @@ class PmsBoardServiceRoomType(models.Model):
     _check_pms_properties_auto = True
 
     pms_board_service_id = fields.Many2one(
+        comodel_name="pms.board.service",
         string="Board Service",
-        help="Board Service corresponding to this Board Service Room Type",
         required=True,
         index=True,
-        comodel_name="pms.board.service",
         ondelete="cascade",
+        help="Board Service corresponding to this Board Service Room Type",
         check_pms_properties=True,
     )
     pms_property_id = fields.Many2one(
+        comodel_name="pms.property",
         string="Property",
-        help="Property with access to the element;"
-        " if not set, all property can access",
-        required=False,
         index=True,
         ondelete="restrict",
-        comodel_name="pms.property",
+        help="Property with access to the element;"
+        " if not set, all property can access",
         check_pms_properties=True,
-        store=True,
     )
     pms_room_type_id = fields.Many2one(
+        comodel_name="pms.room.type",
         string="Room Type",
-        help="Room Type for which this Board Service is available",
         required=True,
         index=True,
-        comodel_name="pms.room.type",
         ondelete="cascade",
+        help="Room Type for which this Board Service is available",
         check_pms_properties=True,
     )
     board_service_line_ids = fields.One2many(
-        string="Board Service Lines",
-        help="Services included in this Board Service",
         comodel_name="pms.board.service.room.type.line",
         inverse_name="pms_board_service_room_type_id",
+        string="Board Service Lines",
         required=True,
+        help="Services included in this Board Service",
     )
     amount = fields.Float(
-        help="Price for this Board Service. "
-        "It corresponds to the sum of his board service lines",
+        compute="_compute_board_amount",
         store=True,
         digits=("Product Price"),
-        compute="_compute_board_amount",
+        help="Price for this Board Service. "
+        "It corresponds to the sum of his board service lines",
     )
     by_default = fields.Boolean(
-        string="Apply by Default",
+        string="Default",
         help="Indicates if this board service is applied by default in the room type",
     )
     pricelist_ids = fields.Many2many(
+        comodel_name="product.pricelist",
         string="Pricelists",
         help="Pricelists where this Board Service is available",
-        comodel_name="product.pricelist",
     )
 
     @api.depends("board_service_line_ids.amount")
     def _compute_board_amount(self):
         for record in self:
-            total = 0
-            for service in record.board_service_line_ids:
-                total += service.amount
-            record.update({"amount": total})
+            record.amount = sum(record.board_service_line_ids.mapped("amount"))
 
-    def name_get(self):
-        res = []
-        for record in self:
-            name = (
-                f"{record.pms_board_service_id.name} - {record.pms_room_type_id.name}"
-            )
-            res.append((record.id, name))
-        return res
+    # def name_get(self):
+    #     res = []
+    #     for record in self:
+    #         name = (
+    #             f"{record.pms_board_service_id.name} - {record.pms_room_type_id.name}"
+    #         )
+    #         res.append((record.id, name))
+    #     return res
 
     @api.constrains("by_default")
     def constrains_duplicated_board_default(self):
@@ -99,27 +94,28 @@ class PmsBoardServiceRoomType(models.Model):
                 raise UserError(_("""Only can set one default board service"""))
 
     def open_board_lines_form(self):
-        action = (
-            self.env.ref("pms.action_pms_board_service_room_type_view").sudo().read()[0]
+        result = self.env["ir.actions.act_window"]._for_xml_id(
+            "pms.action_pms_board_service_room_type_view"
         )
-        action["views"] = [
-            (self.env.ref("pms.pms_board_service_room_type_form").id, "form")
-        ]
-        action["res_id"] = self.id
-        action["target"] = "new"
-        return action
+        result.update(
+            {
+                "res_id": self.id,
+                "target": "new",
+            }
+        )
+        return result
 
-    def init(self):
-        self._cr.execute(
-            "SELECT indexname FROM pg_indexes WHERE indexname = %s",
-            ("pms_board_service_id_pms_room_type_id",),
-        )
-        if not self._cr.fetchone():
-            self._cr.execute(
-                "CREATE INDEX pms_board_service_id_pms_room_type_id \
-                ON pms_board_service_room_type_rel \
-                (pms_board_service_id, pms_room_type_id)"
-            )
+    # def init(self):
+    #     self._cr.execute(
+    #         "SELECT indexname FROM pg_indexes WHERE indexname = %s",
+    #         ("pms_board_service_id_pms_room_type_id",),
+    #     )
+    #     if not self._cr.fetchone():
+    #         self._cr.execute(
+    #             "CREATE INDEX pms_board_service_id_pms_room_type_id \
+    #             ON pms_board_service_room_type_rel \
+    #             (pms_board_service_id, pms_room_type_id)"
+    #         )
 
     @api.model_create_multi
     def create(self, vals_list):

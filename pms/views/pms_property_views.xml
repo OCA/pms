@@ -84,6 +84,9 @@
                                 <!-- <field name="default_pricelist_id" required="True" /> -->
                             </group>
                         </page>
+                        <page name="property_rooms" string="Rooms">
+                            <field name="room_ids" />
+                        </page>
                     </notebook>
                     <!--
                         <page string="Settings" name="property_settings">
@@ -103,11 +106,6 @@
                             </group>
                             <group string="Print in cardex">
                                 <field name="cardex_warning" />
-                            </group>
-                        </page>
-                        <page string="Rooms" name="property_rooms">
-                            <group>
-                                <field name="room_ids" />
                             </group>
                         </page>
                         <page string="Invoicing" name="property_invoicing">

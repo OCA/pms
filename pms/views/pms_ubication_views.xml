@@ -1,44 +1,59 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record model="ir.ui.view" id="pms_ubication_view_form">
+    <record id="pms_ubication_view_form" model="ir.ui.view">
         <field name="name">pms.ubication.form</field>
         <field name="model">pms.ubication</field>
         <field name="arch" type="xml">
             <form string="Property Ubication">
                 <sheet>
+                    <div class="oe_title">
+                        <label for="name" />
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                    </div>
                     <group>
-                        <field name="name" colspan="1" />
-                        <field name="sequence" select="1" />
+                        <field name="sequence" />
                         <field
                             name="pms_property_ids"
                             widget="many2many_tags"
                             options="{'no_create': True,'no_open': True}"
                         />
-                        <field name="pms_room_ids" />
                     </group>
+                    <notebook>
+                        <page name="pms_rooms" string="Rooms">
+                            <field name="pms_room_ids" />
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
     </record>
-    <record model="ir.ui.view" id="pms_ubication_view_tree">
+    <record id="pms_ubication_view_list" model="ir.ui.view">
         <field name="name">pms.ubication.tree</field>
         <field name="model">pms.ubication</field>
         <field name="arch" type="xml">
-            <list name=" Property Ubications">
-                <field name="name" colspan="1" />
-                <field name="sequence" select="1" />
+            <list>
+                <field name="name" />
+                <field
+                    name="pms_property_ids"
+                    widget="many2many_tags"
+                    optional="show"
+                />
+                <field name="pms_room_ids" widget="many2many_tags" optional="show" />
+                <field name="sequence" optional="show" />
             </list>
         </field>
     </record>
-    <record model="ir.actions.act_window" id="open_pms_ubication_form_tree">
+    <record id="open_pms_ubication_form_list" model="ir.actions.act_window">
         <field name="name">Ubication Structure</field>
         <field name="res_model">pms.ubication</field>
         <field name="view_mode">list,form</field>
     </record>
     <menuitem
         name="Ubications"
-        id="menu_open_pms_ubication_form_tree"
-        action="open_pms_ubication_form_tree"
+        id="menu_open_pms_ubication_form_list"
+        action="open_pms_ubication_form_list"
         sequence="65"
         parent="pms.pms_rooms_menu"
     />

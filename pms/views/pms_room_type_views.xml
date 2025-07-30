@@ -41,18 +41,18 @@
                     </group>
                     <notebook>
                         <page string="Board Services">
-                            <!-- <separator string="Board Services" />
                             <field
                                 name="board_service_room_type_ids"
-                                colspan="4"
-                                nolabel="1"
                                 context="{'default_pms_room_type_id':id}"
                             >
                                 <list editable="bottom">
                                     <field name="by_default" />
-                                    <field name="pms_room_type_id" invisible="1" />
+                                    <field
+                                        name="pms_room_type_id"
+                                        column_invisible="1"
+                                    />
                                     <field name="pms_board_service_id" />
-                                    <field name="amount" />
+                                    <field name="amount" sum="Total" />
                                     <field name="pms_property_id" />
                                     <button
                                         title="View Board Services"
@@ -67,7 +67,7 @@
                                         widget="many2many_tags"
                                     />
                                 </list>
-                            </field> -->
+                            </field>
                         </page>
                         <page string="Room Amenities">
                             <separator string="Room Amenities" />

@@ -14,14 +14,18 @@ from . import pms_property
 from . import pms_room
 from . import pms_room_type
 from . import pms_room_type_class
+from . import pms_ubication
+from . import pms_board_service_room_type
+from . import pms_board_service_room_type_line
+from . import pms_room_closure_reason
+from . import pms_board_service
+from . import pms_board_service_line
 
 # Inherit
 from . import res_company
 
 
-# from . import pms_board_service_room_type
 # from . import res_users
-# from . import pms_ubication
 # from . import pms_folio
 # from . import pms_reservation
 # from . import pms_service
@@ -38,11 +42,7 @@ from . import res_company
 # from . import res_partner
 # from . import pms_sale_channel
 # from . import mail_compose_message
-# from . import pms_room_closure_reason
 # from . import pms_service_line
-# from . import pms_board_service
-# from . import pms_board_service_room_type_line
-# from . import pms_board_service_line
 # from . import account_move_line
 # from . import folio_sale_line
 # from . import account_bank_statement_line

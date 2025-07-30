@@ -10,45 +10,41 @@ class PmsBoardServiceLine(models.Model):
     _check_pms_properties_auto = True
 
     pms_board_service_id = fields.Many2one(
+        comodel_name="pms.board.service",
         string="Board Service",
-        help="Board Service in which this line is included",
         required=True,
         index=True,
-        comodel_name="pms.board.service",
         ondelete="cascade",
+        help="Board Service in which this line is included",
         check_pms_properties=True,
     )
     product_id = fields.Many2one(
-        string="Product",
-        help="Product associated with this board service line",
+        comodel_name="product.product",
         required=True,
         index=True,
-        comodel_name="product.product",
+        help="Product associated with this board service line",
         check_pms_properties=True,
     )
     pms_property_ids = fields.Many2many(
-        string="Properties",
-        help="Properties with access to the element;"
-        " if not set, all properties can access",
         comodel_name="pms.property",
         relation="pms_board_service_line_pms_property_rel",
         column1="pms_board_service_line_id",
         column2="pms_property_id",
-        store=True,
+        string="Properties",
+        help="Properties with access to the element;"
+        " if not set, all properties can access",
         check_pms_properties=True,
     )
     amount = fields.Float(
-        help="Price for this Board Service Line/Product",
         default=lambda self: self._get_default_price(),
         digits=("Product Price"),
+        help="Price for this Board Service Line/Product",
     )
     adults = fields.Boolean(
         help="Apply service to adults",
-        default=False,
     )
     children = fields.Boolean(
         help="Apply service to children",
-        default=False,
     )
 
     def _get_default_price(self):

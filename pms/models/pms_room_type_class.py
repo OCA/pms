@@ -109,13 +109,14 @@ class PmsRoomTypeClass(models.Model):
         )
         for rec in self:
             if not rec.pms_property_ids:
-                if self.search(
+                code_duplicate = self.search_count(
                     [
                         ("id", "!=", rec.id),
                         ("default_code", "=", rec.default_code),
                         ("pms_property_ids", "=", False),
                     ]
-                ):
+                )
+                if code_duplicate:
                     raise ValidationError(msg)
             else:
                 for pms_property in rec.pms_property_ids:

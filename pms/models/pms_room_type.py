@@ -46,13 +46,13 @@ class PmsRoomType(models.Model):
         help="Class to which the room type belongs",
         check_pms_properties=True,
     )
-    # board_service_room_type_ids = fields.One2many(
-    #     string="Board Services",
-    #     help="Board Service included in room type",
-    #     comodel_name="pms.board.service.room.type",
-    #     inverse_name="pms_room_type_id",
-    #     check_pms_properties=True,
-    # )
+    board_service_room_type_ids = fields.One2many(
+        comodel_name="pms.board.service.room.type",
+        inverse_name="pms_room_type_id",
+        string="Board Services",
+        help="Board Service included in room type",
+        check_pms_properties=True,
+    )
     room_amenity_ids = fields.Many2many(
         string="Room Type Amenities",
         help="List of amenities included in room type",

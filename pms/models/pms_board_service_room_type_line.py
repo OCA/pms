@@ -11,42 +11,42 @@ class PmsBoardServiceRoomTypeLine(models.Model):
 
     # Fields declaration
     pms_board_service_room_type_id = fields.Many2one(
+        comodel_name="pms.board.service.room.type",
         string="Board Service Room",
-        help="Board Service Room Type in which this line is included",
         required=True,
         index=True,
-        comodel_name="pms.board.service.room.type",
         ondelete="cascade",
+        help="Board Service Room Type in which this line is included",
     )
     pms_property_id = fields.Many2one(
+        comodel_name="pms.property",
+        related="pms_board_service_room_type_id.pms_property_id",
         string="Property",
         help="Property with access to the element;"
         " if not set, all properties can access",
-        comodel_name="pms.property",
         check_pms_properties=True,
-        related="pms_board_service_room_type_id.pms_property_id",
     )
     product_id = fields.Many2one(
-        string="Product",
-        help="Product associated with this board service room type line",
         comodel_name="product.product",
+        string="Product",
         index=True,
-        readonly=True,
-        check_pms_properties=True,
         domain="[('is_pms_available', '=', True)]",
+        readonly=True,
+        help="Product associated with this board service room type line",
+        check_pms_properties=True,
     )
     amount = fields.Float(
-        help="Price for this Board Service Room Type Line/Product",
         default=lambda self: self._default_amount(),
         digits=("Product Price"),
+        help="Price for this Board Service Room Type Line/Product",
     )
     adults = fields.Boolean(
-        help="Apply service to adults",
         default=False,
+        help="Apply service to adults",
     )
     children = fields.Boolean(
-        help="Apply service to children",
         default=False,
+        help="Apply service to children",
     )
 
     def _default_amount(self):

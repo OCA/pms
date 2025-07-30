@@ -52,12 +52,12 @@ class PmsProperty(models.Model):
     #     string="Accepted Users",
     #     help="Field related to res.users. Allowed users on the property",
     # )
-    # room_ids = fields.One2many(
-    #     comodel_name="pms.room",
-    #     inverse_name="pms_property_id",
-    #     string="Rooms",
-    #     help="Rooms that a property has.",
-    # )
+    room_ids = fields.One2many(
+        comodel_name="pms.room",
+        inverse_name="pms_property_id",
+        string="Rooms",
+        help="Rooms that a property has.",
+    )
     # default_pricelist_id = fields.Many2one(
     #     comodel_name="product.pricelist",
     #     string="Product Pricelist",

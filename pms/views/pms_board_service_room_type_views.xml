@@ -8,19 +8,23 @@
                 <group>
                     <field name="amount" />
                     <field name="pms_property_id" />
-                    <field name="board_service_line_ids">
-                        <list editable="bottom">
-                            <field
-                                name="pms_board_service_room_type_id"
-                                invisible="1"
-                            />
-                            <field name="product_id" />
-                            <field name="amount" />
-                            <field name="adults" />
-                            <field name="children" />
-                            <field name="pms_property_id" invisible="1" />
-                        </list>
-                    </field>
+                    <notebook>
+                        <page name="board_service_line" string="Lines">
+                            <field name="board_service_line_ids">
+                                <list editable="bottom">
+                                    <field
+                                        name="pms_board_service_room_type_id"
+                                        invisible="1"
+                                    />
+                                    <field name="product_id" />
+                                    <field name="amount" />
+                                    <field name="adults" />
+                                    <field name="children" />
+                                    <field name="pms_property_id" invisible="1" />
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
                 </group>
             </form>
         </field>

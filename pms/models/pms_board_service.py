@@ -11,48 +11,48 @@ class PmsBoardService(models.Model):
 
     name = fields.Char(
         string="Board Service Name",
-        help="Board Service Name",
         required=True,
         index=True,
         size=64,
         translate=True,
+        help="Board Service Name",
     )
     default_code = fields.Char(
         string="Board Service Code",
-        help="Unique Board Service identification code per property",
         required=True,
+        help="Unique Board Service identification code per property",
     )
     board_service_line_ids = fields.One2many(
-        string="Board Service Lines",
-        help="Services included in this Board Service",
         comodel_name="pms.board.service.line",
         inverse_name="pms_board_service_id",
+        string="Board Service Lines",
+        help="Services included in this Board Service",
     )
     pms_property_ids = fields.Many2many(
-        string="Properties",
-        help="Properties with access to the element;"
-        " if not set, all properties can access",
-        required=False,
-        ondelete="restrict",
         comodel_name="pms.property",
         relation="pms_board_service_pms_property_rel",
         column1="board_service_id",
         column2="pms_property_id",
+        string="Properties",
+        required=False,
+        ondelete="restrict",
+        help="Properties with access to the element;"
+        " if not set, all properties can access",
         check_pms_properties=True,
     )
-    pms_board_service_room_type_ids = fields.One2many(
-        string="Board Services Room Type",
-        help="Board Services Room Type corresponding to this Board Service,"
-        "One board service for several room types",
-        comodel_name="pms.board.service.room.type",
-        inverse_name="pms_board_service_id",
-    )
+    # pms_board_service_room_type_ids = fields.One2many(
+    #     comodel_name="pms.board.service.room.type",
+    #     inverse_name="pms_board_service_id",
+    #     string="Board Services Room Type",
+    #     help="Board Services Room Type corresponding to this Board Service,"
+    #     "One board service for several room types",
+    # )
     amount = fields.Float(
-        help="Price for this Board Service. "
-        "It corresponds to the sum of his board service lines",
+        compute="_compute_board_amount",
         store=True,
         digits=("Product Price"),
-        compute="_compute_board_amount",
+        help="Price for this Board Service. "
+        "It corresponds to the sum of his board service lines",
     )
 
     show_detail_report = fields.Boolean(
@@ -62,10 +62,7 @@ class PmsBoardService(models.Model):
     @api.depends("board_service_line_ids.amount")
     def _compute_board_amount(self):
         for record in self:
-            total = 0
-            for service in record.board_service_line_ids:
-                total += service.amount
-            record.update({"amount": total})
+            record.amount = sum(record.board_service_line_ids.mapped("amount"))
 
     @api.model
     def get_unique_by_property_code(self, pms_property_id, default_code=None):
