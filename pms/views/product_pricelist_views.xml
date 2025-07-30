@@ -14,18 +14,9 @@
                 />
             </xpath>
             <xpath expr="//field[@name='country_group_ids']" position="before">
-                <field
-                    name="pricelist_type"
-                    invisible="not is_pms_available"
-                />
-                <field
-                    name="cancelation_rule_id"
-                    invisible="not is_pms_available"
-                />
-                <field
-                    name="availability_plan_id"
-                    invisible="not is_pms_available"
-                />
+                <field name="pricelist_type" invisible="not is_pms_available" />
+                <field name="cancelation_rule_id" invisible="not is_pms_available" />
+                <field name="availability_plan_id" invisible="not is_pms_available" />
                 <field
                     name="pms_sale_channel_ids"
                     widget="many2many_tags"

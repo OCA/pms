@@ -13,6 +13,7 @@ class ProductPricelist(models.Model):
     A pricelist marked as daily is used as a daily rate plan for room types and
     therefore is related only with one property.
     """
+
     _inherit = "product.pricelist"
     _check_pms_properties_auto = True
 

@@ -19,11 +19,11 @@
                         </h1>
                     </div>
                     <group>
-                        <field name="default_code" select="1" />
+                        <field name="default_code" />
                     </group>
                     <notebook>
                         <page string="Information">
-                            <group colspan="4" col="4">
+                            <group>
                                 <field
                                     name="pms_property_ids"
                                     widget="many2many_tags"
@@ -31,7 +31,6 @@
                                 />
                                 <field
                                     name="pms_amenity_type_id"
-                                    select="2"
                                     string="Amenity Type"
                                     domain="['|', ('pms_property_ids', '=', False), ('pms_property_ids', 'in', pms_property_ids)]"
                                 />
@@ -40,6 +39,7 @@
                         </page>
                     </notebook>
                 </sheet>
+                <chatter />
             </form>
         </field>
     </record>

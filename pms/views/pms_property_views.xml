@@ -7,10 +7,15 @@
             <form string="Property Configuration">
                 <sheet>
                     <div class="o_button_box" name="button_box" />
-                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="text-bg-danger"
+                        invisible="active"
+                    />
                     <field name="logo" widget="image" class="oe_avatar" />
                     <div class="oe_title">
-                        <label for="name"/>
+                        <label for="name" />
                         <h1>
                             <field name="name" />
                         </h1>
@@ -24,22 +29,53 @@
                         <page name="property_general" string="General Information">
                             <group>
                                 <group>
-                                    <label for="street" string="Address"/>
+                                    <label for="street" string="Address" />
                                     <div class="o_address_format">
-                                        <field name="street" placeholder="Street..." class="o_address_street"/>
-                                        <field name="street2" placeholder="Street 2..." class="o_address_street"/>
-                                        <field name="city" placeholder="City" class="o_address_city"/>
-                                        <field name="state_id" class="o_address_state" placeholder="State" options='{"no_open": True}'/>
-                                        <field name="zip" placeholder="ZIP" class="o_address_zip"/>
-                                        <field name="country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'/>
+                                        <field
+                                            name="street"
+                                            placeholder="Street..."
+                                            class="o_address_street"
+                                        />
+                                        <field
+                                            name="street2"
+                                            placeholder="Street 2..."
+                                            class="o_address_street"
+                                        />
+                                        <field
+                                            name="city"
+                                            placeholder="City"
+                                            class="o_address_city"
+                                        />
+                                        <field
+                                            name="state_id"
+                                            class="o_address_state"
+                                            placeholder="State"
+                                            options='{"no_open": True}'
+                                        />
+                                        <field
+                                            name="zip"
+                                            placeholder="ZIP"
+                                            class="o_address_zip"
+                                        />
+                                        <field
+                                            name="country_id"
+                                            placeholder="Country"
+                                            class="o_address_country"
+                                            options='{"no_open": True, "no_create": True}'
+                                        />
                                     </div>
                                 </group>
                                 <group>
-                                    <field name="phone" class="o_force_ltr"/>
-                                    <field name="mobile" class="o_force_ltr"/>
-                                    <field name="email"/>
-                                    <field name="website" string="Website" widget="url" placeholder="e.g. https://www.odoo.com"/>
-                                    <field name="color" widget="color_picker"/>
+                                    <field name="phone" class="o_force_ltr" />
+                                    <field name="mobile" class="o_force_ltr" />
+                                    <field name="email" />
+                                    <field
+                                        name="website"
+                                        string="Website"
+                                        widget="url"
+                                        placeholder="e.g. https://www.odoo.com"
+                                    />
+                                    <field name="color" widget="color_picker" />
                                 </group>
                             </group>
                         </page>

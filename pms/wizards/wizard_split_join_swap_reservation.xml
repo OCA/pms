@@ -51,10 +51,7 @@
                                 <field name="room_source" />
                                 <br />
                             </span>
-                            <label
-                                invisible="operation != 'swap'"
-                                for="room_target"
-                            />
+                            <label invisible="operation != 'swap'" for="room_target" />
                             <label
                                 invisible="operation != 'join'"
                                 for="room_target"
@@ -67,10 +64,7 @@
                             />
                         </div>
                     </div>
-                    <div
-                        class="col-12"
-                        invisible="operation != 'swap'"
-                    >
+                    <div class="col-12" invisible="operation != 'swap'">
                         <field name="reservation_ids" nolabel="1" readonly="1">
                             <list>
                                 <field string="Reservation" name="name" />
@@ -80,10 +74,7 @@
                             </list>
                         </field>
                     </div>
-                    <div
-                        class="col-12"
-                        invisible="operation != 'split'"
-                    >
+                    <div class="col-12" invisible="operation != 'split'">
                         <field
                             name="reservation_lines_to_change"
                             nolabel="1"

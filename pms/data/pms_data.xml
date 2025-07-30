@@ -9,11 +9,11 @@
         <field name="name">Availability Plan</field>
     </record>
     <record id="list0" model="product.pricelist">
-            <field name="name">Public Pricelist</field>
-            <field name="sequence">1</field>
-            <field name="availability_plan_id" ref="main_pms_availability_plan" />
-            <field name="is_pms_available" eval="True" />
-        </record>
+        <field name="name">Public Pricelist</field>
+        <field name="sequence">1</field>
+        <field name="availability_plan_id" ref="main_pms_availability_plan" />
+        <field name="is_pms_available" eval="True" />
+    </record>
     <record id="main_pms_property" model="pms.property">
         <field name="name">My Property</field>
         <field name="company_id" ref="base.main_company" />

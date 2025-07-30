@@ -36,10 +36,7 @@
                                 <!-- <field name="categ_id" select="1" domain="[('isroomtype','=',True)]" string="Room Type" /> -->
                                 <field name="room_type_id" string="Room Type" />
                                 <field name="is_shared_room" />
-                                <field
-                                    name="parent_id"
-                                    invisible="not parent_id"
-                                />
+                                <field name="parent_id" invisible="not parent_id" />
                                 <field name="capacity" />
                                 <field name="extra_beds_allowed" />
                                 <field name="short_name" />
@@ -298,7 +295,7 @@
         </field>
     </record> -->
     <record model="ir.actions.act_window" id="action_pms_room_form">
-        <field name="name">pms Room</field>
+        <field name="name">Room</field>
         <field name="res_model">pms.room</field>
         <field name="view_id" ref="pms_room_view_list" />
         <field name="view_mode">kanban,list,form</field>

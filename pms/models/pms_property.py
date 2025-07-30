@@ -3,22 +3,12 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import base64
-import datetime
-import time
 
-import pytz
-from dateutil.relativedelta import relativedelta
-
-from odoo import _, api, fields, models, modules, tools
-from odoo.exceptions import ValidationError
-from odoo.osv import expression
-from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
-
-from odoo.addons.base.models.res_partner import _tz_get
+from odoo import fields, models, tools
 
 
 def get_default_logo():
-    with tools.file_open('pms/static/img/property_logo.png', 'rb') as f:
+    with tools.file_open("pms/static/img/property_logo.png", "rb") as f:
         return base64.b64encode(f.read())
 
 

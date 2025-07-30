@@ -10,14 +10,8 @@
                     widget="many2many_tags"
                     invisible="partner_type != 'customer'"
                 />
-                <field
-                    name="origin_agency_id"
-                    invisible="not origin_agency_id"
-                />
-                <field
-                    name="origin_reference"
-                    invisible="not origin_agency_id"
-                />
+                <field name="origin_agency_id" invisible="not origin_agency_id" />
+                <field name="origin_reference" invisible="not origin_agency_id" />
             </xpath>
         </field>
     </record>

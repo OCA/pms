@@ -376,9 +376,7 @@
                     </div>
                 </span>
                 <br />
-                <div
-                    invisible="massive_changes_on == 'availability_plan'"
-                >
+                <div invisible="massive_changes_on == 'availability_plan'">
                     <div class="col-4">
                         <group>
                             <field name="price" />
@@ -387,10 +385,7 @@
                         </group>
                     </div>
                 </div>
-                <b
-                    invisible="massive_changes_on == 'pricelist'"
-                    class="mt-5"
-                >
+                <b invisible="massive_changes_on == 'pricelist'" class="mt-5">
                     <span style="text-decoration:underline;">
                     <field name="num_rules_to_overwrite" />
                 </span>
@@ -398,9 +393,7 @@
                     <u>will be overwritten:</u>
                 </b>
 
-                <b
-                    invisible="massive_changes_on == 'availability_plan'"
-                >
+                <b invisible="massive_changes_on == 'availability_plan'">
                     <span style="text-decoration:underline;">
                     <field name="num_pricelist_items_to_overwrite" />
                 </span>
@@ -415,10 +408,7 @@
                     <list>
                         <field name="date" />
                         <field name="room_type_id" />
-                        <field
-                            name="quota"
-                            column_invisible="not parent.apply_quota"
-                        />
+                        <field name="quota" column_invisible="not parent.apply_quota" />
                         <field
                             name="max_avail"
                             column_invisible="not parent.apply_max_avail"

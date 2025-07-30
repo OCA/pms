@@ -22,11 +22,7 @@
                     />
                     <!-- <field name="layout_category_id" groups="sale.group_sale_layout"/> -->
                     <group>
-                        <field
-                            name="product_qty"
-                            readonly="per_day"
-                            force_save="1"
-                        />
+                        <field name="product_qty" readonly="per_day" force_save="1" />
                         <field name="sale_channel_origin_id" />
                         <field name="default_invoice_to" />
                     </group>
@@ -40,10 +36,7 @@
                             <field name="date" />
                             <field name="day_qty" />
                             <field name="price_unit" />
-                            <field
-                                name="discount"
-                                readonly="is_board_service"
-                            />
+                            <field name="discount" readonly="is_board_service" />
                             <field name="price_day_total" />
                             <field name="is_board_service" invisible="1" />
                             <field name="pms_property_id" invisible="1" />
@@ -75,21 +68,14 @@
                 <field name="folio_id" invisible="1" />
                 <field name="company_id" invisible="1" />
                 <field name="pms_property_id" invisible="1" />
-                <field
-                    name="reservation_id"
-                    required="per_day"
-                />
+                <field name="reservation_id" required="per_day" />
                 <field
                     name="product_id"
                     domain="[('sale_ok', '=', True)]"
                     options="{'create': False, 'create_edit': False}"
                 />
                 <field name="name" />
-                <field
-                    name="product_qty"
-                    readonly="per_day"
-                    force_save="1"
-                />
+                <field name="product_qty" readonly="per_day" force_save="1" />
                 <field name="sale_channel_origin_id" />
                 <field name="default_invoice_to" />
                 <button
@@ -108,10 +94,7 @@
                     <list name="Days">
                         <field name="date" />
                         <field name="day_qty" />
-                        <field
-                            name="discount"
-                            readonly="is_board_service"
-                        />
+                        <field name="discount" readonly="is_board_service" />
                         <field name="price_unit" />
                         <field name="is_board_service" invisible="1" />
                         <field name="pms_property_id" invisible="1" />

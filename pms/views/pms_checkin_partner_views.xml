@@ -632,10 +632,7 @@
                 color="folio_id"
                 scales="week,month,year"
             > -->
-            <calendar
-                string="Hosts"
-            >
-
+            <calendar string="Hosts">
                 <field name="partner_id" />
                 <field name="name" />
                 <field name="reservation_id" />

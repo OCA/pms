@@ -6,11 +6,7 @@
         <field name="arch" type="xml">
             <form class="pt-1">
                 <h2>
-                    <field
-                        name="pms_property_id"
-                        required="1"
-                        readonly="folio_id"
-                    />
+                    <field name="pms_property_id" required="1" readonly="folio_id" />
                 </h2>
                 <div class="row">
                     <div class="col-5 ">

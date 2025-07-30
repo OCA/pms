@@ -5,6 +5,7 @@
 # from . import ir_http
 # from . import ir_config_parameter
 
+
 # Master Data
 from . import pms_amenity
 from . import pms_amenity_type
@@ -12,6 +13,11 @@ from . import pms_cancelation_rule
 from . import pms_property
 from . import pms_room
 from . import pms_room_type
+from . import pms_room_type_class
+
+# Inherit
+from . import res_company
+
 
 # from . import pms_board_service_room_type
 # from . import res_users
@@ -22,7 +28,6 @@ from . import pms_room_type
 # from . import account_move
 # from . import product_template
 # from . import product_product
-# from . import res_company
 # from . import account_payment
 # from . import pms_availability_plan
 # from . import pms_availability_plan_rule
@@ -33,7 +38,6 @@ from . import pms_room_type
 # from . import res_partner
 # from . import pms_sale_channel
 # from . import mail_compose_message
-# from . import pms_room_type_class
 # from . import pms_room_closure_reason
 # from . import pms_service_line
 # from . import pms_board_service

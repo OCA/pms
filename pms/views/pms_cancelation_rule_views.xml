@@ -9,9 +9,9 @@
             <form string="Cancelation Rules">
                 <sheet>
                     <div class="oe_title">
-                        <label for="name"/>
+                        <label for="name" />
                         <h1>
-                            <field name="name"/>
+                            <field name="name" />
                         </h1>
                         <group>
                             <field
@@ -21,7 +21,7 @@
                             />
                             <label for="days_intime" />
                             <div>
-                                <field name="days_intime" class="oe_inline" string="Free Cancellation"/>
+                                <field name="days_intime" class="oe_inline" />
                                 <span>Day(s) before check-in</span>
                             </div>
                         </group>
@@ -45,6 +45,7 @@
                         </group>
                     </group>
                 </sheet>
+                <chatter />
             </form>
         </field>
     </record>
@@ -55,12 +56,16 @@
         <field name="arch" type="xml">
             <list name="Cancelation Rules">
                 <field name="name" />
-                <field name="days_intime" string="Free Cancellation" optional="show" />
+                <field name="days_intime" optional="show" />
                 <field name="penalty_late" optional="show" />
                 <field name="apply_on_late" optional="show" />
                 <field name="penalty_noshow" optional="show" />
                 <field name="apply_on_noshow" optional="show" />
-                <field name="pms_property_ids" widget="many2many_tags" optional="show" />
+                <field
+                    name="pms_property_ids"
+                    widget="many2many_tags"
+                    optional="show"
+                />
             </list>
         </field>
     </record>

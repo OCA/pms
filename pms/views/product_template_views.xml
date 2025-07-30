@@ -15,10 +15,7 @@
                 />
             </xpath>
             <xpath expr="//page[@name='sales']" position="before">
-                <page
-                    string="PMS Service"
-                    invisible="not is_pms_available"
-                >
+                <page string="PMS Service" invisible="not is_pms_available">
                     <group colspan="4">
                         <group>
                             <field name="is_extra_bed" />

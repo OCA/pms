@@ -72,11 +72,7 @@
                 <field name="pms_property_ids" widget="many2many_tags" />
             </xpath>
             <xpath expr="//page[@name='internal_notes']" position="after">
-                <page
-                    name="agency"
-                    string="Agency"
-                    invisible="not is_agency"
-                >
+                <page name="agency" string="Agency" invisible="not is_agency">
                     <group>
                         <field
                             name="sale_channel_id"

@@ -2,7 +2,7 @@
 # Copyright 2017  Dario Lodeiros
 # Copyright 2018  Pablo Quesada
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -11,6 +11,7 @@ class PmsRoom(models.Model):
     and also for speeches (conference rooms), parking,
     relax with cafe con leche, spa...
     """
+
     _name = "pms.room"
     _description = "Property Room"
     _order = "sequence, room_type_id, name"
@@ -347,6 +348,8 @@ class PmsRoom(models.Model):
         for record in self:
             if extra_bed > record.extra_beds_allowed:
                 raise ValidationError(
-                    self.env._("Extra beds can't be greater than allowed beds for this room")
+                    self.env._(
+                        "Extra beds can't be greater than allowed beds for this room"
+                    )
                 )
             return record.capacity + extra_bed

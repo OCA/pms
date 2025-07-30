@@ -2,6 +2,7 @@
 # Copyright 2017  Dario Lodeiros
 # Copyright 2021  Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -20,34 +21,34 @@ class PmsRoomTypeClass(models.Model):
 
     name = fields.Char(
         string="Class Name",
-        help="Name of the room type class",
         required=True,
         translate=True,
+        help="Name of the room type class",
     )
     active = fields.Boolean(
-        help="If unchecked, it will allow you to hide the room type",
         default=True,
+        help="If unchecked, it will allow you to hide the room type",
     )
     sequence = fields.Integer(
-        help="Field used to change the position of the room type classes in tree view.",
         default=0,
+        help="Field used to change the position of the room type classes in tree view.",
     )
     pms_property_ids = fields.Many2many(
-        string="Properties",
-        help="Properties with access to the element;"
-        " if not set, all properties can access",
         comodel_name="pms.property",
         relation="pms_room_type_class_property_rel",
         column1="room_type_class_id",
         column2="pms_property_id",
+        string="Properties",
         ondelete="restrict",
+        help="Properties with access to the element;"
+        " if not set, all properties can access",
         check_pms_properties=True,
     )
     room_type_ids = fields.One2many(
-        string="Types",
-        help="Room Types that belong to this Room Type Class",
         comodel_name="pms.room.type",
         inverse_name="class_id",
+        string="Types",
+        help="Room Types that belong to this Room Type Class",
         check_pms_properties=True,
     )
     default_code = fields.Char(

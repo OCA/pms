@@ -11,11 +11,7 @@
                     </p>
                 <group>
                     <group>
-                        <field
-                            name="count"
-                            invisible="count == 1"
-                            readonly="True"
-                        />
+                        <field name="count" invisible="count == 1" readonly="True" />
                         <field
                             name="advance_payment_method"
                             class="oe_inline"

@@ -3,8 +3,7 @@
 # Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo import api, fields, models
 
 
 class PmsRoomType(models.Model):
@@ -12,6 +11,7 @@ class PmsRoomType(models.Model):
     With the term 'room type' is meant a sales type of residential accommodation: for
     example, a Double Room, a Economic Room, an Apartment, a Tent, a Caravan...
     """
+
     _name = "pms.room.type"
     _description = "Room Type"
     _inherits = {"product.product": "product_id"}
@@ -31,21 +31,21 @@ class PmsRoomType(models.Model):
         index=True,
         ondelete="cascade",
     )
-    # room_ids = fields.One2many(
-    #     string="Rooms",
-    #     help="Rooms that belong to room type.",
-    #     comodel_name="pms.room",
-    #     inverse_name="room_type_id",
-    #     check_pms_properties=True,
-    # )
-    # class_id = fields.Many2one(
-    #     comodel_name="pms.room.type.class",
-    #     string="Property Type Class",
-    #     required=True,
-    #     index=True,
-    #     help="Class to which the room type belongs",
-    #     check_pms_properties=True,
-    # )
+    room_ids = fields.One2many(
+        string="Rooms",
+        help="Rooms that belong to room type.",
+        comodel_name="pms.room",
+        inverse_name="room_type_id",
+        check_pms_properties=True,
+    )
+    class_id = fields.Many2one(
+        comodel_name="pms.room.type.class",
+        string="Property Type Class",
+        required=True,
+        index=True,
+        help="Class to which the room type belongs",
+        check_pms_properties=True,
+    )
     # board_service_room_type_ids = fields.One2many(
     #     string="Board Services",
     #     help="Board Service included in room type",
@@ -67,11 +67,11 @@ class PmsRoomType(models.Model):
         help="Identification code for a room type",
         required=True,
     )
-    # total_rooms_count = fields.Integer(
-    #     help="The number of rooms in a room type",
-    #     compute="_compute_total_rooms_count",
-    #     store=True,
-    # )
+    total_rooms_count = fields.Integer(
+        help="The number of rooms in a room type",
+        compute="_compute_total_rooms_count",
+        store=True,
+    )
     default_max_avail = fields.Integer(
         string="Default Max. Availability",
         help="Maximum simultaneous availability on own Booking Engine "
@@ -84,10 +84,10 @@ class PmsRoomType(models.Model):
         "Use `-1` for managing no quota.",
         default=-1,
     )
-    # overnight_room = fields.Boolean(
-    #     related="class_id.overnight",
-    #     store=True,
-    # )
+    overnight_room = fields.Boolean(
+        related="class_id.overnight",
+        store=True,
+    )
     min_price = fields.Float(
         string="Min. Price",
         help="Minimum price for a room type",
@@ -113,10 +113,10 @@ class PmsRoomType(models.Model):
     #         result.append((room_type.id, name))
     #     return result
 
-    # @api.depends("room_ids", "room_ids.active")
-    # def _compute_total_rooms_count(self):
-    #     for record in self:
-    #         record.total_rooms_count = len(record.room_ids)
+    @api.depends("room_ids", "room_ids.active")
+    def _compute_total_rooms_count(self):
+        for record in self:
+            record.total_rooms_count = len(record.room_ids)
 
     # @api.model
     # def get_room_types_by_property(self, pms_property_id, default_code=None):

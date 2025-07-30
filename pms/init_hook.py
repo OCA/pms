@@ -1,10 +1,7 @@
-
 def pre_init_hook(env):
     ResConfig = env["res.config.settings"]
     default_values = ResConfig.default_get(list(ResConfig.fields_get()))
-    default_values.update(
-        {"group_product_pricelist": True}
-    )
+    default_values.update({"group_product_pricelist": True})
     ResConfig.sudo().create(default_values).execute()
     env["ir.config_parameter"].sudo().set_param(
         "product.product_pricelist_setting", "advanced"
