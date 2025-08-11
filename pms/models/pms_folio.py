@@ -2322,10 +2322,18 @@ class PmsFolio(models.Model):
             old_note = reservation.sale_line_ids.filtered(
                 lambda x: x.auto_reservation_note
             )
-            if old_note:
-                sale_reservation_vals.append((2, old_note.id))
             note_vals = self._get_reservation_note_vals(reservation, sequence)
-            if note_vals:
+            create_note = True
+            if old_note:
+                if (
+                    not note_vals
+                    or old_note.name != note_vals[2]["name"]
+                    or old_note.reservation_id.id != note_vals[2]["reservation_id"]
+                ):
+                    sale_reservation_vals.append((2, old_note.id))
+                else:
+                    create_note = False
+            if note_vals and create_note:
                 sale_reservation_vals.append(note_vals)
         expected_reservation_lines = self.env["pms.reservation.line"].read_group(
             [
