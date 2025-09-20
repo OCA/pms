@@ -1556,10 +1556,12 @@ class TestPmsCheckinPartner(TestPms):
                     "The value of " + key + " is not correctly established",
                 )
 
-    def test_compute_partner_fields(self):
+    def test_compute_inverse_partner_fields(self):
         """
         Check that the computes of the checkin_partner fields related to your partner
         correctly add these fields to the checkin_partner.
+        Also check if a change in checkin_partner fields correctly
+        executes the inverse way.
         ---------------------------------------
         A reservation is created with an adult (checkin_partner) ql which is
         saved in the checkin_partner_id variable, a partner is also created with all
@@ -1624,3 +1626,22 @@ class TestPmsCheckinPartner(TestPms):
                         self.partner_id[key],
                         "The value of " + key + " is not correctly established",
                     )
+
+        checkin_partner_vals = {
+            "firstname": "Carlos",
+            "lastname": "balenzuela",
+            "lastname2": "Sota",
+            "email": "paz2@example.com",
+            "birthdate_date": datetime.date(1980, 10, 3),
+            "gender": "male",
+            "mobile": "626555444",
+            "phone": "124456789",
+        }
+        checkin_partner.write(checkin_partner_vals)
+        for key in checkin_partner_vals:
+            with self.subTest(k=key):
+                self.assertEqual(
+                    self.reservation.checkin_partner_ids[0][key],
+                    self.partner_id[key],
+                    "The value of " + key + " is not correctly established",
+                )

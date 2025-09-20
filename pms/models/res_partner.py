@@ -87,53 +87,7 @@ class ResPartner(models.Model):
         comodel_name="pms.folio",
         inverse_name="partner_id",
     )
-    gender = fields.Selection(
-        readonly=False,
-        store=True,
-        compute="_compute_gender",
-    )
-    birthdate_date = fields.Date(
-        readonly=False,
-        store=True,
-        compute="_compute_birthdate_date",
-    )
-    nationality_id = fields.Many2one(
-        readonly=False,
-        store=True,
-        index=True,
-        compute="_compute_nationality_id",
-    )
-    email = fields.Char(
-        readonly=False,
-        store=True,
-        compute="_compute_email",
-    )
-    mobile = fields.Char(
-        readonly=False,
-        store=True,
-        compute="_compute_mobile",
-    )
-    phone = fields.Char(
-        readonly=False,
-        store=True,
-        compute="_compute_phone",
-    )
-    firstname = fields.Char(
-        readonly=False,
-        store=True,
-        compute="_compute_firstname",
-    )
 
-    lastname = fields.Char(
-        readonly=False,
-        store=True,
-        compute="_compute_lastname",
-    )
-    lastname2 = fields.Char(
-        readonly=False,
-        store=True,
-        compute="_compute_lastname2",
-    )
     country_id = fields.Many2one(
         readonly=False,
         store=True,
@@ -246,67 +200,6 @@ class ResPartner(models.Model):
     )
 
     # pylint: disable=W8110
-    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.gender")
-    def _compute_gender(self):
-        if hasattr(super(), "_compute_gender"):
-            super()._compute_gender()
-        for record in self:
-            if record.pms_checkin_partner_ids:
-                last_update_gender = record.pms_checkin_partner_ids.filtered(
-                    lambda x, r=record: x.write_date
-                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
-                )
-                if last_update_gender and last_update_gender[0].gender:
-                    record.gender = last_update_gender[0].gender
-
-    # pylint: disable=W8110
-    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.birthdate_date")
-    def _compute_birthdate_date(self):
-        if hasattr(super(), "_compute_birthdate_date"):
-            super()._compute_birthdate_date()
-        for record in self:
-            if record.pms_checkin_partner_ids:
-                last_update_birthdate = record.pms_checkin_partner_ids.filtered(
-                    lambda x, r=record: x.write_date
-                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
-                )
-                if last_update_birthdate and last_update_birthdate[0].birthdate_date:
-                    record.birthdate_date = last_update_birthdate[0].birthdate_date
-
-    # pylint: disable=W8110
-    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.nationality_id")
-    def _compute_nationality_id(self):
-        if hasattr(super(), "_compute_nationality_id"):
-            super()._compute_nationality_id()
-        for record in self:
-            if record.pms_checkin_partner_ids:
-                last_update_nationality = record.pms_checkin_partner_ids.filtered(
-                    lambda x, r=record: x.write_date
-                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
-                )
-                if (
-                    last_update_nationality
-                    and last_update_nationality[0].nationality_id
-                ):
-                    record.nationality_id = last_update_nationality[0].nationality_id
-                if not record.nationality_id and record.country_id:
-                    record.nationality_id = record.country_id
-
-    # pylint: disable=W8110
-    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.phone")
-    def _compute_phone(self):
-        if hasattr(super(), "_compute_phone"):
-            super()._compute_phone()
-        for record in self:
-            if record.pms_checkin_partner_ids:
-                last_update_phone = record.pms_checkin_partner_ids.filtered(
-                    lambda x, r=record: x.write_date
-                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
-                )
-                if last_update_phone and last_update_phone[0].phone:
-                    record.phone = last_update_phone[0].phone
-
-    # pylint: disable=W8110
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_street")
     def _compute_residence_street(self):
         if hasattr(super(), "_compute_residence_street"):
@@ -397,90 +290,6 @@ class ResPartner(models.Model):
                 )
                 if last_update_state and last_update_state[0].residence_state_id:
                     record.residence_state_id = last_update_state[0].residence_state_id
-
-    # pylint: disable=W8110
-    @api.depends(
-        "pms_checkin_partner_ids",
-        "pms_checkin_partner_ids.email",
-        "pms_reservation_ids",
-        "pms_reservation_ids.email",
-        "pms_folio_ids",
-        "pms_folio_ids.email",
-    )
-    def _compute_email(self):
-        if hasattr(super(), "_compute_email"):
-            super()._compute_email()
-        for record in self:
-            if record.pms_checkin_partner_ids:
-                last_update_checkin_mail = record.pms_checkin_partner_ids.filtered(
-                    lambda x, r=record: x.write_date
-                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
-                )
-                if last_update_checkin_mail and last_update_checkin_mail[0].email:
-                    record.email = last_update_checkin_mail[0].email
-
-    # pylint: disable=W8110
-    @api.depends(
-        "pms_checkin_partner_ids",
-        "pms_checkin_partner_ids.mobile",
-        "pms_reservation_ids",
-        "pms_reservation_ids.mobile",
-        "pms_folio_ids",
-        "pms_folio_ids.mobile",
-    )
-    def _compute_mobile(self):
-        if hasattr(super(), "_compute_mobile"):
-            super()._compute_mobile()
-        for record in self:
-            if record.pms_checkin_partner_ids:
-                last_update_mobile = record.pms_checkin_partner_ids.filtered(
-                    lambda x, r=record: x.write_date
-                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
-                )
-                if last_update_mobile and last_update_mobile[0].mobile:
-                    record.mobile = last_update_mobile[0].mobile
-
-    # pylint: disable=W8110
-    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.firstname")
-    def _compute_firstname(self):
-        if hasattr(super(), "_compute_firstname"):
-            super()._compute_firstname()
-        for record in self:
-            if record.pms_checkin_partner_ids:
-                last_update_firstname = record.pms_checkin_partner_ids.filtered(
-                    lambda x, r=record: x.write_date
-                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
-                )
-                if last_update_firstname and last_update_firstname[0].firstname:
-                    record.firstname = last_update_firstname[0].firstname
-
-    # pylint: disable=W8110
-    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.lastname")
-    def _compute_lastname(self):
-        if hasattr(super(), "_compute_lastname"):
-            super()._compute_lastname()
-        for record in self:
-            if record.pms_checkin_partner_ids:
-                last_update_lastname = record.pms_checkin_partner_ids.filtered(
-                    lambda x, r=record: x.write_date
-                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
-                )
-                if last_update_lastname and last_update_lastname[0].lastname:
-                    record.lastname = last_update_lastname[0].lastname
-
-    # pylint: disable=W8110
-    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.lastname2")
-    def _compute_lastname2(self):
-        if hasattr(super(), "_compute_lastname2"):
-            super()._compute_lastname2()
-        for record in self:
-            if record.pms_checkin_partner_ids:
-                last_update_lastname2 = record.pms_checkin_partner_ids.filtered(
-                    lambda x, r=record: x.write_date
-                    == max(r.pms_checkin_partner_ids.mapped("write_date"))
-                )
-                if last_update_lastname2 and last_update_lastname2[0].lastname2:
-                    record.lastname2 = last_update_lastname2[0].lastname2
 
     # pylint: disable=W8110
     @api.depends("id_numbers")
