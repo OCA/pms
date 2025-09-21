@@ -139,7 +139,7 @@ class PmsFolio(models.Model):
         check_pms_properties=True,
         compute="_compute_pricelist_id",
     )
-    commission = fields.Float(
+    commission = fields.Monetary(
         readonly=True,
         store=True,
         compute="_compute_commission",

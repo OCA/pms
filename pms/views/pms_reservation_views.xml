@@ -498,16 +498,18 @@
                     </group>
                     <notebook>
                         <page name="detail" string="Detail">
+                            <separator string="Nights" />
                             <field name="reservation_line_ids" nolabel="1">
                                 <tree create="false" delete="false" editable="bottom">
+                                    <field name="currency_id" invisible="1" />
                                     <field
                                         name="room_id"
                                         attrs="{'column_invisible': [('parent.splitted','=', False)]}"
                                     />
                                     <field name="date" readonly="1" force_save="1" />
-                                    <field name="price" />
+                                    <field name="price" widget="monetary" />
                                     <field name="discount" />
-                                    <field name="price_day_total" />
+                                    <field name="price_day_total" widget="monetary" />
                                     <field name="cancel_discount" invisible="1" />
                                     <field name="sale_channel_id" />
                                     <field name="default_invoice_to" />
@@ -539,6 +541,7 @@
                                         invisible="1"
                                         readonly="1"
                                     />
+                                    <field name="currency_id" invisible="1" />
                                     <field
                                         name="pms_property_id"
                                         invisible="1"
@@ -586,24 +589,38 @@
                                         optional="show"
                                     />
                                     <field name="board_service_line_id" invisible="1" />
-                                    <field name="price_subtotal" optional="hide" />
-                                    <field name="price_tax" optional="hide" />
-                                    <field name="discount" />
-                                    <field name="price_total" />
+                                    <field
+                                        name="price_subtotal"
+                                        optional="hide"
+                                        widget="monetary"
+                                    />
+                                    <field
+                                        name="price_tax"
+                                        optional="hide"
+                                        widget="monetary"
+                                    />
+                                    <field name="discount" widget="monetary" />
+                                    <field name="price_total" widget="monetary" />
                                     <field
                                         name="service_line_ids"
                                         invisible="1"
                                         readonly="1"
                                     >
                                         <tree name="Days">
-                                            <field name="date" />
+                                            <field name="date" widget="date" />
                                             <field name="day_qty" />
                                             <field
                                                 name="discount"
                                                 attrs="{'readonly':[('is_board_service','=', True)]}"
                                             />
-                                            <field name="price_unit" />
-                                            <field name="price_day_total" />
+                                            <field
+                                                name="price_unit"
+                                                widget="monetary"
+                                            />
+                                            <field
+                                                name="price_day_total"
+                                                widget="monetary"
+                                            />
                                             <field
                                                 name="is_board_service"
                                                 invisible="1"
@@ -622,25 +639,21 @@
                                     name="price_services"
                                     string="Only Services"
                                     widget="monetary"
-                                    options="{'currency_field': 'currency_id'}"
                                 />
                             <field
                                     name="price_total"
                                     string="Only Room"
                                     widget="monetary"
-                                    options="{'currency_field': 'currency_id'}"
                                 />
                             <field
                                     name="discount"
                                     string="Discount Room"
                                     widget="monetary"
-                                    options="{'currency_field': 'currency_id'}"
                                 />
                             <field
                                     name="services_discount"
                                     string="Discount Services"
                                     widget="monetary"
-                                    options="{'currency_field': 'currency_id'}"
                                 />
                             <field name="price_subtotal" invisible="1" />
                             <div
@@ -656,7 +669,6 @@
                                     nolabel="1"
                                     class="oe_subtotal_footer_separator"
                                     widget="monetary"
-                                    options="{'currency_field': 'currency_id'}"
                                 />
                             <field
                                     name="commission_percent"
@@ -666,7 +678,6 @@
                                     name="commission_amount"
                                     string="Commission Amount"
                                     widget='monetary'
-                                    options="{'currency_field': 'currency_id'}"
                                 />
                             <field name="invoice_status" invisible="1" />
                             <field name="currency_id" invisible="1" />
@@ -823,6 +834,7 @@
                 <field name="splitted" invisible="1" />
                 <field name="is_reselling" invisible="1" />
                 <field name="pricelist_id" invisible="1" />
+                <field name="currency_id" invisible="1" />
                 <field name="rooms" />
                 <field name="checkin" />
                 <field name="checkout" />
@@ -843,9 +855,23 @@
                 <field name="sale_channel_origin_id" optional="show" />
                 <field name="sale_channel_ids" optional="show" />
                 <field name="price_subtotal" invisible="1" />
-                <field name="price_total" optional="hide" sum="Total" />
-                <field name="commission_amount" optional="hide" sum="Commission" />
-                <field name="folio_pending_amount" string="Folio Pending Amount" />
+                <field
+                    name="price_total"
+                    optional="hide"
+                    sum="Total"
+                    widget="monetary"
+                />
+                <field
+                    name="commission_amount"
+                    optional="hide"
+                    sum="Commission"
+                    widget="monetary"
+                />
+                <field
+                    name="folio_pending_amount"
+                    string="Folio Pending Amount"
+                    widget="monetary"
+                />
                 <field
                     name="state"
                     decoration-success="state == 'onboard'"

@@ -73,7 +73,7 @@ class PmsReservationLine(models.Model):
     pricelist_item_id = fields.Many2one(
         comodel_name="product.pricelist.item", compute="_compute_pricelist_item_id"
     )
-    price = fields.Float(
+    price = fields.Monetary(
         help="The price in a reservation line",
         store=True,
         readonly=False,
@@ -105,7 +105,7 @@ class PmsReservationLine(models.Model):
         default=0.0,
         digits=("Discount"),
     )
-    price_day_total = fields.Float(
+    price_day_total = fields.Monetary(
         string="Final price",
         help="Get the price with discount applied",
         store=True,
