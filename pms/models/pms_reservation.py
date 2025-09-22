@@ -871,7 +871,7 @@ class PmsReservation(models.Model):
                     reservation.reservation_line_ids = False
             reservation.check_in_out_dates()
 
-    @api.depends("board_service_room_id")
+    @api.depends("board_service_room_id", "adults", "children")
     def _compute_board_service_ids(self):
         if self.env.context.get("skip_compute_board_service_ids", False):
             return
@@ -2185,10 +2185,10 @@ class PmsReservation(models.Model):
             )
 
     def _check_services(self, vals):
-        # If we create a reservation with board service and other service at the
-        # same time, compute_service_ids dont run (compute with readonly to False), and
+        # If we create a reservation with board service, compute_service_ids dont run
+        # (compute with readonly to False), and
         # we must force it to compute the services linked with the board service:
-        if "board_service_room_id" in vals and "service_ids" in vals:
+        if "board_service_room_id" in vals:
             self._compute_board_service_ids()
 
     def get_folios_to_update_channel(self, vals):
