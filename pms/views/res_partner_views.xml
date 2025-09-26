@@ -181,7 +181,6 @@
 
                             <field name="firstname" />
                             <field name="lastname" />
-                            <field name="lastname2" />
                             <field name="gender" />
                             <field name="birthdate_date" />
                             <field name="id_numbers" />

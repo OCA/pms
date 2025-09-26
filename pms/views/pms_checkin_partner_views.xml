@@ -62,7 +62,6 @@
                             />
                             <field name="firstname" />
                             <field name="lastname" />
-                            <field name="lastname2" />
                             <field name="gender" />
                             <field name="birthdate_date" />
                             <field name="document_country_id" />
@@ -161,7 +160,6 @@
                 <field name="partner_id" />
                 <field name="firstname" />
                 <field name="lastname" />
-                <field name="lastname2" />
                 <field name="gender" />
                 <field name="birthdate_date" />
                 <field name="document_country_id" />
@@ -209,7 +207,6 @@
                 <field name="partner_id" domain="[('is_company','=', False)]" />
                 <field name="firstname" />
                 <field name="lastname" />
-                <field name="lastname2" />
                 <field name="gender" />
                 <field name="birthdate_date" />
                 <field name="document_country_id" />
@@ -254,7 +251,6 @@
                 <field name="pms_property_id" invisible="1" />
                 <field name="firstname" />
                 <field name="lastname" />
-                <field name="lastname2" />
                 <field name="gender" />
                 <field name="birthdate_date" />
                 <field name="document_country_id" />
@@ -294,7 +290,6 @@
                 <field name="partner_id" domain="[('is_company','=', False)]" />
                 <field name="firstname" />
                 <field name="lastname" />
-                <field name="lastname2" />
                 <field name="gender" />
                 <field name="birthdate_date" />
                 <field name="document_country_id" />

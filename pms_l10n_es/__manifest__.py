@@ -20,6 +20,7 @@
         "queue_job",
         "base_vat",
         "l10n_es_aeat",
+        "pms_partner_second_lastname",
     ],
     "external_dependencies": {
         "python": [
