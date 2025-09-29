@@ -2502,17 +2502,29 @@ class PmsReservation(models.Model):
         self.ensure_one()
         if self.reservation_type != "normal":
             return False
-        tax_products = self._get_tourist_tax_products()
+        tax_products = self._get_tourist_tax_products(
+            pms_property_id=self.pms_property_id.id
+        )
         if not tax_products:
             return []
 
         nightly_dates = self._get_nightly_dates()
-        grouped_lines = self._build_grouped_tax_lines(tax_products, nightly_dates)
+        grouped_lines = self._build_grouped_tax_lines(
+            tax_products,
+            nightly_dates,
+        )
         existing_services = self._get_existing_tourist_tax_services()
         return self._build_service_commands(grouped_lines, existing_services)
 
-    def _get_tourist_tax_products(self):
-        return self.env["product.product"].search([("is_tourist_tax", "=", True)])
+    def _get_tourist_tax_products(self, pms_property_id):
+        return self.env["product.product"].search(
+            [
+                ("is_tourist_tax", "=", True),
+                "|",
+                ("pms_property_ids", "=", False),
+                ("pms_property_ids", "in", pms_property_id),
+            ]
+        )
 
     def _get_nightly_dates(self):
         return [
