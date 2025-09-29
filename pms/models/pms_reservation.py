@@ -2503,7 +2503,7 @@ class PmsReservation(models.Model):
         if self.reservation_type != "normal":
             return False
         tax_products = self._get_tourist_tax_products(
-            pms_property_id=self.pms_property_id
+            pms_property_id=self.pms_property_id.id
         )
         if not tax_products:
             return []
@@ -2522,7 +2522,7 @@ class PmsReservation(models.Model):
                 ("is_tourist_tax", "=", True),
                 "|",
                 ("pms_property_ids", "=", False),
-                ("pms_property_ids", "in", pms_property_id.id),
+                ("pms_property_ids", "in", pms_property_id),
             ]
         )
 
