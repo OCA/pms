@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Single parameterless cron; logic decides per company -->
+    <record id="cron_pms_downpayment_autoinvoice" model="ir.cron">
+        <field name="name">PMS Auto Downpayment Invoicing</field>
+        <field name="model_id" ref="account.model_account_payment" />
+        <field name="state">code</field>
+        <field name="code">
+# Runs daily. For each company with automation enabled, it evaluates and runs if scheduled today.
+model.pms_run_downpayment_autoinvoice_cron()
+        </field>
+        <field name="interval_type">days</field>
+        <field name="interval_number">1</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False" />
+        <field name="active" eval="True" />
+        <!-- Next run at 04:30 server time -->
+        <field
+            name="nextcall"
+            eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 04:30:00')"
+        />
+        <field name="user_id" ref="base.user_root" />
+    </record>
+</odoo>

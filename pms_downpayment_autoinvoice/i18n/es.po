@@ -1,0 +1,154 @@
+# Translation of PMS Downpayment Auto-Invoicing to Spanish
+# Copyright (C) 2025 Roomdoo
+# This file is distributed under the same license as the module.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pms_downpayment_autoinvoice 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-02 12:00+0000\n"
+"PO-Revision-Date: 2025-10-02 12:00+0000\n"
+"Last-Translator: Roomdoo Tech <dev@roomdoo.com>\n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields,field_description:pms_downpayment_autoinvoice.field_res_company__downpayment_auto_enabled
+msgid "Enable Auto Downpayment Invoicing"
+msgstr "Activar facturación automática de anticipos"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields,help:pms_downpayment_autoinvoice.field_res_company__downpayment_auto_enabled
+msgid "If enabled, the daily cron will evaluate and run downpayment invoicing for this company according to the schedule below."
+msgstr "Si está activado, el cron diario evaluará y ejecutará la facturación de anticipos para esta compañía según la configuración indicada."
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields,field_description:pms_downpayment_autoinvoice.field_res_company__downpayment_auto_mode
+msgid "Schedule Mode"
+msgstr "Modo de programación"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields,help:pms_downpayment_autoinvoice.field_res_company__downpayment_auto_mode
+msgid "Select how often the automation should run."
+msgstr "Selecciona cada cuánto tiempo debe ejecutarse la automatización."
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields.selection,name:pms_downpayment_autoinvoice.selection__res_company__downpayment_auto_mode__daily
+msgid "Daily"
+msgstr "Diario"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields.selection,name:pms_downpayment_autoinvoice.selection__res_company__downpayment_auto_mode__weekly
+msgid "Weekly"
+msgstr "Semanal"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields.selection,name:pms_downpayment_autoinvoice.selection__res_company__downpayment_auto_mode__monthly
+msgid "Monthly"
+msgstr "Mensual"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields.selection,name:pms_downpayment_autoinvoice.selection__res_company__downpayment_auto_mode__quarterly
+msgid "Quarterly (last day of each quarter)"
+msgstr "Trimestral (último día de cada trimestre)"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields,field_description:pms_downpayment_autoinvoice.field_res_company__downpayment_auto_weekday
+msgid "Weekly Day"
+msgstr "Día de la semana"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields,field_description:pms_downpayment_autoinvoice.field_res_company__downpayment_auto_monthly_marker
+msgid "Monthly Marker"
+msgstr "Marcador mensual"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields,field_description:pms_downpayment_autoinvoice.field_res_company__downpayment_auto_monthly_day
+msgid "Monthly Day"
+msgstr "Día del mes"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields,field_description:pms_downpayment_autoinvoice.field_res_company__downpayment_auto_batch_size
+msgid "Batch Size"
+msgstr "Tamaño de lote"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields,field_description:pms_downpayment_autoinvoice.field_res_company__downpayment_auto_dry_run
+msgid "Dry Run"
+msgstr "Simulación (Dry Run)"
+
+#. module: pms_downpayment_autoinvoice
+#: model_terms:ir.ui.view,arch_db:pms_downpayment_autoinvoice.view_company_form_inherit_downpayment_auto
+msgid "Downpayment Automation"
+msgstr "Automatización de anticipos"
+
+#. module: pms_downpayment_autoinvoice
+#: model_terms:ir.ui.view,arch_db:pms_downpayment_autoinvoice.view_company_form_inherit_downpayment_auto
+msgid "Quarterly will run on the last day of each quarter (Mar 31, Jun 30, Sep 30, Dec 31)."
+msgstr "La ejecución trimestral se realizará el último día de cada trimestre (31 marzo, 30 junio, 30 septiembre, 31 diciembre)."
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.cron,name:pms_downpayment_autoinvoice.cron_pms_downpayment_autoinvoice
+msgid "PMS Auto Downpayment Invoicing"
+msgstr "PMS - Facturación automática de anticipos"
+
+# ---- Weekly day ----
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields.selection,name:pms_downpayment_autoinvoice.selection__res_company__downpayment_auto_weekday__mon
+msgid "Monday"
+msgstr "Lunes"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields.selection,name:pms_downpayment_autoinvoice.selection__res_company__downpayment_auto_weekday__tue
+msgid "Tuesday"
+msgstr "Martes"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields.selection,name:pms_downpayment_autoinvoice.selection__res_company__downpayment_auto_weekday__wed
+msgid "Wednesday"
+msgstr "Miércoles"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields.selection,name:pms_downpayment_autoinvoice.selection__res_company__downpayment_auto_weekday__thu
+msgid "Thursday"
+msgstr "Jueves"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields.selection,name:pms_downpayment_autoinvoice.selection__res_company__downpayment_auto_weekday__fri
+msgid "Friday"
+msgstr "Viernes"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields.selection,name:pms_downpayment_autoinvoice.selection__res_company__downpayment_auto_weekday__sat
+msgid "Saturday"
+msgstr "Sábado"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields.selection,name:pms_downpayment_autoinvoice.selection__res_company__downpayment_auto_weekday__sun
+msgid "Sunday"
+msgstr "Domingo"
+
+# ---- Monthly marker ----
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields.selection,name:pms_downpayment_autoinvoice.selection__res_company__downpayment_auto_monthly_marker__first
+msgid "First"
+msgstr "Primero"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields.selection,name:pms_downpayment_autoinvoice.selection__res_company__downpayment_auto_monthly_marker__last
+msgid "Last"
+msgstr "Último"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields.selection,name:pms_downpayment_autoinvoice.selection__res_company__downpayment_auto_monthly_marker__penultimate
+msgid "Penultimate"
+msgstr "Penúltimo"
+
+#. module: pms_downpayment_autoinvoice
+#: model:ir.model.fields.selection,name:pms_downpayment_autoinvoice.selection__res_company__downpayment_auto_monthly_marker__fixed
+msgid "Fixed Day (1..28)"
+msgstr "Día fijo (1..28)"
