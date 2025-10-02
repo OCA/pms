@@ -2500,7 +2500,7 @@ class PmsReservation(models.Model):
     def _compute_tourist_tax_lines(self):
         """Return ORM commands to sync tourist tax services on this reservation."""
         self.ensure_one()
-        if self.reservation_type != "normal":
+        if self.reservation_type != "normal" or not self.overnight_room:
             return False
         tax_products = self._get_tourist_tax_products(
             pms_property_id=self.pms_property_id.id
