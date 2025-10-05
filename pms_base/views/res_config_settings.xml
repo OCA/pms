@@ -259,5 +259,4 @@
         <field name="target">inline</field>
         <field name="context">{'module': 'pms_base'}</field>
     </record>
-
 </odoo>

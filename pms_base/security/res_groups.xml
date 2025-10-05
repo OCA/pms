@@ -1,5 +1,4 @@
 <odoo noupdate="0">
-
     <!-- Group for pms user -->
     <record id="group_pms_user" model="res.groups">
         <field name="name">Property Management / User</field>
@@ -34,5 +33,4 @@
     <record id="group_pms_show_team" model="res.groups">
         <field name="name">Show Teams</field>
     </record>
-
 </odoo>

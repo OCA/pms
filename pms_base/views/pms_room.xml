@@ -89,5 +89,4 @@
         <field name="view_id" ref="view_pms_room_tree" />
         <field name="view_mode">tree,form</field>
     </record>
-
 </odoo>

@@ -1,5 +1,4 @@
 <odoo>
-
     <!-- Field Service Tag -->
     <record id="view_pms_tag_tree" model="ir.ui.view">
         <field name="name">Tags</field>
@@ -51,5 +50,4 @@
             </p>
         </field>
     </record>
-
 </odoo>

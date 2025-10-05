@@ -264,7 +264,7 @@ class PmsProperty(models.Model):
     @api.model
     def create(self, vals):
         vals.update({"is_property": True})
-        return super(PmsProperty, self).create(vals)
+        return super().create(vals)
 
     def name_get(self):
         # Prefetch the fields used by the `name_get`, so `browse` doesn't fetch other fields

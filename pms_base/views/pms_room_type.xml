@@ -1,5 +1,4 @@
 <odoo>
-
     <record model="ir.ui.view" id="view_pms_room_type_form">
         <field name="name">pms.room.type.form</field>
         <field name="model">pms.room.type</field>
@@ -40,5 +39,4 @@
         <field name="res_model">pms.room.type</field>
         <field name="view_mode">tree,form</field>
     </record>
-
 </odoo>

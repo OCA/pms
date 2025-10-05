@@ -1,5 +1,4 @@
 <odoo>
-
     <record id="view_team_form" model="ir.ui.view">
         <field name="name">pms.team.view.form</field>
         <field name="model">pms.team</field>
@@ -68,7 +67,9 @@
                                 <div t-attf-class="o_kanban_card_header">
                                     <div class="o_kanban_card_header_title">
                                         <div class="o_primary">
-                                            <span> <field name="name" /></span>
+                                            <span>
+                                                <field name="name" />
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -102,5 +103,4 @@
         <field name="res_model">pms.team</field>
         <field name="view_mode">kanban,tree,form</field>
     </record>
-
 </odoo>

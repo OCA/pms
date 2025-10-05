@@ -40,5 +40,4 @@
         <field name="res_model">pms.amenity.type</field>
         <field name="view_mode">tree,form</field>
     </record>
-
 </odoo>
