@@ -45,20 +45,20 @@
     </record>
 
     <record model="ir.ui.view" id="pms_amenity_view_tree">
-        <field name="name">pms.amenity.tree</field>
+        <field name="name">pms.amenity.list</field>
         <field name="model">pms.amenity</field>
         <field name="arch" type="xml">
-            <tree string="Amenities">
+            <list>
                 <field name="default_code" />
                 <field name="name" />
                 <field name="type_id" select="1" />
-            </tree>
+            </list>
         </field>
     </record>
 
     <record model="ir.actions.act_window" id="action_pms_amenity">
         <field name="name">Amenities</field>
         <field name="res_model">pms.amenity</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>

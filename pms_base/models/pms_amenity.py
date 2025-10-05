@@ -8,14 +8,9 @@ class PmsAmenity(models.Model):
     _name = "pms.amenity"
     _description = "Property Amenity"
 
-    active = fields.Boolean(
-        string="Active", help="Determines if amenity is active", default=True
-    )
-    name = fields.Char(
-        string="Name", help="Name of the amenity", required=True, translate=True
-    )
+    active = fields.Boolean(help="Determines if amenity is active", default=True)
+    name = fields.Char(help="Name of the amenity", required=True, translate=True)
     property_ids = fields.Many2many(
-        string="Properties",
         help="Properties with access to the amenity",
         comodel_name="pms.property",
         ondelete="restrict",
@@ -24,7 +19,6 @@ class PmsAmenity(models.Model):
         column2="property_id",
     )
     type_id = fields.Many2one(
-        string="Type",
         help="Organize amenities by type (multimedia, comfort, etc ...)",
         comodel_name="pms.amenity.type",
     )

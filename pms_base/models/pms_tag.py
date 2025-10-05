@@ -10,20 +10,21 @@ class PmsTag(models.Model):
     _name = "pms.tag"
     _description = "PMS Tag"
 
-    name = fields.Char(string="Name", required=True, translate=True)
-    parent_id = fields.Many2one("pms.tag", string="Parent")
+    name = fields.Char(required=True, translate=True)
+    parent_id = fields.Many2one("pms.tag")
     color = fields.Integer("Color Index", default=10)
-    full_name = fields.Char(string="Full Name", compute="_compute_full_name")
+    full_name = fields.Char(compute="_compute_full_name")
     company_id = fields.Many2one(
         "res.company",
-        string="Company",
         required=True,
         index=True,
         default=lambda self: self.env.company.id,
         help="Company related to this tag",
     )
 
-    _sql_constraints = [("name_uniq", "unique (name)", "Tag name already exists!")]
+    _sql_constraints = [
+        ("name_uniq", "unique (name, company_id)", "Tag name already exists!")
+    ]
 
     def _compute_full_name(self):
         for record in self:

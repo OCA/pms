@@ -8,7 +8,5 @@ class PmsRoomAmenityType(models.Model):
     _name = "pms.amenity.type"
     _description = "Amenity Type"
 
-    active = fields.Boolean(
-        string="Active", help="Determines if amenity type is active", default=True
-    )
-    name = fields.Char(string="Name", required=True, translate=True)
+    active = fields.Boolean(help="Determines if amenity type is active", default=True)
+    name = fields.Char(required=True, translate=True)

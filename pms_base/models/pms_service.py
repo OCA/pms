@@ -18,24 +18,18 @@ class PmsService(models.Model):
         ondelete="restrict",
         domain="[('type', '=', 'service')]",
     )
-    active = fields.Boolean(
-        string="Active", help="Determines if service is active", default=True
-    )
+    active = fields.Boolean(help="Determines if service is active", default=True)
     sequence = fields.Integer(
-        string="Sequence",
-        help="Field used to change the position of the rooms in tree view."
+        help="Field used to change the position of the rooms in list view."
         "Changing the position changes the sequence",
         default=0,
     )
     property_id = fields.Many2one(
-        string="Property",
         required=True,
         comodel_name="pms.property",
         ondelete="restrict",
     )
     vendor_id = fields.Many2one(
-        string="Vendor", required=True, comodel_name="res.partner", ondelete="restrict"
+        required=True, comodel_name="res.partner", ondelete="restrict"
     )
-    icon = fields.Char(
-        string="Website Icon", help="Set Icon name from https://fontawesome.com/"
-    )
+    icon = fields.Char(help="Set Icon name from https://fontawesome.com/")

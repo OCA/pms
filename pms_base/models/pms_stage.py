@@ -13,33 +13,32 @@ class PMSStage(models.Model):
         default_team_id = self.env.context.get("default_team_id")
         return [default_team_id] if default_team_id else None
 
-    name = fields.Char(string="Name", required=True, translate=True)
-    sequence = fields.Integer("Sequence", default=1)
+    name = fields.Char(required=True, translate=True)
+    sequence = fields.Integer(default=1)
     fold = fields.Boolean(
         "Folded in Kanban",
         help="This stage is folded in the kanban view when "
         "there are no record in that stage to display.",
     )
     is_closed = fields.Boolean(
-        "Is a close stage", help="Services in this stage are considered " "as closed."
+        help="Services in this stage are considered " "as closed."
     )
-    is_default = fields.Boolean("Is a default stage", help="Used as default stage")
+    is_default = fields.Boolean(help="Used as default stage")
     description = fields.Text(translate=True)
     company_id = fields.Many2one(
         "res.company",
-        string="Company",
         required=False,
         index=True,
         default=lambda self: self.env.company.id,
     )
     team_ids = fields.Many2many(
-        "pms.team", string="Teams", default=lambda self: self._default_team_ids()
+        "pms.team", default=lambda self: self._default_team_ids()
     )
-    stage_type = fields.Selection([("property", "Property")], "Type", required=True)
+    stage_type = fields.Selection([("property", "Property")], required=True)
     custom_color = fields.Char(
         "Color Code", default="#FFFFFF", help="Use Hex Code only Ex:-#FFFFFF"
     )
-    active = fields.Boolean(string="Active", default=True)
+    active = fields.Boolean(default=True)
 
     @api.constrains("custom_color")
     def _check_custom_color_hex_code(self):

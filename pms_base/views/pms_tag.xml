@@ -4,10 +4,10 @@
         <field name="name">Tags</field>
         <field name="model">pms.tag</field>
         <field name="arch" type="xml">
-            <tree string="Tags">
+            <list>
                 <field name="full_name" />
                 <field name="company_id" groups="base.group_multi_company" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -43,7 +43,7 @@
         <field name="name">Tags</field>
         <field name="res_model">pms.tag</field>
         <field name="view_id" ref="view_pms_tag_tree" />
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a tag.

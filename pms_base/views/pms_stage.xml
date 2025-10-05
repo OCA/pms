@@ -40,17 +40,17 @@
     </record>
 
     <record id="view_stage_tree" model="ir.ui.view">
-        <field name="name">pms.stage.view.tree</field>
+        <field name="name">pms.stage.view.list</field>
         <field name="model">pms.stage</field>
         <field name="arch" type="xml">
-            <tree string="Stages">
+            <list>
                 <field name="sequence" widget="handle" />
                 <field name="name" />
                 <field name="stage_type" />
                 <field name="is_closed" />
                 <field name="custom_color" />
                 <field name="active" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -73,7 +73,7 @@
     <record id="action_pms_stage" model="ir.actions.act_window">
         <field name="name">PMS Stages</field>
         <field name="res_model">pms.stage</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="context">{'search_default_group_stage_type': 1}</field>
     </record>
 </odoo>

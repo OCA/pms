@@ -23,14 +23,14 @@
         </field>
     </record>
 
-    <!-- Tree view of pms room amenities type -->
+    <!-- List view of pms room amenities type -->
     <record model="ir.ui.view" id="view_pms_amenity_type_tree">
-        <field name="name">pms.amenity.type.tree</field>
+        <field name="name">pms.amenity.type.list</field>
         <field name="model">pms.amenity.type</field>
         <field name="arch" type="xml">
-            <tree string="Amenity Types">
+            <list>
                 <field name="name" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -38,6 +38,6 @@
     <record model="ir.actions.act_window" id="action_pms_amenity_type">
         <field name="name">Amenity Types</field>
         <field name="res_model">pms.amenity.type</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>

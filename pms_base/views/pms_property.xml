@@ -4,23 +4,28 @@
         <field name="model">pms.property</field>
         <field name="arch" type="xml">
             <form string="Property">
-                <header />
+                <header>
+                    <button
+                        name="action_view_childs_property_list"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-users"
+                        invisible="[('childs_property_count', '=', 0)]"
+                    >
+                        <field
+                            name="childs_property_count"
+                            widget="statinfo"
+                            string="Child Property"
+                        />
+                    </button>
+                    <field
+                        name="stage_id"
+                        widget="statusbar"
+                        options="{'fold_field': 'fold', 'clickable': True}"
+                        domain="[('stage_type', '=', 'property'), '|', ('team_ids', 'in', team_id), ('team_ids', '=', False)]"
+                    />
+                </header>
                 <sheet>
-                    <div class="oe_button_box" name="button_box">
-                        <button
-                            name="action_view_childs_property_list"
-                            type="object"
-                            class="oe_stat_button"
-                            icon="fa-users"
-                            attrs="{'invisible': [('childs_property_count', '=', 0)]}"
-                        >
-                            <field
-                                name="childs_property_count"
-                                widget="statinfo"
-                                string="Child Property"
-                            />
-                        </button>
-                    </div>
                     <field
                         name="image_1920"
                         widget="image"
@@ -86,7 +91,10 @@
                                 groups="base.group_multi_company"
                             />
                             <field name="tag_ids" widget="many2many_tags" />
-                            <field name="team_id" />
+                            <field
+                                name="team_id"
+                                groups="pms_base.group_pms_show_team"
+                            />
                         </group>
                     </group>
                     <notebook>
@@ -135,12 +143,12 @@
                                 </group>
                             </group>
                             <field name="room_ids">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="name" />
                                     <field name="type_id" />
                                     <field name="capacity" />
                                     <field name="area" />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page
@@ -149,10 +157,10 @@
                             groups="pms_base.group_pms_show_amenity"
                         >
                             <field name="amenity_ids">
-                                <tree>
+                                <list>
                                     <field name="name" />
                                     <field name="type_id" />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page
@@ -161,23 +169,15 @@
                             groups="pms_base.group_pms_show_service"
                         >
                             <field name="service_ids">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="name" />
                                     <field name="vendor_id" />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers" />
-                    <field name="activity_ids" widget="mail_activity" />
-                    <field
-                        name="message_ids"
-                        widget="mail_thread"
-                        options="{'post_refresh': 'recipients'}"
-                    />
-                </div>
+                <chatter />
             </form>
         </field>
     </record>
@@ -232,17 +232,17 @@
     </record>
 
     <record id="view_pms_property_tree" model="ir.ui.view">
-        <field name="name">pms.property.tree</field>
+        <field name="name">pms.property.list</field>
         <field name="model">pms.property</field>
         <field name="arch" type="xml">
-            <tree string="Properties">
+            <list>
                 <field name="active" invisible="1" />
                 <field name="ref" />
                 <field name="name" />
                 <field name="owner_id" />
                 <field name="tag_ids" widget="many2many_tags" />
                 <field name="team_id" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -259,13 +259,14 @@
                     colors='{"planned": "success", "today": "warning", "overdue": "danger"}'
                 />
                 <templates>
-                    <t t-name="kanban-box">
+                    <t t-name="card">
                         <div class="oe_kanban_global_click">
-                            <div class="o_kanban_image">
-                                <img
-                                    t-att-src="kanban_image('pms.property', 'image_1920', record.id.raw_value)"
-                                    alt="Property"
-                                    class="o_image_64_contain"
+                            <div class="o_kanban_image_fill position-relative w-100">
+                                <field
+                                    name="image_1920"
+                                    alt="Image"
+                                    class="h-100"
+                                    widget="image"
                                 />
                             </div>
                             <div class="oe_kanban_details">
@@ -296,13 +297,13 @@
     <record id="action_pms_property" model="ir.actions.act_window">
         <field name="name">Properties</field>
         <field name="res_model">pms.property</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,list,form</field>
     </record>
 
     <record id="property_action_from_dashboard" model="ir.actions.act_window">
         <field name="name">Properties</field>
         <field name="res_model">pms.property</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="context">{'default_team_id': active_id}</field>
         <field name="domain">[('team_id', '=', active_id)]</field>
     </record>

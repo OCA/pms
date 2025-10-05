@@ -69,17 +69,17 @@
     </record>
 
     <record model="ir.ui.view" id="view_pms_room_tree">
-        <field name="name">pms.room.tree</field>
+        <field name="name">pms.room.list</field>
         <field name="model">pms.room</field>
         <field name="arch" type="xml">
-            <tree string="Rooms" editable="bottom" multi_edit="1" sample="1">
+            <list editable="bottom" multi_edit="1" sample="1">
                 <field name="sequence" widget="handle" />
                 <field name="property_id" />
                 <field name="name" />
                 <field name="type_id" />
                 <field name="capacity" />
                 <field name="area" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -87,6 +87,6 @@
         <field name="name">Rooms</field>
         <field name="res_model">pms.room</field>
         <field name="view_id" ref="view_pms_room_tree" />
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>

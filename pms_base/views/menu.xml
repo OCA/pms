@@ -22,6 +22,7 @@
         action="pms_base.action_pms_team"
         parent="pms_base.menu_board"
         sequence="10"
+        groups="pms_base.group_pms_show_team"
     />
 
     <!-- Master Operations Menu -->

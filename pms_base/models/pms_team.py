@@ -20,22 +20,19 @@ class PMSTeam(models.Model):
 
     name = fields.Char(required=True, translate=True)
     description = fields.Text(translate=True)
-    color = fields.Integer("Color Index")
-    stage_ids = fields.Many2many("pms.stage", string="Stages", default=_default_stages)
-    property_ids = fields.One2many("pms.property", "team_id", string="Properties")
-    property_count = fields.Integer(
-        compute="_compute_property_count", string="Properties Count"
-    )
-    sequence = fields.Integer(
-        "Sequence", default=1, help="Used to sort teams. Lower is better."
-    )
+    color = fields.Integer()
+    stage_ids = fields.Many2many("pms.stage", default=_default_stages)
+    property_ids = fields.One2many("pms.property", "team_id")
+    property_count = fields.Integer(compute="_compute_property_count")
+    sequence = fields.Integer(default=1, help="Used to sort teams. Lower is better.")
     company_id = fields.Many2one(
         "res.company",
-        string="Company",
         required=False,
         index=True,
         default=lambda self: self.env.company.id,
         help="Company related to this team",
     )
 
-    _sql_constraints = [("name_uniq", "unique (name)", "Team name already exists!")]
+    _sql_constraints = [
+        ("name_uniq", "unique (name, company_id)", "Team already exists!")
+    ]

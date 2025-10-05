@@ -24,19 +24,19 @@
     </record>
 
     <record model="ir.ui.view" id="view_pms_room_type_tree">
-        <field name="name">pms.room.type.tree</field>
+        <field name="name">pms.room.type.list</field>
         <field name="model">pms.room.type</field>
         <field name="arch" type="xml">
-            <tree string="Room Types">
+            <list>
                 <field name="sequence" widget="handle" />
                 <field name="name" />
-            </tree>
+            </list>
         </field>
     </record>
 
     <record model="ir.actions.act_window" id="action_pms_room_type">
         <field name="name">Room Types</field>
         <field name="res_model">pms.room.type</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>
