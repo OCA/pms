@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-06-25 09:25+0000\n"
+"PO-Revision-Date: 2025-10-07 14:43+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -3091,17 +3091,17 @@ msgstr "Blacklist"
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__block_create_past_reservations
 msgid "Block Create Past Reservations"
-msgstr ""
+msgstr "Blocco creazione prenotazioni nel passato"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__block_create_past_reservations
 msgid "Block the creation of reservations in the past"
-msgstr ""
+msgstr "Blocca la creazione di prenotazioni nel passato"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__blocked
 msgid "Blocked"
-msgstr ""
+msgstr "Bloccata"
 
 #. module: pms
 #. odoo-python
@@ -3109,7 +3109,7 @@ msgstr ""
 #: code:addons/pms/models/pms_reservation_line.py:0
 #, python-format
 msgid "Blocked reservations can't be modified"
-msgstr ""
+msgstr "Le prenotazioni bloccate non possono essere modificate"
 
 #. module: pms
 #: model:ir.actions.act_window,name:pms.action_pms_board_service_room_type_view
@@ -3124,79 +3124,80 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_service_line_report_view_tree
 msgid "Board Service"
-msgstr ""
+msgstr "Servizio pensione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_board_service__default_code
 msgid "Board Service Code"
-msgstr ""
+msgstr "Codice servizio pensione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_service__board_service_line_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_board_service_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_board_service_room_type_form
 msgid "Board Service Line"
-msgstr ""
+msgstr "Riga servizio pensione"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_service__board_service_line_id
 msgid "Board Service Line in which this service is included"
-msgstr ""
+msgstr "Riga servizio pensione con servizio incluso"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_board_service__board_service_line_ids
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type__board_service_line_ids
 msgid "Board Service Lines"
-msgstr ""
+msgstr "Righe servizio pensione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_board_service__name
 #: model:ir.model.fields,help:pms.field_pms_board_service__name
 msgid "Board Service Name"
-msgstr ""
+msgstr "Nome servizio pensione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__board_price
 #: model:ir.model.fields,field_description:pms.field_product_product__board_price
 msgid "Board Service Price"
-msgstr ""
+msgstr "Prezzo servizio pensione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type_line__pms_board_service_room_type_id
 msgid "Board Service Room"
-msgstr ""
+msgstr "Camera servizio pensione"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_board_service_room_type_line__pms_board_service_room_type_id
 msgid "Board Service Room Type in which this line is included"
-msgstr ""
+msgstr "Tipo camera servizio pensione nella quale è inclusa questa riga"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_board_service_room_type__pms_board_service_id
 msgid "Board Service corresponding to this Board Service Room Type"
 msgstr ""
+"Servizio pensione che corrisponde a questo tipo camera servizio pensione"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_board_service_line__pms_board_service_id
 msgid "Board Service in which this line is included"
-msgstr ""
+msgstr "Servizio pensione nella quale è inclusa questa riga"
 
 #. module: pms
 #: model:ir.model,name:pms.model_pms_board_service_room_type
 msgid "Board Service included in Room"
-msgstr ""
+msgstr "Servizio pensione inclusa nella camera"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__board_service_room_type_ids
 msgid "Board Service included in room type"
-msgstr ""
+msgstr "Servizio pensione inclusa nel tipo camera"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio_availability_wizard__board_service_room_id
 #: model:ir.model.fields,help:pms.field_pms_reservation__board_service_room_id
 #: model:ir.model.fields,help:pms.field_pms_reservation_duplicate__board_service_room_id
 msgid "Board Service included in the room"
-msgstr ""
+msgstr "Servizio pensione incluso nella camera"
 
 #. module: pms
 #: model:ir.actions.act_window,name:pms.open_pms_board_service_form_tree
@@ -3207,12 +3208,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_type_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_service_line_view_search
 msgid "Board Services"
-msgstr ""
+msgstr "Servizi pensione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_board_service__pms_board_service_room_type_ids
 msgid "Board Services Room Type"
-msgstr ""
+msgstr "Tipi camera servizi pensione"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_board_service__pms_board_service_room_type_ids
@@ -3220,76 +3221,78 @@ msgid ""
 "Board Services Room Type corresponding to this Board Service,One board "
 "service for several room types"
 msgstr ""
+"Tipo camera servizi pensione corrispondente a questo servizio pensione, una "
+"pensione per diversi tipi di camera"
 
 #. module: pms
 #: model:ir.ui.menu,name:pms.menu_pms_booking_engine
 msgid "Booking Engine"
-msgstr ""
+msgstr "Motore di prenotazione"
 
 #. module: pms
 #: model:ir.model,name:pms.model_pms_booking_engine
 msgid "Booking engine"
-msgstr ""
+msgstr "Motore di prenotazione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__message_bounce
 msgid "Bounce"
-msgstr ""
+msgstr "Respingi"
 
 #. module: pms
 #: model:pms.board.service,name:pms.pms_board_service_breakfast
 msgid "BreakFast"
-msgstr ""
+msgstr "Colazione"
 
 #. module: pms
 #: model:product.template,name:pms.pms_service_breakfast_buffet_product_template
 msgid "Breakfast Buffet"
-msgstr ""
+msgstr "Buffet colazione"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_service_line_view_search
 msgid "By Day"
-msgstr ""
+msgstr "Per giorno"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_service_line_view_search
 msgid "By Month"
-msgstr ""
+msgstr "Per mese"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_service_line_view_search
 msgid "By Week"
-msgstr ""
+msgstr "Per settimana"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "CIF:"
-msgstr ""
+msgstr "CIF:"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_booking_engine__can_create_folio
 msgid "Can Create Folio"
-msgstr ""
+msgstr "Può creare foglio"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__can_image_1024_be_zoomed
 msgid "Can Image 1024 be zoomed"
-msgstr ""
+msgstr "L'immagine 1024 può essere zoommata"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__can_image_variant_1024_be_zoomed
 msgid "Can Variant Image 1024 be zoomed"
-msgstr ""
+msgstr "L'immagine variante 1024 può essere ingrandita"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__purchase_ok
 msgid "Can be Purchased"
-msgstr ""
+msgstr "Può essere acquistato"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__sale_ok
 msgid "Can be Sold"
-msgstr ""
+msgstr "Può essere venduto"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.advanced_filters_wizard
@@ -3302,59 +3305,59 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.wizard_folio_changes_view_form
 #: model_terms:ir.ui.view,arch_db:pms.wizard_payment_folio_view_form
 msgid "Cancel"
-msgstr ""
+msgstr "Annulla"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__cancel_datetime
 msgid "Cancel Date"
-msgstr ""
+msgstr "Annulla data"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 msgid "Cancel Folio"
-msgstr ""
+msgstr "Annulla foglio"
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid "Cancel Penalty"
-msgstr ""
+msgstr "Annulla penalità"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Cancel Reservation"
-msgstr ""
+msgstr "Annulla prenotazione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_res_company__cancel_penalty_product_id
 msgid "Cancel penalty product"
-msgstr ""
+msgstr "Annulla prodotto penalità"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_service_line__cancel_discount
 msgid "Cancelation Discount"
-msgstr ""
+msgstr "Sconto annullamento"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__cancel_discount
 msgid "Cancelation Discount (%)"
-msgstr ""
+msgstr "Sconto annullamento (%)"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_product_pricelist__cancelation_rule_id
 msgid "Cancelation Policy"
-msgstr ""
+msgstr "Politica annullamento"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_product_pricelist__cancelation_rule_id
 msgid "Cancelation Policy included in the room"
-msgstr ""
+msgstr "Politica annullamento inclusa nella camera"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule__name
 msgid "Cancelation Rule"
-msgstr ""
+msgstr "Regola annullamento"
 
 #. module: pms
 #: model:ir.actions.act_window,name:pms.action_pms_cancelation_rule
@@ -3362,18 +3365,18 @@ msgstr ""
 #: model:ir.ui.menu,name:pms.menu_pms_cancelation_rule
 #: model_terms:ir.ui.view,arch_db:pms.pms_cancelation_rule_form
 msgid "Cancelation Rules"
-msgstr ""
+msgstr "Regole annullamento"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__property_canceled_template
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 msgid "Cancellation Email"
-msgstr ""
+msgstr "E-mail annullamento"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__property_canceled_template
 msgid "Cancellation email template"
-msgstr ""
+msgstr "Modello e-mail annullamento"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_checkin_partner__state__cancel
@@ -3382,146 +3385,148 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_kanban_view
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 msgid "Cancelled"
-msgstr ""
+msgstr "Annullata"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.report_invoice_document
 msgid "Cancelled Invoice"
-msgstr ""
+msgstr "Fattura annullata"
 
 #. module: pms
 #: model:mail.template,name:pms.cancelled_reservation_email
 msgid "Cancelled Reservation"
-msgstr ""
+msgstr "Prenotazione annullata"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 msgid "Cancelled Rooms"
-msgstr ""
+msgstr "Camere annullate"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.report_invoice_document
 msgid "Cancelled Simplified Invoice"
-msgstr ""
+msgstr "Fattura semplificata annullata"
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/ir_config_parameter.py:0
 #, python-format
 msgid "Cannot delete this parameter"
-msgstr ""
+msgstr "Non si può cancellare questo parametro"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room__capacity
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_kanban
 msgid "Capacity"
-msgstr ""
+msgstr "Capienza"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.company_view_form
 msgid "Cardex Settings"
-msgstr ""
+msgstr "Impostazioni cardex"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__statement_line_ids
 msgid "Cash Payments"
-msgstr ""
+msgstr "Pagamenti in contanti"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_res_partner_id_number__category_id
 msgid "Category"
-msgstr ""
+msgstr "Categoria"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__route_from_categ_ids
 msgid "Category Routes"
-msgstr ""
+msgstr "Percorsi categoria"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__pos_categ_id
 msgid "Category used in the Point of Sale."
-msgstr ""
+msgstr "Categoria utilizzata nel punto vendita."
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__cancelled_reason
 msgid "Cause of cancelled"
-msgstr ""
+msgstr "Causale annullamento"
 
 #. module: pms
 #: model:ir.model,name:pms.model_room_closure_reason
 #: model:ir.model.fields,field_description:pms.field_pms_folio__out_service_description
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__out_service_description
 msgid "Cause of out of service"
-msgstr ""
+msgstr "Causale fuori servizio"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.wizard_folio_changes_view_form
 msgid "Change"
-msgstr ""
+msgstr "Modifica"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__apply_day_qty
 msgid "Change cuantity service per day"
-msgstr ""
+msgstr "Modifica quantità servizio per giorno"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__channel_ids
 msgid "Channels"
-msgstr ""
+msgstr "Canali"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__check_adults
 msgid "Check Adults"
-msgstr ""
+msgstr "Controllo adulti"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__checkin
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_split_join_swap_wizard__checkin
 msgid "Check In"
-msgstr ""
+msgstr "Check-in"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__checkout
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_split_join_swap_wizard__checkout
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Check Out"
-msgstr ""
+msgstr "Check-out"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__is_origin_channel_check_visible
 msgid "Check force update origin visible"
-msgstr ""
+msgstr "Origine controllo aggiornamento forzato visibile"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__is_company
 msgid "Check if the contact is a company, otherwise it is a person"
-msgstr ""
+msgstr "Controlla se il contatto è un'azienda, altrimenti è una persona"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__to_weight
 msgid ""
 "Check if the product should be weighted using the hardware scale integration."
 msgstr ""
+"Selezionare se il prodotto deve essere pesato utilizzando l'integrazione con "
+"la bilancia."
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation_duplicate__occupied_room
 msgid "Check if the room is occupied"
-msgstr ""
+msgstr "Controlla se la camera è occupata"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__available_in_pos
 msgid "Check if you want this product to appear in the Point of Sale."
-msgstr ""
+msgstr "Selezionare per visualizzare il prodotto nel punto vendita."
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__checkin
 msgid "Check in"
-msgstr ""
+msgstr "Check-in"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_res_company__check_min_partner_data_invoice
 msgid "Check minimum partner data for invoices"
-msgstr ""
+msgstr "Controlla data partner minima per fatture"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_res_company__check_min_partner_data_invoice
@@ -5841,7 +5846,7 @@ msgstr ""
 #: model:ir.model.fields,help:pms.field_pms_room_type__board_price
 #: model:ir.model.fields,help:pms.field_product_product__board_price
 msgid "Get price on board service"
-msgstr ""
+msgstr "Ottieni prezzo nel servizio pensione"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation_line__price_day_total
@@ -6383,6 +6388,8 @@ msgid ""
 "Indicates if the service included in folio sale line is part of a board "
 "service"
 msgstr ""
+"Indica se il servizio incluso nella riga vendita foglio è parte di un "
+"servizio pensione"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_service__is_cancel_penalty
@@ -6392,17 +6399,19 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_service__is_board_service
 msgid "Indicates if the service is part of a board service"
-msgstr ""
+msgstr "Indica se il servizio è parte di un servizio pensione"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_service_line__is_board_service
 msgid "Indicates if the service line is part of a board service"
-msgstr ""
+msgstr "Indica se la riga servizio è parte di un servizio pensione"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_board_service_room_type__by_default
 msgid "Indicates if this board service is applied by default in the room type"
 msgstr ""
+"Indica se questo servizio pensione è applicato in modo predefinito al tipo "
+"di camera"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room__address_is_independent
@@ -6492,6 +6501,8 @@ msgid ""
 "Integrity error: There's multiple board services with the same code %s and "
 "properties"
 msgstr ""
+"Errore integrità: ci sono diversi servizi pensione con lo stesso codice %s e "
+"proprietà"
 
 #. module: pms
 #. odoo-python
@@ -6782,7 +6793,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_service__is_board_service
 #: model:ir.model.fields,field_description:pms.field_pms_service_line__is_board_service
 msgid "Is Board Service"
-msgstr ""
+msgstr "È servizio pensione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_service__is_cancel_penalty
@@ -7784,7 +7795,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_board_service_id
 msgid "New Board Service"
-msgstr ""
+msgstr "Nuovo servizio pensione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_checkin
@@ -8221,7 +8232,7 @@ msgstr ""
 #: code:addons/pms/models/pms_board_service_room_type.py:0
 #, python-format
 msgid "Only can set one default board service"
-msgstr ""
+msgstr "Si può definire solo un servizio pensione predefinito"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__product_template__consumed_on__checkin
@@ -9004,12 +9015,12 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_board_service_line__amount
 msgid "Price for this Board Service Line/Product"
-msgstr ""
+msgstr "Prezzo per questa riga servizio pensione/prodotto"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_board_service_room_type_line__amount
 msgid "Price for this Board Service Room Type Line/Product"
-msgstr ""
+msgstr "Prezzo per questa riga tipo camera servizio pensione/prodotto"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_board_service__amount
@@ -9018,6 +9029,8 @@ msgid ""
 "Price for this Board Service. It corresponds to the sum of his board service "
 "lines"
 msgstr ""
+"Prezzo per questo servizio pensione. Corrisponde alla somma di queste righe "
+"servizio pensione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio_availability_wizard__price_per_room
@@ -9173,7 +9186,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_board_service_room_type__pricelist_ids
 msgid "Pricelists where this Board Service is available"
-msgstr ""
+msgstr "Listini in cui è disponibile questo servizio pensione"
 
 #. module: pms
 #. odoo-python
@@ -9306,12 +9319,12 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_board_service_line__product_id
 msgid "Product associated with this board service line"
-msgstr ""
+msgstr "Prodotto associato con questa riga prodotto pensione"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_board_service_room_type_line__product_id
 msgid "Product associated with this board service room type line"
-msgstr ""
+msgstr "Prodotto associato con questa riga tipo camera servizio pensione"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_service__product_id
@@ -10241,7 +10254,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_board_service_room_type__pms_room_type_id
 msgid "Room Type for which this Board Service is available"
-msgstr ""
+msgstr "Tipo camera per il quale è disponibile questo servizio pensione"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio_availability_wizard__room_type_id
@@ -10345,7 +10358,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__board_service_room_type_ids
 msgid "Room type's board services"
-msgstr ""
+msgstr "Tipo camera dei servizi pensione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__room_type_filter_ids
@@ -10963,17 +10976,17 @@ msgstr ""
 #: model:ir.model.fields,help:pms.field_pms_board_service__board_service_line_ids
 #: model:ir.model.fields,help:pms.field_pms_board_service_room_type__board_service_line_ids
 msgid "Services included in this Board Service"
-msgstr ""
+msgstr "Servizi inclusi in questo servizio pensione"
 
 #. module: pms
 #: model:ir.model,name:pms.model_pms_board_service_line
 msgid "Services on Board Service included"
-msgstr ""
+msgstr "Servizi inclusi nel servizio pensione"
 
 #. module: pms
 #: model:ir.model,name:pms.model_pms_board_service_room_type_line
 msgid "Services on Board Service included in Room"
-msgstr ""
+msgstr "Servizi in camera inclusi nel servizio pensione"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__overnight_room
@@ -11175,7 +11188,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_product_pricelist_item__board_service_room_type_id
 msgid "Specify a Board services on Room Types."
-msgstr ""
+msgstr "Indicare un servizio pensione in un tipo camera."
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_cancelation_rule__apply_on_late__days
@@ -12747,6 +12760,8 @@ msgstr ""
 #: model:ir.model.fields,help:pms.field_pms_board_service__show_detail_report
 msgid "True if you want that board service detail to be shown on the report"
 msgstr ""
+"Vero se si vuole che il dettaglio del servizio pensione sia visualizzato nel "
+"resoconto"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
@@ -12816,7 +12831,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_board_service__default_code
 msgid "Unique Board Service identification code per property"
-msgstr ""
+msgstr "Codice identificazione univoco servizio pensione per proprietà"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room__room_type_id
@@ -13086,7 +13101,7 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_type_view_form
 msgid "View Board Services"
-msgstr ""
+msgstr "Visualizza servizi pensione"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
