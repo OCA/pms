@@ -145,51 +145,47 @@ class PmsCheckinPartner(models.Model):
         comodel_name="res.country",
         inverse=lambda r: r._inverse_partner_fields("nationality_id", "nationality_id"),
     )
-    residence_street = fields.Char(
-        string="Street",
-        help="Street of the guest's residence",
+    street = fields.Char(
+        help="Street of the guest",
         readonly=False,
         store=True,
-        compute="_compute_residence_street",
+        compute="_compute_street",
     )
-    residence_street2 = fields.Char(
-        string="Street2",
-        help="Second street of the guest's residence",
+    street2 = fields.Char(
+        help="Second street of the guest",
         readonly=False,
         store=True,
-        compute="_compute_residence_street2",
+        compute="_compute_street2",
     )
-    residence_zip = fields.Char(
-        string="Zip",
-        help="Zip of the guest's residence",
+    zip = fields.Char(
+        help="Zip of the guest",
         readonly=False,
         store=True,
-        compute="_compute_residence_zip",
+        compute="_compute_zip",
         change_default=True,
     )
-    residence_city = fields.Char(
-        string="City",
-        help="City of the guest's residence",
+    city = fields.Char(
+        help="City of the guest",
         readonly=False,
         store=True,
-        compute="_compute_residence_city",
+        compute="_compute_city",
     )
-    residence_country_id = fields.Many2one(
+    country_id = fields.Many2one(
         string="Country of residence",
-        help="Country of the guest's residence",
+        help="Country of the guest",
         readonly=False,
         store=True,
         index=True,
-        compute="_compute_residence_country_id",
+        compute="_compute_country_id",
         comodel_name="res.country",
     )
-    residence_state_id = fields.Many2one(
+    state_id = fields.Many2one(
         string="State of residence",
-        help="State of the guest's residence",
+        help="State of the guest",
         readonly=False,
         store=True,
         index=True,
-        compute="_compute_residence_state_id",
+        compute="_compute_state_id",
         comodel_name="res.country.state",
     )
 
@@ -272,7 +268,6 @@ class PmsCheckinPartner(models.Model):
         string="Possible existing customer",
         compute="_compute_possible_existing_customer_ids",
         comodel_name="res.partner",
-        inverse_name="checkin_partner_possible_customer_id",
     )
 
     partner_relationship = fields.Char(help="Family relationship between travelers")
@@ -376,53 +371,52 @@ class PmsCheckinPartner(models.Model):
                 record.nationality_id = False
 
     @api.depends("partner_id")
-    def _compute_residence_street(self):
+    def _compute_street(self):
         for record in self:
-            if not record.residence_street and record.partner_id.residence_street:
-                record.residence_street = record.partner_id.residence_street
-            elif not record.residence_street:
-                record.residence_street = False
+            if not record.street and record.partner_id.street:
+                record.street = record.partner_id.street
+            elif not record.street:
+                record.street = False
 
     @api.depends("partner_id")
-    def _compute_residence_street2(self):
+    def _compute_street2(self):
         for record in self:
-            if not record.residence_street2 and record.partner_id.residence_street2:
-                record.residence_street2 = record.partner_id.residence_street2
-            elif not record.residence_street2:
-                record.residence_street2 = False
+            if not record.street2 and record.partner_id.street2:
+                record.street2 = record.partner_id.street2
+            elif not record.street2:
+                record.street2 = False
 
     @api.depends("partner_id")
-    def _compute_residence_zip(self):
+    def _compute_zip(self):
         for record in self:
-            if not record.residence_zip and record.partner_id.residence_zip:
-                record.residence_zip = record.partner_id.residence_zip
-            elif not record.residence_zip:
-                record.residence_zip = False
+            if not record.zip and record.partner_id.zip:
+                record.zip = record.partner_id.zip
+            elif not record.zip:
+                record.zip = False
 
     @api.depends("partner_id")
-    def _compute_residence_city(self):
+    def _compute_city(self):
         for record in self:
-            if not record.residence_city and record.partner_id.residence_city:
-                record.residence_city = record.partner_id.residence_city
-            elif not record.residence_city:
-                record.residence_city = False
+            if not record.city and record.partner_id.city:
+                record.city = record.partner_id.city
+            elif not record.city:
+                record.city = False
 
     @api.depends("partner_id", "nationality_id")
-    def _compute_residence_country_id(self):
+    def _compute_country_id(self):
         for record in self:
-            if (
-                not record.residence_country_id
-                and record.partner_id.residence_country_id
-            ):
-                record.residence_country_id = record.partner_id.residence_country_id
+            if not record.country_id and record.partner_id.country_id:
+                record.country_id = record.partner_id.country_id
+            elif not record.state_id:
+                record.country_id = False
 
     @api.depends("partner_id")
-    def _compute_residence_state_id(self):
+    def _compute_state_id(self):
         for record in self:
-            if not record.residence_state_id and record.partner_id.residence_state_id:
-                record.residence_state_id = record.partner_id.residence_state_id
-            elif not record.residence_state_id:
-                record.residence_state_id = False
+            if not record.state_id and record.partner_id.state_id:
+                record.state_id = record.partner_id.state_id
+            elif not record.state_id:
+                record.state_id = False
 
     @api.depends(lambda self: self._checkin_manual_fields())
     def _compute_state(self):
@@ -440,7 +434,7 @@ class PmsCheckinPartner(models.Model):
                 elif any(
                     not getattr(record, field)
                     for field in record._checkin_mandatory_fields(
-                        residence_country=record.residence_country_id,
+                        country=record.country_id,
                         document_type=record.document_type,
                         birthdate_date=record.birthdate_date,
                     )
@@ -735,18 +729,37 @@ class PmsCheckinPartner(models.Model):
                         _("Document type and country of document do not match")
                     )
 
-    @api.constrains("residence_state_id", "residence_country_id")
-    def _check_residence_state_id_residence_country_id_consistence(self):
+    @api.constrains("state_id", "country_id")
+    def _check_state_id_country_id_consistence(self):
         for record in self:
-            if record.residence_state_id and record.residence_country_id:
+            if record.state_id and record.country_id:
                 if (
-                    record.residence_state_id.country_id
-                    and record.residence_country_id
-                    not in record.residence_state_id.country_id
+                    record.state_id.country_id
+                    and record.country_id not in record.state_id.country_id
                 ):
                     raise ValidationError(
                         _("State and country of residence do not match")
                     )
+
+    def set_partner_address(self):
+        """
+        Only sets the checkin.partner address in the associated partner if
+        the partner don't have any address field filled.
+        """
+        for record in self:
+            if record.partner_id:
+                residence_vals = {
+                    "street": record.street,
+                    "street2": record.street2,
+                    "zip": record.zip,
+                    "city": record.city,
+                    "country_id": record.country_id.id,
+                    "state_id": record.state_id.id,
+                }
+                if any(residence_vals.values()):
+                    address_fields = residence_vals.keys()
+                    if not any(record.partner_id[field] for field in address_fields):
+                        record.partner_id.write(residence_vals)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -782,6 +795,7 @@ class PmsCheckinPartner(models.Model):
                         "check-in in this reservation"
                     )
                 )
+        records.set_partner_address()
         return records
 
     def write(self, vals):
@@ -791,6 +805,7 @@ class PmsCheckinPartner(models.Model):
             tourist_tax_services_cmds = reservation._compute_tourist_tax_lines()
             if tourist_tax_services_cmds:
                 reservation.write({"service_ids": tourist_tax_services_cmds})
+        self.set_partner_address()
         return res
 
     def unlink(self):
@@ -814,12 +829,12 @@ class PmsCheckinPartner(models.Model):
             "document_number",
             "document_expedition_date",
             "nationality_id",
-            "residence_street",
-            "residence_street2",
-            "residence_zip",
-            "residence_city",
-            "residence_country_id",
-            "residence_state_id",
+            "street",
+            "street2",
+            "zip",
+            "city",
+            "country_id",
+            "state_id",
             "document_country_id",
             "document_type",
         ]
@@ -833,7 +848,7 @@ class PmsCheckinPartner(models.Model):
 
     @api.model
     def _checkin_mandatory_fields(
-        self, residence_country=False, document_type=False, birthdate_date=False
+        self, country=False, document_type=False, birthdate_date=False
     ):
         mandatory_fields = []
         return mandatory_fields
@@ -983,12 +998,10 @@ class PmsCheckinPartner(models.Model):
         )
         if values.get("document_type"):
             values.update({"document_type": int(values.get("document_type"))})
-        if values.get("residence_state_id"):
-            values.update({"residence_state_id": int(values.get("residence_state_id"))})
-        if values.get("residence_country_id"):
-            values.update(
-                {"residence_country_id": int(values.get("residence_country_id"))}
-            )
+        if values.get("state_id"):
+            values.update({"state_id": int(values.get("state_id"))})
+        if values.get("country_id"):
+            values.update({"country_id": int(values.get("country_id"))})
 
         if values.get("document_expedition_date"):
             values.update(

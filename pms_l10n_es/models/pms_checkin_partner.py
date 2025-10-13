@@ -68,20 +68,18 @@ class PmsCheckinPartner(models.Model):
 
     @api.model
     def _checkin_mandatory_fields(
-        self, residence_country=False, document_type=False, birthdate_date=False
+        self, country=False, document_type=False, birthdate_date=False
     ):
-        mandatory_fields = super()._checkin_mandatory_fields(
-            residence_country, document_type
-        )
+        mandatory_fields = super()._checkin_mandatory_fields(country, document_type)
         mandatory_fields.extend(
             [
                 "birthdate_date",
                 "gender",
                 "nationality_id",
-                "residence_street",
-                "residence_city",
-                "residence_country_id",
-                "residence_zip",
+                "street",
+                "city",
+                "country_id",
+                "zip",
             ]
         )
 
@@ -105,10 +103,10 @@ class PmsCheckinPartner(models.Model):
                     ]
                 )
 
-        if residence_country and residence_country.code == CODE_SPAIN:
+        if country and country.code == CODE_SPAIN:
             mandatory_fields.extend(
                 [
-                    "residence_state_id",
+                    "state_id",
                 ]
             )
         if document_type and document_type.code and document_type.code == CODE_NIF:
