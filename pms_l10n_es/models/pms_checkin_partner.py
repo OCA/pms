@@ -21,7 +21,7 @@ class PmsCheckinPartner(models.Model):
         help="ID support number",
         readonly=False,
         store=True,
-        compute="_compute_support_number",
+        compute="_compute_partner_document_data",
     )
 
     ses_partners_relationship = fields.Selection(
@@ -51,26 +51,24 @@ class PmsCheckinPartner(models.Model):
         required=False,
     )
 
-    @api.depends("partner_id")
-    def _compute_support_number(self):
+    def _compute_partner_document_data(self):
+        res = super()._compute_partner_document_data()
         for record in self:
-            if not record.support_number:
-                if record.partner_id.id_numbers:
-                    dni_numbers = record.partner_id.id_numbers.filtered(
-                        lambda x: x.category_id.name == "DNI"
-                    )
-                    if len(dni_numbers) == 1 and dni_numbers.support_number:
-                        record.support_number = dni_numbers.support_number
-                    else:
-                        record.support_number = False
-                else:
-                    record.support_number = False
+            last_update_document = record.partner_id.id_numbers.filtered(
+                lambda x, record=record: x.write_date
+                == max(record.partner_id.id_numbers.mapped("write_date"))
+            )
+            if (
+                not record.support_number
+                and last_update_document
+                and last_update_document[0].support_number
+            ):
+                record.support_number = last_update_document[0].support_number
+        return res
 
-    @api.model
-    def _checkin_mandatory_fields(
-        self, country=False, document_type=False, birthdate_date=False
-    ):
-        mandatory_fields = super()._checkin_mandatory_fields(country, document_type)
+    def _checkin_mandatory_fields(self):
+        self.ensure_one()
+        mandatory_fields = super()._checkin_mandatory_fields()
         mandatory_fields.extend(
             [
                 "birthdate_date",
@@ -83,9 +81,9 @@ class PmsCheckinPartner(models.Model):
             ]
         )
 
-        if birthdate_date:
+        if self.birthdate_date:
             # Checkins with age greater than 14 must have an identity document
-            if birthdate_date <= fields.Date.today() - relativedelta(years=14):
+            if self.birthdate_date <= fields.Date.today() - relativedelta(years=14):
                 mandatory_fields.extend(
                     [
                         "document_number",
@@ -95,7 +93,7 @@ class PmsCheckinPartner(models.Model):
                 )
             # Checkins with age lower than 18 must have a relationship
             # with another checkin partner
-            if birthdate_date > fields.Date.today() - relativedelta(years=18):
+            if self.birthdate_date > fields.Date.today() - relativedelta(years=18):
                 mandatory_fields.extend(
                     [
                         "ses_partners_relationship",
@@ -103,19 +101,23 @@ class PmsCheckinPartner(models.Model):
                     ]
                 )
 
-        if country and country.code == CODE_SPAIN:
+        if self.country_id and self.country_id.code == CODE_SPAIN:
             mandatory_fields.extend(
                 [
                     "state_id",
                 ]
             )
-        if document_type and document_type.code and document_type.code == CODE_NIF:
+        if (
+            self.document_type
+            and self.document_type.code
+            and self.document_type.code == CODE_NIF
+        ):
             mandatory_fields.extend(
                 [
                     "lastname2",
                 ]
             )
-        if document_type and document_type.code in [CODE_NIF, CODE_NIE]:
+        if self.document_type and self.document_type.code in [CODE_NIF, CODE_NIE]:
             mandatory_fields.extend(
                 [
                     "support_number",

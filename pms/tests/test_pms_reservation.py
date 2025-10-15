@@ -138,9 +138,7 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
                 "gender": "male",
             }
         )
-        cls.id_category = cls.env["res.partner.id_category"].create(
-            {"name": "DNI", "code": "D"}
-        )
+
         cls.sale_channel_direct = cls.env["pms.sale.channel"].create(
             {"name": "sale channel direct", "channel_type": "direct"}
         )
@@ -913,15 +911,7 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
                 "gender": "male",
             }
         )
-        self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "30065089H",
-                "valid_from": datetime.date.today(),
-                "partner_id": host.id,
-                "country_id": self.env.ref("base.es").id,
-            }
-        )
+
         r1 = self.env["pms.reservation"].create(
             {
                 "checkin": fields.date.today(),
@@ -1174,15 +1164,7 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
                 "gender": "male",
             }
         )
-        self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "30065000H",
-                "valid_from": datetime.date.today(),
-                "partner_id": self.host1.id,
-                "country_id": self.env.ref("base.es").id,
-            }
-        )
+
         self.host2 = self.env["res.partner"].create(
             {
                 "firstname": "Brais",
@@ -1192,15 +1174,7 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
                 "gender": "male",
             }
         )
-        self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "30065089H",
-                "valid_from": datetime.date.today(),
-                "partner_id": self.host2.id,
-                "country_id": self.env.ref("base.es").id,
-            }
-        )
+
         self.reservation = self.env["pms.reservation"].create(
             {
                 "checkin": "2012-01-14",
@@ -2593,9 +2567,7 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
         # ARRANGE
         checkin = fields.date.today()
         checkout = fields.date.today() + datetime.timedelta(days=3)
-        self.id_category = self.env["res.partner.id_category"].create(
-            {"name": "DNI", "code": "D"}
-        )
+
         # ACT
         reservation = self.env["pms.reservation"].create(
             {
@@ -2632,16 +2604,7 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
                 "email": "enrique@example.com",
             }
         )
-        self.id_category = self.env["res.partner.id_category"].create(
-            {"name": "DNI", "code": "D"}
-        )
-        self.document_id = self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "61645604S",
-                "partner_id": partner.id,
-            }
-        )
+
         checkin = fields.date.today()
         checkout = fields.date.today() + datetime.timedelta(days=3)
         # ACT
@@ -2683,16 +2646,7 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
                 "email": "simon@example.com",
             }
         )
-        self.id_category = self.env["res.partner.id_category"].create(
-            {"name": "DNI", "code": "D"}
-        )
-        self.document_id = self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "74247377L",
-                "partner_id": partner.id,
-            }
-        )
+
         checkin = fields.date.today()
         checkout = fields.date.today() + datetime.timedelta(days=3)
         # ACT

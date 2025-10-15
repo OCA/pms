@@ -145,9 +145,6 @@ class TestPmsReservationLines(TestPms):
                 "gender": "male",
             }
         )
-        cls.id_category = cls.env["res.partner.id_category"].create(
-            {"name": "DNI", "code": "D"}
-        )
         cls.sale_channel_direct = cls.env["pms.sale.channel"].create(
             {"name": "sale channel direct", "channel_type": "direct"}
         )

@@ -64,15 +64,10 @@
                             <field name="lastname" />
                             <field name="gender" />
                             <field name="birthdate_date" />
-                            <field name="document_country_id" />
-                            <field name="document_type" />
-                            <field name="document_number" />
-                            <field name="document_expedition_date" />
                             <field name="nationality_id" />
                             <field name="email" />
                             <field name="mobile" />
                             <field name="phone" />
-                            <field name="document_id" invisible="1" />
                             <field name="pms_property_id" invisible="1" />
                             <label for="street" string="Residence Address" />
                             <div class="o_address_format">
@@ -162,10 +157,6 @@
                 <field name="lastname" />
                 <field name="gender" />
                 <field name="birthdate_date" />
-                <field name="document_country_id" />
-                <field name="document_type" />
-                <field name="document_number" />
-                <field name="document_expedition_date" />
                 <field name="nationality_id" />
                 <field name="state_id" />
                 <field name="mobile" />
@@ -209,10 +200,6 @@
                 <field name="lastname" />
                 <field name="gender" />
                 <field name="birthdate_date" />
-                <field name="document_country_id" />
-                <field name="document_type" />
-                <field name="document_number" />
-                <field name="document_expedition_date" />
                 <field name="nationality_id" />
                 <field name="state_id" />
                 <field name="mobile" />
@@ -253,10 +240,6 @@
                 <field name="lastname" />
                 <field name="gender" />
                 <field name="birthdate_date" />
-                <field name="document_country_id" />
-                <field name="document_type" />
-                <field name="document_number" />
-                <field name="document_expedition_date" />
                 <field name="nationality_id" />
                 <field name="state_id" />
                 <field name="mobile" />
@@ -292,10 +275,6 @@
                 <field name="lastname" />
                 <field name="gender" />
                 <field name="birthdate_date" />
-                <field name="document_country_id" />
-                <field name="document_type" />
-                <field name="document_number" />
-                <field name="document_expedition_date" />
                 <field name="nationality_id" />
                 <field name="state_id" />
                 <field name="email" />

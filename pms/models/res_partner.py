@@ -4,7 +4,6 @@
 import logging
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -260,78 +259,6 @@ class ResPartner(models.Model):
         self.ensure_one()
         # Template to be inherited by localization modules
         return True
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        for vals in vals_list:
-            check_missing_document = self._check_document_partner_required(vals)
-            if check_missing_document:
-                raise ValidationError(_("A document identification is required"))
-        return super().create(vals_list)
-
-    def write(self, vals):
-        check_missing_document = self._check_document_partner_required(
-            vals, partners=self
-        )
-        if check_missing_document:
-            # REVIEW: Deactivate this check for now, because it can generate problems
-            # with other modules that update technical partner fields
-            _logger.warning(
-                _("Partner without document identification, update vals %s"), vals
-            )
-            # We only check if the vat or document_number is updated
-            if "vat" in vals or "document_number" in vals:
-                raise ValidationError(_("A document identification is required"))
-        return super().write(vals)
-
-    @api.model
-    def _check_document_partner_required(self, vals, partners=False):
-        company_ids = (
-            self.env["res.company"].sudo().search([]).ids
-            if (not partners or any([not partner.company_id for partner in partners]))
-            else partners.mapped("company_id.id")
-        )
-        if not self.env.context.get("avoid_document_restriction") and any(
-            [
-                self.env["res.company"]
-                .sudo()
-                .browse(company_id)
-                .document_partner_required
-                for company_id in company_ids
-            ]
-        ):
-            return self._missing_document(vals, partners)
-        return False
-
-    @api.model
-    def _missing_document(self, vals, partners=False):
-        # If not is a partner contact and not have vat,
-        # then return missing document True
-        if (
-            not vals.get("parent_id")
-            or (partners and any([not partner.parent_id for partner in partners]))
-        ) and (
-            vals.get("vat") is False
-            or vals.get("vat") == ""
-            or (
-                "vat" not in vals
-                and (
-                    any([not partner.vat for partner in partners]) if partners else True
-                )
-            )
-            or vals.get("country_id") is False
-            or vals.get("country_id") == ""
-            or (
-                "country_id" not in vals
-                and (
-                    any([not partner.country_id for partner in partners])
-                    if partners
-                    else True
-                )
-            )
-        ):
-            return True
-        return False
 
     @api.constrains("is_agency", "property_product_pricelist")
     def _check_agency_pricelist(self):

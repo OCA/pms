@@ -43,7 +43,6 @@ from . import account_bank_statement_line
 from . import account_bank_statement
 from . import account_journal
 from . import pms_availability
-from . import res_partner_id_number
 from . import pms_automated_mails
 from . import payment_transaction
 from . import pms_team_member
@@ -53,4 +52,3 @@ from . import payment_provider
 from . import account_analytic_line
 from . import res_partner_category
 from . import res_country
-from . import res_partner_id_category

@@ -24,10 +24,8 @@
         "partner_contact_gender",
         "partner_contact_birthdate",
         "partner_contact_nationality",
-        # "partner_identification_unique_by_category",
         "queue_job",
         "web_timeline",
-        "partner_identification",
         "analytic",
         "account",
         "sale",
@@ -103,8 +101,6 @@
         "views/account_analytic_distribution_views.xml",
         # "views/account_analytic_line_views.xml",
         "views/res_partner_category.xml",
-        "views/res_partner_id_category_views.xml",
-        "views/res_partner_id_number_views.xml",
         "views/res_country_views.xml",
         "views/payment_templates.xml",
     ],
@@ -117,6 +113,11 @@
     "qweb": [
         "static/src/xml/reservation_group_button_views.xml",
     ],
+    "external_dependencies": {
+        "python": [
+            "openupgradelib",
+        ],
+    },
     "assets": {
         "web.assets_frontend": [
             "pms/static/src/js/payment_form.js",

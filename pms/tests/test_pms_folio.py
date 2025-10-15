@@ -733,9 +733,6 @@ class TestPmsFolio(TestPms, AccountTestInvoicingCommon):
                 "email": "enrique@example.com",
             }
         )
-        self.id_category = self.env["res.partner.id_category"].create(
-            {"name": "DNI", "code": "D"}
-        )
         # ACT
         folio1 = self.env["pms.folio"].create(
             {
@@ -768,9 +765,6 @@ class TestPmsFolio(TestPms, AccountTestInvoicingCommon):
                 "mobile": "654667733",
                 "email": "simon@example.com",
             }
-        )
-        self.id_category = self.env["res.partner.id_category"].create(
-            {"name": "DNI", "code": "D"}
         )
 
         # ACT
