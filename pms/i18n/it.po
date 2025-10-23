@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-10-21 13:42+0000\n"
+"PO-Revision-Date: 2025-10-23 08:42+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -7539,7 +7539,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__margin_days_autoinvoice
 msgid "Margin Days"
-msgstr ""
+msgstr "Giorni di margine"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__prepaid_warning_days
@@ -7547,56 +7547,58 @@ msgid ""
 "Margin in days to create a notice if a payment                 advance has "
 "not been recorded"
 msgstr ""
+"Giorni di margine per creare una nota se un anticipo di                  "
+"pagamento non è stato registrato"
 
 #. module: pms
 #: model:ir.ui.menu,name:pms.menu_pms_room_massive_changes_wizard
 msgid "Massive Changes"
-msgstr ""
+msgstr "Modifiche di massa"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.availability_view_form
 #: model_terms:ir.ui.view,arch_db:pms.product_pricelist_view_form
 msgid "Massive changes"
-msgstr ""
+msgstr "Modifiche di massa"
 
 #. module: pms
 #: model:ir.actions.act_window,name:pms.action_wizard_massive_changes
 msgid "Massive changes on Pricelist & Availability Plans"
-msgstr ""
+msgstr "Modifiche di massa su listino e piani disponibilità"
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/wizards/wizard_massive_changes.py:0
 #, python-format
 msgid "Massive changes on Pricelist and Availability Plans"
-msgstr ""
+msgstr "Modifiche di massa su listino e piani disponibilità"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__max_amount_simplified_invoice
 msgid "Max Amount Simplified Invoice"
-msgstr ""
+msgstr "Valore massimo fattura semplificata"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan_rule__max_avail
 msgid "Max Avail"
-msgstr ""
+msgstr "Massimo disponibile"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__max_avail
 msgid "Max. Availability"
-msgstr ""
+msgstr "Disponibilità massima"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan_rule__max_stay
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__max_stay
 msgid "Max. Stay"
-msgstr ""
+msgstr "Soggiorno massimo"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan_rule__max_stay_arrival
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__max_stay_arrival
 msgid "Max. Stay Arrival"
-msgstr ""
+msgstr "Massimo arrivo del soggiorno"
 
 #. module: pms
 #. odoo-python
@@ -7604,13 +7606,15 @@ msgstr ""
 #, python-format
 msgid "Max. Stay Arrival can't be less than Min. Stay Arrival"
 msgstr ""
+"Il massimo arrivo del soggiorno non può essere inferiore al minimo arrivo "
+"del soggiorno"
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/pms_availability_plan_rule.py:0
 #, python-format
 msgid "Max. Stay Arrival can't be less than zero"
-msgstr ""
+msgstr "Il massimo arrivo del soggiorno non può essere inferiore a zero"
 
 #. module: pms
 #. odoo-python
@@ -7618,40 +7622,41 @@ msgstr ""
 #, python-format
 msgid "Max. Stay can't be less than Min. Stay"
 msgstr ""
+"Il massimo del soggiorno non può essere inferiore al minimo del soggiorno"
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/pms_availability_plan_rule.py:0
 #, python-format
 msgid "Max. Stay can't be less than zero"
-msgstr ""
+msgstr "Il massimo del soggiorno non può essere inferiore a zero"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_cancelation_rule_form
 msgid "Max. days InTime before Checkin"
-msgstr ""
+msgstr "Massimo numero di giorni prima del check-in"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__tourist_tax_max_age
 #: model:ir.model.fields,field_description:pms.field_product_product__tourist_tax_max_age
 #: model:ir.model.fields,field_description:pms.field_product_template__tourist_tax_max_age
 msgid "Maximum Age"
-msgstr ""
+msgstr "Età massima"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__max_amount_simplified_invoice
 msgid "Maximum amount to create the simplified invoice"
-msgstr ""
+msgstr "Valore massimo per creare una fattura semplificata"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_cancelation_rule__days_intime
 msgid "Maximum number of days for free cancellation before Checkin"
-msgstr ""
+msgstr "Numero di giorni massimo prima del check-in per annullamento gratuito"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_availability_plan_rule__max_avail
 msgid "Maximum simultaneous availability on own Booking Engine"
-msgstr ""
+msgstr "Disponibilità contemporanea massima nel proprio motore di prenotazione"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__default_max_avail
@@ -7659,26 +7664,29 @@ msgid ""
 "Maximum simultaneous availability on own Booking Engine given no "
 "availability rules. Use `-1` for using maximum simultaneous availability."
 msgstr ""
+"Massima disponibilità simultanea sul proprio motore di prenotazione, in "
+"assenza di regole di disponibilità. Utilizzare `-1` per utilizzare la "
+"massima disponibilità simultanea."
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_massive_changes_wizard__max_avail
 msgid "Maximum simultaneous availability on own Booking Engine."
-msgstr ""
+msgstr "Disponibilità contemporanea massima nel proprio motore di prenotazione."
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_availability_plan_rule__max_stay
 msgid "Maximum stay"
-msgstr ""
+msgstr "Soggiorno massimo"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_availability_plan_rule__max_stay_arrival
 msgid "Maximum stay if checkin is today"
-msgstr ""
+msgstr "Soggiorno massimo se il check-in è oggi"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 msgid "Member Team"
-msgstr ""
+msgstr "Team del membro"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_has_error
@@ -7687,27 +7695,27 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__message_has_error
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__message_has_error
 msgid "Message Delivery error"
-msgstr ""
+msgstr "Errore di consegna messaggio"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__invoice_warn_msg
 msgid "Message for Invoice"
-msgstr ""
+msgstr "Messaggio per fattura"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__sale_warn_msg
 msgid "Message for Sales Order"
-msgstr ""
+msgstr "Messaggio per ordine di vendita"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__sale_line_warn_msg
 msgid "Message for Sales Order Line"
-msgstr ""
+msgstr "Messaggio per riga ordine vendita"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__picking_warn_msg
 msgid "Message for Stock Picking"
-msgstr ""
+msgstr "Messaggio per prelievo di magazzino"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_ids
@@ -7716,75 +7724,75 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__message_ids
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__message_ids
 msgid "Messages"
-msgstr ""
+msgstr "Messaggi"
 
 #. module: pms
 #: model:pms.amenity,name:pms.pms_amenity_microwave_oven
 msgid "Microwave oven"
-msgstr ""
+msgstr "Forno a microonde"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__min_price
 msgid "Min. Price"
-msgstr ""
+msgstr "Prezzo minimo"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__min_quantity
 msgid "Min. Quantity"
-msgstr ""
+msgstr "Quantità minima"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan_rule__min_stay
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__min_stay
 msgid "Min. Stay"
-msgstr ""
+msgstr "Soggiorno minimo"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan_rule__min_stay_arrival
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__min_stay_arrival
 msgid "Min. Stay Arrival"
-msgstr ""
+msgstr "Arrivo del soggiorno minimo"
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/pms_availability_plan_rule.py:0
 #, python-format
 msgid "Min. Stay Arrival can't be less than zero"
-msgstr ""
+msgstr "L'arrivo del soggiorno minimo non può essere inferiore a zero"
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/pms_availability_plan_rule.py:0
 #, python-format
 msgid "Min. Stay can't be less than zero"
-msgstr ""
+msgstr "Il soggiorno minimo non può essere inferiore a zero"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__tourist_tax_min_age
 #: model:ir.model.fields,field_description:pms.field_product_product__tourist_tax_min_age
 #: model:ir.model.fields,field_description:pms.field_product_template__tourist_tax_min_age
 msgid "Minimum Age"
-msgstr ""
+msgstr "Età massima"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__orderpoint_ids
 msgid "Minimum Stock Rules"
-msgstr ""
+msgstr "Regole giacenze minime"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__min_price
 msgid "Minimum price for a room type"
-msgstr ""
+msgstr "Prezzo minimo per un tipo di camera"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_availability_plan_rule__min_stay
 msgid "Minimum stay"
-msgstr ""
+msgstr "Soggiorno minimo"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_availability_plan_rule__min_stay_arrival
 msgid "Minimum stay if checkin is today"
-msgstr ""
+msgstr "Soggiorno minimo se il check-in è oggi"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__mobile
@@ -7795,68 +7803,68 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_res_partner__mobile
 #: model:ir.model.fields,field_description:pms.field_res_users__mobile
 msgid "Mobile"
-msgstr ""
+msgstr "Cellulare"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_ir_pms_property__model_id
 #: model_terms:ir.ui.view,arch_db:pms.advanced_filters_wizard
 msgid "Model"
-msgstr ""
+msgstr "Modello"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_ir_pms_property__model_name
 msgid "Model Name"
-msgstr ""
+msgstr "Nome modello"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__property_modified_template
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 msgid "Modification Email"
-msgstr ""
+msgstr "E-mail notifica"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__modification_type
 msgid "Modification Type"
-msgstr ""
+msgstr "Tipo notifica"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__property_modified_template
 msgid "Modification email template"
-msgstr ""
+msgstr "Modello e-mail notifica"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_reservation__cancelled_reason__modified
 msgid "Modified"
-msgstr ""
+msgstr "Modificato"
 
 #. module: pms
 #: model:mail.template,name:pms.modified_reservation_email
 msgid "Modified Reservation"
-msgstr ""
+msgstr "Prenotazione modificata"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
 #: model_terms:ir.ui.view,arch_db:pms.wizard_folio_changes_view_form
 msgid "Monday"
-msgstr ""
+msgstr "Lunedì"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_property__default_invoicing_policy__month_day
 #: model:ir.model.fields.selection,name:pms.selection__res_partner__invoicing_policy__month_day
 msgid "Month Day Invoice"
-msgstr ""
+msgstr "Fattura del mese e del giorno"
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/product_product.py:0
 #, python-format
 msgid "More than one room found for the same product"
-msgstr ""
+msgstr "Trovata più di una camera per lo stesso prodotto"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.res_users_view_form
 msgid "Multi Properties"
-msgstr ""
+msgstr "Proprietà multipla"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__my_activity_date_deadline
@@ -7865,12 +7873,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__my_activity_date_deadline
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__my_activity_date_deadline
 msgid "My Activity Deadline"
-msgstr ""
+msgstr "Scadenza mia attività"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 msgid "My Reservations"
-msgstr ""
+msgstr "Le mie prenotazioni"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_automated_mails__name
@@ -7885,37 +7893,37 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
 msgid "Name in reports"
-msgstr ""
+msgstr "Nome nei report"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_availability_plan__name
 msgid "Name of availability plan"
-msgstr ""
+msgstr "Nome del piano di disponibilità"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_automated_mails__name
 msgid "Name of the automated mail."
-msgstr ""
+msgstr "Nome della e-mail automatica."
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type_class__name
 msgid "Name of the room type class"
-msgstr ""
+msgstr "Nome della classe tipo camera"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__partner_id
 msgid "Name of who made the reservation"
-msgstr ""
+msgstr "Nome di chi ha fatto la prenotazione"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_account_move_line__name_changed_by_user
 msgid "Name set manually"
-msgstr ""
+msgstr "Nome impostato manualmente"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__nationality_id
@@ -7923,22 +7931,22 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_res_partner__nationality_id
 #: model:ir.model.fields,field_description:pms.field_res_users__nationality_id
 msgid "Nationality"
-msgstr ""
+msgstr "Nazionalità"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__nbr_moves_in
 msgid "Nbr Moves In"
-msgstr ""
+msgstr "Entra NBR"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__nbr_moves_out
 msgid "Nbr Moves Out"
-msgstr ""
+msgstr "Esce NBR"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__res_partner__invoice_to_agency__never
 msgid "Never"
-msgstr ""
+msgstr "Mai"
 
 #. module: pms
 #. odoo-python
@@ -7947,7 +7955,7 @@ msgstr ""
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid "New"
-msgstr ""
+msgstr "Nuova"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_board_service_id
@@ -7957,32 +7965,32 @@ msgstr "Nuovo servizio pensione"
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_checkin
 msgid "New Checkin"
-msgstr ""
+msgstr "Nuovo check-in"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_checkout
 msgid "New Checkout"
-msgstr ""
+msgstr "Nuovo check-out"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_discount
 msgid "New Discount %"
-msgstr ""
+msgstr "Nuovo sconto %"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_price
 msgid "New Price"
-msgstr ""
+msgstr "Nuovo prezzo"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_service_id
 msgid "New Service"
-msgstr ""
+msgstr "Nuovo servizio"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_service_line_view_search
 msgid "Next 7 days"
-msgstr ""
+msgstr "Sette giorni successivi"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__activity_date_deadline
@@ -7991,7 +7999,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__activity_date_deadline
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__activity_date_deadline
 msgid "Next Activity Deadline"
-msgstr ""
+msgstr "Scadenza prossima attività"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__activity_summary
@@ -8000,7 +8008,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__activity_summary
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__activity_summary
 msgid "Next Activity Summary"
-msgstr ""
+msgstr "Riepilogo prossima attività"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__activity_type_id
@@ -8009,91 +8017,91 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__activity_type_id
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__activity_type_id
 msgid "Next Activity Type"
-msgstr ""
+msgstr "Tipo prossima attività"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__tourist_tax_apply_from_night
 #: model:ir.model.fields,help:pms.field_product_product__tourist_tax_apply_from_night
 #: model:ir.model.fields,help:pms.field_product_template__tourist_tax_apply_from_night
 msgid "Night number the rule starts applying (e.g., 1 = first night)"
-msgstr ""
+msgstr "Numero della notte da cui si applica la regola (es. 1 = prima notte)"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__tourist_tax_apply_to_night
 #: model:ir.model.fields,help:pms.field_product_product__tourist_tax_apply_to_night
 #: model:ir.model.fields,help:pms.field_product_template__tourist_tax_apply_to_night
 msgid "Night number the rule stops applying (optional)"
-msgstr ""
+msgstr "Numero della notte dalla quale la regola non si applica (opzionale)"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__reservation_line_ids
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__nights
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__nights
 msgid "Nights"
-msgstr ""
+msgstr "Notti"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Nights)"
-msgstr ""
+msgstr "notti)"
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid "No Checkins!"
-msgstr ""
+msgstr "Nessun check-in!"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_reservation__cancelled_reason__noshow
 #: model_terms:ir.ui.view,arch_db:pms.pms_cancelation_rule_form
 msgid "No Show"
-msgstr ""
+msgstr "Non visualizzare"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule__apply_on_noshow
 msgid "No Show apply on"
-msgstr ""
+msgstr "Applica non visualizzare a"
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid "No checkin was made for this reservation"
-msgstr ""
+msgstr "Nessun check-in eseguito per questa prenotazione"
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid "No entry has been recorded in this reservation"
-msgstr ""
+msgstr "Nessuna entrata registrata per questa prenotazione"
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/account_move.py:0
 #, python-format
 msgid "No journal could be found in company %(company_name)s"
-msgstr ""
+msgstr "Nessun registro trovato nell'azienda %(company_name)s"
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/account_move.py:0
 #, python-format
 msgid "No journal could be found in property %(property_name)s"
-msgstr ""
+msgstr "Nessun registro trovato nella proprietà %(property_name)s"
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid "No person from reserve %s has arrived"
-msgstr ""
+msgstr "Nessun persona è arrivata per la prenotazione %s"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule__days_noshow
 msgid "NoShow first days"
-msgstr ""
+msgstr "Non visualizzare i primi giorni"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_booking_duplicate__reservation_type__normal
@@ -8101,34 +8109,34 @@ msgstr ""
 #: model:ir.model.fields.selection,name:pms.selection__pms_folio__reservation_type__normal
 #: model:ir.model.fields.selection,name:pms.selection__pms_reservation__reservation_type__normal
 msgid "Normal"
-msgstr ""
+msgstr "Normale"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__journal_normal_invoice_id
 msgid "Normal Invoice Journal"
-msgstr ""
+msgstr "Registro fattura normale"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__email_normalized
 msgid "Normalized Email"
-msgstr ""
+msgstr "E-mail normalizzata"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_folio__payment_state__not_paid
 msgid "Not Paid"
-msgstr ""
+msgstr "Non pagato"
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/pms_property.py:0
 #, python-format
 msgid "Not invoiced due to pending amounts and cancelled reservations"
-msgstr ""
+msgstr "Non fatturato per valori in sospeso e prenotazioni annullate"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__folio_sale_line__display_type__line_note
 msgid "Note"
-msgstr ""
+msgstr "Nota"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__folio_sale_line__invoice_status__no
@@ -8136,19 +8144,19 @@ msgstr ""
 #: model:ir.model.fields.selection,name:pms.selection__pms_reservation__invoice_status__no
 #: model:ir.model.fields.selection,name:pms.selection__pms_service__invoice_status__no
 msgid "Nothing to Invoice"
-msgstr ""
+msgstr "Niente da fatturare"
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/wizards/folio_make_invoice_advance.py:0
 #, python-format
 msgid "Nothing to invoice"
-msgstr ""
+msgstr "Niente da fatturare"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_folio__payment_state__nothing_to_pay
 msgid "Nothing to pay"
-msgstr ""
+msgstr "Niente da pagare"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__cardex_warning
