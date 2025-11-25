@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-10-28 12:01+0000\n"
+"PO-Revision-Date: 2025-11-25 11:42+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -400,7 +400,7 @@ msgstr "<i class=\"fa fa-danger\"/> Prenotazione annullata!"
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.folio_portal_template
 msgid "<i class=\"fa fa-download\"/> Download"
-msgstr "<i class=\"fa fa-download\"/> Download"
+msgstr "<i class=\"fa fa-download\"/> Scarica"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.folio_portal_template
