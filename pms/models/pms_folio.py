@@ -791,7 +791,7 @@ class PmsFolio(models.Model):
     def _compute_sale_line_ids(self):
         for folio in self.filtered(lambda f: isinstance(f.id, int)):
             sale_lines_vals = []
-            if folio.reservation_type in ("normal", "staff"):
+            if folio.reservation_type in self._get_reservation_types_with_any_pricing():
                 sale_lines_vals_to_drop = []
                 seq = 0
                 for reservation in sorted(
@@ -802,7 +802,11 @@ class PmsFolio(models.Model):
                     # RESERVATION LINES
                     reservation_sale_lines = []
                     reservation_sale_lines_to_drop = []
-                    if reservation.reservation_line_ids:
+                    if (
+                        reservation.reservation_line_ids
+                        and folio.reservation_type
+                        in self._get_reservation_types_with_night_pricing()
+                    ):
                         (
                             reservation_sale_lines,
                             reservation_sale_lines_to_drop,
@@ -817,7 +821,11 @@ class PmsFolio(models.Model):
                     # RESERVATION SERVICES
                     service_sale_lines = []
                     service_sale_lines_to_drop = []
-                    if reservation.service_ids:
+                    if (
+                        reservation.service_ids
+                        and folio.reservation_type
+                        in self._get_reservation_types_with_service_pricing()
+                    ):
                         (
                             service_sale_lines,
                             service_sale_lines_to_drop,
@@ -861,7 +869,10 @@ class PmsFolio(models.Model):
     def _compute_pricelist_id(self):
         for folio in self:
             is_new = not folio.pricelist_id or isinstance(folio.id, models.NewId)
-            if folio.reservation_type == "out":
+            if (
+                folio.reservation_type
+                not in self._get_reservation_types_with_any_pricing()
+            ):
                 folio.pricelist_id = False
             elif len(folio.reservation_ids.pricelist_id) == 1:
                 folio.pricelist_id = folio.reservation_ids.pricelist_id
@@ -1224,7 +1235,10 @@ class PmsFolio(models.Model):
     )
     def _compute_amount(self):
         for record in self:
-            if record.reservation_type == "out":
+            if (
+                record.reservation_type
+                not in self._get_reservation_types_with_any_pricing()
+            ):
                 record.amount_total = 0
                 vals = {
                     "payment_state": "nothing_to_pay",
@@ -2765,3 +2779,31 @@ class PmsFolio(models.Model):
         when returning from customer portal."""
         self.ensure_one()
         return self.env.ref("pms.open_pms_folio1_form_tree_all")
+
+    def _get_reservation_types_with_night_pricing(self):
+        """
+        Returns reservation types that use night-based pricing
+        (e.g. per-night room price).
+        This method is meant to be extended by other modules.
+        """
+        return ("normal",)
+
+    def _get_reservation_types_with_service_pricing(self):
+        """
+        Returns reservation types that use the standard service pricing logic
+        (e.g. pms.service._get_price_unit_line).
+        This method is meant to be extended by other modules.
+        """
+        return ("normal", "staff")
+
+    def _get_reservation_types_with_any_pricing(self):
+        """
+        Returns reservation types that have any pricing rule.
+        (union of night-based and service-based types)
+        """
+        night = list(self._get_reservation_types_with_night_pricing())
+        service = list(self._get_reservation_types_with_service_pricing())
+
+        # Combine preserving order: night first, then service without duplicates
+        result = night + [t for t in service if t not in night]
+        return tuple(result)
