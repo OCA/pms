@@ -1479,3 +1479,86 @@ class TestPmsFolio(TestPms, AccountTestInvoicingCommon):
     def test_pms_folio_form_creation(self):
         folio_form = Form(self.env["pms.folio"])
         self.assertFalse(folio_form.possible_existing_customer_ids)
+
+    def test_pms_folio_fiscal_position_id(self):
+        """
+        Check that the fiscal_position_id field of the folio is correctly
+        set when a partner is assigned to the folio.
+        """
+        fiscal_position = self.env["account.fiscal.position"].create(
+            {"name": "Fiscal Position Test"}
+        )
+        partner = (
+            self.env["res.partner"]
+            .with_company(self.pms_property1.company_id)
+            .create(
+                {
+                    "name": "Fiscal Partner",
+                    "property_account_position_id": fiscal_position.id,
+                }
+            )
+        )
+        folio = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "partner_id": partner.id,
+            }
+        )
+        folio.env.invalidate_all()
+        self.assertEqual(
+            folio.fiscal_position_id.id,
+            fiscal_position.id,
+            "The fiscal_position_id of the folio was not "
+            "set correctly from the partner",
+        )
+
+    def test_pms_folio_priority_fiscal_position_property(self):
+        """
+        Check that the fiscal_position_id field of the folio
+        takes precedence from automatic assignation.
+        """
+        fiscal_position_property = self.env["account.fiscal.position"].create(
+            {"name": "Fiscal Position Property"}
+        )
+        # automatic fiscal position for US country
+        self.env["account.fiscal.position"].create(
+            {
+                "name": "Automatic Fiscal Position",
+                "auto_apply": True,
+                "country_id": self.env.ref("base.us").id,
+            }
+        )
+        pms_propert_1 = self.env["pms.property"].create(
+            {
+                "name": "Property with Fiscal Position",
+                "company_id": self.env.ref("base.main_company").id,
+            }
+        )
+        pms_propert_1.partner_id.property_account_position_id = (
+            fiscal_position_property.id
+        )
+        partner = (
+            self.env["res.partner"]
+            .with_company(pms_propert_1.company_id)
+            .create(
+                {
+                    "name": "Fiscal Partner",
+                    "country_id": self.env.ref("base.us").id,
+                }
+            )
+        )
+        folio = self.env["pms.folio"].create(
+            {
+                "pms_property_id": pms_propert_1.id,
+                "partner_name": partner.name,
+                "partner_id": partner.id,
+            }
+        )
+        folio.env.invalidate_all()
+        self.assertEqual(
+            folio.fiscal_position_id.id,
+            fiscal_position_property.id,
+            "The fiscal_position_id of the folio was not set "
+            "correctly from the property",
+        )

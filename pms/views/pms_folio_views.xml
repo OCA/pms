@@ -532,6 +532,9 @@
                             string="Invoicing"
                             attrs="{'invisible':[('reservation_type', '!=', 'normal')]}"
                         >
+                            <group>
+                                <field name="fiscal_position_id" />
+                            </group>
                             <div
                                 class="alert alert-info"
                                 role="alert"

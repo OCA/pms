@@ -325,6 +325,10 @@ class PmsFolio(models.Model):
     # )
     fiscal_position_id = fields.Many2one(
         string="Fiscal Position",
+        compute="_compute_fiscal_position_id",
+        store=True,
+        readonly=False,
+        domain="[('company_id', '=', company_id)]",
         help="The fiscal position depends on the location of the client",
         comodel_name="account.fiscal.position",
         index=True,
@@ -565,6 +569,28 @@ class PmsFolio(models.Model):
         store=True,
         readonly=False,
     )
+
+    @api.depends("pms_property_id", "partner_id", "company_id")
+    def _compute_fiscal_position_id(self):
+        cache = {}
+        for folio in self:
+            if not folio.partner_id:
+                folio.fiscal_position_id = False
+                continue
+            key = (
+                folio.company_id.id,
+                folio.partner_id.id,
+                folio.pms_property_id.partner_id.id,
+            )
+            if key not in cache:
+                cache[key] = (
+                    self.env["account.fiscal.position"]
+                    .with_company(folio.company_id)
+                    ._get_fiscal_position(
+                        folio.partner_id, folio.pms_property_id.partner_id
+                    )
+                )
+            folio.fiscal_position_id = cache[key]
 
     @api.model
     def _get_lang_selection_options(self):
@@ -2120,10 +2146,7 @@ class PmsFolio(models.Model):
             "invoice_line_ids": [],
             "company_id": self.company_id.id,
             "payment_reference": self.name,
-            "fiscal_position_id": self.env["account.fiscal.position"]
-            .with_company(self.company_id.id)
-            ._get_fiscal_position(self.env["res.partner"].browse(partner_invoice_id))
-            .id,
+            "fiscal_position_id": self.fiscal_position_id.id,
         }
         return invoice_vals
 
