@@ -1,11 +1,9 @@
 # Copyright 2020  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from datetime import timedelta
 from math import ceil
 
 import babel.dates
-from dateutil import relativedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
@@ -330,10 +328,6 @@ class FolioSaleLine(models.Model):
         ondelete="restrict",
         index=True,
     )
-    autoinvoice_date = fields.Date(
-        compute="_compute_autoinvoice_date",
-        store=True,
-    )
     auto_reservation_note = fields.Boolean(
         help="Indicates if the folio sale line is an auto reservation note",
         default=False,
@@ -401,55 +395,6 @@ class FolioSaleLine(models.Model):
                 )
             else:
                 record.date_order = 0
-
-    @api.depends(
-        "default_invoice_to",
-        "invoice_status",
-        "folio_id.last_checkout",
-        "reservation_id.checkout",
-        "service_id.reservation_id.checkout",
-    )
-    def _compute_autoinvoice_date(self):
-        for record in self:
-            record.autoinvoice_date = record._get_to_invoice_date()
-
-    def _get_to_invoice_date(self):
-        self.ensure_one()
-        partner = self.default_invoice_to
-        if self.reservation_id:
-            last_checkout = self.reservation_id.checkout
-        elif self.service_id and self.service_id.reservation_id:
-            last_checkout = self.service_id.reservation_id.checkout
-        else:
-            last_checkout = self.folio_id.last_checkout
-        if not last_checkout:
-            return False
-        invoicing_policy = (
-            self.folio_id.pms_property_id.default_invoicing_policy
-            if not partner or partner.invoicing_policy == "property"
-            else partner.invoicing_policy
-        )
-        if invoicing_policy == "manual":
-            return False
-        if invoicing_policy == "checkout":
-            margin_days = (
-                self.folio_id.pms_property_id.margin_days_autoinvoice
-                if not partner or partner.invoicing_policy == "property"
-                else partner.margin_days_autoinvoice
-            )
-            return last_checkout + timedelta(days=margin_days)
-        if invoicing_policy == "month_day":
-            month_day = (
-                self.folio_id.pms_property_id.invoicing_month_day
-                if not partner or partner.invoicing_policy == "property"
-                else partner.invoicing_month_day
-            )
-            if last_checkout.day <= month_day:
-                return last_checkout.replace(day=month_day)
-            else:
-                return (last_checkout + relativedelta.relativedelta(months=1)).replace(
-                    day=month_day
-                )
 
     @api.depends("date_order")
     def _compute_reservation_order(self):
