@@ -16,11 +16,6 @@
                             <span t-field="docs.identifier" />
                         </strong> / <span t-field="docs.reservation_id" />
                     </p>
-                    <p class="amount"> Total amount
-                        (Reservation Card): <strong>
-                            <span t-field="docs.reservation_id.folio_id.amount_total" />
-                        </strong>
-                    </p>
                     <div class="property amount">
                         <strong>
                             <span t-field="docs.pms_property_id.name" />
@@ -181,10 +176,6 @@
                     <p class="checknumber"> Document number: <strong>
                             <span t-field="docs.identifier" />
                         </strong> / <span t-field="docs.reservation_id" />
-                    </p>
-                    <p class="amount"> Total amount (Reservation Card): <strong>
-                            <span t-field="docs.reservation_id.folio_id.amount_total" />
-                        </strong>
                     </p>
                     <div class="property amount">
                         <strong>
