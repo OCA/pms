@@ -130,7 +130,7 @@ class AccountMove(models.Model):
 
                 pay_term_lines = move.line_ids.filtered(
                     lambda line: line.account_id.account_type
-                    in ("asset_receivable", "payable")
+                    in ("asset_receivable", "liability_payable")
                 )
 
                 payments_widget_vals = {
