@@ -5143,6 +5143,11 @@ msgid "Future"
 msgstr "Futuro"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__global_location_number
+msgid "GLN"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__gender
 #: model:ir.model.fields,field_description:pms.field_pms_property__gender
 #: model:ir.model.fields,field_description:pms.field_res_partner__gender
@@ -5211,6 +5216,11 @@ msgstr "Obtener el precio con descuento aplicado"
 #: model:ir.model.fields,help:pms.field_pms_room_type__packaging_ids
 msgid "Gives the different ways to package the same product."
 msgstr "Ofrece diferentes formas de empaquetar el mismo producto."
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__global_location_number
+msgid "Global Location Number"
+msgstr ""
 
 #. module: pms
 #: model:pms.ubication,name:pms.pms_ubication_ground_floor

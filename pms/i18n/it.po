@@ -5384,8 +5384,8 @@ msgid ""
 "Field that stores the number of checkin partners pending to checkin (with "
 "the state = draft)"
 msgstr ""
-"Campo che archivia il numero dei partner del check-in in attesa di check-in ("
-"con stato = bozza)"
+"Campo che archivia il numero dei partner del check-in in attesa di check-in "
+"(con stato = bozza)"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__avoid_mails
@@ -5872,6 +5872,11 @@ msgid "Future"
 msgstr "Futuro"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__global_location_number
+msgid "GLN"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__gender
 #: model:ir.model.fields,field_description:pms.field_pms_property__gender
 #: model:ir.model.fields,field_description:pms.field_res_partner__gender
@@ -5940,6 +5945,11 @@ msgstr "Ottieni il prezzo con lo sconto applicato"
 #: model:ir.model.fields,help:pms.field_pms_room_type__packaging_ids
 msgid "Gives the different ways to package the same product."
 msgstr "Consente di imballare diversamente lo stesso prodotto."
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__global_location_number
+msgid "Global Location Number"
+msgstr ""
 
 #. module: pms
 #: model:pms.ubication,name:pms.pms_ubication_ground_floor
@@ -6043,8 +6053,8 @@ msgid ""
 "Hi ${object.firstname}, do your check-in now in ${object.pms_property_id."
 "name}"
 msgstr ""
-"Salve ${object.firstname}, esegui il check-in adesso in "
-"${object.pms_property_id.name}"
+"Salve ${object.firstname}, esegui il check-in adesso in ${object."
+"pms_property_id.name}"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_search
@@ -6334,8 +6344,8 @@ msgid ""
 msgstr ""
 "Nei prezzi standard & costi medi: valore del prodotto (calcolato "
 "automaticamente nei costi medi).\n"
-"        In FIFO: valore dell'unità successiva che lascerà il magazzino ("
-"calcolato automaticamente).\n"
+"        In FIFO: valore dell'unità successiva che lascerà il magazzino "
+"(calcolato automaticamente).\n"
 "        Utilizzato per valutare il prodotto quando il costo di acquisto non "
 "è noto (es. rettifiche di inventario).\n"
 "        Utilizzato per calcolare i margini negli ordini di vendita."
@@ -7671,7 +7681,8 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_massive_changes_wizard__max_avail
 msgid "Maximum simultaneous availability on own Booking Engine."
-msgstr "Disponibilità contemporanea massima nel proprio motore di prenotazione."
+msgstr ""
+"Disponibilità contemporanea massima nel proprio motore di prenotazione."
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_availability_plan_rule__max_stay
@@ -8219,7 +8230,8 @@ msgstr "Numero di partner al check-in in una prenotazione"
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__checkin_partner_pending_count
 msgid "Number of checkin partners pending to checkin in a reservation"
-msgstr "Numero di partner al check-in in attesa di check-in in una prenotazione"
+msgstr ""
+"Numero di partner al check-in in attesa di check-in in una prenotazione"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__children_occupying
@@ -8473,9 +8485,9 @@ msgid ""
 "Optional Products are suggested whenever the customer hits *Add to Cart* "
 "(cross-sell strategy, e.g. for computers: warranty, software, etc.)."
 msgstr ""
-"I prodotti opzionali sono suggeriti quando il cliente fa clic su "
-"\"Aggiungi al carrello\" (strategia cross-selling, es. per computer: "
-"garanzia, programmi, ecc.)."
+"I prodotti opzionali sono suggeriti quando il cliente fa clic su \"Aggiungi "
+"al carrello\" (strategia cross-selling, es. per computer: garanzia, "
+"programmi, ecc.)."
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
