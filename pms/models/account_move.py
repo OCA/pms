@@ -1,6 +1,5 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
-import itertools as it
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
@@ -258,52 +257,6 @@ class AccountMove(models.Model):
                     or move.pms_property_id.id in j.pms_property_ids.ids
                 )
 
-    def _autoreconcile_folio_payments(self):
-        """
-        Reconcile payments with the invoice
-        """
-        # TODO: Add setting option to enable automatic payment reconciliation
-        for move in self.filtered(lambda m: m.state == "posted"):
-            if move.is_invoice(include_receipts=True) and move.folio_ids:
-                to_reconcile_payments_widget_vals = (
-                    move.invoice_outstanding_credits_debits_widget
-                )
-                if not to_reconcile_payments_widget_vals:
-                    continue
-                current_amounts = {
-                    vals["move_id"]: vals["amount"]
-                    for vals in to_reconcile_payments_widget_vals["content"]
-                }
-                pay_term_lines = move.line_ids.filtered(
-                    lambda line: line.account_type
-                    in ("asset_receivable", "liability_payable")
-                )
-                to_propose = (
-                    self.env["account.move"]
-                    .browse(list(current_amounts.keys()))
-                    .line_ids.filtered(
-                        lambda line,
-                        pay_term_lines=pay_term_lines,
-                        move=move: line.account_id == pay_term_lines.account_id
-                        and line.payment_id.folio_ids in move.folio_ids
-                    )
-                )
-                to_reconcile = self.match_pays_by_amount(
-                    payments=to_propose, invoice=move
-                )
-                if to_reconcile:
-                    try:
-                        (pay_term_lines + to_reconcile).reconcile()
-                    except Exception as e:
-                        message = _(
-                            """
-                            An error occurred while reconciling
-                            the invoice with the payments: %s
-                            """
-                        ) % str(e)
-                        move.message_post(body=message)
-        return True
-
     def _post(self, soft=True):
         """
         Overwrite the original method to add the folio_ids to the invoice
@@ -311,24 +264,7 @@ class AccountMove(models.Model):
         for record in self:
             record._check_pms_valid_invoice(record)
         res = super()._post(soft)
-        self._autoreconcile_folio_payments()
         return res
-
-    def match_pays_by_amount(self, payments, invoice):
-        """
-        Match payments by amount
-        """
-        for i in range(len(payments)):
-            combinations = list(it.combinations(payments, i + 1))
-            for combi in combinations:
-                # TODO: compare with currency differences
-                if sum(abs(item.balance) for item in combi) == invoice.amount_residual:
-                    return payments.filtered(
-                        lambda p, combi=combi: p.id in [item.id for item in combi]
-                    )
-                if sum(invoice.folio_ids.mapped("pending_amount")) == 0:
-                    return payments
-        return []
 
     @api.model
     def _check_pms_valid_invoice(self, move):
