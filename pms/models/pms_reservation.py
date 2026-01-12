@@ -80,9 +80,24 @@ class PmsReservation(models.Model):
         store=True,
         comodel_name="pms.board.service.room.type",
         compute="_compute_board_service_room_id",
+        inverse="_inverse_board_service_room_id",
         index=True,
         tracking=True,
         check_pms_properties=True,
+    )
+    # Manual override flag:
+    # - False: system is allowed to auto-fill the field from the default rule.
+    # - True: user has intervened (including clearing the value),
+    # so do NOT auto-fill again.
+    board_service_room_manual = fields.Boolean(
+        string="Board Service Manually Set",
+        default=False,
+        help=(
+            "When enabled, the reservation will NOT auto-assign a "
+            "default board service even if the field is empty. "
+            "This is set automatically when the user edits "
+            "or clears the board service."
+        ),
     )
     room_type_id = fields.Many2one(
         string="Room Type",
@@ -720,9 +735,47 @@ class PmsReservation(models.Model):
         for record in self:
             record.check_adults = True
 
-    @api.depends("pricelist_id", "room_type_id")
+    @api.depends(
+        "pricelist_id",
+        "room_type_id",
+        "pms_property_id",
+        "board_service_room_manual",
+    )
     def _compute_board_service_room_id(self):
+        """
+        Compute default board service for the reservation.
+
+        Behavior:
+        1) If 'board_service_room_manual' is True, DO NOT auto-fill again.
+           This prevents the default from coming back after the user
+           leared it.
+        2) Otherwise, if we have the needed inputs (pricelist + room type),
+           fetch the configured default and assign it when appropriate.
+
+        Optional safety:
+        - If manual mode is True but the currently selected board service
+        is no longer compatible with the new room type, we clear it.
+          This avoids inconsistent data.
+        """
         for reservation in self:
+            # 1) Respect the user's manual decision
+            # (including "I want it empty").
+            if reservation.board_service_room_manual:
+                # Optional: if the current value becomes incompatible
+                # with the room type, clear it to avoid inconsistencies.
+                if (
+                    reservation.board_service_room_id
+                    and reservation.board_service_room_id.pms_room_type_id
+                    and reservation.room_type_id
+                    and (
+                        reservation.board_service_room_id.pms_room_type_id
+                        != reservation.room_type_id
+                    )
+                ):
+                    reservation.board_service_room_id = False
+                continue
+
+            # 2) Auto-fill only when we can compute the default.
             if reservation.pricelist_id and reservation.room_type_id:
                 board_service_default = (
                     reservation.room_type_id.get_default_board_service(
@@ -731,16 +784,38 @@ class PmsReservation(models.Model):
                         pricelist_id=reservation.pricelist_id.id,
                     )
                 )
-                if (
-                    not reservation.board_service_room_id
-                    or not reservation.board_service_room_id.pms_room_type_id
-                    == reservation.room_type_id
+
+                # Assign default if empty OR if current value
+                # doesn't match the room type.
+                if not reservation.board_service_room_id or (
+                    reservation.board_service_room_id.pms_room_type_id
+                    and (
+                        reservation.board_service_room_id.pms_room_type_id
+                        != reservation.room_type_id
+                    )
                 ):
                     reservation.board_service_room_id = (
                         board_service_default.id if board_service_default else False
                     )
-            elif not reservation.board_service_room_id:
-                reservation.board_service_room_id = False
+
+            else:
+                # If we cannot compute (missing inputs), keep it empty.
+                if not reservation.board_service_room_id:
+                    reservation.board_service_room_id = False
+
+    def _inverse_board_service_room_id(self):
+        """
+        Inverse method executed when the user manually
+        the computed field.
+
+        Key idea:
+        - Any manual edit (setting a value OR clearing it) is considered
+        user decision.
+        - Once the user has decided, we set a flag so future recomputes
+        won't restore the default automatically.
+        """
+        for reservation in self:
+            reservation.board_service_room_manual = True
 
     @api.depends("preferred_room_id")
     def _compute_room_type_id(self):
