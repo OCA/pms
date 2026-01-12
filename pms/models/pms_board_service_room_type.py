@@ -85,6 +85,8 @@ class PmsBoardServiceRoomType(models.Model):
     @api.constrains("by_default")
     def constrains_duplicated_board_default(self):
         for record in self:
+            if not record.by_default:
+                continue
             default_boards = (
                 record.pms_room_type_id.board_service_room_type_ids.filtered(
                     "by_default"
