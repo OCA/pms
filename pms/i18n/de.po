@@ -13126,20 +13126,6 @@ msgid "Total amount"
 msgstr "Gesamtbetrag"
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.traveller_report
-msgid ""
-"Total amount\n"
-"                        (Reservation Card):"
-msgstr ""
-"Gesamtbetrag\n"
-"                        (Reservierungskarte):"
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.traveller_report
-msgid "Total amount (Reservation Card):"
-msgstr "Gesamtbetrag (Reservierungskarte):"
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__credit
 msgid "Total amount this customer owes you."
 msgstr "Gesamtschulden dieses Kunden."
@@ -14073,6 +14059,16 @@ msgstr ""
 #, python-format
 msgid "{room_name}: No room available in {checkin} <-> {checkout}."
 msgstr "{room_name}: Kein Zimmer verfügbar in {checkin} <-> {checkout}."
+
+#~ msgid ""
+#~ "Total amount\n"
+#~ "                        (Reservation Card):"
+#~ msgstr ""
+#~ "Gesamtbetrag\n"
+#~ "                        (Reservierungskarte):"
+
+#~ msgid "Total amount (Reservation Card):"
+#~ msgstr "Gesamtbetrag (Reservierungskarte):"
 
 #, python-format
 #~ msgid ""

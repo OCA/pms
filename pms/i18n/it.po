@@ -12838,18 +12838,6 @@ msgid "Total amount"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.traveller_report
-msgid ""
-"Total amount\n"
-"                        (Reservation Card):"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.traveller_report
-msgid "Total amount (Reservation Card):"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__credit
 msgid "Total amount this customer owes you."
 msgstr ""
