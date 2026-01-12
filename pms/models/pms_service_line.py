@@ -70,7 +70,7 @@ class PmsServiceLine(models.Model):
         string="Units",
         help="Amount to be consumed per day",
     )
-    price_unit = fields.Float(
+    price_unit = fields.Monetary(
         string="Unit Price",
         help="Price per unit of service",
         digits=("Product Price"),
@@ -89,7 +89,7 @@ class PmsServiceLine(models.Model):
         store=True,
         compute="_compute_day_amount_service",
     )
-    price_day_tax = fields.Float(
+    price_day_tax = fields.Monetary(
         string="Taxes Amount",
         help="",
         readonly=True,

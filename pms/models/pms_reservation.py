@@ -243,7 +243,7 @@ class PmsReservation(models.Model):
         compute="_compute_commission_percent",
         tracking=True,
     )
-    commission_amount = fields.Float(
+    commission_amount = fields.Monetary(
         string="Commission amount",
         help="Amount corresponding to commission",
         store=True,
@@ -573,7 +573,7 @@ class PmsReservation(models.Model):
         compute="_compute_amount_reservation",
         tracking=True,
     )
-    price_tax = fields.Float(
+    price_tax = fields.Monetary(
         string="Taxes Amount",
         help="Total of taxes in a reservation",
         readonly=True,
@@ -594,7 +594,7 @@ class PmsReservation(models.Model):
         store=True,
         compute="_compute_price_room_services_set",
     )
-    discount = fields.Float(
+    discount = fields.Monetary(
         help="Discount of total price in reservation",
         readonly=False,
         store=True,
@@ -603,7 +603,7 @@ class PmsReservation(models.Model):
         tracking=True,
     )
 
-    services_discount = fields.Float(
+    services_discount = fields.Monetary(
         help="Services discount",
         readonly=False,
         store=True,
