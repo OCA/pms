@@ -6833,6 +6833,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__reservation_line_ids
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__nights
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__nights
+#: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Nights"
 msgstr ""
 
