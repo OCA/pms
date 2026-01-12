@@ -1507,6 +1507,9 @@ class PmsFolio(models.Model):
         records = super().create(vals_list)
         for record in records:
             record.access_token = record._portal_ensure_token()
+            if record.partner_id:
+                partners = record.partner_id | record.partner_id.commercial_partner_id
+                partners._increase_rank("customer_rank")
         return records
 
     def write(self, vals):
@@ -1517,6 +1520,9 @@ class PmsFolio(models.Model):
             services_to_update = self.get_services_to_update_channel(vals)
 
         res = super().write(vals)
+        if vals.get("partner_id"):
+            partners = self.partner_id | self.partner_id.commercial_partner_id
+            partners._increase_rank("customer_rank")
         if reservations_to_update:
             reservations_to_update.sale_channel_origin_id = vals[
                 "sale_channel_origin_id"
