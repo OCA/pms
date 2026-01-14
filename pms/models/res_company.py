@@ -56,20 +56,3 @@ class ResCompany(models.Model):
         index=True,
         ondelete="restrict",
     )
-
-    self_billed_journal_id = fields.Many2one(
-        string="Self billed journal",
-        help="Journal used to create self billing",
-        comodel_name="account.journal",
-        index=True,
-        ondelete="restrict",
-    )
-    self_billed_tax_ids = fields.Many2many(
-        string="Self billed taxes",
-        help="Taxes used to create self billing",
-        comodel_name="account.tax",
-        relation="company_autoinvoicing_tax_rel",
-        column1="company_id",
-        column2="tax_id",
-        domain="[('company_id', '=', id)]",
-    )
