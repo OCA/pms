@@ -843,6 +843,64 @@ class TestRoomType(TestPms):
                 }
             )
 
+    def test_room_type_board_service_by_default_constraint(self):
+        room_type = self.env["pms.room.type"].create(
+            {
+                "name": "Room Type",
+                "default_code": "Type1",
+                "pms_property_ids": self.pms_property1,
+                "class_id": self.room_type_class1.id,
+            }
+        )
+        board_service_default = self.env["pms.board.service"].create(
+            {
+                "name": "Board service 1",
+                "default_code": "c1",
+                "pms_property_ids": self.pms_property1,
+            }
+        )
+        board_service_not_default = self.env["pms.board.service"].create(
+            {
+                "name": "Board service 2",
+                "default_code": "c2",
+                "pms_property_ids": self.pms_property1,
+            }
+        )
+        board_service_second_default = self.env["pms.board.service"].create(
+            {
+                "name": "Board service 3",
+                "default_code": "c3",
+                "pms_property_ids": self.pms_property1,
+            }
+        )
+        self.env["pms.board.service.room.type"].create(
+            {
+                "pms_board_service_id": board_service_default.id,
+                "pms_room_type_id": room_type.id,
+                "pms_property_id": self.pms_property1.id,
+                "by_default": True,
+            }
+        )
+        self.env["pms.board.service.room.type"].create(
+            {
+                "pms_board_service_id": board_service_not_default.id,
+                "pms_room_type_id": room_type.id,
+                "pms_property_id": self.pms_property1.id,
+            }
+        )
+        with self.assertRaises(
+            UserError,
+            msg="Only can set one default board service",
+        ):
+            self.env["pms.board.service.room.type"].create(
+                {
+                    "pms_board_service_id": board_service_second_default.id,
+                    "pms_room_type_id": room_type.id,
+                    "pms_property_id": self.pms_property1.id,
+                    "by_default": True,
+                }
+            )
+
     def test_check_amenities_property_integrity(self):
         self.amenity1 = self.env["pms.amenity"].create(
             {"name": "Amenity", "pms_property_ids": self.pms_property1}
