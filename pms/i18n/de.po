@@ -7210,11 +7210,6 @@ msgid "Journal Items"
 msgstr "Journal Einträge"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_res_company__self_billed_journal_id
-msgid "Journal used to create self billing"
-msgstr "Journal zur Erstellung von Gutschriften"
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__journal_normal_invoice_id
 msgid "Journal used to create the normal invoice"
 msgstr "Journal, das zur Erstellung der normalen Rechnung verwendet wird"
@@ -11077,16 +11072,6 @@ msgid "Self"
 msgstr "Selbst"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_res_company__self_billed_journal_id
-msgid "Self billed journal"
-msgstr "Selbstfakturiertes Journal"
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_res_company__self_billed_tax_ids
-msgid "Self billed taxes"
-msgstr "Selbst berechnete Steuern"
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Send Cancellation Email"
 msgstr "Stornierungs-E-Mail senden"
@@ -11869,11 +11854,6 @@ msgstr "Steuern in der Dienstleistungszeile"
 #: model:ir.model.fields,help:pms.field_folio_advance_payment_inv__deposit_taxes_id
 msgid "Taxes used for deposits"
 msgstr "Steuer für Anzahlungen"
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_res_company__self_billed_tax_ids
-msgid "Taxes used to create self billing"
-msgstr "Steuern zur Erstellung von Gutschriften"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__user_id
@@ -14060,6 +14040,18 @@ msgstr ""
 #, python-format
 msgid "{room_name}: No room available in {checkin} <-> {checkout}."
 msgstr "{room_name}: Kein Zimmer verfügbar in {checkin} <-> {checkout}."
+
+#~ msgid "Journal used to create self billing"
+#~ msgstr "Journal zur Erstellung von Gutschriften"
+
+#~ msgid "Self billed journal"
+#~ msgstr "Selbstfakturiertes Journal"
+
+#~ msgid "Self billed taxes"
+#~ msgstr "Selbst berechnete Steuern"
+
+#~ msgid "Taxes used to create self billing"
+#~ msgstr "Steuern zur Erstellung von Gutschriften"
 
 #~ msgid ""
 #~ "Total amount\n"
