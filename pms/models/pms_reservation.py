@@ -2570,7 +2570,11 @@ class PmsReservation(models.Model):
     def _compute_tourist_tax_lines(self):
         """Return ORM commands to sync tourist tax services on this reservation."""
         self.ensure_one()
-        if self.reservation_type != "normal" or not self.overnight_room:
+        if (
+            self.reservation_type != "normal"
+            or not self.overnight_room
+            or self.state in ("draft", "cancel", "done")
+        ):
             return False
         tax_products = self._get_tourist_tax_products(
             pms_property_id=self.pms_property_id.id
@@ -2642,12 +2646,20 @@ class PmsReservation(models.Model):
         )
 
     def _get_applicable_guest_count(self, product):
-        return len(
+        count = len(
             self._get_guests_by_age(
                 product.tourist_tax_min_age,
                 product.tourist_tax_max_age,
             )
         )
+        # If not hosts found, consider all guests (if not min_age or max_age is set)
+        # or only adults min_age
+        if count == 0:
+            if not product.tourist_tax_min_age:
+                count = self.adults + self.children
+            else:
+                count = self.adults
+        return count
 
     def _get_product_price(self, product, quantity, night_date):
         product = product.with_context(
