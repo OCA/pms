@@ -3150,6 +3150,11 @@ msgid "Board Service Lines"
 msgstr "Righe servizio pensione"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__board_service_room_manual
+msgid "Board Service Manually Set"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_board_service__name
 #: model:ir.model.fields,help:pms.field_pms_board_service__name
 msgid "Board Service Name"
@@ -13349,6 +13354,14 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__weight_uom_name
 msgid "Weight unit of measure label"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation__board_service_room_manual
+msgid ""
+"When enabled, the reservation will NOT auto-assign a default board service "
+"even if the field is empty. This is set automatically when the user edits or "
+"clears the board service."
 msgstr ""
 
 #. module: pms
