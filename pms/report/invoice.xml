@@ -6,15 +6,32 @@
         priority="99999"
     >
         <xpath expr="//div[@name='address_same_as_shipping']" position="inside">
-            <t t-if="o.pms_property_id">
-                <t t-set="information_block">
-                    <div name="pms_property_address_block">
-                       <div
+            <!-- use room access address if only one room in journal and independent address, else, property address -->
+            <t
+                t-set="room_single"
+                t-value="(o.journal_id.room_filter_ids and len(o.journal_id.room_filter_ids) == 1) and o.journal_id.room_filter_ids[:1] or False"
+            />
+            <t
+                t-set="use_room_address"
+                t-value="room_single and room_single.address_is_independent"
+            />
+            <t t-set="information_block">
+                <div name="pms_property_address_block">
+                    <!-- special case: single room in journal + independent address -->
+                    <t t-if="use_room_address">
+                        <div
+                            t-field="room_single.address_id"
+                            t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: True}"
+                        />
+                    </t>
+                    <!-- Normal case: property address -->
+                    <t t-elif="o.pms_property_id">
+                        <div
                             t-field="o.pms_property_id.partner_id"
                             t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: True}"
                         />
-                    </div>
-                </t>
+                    </t>
+                </div>
             </t>
         </xpath>
         <xpath expr="//div[@name='no_shipping']" position="inside">
