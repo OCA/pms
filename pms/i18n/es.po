@@ -178,13 +178,6 @@ msgstr "% Penalización No Show"
 #. odoo-python
 #: code:addons/pms/models/pms_checkin_partner.py:0
 #, python-format
-msgid "%(doc_number)s is not a valid %(doc_type)s identifier"
-msgstr ""
-
-#. module: pms
-#. odoo-python
-#: code:addons/pms/models/pms_checkin_partner.py:0
-#, python-format
 msgid "%(identifier)s not found in checkins (%(reservation)s)"
 msgstr ""
 
@@ -1258,13 +1251,6 @@ msgstr ""
 "Descripción del Producto que quiere comunicarle a sus clientes. La "
 "descripción será copiada a todas las Órdenes de Venta, Órdenes de Entrega y "
 "Facturas del Cliente"
-
-#. module: pms
-#. odoo-python
-#: code:addons/pms/models/res_partner.py:0
-#, python-format
-msgid "A document identification is required"
-msgstr "Se requiere un documento de identificación"
 
 #. module: pms
 #. odoo-python
@@ -2750,11 +2736,6 @@ msgid "Cash Payments"
 msgstr "Pagos de Efectivo"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_res_partner_id_number__category_id
-msgid "Category"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__route_from_categ_ids
 msgid "Category Routes"
 msgstr ""
@@ -3444,15 +3425,9 @@ msgid "Counter of the number of bounced emails for this contact"
 msgstr "Nº emails devueltos por este contacto"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_res_partner_id_category__country_ids
-msgid "Countries"
-msgstr ""
-
-#. module: pms
 #: model:ir.model,name:pms.model_res_country
 #: model:ir.model.fields,field_description:pms.field_pms_property__country_id
 #: model:ir.model.fields,field_description:pms.field_pms_room__country_id
-#: model:ir.model.fields,field_description:pms.field_res_partner_id_number__country_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
@@ -3466,22 +3441,9 @@ msgid "Country Code"
 msgstr ""
 
 #. module: pms
-#. odoo-python
-#: code:addons/pms/models/res_partner_id_number.py:0
-#, python-format
-msgid "Country is not allowed for this document type"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__country_id
 msgid "Country of residence"
 msgstr "País de residencia"
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__document_country_id
-#: model:ir.model.fields,help:pms.field_res_partner_id_number__country_id
-msgid "Country of the document"
-msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__country_id
@@ -3879,11 +3841,6 @@ msgstr ""
 "reserva folio)"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__document_expedition_date
-msgid "Date on which document_type was issued"
-msgstr "Fecha en que se emitió el documento"
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__date_order
 msgid "Date on which folio is sold"
 msgstr "Fecha en la cual se confirmó el folio"
@@ -4251,36 +4208,11 @@ msgid "Display Type"
 msgstr "Tipo Mostrado"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_id
-msgid "Document"
-msgstr "Documento"
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid ""
 "Document\n"
 "                            number"
 msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_country_id
-msgid "Document Country"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_number
-msgid "Document Number"
-msgstr "Nº de documento"
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_res_company__document_partner_required
-msgid "Document Partner Required"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_type
-msgid "Document Type"
-msgstr "Tipo de Documento"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
@@ -4291,20 +4223,6 @@ msgstr "Número de documento"
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Document number:"
 msgstr "Número de documento:"
-
-#. module: pms
-#. odoo-python
-#: code:addons/pms/models/pms_checkin_partner.py:0
-#, python-format
-msgid "Document type and country of document do not match"
-msgstr ""
-
-#. module: pms
-#. odoo-python
-#: code:addons/pms/models/pms_checkin_partner.py:0
-#, python-format
-msgid "Document_type has already exists"
-msgstr "El tipo de documento ya existe"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard__pms_domain
@@ -4506,16 +4424,6 @@ msgid "Entry date"
 msgstr "Fecha de entrada"
 
 #. module: pms
-#. odoo-python
-#: code:addons/pms/models/pms_checkin_partner.py:0
-#, python-format
-msgid ""
-"Error when evaluating the id_category validation code:\n"
-" %(name)s \n"
-"(%(error)s)"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__checkin_datetime
 msgid "Exact Arrival"
 msgstr "Llegada Exacta"
@@ -4547,11 +4455,6 @@ msgid ""
 "Expedition\n"
 "                            date"
 msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_expedition_date
-msgid "Expedition Date"
-msgstr "Fecha de expedición"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__property_account_expense_id
@@ -5336,11 +5239,6 @@ msgid "History"
 msgstr "Historia"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__document_number
-msgid "Host document number"
-msgstr "Número de documento de cliente"
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_kanban_view
 msgid "Hosted's Name"
 msgstr "Nombre del huésped"
@@ -5394,16 +5292,6 @@ msgstr "Huéspedes"
 #: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__id
 msgid "ID"
 msgstr "Identificación"
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_res_partner_id_number__name
-msgid "ID Number"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_res_partner_id_number__category_id
-msgid "ID type defined in configuration. For example, Driver License"
-msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__im_status
@@ -5514,15 +5402,6 @@ msgid ""
 msgstr ""
 "Si la lista de precios está disponible en el PMS, debe seleccionar un plan "
 "de disponibilidad"
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_res_company__document_partner_required
-msgid ""
-"If true, the partner document is required\n"
-"        to create a new contact"
-msgstr ""
-"Si es verdadero, se requiere el documento del interlocutor\n"
-" para crear un nuevo contacto"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_availability_plan__active
@@ -7784,7 +7663,6 @@ msgstr "Agencia de origen"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_checkin_partner__gender__other
-#: model:res.partner.id_category,name:pms.document_type_other
 msgid "Other"
 msgstr "Otro"
 
@@ -7987,16 +7865,6 @@ msgid "Partner Contracts"
 msgstr "Contratos del Cliente"
 
 #. module: pms
-#: model:ir.model,name:pms.model_res_partner_id_category
-msgid "Partner ID Category"
-msgstr ""
-
-#. module: pms
-#: model:ir.model,name:pms.model_res_partner_id_number
-msgid "Partner ID Number"
-msgstr "Número empresa"
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__partner_incongruences
 #: model:ir.model.fields,field_description:pms.field_pms_folio__partner_incongruences
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__partner_incongruences
@@ -8037,13 +7905,6 @@ msgid "Partner Tags"
 msgstr "Cliente"
 
 #. module: pms
-#. odoo-python
-#: code:addons/pms/models/res_partner_id_number.py:0
-#, python-format
-msgid "Partner already has this document type"
-msgstr "El cliente ya tiene guardado este tipo de documento"
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__partner_id
 msgid "Partner associated with checkin partner"
 msgstr "Partner relacionado con el checkin partner"
@@ -8078,18 +7939,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_property__same_vat_partner_id
 msgid "Partner with same Tax ID"
 msgstr "Cliente con el mismo NIF"
-
-#. module: pms
-#. odoo-python
-#: code:addons/pms/models/res_partner.py:0
-#, python-format
-msgid "Partner without document identification, update vals %s"
-msgstr "Socio sin identificación documental, actualizar vals %s"
-
-#. module: pms
-#: model:res.partner.id_category,name:pms.document_type_passport
-msgid "Passport"
-msgstr "Pasaporte"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.wizard_payment_folio_view_form
@@ -8608,7 +8457,6 @@ msgstr "Imprimir en cardex"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_res_country__priority
-#: model:ir.model.fields,field_description:pms.field_res_partner_id_category__priority
 msgid "Priority"
 msgstr "Prioridad"
 
@@ -10147,11 +9995,6 @@ msgid "Segmentation..."
 msgstr "Segmentación..."
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__document_type
-msgid "Select a valid document type"
-msgstr "Seleccione un tipo de documento válido"
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.wizard_folio_changes_view_form
 msgid "Selected reservations with different dates"
 msgstr "Reservas seleccionadas con fechas diferentes"
@@ -10966,11 +10809,6 @@ msgstr ""
 " se mostrará un botón de recálculo"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__document_id
-msgid "Technical field"
-msgstr "Computación técnica"
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__vies_failed_message
 msgid "Technical field display a message to the user if the VIES check fails."
 msgstr ""
@@ -11084,11 +10922,6 @@ msgid ""
 "The '%(incompatible_class)s' is not compatible with the reservation type "
 "class '%(reservation_class)s'. Please select a compatible class room for "
 "this reservation."
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_res_partner_id_number__name
-msgid "The ID itself. For example, Driver License number of this person"
 msgstr ""
 
 #. module: pms
@@ -12475,16 +12308,6 @@ msgid "Valid Product Attribute Lines"
 msgstr "Líneas de atributo de producto válidas"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_res_partner_id_number__valid_from
-msgid "Valid from"
-msgstr "Válido desde"
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_res_partner_id_number__valid_from
-msgid "Validation period stating date."
-msgstr "Fecha de inicio del período de validación."
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__company_currency_id
 msgid "Valuation Currency"
 msgstr ""
@@ -13015,6 +12838,65 @@ msgstr ""
 #, python-format
 msgid "{room_name}: No room available in {checkin} <-> {checkout}."
 msgstr ""
+
+#, python-format
+#~ msgid "A document identification is required"
+#~ msgstr "Se requiere un documento de identificación"
+
+#~ msgid "Date on which document_type was issued"
+#~ msgstr "Fecha en que se emitió el documento"
+
+#~ msgid "Document"
+#~ msgstr "Documento"
+
+#~ msgid "Document Number"
+#~ msgstr "Nº de documento"
+
+#~ msgid "Document Type"
+#~ msgstr "Tipo de Documento"
+
+#, python-format
+#~ msgid "Document_type has already exists"
+#~ msgstr "El tipo de documento ya existe"
+
+#~ msgid "Expedition Date"
+#~ msgstr "Fecha de expedición"
+
+#~ msgid "Host document number"
+#~ msgstr "Número de documento de cliente"
+
+#~ msgid ""
+#~ "If true, the partner document is required\n"
+#~ "        to create a new contact"
+#~ msgstr ""
+#~ "Si es verdadero, se requiere el documento del interlocutor\n"
+#~ " para crear un nuevo contacto"
+
+#~ msgid "Partner ID Number"
+#~ msgstr "Número empresa"
+
+#, python-format
+#~ msgid "Partner already has this document type"
+#~ msgstr "El cliente ya tiene guardado este tipo de documento"
+
+#, python-format
+#~ msgid "Partner without document identification, update vals %s"
+#~ msgstr "Socio sin identificación documental, actualizar vals %s"
+
+#~ msgid "Passport"
+#~ msgstr "Pasaporte"
+
+#~ msgid "Select a valid document type"
+#~ msgstr "Seleccione un tipo de documento válido"
+
+#~ msgid "Technical field"
+#~ msgstr "Computación técnica"
+
+#~ msgid "Valid from"
+#~ msgstr "Válido desde"
+
+#~ msgid "Validation period stating date."
+#~ msgstr "Fecha de inicio del período de validación."
 
 #~ msgid "City of the guest's residence"
 #~ msgstr "Ciudad de residencia del huésped"
