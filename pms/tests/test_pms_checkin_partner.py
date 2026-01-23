@@ -1527,7 +1527,6 @@ class TestPmsCheckinPartner(TestPms):
             "id": checkin_partner.id,
             "firstname": "Serafín",
             "lastname": "Rivas",
-            "lastname2": "Gonzalez",
             "document_type": self.id_category,
             "document_number": "18038946T",
             "document_expedition_date": "07/10/2010",
@@ -1592,7 +1591,6 @@ class TestPmsCheckinPartner(TestPms):
         partner_vals = {
             "firstname": "Paz",
             "lastname": "Valenzuela",
-            "lastname2": "Soto",
             "email": "paz@example.com",
             "birthdate_date": datetime.date(1980, 10, 5),
             "gender": "female",
@@ -1630,7 +1628,6 @@ class TestPmsCheckinPartner(TestPms):
         checkin_partner_vals = {
             "firstname": "Carlos",
             "lastname": "balenzuela",
-            "lastname2": "Sota",
             "email": "paz2@example.com",
             "birthdate_date": datetime.date(1980, 10, 3),
             "gender": "male",

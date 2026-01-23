@@ -21,7 +21,6 @@
         "sales_team",
         "multi_pms_properties",
         "partner_firstname",
-        "partner_second_lastname",
         "partner_contact_gender",
         "partner_contact_birthdate",
         "partner_contact_nationality",

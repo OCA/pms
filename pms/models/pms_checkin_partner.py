@@ -209,14 +209,6 @@ class PmsCheckinPartner(models.Model):
         compute="_compute_lastname",
         inverse=lambda r: r._inverse_partner_fields("lastname", "lastname"),
     )
-    lastname2 = fields.Char(
-        string="Second Last Name",
-        help="host second lastname",
-        readonly=False,
-        store=True,
-        compute="_compute_lastname2",
-        inverse=lambda r: r._inverse_partner_fields("lastname2", "lastname2"),
-    )
     birthdate_date = fields.Date(
         string="Birthdate",
         help="host birthdate",
@@ -358,14 +350,6 @@ class PmsCheckinPartner(models.Model):
                 record.lastname = record.partner_id.lastname
             elif not record.lastname:
                 record.lastname = False
-
-    @api.depends("partner_id")
-    def _compute_lastname2(self):
-        for record in self:
-            if not record.lastname2 and record.partner_id.lastname2:
-                record.lastname2 = record.partner_id.lastname2
-            elif not record.lastname2:
-                record.lastname2 = False
 
     @api.depends("partner_id")
     def _compute_birth_date(self):
@@ -534,13 +518,26 @@ class PmsCheckinPartner(models.Model):
             "country_id": self.document_country_id.id,
         }
 
-    @api.depends(
-        "document_number",
-        "document_type",
-        "firstname",
-        "lastname",
-        "lastname2",
-    )
+    @api.model
+    def _get_compute_partner_id_field_names(self):
+        return ["document_number", "document_type", "firstname", "lastname"]
+
+    def _completed_partner_creation_fields(self):
+        self.ensure_one()
+        if self.firstname or self.lastname:
+            return True
+        return False
+
+    def _get_partner_create_vals(self):
+        return {
+            "firstname": self.firstname,
+            "lastname": self.lastname,
+            "gender": self.gender,
+            "birthdate_date": self.birthdate_date,
+            "nationality_id": self.nationality_id.id,
+        }
+
+    @api.depends(lambda self: self._get_compute_partner_id_field_names())
     def _compute_partner_id(self):
         for record in self:
             if not record.partner_id:
@@ -549,15 +546,8 @@ class PmsCheckinPartner(models.Model):
                         record.document_number, record.document_type
                     )
                     if not partner:
-                        if record.firstname or record.lastname or record.lastname2:
-                            partner_values = {
-                                "firstname": record.firstname,
-                                "lastname": record.lastname,
-                                "lastname2": record.lastname2,
-                                "gender": record.gender,
-                                "birthdate_date": record.birthdate_date,
-                                "nationality_id": record.nationality_id.id,
-                            }
+                        if self._completed_partner_creation_fields():
+                            partner_values = self._get_partner_create_vals()
                             partner = (
                                 self.env["res.partner"]
                                 .with_context(avoid_document_restriction=True)
@@ -592,17 +582,20 @@ class PmsCheckinPartner(models.Model):
             else:
                 record.possible_existing_customer_ids = False
 
-    @api.depends(
-        "firstname",
-        "lastname",
-        "lastname2",
-        "gender",
-        "birthdate_date",
-        "nationality_id",
-        "email",
-        "mobile",
-        "partner_id",
-    )
+    @api.model
+    def _get_partner_incongruences_field_names(self):
+        return [
+            "firstname",
+            "lastname",
+            "gender",
+            "birthdate_date",
+            "nationality_id",
+            "email",
+            "mobile",
+            "partner_id",
+        ]
+
+    @api.depends(lambda self: self._get_partner_incongruences_field_names())
     def _compute_partner_incongruences(self):
         for record in self:
             incongruous_fields = False
@@ -817,7 +810,6 @@ class PmsCheckinPartner(models.Model):
             "gender",
             "firstname",
             "lastname",
-            "lastname2",
             "birthdate_date",
             "document_number",
             "document_expedition_date",
@@ -851,7 +843,6 @@ class PmsCheckinPartner(models.Model):
         checkin_fields = [
             "firstname",
             "lastname",
-            "lastname2",
             "mobile",
             "email",
             "gender",

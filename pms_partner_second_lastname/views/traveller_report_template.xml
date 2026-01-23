@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <template id="traveller_report" inherit_id="pms.traveller_report">
+        <xpath expr="//span[@t-field='docs.lastname']" position="after">
+            <span t-field="docs.lastname2" />
+        </xpath>
+    </template>
+</odoo>

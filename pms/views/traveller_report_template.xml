@@ -90,7 +90,6 @@
                         <td>
                             <strong>
                                 <span t-field="docs.lastname" />
-                                <span t-field="docs.lastname2" />
                             </strong>
                         </td>
                     </tr>
@@ -250,7 +249,6 @@
                         <td>
                             <strong>
                                 <span t-field="docs.lastname" />
-                                <span t-field="docs.lastname2" />
                             </strong>
                         </td>
                     </tr>
