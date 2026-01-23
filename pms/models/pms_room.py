@@ -226,7 +226,7 @@ class PmsRoom(models.Model):
                                 "type": "other",
                                 "is_company": False,
                                 "active": True,
-                                "parent_id": record.pms_property_id.id,
+                                "parent_id": record.pms_property_id.partner_id.id,
                             }
                         )
                     )

@@ -65,18 +65,21 @@ class PmsCheckinPartner(models.Model):
         readonly=False,
         store=True,
         compute="_compute_email",
+        inverse=lambda r: r._inverse_partner_fields("email", "email"),
     )
     mobile = fields.Char(
         help="Checkin Partner Mobile",
         readonly=False,
         store=True,
         compute="_compute_mobile",
+        inverse=lambda r: r._inverse_partner_fields("mobile", "mobile"),
     )
     phone = fields.Char(
         help="Checkin Partner Phone",
         readonly=False,
         store=True,
         compute="_compute_phone",
+        inverse=lambda r: r._inverse_partner_fields("phone", "phone"),
     )
     image_128 = fields.Image(
         string="Image",
@@ -130,6 +133,7 @@ class PmsCheckinPartner(models.Model):
         store=True,
         compute="_compute_gender",
         selection=[("male", "Male"), ("female", "Female"), ("other", "Other")],
+        inverse=lambda r: r._inverse_partner_fields("gender", "gender"),
     )
     nationality_id = fields.Many2one(
         string="Nationality",
@@ -139,6 +143,7 @@ class PmsCheckinPartner(models.Model):
         index=True,
         compute="_compute_nationality_id",
         comodel_name="res.country",
+        inverse=lambda r: r._inverse_partner_fields("nationality_id", "nationality_id"),
     )
     residence_street = fields.Char(
         string="Street",
@@ -194,6 +199,7 @@ class PmsCheckinPartner(models.Model):
         readonly=False,
         store=True,
         compute="_compute_firstname",
+        inverse=lambda r: r._inverse_partner_fields("firstname", "firstname"),
     )
     lastname = fields.Char(
         string="Last Name",
@@ -201,6 +207,7 @@ class PmsCheckinPartner(models.Model):
         readonly=False,
         store=True,
         compute="_compute_lastname",
+        inverse=lambda r: r._inverse_partner_fields("lastname", "lastname"),
     )
     lastname2 = fields.Char(
         string="Second Last Name",
@@ -208,6 +215,7 @@ class PmsCheckinPartner(models.Model):
         readonly=False,
         store=True,
         compute="_compute_lastname2",
+        inverse=lambda r: r._inverse_partner_fields("lastname2", "lastname2"),
     )
     birthdate_date = fields.Date(
         string="Birthdate",
@@ -215,6 +223,7 @@ class PmsCheckinPartner(models.Model):
         readonly=False,
         store=True,
         compute="_compute_birth_date",
+        inverse=lambda r: r._inverse_partner_fields("birthdate_date", "birthdate_date"),
     )
     document_number = fields.Char(
         help="Host document number",
@@ -284,6 +293,11 @@ class PmsCheckinPartner(models.Model):
         help="Date and time of the signature",
         compute="_compute_sign_on",
     )
+
+    def _inverse_partner_fields(self, checkin_field_name, partner_field_name):
+        for record in self:
+            if record.partner_id:
+                record.partner_id[partner_field_name] = record[checkin_field_name]
 
     @api.depends("partner_id")
     def _compute_document_number(self):
