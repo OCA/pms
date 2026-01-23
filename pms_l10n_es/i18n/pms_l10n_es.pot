@@ -165,11 +165,6 @@ msgid "Cónyuge"
 msgstr ""
 
 #. module: pms_l10n_es
-#: model:res.partner.id_category,name:pms_l10n_es.document_type_dni
-msgid "DNI"
-msgstr ""
-
-#. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_res_partner_id_number__support_number
 msgid "DNI support number"
 msgstr ""
@@ -824,14 +819,6 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_room__in_ine
 msgid "Take it into account to generate INE statistics"
-msgstr ""
-
-#. module: pms_l10n_es
-#. odoo-python
-#: code:addons/pms_l10n_es/models/res_partner.py:0
-#, python-format
-msgid ""
-"The VAT number %(number)s already exists in other contacts: %(contact)s"
 msgstr ""
 
 #. module: pms_l10n_es
