@@ -1535,7 +1535,7 @@ class TestPmsCheckinPartner(TestPms):
             "email": "serafin@example.com",
             "gender": "male",
             "nationality_id": 1,
-            "residence_state_id": 1,
+            "state_id": 1,
         }
         checkin_partner._save_data_from_portal(checkin_partner_vals)
         checkin_partner_vals.update(
@@ -1543,7 +1543,7 @@ class TestPmsCheckinPartner(TestPms):
                 "birthdate_date": datetime.date(1983, 10, 5),
                 "document_expedition_date": datetime.date(2010, 10, 7),
                 "nationality_id": self.env["res.country"].search([("id", "=", 1)]),
-                "residence_state_id": self.env["res.country.state"].browse(1),
+                "state_id": self.env["res.country.state"].browse(1),
                 "document_type": self.id_category,
             }
         )
@@ -1597,12 +1597,12 @@ class TestPmsCheckinPartner(TestPms):
             "mobile": "666555444",
             "phone": "123456789",
             "nationality_id": nationality.id,
-            "residence_street": "Calle 123",
-            "residence_street2": "Avda. Constitución 123",
-            "residence_zip": "15700",
-            "residence_city": "City Residence",
-            "residence_country_id": nationality.id,
-            "residence_state_id": state.id,
+            "street": "Calle 123",
+            "street2": "Avda. Constitución 123",
+            "zip": "15700",
+            "city": "City Residence",
+            "country_id": nationality.id,
+            "state_id": state.id,
             # "pms_checkin_partner_ids": checkin_partner_id,
         }
         self.partner_id = self.env["res.partner"].create(partner_vals)
@@ -1610,8 +1610,8 @@ class TestPmsCheckinPartner(TestPms):
         partner_vals.update(
             {
                 "nationality_id": nationality,
-                "residence_country_id": nationality,
-                "residence_state_id": state,
+                "country_id": nationality,
+                "state_id": state,
             }
         )
 

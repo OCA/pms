@@ -220,13 +220,13 @@ def _ses_xml_person_address_elements(persona, checkin_partner):
     _ses_xml_text_element_and_validate(
         direccion,
         "direccion",
-        checkin_partner.residence_street,
+        checkin_partner.street,
         _("The guest does not have a street."),
     )
 
-    if checkin_partner.residence_country_id.code == CODE_SPAIN:
+    if checkin_partner.country_id.code == CODE_SPAIN:
         municipio_code = _ses_xml_municipality_code(
-            residence_zip=checkin_partner.residence_zip,
+            residence_zip=checkin_partner.zip,
             pms_property=checkin_partner.reservation_id.pms_property_id,
         )
         if municipio_code:
@@ -235,20 +235,20 @@ def _ses_xml_person_address_elements(persona, checkin_partner):
         _ses_xml_text_element_and_validate(
             direccion,
             "nombreMunicipio",
-            checkin_partner.residence_city,
+            checkin_partner.city,
             _("The guest does not have a city."),
         )
 
     _ses_xml_text_element_and_validate(
         direccion,
         "codigoPostal",
-        checkin_partner.residence_zip,
+        checkin_partner.zip,
         _("The guest does not have a zip code."),
     )
     _ses_xml_text_element_and_validate(
         direccion,
         "pais",
-        checkin_partner.residence_country_id.code_alpha3,
+        checkin_partner.country_id.code_alpha3,
         _("The guest does not have a country."),
     )
 

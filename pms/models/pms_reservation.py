@@ -644,7 +644,6 @@ class PmsReservation(models.Model):
         string="Possible existing customer",
         compute="_compute_possible_existing_customer_ids",
         comodel_name="res.partner",
-        inverse_name="reservation_possible_customer_id",
     )
 
     avoid_mails = fields.Boolean(

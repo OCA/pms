@@ -235,7 +235,7 @@ class WizardIne(models.TransientModel):
             """
 
             for entry in read_group_result:
-                if not entry["residence_country_id"]:
+                if not entry["country_id"]:
                     guests_with_no_residence_country = self.env[
                         "pms.checkin.partner"
                     ].search(entry["__domain"])
@@ -253,7 +253,7 @@ class WizardIne(models.TransientModel):
                 # get residence_country_id from group set read_group results
                 residence_country_id_code = (
                     self.env["res.country"]
-                    .search([("id", "=", entry["residence_country_id"][0])])
+                    .search([("id", "=", entry["country_id"][0])])
                     .code
                 )
                 # all countries except Spain
@@ -271,13 +271,13 @@ class WizardIne(models.TransientModel):
                     # arrivals grouped by state_id (Spain "provincias")
                     read_by_arrivals_spain = self.env["pms.checkin.partner"].read_group(
                         entry["__domain"],
-                        ["residence_state_id"],
-                        ["residence_state_id"],
+                        ["state_id"],
+                        ["state_id"],
                         lazy=False,
                     )
                     # iterate read_group results from Spain
                     for entry_from_spain in read_by_arrivals_spain:
-                        if not entry_from_spain["residence_state_id"]:
+                        if not entry_from_spain["state_id"]:
                             spanish_guests_with_no_state = self.env[
                                 "pms.checkin.partner"
                             ].search(entry_from_spain["__domain"])
@@ -294,7 +294,7 @@ class WizardIne(models.TransientModel):
                                 )
                             )
                         residence_state_id = self.env["res.country.state"].browse(
-                            entry_from_spain["residence_state_id"][0]
+                            entry_from_spain["state_id"][0]
                         )  # .ine_code
                         ine_code = residence_state_id.ine_code
 
@@ -347,12 +347,12 @@ class WizardIne(models.TransientModel):
                 lambda x, p_date=p_date: x.reservation_id.checkin == p_date
             )
 
-            # arrivals grouped by residence_country_id
+            # arrivals grouped by country_id
             read_by_arrivals = self.env["pms.checkin.partner"].read_group(
                 [("id", "in", arrivals.ids)],
-                ["residence_country_id"],
-                ["residence_country_id"],
-                orderby="residence_country_id",
+                ["country_id"],
+                ["country_id"],
+                orderby="country_id",
                 lazy=False,
             )
 
@@ -361,24 +361,24 @@ class WizardIne(models.TransientModel):
                 lambda x, p_date=p_date: x.reservation_id.checkout == p_date
             )
 
-            # departures grouped by residence_country_id
+            # departures grouped by country_id
             read_by_departures = self.env["pms.checkin.partner"].read_group(
                 [("id", "in", departures.ids)],
-                ["residence_country_id"],
-                ["residence_country_id"],
-                orderby="residence_country_id",
+                ["country_id"],
+                ["country_id"],
+                orderby="country_id",
                 lazy=False,
             )
 
             # pernoctations
             pernoctations = hosts - departures
 
-            # pernoctations grouped by residence_country_id
+            # pernoctations grouped by country_id
             read_by_pernoctations = self.env["pms.checkin.partner"].read_group(
                 [("id", "in", pernoctations.ids)],
-                ["residence_country_id"],
-                ["residence_country_id"],
-                orderby="residence_country_id",
+                ["country_id"],
+                ["country_id"],
+                orderby="country_id",
                 lazy=False,
             )
             ine_add_arrivals_departures_pernoctations(

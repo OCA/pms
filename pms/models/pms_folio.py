@@ -527,7 +527,6 @@ class PmsFolio(models.Model):
         string="Possible existing customer",
         compute="_compute_possible_existing_customer_ids",
         comodel_name="res.partner",
-        inverse_name="folio_possible_customer_id",
     )
     first_checkin = fields.Date(
         string="First Folio Checkin",
