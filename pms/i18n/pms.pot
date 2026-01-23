@@ -2052,8 +2052,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__birthdate_date
 #: model:ir.model.fields,field_description:pms.field_pms_property__birthdate_date
-#: model:ir.model.fields,field_description:pms.field_res_partner__birthdate_date
-#: model:ir.model.fields,field_description:pms.field_res_users__birthdate_date
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Birthdate"
 msgstr ""
@@ -4090,8 +4088,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__email
 #: model:ir.model.fields,field_description:pms.field_pms_room__email
-#: model:ir.model.fields,field_description:pms.field_res_partner__email
-#: model:ir.model.fields,field_description:pms.field_res_users__email
 msgid "Email"
 msgstr ""
 
@@ -4390,8 +4386,6 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__firstname
-#: model:ir.model.fields,field_description:pms.field_res_partner__firstname
-#: model:ir.model.fields,field_description:pms.field_res_users__firstname
 msgid "First name"
 msgstr ""
 
@@ -4763,7 +4757,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__gender
 #: model:ir.model.fields,field_description:pms.field_pms_property__gender
-#: model:ir.model.fields,field_description:pms.field_res_partner__gender
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Gender"
 msgstr ""
@@ -6177,8 +6170,6 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__lastname
-#: model:ir.model.fields,field_description:pms.field_res_partner__lastname
-#: model:ir.model.fields,field_description:pms.field_res_users__lastname
 msgid "Last name"
 msgstr ""
 
@@ -6594,8 +6585,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_property__mobile
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__mobile
 #: model:ir.model.fields,field_description:pms.field_pms_room__mobile
-#: model:ir.model.fields,field_description:pms.field_res_partner__mobile
-#: model:ir.model.fields,field_description:pms.field_res_users__mobile
 msgid "Mobile"
 msgstr ""
 
@@ -6722,8 +6711,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__nationality_id
 #: model:ir.model.fields,field_description:pms.field_pms_property__nationality_id
-#: model:ir.model.fields,field_description:pms.field_res_partner__nationality_id
-#: model:ir.model.fields,field_description:pms.field_res_users__nationality_id
 msgid "Nationality"
 msgstr ""
 
@@ -7831,8 +7818,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__phone
 #: model:ir.model.fields,field_description:pms.field_pms_property__phone
 #: model:ir.model.fields,field_description:pms.field_pms_room__phone
-#: model:ir.model.fields,field_description:pms.field_res_partner__phone
-#: model:ir.model.fields,field_description:pms.field_res_users__phone
 msgid "Phone"
 msgstr ""
 
@@ -9645,8 +9630,6 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__lastname2
-#: model:ir.model.fields,field_description:pms.field_res_partner__lastname2
-#: model:ir.model.fields,field_description:pms.field_res_users__lastname2
 msgid "Second last name"
 msgstr ""
 
