@@ -3114,25 +3114,19 @@ msgid "Choose a customer if you want to add it to the reservation"
 msgstr "Seleccione un cliente si desea añadirlo a la reserva"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_city
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__city
 #: model:ir.model.fields,field_description:pms.field_pms_property__city
 #: model:ir.model.fields,field_description:pms.field_pms_room__city
-#: model:ir.model.fields,field_description:pms.field_res_partner__city
-#: model:ir.model.fields,field_description:pms.field_res_users__city
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
-#: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "City"
 msgstr "Ciudad"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__residence_city
-#: model:ir.model.fields,help:pms.field_pms_property__residence_city
-#: model:ir.model.fields,help:pms.field_res_partner__residence_city
-#: model:ir.model.fields,help:pms.field_res_users__residence_city
-msgid "City of the guest's residence"
-msgstr "Ciudad de residencia del huésped"
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__city
+msgid "City of the guest"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type_class__name
@@ -3458,14 +3452,11 @@ msgstr ""
 #: model:ir.model,name:pms.model_res_country
 #: model:ir.model.fields,field_description:pms.field_pms_property__country_id
 #: model:ir.model.fields,field_description:pms.field_pms_room__country_id
-#: model:ir.model.fields,field_description:pms.field_res_partner__country_id
 #: model:ir.model.fields,field_description:pms.field_res_partner_id_number__country_id
-#: model:ir.model.fields,field_description:pms.field_res_users__country_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
-#: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "Country"
 msgstr "País"
 
@@ -3482,10 +3473,7 @@ msgid "Country is not allowed for this document type"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_country_id
-#: model:ir.model.fields,field_description:pms.field_pms_property__residence_country_id
-#: model:ir.model.fields,field_description:pms.field_res_partner__residence_country_id
-#: model:ir.model.fields,field_description:pms.field_res_users__residence_country_id
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__country_id
 msgid "Country of residence"
 msgstr "País de residencia"
 
@@ -3496,9 +3484,9 @@ msgid "Country of the document"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__residence_country_id
-msgid "Country of the guest's residence"
-msgstr "País de residencia del huésped"
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__country_id
+msgid "Country of the guest"
+msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_search
@@ -8068,26 +8056,12 @@ msgid "Partner contact name is required"
 msgstr "Se requiere el nombre del cliente"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_property__residence_country_id
-#: model:ir.model.fields,help:pms.field_res_partner__residence_country_id
-#: model:ir.model.fields,help:pms.field_res_users__residence_country_id
-msgid "Partner country of residence"
-msgstr "País de residencia del socio"
-
-#. module: pms
 #. odoo-python
 #: code:addons/pms/models/account_move_line.py:0
 #, python-format
 msgid ""
 "Partner modify automatically from invoice: {old_partner} to {new_partner}"
 msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_property__residence_state_id
-#: model:ir.model.fields,help:pms.field_res_partner__residence_state_id
-#: model:ir.model.fields,help:pms.field_res_users__residence_state_id
-msgid "Partner state of residence"
-msgstr "Estado de residencia del socio"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_booking_duplicate__partner_id
@@ -8353,27 +8327,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_property__pos_order_count
 msgid "Pos Order Count"
 msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_property__checkin_partner_possible_customer_id
-#: model:ir.model.fields,field_description:pms.field_res_partner__checkin_partner_possible_customer_id
-#: model:ir.model.fields,field_description:pms.field_res_users__checkin_partner_possible_customer_id
-msgid "Possible Customer In Checkin Partner"
-msgstr "Posible Cliente en el Registro de Entrada Socio"
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_property__folio_possible_customer_id
-#: model:ir.model.fields,field_description:pms.field_res_partner__folio_possible_customer_id
-#: model:ir.model.fields,field_description:pms.field_res_users__folio_possible_customer_id
-msgid "Possible Customer In Folio"
-msgstr "Posible Cliente En Folio"
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_property__reservation_possible_customer_id
-#: model:ir.model.fields,field_description:pms.field_res_partner__reservation_possible_customer_id
-#: model:ir.model.fields,field_description:pms.field_res_users__reservation_possible_customer_id
-msgid "Possible Customer In Reservation"
-msgstr "Posible Cliente en Reserva"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__possible_existing_customer_ids
@@ -9565,7 +9518,6 @@ msgstr "Reservas/"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
-#: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "Residence Address"
 msgstr "Dirección de Residencia"
 
@@ -10141,19 +10093,9 @@ msgid "Second last name"
 msgstr "Segundo apellido"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_property__residence_street2
-#: model:ir.model.fields,field_description:pms.field_res_partner__residence_street2
-#: model:ir.model.fields,field_description:pms.field_res_users__residence_street2
-msgid "Second street of residence"
-msgstr "Segunda calle de residencia"
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__residence_street2
-#: model:ir.model.fields,help:pms.field_pms_property__residence_street2
-#: model:ir.model.fields,help:pms.field_res_partner__residence_street2
-#: model:ir.model.fields,help:pms.field_res_users__residence_street2
-msgid "Second street of the guest's residence"
-msgstr "Segunda calle de la residencia del huésped"
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__street2
+msgid "Second street of the guest"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__section_id
@@ -10717,22 +10659,18 @@ msgstr "Fecha de inicio para aplicar los items de tarifa diarios"
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__state
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__state
 #: model:ir.model.fields,field_description:pms.field_pms_room__state_id
-#: model:ir.model.fields,field_description:pms.field_res_partner__state_id
-#: model:ir.model.fields,field_description:pms.field_res_users__state_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
-#: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "State"
 msgstr "Estado"
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/pms_checkin_partner.py:0
-#: code:addons/pms/models/res_partner.py:0
 #, python-format
 msgid "State and country of residence do not match"
 msgstr ""
@@ -10747,17 +10685,14 @@ msgstr ""
 "'facturado', 'a facturar' o 'no'"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_state_id
-#: model:ir.model.fields,field_description:pms.field_pms_property__residence_state_id
-#: model:ir.model.fields,field_description:pms.field_res_partner__residence_state_id
-#: model:ir.model.fields,field_description:pms.field_res_users__residence_state_id
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__state_id
 msgid "State of residence"
 msgstr "Estado de residencia"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__residence_state_id
-msgid "State of the guest's residence"
-msgstr "Estado de residencia del huésped"
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__state_id
+msgid "State of the guest"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation_line__state
@@ -10824,11 +10759,9 @@ msgid "Storage Category Capacity"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_street
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__street
 #: model:ir.model.fields,field_description:pms.field_pms_property__street
 #: model:ir.model.fields,field_description:pms.field_pms_room__street
-#: model:ir.model.fields,field_description:pms.field_res_partner__street
-#: model:ir.model.fields,field_description:pms.field_res_users__street
 msgid "Street"
 msgstr "Calle"
 
@@ -10836,39 +10769,25 @@ msgstr "Calle"
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
-#: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "Street 2..."
 msgstr "Calle 2..."
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_property__residence_street
-#: model:ir.model.fields,field_description:pms.field_res_partner__residence_street
-#: model:ir.model.fields,field_description:pms.field_res_users__residence_street
-msgid "Street of residence"
-msgstr "Calle de residencia"
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__residence_street
-#: model:ir.model.fields,help:pms.field_pms_property__residence_street
-#: model:ir.model.fields,help:pms.field_res_partner__residence_street
-#: model:ir.model.fields,help:pms.field_res_users__residence_street
-msgid "Street of the guest's residence"
-msgstr "Calle de la residencia del huésped"
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__street
+msgid "Street of the guest"
+msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
-#: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "Street..."
 msgstr "Calle"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_street2
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__street2
 #: model:ir.model.fields,field_description:pms.field_pms_property__street2
 #: model:ir.model.fields,field_description:pms.field_pms_room__street2
-#: model:ir.model.fields,field_description:pms.field_res_partner__street2
-#: model:ir.model.fields,field_description:pms.field_res_users__street2
 msgid "Street2"
 msgstr "Calle2"
 
@@ -11458,13 +11377,6 @@ msgstr "Se ha actualizado la cantidad pedida."
 #, python-format
 msgid "The parameter Advanced price rules cannot be modified"
 msgstr "El parámetro de reglas de tarifa avanzadas no se puede modificar"
-
-#. module: pms
-#. odoo-python
-#: code:addons/pms/models/res_partner.py:0
-#, python-format
-msgid "The partner %s cannot be deleted"
-msgstr "El interlocutor %s no puede ser borrado"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__has_unreconciled_entries
@@ -12919,33 +12831,20 @@ msgstr "Su reserva en ${object.pms_property_id.name} ha sido modificada"
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
-#: model_terms:ir.ui.view,arch_db:pms.res_partner_view_form
 msgid "ZIP"
 msgstr "Código Postal"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__residence_zip
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__zip
 #: model:ir.model.fields,field_description:pms.field_pms_property__zip
 #: model:ir.model.fields,field_description:pms.field_pms_room__zip
-#: model:ir.model.fields,field_description:pms.field_res_partner__zip
-#: model:ir.model.fields,field_description:pms.field_res_users__zip
 msgid "Zip"
 msgstr "Código Postal"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_property__residence_zip
-#: model:ir.model.fields,field_description:pms.field_res_partner__residence_zip
-#: model:ir.model.fields,field_description:pms.field_res_users__residence_zip
-msgid "Zip of residence"
-msgstr "Código postal de residencia"
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__residence_zip
-#: model:ir.model.fields,help:pms.field_pms_property__residence_zip
-#: model:ir.model.fields,help:pms.field_res_partner__residence_zip
-#: model:ir.model.fields,help:pms.field_res_users__residence_zip
-msgid "Zip of the guest's residence"
-msgstr "Código postal de la residencia del huésped"
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__zip
+msgid "Zip of the guest"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room__is_shared_room
@@ -12996,13 +12895,6 @@ msgstr "Agencia de reservas con configuración incorrecta: "
 #: model:ir.model.fields,help:pms.field_pms_reservation_split_join_swap_wizard__checkout
 msgid "checkout in reservation"
 msgstr "Checkout reserba"
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_property__residence_city
-#: model:ir.model.fields,field_description:pms.field_res_partner__residence_city
-#: model:ir.model.fields,field_description:pms.field_res_users__residence_city
-msgid "city of residence"
-msgstr "ciudad de residencia"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_folio_error
@@ -13123,6 +13015,55 @@ msgstr ""
 #, python-format
 msgid "{room_name}: No room available in {checkin} <-> {checkout}."
 msgstr ""
+
+#~ msgid "City of the guest's residence"
+#~ msgstr "Ciudad de residencia del huésped"
+
+#~ msgid "Country of the guest's residence"
+#~ msgstr "País de residencia del huésped"
+
+#~ msgid "Partner country of residence"
+#~ msgstr "País de residencia del socio"
+
+#~ msgid "Partner state of residence"
+#~ msgstr "Estado de residencia del socio"
+
+#~ msgid "Possible Customer In Checkin Partner"
+#~ msgstr "Posible Cliente en el Registro de Entrada Socio"
+
+#~ msgid "Possible Customer In Folio"
+#~ msgstr "Posible Cliente En Folio"
+
+#~ msgid "Possible Customer In Reservation"
+#~ msgstr "Posible Cliente en Reserva"
+
+#~ msgid "Second street of residence"
+#~ msgstr "Segunda calle de residencia"
+
+#~ msgid "Second street of the guest's residence"
+#~ msgstr "Segunda calle de la residencia del huésped"
+
+#~ msgid "State of the guest's residence"
+#~ msgstr "Estado de residencia del huésped"
+
+#~ msgid "Street of residence"
+#~ msgstr "Calle de residencia"
+
+#~ msgid "Street of the guest's residence"
+#~ msgstr "Calle de la residencia del huésped"
+
+#, python-format
+#~ msgid "The partner %s cannot be deleted"
+#~ msgstr "El interlocutor %s no puede ser borrado"
+
+#~ msgid "Zip of residence"
+#~ msgstr "Código postal de residencia"
+
+#~ msgid "Zip of the guest's residence"
+#~ msgstr "Código postal de la residencia del huésped"
+
+#~ msgid "city of residence"
+#~ msgstr "ciudad de residencia"
 
 #~ msgid "Second Last Name"
 #~ msgstr "Segundo apellido"
