@@ -6,7 +6,7 @@
     "author": "Commit [Sun], Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/pms",
     "category": "Generic Modules/Property Management System",
-    "version": "16.0.1.1.0",
+    "version": "16.0.1.2.0",
     "license": "AGPL-3",
     "depends": [
         "l10n_es_aeat_sii_oca",
