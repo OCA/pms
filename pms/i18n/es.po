@@ -10131,11 +10131,6 @@ msgid "Search"
 msgstr "Buscar"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__lastname2
-msgid "Second Last Name"
-msgstr "Segundo apellido"
-
-#. module: pms
 #: model:pms.ubication,name:pms.pms_ubication_2nd_floor
 msgid "Second floor"
 msgstr "Segundo piso"
@@ -13052,11 +13047,6 @@ msgid "host nationality"
 msgstr "Nacionalidad"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__lastname2
-msgid "host second lastname"
-msgstr "Apellido 2"
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__partner_incongruences
 msgid ""
 "indicates that some partner fields             on the checkin do not "
@@ -13133,6 +13123,12 @@ msgstr ""
 #, python-format
 msgid "{room_name}: No room available in {checkin} <-> {checkout}."
 msgstr ""
+
+#~ msgid "Second Last Name"
+#~ msgstr "Segundo apellido"
+
+#~ msgid "host second lastname"
+#~ msgstr "Apellido 2"
 
 #~ msgid "Total amount (Reservation Card):"
 #~ msgstr "Importe total (Tarjeta de Reserva):"

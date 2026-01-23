@@ -10954,11 +10954,6 @@ msgid "Search"
 msgstr "Suche"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__lastname2
-msgid "Second Last Name"
-msgstr "Zweiter Nachname"
-
-#. module: pms
 #: model:pms.ubication,name:pms.pms_ubication_2nd_floor
 msgid "Second floor"
 msgstr "Zweiter Stock"
@@ -13959,11 +13954,6 @@ msgid "host nationality"
 msgstr "Nationalität"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__lastname2
-msgid "host second lastname"
-msgstr "zweiter Nachname"
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__partner_incongruences
 msgid ""
 "indicates that some partner fields             on the checkin do not "
@@ -14040,6 +14030,12 @@ msgstr ""
 #, python-format
 msgid "{room_name}: No room available in {checkin} <-> {checkout}."
 msgstr "{room_name}: Kein Zimmer verfügbar in {checkin} <-> {checkout}."
+
+#~ msgid "Second Last Name"
+#~ msgstr "Zweiter Nachname"
+
+#~ msgid "host second lastname"
+#~ msgstr "zweiter Nachname"
 
 #~ msgid "Journal used to create self billing"
 #~ msgstr "Journal zur Erstellung von Gutschriften"
