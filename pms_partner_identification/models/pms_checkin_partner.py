@@ -80,12 +80,6 @@ class PmsCheckinPartner(models.Model):
             "country_id": self.document_country_id.id,
         }
 
-    @api.model
-    def _get_compute_partner_id_field_names(self):
-        res = super()._get_compute_partner_id_field_names()
-        res += ["document_number", "document_type"]
-        return res
-
     @api.constrains("document_number", "document_type", "document_country_id")
     def validate_id_number(self):
         """Validate the given ID number
@@ -174,16 +168,17 @@ class PmsCheckinPartner(models.Model):
             self.sudo().env["res.partner"].search([("id", "=", number.partner_id.id)])
         )
 
-    def _compute_partner_id(self):
+    def set_partner_id(self):
         for record in self:
             if not record.partner_id:
                 if record.document_number and record.document_type:
                     partner = self._get_partner_by_document(
                         record.document_number, record.document_type
                     )
-                    if not partner:
-                        super(PmsCheckinPartner, record)._compute_partner_id()
-                    record.partner_id = partner
+                    if partner:
+                        record.partner_id = partner
+                    else:
+                        super(PmsCheckinPartner, record).set_partner_id()
         return True
 
     @api.model

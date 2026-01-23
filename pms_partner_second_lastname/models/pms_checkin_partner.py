@@ -39,12 +39,6 @@ class PmsCheckinPartner(models.Model):
         res.append("lastname2")
         return res
 
-    @api.model
-    def _get_compute_partner_id_field_names(self):
-        res = super()._get_compute_partner_id_field_names()
-        res.append("lastname2")
-        return res
-
     def _completed_partner_creation_fields(self):
         res = super()._completed_partner_creation_fields()
         if self.lastname2:

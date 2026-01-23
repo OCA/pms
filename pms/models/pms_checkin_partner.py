@@ -24,12 +24,9 @@ class PmsCheckinPartner(models.Model):
     partner_id = fields.Many2one(
         string="Partner",
         help="Partner associated with checkin partner",
-        readonly=False,
         index=True,
-        store=True,
         comodel_name="res.partner",
         domain="[('is_company', '=', False)]",
-        compute="_compute_partner_id",
     )
     reservation_id = fields.Many2one(
         string="Reservation",
@@ -377,10 +374,6 @@ class PmsCheckinPartner(models.Model):
             elif not record.phone:
                 record.phone = False
 
-    @api.model
-    def _get_compute_partner_id_field_names(self):
-        return ["firstname", "lastname"]
-
     def _completed_partner_creation_fields(self):
         self.ensure_one()
         if self.firstname or self.lastname:
@@ -395,19 +388,6 @@ class PmsCheckinPartner(models.Model):
             "birthdate_date": self.birthdate_date,
             "nationality_id": self.nationality_id.id,
         }
-
-    @api.depends(lambda self: self._get_compute_partner_id_field_names())
-    def _compute_partner_id(self):
-        for record in self:
-            if not record.partner_id:
-                if record._completed_partner_creation_fields():
-                    partner_values = record._get_partner_create_vals()
-                    partner = (
-                        self.env["res.partner"]
-                        .with_context(avoid_document_restriction=True)
-                        .create(partner_values)
-                    )
-                    record.partner_id = partner
 
     @api.depends("email", "mobile")
     def _compute_possible_existing_customer_ids(self):
@@ -538,6 +518,14 @@ class PmsCheckinPartner(models.Model):
                     if not any(record.partner_id[field] for field in address_fields):
                         record.partner_id.write(residence_vals)
 
+    def set_partner_id(self):
+        for record in self:
+            if not record.partner_id:
+                if record._completed_partner_creation_fields():
+                    partner_values = record._get_partner_create_vals()
+                    partner = self.env["res.partner"].create(partner_values)
+                    record.partner_id = partner
+
     @api.model_create_multi
     def create(self, vals_list):
         records = self.env["pms.checkin.partner"]
@@ -572,6 +560,9 @@ class PmsCheckinPartner(models.Model):
                         "check-in in this reservation"
                     )
                 )
+        records_without_partner = records.filtered(lambda r: not r.partner_id)
+        if records_without_partner:
+            records_without_partner.set_partner_id()
         records.set_partner_address()
         return records
 
@@ -582,6 +573,10 @@ class PmsCheckinPartner(models.Model):
             tourist_tax_services_cmds = reservation._compute_tourist_tax_lines()
             if tourist_tax_services_cmds:
                 reservation.write({"service_ids": tourist_tax_services_cmds})
+        records_without_partner = self.filtered(lambda r: not r.partner_id)
+        if records_without_partner:
+            records_without_partner.set_partner_id()
+
         self.set_partner_address()
         return res
 
