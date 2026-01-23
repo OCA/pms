@@ -9619,11 +9619,6 @@ msgid "Search"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__lastname2
-msgid "Second Last Name"
-msgstr ""
-
-#. module: pms
 #: model:pms.ubication,name:pms.pms_ubication_2nd_floor
 msgid "Second floor"
 msgstr ""
@@ -12369,11 +12364,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__nationality_id
 msgid "host nationality"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__lastname2
-msgid "host second lastname"
 msgstr ""
 
 #. module: pms
