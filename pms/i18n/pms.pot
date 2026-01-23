@@ -142,13 +142,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/pms/models/pms_checkin_partner.py:0
 #, python-format
-msgid "%(doc_number)s is not a valid %(doc_type)s identifier"
-msgstr ""
-
-#. module: pms
-#. odoo-python
-#: code:addons/pms/models/pms_checkin_partner.py:0
-#, python-format
 msgid "%(identifier)s not found in checkins (%(reservation)s)"
 msgstr ""
 
@@ -934,14 +927,6 @@ msgid ""
 "A description of the Product that you want to communicate to your customers."
 " This description will be copied to every Sales Order, Delivery Order and "
 "Customer Invoice/Credit Note"
-msgstr ""
-
-#. module: pms
-#. odoo-python
-#: code:addons/pms/models/res_partner.py:0
-#: code:addons/pms/models/res_partner.py:0
-#, python-format
-msgid "A document identification is required"
 msgstr ""
 
 #. module: pms
@@ -2406,11 +2391,6 @@ msgid "Cash Payments"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_res_partner_id_number__category_id
-msgid "Category"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__route_from_categ_ids
 msgid "Category Routes"
 msgstr ""
@@ -3097,15 +3077,9 @@ msgid "Counter of the number of bounced emails for this contact"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_res_partner_id_category__country_ids
-msgid "Countries"
-msgstr ""
-
-#. module: pms
 #: model:ir.model,name:pms.model_res_country
 #: model:ir.model.fields,field_description:pms.field_pms_property__country_id
 #: model:ir.model.fields,field_description:pms.field_pms_room__country_id
-#: model:ir.model.fields,field_description:pms.field_res_partner_id_number__country_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
@@ -3119,21 +3093,8 @@ msgid "Country Code"
 msgstr ""
 
 #. module: pms
-#. odoo-python
-#: code:addons/pms/models/res_partner_id_number.py:0
-#, python-format
-msgid "Country is not allowed for this document type"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__country_id
 msgid "Country of residence"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__document_country_id
-#: model:ir.model.fields,help:pms.field_res_partner_id_number__country_id
-msgid "Country of the document"
 msgstr ""
 
 #. module: pms
@@ -3526,11 +3487,6 @@ msgid "Date from first copy Checkin (reference min checkin folio reservation)"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__document_expedition_date
-msgid "Date on which document_type was issued"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__date_order
 msgid "Date on which folio is sold"
 msgstr ""
@@ -3891,35 +3847,10 @@ msgid "Display Type"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_id
-msgid "Document"
-msgstr ""
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid ""
 "Document\n"
 "                            number"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_country_id
-msgid "Document Country"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_number
-msgid "Document Number"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_res_company__document_partner_required
-msgid "Document Partner Required"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_type
-msgid "Document Type"
 msgstr ""
 
 #. module: pms
@@ -3930,20 +3861,6 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Document number:"
-msgstr ""
-
-#. module: pms
-#. odoo-python
-#: code:addons/pms/models/pms_checkin_partner.py:0
-#, python-format
-msgid "Document type and country of document do not match"
-msgstr ""
-
-#. module: pms
-#. odoo-python
-#: code:addons/pms/models/pms_checkin_partner.py:0
-#, python-format
-msgid "Document_type has already exists"
 msgstr ""
 
 #. module: pms
@@ -4142,16 +4059,6 @@ msgid "Entry date"
 msgstr ""
 
 #. module: pms
-#. odoo-python
-#: code:addons/pms/models/pms_checkin_partner.py:0
-#, python-format
-msgid ""
-"Error when evaluating the id_category validation code:\n"
-" %(name)s \n"
-"(%(error)s)"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__checkin_datetime
 msgid "Exact Arrival"
 msgstr ""
@@ -4182,11 +4089,6 @@ msgstr ""
 msgid ""
 "Expedition\n"
 "                            date"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_expedition_date
-msgid "Expedition Date"
 msgstr ""
 
 #. module: pms
@@ -4940,11 +4842,6 @@ msgid "History"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__document_number
-msgid "Host document number"
-msgstr ""
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_kanban_view
 msgid "Hosted's Name"
 msgstr ""
@@ -4997,16 +4894,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__id
 #: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__id
 msgid "ID"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_res_partner_id_number__name
-msgid "ID Number"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_res_partner_id_number__category_id
-msgid "ID type defined in configuration. For example, Driver License"
 msgstr ""
 
 #. module: pms
@@ -5108,13 +4995,6 @@ msgstr ""
 msgid ""
 "If the pricelist is available in the PMS, you must select an availability "
 "plan"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_res_company__document_partner_required
-msgid ""
-"If true, the partner document is required\n"
-"        to create a new contact"
 msgstr ""
 
 #. module: pms
@@ -7299,7 +7179,6 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_checkin_partner__gender__other
-#: model:res.partner.id_category,name:pms.document_type_other
 msgid "Other"
 msgstr ""
 
@@ -7503,16 +7382,6 @@ msgid "Partner Contracts"
 msgstr ""
 
 #. module: pms
-#: model:ir.model,name:pms.model_res_partner_id_category
-msgid "Partner ID Category"
-msgstr ""
-
-#. module: pms
-#: model:ir.model,name:pms.model_res_partner_id_number
-msgid "Partner ID Number"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__partner_incongruences
 #: model:ir.model.fields,field_description:pms.field_pms_folio__partner_incongruences
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__partner_incongruences
@@ -7553,13 +7422,6 @@ msgid "Partner Tags"
 msgstr ""
 
 #. module: pms
-#. odoo-python
-#: code:addons/pms/models/res_partner_id_number.py:0
-#, python-format
-msgid "Partner already has this document type"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__partner_id
 msgid "Partner associated with checkin partner"
 msgstr ""
@@ -7595,18 +7457,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__same_vat_partner_id
 msgid "Partner with same Tax ID"
-msgstr ""
-
-#. module: pms
-#. odoo-python
-#: code:addons/pms/models/res_partner.py:0
-#, python-format
-msgid "Partner without document identification, update vals %s"
-msgstr ""
-
-#. module: pms
-#: model:res.partner.id_category,name:pms.document_type_passport
-msgid "Passport"
 msgstr ""
 
 #. module: pms
@@ -8121,7 +7971,6 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_res_country__priority
-#: model:ir.model.fields,field_description:pms.field_res_partner_id_category__priority
 msgid "Priority"
 msgstr ""
 
@@ -9634,11 +9483,6 @@ msgid "Segmentation..."
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__document_type
-msgid "Select a valid document type"
-msgstr ""
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.wizard_folio_changes_view_form
 msgid "Selected reservations with different dates"
 msgstr ""
@@ -10425,11 +10269,6 @@ msgid ""
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__document_id
-msgid "Technical field"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__vies_failed_message
 msgid "Technical field display a message to the user if the VIES check fails."
 msgstr ""
@@ -10526,11 +10365,6 @@ msgid ""
 "The '%(incompatible_class)s' is not compatible with the reservation type "
 "class '%(reservation_class)s'. Please select a compatible class room for "
 "this reservation."
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_res_partner_id_number__name
-msgid "The ID itself. For example, Driver License number of this person"
 msgstr ""
 
 #. module: pms
@@ -11818,16 +11652,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__valid_product_template_attribute_line_ids
 msgid "Valid Product Attribute Lines"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_res_partner_id_number__valid_from
-msgid "Valid from"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_res_partner_id_number__valid_from
-msgid "Validation period stating date."
 msgstr ""
 
 #. module: pms
