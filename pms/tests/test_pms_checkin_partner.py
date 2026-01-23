@@ -1,7 +1,6 @@
 import datetime
 import logging
 
-from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 
 from odoo import fields
@@ -58,21 +57,6 @@ class TestPmsCheckinPartner(TestPms):
                 "gender": "male",
             }
         )
-        cls.id_category = cls.env["res.partner.id_category"].search(
-            [("code", "=", "D")]
-        )
-        if not cls.id_category:
-            cls.id_category = cls.env["res.partner.id_category"].create(
-                {"name": "DNI", "code": "D"}
-            )
-        cls.env["res.partner.id_number"].create(
-            {
-                "category_id": cls.id_category.id,
-                "name": "30065089H",
-                "valid_from": today,
-                "partner_id": cls.host1.id,
-            }
-        )
         cls.sale_channel_direct1 = cls.env["pms.sale.channel"].create(
             {
                 "name": "Door",
@@ -123,14 +107,6 @@ class TestPmsCheckinPartner(TestPms):
                 "email": "carlos@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",
-            }
-        )
-        self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "85564627G",
-                "valid_from": datetime.date.today(),
-                "partner_id": host2.id,
             }
         )
         self.reservation_1.checkin_partner_ids = [
@@ -268,14 +244,6 @@ class TestPmsCheckinPartner(TestPms):
                 "gender": "male",
             }
         )
-        self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "95876871Z",
-                "valid_from": datetime.date.today(),
-                "partner_id": host2.id,
-            }
-        )
         host3 = self.env["res.partner"].create(
             {
                 "name": "Enmanuel",
@@ -285,14 +253,6 @@ class TestPmsCheckinPartner(TestPms):
                 "gender": "male",
             }
         )
-        self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "58261664L",
-                "valid_from": datetime.date.today(),
-                "partner_id": host3.id,
-            }
-        )
         host4 = self.env["res.partner"].create(
             {
                 "name": "Enrique",
@@ -300,14 +260,6 @@ class TestPmsCheckinPartner(TestPms):
                 "email": "enrique@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",
-            }
-        )
-        self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "61645604S",
-                "valid_from": datetime.date.today(),
-                "partner_id": host4.id,
             }
         )
         self.env["pms.checkin.partner"].create(
@@ -358,14 +310,6 @@ class TestPmsCheckinPartner(TestPms):
                 "gender": "male",
             }
         )
-        self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "63073204M",
-                "valid_from": datetime.date.today(),
-                "partner_id": self.host2.id,
-            }
-        )
         self.host3 = self.env["res.partner"].create(
             {
                 "name": "Enmanuel",
@@ -373,14 +317,6 @@ class TestPmsCheckinPartner(TestPms):
                 "email": "enmanuel@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",
-            }
-        )
-        self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "70699468K",
-                "valid_from": datetime.date.today(),
-                "partner_id": self.host3.id,
             }
         )
 
@@ -433,14 +369,7 @@ class TestPmsCheckinPartner(TestPms):
                 "gender": "male",
             }
         )
-        self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "12650631X",
-                "valid_from": datetime.date.today(),
-                "partner_id": self.host2.id,
-            }
-        )
+
         # ACT
 
         self.checkin2 = self.env["pms.checkin.partner"].create(
@@ -486,14 +415,7 @@ class TestPmsCheckinPartner(TestPms):
                 "gender": "male",
             }
         )
-        self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "61369791H",
-                "valid_from": datetime.date.today(),
-                "partner_id": self.host2.id,
-            }
-        )
+
         self.host3 = self.env["res.partner"].create(
             {
                 "name": "Enmanuel",
@@ -503,14 +425,7 @@ class TestPmsCheckinPartner(TestPms):
                 "gender": "male",
             }
         )
-        self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "53563260D",
-                "valid_from": datetime.date.today(),
-                "partner_id": self.host3.id,
-            }
-        )
+
         self.host4 = self.env["res.partner"].create(
             {
                 "name": "Enrique",
@@ -520,14 +435,7 @@ class TestPmsCheckinPartner(TestPms):
                 "gender": "male",
             }
         )
-        self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "63742138F",
-                "valid_from": datetime.date.today(),
-                "partner_id": self.host4.id,
-            }
-        )
+
         self.reservation_1.write(
             {
                 "checkin": datetime.date.today() + datetime.timedelta(days=1),
@@ -600,14 +508,7 @@ class TestPmsCheckinPartner(TestPms):
                 "gender": "male",
             }
         )
-        self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "61369791H",
-                "valid_from": datetime.date.today(),
-                "partner_id": self.host2.id,
-            }
-        )
+
         self.host3 = self.env["res.partner"].create(
             {
                 "name": "Enmanuel",
@@ -617,14 +518,7 @@ class TestPmsCheckinPartner(TestPms):
                 "gender": "male",
             }
         )
-        self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "53563260D",
-                "valid_from": datetime.date.today(),
-                "partner_id": self.host3.id,
-            }
-        )
+
         self.host4 = self.env["res.partner"].create(
             {
                 "name": "Enrique",
@@ -634,14 +528,7 @@ class TestPmsCheckinPartner(TestPms):
                 "gender": "male",
             }
         )
-        self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "63742138F",
-                "valid_from": datetime.date.today(),
-                "partner_id": self.host4.id,
-            }
-        )
+
         self.reservation_1.write(
             {
                 "checkin": datetime.date.today(),
@@ -926,8 +813,6 @@ class TestPmsCheckinPartner(TestPms):
             {
                 "firstname": "Pepe",
                 "lastname": "Paz",
-                "document_type": self.id_category.id,
-                "document_number": "77156490T",
                 "reservation_id": self.reservation_1.id,
             }
         )
@@ -936,28 +821,6 @@ class TestPmsCheckinPartner(TestPms):
         self.assertTrue(
             checkin.partner_id,
             "Partner should have been created and associated with the checkin",
-        )
-
-    def test_not_create_partner_checkin_hasnt_enought_data(self):
-        """
-        Check that partner is not created when the necessary minimum data isn't entered
-        into checkin_partner data, in this case document_id and document_number
-        """
-        # ACT & ASSERT
-        checkin = self.env["pms.checkin.partner"].create(
-            {
-                "firstname": "Pepe",
-                "lastname": "Paz",
-                "email": "pepepaz@gmail.com",
-                "mobile": "666777777",
-                "reservation_id": self.reservation_1.id,
-            }
-        )
-
-        # ASSERT
-        self.assertFalse(
-            checkin.partner_id,
-            "Partner mustn't have been created and associated with the checkin",
         )
 
     def test_add_partner_data_from_checkin(self):
@@ -976,32 +839,6 @@ class TestPmsCheckinPartner(TestPms):
         self.checkin1.mobile = "666777888"
         # ASSERT
         self.assertTrue(self.host1.mobile, "Partner mobile must be added")
-
-    def test_partner_id_numbers_created_from_checkin(self):
-        """
-        Some of the required data of the checkin_partner to create the partner are
-        document_type and document_number, with them an id_number is created associated
-        with the partner that has just been created. In this test it is verified that
-        this document has been created correctly
-        """
-        # ACT & ARRANGE
-        checkin = self.env["pms.checkin.partner"].create(
-            {
-                "firstname": "Pepe",
-                "lastname": "Paz",
-                "document_type": self.id_category.id,
-                "document_number": "77156490T",
-                "reservation_id": self.reservation_1.id,
-            }
-        )
-
-        checkin.flush_recordset()
-
-        # ASSERT
-        self.assertTrue(
-            checkin.partner_id.id_numbers,
-            "Partner id_number should have been created and hasn't been",
-        )
 
     def _test_partner_not_modified_when_checkin_modified(self):
         """
@@ -1032,47 +869,6 @@ class TestPmsCheckinPartner(TestPms):
             self.host1.gender,
             self.checkin1.gender,
             "Checkin partner gender and partner gender shouldn't match",
-        )
-
-    def test_add_partner_if_exists_from_checkin(self):
-        """
-        Check when a document_type and document_number are entered in a checkin if this
-        document already existes and is associated with a partner, this partner will be
-        associated with the checkin
-        """
-        # ACT
-        host = self.env["res.partner"].create(
-            {
-                "name": "Ricardo",
-                "mobile": "666555666",
-                "email": "ricardo@example.com",
-                "birthdate_date": "1995-11-14",
-                "gender": "male",
-            }
-        )
-
-        self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "55562998N",
-                "partner_id": host.id,
-            }
-        )
-
-        # ARRANGE
-        checkin = self.env["pms.checkin.partner"].create(
-            {
-                "document_type": self.id_category.id,
-                "document_number": "55562998N",
-                "reservation_id": self.reservation_1.id,
-            }
-        )
-
-        # ASSERT
-        self.assertEqual(
-            checkin.partner_id.id,
-            host.id,
-            "Checkin partner_id must be the same as the one who has that document",
         )
 
     def test_is_possible_customer_by_email(self):
@@ -1320,240 +1116,6 @@ class TestPmsCheckinPartner(TestPms):
             msg="A partner can be added to the checkin partner",
         ):
             several_partners_wizard.add_partner()
-
-    def test_calculate_dni_expedition_date_from_validity_date_age_lt_30(self):
-        """
-        Check that the calculate_doc_type_expedition_date_from_validity_date()
-        method calculates correctly the expedition_date of an id category DNI
-        when the age is less than 30.
-        -------------
-        We launch the method calculate_doc_type_expedition_date_from_validity_date
-        with the parameters doc_type_id DNI, birthdate calculated so that the age
-        is = 20 years old and document_date = today + 1 year. The expected
-        expedition date has to be doc_date - 5 years
-        """
-        doc_date = fields.date.today() + relativedelta(years=1)
-        doc_date_str = str(doc_date)
-
-        # age=20 years old
-        birthdate = fields.date.today() - relativedelta(years=20)
-        birthdate_str = str(birthdate)
-
-        # expected_expedition_date = doc_date - 5 years
-        expected_exp_date = doc_date - relativedelta(years=5)
-        expedition_date = (
-            self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
-                self.id_category, doc_date_str, birthdate_str
-            )
-        )
-        date_expedition_date = datetime.date(
-            year=expedition_date.year,
-            month=expedition_date.month,
-            day=expedition_date.day,
-        )
-        self.assertEqual(
-            date_expedition_date,
-            expected_exp_date,
-            "Expedition date doesn't correspond with expected expedition date",
-        )
-
-    def test_calculate_dni_expedition_date_from_validity_date_age_gt_30(self):
-        """
-        Check that the calculate_doc_type_expedition_date_from_validity_date()
-        method calculates correctly the expedition_date of an id category DNI
-        when the age is greater than 30.
-        -------------
-        We launch the method calculate_doc_type_expedition_date_from_validity_date
-        with the parameters doc_type_id DNI, birthdate calculated so that the age
-        is = 40 years old and document_date = today + 1 year. The expected
-        expedition date has to be doc_date - 10 years
-        """
-        doc_date = fields.date.today() + relativedelta(years=1)
-        doc_date_str = str(doc_date)
-
-        # age=40 years old
-        birthdate = fields.date.today() - relativedelta(years=40)
-        birthdate_str = str(birthdate)
-
-        # expected_expedition_date = doc_date - 10 years
-        expected_exp_date = doc_date - relativedelta(years=10)
-        expedition_date = (
-            self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
-                self.id_category, doc_date_str, birthdate_str
-            )
-        )
-        date_expedition_date = datetime.date(
-            year=expedition_date.year,
-            month=expedition_date.month,
-            day=expedition_date.day,
-        )
-        self.assertEqual(
-            date_expedition_date,
-            expected_exp_date,
-            "Expedition date doesn't correspond with expected expedition date",
-        )
-
-    def test_calculate_passport_expedition_date_from_validity_date_age_lt_30(self):
-        """
-        Check that the calculate_doc_type_expedition_date_from_validity_date()
-        method calculates correctly the expedition_date of an id category Passport
-        when the age is less than 30.
-        -------------
-        We launch the method calculate_doc_type_expedition_date_from_validity_date
-        with the parameters doc_type_id Passport, birthdate calculated so that the age
-        is = 20 years old and document_date = today + 1 year. The expected
-        expedition date has to be doc_date - 5 years
-        """
-        doc_date = fields.date.today() + relativedelta(years=1)
-        doc_date_str = str(doc_date)
-
-        # age=20 years old
-        birthdate = fields.date.today() - relativedelta(years=20)
-        birthdate_str = str(birthdate)
-
-        # expected_expedition_date = doc_date - 5 years
-        expected_exp_date = doc_date - relativedelta(years=5)
-        expedition_date = (
-            self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
-                self.id_category, doc_date_str, birthdate_str
-            )
-        )
-        date_expedition_date = datetime.date(
-            year=expedition_date.year,
-            month=expedition_date.month,
-            day=expedition_date.day,
-        )
-        self.assertEqual(
-            date_expedition_date,
-            expected_exp_date,
-            "Expedition date doesn't correspond with expected expedition date",
-        )
-
-    def test_calculate_passport_expedition_date_from_validity_date_age_gt_30(self):
-        """
-        Check that the calculate_doc_type_expedition_date_from_validity_date()
-        method calculates correctly the expedition_date of an id category Passport
-        when the age is greater than 30.
-        -------------
-        We launch the method calculate_doc_type_expedition_date_from_validity_date
-        with the parameters doc_type_id Passport, birthdate calculated so that the age
-        is = 40 years old and document_date = today + 1 year. The expected
-        expedition date has to be doc_date - 10 years
-        """
-        doc_type_id = self.env["res.partner.id_category"].search([("code", "=", "P")])
-        doc_date = fields.date.today() + relativedelta(years=1)
-        doc_date_str = str(doc_date)
-
-        # age=40 years old
-        birthdate = fields.date.today() - relativedelta(years=40)
-        birthdate_str = str(birthdate)
-
-        # expected_expedition_date = doc_date - 10 years
-        expected_exp_date = doc_date - relativedelta(years=10)
-        expedition_date = (
-            self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
-                doc_type_id, doc_date_str, birthdate_str
-            )
-        )
-        date_expedition_date = datetime.date(
-            year=expedition_date.year,
-            month=expedition_date.month,
-            day=expedition_date.day,
-        )
-        self.assertEqual(
-            date_expedition_date,
-            expected_exp_date,
-            "Expedition date doesn't correspond with expected expedition date",
-        )
-
-    def test_calculate_expedition_date(self):
-        """
-        Check that if the value of the doc_date is less than today,
-        the method calculate_doc_type_expedition_date_from_validity_date
-        returns the value of the doc_date as expedition_date.
-        -----------
-        We launch the method calculate_doc_type_expedition_date_from_validity_date
-        with the parameters doc_type_id DNI, birthdate calculated so that the age
-        is = 20 years old and document_date = today - 1 year. The expected
-        expedition date has to be the value of doc_date.
-        """
-        doc_type_id = self.env["res.partner.id_category"].search([("code", "=", "D")])
-        doc_date = fields.date.today() - relativedelta(years=1)
-        doc_date_str = str(doc_date)
-        birthdate = fields.date.today() - relativedelta(years=20)
-        birthdate_str = str(birthdate)
-        expedition_date = (
-            self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
-                doc_type_id, doc_date_str, birthdate_str
-            )
-        )
-        date_expedition_date = datetime.date(
-            year=expedition_date.year,
-            month=expedition_date.month,
-            day=expedition_date.day,
-        )
-        self.assertEqual(
-            date_expedition_date,
-            doc_date,
-            "Expedition date doesn't correspond with expected expedition date",
-        )
-
-    def test_save_checkin_from_portal(self):
-        """
-        Check by subtesting that a checkin partner is saved correctly
-        with the _save_data_from_portal() method.
-        ---------
-        A reservation is created with an adult, and it will create a checkin partner.
-        A dictionary is created with the values to be saved and with the key 'id'
-        equal to the id of the checkin_partner created when the reservation was
-        created. We launch the _save_data_from_portal() method, passing the created
-        dictionary as a parameter. Then it is verified that the value of each key
-        in the dictionary corresponds to the fields of the saved checkin_partner.
-        """
-        self.reservation = self.env["pms.reservation"].create(
-            {
-                "checkin": datetime.date.today() + datetime.timedelta(days=10),
-                "checkout": datetime.date.today() + datetime.timedelta(days=13),
-                "room_type_id": self.room_type1.id,
-                "partner_id": self.host1.id,
-                "adults": 1,
-                "pms_property_id": self.pms_property1.id,
-                "sale_channel_origin_id": self.sale_channel_direct1.id,
-            }
-        )
-        checkin_partner = self.reservation.checkin_partner_ids[0]
-        checkin_partner_vals = {
-            "checkin_partner": checkin_partner,
-            "id": checkin_partner.id,
-            "firstname": "Serafín",
-            "lastname": "Rivas",
-            "document_type": self.id_category,
-            "document_number": "18038946T",
-            "document_expedition_date": "07/10/2010",
-            "birthdate_date": "05/10/1983",
-            "mobile": "60595595",
-            "email": "serafin@example.com",
-            "gender": "male",
-            "nationality_id": 1,
-            "state_id": 1,
-        }
-        checkin_partner._save_data_from_portal(checkin_partner_vals)
-        checkin_partner_vals.update(
-            {
-                "birthdate_date": datetime.date(1983, 10, 5),
-                "document_expedition_date": datetime.date(2010, 10, 7),
-                "nationality_id": self.env["res.country"].search([("id", "=", 1)]),
-                "state_id": self.env["res.country.state"].browse(1),
-                "document_type": self.id_category,
-            }
-        )
-        for key in checkin_partner_vals:
-            with self.subTest(k=key):
-                self.assertEqual(
-                    self.reservation.checkin_partner_ids[0][key],
-                    checkin_partner_vals[key],
-                    "The value of " + key + " is not correctly established",
-                )
 
     def test_compute_inverse_partner_fields(self):
         """

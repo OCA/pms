@@ -144,7 +144,6 @@
                             <field name="lastname" />
                             <field name="gender" />
                             <field name="birthdate_date" />
-                            <field name="id_numbers" />
                             <field name="nationality_id" />
                             <field name="email" />
                             <field name="mobile" />

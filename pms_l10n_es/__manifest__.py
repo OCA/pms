@@ -21,11 +21,13 @@
         "base_vat",
         "l10n_es_aeat",
         "pms_partner_second_lastname",
+        "pms_partner_identification",
     ],
     "external_dependencies": {
         "python": [
             "bs4",
             "pycountry",
+            "openupgradelib",
         ],
     },
     "data": [

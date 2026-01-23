@@ -43,12 +43,6 @@ class ResCompany(models.Model):
         default="no",
     )
 
-    document_partner_required = fields.Boolean(
-        help="""If true, the partner document is required
-        to create a new contact""",
-        default=False,
-    )
-
     cancel_penalty_product_id = fields.Many2one(
         string="Cancel penalty product",
         help="Product used to calculate the cancel penalty",

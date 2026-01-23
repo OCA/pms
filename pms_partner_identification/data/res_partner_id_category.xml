@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<odoo noupdate="1">
+    <record id="document_type_national_id" model="res.partner.id_category">
+        <field name="name">National identification document</field>
+        <field name="code">D</field>
+        <field name="priority">10</field>
+        <field name="validation_code">
+failed = not id_number.partner_id.simple_vat_check(id_number.country_id.code, id_number.name)
+        </field>
+    </record>
+    <record id="document_type_passport" model="res.partner.id_category">
+        <field name="name">Passport</field>
+        <field name="code">P</field>
+        <field name="priority">20</field>
+    </record>
+
+    <record id="document_type_other" model="res.partner.id_category">
+        <field name="name">Other</field>
+        <field name="code">O</field>
+        <field name="priority">90</field>
+    </record>
+</odoo>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="pms_checkin_partner_view_form" model="ir.ui.view">
+        <field name="name">pms.checkin.partner.inherit.view.form</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="inherit_id" ref="pms.pms_checkin_partner_view_form" />
+        <field name="arch" type="xml">
+            <field name="birthdate_date" position="after">
+                <field name="document_country_id" />
+                <field name="document_type" />
+                <field name="document_number" />
+                <field name="document_expedition_date" />
+            </field>
+
+        </field>
+    </record>
+    <record id="pms_checkin_partner_reservation_view_tree" model="ir.ui.view">
+        <field name="name">pms.checkin.partner.inherit.view.form</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="inherit_id" ref="pms.pms_checkin_partner_reservation_view_tree" />
+        <field name="arch" type="xml">
+            <field name="birthdate_date" position="after">
+                <field name="document_country_id" />
+                <field name="document_type" />
+                <field name="document_number" />
+                <field name="document_expedition_date" />
+            </field>
+
+        </field>
+    </record>
+    <record id="pms_checkin_partner_folio_view_tree" model="ir.ui.view">
+        <field name="name">pms.checkin.partner.inherit.view.form</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="inherit_id" ref="pms.pms_checkin_partner_folio_view_tree" />
+        <field name="arch" type="xml">
+            <field name="birthdate_date" position="after">
+                <field name="document_country_id" />
+                <field name="document_type" />
+                <field name="document_number" />
+                <field name="document_expedition_date" />
+            </field>
+
+        </field>
+    </record>
+    <record id="pms_checkin_partner_view_tree" model="ir.ui.view">
+        <field name="name">pms.checkin.partner.inherit.view.form</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="inherit_id" ref="pms.pms_checkin_partner_view_tree" />
+        <field name="arch" type="xml">
+            <field name="birthdate_date" position="after">
+                <field name="document_country_id" />
+                <field name="document_type" />
+                <field name="document_number" />
+                <field name="document_expedition_date" />
+            </field>
+
+        </field>
+    </record>
+    <record id="pms_checkin_partner_kanban_view" model="ir.ui.view">
+        <field name="name">pms.checkin.partner.inherit.view.form</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="inherit_id" ref="pms.pms_checkin_partner_kanban_view" />
+        <field name="arch" type="xml">
+            <field name="birthdate_date" position="after">
+                <field name="document_country_id" />
+                <field name="document_type" />
+                <field name="document_number" />
+                <field name="document_expedition_date" />
+            </field>
+
+        </field>
+    </record>
+</odoo>

@@ -5,12 +5,8 @@
 import json
 from datetime import datetime
 
-from dateutil.relativedelta import relativedelta
-
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
-from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
-from odoo.tools.safe_eval import safe_eval
+from odoo.exceptions import ValidationError
 
 
 class PmsCheckinPartner(models.Model):
@@ -213,50 +209,6 @@ class PmsCheckinPartner(models.Model):
         compute="_compute_birth_date",
         inverse=lambda r: r._inverse_partner_fields("birthdate_date", "birthdate_date"),
     )
-    document_number = fields.Char(
-        help="Host document number",
-        readonly=False,
-        store=True,
-        compute="_compute_document_number",
-    )
-    document_type = fields.Many2one(
-        help="Select a valid document type",
-        readonly=False,
-        store=True,
-        index=True,
-        comodel_name="res.partner.id_category",
-        compute="_compute_document_type",
-        domain="['|', ('country_ids', '=', False),"
-        " ('country_ids', 'in', document_country_id)]",
-    )
-    document_expedition_date = fields.Date(
-        string="Expedition Date",
-        help="Date on which document_type was issued",
-        readonly=False,
-        store=True,
-        compute="_compute_document_expedition_date",
-    )
-
-    document_id = fields.Many2one(
-        string="Document",
-        help="Technical field",
-        readonly=False,
-        store=True,
-        index=True,
-        comodel_name="res.partner.id_number",
-        compute="_compute_document_id",
-        ondelete="restrict",
-    )
-
-    document_country_id = fields.Many2one(
-        string="Document Country",
-        help="Country of the document",
-        comodel_name="res.country",
-        compute="_compute_document_country_id",
-        store=True,
-        readonly=False,
-    )
-
     partner_incongruences = fields.Char(
         help="indicates that some partner fields \
             on the checkin do not correspond to that of \
@@ -285,50 +237,6 @@ class PmsCheckinPartner(models.Model):
         for record in self:
             if record.partner_id:
                 record.partner_id[partner_field_name] = record[checkin_field_name]
-
-    @api.depends("partner_id")
-    def _compute_document_number(self):
-        for record in self:
-            if not record.document_number and record.partner_id.id_numbers:
-                last_update_document = record.partner_id.id_numbers.filtered(
-                    lambda x, record=record: x.write_date
-                    == max(record.partner_id.id_numbers.mapped("write_date"))
-                )
-                if last_update_document and last_update_document[0].name:
-                    record.document_number = last_update_document[0].name
-
-    @api.depends("partner_id")
-    def _compute_document_type(self):
-        for record in self:
-            if not record.document_type and record.partner_id.id_numbers:
-                last_update_document = record.partner_id.id_numbers.filtered(
-                    lambda x, record=record: x.write_date
-                    == max(record.partner_id.id_numbers.mapped("write_date"))
-                )
-                if last_update_document and last_update_document[0].category_id:
-                    record.document_type = last_update_document[0].category_id
-
-    @api.depends("partner_id")
-    def _compute_document_expedition_date(self):
-        for record in self:
-            if not record.document_expedition_date and record.partner_id.id_numbers:
-                last_update_document = record.partner_id.id_numbers.filtered(
-                    lambda x, record=record: x.write_date
-                    == max(record.partner_id.id_numbers.mapped("write_date"))
-                )
-                if last_update_document and last_update_document[0].valid_from:
-                    record.document_expedition_date = last_update_document[0].valid_from
-
-    @api.depends("partner_id")
-    def _compute_document_country_id(self):
-        for record in self:
-            if not record.document_country_id and record.partner_id.id_numbers:
-                last_update_document = record.partner_id.id_numbers.filtered(
-                    lambda x, record=record: x.write_date
-                    == max(record.partner_id.id_numbers.mapped("write_date"))
-                )
-                if last_update_document and last_update_document[0].country_id:
-                    record.document_country_id = last_update_document[0].country_id
 
     @api.depends("partner_id")
     def _compute_firstname(self):
@@ -433,11 +341,7 @@ class PmsCheckinPartner(models.Model):
                     record.state = "dummy"
                 elif any(
                     not getattr(record, field)
-                    for field in record._checkin_mandatory_fields(
-                        country=record.country_id,
-                        document_type=record.document_type,
-                        birthdate_date=record.birthdate_date,
-                    )
+                    for field in record._checkin_mandatory_fields()
                 ):
                     record.state = "draft"
                 else:
@@ -473,48 +377,9 @@ class PmsCheckinPartner(models.Model):
             elif not record.phone:
                 record.phone = False
 
-    @api.depends("partner_id")
-    def _compute_document_id(self):
-        for record in self:
-            if record.partner_id:
-                if (
-                    not record.document_id
-                    and record.document_number
-                    and record.document_type
-                ):
-                    id_number_id = (
-                        self.sudo()
-                        .env["res.partner.id_number"]
-                        .search(
-                            [
-                                ("partner_id", "=", record.partner_id.id),
-                                ("name", "=", record.document_number),
-                                ("category_id", "=", record.document_type.id),
-                            ]
-                        )
-                    )
-                    if not id_number_id:
-                        document_vals = record.get_document_vals()
-                        id_number_id = self.env["res.partner.id_number"].create(
-                            document_vals
-                        )
-
-                    record.document_id = id_number_id
-            else:
-                record.document_id = False
-
-    def get_document_vals(self):
-        return {
-            "name": self.document_number,
-            "partner_id": self.partner_id.id,
-            "category_id": self.document_type.id,
-            "valid_from": self.document_expedition_date,
-            "country_id": self.document_country_id.id,
-        }
-
     @api.model
     def _get_compute_partner_id_field_names(self):
-        return ["document_number", "document_type", "firstname", "lastname"]
+        return ["firstname", "lastname"]
 
     def _completed_partner_creation_fields(self):
         self.ensure_one()
@@ -535,35 +400,14 @@ class PmsCheckinPartner(models.Model):
     def _compute_partner_id(self):
         for record in self:
             if not record.partner_id:
-                if record.document_number and record.document_type:
-                    partner = self._get_partner_by_document(
-                        record.document_number, record.document_type
+                if record._completed_partner_creation_fields():
+                    partner_values = record._get_partner_create_vals()
+                    partner = (
+                        self.env["res.partner"]
+                        .with_context(avoid_document_restriction=True)
+                        .create(partner_values)
                     )
-                    if not partner:
-                        if self._completed_partner_creation_fields():
-                            partner_values = self._get_partner_create_vals()
-                            partner = (
-                                self.env["res.partner"]
-                                .with_context(avoid_document_restriction=True)
-                                .create(partner_values)
-                            )
                     record.partner_id = partner
-
-    @api.model
-    def _get_partner_by_document(self, document_number, document_type):
-        number = (
-            self.sudo()
-            .env["res.partner.id_number"]
-            .search(
-                [
-                    ("name", "=", document_number),
-                    ("category_id", "=", document_type.id),
-                ]
-            )
-        )
-        return (
-            self.sudo().env["res.partner"].search([("id", "=", number.partner_id.id)])
-        )
 
     @api.depends("email", "mobile")
     def _compute_possible_existing_customer_ids(self):
@@ -658,76 +502,9 @@ class PmsCheckinPartner(models.Model):
                         _("This guest is already registered in the room")
                     )
 
-    @api.constrains("document_number")
-    def check_document_number(self):
-        for record in self:
-            if record.partner_id:
-                for number in record.partner_id.id_numbers:
-                    if record.document_type == number.category_id:
-                        if record.document_number != number.name:
-                            raise ValidationError(_("Document_type has already exists"))
-
     def _validation_eval_context(self, id_number):
         self.ensure_one()
         return {"self": self, "id_number": id_number}
-
-    @api.constrains("document_number", "document_type")
-    def validate_id_number(self):
-        """Validate the given ID number
-        The method raises an odoo.exceptions.ValidationError if the eval of
-        python validation code fails
-        """
-        for record in self:
-            if record.document_number and record.document_type:
-                id_number = self.env["res.partner.id_number"].new(
-                    {
-                        "name": record.document_number,
-                        "category_id": record.document_type,
-                    }
-                )
-                if (
-                    self.env.context.get("id_no_validate")
-                    or not record.document_type.validation_code
-                ):
-                    return
-                eval_context = record._validation_eval_context(id_number)
-                try:
-                    safe_eval(
-                        record.document_type.validation_code,
-                        eval_context,
-                        mode="exec",
-                        nocopy=True,
-                    )
-                except Exception as e:
-                    raise UserError(
-                        _(
-                            "Error when evaluating the id_category "
-                            "validation code:\n %(name)s \n(%(error)s)",
-                            name=self.name,
-                            error=e,
-                        )
-                    ) from e
-                if eval_context.get("failed", False):
-                    raise ValidationError(
-                        _(
-                            "%(doc_number)s is not a valid %(doc_type)s identifier",
-                            doc_number=record.document_number,
-                            doc_type=record.document_type.name,
-                        )
-                    )
-
-    @api.constrains("document_country_id", "document_type")
-    def _check_document_country_id_document_type_consistence(self):
-        for record in self:
-            if record.document_country_id and record.document_type:
-                if (
-                    record.document_type.country_ids
-                    and record.document_country_id
-                    not in record.document_type.country_ids
-                ):
-                    raise ValidationError(
-                        _("Document type and country of document do not match")
-                    )
 
     @api.constrains("state_id", "country_id")
     def _check_state_id_country_id_consistence(self):
@@ -826,8 +603,6 @@ class PmsCheckinPartner(models.Model):
             "firstname",
             "lastname",
             "birthdate_date",
-            "document_number",
-            "document_expedition_date",
             "nationality_id",
             "street",
             "street2",
@@ -835,8 +610,6 @@ class PmsCheckinPartner(models.Model):
             "city",
             "country_id",
             "state_id",
-            "document_country_id",
-            "document_type",
         ]
         return manual_fields
 
@@ -846,12 +619,13 @@ class PmsCheckinPartner(models.Model):
         manual_fields.append("reservation_id.state")
         return manual_fields
 
-    @api.model
-    def _checkin_mandatory_fields(
-        self, country=False, document_type=False, birthdate_date=False
-    ):
-        mandatory_fields = []
-        return mandatory_fields
+    def _checkin_mandatory_fields(self):
+        """
+        Auxiliar method to return the mandatory fields for checkin.
+        It can be extended by modules that need to add more mandatory fields.
+        """
+        self.ensure_one()
+        return []
 
     @api.model
     def _checkin_partner_fields(self):
@@ -893,28 +667,6 @@ class PmsCheckinPartner(models.Model):
                 checkin_vals[key] = value
             checkin.write(checkin_vals)
 
-    @api.model
-    def calculate_doc_type_expedition_date_from_validity_date(
-        self, doc_type, doc_date, birthdate
-    ):
-        today = fields.datetime.today()
-        datetime_doc_date = datetime.strptime(doc_date, DEFAULT_SERVER_DATE_FORMAT)
-        if datetime_doc_date < today:
-            return datetime_doc_date
-        datetime_birthdate = datetime.strptime(birthdate, DEFAULT_SERVER_DATE_FORMAT)
-        age = today.year - datetime_birthdate.year
-
-        document_expedition_date = False
-        if doc_type.code == "D" or doc_type.code == "P":
-            if age < 30:
-                document_expedition_date = datetime_doc_date - relativedelta(years=5)
-            else:
-                document_expedition_date = datetime_doc_date - relativedelta(years=10)
-        if doc_type.code == "C":
-            if age < 70:
-                document_expedition_date = datetime_doc_date - relativedelta(years=10)
-        return document_expedition_date
-
     def action_on_board(self):
         for record in self:
             if record.reservation_id.checkin > fields.Date.today():
@@ -923,7 +675,8 @@ class PmsCheckinPartner(models.Model):
                 raise ValidationError(_("Its too late to checkin"))
 
             if any(
-                not getattr(record, field) for field in self._checkin_mandatory_fields()
+                not getattr(record, field)
+                for field in record._checkin_mandatory_fields()
             ):
                 raise ValidationError(_("Personal data is missing for check-in"))
             vals = {
@@ -983,50 +736,6 @@ class PmsCheckinPartner(models.Model):
             "type": "ir.actions.act_window",
             "context": ctx,
         }
-
-    def _save_data_from_portal(self, values):
-        checkin_partner = values.get("checkin_partner", "")
-        values.pop("checkin_partner")
-        values.pop("folio_access_token") if "folio_access_token" in values else None
-        if values.get("nationality"):
-            values.update({"nationality_id": int(values.get("nationality_id"))})
-
-        doc_type = (
-            self.sudo()
-            .env["res.partner.id_category"]
-            .browse(int(values.get("document_type")))
-        )
-        if values.get("document_type"):
-            values.update({"document_type": int(values.get("document_type"))})
-        if values.get("state_id"):
-            values.update({"state_id": int(values.get("state_id"))})
-        if values.get("country_id"):
-            values.update({"country_id": int(values.get("country_id"))})
-
-        if values.get("document_expedition_date"):
-            values.update(
-                {
-                    "document_expedition_date": datetime.strptime(
-                        values.get("document_expedition_date"), "%d/%m/%Y"
-                    ).strftime("%Y-%m-%d"),
-                    "birthdate_date": datetime.strptime(
-                        values.get("birthdate_date"), "%d/%m/%Y"
-                    ).strftime("%Y-%m-%d"),
-                }
-            )
-            doc_date = values.get("document_expedition_date")
-            birthdate = values.get("birthdate_date")
-            document_expedition_date = (
-                self.calculate_doc_type_expedition_date_from_validity_date(
-                    doc_type, doc_date, birthdate
-                )
-            )
-            values.update(
-                {
-                    "document_expedition_date": document_expedition_date,
-                }
-            )
-        checkin_partner.sudo().write(values)
 
     def send_portal_invitation_email(self, invitation_firstname=None, email=None):
         template = self.sudo().env.ref(

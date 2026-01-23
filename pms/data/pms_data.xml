@@ -69,15 +69,4 @@
             <field name="name">Agency</field>
             <field name="channel_type">indirect</field>
         </record>
-        <record id="document_type_passport" model="res.partner.id_category">
-            <field name="name">Passport</field>
-            <field name="code">P</field>
-            <field name="priority">20</field>
-        </record>
-
-        <record id="document_type_other" model="res.partner.id_category">
-            <field name="name">Other</field>
-            <field name="code">O</field>
-            <field name="priority">90</field>
-        </record>
 </odoo>
