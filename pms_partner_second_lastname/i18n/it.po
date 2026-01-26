@@ -6,25 +6,27 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2026-01-26 13:09+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. module: pms_partner_second_lastname
 #: model:ir.model,name:pms_partner_second_lastname.model_pms_checkin_partner
 msgid "Partner Checkins"
-msgstr ""
+msgstr "Check-in partner"
 
 #. module: pms_partner_second_lastname
 #: model:ir.model.fields,field_description:pms_partner_second_lastname.field_pms_checkin_partner__lastname2
 msgid "Second Last Name"
-msgstr ""
+msgstr "Secondo cognome"
 
 #. module: pms_partner_second_lastname
 #: model:ir.model.fields,help:pms_partner_second_lastname.field_pms_checkin_partner__lastname2
 msgid "host second lastname"
-msgstr ""
+msgstr "Secondo cognome ospite"
