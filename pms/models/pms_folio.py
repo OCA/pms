@@ -569,7 +569,7 @@ class PmsFolio(models.Model):
         readonly=False,
     )
 
-    @api.depends("pms_property_id", "partner_id", "company_id")
+    @api.depends("partner_id", "company_id")
     def _compute_fiscal_position_id(self):
         cache = {}
         for folio in self:
@@ -579,15 +579,12 @@ class PmsFolio(models.Model):
             key = (
                 folio.company_id.id,
                 folio.partner_id.id,
-                folio.pms_property_id.partner_id.id,
             )
             if key not in cache:
                 cache[key] = (
                     self.env["account.fiscal.position"]
                     .with_company(folio.company_id)
-                    ._get_fiscal_position(
-                        folio.partner_id, folio.pms_property_id.partner_id
-                    )
+                    ._get_fiscal_position(folio.partner_id)
                 )
             folio.fiscal_position_id = cache[key]
 
