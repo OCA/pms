@@ -101,14 +101,15 @@ class AccountMoveLine(models.Model):
         "statement_line_id.folio_ids",
     )
     def _compute_folio_ids(self):
-        if self.folio_line_ids:
-            self.folio_ids = self.folio_line_ids.mapped("folio_id")
-        elif self.payment_id:
-            self.folio_ids = self.payment_id.folio_ids
-        elif self.statement_line_id:
-            self.folio_ids = self.statement_line_id.folio_ids
-        else:
-            self.folio_ids = False
+        for line in self:
+            if line.folio_line_ids:
+                line.folio_ids = line.folio_line_ids.mapped("folio_id")
+            elif line.payment_id:
+                line.folio_ids = line.payment_id.folio_ids
+            elif line.statement_line_id:
+                line.folio_ids = line.statement_line_id.folio_ids
+            else:
+                line.folio_ids = False
 
     @api.depends("folio_line_ids")
     def _compute_origin_agency_id(self):
