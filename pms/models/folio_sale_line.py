@@ -1039,7 +1039,7 @@ class FolioSaleLine(models.Model):
         result = super().write(values)
         return result
 
-    def _prepare_invoice_line(self, qty=False, **optional_values):
+    def _prepare_invoice_line(self, qty=False, invoice_fpos=None, **optional_values):
         """
         Prepare the dict of values to create the new invoice line for a folio sale line.
 
@@ -1048,6 +1048,11 @@ class FolioSaleLine(models.Model):
             should be added to the returned invoice line
         """
         self.ensure_one()
+        taxes = invoice_fpos.map_tax(
+            self.product_id.taxes_id.filtered(
+                lambda t, r=self.folio_id: t.company_id == r.env.company
+            )
+        )
         if self.is_downpayment:
             downpayment_invoice = self.folio_id.move_ids.filtered(
                 lambda x: x.payment_state != "reversed"
@@ -1067,7 +1072,7 @@ class FolioSaleLine(models.Model):
             "quantity": qty if qty else self.qty_to_invoice,
             "discount": self.discount,
             "price_unit": self.price_unit,
-            "tax_ids": [(6, 0, self.tax_ids.ids)],
+            "tax_ids": [(6, 0, taxes.ids)],
             # "analytic_account_id": self.folio_id.analytic_account_id.id,
             # "analytic_tag_ids": [(6, 0, self.analytic_tag_ids.ids)],
             "folio_line_ids": [(6, 0, [self.id])],

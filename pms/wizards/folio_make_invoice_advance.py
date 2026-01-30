@@ -156,15 +156,28 @@ class FolioAdvancePaymentInv(models.TransientModel):
 
     def _prepare_invoice_values(self, order, name, amount, line):
         partner_id = (
-            self.partner_invoice_id.id
-            if self.partner_invoice_id
-            else order.partner_invoice_id.id
+            self.partner_invoice_id if self.partner_invoice_id else order.partner_id
         )
+        taxes = line.tax_ids
+        if partner_id == order.partner_id:
+            fiscal_position = order.fiscal_position_id
+        else:
+            fiscal_position = (
+                self.env["account.fiscal.position"]
+                .with_company(order.company_id)
+                ._get_fiscal_position(partner_id)
+            )
+            product = line.product_id
+            taxes = fiscal_position.map_tax(
+                product.taxes_id.filtered(
+                    lambda t, r=order: t.company_id == r.env.company
+                )
+            )
         invoice_vals = {
             "ref": order.name,
             "move_type": "out_invoice",
             "journal_id": order.pms_property_id._get_folio_default_journal(
-                partner_invoice_id=partner_id,
+                partner_invoice_id=partner_id.id,
                 room_ids=order.mapped(
                     "reservation_ids.reservation_line_ids.room_id.id"
                 ),
@@ -172,14 +185,12 @@ class FolioAdvancePaymentInv(models.TransientModel):
             "invoice_origin": order.name,
             "invoice_user_id": order.user_id.id,
             "narration": order.note,
-            "partner_id": partner_id,
+            "partner_id": partner_id.id,
             "currency_id": order.pricelist_id.currency_id.id,
             "folio_ids": [(6, 0, order.ids)],
             "payment_reference": order.reference,
             "invoice_payment_term_id": order.payment_term_id.id,
-            "fiscal_position_id": self.env["res.partner"]
-            .browse(partner_id)
-            .property_account_position_id.id,
+            "fiscal_position_id": fiscal_position.id,
             # 'campaign_id': order.campaign_id.id,
             # 'medium_id': order.medium_id.id,
             # 'source_id': order.source_id.id,
@@ -193,7 +204,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
                         "quantity": 1.0,
                         "product_id": self.product_id.id,
                         "product_uom_id": line.product_uom.id,
-                        "tax_ids": [(6, 0, line.tax_ids.ids)],
+                        "tax_ids": [(6, 0, taxes.ids)],
                         "folio_line_ids": [(6, 0, [line.id])],
                         # "analytic_tag_ids": [(6, 0, line.analytic_tag_ids.ids)],
                         # "analytic_account_id": order.analytic_account_id.id or False,
@@ -213,8 +224,6 @@ class FolioAdvancePaymentInv(models.TransientModel):
         amount, name = self._get_advance_details(order)
 
         invoice_vals = self._prepare_invoice_values(order, name, amount, line)
-        if order.fiscal_position_id:
-            invoice_vals["fiscal_position_id"] = order.fiscal_position_id.id
         invoice = (
             self.env["account.move"].sudo().create(invoice_vals).with_user(self.env.uid)
         )
