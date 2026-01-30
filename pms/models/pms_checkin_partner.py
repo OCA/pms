@@ -498,25 +498,43 @@ class PmsCheckinPartner(models.Model):
                         _("State and country of residence do not match")
                     )
 
-    def set_partner_address(self):
+    def set_partner_address(self, residence_vals=None):
         """
         Only sets the checkin.partner address in the associated partner if
-        the partner don't have any address field filled.
+        the partner has no address yet or the changes do not conflict with
+        the partner's address.
         """
-        for record in self:
-            if record.partner_id:
-                residence_vals = {
-                    "street": record.street,
-                    "street2": record.street2,
-                    "zip": record.zip,
-                    "city": record.city,
-                    "country_id": record.country_id.id,
-                    "state_id": record.state_id.id,
-                }
-                if any(residence_vals.values()):
-                    address_fields = residence_vals.keys()
-                    if not any(record.partner_id[field] for field in address_fields):
-                        record.partner_id.write(residence_vals)
+        self.ensure_one()
+        if not self.partner_id:
+            return
+        address_fields = {"street", "street2", "zip", "city", "country_id", "state_id"}
+        # If it comes form create, we take the values from the checkin.partner
+        if residence_vals is None:
+            residence_vals = {
+                field: self[field].id if hasattr(self[field], "id") else self[field]
+                for field in address_fields
+            }
+
+        if any(residence_vals.values()):
+            address_fields = residence_vals.keys()
+            if any(
+                (
+                    self.partner_id[field].id
+                    if hasattr(self.partner_id[field], "id")
+                    else self.partner_id[field]
+                )
+                != residence_vals.get(field)
+                for field in address_fields
+                if self.partner_id[field]
+            ):
+                return
+            vals_to_write = {
+                field: residence_vals[field]
+                for field in address_fields
+                if residence_vals.get(field) and not self.partner_id[field]
+            }
+            if vals_to_write:
+                self.partner_id.write(vals_to_write)
 
     def set_partner_id(self):
         for record in self:
@@ -563,7 +581,8 @@ class PmsCheckinPartner(models.Model):
         records_without_partner = records.filtered(lambda r: not r.partner_id)
         if records_without_partner:
             records_without_partner.set_partner_id()
-        records.set_partner_address()
+        for record in records:
+            record.set_partner_address()
         return records
 
     def write(self, vals):
@@ -573,11 +592,14 @@ class PmsCheckinPartner(models.Model):
             tourist_tax_services_cmds = reservation._compute_tourist_tax_lines()
             if tourist_tax_services_cmds:
                 reservation.write({"service_ids": tourist_tax_services_cmds})
-        records_without_partner = self.filtered(lambda r: not r.partner_id)
-        if records_without_partner:
-            records_without_partner.set_partner_id()
-
-        self.set_partner_address()
+        if not self._context.get("skip_set_partner_data"):
+            records_without_partner = self.filtered(lambda r: not r.partner_id)
+            if records_without_partner:
+                records_without_partner.with_context(
+                    skip_set_partner_data=True
+                ).set_partner_id()
+            for record in self:
+                record.set_partner_address()
         return res
 
     def unlink(self):

@@ -1204,3 +1204,141 @@ class TestPmsCheckinPartner(TestPms):
                     self.partner_id[key],
                     "The value of " + key + " is not correctly established",
                 )
+
+    def test_partner_without_address_gets_checkin_address(self):
+        """Test that a partner without an address gets the address from the
+        checkin partner"""
+        partner = self.env["res.partner"].create(
+            {
+                "firstname": "Test",
+                "lastname": "Partner",
+            }
+        )
+        checkin_partner = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": partner.id,
+                "reservation_id": self.reservation_1.id,
+            }
+        )
+        checkin_partner.write(
+            {
+                "street": "test",
+                "city": "Madrid",
+                "country_id": self.env.ref("base.es").id,
+            }
+        )
+        self.assertEqual(partner.street, "test")
+        self.assertEqual(partner.city, "Madrid")
+        self.assertEqual(partner.country_id, self.env.ref("base.es"))
+
+    def test_partner_with_partial_address_gets_checkin_address(self):
+        """Test that a partner with a partial address gets the missing fields
+        from the checkin partner"""
+        partner = self.env["res.partner"].create(
+            {
+                "firstname": "Test",
+                "lastname": "Partner",
+                "street": "existing street",
+            }
+        )
+        checkin_partner = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": partner.id,
+                "reservation_id": self.reservation_1.id,
+            }
+        )
+        checkin_partner.write(
+            {
+                "city": "Madrid",
+                "country_id": self.env.ref("base.es").id,
+            }
+        )
+        self.assertEqual(partner.street, "existing street")
+        self.assertEqual(partner.city, "Madrid")
+        self.assertEqual(partner.country_id, self.env.ref("base.es"))
+
+    def test_partner_with_same_address_allows_new_fields(self):
+        """Test that a partner with the same address allows updating address
+        fields who are empty from the checkin partner"""
+        partner = self.env["res.partner"].create(
+            {
+                "firstname": "Test",
+                "lastname": "Partner",
+                "street": "existing street",
+            }
+        )
+        checkin_partner = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": partner.id,
+                "reservation_id": self.reservation_1.id,
+            }
+        )
+        checkin_partner.write(
+            {
+                "street": "existing street",
+                "city": "Madrid",
+                "country_id": self.env.ref("base.es").id,
+            }
+        )
+        self.assertEqual(partner.street, "existing street")
+        self.assertEqual(partner.city, "Madrid")
+        self.assertEqual(partner.country_id, self.env.ref("base.es"))
+
+    def test_partner_address_used_over_checkin_address(self):
+        """Test that a partner with a full address blocks updating the
+        address from the checkin partner"""
+        partner = self.env["res.partner"].create(
+            {
+                "firstname": "Test",
+                "lastname": "Partner",
+                "street": "existing street",
+                "city": "Existing city",
+                "country_id": self.env.ref("base.us").id,
+            }
+        )
+        checkin_partner = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": partner.id,
+                "reservation_id": self.reservation_1.id,
+            }
+        )
+        checkin_partner.write(
+            {
+                "street": "test",
+                "city": "Madrid",
+                "country_id": self.env.ref("base.es").id,
+            }
+        )
+        self.assertEqual(partner.street, "existing street")
+        self.assertEqual(partner.city, "Existing city")
+        self.assertEqual(partner.country_id, self.env.ref("base.us"))
+
+    def test_partner_with_different_many2one_address_field_blocks_update(self):
+        """
+        Test that a partner with a different country blocks updating
+        the address from the checkin partner.
+
+        """
+        partner = self.env["res.partner"].create(
+            {
+                "firstname": "Test",
+                "lastname": "Partner",
+                "country_id": self.env.ref("base.us").id,
+            }
+        )
+        checkin_partner = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": partner.id,
+                "reservation_id": self.reservation_1.id,
+            }
+        )
+        checkin_partner.write(
+            {
+                "street": "test",
+                "city": "Madrid",
+                "country_id": self.env.ref("base.es").id,
+            }
+        )
+        self.assertEqual(partner.country_id, self.env.ref("base.us"))
+        self.assertFalse(partner.street)
+        self.assertFalse(partner.city)
