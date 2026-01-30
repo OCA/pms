@@ -569,7 +569,7 @@ class PmsCheckinPartner(models.Model):
             ):
                 records += super().create(vals)
             elif len(dummy_checkins) > 0:
-                dummy_checkins[0].write(vals)
+                dummy_checkins[0].with_context(skip_set_partner_data=True).write(vals)
                 records += dummy_checkins[0]
             else:
                 raise ValidationError(
