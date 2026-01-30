@@ -647,6 +647,10 @@ class PmsFolio(models.Model):
                 invoice_vals = folio._prepare_invoice(
                     partner_invoice_id=group["partner_id"]
                 )
+                invoice_fpos_id = invoice_vals.get("fiscal_position_id")
+                invoice_fpos = self.env["account.fiscal.position"].browse(
+                    invoice_fpos_id
+                )
                 # Invoice line values (keep only necessary sections).
                 current_section_vals = None
                 invoice_lines_vals = []
@@ -654,7 +658,8 @@ class PmsFolio(models.Model):
                     if line.display_type == "line_section":
                         current_section_vals = line._prepare_invoice_line(
                             sequence=invoice_item_sequence
-                            + folio.sale_line_ids.ids.index(line.id)
+                            + folio.sale_line_ids.ids.index(line.id),
+                            invoice_fpos=invoice_fpos,
                         )
                         continue
                     if line.display_type != "line_note" and float_is_zero(
@@ -676,6 +681,7 @@ class PmsFolio(models.Model):
                             sequence=invoice_item_sequence
                             + folio.sale_line_ids.ids.index(line.id),
                             qty=lines_to_invoice[line.id],
+                            invoice_fpos=invoice_fpos,
                         )
                         invoice_lines_vals.append(prepared_line)
 
@@ -693,7 +699,8 @@ class PmsFolio(models.Model):
                         invoice_item_sequence += 1
                         invoice_down_payment_vals = down_payment._prepare_invoice_line(
                             sequence=invoice_item_sequence
-                            + folio.sale_line_ids.ids.index(down_payment.id)
+                            + folio.sale_line_ids.ids.index(down_payment.id),
+                            invoice_fpos=invoice_fpos,
                         )
                         invoice_lines_vals.append(invoice_down_payment_vals)
 
@@ -2101,6 +2108,15 @@ class PmsFolio(models.Model):
         (making sure to call super() to establish a clean extension chain).
         """
         self.ensure_one()
+        if partner_invoice_id and partner_invoice_id != self.partner_id.id:
+            partner = self.env["res.partner"].browse(partner_invoice_id)
+            fiscal_position = (
+                self.env["account.fiscal.position"]
+                .with_company(self.company_id)
+                ._get_fiscal_position(partner)
+            )
+        else:
+            fiscal_position = self.fiscal_position_id
         journal = self.pms_property_id._get_folio_default_journal(
             partner_invoice_id=partner_invoice_id,
             room_ids=self.reservation_ids.mapped("reservation_line_ids.room_id.id"),
@@ -2148,7 +2164,7 @@ class PmsFolio(models.Model):
             "invoice_line_ids": [],
             "company_id": self.company_id.id,
             "payment_reference": self.name,
-            "fiscal_position_id": self.fiscal_position_id.id,
+            "fiscal_position_id": fiscal_position.id,
         }
         return invoice_vals
 

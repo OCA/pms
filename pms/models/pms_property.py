@@ -924,6 +924,7 @@ class PmsProperty(models.Model):
                             )
                             folio.sudo().message_post(body=mens)
                             raise ValidationError(mens)
+                    invoice_fpos = invoice.fiscal_position_id
                     for downpayment in downpayments.filtered(
                         lambda d, i=invoice: d.default_invoice_to == i.partner_id
                     ):
@@ -933,6 +934,7 @@ class PmsProperty(models.Model):
                         invoice_down_payment_vals = downpayment._prepare_invoice_line(
                             sequence=max(invoice.invoice_line_ids.mapped("sequence"))
                             + 1,
+                            invoice_fpos=invoice_fpos,
                         )
                         invoice.write(
                             {"invoice_line_ids": [(0, 0, invoice_down_payment_vals)]}
