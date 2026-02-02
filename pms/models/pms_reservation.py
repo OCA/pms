@@ -1523,7 +1523,7 @@ class PmsReservation(models.Model):
             fiscal_position = record.folio_id.fiscal_position_id
             record.tax_ids = fiscal_position.map_tax(
                 product.taxes_id.filtered(
-                    lambda t, r=record: t.company_id == r.env.company
+                    lambda t, r=record: t.company_id == r.company_id
                 )
             )
 

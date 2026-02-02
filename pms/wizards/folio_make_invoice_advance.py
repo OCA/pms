@@ -170,7 +170,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
             product = line.product_id
             taxes = fiscal_position.map_tax(
                 product.taxes_id.filtered(
-                    lambda t, r=order: t.company_id == r.env.company
+                    lambda t, r=order: t.company_id == r.company_id
                 )
             )
         invoice_vals = {
