@@ -159,7 +159,7 @@ class PmsCheckinPartner(models.Model):
             .env["res.partner.id_number"]
             .search(
                 [
-                    ("name", "=", document_number),
+                    ("name", "=ilike", document_number),
                     ("category_id", "=", document_type.id),
                 ]
             )
@@ -200,7 +200,7 @@ class PmsCheckinPartner(models.Model):
                 .search(
                     [
                         ("partner_id", "=", record.partner_id.id),
-                        ("name", "=", record.document_number),
+                        ("name", "=ilike", record.document_number),
                         ("category_id", "=", record.document_type.id),
                     ],
                     limit=1,
