@@ -194,6 +194,12 @@ class PmsCheckinPartner(models.Model):
 
     def _create_or_update_partner_document(self):
         for record in self:
+            if (
+                not record.document_number
+                or not record.document_type
+                or not record.country_id
+            ):
+                continue
             document_id = (
                 self.sudo()
                 .env["res.partner.id_number"]
@@ -202,6 +208,7 @@ class PmsCheckinPartner(models.Model):
                         ("partner_id", "=", record.partner_id.id),
                         ("name", "=ilike", record.document_number),
                         ("category_id", "=", record.document_type.id),
+                        ("country_id", "=", record.document_country_id.id),
                     ],
                     limit=1,
                 )
