@@ -128,11 +128,20 @@ class TestPmsCheckinPartner(TestPms):
 
     def test_compute_document_data(self):
         """Test document data is computed from partner"""
+
+        self.host2 = self.env["res.partner"].create(
+            {
+                "name": "Miguel",
+                "email": "miguel@example.com",
+                "birthdate_date": "1995-12-10",
+                "gender": "male",
+            }
+        )
         self.env["res.partner.id_number"].create(
             {
                 "name": "67890",
                 "category_id": self.doc_type.id,
-                "partner_id": self.host1.id,
+                "partner_id": self.host2.id,
                 "valid_from": "2023-02-01",
                 "country_id": self.country.id,
             }
@@ -140,7 +149,7 @@ class TestPmsCheckinPartner(TestPms):
 
         new_checkin = self.env["pms.checkin.partner"].create(
             {
-                "partner_id": self.host1.id,
+                "partner_id": self.host2.id,
                 "reservation_id": self.reservation_1.id,
             }
         )
