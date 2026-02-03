@@ -72,13 +72,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/pms_partner_identification/models/pms_checkin_partner.py:0
 #, python-format
-msgid "Document_type has already exists"
-msgstr ""
-
-#. module: pms_partner_identification
-#. odoo-python
-#: code:addons/pms_partner_identification/models/pms_checkin_partner.py:0
-#, python-format
 msgid ""
 "Error when evaluating the id_category validation code:\n"
 " %(name)s \n"
