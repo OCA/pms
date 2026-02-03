@@ -75,13 +75,6 @@ msgstr "El tipo de documento y el país de documento no coinciden"
 #. odoo-python
 #: code:addons/pms_partner_identification/models/pms_checkin_partner.py:0
 #, python-format
-msgid "Document_type has already exists"
-msgstr "El huésped ya tiene otro documento del mismo tipo"
-
-#. module: pms_partner_identification
-#. odoo-python
-#: code:addons/pms_partner_identification/models/pms_checkin_partner.py:0
-#, python-format
 msgid ""
 "Error when evaluating the id_category validation code:\n"
 " %(name)s \n"
@@ -150,6 +143,10 @@ msgstr ""
 #: model:ir.model.fields,help:pms_partner_identification.field_pms_checkin_partner__document_type
 msgid "Select a valid document type"
 msgstr ""
+
+#, python-format
+#~ msgid "Document_type has already exists"
+#~ msgstr "El huésped ya tiene otro documento del mismo tipo"
 
 #~ msgid "Contact"
 #~ msgstr "Contacto"
