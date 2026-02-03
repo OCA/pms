@@ -54,16 +54,12 @@ class ProductPricelistItem(models.Model):
     allowed_board_service_product_ids = fields.Many2many(
         string="Allowed board service products",
         comodel_name="product.product",
-        store=True,
-        readonly=False,
         compute="_compute_allowed_board_service_product_ids",
     )
 
     allowed_board_service_room_type_ids = fields.Many2many(
         string="Allowed board service room types",
         comodel_name="pms.board.service.room.type",
-        store=True,
-        readonly=False,
         compute="_compute_allowed_board_service_room_type_ids",
     )
     has_properties = fields.Boolean(compute="_compute_has_properties", store=True)
