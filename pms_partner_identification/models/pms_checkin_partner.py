@@ -159,7 +159,7 @@ class PmsCheckinPartner(models.Model):
             .env["res.partner.id_number"]
             .search(
                 [
-                    ("name", "=", document_number),
+                    ("name", "=ilike", document_number),
                     ("category_id", "=", document_type.id),
                 ]
             )
@@ -167,6 +167,16 @@ class PmsCheckinPartner(models.Model):
         return (
             self.sudo().env["res.partner"].search([("id", "=", number.partner_id.id)])
         )
+
+    def _completed_partner_creation_fields(self):
+        self.ensure_one()
+        if (
+            not self.document_number
+            or not self.document_type
+            or not self.document_country_id
+        ):
+            return False
+        return super()._completed_partner_creation_fields()
 
     def set_partner_id(self):
         for record in self:
@@ -179,6 +189,9 @@ class PmsCheckinPartner(models.Model):
                         record.partner_id = partner
                     else:
                         super(PmsCheckinPartner, record).set_partner_id()
+            if record.partner_id:
+                if record._completed_partner_creation_fields():
+                    record._create_or_update_partner_document()
         return True
 
     @api.model
@@ -194,25 +207,39 @@ class PmsCheckinPartner(models.Model):
 
     def _create_or_update_partner_document(self):
         for record in self:
+            if (
+                not record.document_number
+                or not record.document_type
+                or not record.document_country_id
+            ):
+                continue
             document_id = (
                 self.sudo()
                 .env["res.partner.id_number"]
                 .search(
                     [
                         ("partner_id", "=", record.partner_id.id),
-                        ("name", "=", record.document_number),
                         ("category_id", "=", record.document_type.id),
+                        ("country_id", "=", record.document_country_id.id),
                     ],
                     limit=1,
                 )
             )
+            document_vals = record.get_document_vals()
             if document_id:
-                document_vals = record.get_document_vals()
                 document_id.write(document_vals)
             else:
-                document_vals = record.get_document_vals()
                 self.env["res.partner.id_number"].create(document_vals)
 
-    def action_on_board(self):
-        self._create_or_update_partner_document()
-        return super().action_on_board()
+    def write(self, vals):
+        res = super().write(vals)
+        document_fields = [
+            "document_number",
+            "document_type",
+            "document_expedition_date",
+            "document_country_id",
+        ]
+        for record in self:
+            if vals.keys() & document_fields and record.partner_id:
+                record._create_or_update_partner_document()
+        return res

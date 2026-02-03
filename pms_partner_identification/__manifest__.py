@@ -8,6 +8,7 @@
     "author": "Commit [Sun], Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "depends": [
+        "base_vat",
         "pms",
         "partner_identification",
     ],

@@ -1050,7 +1050,7 @@ class FolioSaleLine(models.Model):
         self.ensure_one()
         taxes = invoice_fpos.map_tax(
             self.product_id.taxes_id.filtered(
-                lambda t, r=self.folio_id: t.company_id == r.env.company
+                lambda t, r=self.folio_id: t.company_id == r.company_id
             )
         )
         if self.is_downpayment:
