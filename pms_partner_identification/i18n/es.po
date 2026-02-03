@@ -29,11 +29,6 @@ msgid "Category"
 msgstr "Categoría"
 
 #. module: pms_partner_identification
-#: model:ir.model,name:pms_partner_identification.model_res_partner
-msgid "Contact"
-msgstr "Contacto"
-
-#. module: pms_partner_identification
 #: model:ir.model.fields,field_description:pms_partner_identification.field_res_partner_id_category__country_ids
 msgid "Countries"
 msgstr "Países"
@@ -112,13 +107,6 @@ msgid "ID type defined in configuration. For example, Driver License"
 msgstr ""
 
 #. module: pms_partner_identification
-#: model:ir.model.fields,field_description:pms_partner_identification.field_pms_property__identification_number
-#: model:ir.model.fields,field_description:pms_partner_identification.field_res_partner__identification_number
-#: model:ir.model.fields,field_description:pms_partner_identification.field_res_users__identification_number
-msgid "Identification Number"
-msgstr ""
-
-#. module: pms_partner_identification
 #: model:res.partner.id_category,name:pms_partner_identification.document_type_national_id
 msgid "National identification document"
 msgstr "Documento nacional de identidad"
@@ -162,3 +150,6 @@ msgstr ""
 #: model:ir.model.fields,help:pms_partner_identification.field_pms_checkin_partner__document_type
 msgid "Select a valid document type"
 msgstr ""
+
+#~ msgid "Contact"
+#~ msgstr "Contacto"
