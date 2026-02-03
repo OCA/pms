@@ -143,15 +143,6 @@ class PmsCheckinPartner(models.Model):
                         _("Document type and country of document do not match")
                     )
 
-    @api.constrains("document_number")
-    def check_document_number(self):
-        for record in self:
-            if record.partner_id:
-                for number in record.partner_id.id_numbers:
-                    if record.document_type == number.category_id:
-                        if record.document_number != number.name:
-                            raise ValidationError(_("Document_type has already exists"))
-
     @api.model
     def _get_partner_by_document(self, document_number, document_type):
         number = (
