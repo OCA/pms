@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="external_layout_pms_property" inherit_id="web.external_layout">
+        <xpath expr="//t[@t-set='o']" position="after">
+            <t
+                t-set="property"
+                t-value="o.pms_property_id if o and o._fields.get('pms_property_id') else False"
+            />
+        </xpath>
+        <xpath expr="//t[@t-if='not company']" position="after">
+            <t
+                t-set="logo_to_show"
+                t-value="(property and property.logo) or (company and company.logo)"
+            />
+        </xpath>
+    </template>
+
+    <template
+        id="external_layout_standard_pms"
+        inherit_id="web.external_layout_standard"
+    >
+        <xpath expr="//img[@t-if='company.logo']" position="attributes">
+            <attribute name="t-if">logo_to_show</attribute>
+            <attribute name="t-att-src">image_data_uri(logo_to_show)</attribute>
+        </xpath>
+    </template>
+
+    <template id="external_layout_striped_pms" inherit_id="web.external_layout_striped">
+        <xpath expr="//img[@t-if='company.logo']" position="attributes">
+            <attribute name="t-if">logo_to_show</attribute>
+            <attribute name="t-att-src">image_data_uri(logo_to_show)</attribute>
+        </xpath>
+    </template>
+
+    <template id="external_layout_boxed_pms" inherit_id="web.external_layout_boxed">
+        <xpath expr="//img[@t-if='company.logo']" position="attributes">
+            <attribute name="t-if">logo_to_show</attribute>
+            <attribute name="t-att-src">image_data_uri(logo_to_show)</attribute>
+        </xpath>
+    </template>
+
+    <template id="external_layout_bold_pms" inherit_id="web.external_layout_bold">
+        <xpath expr="//img[@t-if='company.logo']" position="attributes">
+            <attribute name="t-if">logo_to_show</attribute>
+            <attribute name="t-att-src">image_data_uri(logo_to_show)</attribute>
+        </xpath>
+    </template>
+</odoo>
