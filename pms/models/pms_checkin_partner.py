@@ -514,6 +514,12 @@ class PmsCheckinPartner(models.Model):
                 field: self[field].id if hasattr(self[field], "id") else self[field]
                 for field in address_fields
             }
+        else:
+            residence_vals = {
+                field: residence_vals[field]
+                for field in address_fields
+                if field in residence_vals
+            }
 
         if any(residence_vals.values()):
             address_fields = residence_vals.keys()
@@ -599,7 +605,7 @@ class PmsCheckinPartner(models.Model):
                     skip_set_partner_data=True
                 ).set_partner_id()
             for record in self:
-                record.set_partner_address()
+                record.set_partner_address(vals)
         return res
 
     def unlink(self):
