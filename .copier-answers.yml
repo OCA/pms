@@ -1,5 +1,5 @@
 # Do NOT update manually; changes here will be overwritten by Copier
-_commit: v1.32
+_commit: v1.38
 _src_path: gh:oca/oca-addons-repo-template
 additional_ruff_rules: []
 ci: GitHub
@@ -18,7 +18,7 @@ odoo_version: 16.0
 org_name: Odoo Community Association (OCA)
 org_slug: OCA
 rebel_module_groups: []
-repo_description: 'TODO: add repo description.'
+repo_description: Property Management System on Odoo.
 repo_name: pms
 repo_slug: pms
 repo_website: https://github.com/OCA/pms

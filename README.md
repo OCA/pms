@@ -1,4 +1,7 @@
 
+[![Support the OCA](https://odoo-community.org/readme-banner-image)](https://odoo-community.org/get-involved?utm_source=repo-readme)
+
+# pms
 [![Runboat](https://img.shields.io/badge/runboat-Try%20me-875A7B.png)](https://runboat.odoo-community.org/builds?repo=OCA/pms&target_branch=16.0)
 [![Pre-commit Status](https://github.com/OCA/pms/actions/workflows/pre-commit.yml/badge.svg?branch=16.0)](https://github.com/OCA/pms/actions/workflows/pre-commit.yml?query=branch%3A16.0)
 [![Build Status](https://github.com/OCA/pms/actions/workflows/test.yml/badge.svg?branch=16.0)](https://github.com/OCA/pms/actions/workflows/test.yml?query=branch%3A16.0)
@@ -7,9 +10,7 @@
 
 <!-- /!\ do not modify above this line -->
 
-# pms
-
-TODO: add repo description.
+Property Management System on Odoo.
 
 <!-- /!\ do not modify below this line -->
 
