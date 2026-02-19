@@ -243,13 +243,35 @@ class PmsRoom(models.Model):
         for room in self:
             name = room.name
             if room.room_type_id:
-                name += " [%s]" % room.room_type_id.default_code
+                name += f" [{room.room_type_id.default_code}]"
             if room.room_amenity_ids:
                 for amenity in room.room_amenity_ids:
                     if amenity.is_add_code_room_name:
-                        name += " %s" % amenity.default_code
+                        name += f" {amenity.default_code}"
             result.append((room.id, name))
         return result
+
+    @api.model
+    def _name_search(
+        self, name, args=None, operator="ilike", limit=100, name_get_uid=None
+    ):
+        args = args or []
+        if name:
+            amenity_domain = [
+                ("room_amenity_ids.default_code", operator, name),
+                ("room_amenity_ids.is_add_code_room_name", "=", True),
+            ]
+            domain = [
+                "|",
+                "|",
+                ("name", operator, name),
+                ("room_type_id.default_code", operator, name),
+                "&",
+                *amenity_domain,
+            ]
+        else:
+            domain = []
+        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid)
 
     # Constraints and onchanges
     @api.constrains("capacity")
