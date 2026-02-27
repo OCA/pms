@@ -2215,6 +2215,8 @@ class PmsReservation(models.Model):
             if (
                 "checkin" in vals
                 or "checkout" in vals
+                or "adults" in vals
+                or "children" in vals
                 or "reservation_line_ids" in vals
             ):
                 tourist_tax_services_cmds = record._compute_tourist_tax_lines()
