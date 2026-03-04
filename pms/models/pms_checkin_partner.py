@@ -348,16 +348,15 @@ class PmsCheckinPartner(models.Model):
                 else:
                     record.state = "precheckin"
 
-    @api.depends("partner_id", "firstname", "lastname", "lastname2")
+    @api.depends("partner_id", "firstname", "lastname")
     def _compute_name(self):
         for record in self:
-            if record.partner_id.name:
+            if record.partner_id:
                 record.name = record.partner_id.name
             else:
-                name = self.env["res.partner"]._get_computed_name(
-                    record.firstname, record.lastname, record.lastname2
+                record.name = self.env["res.partner"]._get_computed_name(
+                    record.lastname, record.firstname
                 )
-                record.name = name
 
     @api.depends("partner_id")
     def _compute_email(self):
