@@ -43,3 +43,4 @@ from . import test_pms_reservation_line
 # from . import test_automated_mails
 from . import test_pms_service
 from . import test_pms_tourist_tax
+from . import test_pms_payment

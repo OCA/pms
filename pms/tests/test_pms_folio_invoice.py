@@ -147,7 +147,7 @@ class TestPmsFolioInvoice(TestPms, AccountTestInvoicingCommon):
                 ("type", "in", ["bank", "cash"]),
             ]
         )
-        journals.allowed_pms_payments = True
+        journals.inbound_payment_method_line_ids.allowed_on_pms = True
 
     def _test_invoice_full_folio(self):
         """

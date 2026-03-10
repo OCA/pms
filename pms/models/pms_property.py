@@ -609,7 +609,7 @@ class PmsProperty(models.Model):
         # room_ids [list] is used to filter the payment methods
         # by rooms (usefull in apartments, villas, etc)
         self.ensure_one()
-        payment_methods = self.env["account.journal"].search(
+        journals = self.env["account.journal"].search(
             [
                 ("type", "in", ["cash", "bank"]),
                 "|",
@@ -624,13 +624,14 @@ class PmsProperty(models.Model):
             ]
         )
         if room_ids:
-            payment_methods = payment_methods.filtered(
+            journals = journals.filtered(
                 lambda p: not p.room_filter_ids
-                or any([room_id in p.room_filter_ids.ids for room_id in room_ids])
+                or any(room_id in p.room_filter_ids.ids for room_id in room_ids)
             )
+        method_lines = journals.mapped("inbound_payment_method_line_ids")
         if not automatic_included:
-            payment_methods = payment_methods.filtered(lambda p: p.allowed_pms_payments)
-        return payment_methods
+            method_lines = method_lines.filtered(lambda ml: ml.allowed_on_pms)
+        return method_lines
 
     @api.model_create_multi
     def create(self, vals_list):

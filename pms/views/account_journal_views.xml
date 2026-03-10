@@ -12,10 +12,18 @@
                     string="Room Types"
                     widget="many2many_tags"
                 />
-                <field
-                    name="allowed_pms_payments"
-                    attrs="{'invisible':[('type','not in',('bank', 'cash'))]}"
-                />
+            </xpath>
+            <xpath
+                expr="//field[@name='inbound_payment_method_line_ids']/tree/field[@name='name']"
+                position="after"
+            >
+                <field name="allowed_on_pms" optional="show" />
+            </xpath>
+            <xpath
+                expr="//field[@name='outbound_payment_method_line_ids']/tree/field[@name='name']"
+                position="after"
+            >
+                <field name="allowed_on_pms" optional="show" />
             </xpath>
         </field>
     </record>

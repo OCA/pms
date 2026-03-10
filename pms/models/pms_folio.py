@@ -2137,8 +2137,7 @@ class PmsFolio(models.Model):
 
     def do_payment(
         self,
-        journal,
-        receivable_account,
+        payment_method_line,
         user,
         amount,
         folio,
@@ -2154,6 +2153,7 @@ class PmsFolio(models.Model):
         type: set cash to use statement or bank to use account.payment,
         by default, use the journal type
         """
+        journal = payment_method_line.journal_id
         if not pay_type:
             pay_type = journal.type
 
@@ -2164,6 +2164,7 @@ class PmsFolio(models.Model):
             reference += ": " + ref
         vals = {
             "journal_id": journal.id,
+            "payment_method_line_id": payment_method_line.id,
             "partner_id": partner.id if partner else False,
             "amount": amount,
             "date": date or fields.Date.today(),

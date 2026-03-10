@@ -58,7 +58,7 @@ class TestPmsFolio(TestPms, AccountTestInvoicingCommon):
                 ("type", "in", ["bank", "cash"]),
             ]
         )
-        journals.allowed_pms_payments = True
+        journals.inbound_payment_method_line_ids.allowed_on_pms = True
 
         # create sale channel direct
         cls.sale_channel_direct1 = cls.env["pms.sale.channel"].create(
@@ -394,12 +394,9 @@ class TestPmsFolio(TestPms, AccountTestInvoicingCommon):
 
         # ACTION
         self.env["pms.folio"].do_payment(
-            journal=self.env["account.journal"].browse(
-                reservation1.folio_id.pms_property_id._get_payment_methods().ids[0]
-            ),
-            receivable_account=self.env["account.journal"]
-            .browse(reservation1.folio_id.pms_property_id._get_payment_methods().ids[0])
-            .suspense_account_id,
+            payment_method_line=reservation1.folio_id.pms_property_id._get_payment_methods()[
+                0
+            ],
             user=self.env.user,
             amount=reservation1.folio_id.pending_amount,
             folio=reservation1.folio_id,
@@ -441,12 +438,9 @@ class TestPmsFolio(TestPms, AccountTestInvoicingCommon):
 
         # ACTION
         self.env["pms.folio"].do_payment(
-            journal=self.env["account.journal"].browse(
-                reservation1.folio_id.pms_property_id._get_payment_methods().ids[0]
-            ),
-            receivable_account=self.env["account.journal"]
-            .browse(reservation1.folio_id.pms_property_id._get_payment_methods().ids[0])
-            .suspense_account_id,
+            payment_method_line=reservation1.folio_id.pms_property_id._get_payment_methods()[
+                0
+            ],
             user=self.env.user,
             amount=reservation1.folio_id.pending_amount - left_to_pay,
             folio=reservation1.folio_id,
