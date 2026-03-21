@@ -1,6 +1,6 @@
 {
     "name": "PMS partner second lastname",
-    "version": "16.0.2.1.0",
+    "version": "16.0.2.2.0",
     "summary": "Add lastname2 in pms models",
     "development_status": "Beta",
     "category": "Generic Modules/Property Management System",
