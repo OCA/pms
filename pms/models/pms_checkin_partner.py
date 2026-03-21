@@ -51,7 +51,11 @@ class PmsCheckinPartner(models.Model):
         comodel_name="pms.property",
         related="reservation_id.pms_property_id",
     )
-    name = fields.Char(help="Checkin partner name", related="partner_id.name")
+    name = fields.Char(
+        help="Checkin partner name",
+        compute="_compute_name",
+        store=True,
+    )
     email = fields.Char(
         string="E-mail",
         help="Checkin Partner Email",
@@ -344,11 +348,15 @@ class PmsCheckinPartner(models.Model):
                 else:
                     record.state = "precheckin"
 
-    @api.depends("partner_id")
+    @api.depends("partner_id", "firstname", "lastname")
     def _compute_name(self):
         for record in self:
-            if not record.name or record.partner_id.name:
+            if record.partner_id:
                 record.name = record.partner_id.name
+            else:
+                record.name = self.env["res.partner"]._get_computed_name(
+                    record.lastname, record.firstname
+                )
 
     @api.depends("partner_id")
     def _compute_email(self):

@@ -4,6 +4,16 @@ from odoo import api, fields, models
 class PmsCheckinPartner(models.Model):
     _inherit = "pms.checkin.partner"
 
+    @api.depends("lastname2")
+    def _compute_name(self):
+        res = super()._compute_name()
+        for record in self:
+            if not record.partner_id:
+                record.name = self.env["res.partner"]._get_computed_name(
+                    record.lastname, record.firstname, record.lastname2
+                )
+        return res
+
     lastname2 = fields.Char(
         string="Second Last Name",
         help="host second lastname",
