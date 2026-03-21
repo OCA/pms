@@ -2220,11 +2220,7 @@ class PmsFolio(models.Model):
         )
 
         pay.action_post()
-
-        # Review: force to autoreconcile payment with invoices already created
         pay.flush_recordset()
-        for move in folio.move_ids:
-            move.sudo()._autoreconcile_folio_payments()
 
         folio.sudo().message_post(
             body=_("Payment: <b>%(amount)s</b> by <b>%(journal)s</b>")
