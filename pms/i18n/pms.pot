@@ -15,17 +15,6 @@ msgstr ""
 
 #. module: pms
 #. odoo-python
-#: code:addons/pms/models/account_move.py:0
-#, python-format
-msgid ""
-"\n"
-"                            An error occurred while reconciling\n"
-"                            the invoice with the payments: %s\n"
-"                            "
-msgstr ""
-
-#. module: pms
-#. odoo-python
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid ""
