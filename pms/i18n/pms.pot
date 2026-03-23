@@ -1251,11 +1251,6 @@ msgid ""
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__allowed_method_ids
-msgid "Allowed Method"
-msgstr ""
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.res_users_view_form
 msgid "Allowed Properties"
 msgstr ""
@@ -1315,6 +1310,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__allowed_checkout
 msgid "Allowed checkout"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_account_payment_method_line__allowed_on_pms
+msgid "Allowed on PMS"
 msgstr ""
 
 #. module: pms
@@ -1859,6 +1859,16 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_product_pricelist__pms_sale_channel_ids
 msgid "Available Channels"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__available_journal_ids
+msgid "Available Journal"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__available_payment_method_line_ids
+msgid "Available Payment Method Line"
 msgstr ""
 
 #. module: pms
@@ -4427,11 +4437,6 @@ msgid "Font awesome icon e.g. fa-tasks"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_account_journal__allowed_pms_payments
-msgid "For manual payments"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_service__no_auto_add_lines
 msgid "Force No Auto Add Lines"
 msgstr ""
@@ -5735,6 +5740,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model,name:pms.model_account_journal
 #: model:ir.model.fields,field_description:pms.field_account_bank_statement__journal_id
+#: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__journal_id
 msgid "Journal"
 msgstr ""
 
@@ -7375,8 +7381,13 @@ msgid "Payment Folio"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__payment_method_id
+#: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__payment_method_line_id
 msgid "Payment Method"
+msgstr ""
+
+#. module: pms
+#: model:ir.model,name:pms.model_account_payment_method_line
+msgid "Payment Methods"
 msgstr ""
 
 #. module: pms
@@ -11458,7 +11469,7 @@ msgid "Use for overnight stays"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_account_journal__allowed_pms_payments
+#: model:ir.model.fields,help:pms.field_account_payment_method_line__allowed_on_pms
 msgid "Use to pay for reservations"
 msgstr ""
 
