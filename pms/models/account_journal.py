@@ -16,10 +16,6 @@ class AccountJournal(models.Model):
         column2="pms_property_id",
         check_pms_properties=True,
     )
-    allowed_pms_payments = fields.Boolean(
-        string="For manual payments",
-        help="Use to pay for reservations",
-    )
     is_simplified_invoice = fields.Boolean(
         string="Simplified invoice",
         help="Use to simplified invoice",

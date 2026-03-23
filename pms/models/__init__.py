@@ -52,3 +52,4 @@ from . import payment_provider
 from . import account_analytic_line
 from . import res_partner_category
 from . import res_country
+from . import account_payment_method_line
