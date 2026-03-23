@@ -2279,11 +2279,6 @@ msgstr ""
 "diese Sprache übersetzt."
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__allowed_method_ids
-msgid "Allowed Method"
-msgstr "Erlaubte Methode"
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.res_users_view_form
 msgid "Allowed Properties"
 msgstr "Erlaubte Immobilien"
@@ -2344,6 +2339,11 @@ msgstr "Erlaubt Check-In"
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__allowed_checkout
 msgid "Allowed checkout"
 msgstr "Erlaubt Check-Out"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_account_payment_method_line__allowed_on_pms
+msgid "Allowed on PMS"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__allowed_pricelist_ids
@@ -2897,6 +2897,16 @@ msgstr "Verfügbarkeitsregeln"
 #: model:ir.model.fields,field_description:pms.field_product_pricelist__pms_sale_channel_ids
 msgid "Available Channels"
 msgstr "Verfügbare Kanäle"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__available_journal_ids
+msgid "Available Journal"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__available_payment_method_line_ids
+msgid "Available Payment Method Line"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_product_pricelist__is_pms_available
@@ -5534,11 +5544,6 @@ msgid "Font awesome icon e.g. fa-tasks"
 msgstr "Font awesome Symbole z.B. fa-tasks"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_account_journal__allowed_pms_payments
-msgid "For manual payments"
-msgstr "Für manuelle Zahlungen"
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_service__no_auto_add_lines
 msgid "Force No Auto Add Lines"
 msgstr "Keine Auto-Add-Zeilen erzwingen"
@@ -6943,6 +6948,7 @@ msgstr "Zu Reservierung verknüpfen"
 #. module: pms
 #: model:ir.model,name:pms.model_account_journal
 #: model:ir.model.fields,field_description:pms.field_account_bank_statement__journal_id
+#: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__journal_id
 msgid "Journal"
 msgstr "Journal"
 
@@ -8634,9 +8640,14 @@ msgid "Payment Folio"
 msgstr "Zahlungs-Folio"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__payment_method_id
+#: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__payment_method_line_id
 msgid "Payment Method"
 msgstr "Zahlungsart"
+
+#. module: pms
+#: model:ir.model,name:pms.model_account_payment_method_line
+msgid "Payment Methods"
+msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
@@ -12972,7 +12983,7 @@ msgid "Use for overnight stays"
 msgstr "Verwendung für Übernachtungen"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_account_journal__allowed_pms_payments
+#: model:ir.model.fields,help:pms.field_account_payment_method_line__allowed_on_pms
 msgid "Use to pay for reservations"
 msgstr "Zum Bezahlen von Reservierungen verwenden"
 
@@ -13582,6 +13593,12 @@ msgstr ""
 #, python-format
 msgid "{room_name}: No room available in {checkin} <-> {checkout}."
 msgstr "{room_name}: Kein Zimmer verfügbar in {checkin} <-> {checkout}."
+
+#~ msgid "Allowed Method"
+#~ msgstr "Erlaubte Methode"
+
+#~ msgid "For manual payments"
+#~ msgstr "Für manuelle Zahlungen"
 
 #, python-format
 #~ msgid ""
