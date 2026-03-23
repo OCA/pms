@@ -16,10 +16,6 @@
                     name="allowed_pms_payments"
                     attrs="{'invisible':[('type','not in',('bank', 'cash'))]}"
                 />
-                <field
-                    name="avoid_autoinvoice_downpayment"
-                    attrs="{'invisible':[('type','not in',('bank', 'cash'))]}"
-                />
             </xpath>
         </field>
     </record>

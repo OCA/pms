@@ -7,7 +7,6 @@ import datetime
 import time
 
 import pytz
-from dateutil.relativedelta import relativedelta
 
 from odoo import _, api, fields, models, modules
 from odoo.exceptions import ValidationError
@@ -156,21 +155,7 @@ class PmsProperty(models.Model):
     is_modified_auto_mail = fields.Boolean(string="Auto Send Modification Mail")
     is_exit_auto_mail = fields.Boolean(string="Auto Send Exit Mail")
     is_canceled_auto_mail = fields.Boolean(string="Auto Send Cancellation Mail")
-    default_invoicing_policy = fields.Selection(
-        selection=[
-            ("manual", "Manual"),
-            ("checkout", "Checkout"),
-            ("month_day", "Month Day Invoice"),
-        ],
-        default="manual",
-    )
-    margin_days_autoinvoice = fields.Integer(
-        string="Margin Days",
-        help="Days from Checkout to generate the invoice",
-    )
-    invoicing_month_day = fields.Integer(
-        help="The day of the month to invoice",
-    )
+
     journal_simplified_invoice_id = fields.Many2one(
         string="Simplified Invoice Journal",
         comodel_name="account.journal",
@@ -763,203 +748,6 @@ class PmsProperty(models.Model):
                         )
         return True
 
-    @api.model
-    def autoinvoicing(self, offset=0, with_delay=False, autocommit=False):
-        """
-        This method is used to invoicing automatically the folios
-        and validate the draft invoices created by the folios
-        """
-        date_reference = fields.Date.today() - relativedelta(days=offset)
-        # REVIEW: We clean the autoinvoice_date of the past draft invoices
-        # to avoid blocking the autoinvoicing
-        self.clean_date_on_past_draft_invoices(date_reference)
-        # 1- Invoicing the folios
-        folios = self.env["pms.folio"].search(
-            [
-                ("sale_line_ids.autoinvoice_date", "=", date_reference),
-                ("invoice_status", "=", "to_invoice"),
-                ("amount_total", ">", 0),
-            ]
-        )
-        paid_folios = folios.filtered(lambda f: f.pending_amount <= 0)
-        unpaid_folios = folios.filtered(lambda f: f.pending_amount > 0)
-        folios_to_invoice = paid_folios
-        # If the folio is unpaid we will auto invoice only the
-        # not cancelled lines
-        for folio in unpaid_folios:
-            if any([res.state != "cancel" for res in folio.reservation_ids]):
-                folios_to_invoice += folio
-            else:
-                folio.sudo().message_post(
-                    body=_(
-                        "Not invoiced due to pending amounts and cancelled reservations"
-                    )
-                )
-        for folio in folios_to_invoice:
-            if with_delay:
-                self.with_delay().autoinvoice_folio(folio)
-            else:
-                self.autoinvoice_folio(folio)
-        # 2- Validate the draft invoices created by the folios
-        draft_invoices_to_post = self.env["account.move"].search(
-            [
-                ("state", "=", "draft"),
-                ("invoice_date_due", "=", date_reference),
-                ("folio_ids", "!=", False),
-                ("amount_total", ">", 0),
-            ]
-        )
-        for invoice in draft_invoices_to_post:
-            if with_delay:
-                self.with_delay().autovalidate_folio_invoice(invoice)
-            else:
-                self.autovalidate_folio_invoice(invoice)
-
-        # 3- Reverse the downpayment invoices that not was included in final invoice
-        downpayments_invoices_to_reverse = self.env["account.move.line"].search(
-            [
-                ("move_id.state", "=", "posted"),
-                ("folio_line_ids.is_downpayment", "=", True),
-                ("folio_line_ids.qty_invoiced", ">", 0),
-                ("folio_ids", "in", folios.ids),
-            ]
-        )
-        downpayment_invoices = downpayments_invoices_to_reverse.mapped("move_id")
-        if downpayment_invoices:
-            for downpayment_invoice in downpayment_invoices:
-                default_values_list = [
-                    {
-                        "ref": _(f'Reversal of: {move.name + " - " + move.ref}'),
-                    }
-                    for move in downpayment_invoice
-                ]
-                downpayment_invoice.with_context(sii_refund_type="I")._reverse_moves(
-                    default_values_list, cancel=True
-                )
-                downpayment_invoice.message_post(
-                    body=_(
-                        """
-                           The downpayment invoice has been reversed
-                           because it was not included in the final invoice
-                        """
-                    )
-                )
-
-        return True
-
-    @api.model
-    def clean_date_on_past_draft_invoices(self, date_reference):
-        """
-        This method is used to clean the date on past draft invoices
-        """
-        journal_ids = (
-            self.env["account.journal"]
-            .search(
-                [
-                    ("type", "=", "sale"),
-                    ("pms_property_ids", "!=", False),
-                ]
-            )
-            .ids
-        )
-        draft_invoices = self.env["account.move"].search(
-            [
-                ("state", "=", "draft"),
-                ("invoice_date", "<", date_reference),
-                ("journal_id", "in", journal_ids),
-            ]
-        )
-        if draft_invoices:
-            draft_invoices.write({"invoice_date": date_reference})
-        return True
-
-    def autovalidate_folio_invoice(self, invoice):
-        try:
-            with self.env.cr.savepoint():
-                invoice.action_post()
-        except Exception as e:
-            raise ValidationError(
-                _("Error in autovalidate invoice: %s") % str(e)
-            ) from e
-
-    def autoinvoice_folio(self, folio):
-        try:
-            with self.env.cr.savepoint():
-                # REVIEW: folio sale line "_compute_auotinvoice_date" sometimes
-                # dont work in services (probably cache issue¿?),
-                # we ensure that the date is set or recompute this
-                for line in folio.sale_line_ids.filtered(
-                    lambda r: not r.autoinvoice_date
-                ):
-                    line._compute_autoinvoice_date()
-                invoices = folio.with_context(autoinvoice=True)._create_invoices(
-                    grouped=True,
-                    final=False,
-                )
-                downpayments = folio.sale_line_ids.filtered(
-                    lambda r: r.is_downpayment and r.qty_invoiced > 0
-                )
-                for invoice in invoices:
-                    if (
-                        invoice.amount_total
-                        > invoice.pms_property_id.max_amount_simplified_invoice
-                        and invoice.journal_id.is_simplified_invoice
-                    ):
-                        hosts_to_invoice = (
-                            invoice.folio_ids.partner_invoice_ids.filtered(
-                                lambda p: p._check_enought_invoice_data()
-                            ).mapped("id")
-                        )
-                        if hosts_to_invoice:
-                            invoice.partner_id = hosts_to_invoice[0]
-                            invoice.journal_id = (
-                                invoice.pms_property_id.journal_normal_invoice_id
-                            )
-                        else:
-                            mens = _(
-                                "The total amount of the simplified invoice is "
-                                "higher than the maximum amount allowed for "
-                                "simplified invoices, and dont have enought data"
-                                " in hosts to create a normal invoice."
-                            )
-                            folio.sudo().message_post(body=mens)
-                            raise ValidationError(mens)
-                    invoice_fpos = invoice.fiscal_position_id
-                    for downpayment in downpayments.filtered(
-                        lambda d, i=invoice: d.default_invoice_to == i.partner_id
-                    ):
-                        # If the downpayment invoice partner is the same that the
-                        # folio partner, we include the downpayment in the
-                        #  normal invoice
-                        invoice_down_payment_vals = downpayment._prepare_invoice_line(
-                            sequence=max(invoice.invoice_line_ids.mapped("sequence"))
-                            + 1,
-                            invoice_fpos=invoice_fpos,
-                        )
-                        invoice.write(
-                            {"invoice_line_ids": [(0, 0, invoice_down_payment_vals)]}
-                        )
-                    invoice.action_post()
-                # The downpayment invoices that not was included in final
-                # invoice, are reversed
-                downpayment_invoices = (
-                    downpayments.filtered(
-                        lambda d: d.qty_invoiced > 0
-                    ).invoice_lines.mapped("move_id")
-                ).filtered(lambda i: i.is_simplified_invoice)
-                if downpayment_invoices:
-                    default_values_list = [
-                        {
-                            "ref": _(f'Reversal of: {move.name + " - " + move.ref}'),
-                        }
-                        for move in downpayment_invoices
-                    ]
-                    downpayment_invoices.with_context(
-                        sii_refund_type="I"
-                    )._reverse_moves(default_values_list, cancel=True)
-        except Exception as e:
-            raise ValidationError(_("Error in autoinvoicing folio: %s") % str(e)) from e
-
     @api.constrains("journal_normal_invoice_id")
     def _check_journal_normal_invoice(self):
         for pms_property in self.filtered("journal_normal_invoice_id"):
@@ -975,69 +763,42 @@ class PmsProperty(models.Model):
             if not pms_property.journal_simplified_invoice_id.is_simplified_invoice:
                 pms_property.journal_simplified_invoice_id.is_simplified_invoice = True
 
+    def _get_journal(self, is_simplified_invoice, room_ids=False):
+        self.ensure_one()
+        if is_simplified_invoice:
+            if self.journal_simplified_invoice_id:
+                return self.journal_simplified_invoice_id
+        else:
+            if self.journal_normal_invoice_id:
+                return self.journal_normal_invoice_id
+        journals = self.env["account.journal"].search(
+            [
+                ("type", "=", "sale"),
+                ("is_simplified_invoice", "=", is_simplified_invoice),
+                ("company_id", "=", self.company_id.id),
+                "|",
+                ("pms_property_ids", "in", self.id),
+                ("pms_property_ids", "=", False),
+            ]
+        )
+        if journals:
+            if room_ids:
+                journals = journals.filtered(
+                    lambda j: not j.room_filter_ids
+                    or any([room_id in j.room_filter_ids.ids for room_id in room_ids])
+                )
+            return journals[0]
+        return False
+
     @api.model
     def _get_folio_default_journal(self, partner_invoice_id, room_ids=False):
         self.ensure_one()
         partner = self.env["res.partner"].browse(partner_invoice_id)
         # For simplified invoices
-        if (
-            not partner
-            or partner.id == self.env.ref("pms.various_pms_partner").id
-            or (
-                not partner._check_enought_invoice_data()
-                and self._context.get("autoinvoice")
-            )
-        ):
-            if self.journal_simplified_invoice_id:
-                return self.journal_simplified_invoice_id
-            else:
-                journals = self.env["account.journal"].search(
-                    [
-                        ("type", "=", "sale"),
-                        ("is_simplified_invoice", "=", True),
-                        ("company_id", "=", self.company_id.id),
-                        "|",
-                        ("pms_property_ids", "in", self.id),
-                        ("pms_property_ids", "=", False),
-                    ]
-                )
-                if journals:
-                    if room_ids:
-                        journals = journals.filtered(
-                            lambda j: not j.room_filter_ids
-                            or any(
-                                [
-                                    room_id in j.room_filter_ids.ids
-                                    for room_id in room_ids
-                                ]
-                            )
-                        )
-                    return journals[0]
-                return False
+        if not partner or partner.id == self.env.ref("pms.various_pms_partner").id:
+            return self._get_journal(is_simplified_invoice=True, room_ids=room_ids)
         # For normal invoices
-        if self.journal_normal_invoice_id:
-            return self.journal_normal_invoice_id
-        else:
-            journals = self.env["account.journal"].search(
-                [
-                    ("type", "=", "sale"),
-                    ("is_simplified_invoice", "=", False),
-                    ("company_id", "=", self.company_id.id),
-                    "|",
-                    ("pms_property_ids", "in", self.id),
-                    ("pms_property_ids", "=", False),
-                ]
-            )
-            if journals:
-                if room_ids:
-                    journals = journals.filtered(
-                        lambda j: not j.room_filter_ids
-                        or any(
-                            [room_id in j.room_filter_ids.ids for room_id in room_ids]
-                        )
-                    )
-                return journals[0]
-            return False
+        return self._get_journal(is_simplified_invoice=False, room_ids=room_ids)
 
     def _get_adr(self, start_date, end_date, domain=False):
         """
