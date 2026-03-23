@@ -18,22 +18,6 @@ msgstr ""
 
 #. module: pms
 #. odoo-python
-#: code:addons/pms/models/account_move.py:0
-#, python-format
-msgid ""
-"\n"
-"                            An error occurred while reconciling\n"
-"                            the invoice with the payments: %s\n"
-"                            "
-msgstr ""
-"\n"
-"                            Si è verificato un errore durante la "
-"riconciliazione\n"
-"                            della fattura con i pagamenti: %s\n"
-"                            "
-
-#. module: pms
-#. odoo-python
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid ""
@@ -109,27 +93,6 @@ msgstr ""
 "                Usato per chiudere le camere che richiedono manutenzione. Si "
 "può indicare\n"
 "                il motivo nella prenotazione relativa.\n"
-"            "
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_res_company__pms_invoice_downpayment_policy
-msgid ""
-"\n"
-"            - Manual: Downpayment invoice will be created manually\n"
-"            - All: Downpayment invoice will be created automatically\n"
-"            - Current Month: Downpayment invoice will be created "
-"automatically\n"
-"                only for reservations with checkout date past of current "
-"month\n"
-"            "
-msgstr ""
-"\n"
-"            - Manuale: la fattura per l'acconto verrà creata manualmente\n"
-"            - Tutti: la fattura per l'acconto verrà creata automaticamente\n"
-"            - Mese corrente: la fattura per l'acconto verrà creata "
-"automaticamente\n"
-"                solo per le prenotazioni con data di check-out successiva al "
-"mese corrente\n"
 "            "
 
 #. module: pms
@@ -2268,11 +2231,6 @@ msgid "Agency that made the reservation"
 msgstr "Agenzia che ha creato la prenotazione"
 
 #. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__res_company__pms_invoice_downpayment_policy__all
-msgid "All"
-msgstr "Tutte"
-
-#. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_cancelation_rule__apply_on_late__all
 #: model:ir.model.fields.selection,name:pms.selection__pms_cancelation_rule__apply_on_noshow__all
 msgid "All Days"
@@ -2802,18 +2760,6 @@ msgid "Authorization by the user for themanage of their personal data"
 msgstr "Autorizzazione dell'utente per la gestione dei suoi dati personali"
 
 #. module: pms
-#: model:ir.actions.server,name:pms.autoinvoicing_downpayments_ir_actions_server
-#: model:ir.cron,cron_name:pms.autoinvoicing_downpayments
-msgid "Auto Invoicing DownPayments"
-msgstr "Auto fatturazione acconti"
-
-#. module: pms
-#: model:ir.actions.server,name:pms.autoinvoicing_folios_ir_actions_server
-#: model:ir.cron,cron_name:pms.autoinvoicing_folios
-msgid "Auto Invoicing Folios"
-msgstr "Auto fatturazione fogli"
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__auto_reservation_note
 msgid "Auto Reservation Note"
 msgstr "Nota prenotazione automatica"
@@ -2847,11 +2793,6 @@ msgstr "Invia automaticamente e-mail di modifica"
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__preconfirm
 msgid "Auto confirm to Save"
 msgstr "Conferma automatica da salvare"
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_folio_sale_line__autoinvoice_date
-msgid "Autoinvoice Date"
-msgstr "Data autofattura"
 
 #. module: pms
 #: model:ir.model,name:pms.model_pms_automated_mails
@@ -2986,16 +2927,6 @@ msgstr "Costo medio"
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__avail_readonly
 msgid "Avialability Readonly"
 msgstr "Disponibilità solo lettura"
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_account_journal__avoid_autoinvoice_downpayment
-msgid "Avoid Autoinvoice Downpayment"
-msgstr "Evita autofattura acconto"
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_account_journal__avoid_autoinvoice_downpayment
-msgid "Avoid autoinvoice downpayment"
-msgstr "Evita autofattura acconto"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__avoid_mails
@@ -3711,7 +3642,6 @@ msgid "Checkins to 7 days"
 msgstr "Check-in in sette giorni"
 
 #. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_property__default_invoicing_policy__checkout
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation
 msgid "Checkout"
 msgstr "Check-out"
@@ -3740,11 +3670,6 @@ msgstr "Check-out per settimana"
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__checkout
 msgid "Checkout date"
 msgstr "Data check-out"
-
-#. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__res_company__pms_invoice_downpayment_policy__checkout_past_month
-msgid "Checkout past month"
-msgstr "Check-out mese scorso"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_availability__child_avail_ids
@@ -4589,19 +4514,6 @@ msgid "Days To Checkout"
 msgstr "Giorni al check-out"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_res_partner__margin_days_autoinvoice
-#: model:ir.model.fields,field_description:pms.field_res_users__margin_days_autoinvoice
-msgid "Days from Checkout"
-msgstr "Giorni dal check-out"
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_property__margin_days_autoinvoice
-#: model:ir.model.fields,help:pms.field_res_partner__margin_days_autoinvoice
-#: model:ir.model.fields,help:pms.field_res_users__margin_days_autoinvoice
-msgid "Days from Checkout to generate the invoice"
-msgstr "Giorni dal check-out per generare la fattura"
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_cancelation_rule__apply_on_late
 msgid ""
 "Days on which the cancelation rule applies when the reason is late arrival. "
@@ -4630,11 +4542,6 @@ msgstr "Dedurre acconti"
 #: model:ir.model.fields,help:pms.field_folio_advance_payment_inv__deduct_down_payments
 msgid "Deduct down payments"
 msgstr "Dedurre acconti"
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_property__default_invoicing_policy
-msgid "Default Invoicing Policy"
-msgstr "Politica fatturazione predefinita"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__default_max_avail
@@ -5003,11 +4910,6 @@ msgstr "Scarica"
 #: model:ir.model.fields,field_description:pms.field_pms_property__avoid_simplified_max_amount_downpayment
 msgid "Downpayment Invoive without limit amount"
 msgstr "Fattura acconto senza limite valore"
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_res_company__pms_invoice_downpayment_policy
-msgid "Downpayment policy invoce"
-msgstr "Fattura politica acconto"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_kanban_view
@@ -5731,11 +5633,6 @@ msgstr "Venerdì"
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__start_date
 msgid "From"
 msgstr "Da"
-
-#. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__res_partner__invoicing_policy__checkout
-msgid "From Checkout"
-msgstr "Dal check-out"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_booking_duplicate__start_date
@@ -6762,17 +6659,7 @@ msgid "Invoicing"
 msgstr "Fatturazione"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_property__invoicing_month_day
-#: model:ir.model.fields,field_description:pms.field_res_partner__invoicing_month_day
-#: model:ir.model.fields,field_description:pms.field_res_users__invoicing_month_day
-msgid "Invoicing Month Day"
-msgstr "Giorno di fatturazione del mese"
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_property__invoicing_policy
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__invoice_policy
-#: model:ir.model.fields,field_description:pms.field_res_partner__invoicing_policy
-#: model:ir.model.fields,field_description:pms.field_res_users__invoicing_policy
 msgid "Invoicing Policy"
 msgstr "Politica fatturazione"
 
@@ -7015,6 +6902,13 @@ msgstr "Unisci la prenotazione"
 #: model:ir.model.fields,field_description:pms.field_account_bank_statement__journal_id
 msgid "Journal"
 msgstr "Registro"
+
+#. module: pms
+#. odoo-python
+#: code:addons/pms/models/pms_property.py:0
+#, python-format
+msgid "Journal %s is not allowed to be used for normal invoices"
+msgstr ""
 
 #. module: pms
 #: model:ir.model,name:pms.model_account_move
@@ -7365,10 +7259,7 @@ msgid "Male"
 msgstr "Maschio"
 
 #. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_property__default_invoicing_policy__manual
-#: model:ir.model.fields.selection,name:pms.selection__res_company__pms_invoice_downpayment_policy__no
 #: model:ir.model.fields.selection,name:pms.selection__res_partner__invoice_to_agency__manual
-#: model:ir.model.fields.selection,name:pms.selection__res_partner__invoicing_policy__manual
 msgid "Manual"
 msgstr "Manuale"
 
@@ -7403,11 +7294,6 @@ msgstr ""
 "foglio ore.\n"
 "Crea una attività e traccia le ore: crea una attività alla validazione "
 "dell'ordine di vendita e traccia le ore lavorate."
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_property__margin_days_autoinvoice
-msgid "Margin Days"
-msgstr "Giorni di margine"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__prepaid_warning_days
@@ -7716,12 +7602,6 @@ msgid "Monday"
 msgstr "Lunedì"
 
 #. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_property__default_invoicing_policy__month_day
-#: model:ir.model.fields.selection,name:pms.selection__res_partner__invoicing_policy__month_day
-msgid "Month Day Invoice"
-msgstr "Fattura del mese e del giorno"
-
-#. module: pms
 #. odoo-python
 #: code:addons/pms/models/product_product.py:0
 #, python-format
@@ -7991,13 +7871,6 @@ msgstr "E-mail normalizzata"
 #: model:ir.model.fields.selection,name:pms.selection__pms_folio__payment_state__not_paid
 msgid "Not Paid"
 msgstr "Non pagato"
-
-#. module: pms
-#. odoo-python
-#: code:addons/pms/models/pms_property.py:0
-#, python-format
-msgid "Not invoiced due to pending amounts and cancelled reservations"
-msgstr "Non fatturato per valori in sospeso e prenotazioni annullate"
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__folio_sale_line__display_type__line_note
@@ -8502,11 +8375,6 @@ msgstr "PARTE DELL'ENTRATA VIAGGIATORI"
 #: model:ir.model,name:pms.model_pms_folio
 msgid "PMS Folio"
 msgstr "Foglio PMS"
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.view_partner_property_form
-msgid "PMS Invoice policy"
-msgstr "Politica fatturazione PMS"
 
 #. module: pms
 #: model:ir.actions.act_window,name:pms.action_pms_move_out_invoice_type
@@ -9471,11 +9339,6 @@ msgstr ""
 #. module: pms
 #: model:res.groups,name:pms.group_pms_manager
 msgid "Property Management/ Manager"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__res_partner__invoicing_policy__property
-msgid "Property Policy Invoice"
 msgstr ""
 
 #. module: pms
@@ -11740,13 +11603,6 @@ msgid "The date of the reservation in reservation line"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_property__invoicing_month_day
-#: model:ir.model.fields,help:pms.field_res_partner__invoicing_month_day
-#: model:ir.model.fields,help:pms.field_res_users__invoicing_month_day
-msgid "The day of the month to invoice"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__default_pricelist_id
 msgid "The default pricelist used in this property."
 msgstr ""
@@ -11785,15 +11641,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_folio_sale_line__untaxed_amount_to_invoice
 msgid "The invoiced amount without taxes in the line of the folio"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_property__invoicing_policy
-#: model:ir.model.fields,help:pms.field_res_partner__invoicing_policy
-#: model:ir.model.fields,help:pms.field_res_users__invoicing_policy
-msgid ""
-"The invoicing policy of the partner,\n"
-"         set Property to user the policy configured in the Property"
 msgstr ""
 
 #. module: pms
@@ -13385,6 +13232,91 @@ msgstr ""
 #, python-format
 msgid "{room_name}: No room available in {checkin} <-> {checkout}."
 msgstr ""
+
+#, python-format
+#~ msgid ""
+#~ "\n"
+#~ "                            An error occurred while reconciling\n"
+#~ "                            the invoice with the payments: %s\n"
+#~ "                            "
+#~ msgstr ""
+#~ "\n"
+#~ "                            Si è verificato un errore durante la "
+#~ "riconciliazione\n"
+#~ "                            della fattura con i pagamenti: %s\n"
+#~ "                            "
+
+#~ msgid ""
+#~ "\n"
+#~ "            - Manual: Downpayment invoice will be created manually\n"
+#~ "            - All: Downpayment invoice will be created automatically\n"
+#~ "            - Current Month: Downpayment invoice will be created "
+#~ "automatically\n"
+#~ "                only for reservations with checkout date past of current "
+#~ "month\n"
+#~ "            "
+#~ msgstr ""
+#~ "\n"
+#~ "            - Manuale: la fattura per l'acconto verrà creata manualmente\n"
+#~ "            - Tutti: la fattura per l'acconto verrà creata "
+#~ "automaticamente\n"
+#~ "            - Mese corrente: la fattura per l'acconto verrà creata "
+#~ "automaticamente\n"
+#~ "                solo per le prenotazioni con data di check-out successiva "
+#~ "al mese corrente\n"
+#~ "            "
+
+#~ msgid "All"
+#~ msgstr "Tutte"
+
+#~ msgid "Auto Invoicing DownPayments"
+#~ msgstr "Auto fatturazione acconti"
+
+#~ msgid "Auto Invoicing Folios"
+#~ msgstr "Auto fatturazione fogli"
+
+#~ msgid "Autoinvoice Date"
+#~ msgstr "Data autofattura"
+
+#~ msgid "Avoid Autoinvoice Downpayment"
+#~ msgstr "Evita autofattura acconto"
+
+#~ msgid "Avoid autoinvoice downpayment"
+#~ msgstr "Evita autofattura acconto"
+
+#~ msgid "Checkout past month"
+#~ msgstr "Check-out mese scorso"
+
+#~ msgid "Days from Checkout"
+#~ msgstr "Giorni dal check-out"
+
+#~ msgid "Days from Checkout to generate the invoice"
+#~ msgstr "Giorni dal check-out per generare la fattura"
+
+#~ msgid "Default Invoicing Policy"
+#~ msgstr "Politica fatturazione predefinita"
+
+#~ msgid "Downpayment policy invoce"
+#~ msgstr "Fattura politica acconto"
+
+#~ msgid "From Checkout"
+#~ msgstr "Dal check-out"
+
+#~ msgid "Invoicing Month Day"
+#~ msgstr "Giorno di fatturazione del mese"
+
+#~ msgid "Margin Days"
+#~ msgstr "Giorni di margine"
+
+#~ msgid "Month Day Invoice"
+#~ msgstr "Fattura del mese e del giorno"
+
+#, python-format
+#~ msgid "Not invoiced due to pending amounts and cancelled reservations"
+#~ msgstr "Non fatturato per valori in sospeso e prenotazioni annullate"
+
+#~ msgid "PMS Invoice policy"
+#~ msgstr "Politica fatturazione PMS"
 
 #, python-format
 #~ msgid "%(doc_number)s is not a valid %(doc_type)s identifier"
