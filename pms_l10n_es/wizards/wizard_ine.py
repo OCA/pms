@@ -722,6 +722,7 @@ class WizardIne(models.TransientModel):
         }
         percents = {}
         adrs = {}
+
         for group, domain in total_groups_domains.items():
             percents[group] = self.ine_calculate_occupancy(
                 self.start_date,
@@ -734,35 +735,21 @@ class WizardIne(models.TransientModel):
                 domain,
             )
 
-        # In this point, the groups adrs and percents are well calculated.... but,
-        # our statist friends want the total of the percentage groupings to add
-        # up = 100%, without conceiving that the groupings overlap, so they cannot
-        # receive real data and force us to pervert the original data so that
-        # it fits in their grid notebook.
-        # The purpose of the following lines of code is only to show the inefficiency
-        # of the state statistics,
-        # so at least I will feel that the effort made some sense :)
+        total_percent = sum(percents.values())
 
-        total_percent = sum(val for val in percents.values())
-        sum_percentages = 0
-        for group in total_groups_domains.keys():
-            percents[group] = round(percents[group] * 100 / (total_percent or 1), 2)
-            sum_percentages += percents[group]
+        if total_percent:
+            for group in percents:
+                percents[group] = round((percents[group] / total_percent) * 100, 2)
 
-        if sum_percentages < 100:
-            for group in total_groups_domains.keys():
-                if percents[group] > 0:
-                    percents[group] = round(
-                        percents[group] + ((100 - sum_percentages) * 100) / 100, 2
-                    )
-                    break
-        elif sum_percentages > 100:
-            for group in total_groups_domains.keys():
-                if percents[group] > 0:
-                    percents[group] = round(
-                        percents[group] - ((100 - sum_percentages) * 100) / 100, 2
-                    )
-                    break
+            sum_percentages = round(sum(percents.values()), 2)
+            adjustment = round(100 - sum_percentages, 2)
+
+            if adjustment:
+                target_group = max(percents, key=percents.get)
+                percents[target_group] = round(percents[target_group] + adjustment, 2)
+        else:
+            for group in percents:
+                percents[group] = 0.0
 
         ET.SubElement(prices_tag, "ADR_TOUROPERADOR_TRADICIONAL").text = str(
             adrs["tour_operator_offline"]
