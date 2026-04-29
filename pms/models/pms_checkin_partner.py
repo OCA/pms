@@ -389,13 +389,16 @@ class PmsCheckinPartner(models.Model):
         return False
 
     def _get_partner_create_vals(self):
-        return {
+        vals = {
             "firstname": self.firstname,
             "lastname": self.lastname,
             "gender": self.gender,
             "birthdate_date": self.birthdate_date,
             "nationality_id": self.nationality_id.id,
         }
+        if self.folio_id.lang:
+            vals["lang"] = self.folio_id.lang
+        return vals
 
     @api.depends("email", "mobile")
     def _compute_possible_existing_customer_ids(self):
