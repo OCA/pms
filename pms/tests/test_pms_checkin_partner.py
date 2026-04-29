@@ -1342,3 +1342,37 @@ class TestPmsCheckinPartner(TestPms):
         self.assertEqual(partner.country_id, self.env.ref("base.us"))
         self.assertFalse(partner.street)
         self.assertFalse(partner.city)
+
+    @freeze_time("2012-01-14")
+    def test_partner_created_with_folio_lang(self):
+        """
+        When a partner is created from a checkin via set_partner_id,
+        the partner should inherit the language from the folio.
+        """
+        # ARRANGE
+        lang_es = self.env["res.lang"]._activate_lang("es_ES")
+        folio = self.reservation_1.folio_id
+        folio.lang = lang_es.code
+        checkin = self.reservation_1.checkin_partner_ids.filtered(
+            lambda c: not c.partner_id
+        )[:1]
+        checkin.write(
+            {
+                "firstname": "Juan",
+                "lastname": "Garcia",
+            }
+        )
+
+        # ACT
+        checkin.set_partner_id()
+
+        # ASSERT
+        self.assertTrue(
+            checkin.partner_id,
+            "Partner should have been created",
+        )
+        self.assertEqual(
+            checkin.partner_id.lang,
+            lang_es.code,
+            "Partner lang should match folio lang",
+        )
