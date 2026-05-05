@@ -6,68 +6,70 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2026-05-05 13:45+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. module: pms_partner_identification
 #. odoo-python
 #: code:addons/pms_partner_identification/models/pms_checkin_partner.py:0
 #, python-format
 msgid "%(doc_number)s is not a valid %(doc_type)s identifier"
-msgstr ""
+msgstr "%(doc_number)s non è un valido identificatore %(doc_type)s"
 
 #. module: pms_partner_identification
 #: model:ir.model.fields,field_description:pms_partner_identification.field_res_partner_id_number__category_id
 msgid "Category"
-msgstr ""
+msgstr "Categoria"
 
 #. module: pms_partner_identification
 #: model:ir.model.fields,field_description:pms_partner_identification.field_res_partner_id_category__country_ids
 msgid "Countries"
-msgstr ""
+msgstr "Nazioni"
 
 #. module: pms_partner_identification
 #: model:ir.model.fields,field_description:pms_partner_identification.field_res_partner_id_number__country_id
 msgid "Country"
-msgstr ""
+msgstr "Nazione"
 
 #. module: pms_partner_identification
 #: model:ir.model.fields,help:pms_partner_identification.field_pms_checkin_partner__document_country_id
 #: model:ir.model.fields,help:pms_partner_identification.field_res_partner_id_number__country_id
 msgid "Country of the document"
-msgstr ""
+msgstr "Nazione del documento"
 
 #. module: pms_partner_identification
 #: model:ir.model.fields,help:pms_partner_identification.field_pms_checkin_partner__document_expedition_date
 msgid "Date on which document_type was issued"
-msgstr ""
+msgstr "Data nella quale è stato segnalato il document_type"
 
 #. module: pms_partner_identification
 #: model:ir.model.fields,field_description:pms_partner_identification.field_pms_checkin_partner__document_country_id
 msgid "Document Country"
-msgstr ""
+msgstr "Nazione documento"
 
 #. module: pms_partner_identification
 #: model:ir.model.fields,field_description:pms_partner_identification.field_pms_checkin_partner__document_number
 msgid "Document Number"
-msgstr ""
+msgstr "Numero documento"
 
 #. module: pms_partner_identification
 #: model:ir.model.fields,field_description:pms_partner_identification.field_pms_checkin_partner__document_type
 msgid "Document Type"
-msgstr ""
+msgstr "Tipo documento"
 
 #. module: pms_partner_identification
 #. odoo-python
 #: code:addons/pms_partner_identification/models/pms_checkin_partner.py:0
 #, python-format
 msgid "Document type and country of document do not match"
-msgstr ""
+msgstr "Il tipo documento e la nazione non corrispondono"
 
 #. module: pms_partner_identification
 #. odoo-python
@@ -78,63 +80,68 @@ msgid ""
 " %(name)s \n"
 "(%(error)s)"
 msgstr ""
+"Errore nella valutazione il codice validazione id_category: \n"
+" %(name)s \n"
+"(%(error)s)"
 
 #. module: pms_partner_identification
 #: model:ir.model.fields,field_description:pms_partner_identification.field_pms_checkin_partner__document_expedition_date
 msgid "Expedition Date"
-msgstr ""
+msgstr "Data spedizione"
 
 #. module: pms_partner_identification
 #: model:ir.model.fields,help:pms_partner_identification.field_pms_checkin_partner__document_number
 msgid "Host document number"
-msgstr ""
+msgstr "Numero documento host"
 
 #. module: pms_partner_identification
 #: model:ir.model.fields,help:pms_partner_identification.field_res_partner_id_number__category_id
 msgid "ID type defined in configuration. For example, Driver License"
 msgstr ""
+"Tipo di documento definito nella configurazione. Per esempio, patente di "
+"guida"
 
 #. module: pms_partner_identification
 #: model:res.partner.id_category,name:pms_partner_identification.document_type_national_id
 msgid "National identification document"
-msgstr ""
+msgstr "Carta di identità"
 
 #. module: pms_partner_identification
 #: model:res.partner.id_category,name:pms_partner_identification.document_type_other
 msgid "Other"
-msgstr ""
+msgstr "Altro"
 
 #. module: pms_partner_identification
 #: model:ir.model,name:pms_partner_identification.model_pms_checkin_partner
 msgid "Partner Checkins"
-msgstr ""
+msgstr "Check-in partner"
 
 #. module: pms_partner_identification
 #: model:ir.model,name:pms_partner_identification.model_res_partner_id_category
 msgid "Partner ID Category"
-msgstr ""
+msgstr "ID categoria partner"
 
 #. module: pms_partner_identification
 #: model:ir.model,name:pms_partner_identification.model_res_partner_id_number
 msgid "Partner ID Number"
-msgstr ""
+msgstr "Numero ID partner"
 
 #. module: pms_partner_identification
 #: model:ir.model.constraint,message:pms_partner_identification.constraint_res_partner_id_number_unique_category_by_partner
 msgid "Partner already has this document type!"
-msgstr ""
+msgstr "Il partner ha già questo tipo di documento!"
 
 #. module: pms_partner_identification
 #: model:res.partner.id_category,name:pms_partner_identification.document_type_passport
 msgid "Passport"
-msgstr ""
+msgstr "Passaporto"
 
 #. module: pms_partner_identification
 #: model:ir.model.fields,field_description:pms_partner_identification.field_res_partner_id_category__priority
 msgid "Priority"
-msgstr ""
+msgstr "Priorità"
 
 #. module: pms_partner_identification
 #: model:ir.model.fields,help:pms_partner_identification.field_pms_checkin_partner__document_type
 msgid "Select a valid document type"
-msgstr ""
+msgstr "Selezionare un tipo documento valido"
