@@ -77,6 +77,7 @@
                             </group>
                             <group string="Reservation">
                                 <field name="block_create_past_reservations" />
+                                <field name="block_modify_past_out_service" />
                             </group>
                             <group string="Timezone">
                                 <field name="tz" widget="timezone_mismatch" />

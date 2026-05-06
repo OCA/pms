@@ -212,6 +212,11 @@ class PmsProperty(models.Model):
         help="Block the creation of reservations in the past",
         default=False,
     )
+    block_modify_past_out_service = fields.Boolean(
+        help="Block deletion or cancellation of out-of-service reservations "
+        "with dates already in the past",
+        default=False,
+    )
     invoice_reservation_note_template = fields.Text(
         translate=True,
         help="""
