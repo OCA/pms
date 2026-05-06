@@ -3056,6 +3056,110 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
             "a closure reason.",
         )
 
+    # tests for block_modify_past_out_service flag
+
+    def _create_out_reservation(self, checkin, checkout):
+        closure_reason = self.env["room.closure.reason"].create({"name": "Out test"})
+        return self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "reservation_type": "out",
+                "closure_reason_id": closure_reason.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+
+    @freeze_time("2012-01-14")
+    def test_block_modify_past_out_service_delete_fully_past(self):
+        """Out-of-service block fully in the past cannot be deleted."""
+        self.pms_property1.block_modify_past_out_service = True
+        today = fields.date.today()
+        reservation = self._create_out_reservation(
+            today - datetime.timedelta(days=3),
+            today - datetime.timedelta(days=1),
+        )
+        with self.assertRaisesRegex(UserError, "already in the past"):
+            reservation.unlink()
+
+    @freeze_time("2012-01-14")
+    def test_block_modify_past_out_service_cancel_with_future(self):
+        """Out-of-service block with past+future days cannot be cancelled."""
+        self.pms_property1.block_modify_past_out_service = True
+        today = fields.date.today()
+        reservation = self._create_out_reservation(
+            today - datetime.timedelta(days=2),
+            today + datetime.timedelta(days=2),
+        )
+        with self.assertRaisesRegex(UserError, "shorten the block"):
+            reservation.action_cancel()
+
+    @freeze_time("2012-01-14")
+    def test_block_modify_past_out_service_unlink_past_line(self):
+        """A past day of an out-of-service block cannot be deleted."""
+        self.pms_property1.block_modify_past_out_service = True
+        today = fields.date.today()
+        reservation = self._create_out_reservation(
+            today - datetime.timedelta(days=2),
+            today + datetime.timedelta(days=2),
+        )
+        past_line = reservation.reservation_line_ids.filtered(
+            lambda line: line.date < today
+        )[:1]
+        with self.assertRaisesRegex(UserError, "already in the past"):
+            past_line.unlink()
+
+    @freeze_time("2012-01-14")
+    def test_block_modify_past_out_service_unlink_future_line(self):
+        """A future day can be removed to shorten an out-of-service block."""
+        self.pms_property1.block_modify_past_out_service = True
+        today = fields.date.today()
+        reservation = self._create_out_reservation(
+            today - datetime.timedelta(days=2),
+            today + datetime.timedelta(days=2),
+        )
+        future_lines = reservation.reservation_line_ids.filtered(
+            lambda line: line.date >= today
+        )
+        future_lines.unlink()
+        self.assertFalse(
+            reservation.reservation_line_ids.filtered(lambda line: line.date >= today),
+            "Future days of the block should have been removed.",
+        )
+
+    @freeze_time("2012-01-14")
+    def test_block_modify_past_out_service_flag_disabled(self):
+        """When the flag is disabled, past out-of-service blocks are deletable."""
+        self.pms_property1.block_modify_past_out_service = False
+        today = fields.date.today()
+        reservation = self._create_out_reservation(
+            today - datetime.timedelta(days=3),
+            today - datetime.timedelta(days=1),
+        )
+        reservation.unlink()
+        self.assertFalse(reservation.exists())
+
+    @freeze_time("2012-01-14")
+    def test_block_modify_past_out_service_non_out_unaffected(self):
+        """Non-out-of-service reservations are not affected by the flag."""
+        self.pms_property1.block_modify_past_out_service = True
+        today = fields.date.today()
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": today - datetime.timedelta(days=3),
+                "checkout": today - datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+        reservation.unlink()
+        self.assertFalse(reservation.exists())
+
     # tests for several sale channels in reservation
     @freeze_time("2000-11-10")
     def test_reservation_sale_channel_origin_in_reservation_lines(self):
