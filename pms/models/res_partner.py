@@ -242,6 +242,12 @@ class ResPartner(models.Model):
         # Template to be inherited by localization modules
         return True
 
+    def get_vat(self):
+        """Return the partner VAT. Inherited by localizations to return
+        the equivalent fiscal identification when applicable."""
+        self.ensure_one()
+        return self.vat or ""
+
     @api.constrains("is_agency", "property_product_pricelist")
     def _check_agency_pricelist(self):
         if any(
