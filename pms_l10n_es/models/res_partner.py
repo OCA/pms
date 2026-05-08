@@ -41,3 +41,9 @@ class ResPartner(models.Model):
             elif not self.aeat_identification:
                 return False
         return True
+
+    def get_vat(self):
+        self.ensure_one()
+        if self.aeat_identification_type:
+            return self.aeat_identification or ""
+        return super().get_vat()
