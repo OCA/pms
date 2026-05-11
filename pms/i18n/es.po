@@ -2341,11 +2341,6 @@ msgid "Block Create Past Reservations"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_property__block_create_past_reservations
-msgid "Block the creation of reservations in the past"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__block_modify_past_out_service
 msgid "Block Modify Past Out Service"
 msgstr "Bloquear modificación de bloqueos pasados"
@@ -2358,6 +2353,11 @@ msgid ""
 msgstr ""
 "Bloquea el borrado o la cancelación de reservas fuera de servicio con fechas "
 "ya pasadas"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__block_create_past_reservations
+msgid "Block the creation of reservations in the past"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__blocked

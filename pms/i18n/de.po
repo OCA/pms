@@ -3045,6 +3045,18 @@ msgid "Block Create Past Reservations"
 msgstr "Blockieren Vergangene Reservierungen erstellen"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__block_modify_past_out_service
+msgid "Block Modify Past Out Service"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__block_modify_past_out_service
+msgid ""
+"Block deletion or cancellation of out-of-service reservations with dates "
+"already in the past"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__block_create_past_reservations
 msgid "Block the creation of reservations in the past"
 msgstr "Sperren Sie die Erstellung von Reservierungen in der Vergangenheit"
@@ -13281,6 +13293,31 @@ msgstr "Sie können keine vergangenen Reservierungen erstellen"
 
 #. module: pms
 #. odoo-python
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid "You cannot cancel an out-of-service block already in the past."
+msgstr ""
+
+#. module: pms
+#. odoo-python
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid ""
+"You cannot cancel an out-of-service block with past dates. You can shorten "
+"the block to release today or future days."
+msgstr ""
+
+#. module: pms
+#. odoo-python
+#: code:addons/pms/models/pms_reservation_line.py:0
+#, python-format
+msgid ""
+"You cannot delete a day of an out-of-service block that is already in the "
+"past."
+msgstr ""
+
+#. module: pms
+#. odoo-python
 #: code:addons/pms/models/folio_sale_line.py:0
 #, python-format
 msgid ""
@@ -13288,6 +13325,22 @@ msgid ""
 msgstr ""
 "Sie können eine Verkaufsauftragszeile nicht mehr löschen, sobald eine "
 "Rechnung aus ihr erstellt wurde."
+
+#. module: pms
+#. odoo-python
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid "You cannot delete an out-of-service block already in the past."
+msgstr ""
+
+#. module: pms
+#. odoo-python
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid ""
+"You cannot delete an out-of-service block with past dates. You can shorten "
+"the block to release today or future days."
+msgstr ""
 
 #. module: pms
 #: model:ir.model.constraint,message:pms.constraint_pms_room_room_property_unique
