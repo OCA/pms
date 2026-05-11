@@ -2341,6 +2341,7 @@ class PmsReservation(models.Model):
         return True
 
     def action_cancel(self):
+        self._check_block_modify_past_out_service_cancel()
         for record in self:
             # else state = cancel
             if not record.allowed_cancel:
@@ -2357,6 +2358,56 @@ class PmsReservation(models.Model):
                 ):
                     record.folio_id.action_cancel()
                 record.folio_id._compute_amount()
+
+    def unlink(self):
+        self._check_block_modify_past_out_service_delete()
+        return super().unlink()
+
+    def _get_past_out_service_records(self):
+        today = fields.Date.today()
+        result = []
+        for record in self:
+            if (
+                record.reservation_type != "out"
+                or not record.pms_property_id.block_modify_past_out_service
+            ):
+                continue
+            past_lines = record.reservation_line_ids.filtered(
+                lambda line: line.date < today
+            )
+            if not past_lines:
+                continue
+            has_future = bool(record.reservation_line_ids - past_lines)
+            result.append((record, has_future))
+        return result
+
+    def _check_block_modify_past_out_service_delete(self):
+        for _record, has_future in self._get_past_out_service_records():
+            if has_future:
+                raise UserError(
+                    _(
+                        "You cannot delete an out-of-service block with past "
+                        "dates. You can shorten the block to release today "
+                        "or future days."
+                    )
+                )
+            raise UserError(
+                _("You cannot delete an out-of-service block already in the past.")
+            )
+
+    def _check_block_modify_past_out_service_cancel(self):
+        for _record, has_future in self._get_past_out_service_records():
+            if has_future:
+                raise UserError(
+                    _(
+                        "You cannot cancel an out-of-service block with past "
+                        "dates. You can shorten the block to release today "
+                        "or future days."
+                    )
+                )
+            raise UserError(
+                _("You cannot cancel an out-of-service block already in the past.")
+            )
 
     def action_assign(self):
         for record in self:

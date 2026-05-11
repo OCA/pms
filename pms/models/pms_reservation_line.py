@@ -5,7 +5,7 @@ import datetime
 import logging
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -616,6 +616,22 @@ class PmsReservationLine(models.Model):
                 record.default_invoice_to = agency
             elif not record.default_invoice_to:
                 record.default_invoice_to = False
+
+    def unlink(self):
+        today = fields.Date.today()
+        for line in self:
+            if (
+                line.reservation_id.reservation_type == "out"
+                and line.pms_property_id.block_modify_past_out_service
+                and line.date < today
+            ):
+                raise UserError(
+                    _(
+                        "You cannot delete a day of an out-of-service block "
+                        "that is already in the past."
+                    )
+                )
+        return super().unlink()
 
     def write(self, vals):
         if not self.env.context.get("force_write_blocked") and (

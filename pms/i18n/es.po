@@ -2346,6 +2346,20 @@ msgid "Block the creation of reservations in the past"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__block_modify_past_out_service
+msgid "Block Modify Past Out Service"
+msgstr "Bloquear modificación de bloqueos pasados"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__block_modify_past_out_service
+msgid ""
+"Block deletion or cancellation of out-of-service reservations with dates "
+"already in the past"
+msgstr ""
+"Bloquea el borrado o la cancelación de reservas fuera de servicio con fechas "
+"ya pasadas"
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__blocked
 msgid "Blocked"
 msgstr ""
@@ -12396,11 +12410,58 @@ msgstr ""
 
 #. module: pms
 #. odoo-python
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid "You cannot cancel an out-of-service block already in the past."
+msgstr "No puede cancelar un bloqueo fuera de servicio ya en el pasado."
+
+#. module: pms
+#. odoo-python
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid ""
+"You cannot cancel an out-of-service block with past dates. You can shorten "
+"the block to release today or future days."
+msgstr ""
+"No puede cancelar un bloqueo fuera de servicio con fechas pasadas. Puede "
+"acortar el bloqueo para liberar el día de hoy o días futuros."
+
+#. module: pms
+#. odoo-python
+#: code:addons/pms/models/pms_reservation_line.py:0
+#, python-format
+msgid ""
+"You cannot delete a day of an out-of-service block that is already in the "
+"past."
+msgstr ""
+"No puede eliminar un día de un bloqueo fuera de servicio que ya está en el "
+"pasado."
+
+#. module: pms
+#. odoo-python
 #: code:addons/pms/models/folio_sale_line.py:0
 #, python-format
 msgid ""
 "You cannot delete a sale order line once a invoice has been created from it."
 msgstr ""
+
+#. module: pms
+#. odoo-python
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid "You cannot delete an out-of-service block already in the past."
+msgstr "No puede eliminar un bloqueo fuera de servicio ya en el pasado."
+
+#. module: pms
+#. odoo-python
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid ""
+"You cannot delete an out-of-service block with past dates. You can shorten "
+"the block to release today or future days."
+msgstr ""
+"No puede eliminar un bloqueo fuera de servicio con fechas pasadas. Puede "
+"acortar el bloqueo para liberar el día de hoy o días futuros."
 
 #. module: pms
 #: model:ir.model.constraint,message:pms.constraint_pms_room_room_property_unique
