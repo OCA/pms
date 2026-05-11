@@ -44,3 +44,4 @@ from . import test_pms_reservation_line
 from . import test_pms_service
 from . import test_pms_tourist_tax
 from . import test_pms_payment
+from . import test_res_partner
