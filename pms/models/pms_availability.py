@@ -85,10 +85,20 @@ class PmsAvailability(models.Model):
         )
     ]
 
+    # Note: a dependency on ``room_type_id.total_rooms_count`` is
+    # deliberately NOT declared here. That field is itself a stored
+    # compute on ``pms.room_type`` whose value changes whenever any of
+    # the room_type's ``room_ids`` toggles ``active`` or moves to a
+    # different ``room_type_id``. Declaring it as a dependency caused
+    # every such room change to trigger a recompute of EVERY
+    # ``pms.availability`` row tied to the affected room type(s) —
+    # historical rows included — which locked the table for minutes on
+    # a busy property. Instead, ``pms.room.write/create/unlink``
+    # triggers a SCOPED, future-only recompute via
+    # ``_recompute_real_avail_for_room_change`` below.
     @api.depends(
         "reservation_line_ids",
         "reservation_line_ids.occupies_availability",
-        "room_type_id.total_rooms_count",
         "reservation_line_ids.room_id",
         "reservation_line_ids.date",
         "parent_avail_id",
@@ -117,6 +127,44 @@ class PmsAvailability(models.Model):
                 )
             )
             record.real_avail = len(room_ids) - count_rooms_not_avail
+
+    @api.model
+    def _recompute_real_avail_for_room_change(
+        self, pms_property_ids, room_type_ids, date_from=None
+    ):
+        """Trigger a scoped recompute of ``real_avail`` after a
+        ``pms.room`` change (active toggle, ``room_type_id`` move,
+        new/deleted room).
+
+        Limits the recompute to (property, room_type) pairs in the
+        given sets and to dates ``>= date_from`` (defaults to today).
+        Replaces the wider ``room_type_id.total_rooms_count`` automatic
+        dependency — see the comment on ``_compute_real_avail`` for the
+        rationale.
+
+        :param pms_property_ids: iterable of ``pms.property`` ids whose
+            rooms changed.
+        :param room_type_ids: iterable of ``pms.room.type`` ids whose
+            total room count is affected (use both OLD and NEW types
+            when handling a re-segmentation).
+        :param date_from: optional lower-bound date for the recompute
+            scope. Defaults to today.
+        """
+        property_ids = [pid for pid in pms_property_ids if pid]
+        room_type_ids = [rid for rid in room_type_ids if rid]
+        if not property_ids or not room_type_ids:
+            return
+        if date_from is None:
+            date_from = fields.Date.today()
+        avails = self.search(
+            [
+                ("pms_property_id", "in", property_ids),
+                ("room_type_id", "in", room_type_ids),
+                ("date", ">=", date_from),
+            ]
+        )
+        if avails:
+            self.env.add_to_compute(self._fields["real_avail"], avails)
 
     @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
     def _compute_parent_avail_id(self):

@@ -325,6 +325,24 @@ class PmsRoom(models.Model):
                     _("The short name can't contain more than 4 characters")
                 )
 
+    # Fields whose change on a room shifts the room_type's effective
+    # room count for one or more (property, room_type) pairs and so
+    # invalidates ``pms.availability.real_avail`` for FUTURE dates.
+    _PMS_AVAIL_RELEVANT_FIELDS = {
+        "active",
+        "room_type_id",
+        "pms_property_id",
+        "parent_id",
+    }
+
+    @api.model
+    def _trigger_avail_recompute(self, property_ids, room_type_ids):
+        if not property_ids or not room_type_ids:
+            return
+        self.env["pms.availability"]._recompute_real_avail_for_room_change(
+            property_ids, room_type_ids
+        )
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -334,7 +352,12 @@ class PmsRoom(models.Model):
                     vals.update({"short_name": short_name})
                 else:
                     vals.update({"short_name": vals["name"]})
-        return super().create(vals_list)
+        records = super().create(vals_list)
+        records._trigger_avail_recompute(
+            records.mapped("pms_property_id").ids,
+            records.mapped("room_type_id").ids,
+        )
+        return records
 
     def write(self, vals):
         if vals.get("name") and not vals.get("short_name"):
@@ -343,7 +366,30 @@ class PmsRoom(models.Model):
                 vals.update({"short_name": short_name})
             else:
                 vals.update({"short_name": vals["name"]})
-        return super().write(vals)
+        relevant_change = bool(set(vals) & self._PMS_AVAIL_RELEVANT_FIELDS)
+        old_property_ids = old_room_type_ids = []
+        if relevant_change:
+            old_property_ids = self.mapped("pms_property_id").ids
+            old_room_type_ids = self.mapped("room_type_id").ids
+        result = super().write(vals)
+        if relevant_change:
+            new_property_ids = self.mapped("pms_property_id").ids
+            new_room_type_ids = self.mapped("room_type_id").ids
+            # Union: a re-segmentation moves a room out of one type and
+            # into another, so BOTH the old and new (property, type)
+            # pairs need their future avail recomputed.
+            self._trigger_avail_recompute(
+                list(set(old_property_ids) | set(new_property_ids)),
+                list(set(old_room_type_ids) | set(new_room_type_ids)),
+            )
+        return result
+
+    def unlink(self):
+        property_ids = self.mapped("pms_property_id").ids
+        room_type_ids = self.mapped("room_type_id").ids
+        result = super().unlink()
+        self.env["pms.room"]._trigger_avail_recompute(property_ids, room_type_ids)
+        return result
 
     def calculate_short_name(self, vals):
         short_name = vals["name"][:2].upper()
