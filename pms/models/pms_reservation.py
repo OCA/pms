@@ -2321,7 +2321,9 @@ class PmsReservation(models.Model):
         ):
             msg = _("No checkin was made for this reservation")
             reservation.message_post(
-                subject=_("No Checkins!"), subtype="mt_comment", body=msg
+                subject=_("No Checkins!"),
+                subtype_xmlid="mail.mt_comment",
+                body=msg,
             )
         return True
 
