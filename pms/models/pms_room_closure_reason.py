@@ -26,3 +26,9 @@ class RoomClosureReason(models.Model):
         help="Explanation of the reason for closing a room",
         translate=True,
     )
+    active = fields.Boolean(
+        default=True,
+        help="Uncheck to archive the room closure reason and hide it"
+        " from selection lists without removing the historical records"
+        " that already reference it.",
+    )

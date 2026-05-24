@@ -6,6 +6,13 @@
         <field name="arch" type="xml">
             <form string="Room Closure Reason">
                 <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('active', '=', True)]}"
+                    />
+                    <field name="active" invisible="1" />
                     <field name="name" />
                     <field name="description" />
                     <field
@@ -27,10 +34,26 @@
             </tree>
         </field>
     </record>
+    <record model="ir.ui.view" id="pms_room_closure_reason_view_search">
+        <field name="name">pms.room.closure.reason.search</field>
+        <field name="model">room.closure.reason</field>
+        <field name="arch" type="xml">
+            <search string="Room Closure Reason">
+                <field name="name" />
+                <field name="description" />
+                <filter
+                    name="inactive"
+                    string="Archived"
+                    domain="[('active', '=', False)]"
+                />
+            </search>
+        </field>
+    </record>
     <record model="ir.actions.act_window" id="open_pms_room_closure_reason_form_tree">
         <field name="name">Room Closure Reason</field>
         <field name="res_model">room.closure.reason</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="pms_room_closure_reason_view_search" />
     </record>
     <menuitem
         name="Closure Reasons"
