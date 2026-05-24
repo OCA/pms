@@ -1673,7 +1673,12 @@ class PmsFolio(models.Model):
         )
 
         if self.env.context.get("confirm_all_reservations"):
-            self.reservation_ids.action_confirm()
+            # Skip reservations cancelled because of a modification: re-confirming
+            # them would re-occupy the room of a superseded version of the same
+            # booking and trigger spurious availability errors.
+            self.reservation_ids.filtered(
+                lambda r: not (r.state == "cancel" and r.cancelled_reason == "modified")
+            ).action_confirm()
 
         return True
 
