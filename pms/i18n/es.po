@@ -1338,6 +1338,7 @@ msgstr "Acción Necesaria"
 #: model:ir.model.fields,field_description:pms.field_pms_room_type_class__active
 #: model:ir.model.fields,field_description:pms.field_pms_sale_channel__active
 #: model:ir.model.fields,field_description:pms.field_pms_team_member__active
+#: model:ir.model.fields,field_description:pms.field_room_closure_reason__active
 msgid "Active"
 msgstr "Activo"
 
@@ -2002,6 +2003,12 @@ msgstr ""
 #: model:ir.model.fields,help:pms.field_pms_board_service_line__children
 #: model:ir.model.fields,help:pms.field_pms_board_service_room_type_line__children
 msgid "Apply service to children"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_room_closure_reason_view_form
+#: model_terms:ir.ui.view,arch_db:pms.pms_room_closure_reason_view_search
+msgid "Archived"
 msgstr ""
 
 #. module: pms
@@ -9330,6 +9337,7 @@ msgstr "Clase de Habitación"
 #. module: pms
 #: model:ir.actions.act_window,name:pms.open_pms_room_closure_reason_form_tree
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_closure_reason_view_form
+#: model_terms:ir.ui.view,arch_db:pms.pms_room_closure_reason_view_search
 msgid "Room Closure Reason"
 msgstr "Razón de cierre de la habitación"
 
@@ -12001,6 +12009,13 @@ msgstr "Zonas del Hotel"
 #: model:ir.ui.menu,name:pms.menu_open_pms_ubication_form_tree
 msgid "Ubications"
 msgstr "Zonas"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_room_closure_reason__active
+msgid ""
+"Uncheck to archive the room closure reason and hide it from selection lists "
+"without removing the historical records that already reference it."
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_board_service__default_code
