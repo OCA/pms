@@ -48,6 +48,10 @@ class PmsBoardServiceRoomTypeLine(models.Model):
         help="Apply service to children",
         default=False,
     )
+    active = fields.Boolean(
+        default=True,
+        help="Lines of an archived board service room type are archived as well.",
+    )
 
     def _default_amount(self):
         return self.product_id.list_price

@@ -64,6 +64,24 @@ class PmsBoardServiceRoomType(models.Model):
         help="Pricelists where this Board Service is available",
         comodel_name="product.pricelist",
     )
+    active = fields.Boolean(
+        default=True,
+        help="If unchecked, this board service room type assignment will be "
+        "archived and hidden from selections without affecting historical "
+        "reservations that reference it.",
+    )
+
+    def write(self, vals):
+        if "pms_board_service_id" in vals and "board_service_line_ids" not in vals:
+            vals.update(
+                self.prepare_board_service_reservation_ids(vals["pms_board_service_id"])
+            )
+        res = super().write(vals)
+        if "active" in vals:
+            self.with_context(active_test=False).mapped("board_service_line_ids").write(
+                {"active": vals["active"]}
+            )
+        return res
 
     @api.depends("board_service_line_ids.amount")
     def _compute_board_amount(self):
@@ -135,13 +153,6 @@ class PmsBoardServiceRoomType(models.Model):
                     )
                 )
         return super().create(vals_list)
-
-    def write(self, vals):
-        if "pms_board_service_id" in vals and "board_service_line_ids" not in vals:
-            vals.update(
-                self.prepare_board_service_reservation_ids(vals["pms_board_service_id"])
-            )
-        return super().write(vals)
 
     @api.model
     def prepare_board_service_reservation_ids(self, board_service_id):

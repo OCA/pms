@@ -5,26 +5,35 @@
         <field name="model">pms.board.service</field>
         <field name="arch" type="xml">
             <form string="Board Service Line">
-                <group>
-                    <field name="name" />
-                    <field name="default_code" />
-                    <field
-                        name="pms_property_ids"
-                        widget="many2many_tags"
-                        options="{'no_create': True,'no_open': True}"
+                <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('active', '=', True)]}"
                     />
-                    <field name="amount" />
-                    <field name="board_service_line_ids">
-                        <tree editable="bottom">
-                            <field name="product_id" />
-                            <field name="amount" />
-                            <field name="adults" />
-                            <field name="children" />
-                            <field name="pms_property_ids" invisible="1" />
-                        </tree>
-                    </field>
-                    <field name="show_detail_report" />
-                </group>
+                    <field name="active" invisible="1" />
+                    <group>
+                        <field name="name" />
+                        <field name="default_code" />
+                        <field
+                            name="pms_property_ids"
+                            widget="many2many_tags"
+                            options="{'no_create': True,'no_open': True}"
+                        />
+                        <field name="amount" />
+                        <field name="board_service_line_ids">
+                            <tree editable="bottom">
+                                <field name="product_id" />
+                                <field name="amount" />
+                                <field name="adults" />
+                                <field name="children" />
+                                <field name="pms_property_ids" invisible="1" />
+                            </tree>
+                        </field>
+                        <field name="show_detail_report" />
+                    </group>
+                </sheet>
             </form>
         </field>
     </record>
@@ -41,10 +50,26 @@
             </tree>
         </field>
     </record>
+    <record model="ir.ui.view" id="pms_board_service_view_search">
+        <field name="name">pms.board.service.search</field>
+        <field name="model">pms.board.service</field>
+        <field name="arch" type="xml">
+            <search string="Board Service">
+                <field name="name" />
+                <field name="default_code" />
+                <filter
+                    name="inactive"
+                    string="Archived"
+                    domain="[('active', '=', False)]"
+                />
+            </search>
+        </field>
+    </record>
     <record model="ir.actions.act_window" id="open_pms_board_service_form_tree">
         <field name="name">Board Services</field>
         <field name="res_model">pms.board.service</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="pms_board_service_view_search" />
     </record>
     <menuitem
         name="Board Services"

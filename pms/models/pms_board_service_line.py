@@ -50,6 +50,10 @@ class PmsBoardServiceLine(models.Model):
         help="Apply service to children",
         default=False,
     )
+    active = fields.Boolean(
+        default=True,
+        help="Lines of an archived board service are archived as well.",
+    )
 
     def _get_default_price(self):
         if self.product_id:
