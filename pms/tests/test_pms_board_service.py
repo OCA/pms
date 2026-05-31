@@ -409,3 +409,77 @@ class TestBoardService(TestPms):
             board_service2.id,
             "Expected board service not found",
         )
+
+    def test_archive_board_service_propagates_to_children(self):
+        """
+        Archiving a board service must cascade ``active=False`` to its
+        lines and to its room-type assignments (and their lines), so that
+        the archived regime fully disappears from operative selections
+        while historical references remain in place.
+
+        PRE:    - board_service bs1 is active
+                - bs1 has one line (bsl)
+                - bs1 has one room-type assignment (bsrt) with one line (bsrtl)
+        ACT:    - bs1.active = False
+        POST:   - bsl.active == False
+                - bsrt.active == False
+                - bsrtl.active == False
+                - reactivating bs1 propagates back to all descendants
+        """
+        # ARRANGE
+        product = self.env["product.product"].create(
+            {"name": "Bs Product", "is_pms_available": True}
+        )
+        room_type = self.env["pms.room.type"].create(
+            {
+                "pms_property_ids": [(6, 0, [self.pms_property1.id])],
+                "name": "Room Type Archive Test",
+                "default_code": "RTAT",
+                "class_id": self.room_type_class1.id,
+                "list_price": 30.0,
+            }
+        )
+        board_service = self.env["pms.board.service"].create(
+            {
+                "name": "Bs Archive Test",
+                "default_code": "BSAT",
+                "pms_property_ids": [(6, 0, [self.pms_property1.id])],
+                "board_service_line_ids": [
+                    (0, 0, {"product_id": product.id, "adults": True}),
+                ],
+            }
+        )
+        bsrt = self.env["pms.board.service.room.type"].create(
+            {
+                "pms_board_service_id": board_service.id,
+                "pms_room_type_id": room_type.id,
+                "pms_property_id": self.pms_property1.id,
+            }
+        )
+
+        # ACT — archive
+        board_service.active = False
+
+        # ASSERT — propagation downwards
+        bs_line = board_service.with_context(active_test=False).board_service_line_ids
+        bsrt_line = bsrt.with_context(active_test=False).board_service_line_ids
+        self.assertFalse(bs_line.active, "Board service line was not archived")
+        self.assertFalse(
+            bsrt.with_context(active_test=False).active,
+            "Board service room type was not archived",
+        )
+        self.assertFalse(
+            bsrt_line.active,
+            "Board service room type line was not archived",
+        )
+
+        # ACT — reactivate
+        board_service.with_context(active_test=False).active = True
+
+        # ASSERT — propagation back
+        self.assertTrue(bs_line.active, "Board service line was not reactivated")
+        self.assertTrue(bsrt.active, "Board service room type was not reactivated")
+        self.assertTrue(
+            bsrt_line.active,
+            "Board service room type line was not reactivated",
+        )

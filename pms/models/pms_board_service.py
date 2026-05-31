@@ -58,6 +58,23 @@ class PmsBoardService(models.Model):
     show_detail_report = fields.Boolean(
         help="True if you want that board service detail to be shown on the report",
     )
+    active = fields.Boolean(
+        default=True,
+        help="If unchecked, this board service will be archived and hidden from "
+        "selections without affecting historical records that reference it.",
+    )
+
+    def write(self, vals):
+        res = super().write(vals)
+        if "active" in vals:
+            new_state = vals["active"]
+            self.with_context(active_test=False).mapped("board_service_line_ids").write(
+                {"active": new_state}
+            )
+            self.with_context(active_test=False).mapped(
+                "pms_board_service_room_type_ids"
+            ).write({"active": new_state})
+        return res
 
     @api.depends("board_service_line_ids.amount")
     def _compute_board_amount(self):
