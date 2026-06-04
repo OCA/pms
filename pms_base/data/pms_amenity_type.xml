@@ -1,5 +1,4 @@
 <odoo>
-
     <record id="pms_amenity_type_0" model="pms.amenity.type">
         <field name="name">Toiletries</field>
     </record>
@@ -23,5 +22,4 @@
     <record id="pms_amenity_type_5" model="pms.amenity.type">
         <field name="name">Pets</field>
     </record>
-
 </odoo>

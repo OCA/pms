@@ -1,5 +1,4 @@
 <odoo>
-
     <record id="view_pms_amenity_form" model="ir.ui.view">
         <field name="name">pms.amenity.form</field>
         <field name="model">pms.amenity</field>
@@ -10,14 +9,14 @@
                     <div class="oe_button_box" name="button_box" />
                     <h1>
                         <label for="name" string="Amenity" />
-                        <field name="name" select="1" />
+                        <field name="name" />
                     </h1>
                     <group id="main">
                         <group id="main-left">
                             <field name="type_id" string="Type" />
                         </group>
                         <group id="main-right">
-                            <field name="default_code" select="1" />
+                            <field name="default_code" />
                         </group>
                     </group>
                     <notebook>
@@ -39,8 +38,7 @@
         <field name="arch" type="xml">
             <search string="Amenities">
                 <field name="name" />
-                <field name="type_id" select="1" />
-                <group expand="0" string="Group By..." />
+                <field name="type_id" />
             </search>
         </field>
     </record>
@@ -49,18 +47,17 @@
         <field name="name">pms.amenity.tree</field>
         <field name="model">pms.amenity</field>
         <field name="arch" type="xml">
-            <tree string="Amenities">
+            <list string="Amenities">
                 <field name="default_code" />
                 <field name="name" />
-                <field name="type_id" select="1" />
-            </tree>
+                <field name="type_id" />
+            </list>
         </field>
     </record>
 
     <record model="ir.actions.act_window" id="action_pms_amenity">
         <field name="name">Amenities</field>
         <field name="res_model">pms.amenity</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
-
 </odoo>

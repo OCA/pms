@@ -5,7 +5,7 @@
 {
     "name": "Property Management System",
     "summary": "Manage properties",
-    "version": "14.0.1.1.1",
+    "version": "19.0.1.0.0",
     "development_status": "Beta",
     "category": "Generic Modules/Property Management System",
     "website": "https://github.com/OCA/pms",
@@ -14,6 +14,15 @@
     "license": "AGPL-3",
     "application": True,
     "depends": ["base_geolocalize", "mail", "product"],
+    "demo": [
+        "demo/pms_tag.xml",
+        "demo/pms_amenity.xml",
+        "demo/res_partner.xml",
+        "demo/pms_property.xml",
+        "demo/pms_room.xml",
+        "demo/product_product.xml",
+        "demo/pms_service.xml",
+    ],
     "data": [
         "security/res_groups.xml",
         "security/ir.model.access.csv",

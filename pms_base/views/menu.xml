@@ -1,5 +1,4 @@
 <odoo>
-
     <!-- Menu Items -->
     <menuitem
         id="menu_root"
@@ -148,5 +147,4 @@
         action="action_pms_amenity_type"
         groups="pms_base.group_pms_show_amenity"
     />
-
 </odoo>

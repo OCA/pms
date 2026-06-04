@@ -1,0 +1,45 @@
+<odoo noupdate="1">
+    <!-- Services: Downtown Apartment -->
+    <record id="demo_service_downtown_internet" model="pms.service">
+        <field name="name" ref="demo_product_internet" />
+        <field name="property_id" ref="demo_property_downtown" />
+        <field name="vendor_id" ref="demo_partner_owner" />
+        <field name="icon">fa-wifi</field>
+    </record>
+
+    <record id="demo_service_downtown_cleaning" model="pms.service">
+        <field name="name" ref="demo_product_cleaning" />
+        <field name="property_id" ref="demo_property_downtown" />
+        <field name="vendor_id" ref="demo_partner_owner" />
+        <field name="icon">fa-home</field>
+    </record>
+
+    <record id="demo_service_downtown_laundry" model="pms.service">
+        <field name="name" ref="demo_product_laundry" />
+        <field name="property_id" ref="demo_property_downtown" />
+        <field name="vendor_id" ref="demo_partner_owner" />
+        <field name="icon">fa-tshirt</field>
+    </record>
+
+    <!-- Services: Suburban House -->
+    <record id="demo_service_suburban_internet" model="pms.service">
+        <field name="name" ref="demo_product_internet" />
+        <field name="property_id" ref="demo_property_suburban" />
+        <field name="vendor_id" ref="demo_partner_owner" />
+        <field name="icon">fa-wifi</field>
+    </record>
+
+    <record id="demo_service_suburban_cleaning" model="pms.service">
+        <field name="name" ref="demo_product_cleaning" />
+        <field name="property_id" ref="demo_property_suburban" />
+        <field name="vendor_id" ref="demo_partner_owner" />
+        <field name="icon">fa-home</field>
+    </record>
+
+    <record id="demo_service_suburban_parking" model="pms.service">
+        <field name="name" ref="demo_product_parking" />
+        <field name="property_id" ref="demo_property_suburban" />
+        <field name="vendor_id" ref="demo_partner_owner" />
+        <field name="icon">fa-car</field>
+    </record>
+</odoo>

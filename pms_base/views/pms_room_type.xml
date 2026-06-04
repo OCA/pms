@@ -1,5 +1,4 @@
 <odoo>
-
     <record model="ir.ui.view" id="view_pms_room_type_form">
         <field name="name">pms.room.type.form</field>
         <field name="model">pms.room.type</field>
@@ -8,9 +7,9 @@
                 <header />
                 <sheet>
                     <div class="oe_button_box" name="button_box" />
-                    <label for="name" class="oe_edit_only" />
+                    <label for="name" />
                     <h1>
-                        <field name="name" required="True" />
+                        <field name="name" required="1" />
                     </h1>
                     <group id="main">
                         <group id="main-left">
@@ -28,17 +27,16 @@
         <field name="name">pms.room.type.tree</field>
         <field name="model">pms.room.type</field>
         <field name="arch" type="xml">
-            <tree string="Room Types">
+            <list string="Room Types">
                 <field name="sequence" widget="handle" />
                 <field name="name" />
-            </tree>
+            </list>
         </field>
     </record>
 
     <record model="ir.actions.act_window" id="action_pms_room_type">
         <field name="name">Room Types</field>
         <field name="res_model">pms.room.type</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
-
 </odoo>

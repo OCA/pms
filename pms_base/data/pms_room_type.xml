@@ -1,5 +1,4 @@
 <odoo>
-
     <record id="pms_room_type_0" model="pms.room.type">
         <field name="name">Economic</field>
     </record>
@@ -94,5 +93,4 @@
         <field name="name">Half Bathroom</field>
         <field name="sequence">130</field>
     </record>
-
 </odoo>
