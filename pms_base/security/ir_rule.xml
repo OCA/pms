@@ -1,5 +1,4 @@
 <odoo>
-
     <!-- Multi-Company Rule -->
     <record id="pms_property_rule" model="ir.rule">
         <field name="name">Multi-Company Property Rule</field>
@@ -9,5 +8,4 @@
             name="domain_force"
         >['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
-
 </odoo>

@@ -1,5 +1,4 @@
 <odoo>
-
     <record id="view_team_form" model="ir.ui.view">
         <field name="name">pms.team.view.form</field>
         <field name="model">pms.team</field>
@@ -8,9 +7,9 @@
                 <header />
                 <sheet>
                     <div class="oe_button_box" name="button_box" />
-                    <label for="name" class="oe_edit_only" />
+                    <label for="name" />
                     <h1>
-                        <field name="name" required="True" />
+                        <field name="name" required="1" />
                     </h1>
                     <group id="main">
                         <group id="main-left">
@@ -26,15 +25,7 @@
                     </group>
                     <notebook />
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers" />
-                    <field name="activity_ids" widget="mail_activity" />
-                    <field
-                        name="message_ids"
-                        widget="mail_thread"
-                        options="{'post_refresh': 'recipients'}"
-                    />
-                </div>
+                <chatter />
             </form>
         </field>
     </record>
@@ -43,15 +34,18 @@
         <field name="name">pms.team.view.tree</field>
         <field name="model">pms.team</field>
         <field name="arch" type="xml">
-            <tree string="Teams">
+            <list string="Teams">
                 <field name="sequence" widget="handle" groups="base.group_no_one" />
                 <field name="name" />
                 <field name="description" />
                 <field name="company_id" groups="base.group_multi_company" />
-            </tree>
+            </list>
         </field>
     </record>
 
+    <!-- TODO [MIG] v19.0: Dashboard kanban migrated from kanban-box to card.
+         Verify button action %(...)d syntax still works and layout renders correctly.
+         Reference: https://github.com/odoo/odoo/pull/167751 -->
     <record id="view_pms_team_kanban" model="ir.ui.view">
         <field name="name">pms.team.kanban</field>
         <field name="model">pms.team</field>
@@ -61,33 +55,29 @@
                 create="0"
             >
                 <field name="name" />
+                <field name="property_count" />
                 <templates>
-                    <t t-name="kanban-box">
-                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
-                            <div>
-                                <div t-attf-class="o_kanban_card_header">
-                                    <div class="o_kanban_card_header_title">
-                                        <div class="o_primary">
-                                            <span> <field name="name" /></span>
-                                        </div>
-                                    </div>
+                    <t t-name="card">
+                        <div class="o_kanban_card_header">
+                            <div class="o_kanban_card_header_title">
+                                <div class="o_primary fw-bold">
+                                    <field name="name" />
                                 </div>
-                                <div class="container o_kanban_card_content">
-                                    <div class="row">
-                                        <div class="col-5 o_kanban_primary_left">
-                                            <button
-                                                class="btn btn-primary"
-                                                name="%(pms_base.property_action_from_dashboard)d"
-                                                type="action"
-                                                style="margin-bottom: 05px;width: inherit;"
-                                                context="{'search_default_team_properties': 1}"
-                                            >
-                                            <field name="property_count" />
-                                                <br />
-                                                Properties
-                                            </button>
-                                        </div>
-                                    </div>
+                            </div>
+                        </div>
+                        <div class="container o_kanban_card_content">
+                            <div class="row">
+                                <div class="col-5 o_kanban_primary_left">
+                                    <button
+                                        class="btn btn-primary"
+                                        name="%(pms_base.property_action_from_dashboard)d"
+                                        type="action"
+                                        t-att-context="{'default_team_id': record.id.value, 'search_default_team_id': record.id.value}"
+                                    >
+                                        <field name="property_count" />
+                                        <br />
+                                        Properties
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -100,7 +90,6 @@
     <record id="action_pms_team" model="ir.actions.act_window">
         <field name="name">PMS Teams</field>
         <field name="res_model">pms.team</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,list,form</field>
     </record>
-
 </odoo>

@@ -4,16 +4,17 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0+e-20211202\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-23 19:22+0000\n"
-"PO-Revision-Date: 2021-12-23 19:22+0000\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"POT-Creation-Date: 2026-06-04 00:00+0000\n"
+"PO-Revision-Date: 2026-06-04 00:00+0000\n"
+"Last-Translator: Maxime Chambreuil <maxime.chambreuil@graymatterlogic.com>\n"
+"Language-Team: Spanish\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_team_kanban
@@ -47,7 +48,7 @@ msgstr "Activo"
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__active_lang_count
 msgid "Active Lang Count"
-msgstr "Numéro de idiomas activas"
+msgstr "Número de idiomas activos"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_ids
@@ -96,6 +97,8 @@ msgid ""
 msgstr ""
 "Todos los correos electrónicos y documentos enviados a este contacto serán "
 "traducidos a este idioma."
+"Todos los correos electrónicos y documentos enviados a este contacto serán "
+"traducidos a este idioma."
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
@@ -132,14 +135,14 @@ msgstr "Amenidad"
 #: model:ir.model,name:pms_base.model_pms_amenity_type
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_room_amenity_type_form
 msgid "Amenity Type"
-msgstr "Típo de amenidad"
+msgstr "Tipo de amenidad"
 
 #. module: pms_base
 #: model:ir.actions.act_window,name:pms_base.action_pms_amenity_type
 #: model:ir.ui.menu,name:pms_base.menu_pms_config_property_amenity_type
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_amenity_type_tree
 msgid "Amenity Types"
-msgstr "Típos de amenidades"
+msgstr "Tipos de amenidades"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_service_form
@@ -166,7 +169,7 @@ msgstr "Superficie (UdM)"
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_attachment_count
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_attachment_count
 msgid "Attachment Count"
-msgstr "Numéro de archivos adjuntos"
+msgstr "Número de archivos adjuntos"
 
 #. module: pms_base
 #: model:pms.stage,name:pms_base.pms_stage_available
@@ -192,7 +195,7 @@ msgstr "Código de barras"
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_basement
 msgid "Basement"
-msgstr "Sotano"
+msgstr "Sótano"
 
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_bath
@@ -202,12 +205,12 @@ msgstr "Baño"
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_bed
 msgid "Bedroom"
-msgstr "Recamara"
+msgstr "Recámara"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
 msgid "Bedroom(s)"
-msgstr "Recamara(s)"
+msgstr "Recámara(s)"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__is_blacklisted
@@ -232,7 +235,7 @@ msgstr "Caldera del edificio"
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "CRM"
-msgstr ""
+msgstr "CRM"
 
 #. module: pms_base
 #: model:pms.stage,name:pms_base.pms_stage_cancelled
@@ -265,6 +268,8 @@ msgid ""
 "Check this box to ensure every address created in that country has a 'City' "
 "chosen in the list of the country's cities."
 msgstr ""
+"Marque esta casilla para asegurar que cada dirección creada en ese país "
+"tenga una ciudad elegida de la lista de ciudades del país."
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
@@ -274,7 +279,7 @@ msgstr "Propiedad hija"
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__childs_property_count
 msgid "Children Count"
-msgstr "Numéro de hijas"
+msgstr "Número de propiedades hijas"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__property_child_ids
@@ -302,7 +307,7 @@ msgstr "Código de color"
 #: model:ir.model.fields,field_description:pms_base.field_pms_tag__color
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__color
 msgid "Color Index"
-msgstr "Indíce de color"
+msgstr "Índice de color"
 
 #. module: pms_base
 #: code:addons/pms_base/models/pms_stage.py:0
@@ -336,12 +341,12 @@ msgstr "Nombre de la empresa"
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__commercial_company_name
 msgid "Company Name Entity"
-msgstr ""
+msgstr "Nombre de la entidad comercial"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__company_type
 msgid "Company Type"
-msgstr "Típo de empresa"
+msgstr "Tipo de empresa"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__partner_gid
@@ -404,12 +409,12 @@ msgstr "Contacto"
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__contact_address_complete
 msgid "Contact Address Complete"
-msgstr ""
+msgstr "Dirección completa del contacto"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__message_bounce
 msgid "Counter of the number of bounced emails for this contact"
-msgstr ""
+msgstr "Contador del número de correos rebotados de este contacto"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__country_id
@@ -451,7 +456,7 @@ msgstr "Creado el"
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__credit_limit
 msgid "Credit Limit"
-msgstr "Limite de credito"
+msgstr "Límite de crédito"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__partner_id
@@ -528,7 +533,7 @@ msgstr "Comedor"
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__display_name
 #: model:ir.model.fields,field_description:pms_base.field_res_partner__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nombre para mostrar"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__street_number2
@@ -552,6 +557,9 @@ msgid ""
 "partner is a customer without access or with a limited access created for "
 "sharing data."
 msgstr ""
+"Es un cliente (no un usuario) o un usuario compartido. Indica que el "
+"contacto actual es un cliente sin acceso o con acceso limitado creado para "
+"compartir datos."
 
 #. module: pms_base
 #: model:ir.model.fields.selection,name:pms_base.selection__pms_property__heating__tankless_electric
@@ -576,7 +584,7 @@ msgstr "Empleado"
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__country_enforce_cities
 msgid "Enforce Cities"
-msgstr ""
+msgstr "Imponer ciudades"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_room__sequence
@@ -585,6 +593,8 @@ msgid ""
 "Field used to change the position of the rooms in tree view.Changing the "
 "position changes the sequence"
 msgstr ""
+"Campo utilizado para cambiar la posición de los cuartos en la vista de "
+"lista. Cambiar la posición cambia la secuencia."
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__floors_num
@@ -594,7 +604,7 @@ msgstr "Piso"
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_stage__fold
 msgid "Folded in Kanban"
-msgstr ""
+msgstr "Plegado en Kanban"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_follower_ids
@@ -618,7 +628,7 @@ msgstr "Seguidores (Contactos)"
 #: model:ir.model.fields,help:pms_base.field_pms_property__activity_type_icon
 #: model:ir.model.fields,help:pms_base.field_pms_team__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
-msgstr ""
+msgstr "Icono de Font Awesome, p. ej. fa-tasks"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__email_formatted
@@ -638,7 +648,7 @@ msgstr "Nombre completo"
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_garage
 msgid "Garage"
-msgstr ""
+msgstr "Cochera"
 
 #. module: pms_base
 #: model:ir.model.fields.selection,name:pms_base.selection__pms_property__heating__tankless_gas
@@ -719,19 +729,19 @@ msgstr "Id"
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__im_status
 msgid "IM Status"
-msgstr ""
+msgstr "Estado de mensajería"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_exception_icon
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_exception_icon
 msgid "Icon"
-msgstr ""
+msgstr "Icono"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__activity_exception_icon
 #: model:ir.model.fields,help:pms_base.field_pms_team__activity_exception_icon
 msgid "Icon to indicate an exception activity."
-msgstr ""
+msgstr "Icono para indicar una actividad de excepción."
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__message_needaction
@@ -739,13 +749,13 @@ msgstr ""
 #: model:ir.model.fields,help:pms_base.field_pms_team__message_needaction
 #: model:ir.model.fields,help:pms_base.field_pms_team__message_unread
 msgid "If checked, new messages require your attention."
-msgstr ""
+msgstr "Si está marcado, los nuevos mensajes requieren su atención."
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__message_has_error
 #: model:ir.model.fields,help:pms_base.field_pms_team__message_has_error
 msgid "If checked, some messages have a delivery error."
-msgstr ""
+msgstr "Si está marcado, algunos mensajes tienen un error de entrega."
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__is_blacklisted
@@ -753,6 +763,8 @@ msgid ""
 "If the email address is on the blacklist, the contact won't receive mass "
 "mailing anymore, from any list"
 msgstr ""
+"Si la dirección de correo está en la lista negra, el contacto no recibirá "
+"más correos masivos de ninguna lista."
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__image_1920
@@ -810,12 +822,14 @@ msgid ""
 "Invoice & Delivery addresses are used in sales orders. Private addresses are"
 " only visible by authorized users."
 msgstr ""
+"Las direcciones de factura y entrega se usan en los pedidos de venta. "
+"Las direcciones privadas solo son visibles para los usuarios autorizados."
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_is_follower
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_is_follower
 msgid "Is Follower"
-msgstr ""
+msgstr "Es seguidor"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__is_company
@@ -878,7 +892,7 @@ msgstr "Idioma"
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings____last_update
 #: model:ir.model.fields,field_description:pms_base.field_res_partner____last_update
 msgid "Last Modified on"
-msgstr "Ultima modificación el"
+msgstr "Última modificación el"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_amenity__write_uid
@@ -891,7 +905,7 @@ msgstr "Ultima modificación el"
 #: model:ir.model.fields,field_description:pms_base.field_pms_tag__write_uid
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__write_uid
 msgid "Last Updated by"
-msgstr "Ultima modificación por"
+msgstr "Última modificación por"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_amenity__write_date
@@ -904,12 +918,12 @@ msgstr "Ultima modificación por"
 #: model:ir.model.fields,field_description:pms_base.field_pms_tag__write_date
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__write_date
 msgid "Last Updated on"
-msgstr "Ultima modificación el"
+msgstr "Última modificación el"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__calendar_last_notif_ack
 msgid "Last notification marked as read from base Calendar"
-msgstr ""
+msgstr "Última notificación marcada como leída desde el calendario base"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__laundry_room
@@ -936,7 +950,7 @@ msgstr "Lista de cuartos en la propiedad"
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__service_ids
 msgid "List of services available in the property."
-msgstr "ista de servicios disponibles en la propiedad"
+msgstr "Lista de servicios disponibles en la propiedad"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
@@ -952,7 +966,7 @@ msgstr "Salón"
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_main_attachment_id
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_main_attachment_id
 msgid "Main Attachment"
-msgstr ""
+msgstr "Adjunto principal"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_account
@@ -1025,13 +1039,13 @@ msgstr "Datos Maestros"
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__image_medium
 msgid "Medium-sized image"
-msgstr ""
+msgstr "Imagen mediana"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_has_error
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_has_error
 msgid "Message Delivery error"
-msgstr ""
+msgstr "Error de entrega de mensaje"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_ids
@@ -1042,13 +1056,13 @@ msgstr "Mensajes"
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__mobile
 msgid "Mobile"
-msgstr "Movil"
+msgstr "Móvil"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__my_activity_date_deadline
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__my_activity_date_deadline
 msgid "My Activity Deadline"
-msgstr ""
+msgstr "Fecha límite de mi actividad"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_amenity__name
@@ -1075,24 +1089,24 @@ msgstr "Nuevo"
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_date_deadline
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_date_deadline
 msgid "Next Activity Deadline"
-msgstr ""
+msgstr "Fecha límite de la próxima actividad"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_summary
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_summary
 msgid "Next Activity Summary"
-msgstr ""
+msgstr "Resumen de la próxima actividad"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_type_id
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_type_id
 msgid "Next Activity Type"
-msgstr ""
+msgstr "Tipo de la próxima actividad"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__email_normalized
 msgid "Normalized Email"
-msgstr ""
+msgstr "Correo normalizado"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__comment
@@ -1103,41 +1117,41 @@ msgstr "Notas"
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_needaction_counter
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_needaction_counter
 msgid "Number of Actions"
-msgstr "Numéro de acciones"
+msgstr "Número de acciones"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_has_error_counter
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_has_error_counter
 msgid "Number of errors"
-msgstr "Numéro de errores"
+msgstr "Número de errores"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__message_needaction_counter
 #: model:ir.model.fields,help:pms_base.field_pms_team__message_needaction_counter
 msgid "Number of messages which requires an action"
-msgstr ""
+msgstr "Número de mensajes que requieren una acción"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__message_has_error_counter
 #: model:ir.model.fields,help:pms_base.field_pms_team__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr ""
+msgstr "Número de mensajes con error de entrega"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__room_count
 msgid "Number of rooms"
-msgstr "Numéro de cuartos"
+msgstr "Número de cuartos"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__message_unread_counter
 #: model:ir.model.fields,help:pms_base.field_pms_team__message_unread_counter
 msgid "Number of unread messages"
-msgstr ""
+msgstr "Número de mensajes no leídos"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__ocn_token
 msgid "OCN Token"
-msgstr ""
+msgstr "Token OCN"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
@@ -1227,7 +1241,7 @@ msgstr "Mascotas"
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__phone
 msgid "Phone"
-msgstr "Telefono"
+msgstr "Teléfono"
 
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_play
@@ -1237,7 +1251,7 @@ msgstr "Cuarto de juego"
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__property_product_pricelist
 msgid "Pricelist"
-msgstr "Lista de precio"
+msgstr "Lista de precios"
 
 #. module: pms_base
 #: model:ir.ui.menu,name:pms_base.menu_pms_data_product
@@ -1261,12 +1275,12 @@ msgstr "Propiedades"
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__property_count
 msgid "Properties Count"
-msgstr "Numéro de propiedades"
+msgstr "Número de propiedades"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_amenity__property_ids
 msgid "Properties with access to the amenity"
-msgstr "Propiedadesz con acceso a la amenidad"
+msgstr "Propiedades con acceso a la amenidad"
 
 #. module: pms_base
 #: model:ir.model,name:pms_base.model_pms_property
@@ -1336,27 +1350,27 @@ msgstr "Publica tus propiedades en tu sitio web"
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__qty_bedroom
 msgid "Qty Bedroom"
-msgstr "Numéro de recamaras"
+msgstr "Número de recámaras"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__qty_dining_room
 msgid "Qty Dining Room"
-msgstr "Numéro de comedor"
+msgstr "Número de comedores"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__qty_half_bathroom
 msgid "Qty Half Bathroom"
-msgstr "Numéro de medio baño"
+msgstr "Número de medios baños"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__qty_kitchen
 msgid "Qty Kitchen"
-msgstr "Numéro de cocina"
+msgstr "Número de cocinas"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__qty_living_room
 msgid "Qty Living Room"
-msgstr "Numéro de salón"
+msgstr "Número de salones"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
@@ -1402,7 +1416,7 @@ msgstr "Nombre del cuarto"
 #: model:ir.model.fields,field_description:pms_base.field_pms_room__type_id
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_room_type_form
 msgid "Room Type"
-msgstr "Típo del cuarto"
+msgstr "Tipo de cuarto"
 
 #. module: pms_base
 #: model:ir.actions.act_window,name:pms_base.action_pms_room_type
@@ -1410,7 +1424,7 @@ msgstr "Típo del cuarto"
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_room_search
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_room_type_tree
 msgid "Room Types"
-msgstr "Típos del cuarto"
+msgstr "Tipos de cuarto"
 
 #. module: pms_base
 #: model:ir.actions.act_window,name:pms_base.action_pms_room
@@ -1434,7 +1448,7 @@ msgstr "Buscar etapas"
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__self
 msgid "Self"
-msgstr ""
+msgstr "Mismo"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_room__sequence
@@ -1471,7 +1485,7 @@ msgstr "Servicios en esta etapa estan considerados cerrados."
 #: model:ir.model.fields,help:pms_base.field_pms_room_type__icon
 #: model:ir.model.fields,help:pms_base.field_pms_service__icon
 msgid "Set Icon name from https://fontawesome.com/"
-msgstr ""
+msgstr "Nombre del icono de https://fontawesome.com/"
 
 #. module: pms_base
 #: model:ir.actions.act_window,name:pms_base.action_pms_config
@@ -1510,37 +1524,37 @@ msgstr "Mostrar servicios"
 #: model:res.groups,name:pms_base.group_pms_show_team
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Show Teams"
-msgstr "Mostrar equipoes"
+msgstr "Mostrar equipos"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__signup_expiration
 msgid "Signup Expiration"
-msgstr ""
+msgstr "Expiración del registro"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__signup_token
 msgid "Signup Token"
-msgstr ""
+msgstr "Token de registro"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__signup_type
 msgid "Signup Token Type"
-msgstr ""
+msgstr "Tipo de token de registro"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__signup_valid
 msgid "Signup Token is Valid"
-msgstr ""
+msgstr "El token de registro es válido"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__signup_url
 msgid "Signup URL"
-msgstr ""
+msgstr "URL de registro"
 
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_1
 msgid "Single"
-msgstr "Soltero"
+msgstr "Individual"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
@@ -1584,6 +1598,10 @@ msgid ""
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
+"Estado basado en actividades\n"
+"Vencido: La fecha límite ya pasó\n"
+"Hoy: La fecha de actividad es hoy\n"
+"Planeado: Actividades futuras."
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__street
@@ -1670,6 +1688,8 @@ msgid ""
 "The Tax Identification Number. Complete it if the contact is subjected to "
 "government taxes. Used in some legal statements."
 msgstr ""
+"El Número de Identificación Fiscal. Complételo si el contacto está sujeto "
+"a impuestos gubernamentales. Se usa en algunos documentos legales."
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__user_id
@@ -1697,6 +1717,8 @@ msgid ""
 "This field is used to search on email address as the primary email field can"
 " contain more than strictly an email address."
 msgstr ""
+"Este campo se utiliza para buscar por dirección de correo, ya que el campo "
+"principal puede contener más que una dirección de correo electrónico."
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__property_product_pricelist
@@ -1704,6 +1726,8 @@ msgid ""
 "This pricelist will be used, instead of the default one, for sales to the "
 "current partner"
 msgstr ""
+"Esta lista de precios se usará, en lugar de la predeterminada, para las "
+"ventas al contacto actual."
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_stage__fold
@@ -1711,6 +1735,8 @@ msgid ""
 "This stage is folded in the kanban view when there are no record in that "
 "stage to display."
 msgstr ""
+"Esta etapa se pliega en la vista kanban cuando no hay registros que "
+"mostrar en esa etapa."
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__tz
@@ -1720,7 +1746,7 @@ msgstr "Zona horaria"
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__tz_offset
 msgid "Timezone offset"
-msgstr ""
+msgstr "Desplazamiento de zona horaria"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__title
@@ -1730,12 +1756,12 @@ msgstr "Titulo"
 #. module: pms_base
 #: model:pms.amenity.type,name:pms_base.pms_amenity_type_0
 msgid "Toiletries"
-msgstr "Articulos de aséo"
+msgstr "Artículos de aseo"
 
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_3
 msgid "Triple"
-msgstr ""
+msgstr "Triple"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_amenity__type_id
@@ -1743,13 +1769,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_amenity_form
 #: model_terms:ir.ui.view,arch_db:pms_base.view_stage_search
 msgid "Type"
-msgstr "Típo"
+msgstr "Tipo"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__activity_exception_decoration
 #: model:ir.model.fields,help:pms_base.field_pms_team__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr ""
+msgstr "Tipo de actividad de excepción en el registro."
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_room__type_id
@@ -1765,7 +1791,7 @@ msgstr "Piso de la unidad"
 #: model:ir.model.fields,field_description:pms_base.field_res_company__pms_uom
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__pms_uom
 msgid "Unit of Measure"
-msgstr "Unidad de medidad"
+msgstr "Unidad de medida"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_unread
@@ -1777,7 +1803,7 @@ msgstr "Mensajes no leídos"
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_unread_counter
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_unread_counter
 msgid "Unread Messages Counter"
-msgstr ""
+msgstr "Contador de mensajes no leídos"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_stage__custom_color
@@ -1797,7 +1823,7 @@ msgstr "Usa como etapa por defecto"
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__ocn_token
 msgid "Used for sending notification to registered devices"
-msgstr ""
+msgstr "Utilizado para enviar notificaciones a dispositivos registrados"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_team__sequence

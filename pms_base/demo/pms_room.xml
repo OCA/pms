@@ -1,0 +1,101 @@
+<odoo noupdate="1">
+    <!-- Rooms: Downtown Apartment -->
+    <record id="demo_room_downtown_bedroom1" model="pms.room">
+        <field name="name">Bedroom 1</field>
+        <field name="property_id" ref="demo_property_downtown" />
+        <field name="type_id" ref="pms_room_type_bed" />
+        <field name="capacity">2</field>
+        <field name="area">18.0</field>
+    </record>
+
+    <record id="demo_room_downtown_bedroom2" model="pms.room">
+        <field name="name">Bedroom 2</field>
+        <field name="property_id" ref="demo_property_downtown" />
+        <field name="type_id" ref="pms_room_type_bed" />
+        <field name="capacity">1</field>
+        <field name="area">14.0</field>
+    </record>
+
+    <record id="demo_room_downtown_bathroom" model="pms.room">
+        <field name="name">Bathroom</field>
+        <field name="property_id" ref="demo_property_downtown" />
+        <field name="type_id" ref="pms_room_type_bath" />
+        <field name="area">6.0</field>
+    </record>
+
+    <record id="demo_room_downtown_kitchen" model="pms.room">
+        <field name="name">Kitchen</field>
+        <field name="property_id" ref="demo_property_downtown" />
+        <field name="type_id" ref="pms_room_type_kitchen" />
+        <field name="area">12.0</field>
+    </record>
+
+    <record id="demo_room_downtown_living" model="pms.room">
+        <field name="name">Living Room</field>
+        <field name="property_id" ref="demo_property_downtown" />
+        <field name="type_id" ref="pms_room_type_living" />
+        <field name="capacity">6</field>
+        <field name="area">25.0</field>
+    </record>
+
+    <!-- Rooms: Suburban House -->
+    <record id="demo_room_suburban_bedroom1" model="pms.room">
+        <field name="name">Master Bedroom</field>
+        <field name="property_id" ref="demo_property_suburban" />
+        <field name="type_id" ref="pms_room_type_bed" />
+        <field name="capacity">2</field>
+        <field name="area">22.0</field>
+    </record>
+
+    <record id="demo_room_suburban_bedroom2" model="pms.room">
+        <field name="name">Guest Bedroom</field>
+        <field name="property_id" ref="demo_property_suburban" />
+        <field name="type_id" ref="pms_room_type_bed" />
+        <field name="capacity">2</field>
+        <field name="area">16.0</field>
+    </record>
+
+    <record id="demo_room_suburban_bedroom3" model="pms.room">
+        <field name="name">Kids Bedroom</field>
+        <field name="property_id" ref="demo_property_suburban" />
+        <field name="type_id" ref="pms_room_type_bed" />
+        <field name="capacity">2</field>
+        <field name="area">14.0</field>
+    </record>
+
+    <record id="demo_room_suburban_bathroom1" model="pms.room">
+        <field name="name">Main Bathroom</field>
+        <field name="property_id" ref="demo_property_suburban" />
+        <field name="type_id" ref="pms_room_type_bath" />
+        <field name="area">8.0</field>
+    </record>
+
+    <record id="demo_room_suburban_kitchen" model="pms.room">
+        <field name="name">Kitchen</field>
+        <field name="property_id" ref="demo_property_suburban" />
+        <field name="type_id" ref="pms_room_type_kitchen" />
+        <field name="area">20.0</field>
+    </record>
+
+    <record id="demo_room_suburban_living" model="pms.room">
+        <field name="name">Living Room</field>
+        <field name="property_id" ref="demo_property_suburban" />
+        <field name="type_id" ref="pms_room_type_living" />
+        <field name="capacity">8</field>
+        <field name="area">35.0</field>
+    </record>
+
+    <record id="demo_room_suburban_garage" model="pms.room">
+        <field name="name">Garage</field>
+        <field name="property_id" ref="demo_property_suburban" />
+        <field name="type_id" ref="pms_room_type_garage" />
+        <field name="area">30.0</field>
+    </record>
+
+    <record id="demo_room_suburban_terrace" model="pms.room">
+        <field name="name">Terrace</field>
+        <field name="property_id" ref="demo_property_suburban" />
+        <field name="type_id" ref="pms_room_type_patio" />
+        <field name="area">25.0</field>
+    </record>
+</odoo>

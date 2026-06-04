@@ -1,0 +1,16 @@
+<odoo noupdate="1">
+    <record id="demo_tag_residential" model="pms.tag">
+        <field name="name">Residential</field>
+        <field name="company_id" ref="base.main_company" />
+    </record>
+
+    <record id="demo_tag_commercial" model="pms.tag">
+        <field name="name">Commercial</field>
+        <field name="company_id" ref="base.main_company" />
+    </record>
+
+    <record id="demo_tag_premium" model="pms.tag">
+        <field name="name">Premium</field>
+        <field name="company_id" ref="base.main_company" />
+    </record>
+</odoo>

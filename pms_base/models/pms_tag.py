@@ -3,17 +3,17 @@
 # Copyright 2021 Eric Antones <eantones@nuobit.com>
 # Copyright (c) 2021 Open Source Integrators
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class PmsTag(models.Model):
     _name = "pms.tag"
     _description = "PMS Tag"
 
-    name = fields.Char(string="Name", required=True, translate=True)
+    name = fields.Char(required=True, translate=True)
     parent_id = fields.Many2one("pms.tag", string="Parent")
     color = fields.Integer("Color Index", default=10)
-    full_name = fields.Char(string="Full Name", compute="_compute_full_name")
+    full_name = fields.Char(compute="_compute_full_name")
     company_id = fields.Many2one(
         "res.company",
         string="Company",
@@ -23,8 +23,9 @@ class PmsTag(models.Model):
         help="Company related to this tag",
     )
 
-    _sql_constraints = [("name_uniq", "unique (name)", "Tag name already exists!")]
+    _sql_name_uniq = models.Constraint("unique (name)", "Tag name already exists!")
 
+    @api.depends("parent_id", "name")
     def _compute_full_name(self):
         for record in self:
             if record.parent_id:

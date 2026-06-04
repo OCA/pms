@@ -1,0 +1,7 @@
+<odoo noupdate="1">
+    <record id="demo_partner_owner" model="res.partner">
+        <field name="name">John Smith</field>
+        <field name="email">john.smith@example.com</field>
+        <field name="phone">+1 555 000 1234</field>
+    </record>
+</odoo>

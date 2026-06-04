@@ -8,23 +8,25 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button
-                            name="toggle_active"
+                            name="action_archive"
+                            string="Archive"
                             type="object"
                             class="oe_stat_button"
                             icon="fa-archive"
-                            string="Archive"
-                        >
-                            <field
-                                name="active"
-                                widget="boolean_button"
-                                options='{"terminology": "archive"}'
-                                invisible="1"
-                            />
-                        </button>
+                            invisible="not active"
+                        />
+                        <button
+                            name="action_unarchive"
+                            string="Restore"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-archive"
+                            invisible="active"
+                        />
                     </div>
-                    <label for="name" class="oe_edit_only" />
+                    <label for="name" />
                     <h1>
-                        <field name="name" required="True" />
+                        <field name="name" required="1" />
                     </h1>
                     <group id="main">
                         <group id="main-left">
@@ -50,12 +52,11 @@
                 <field name="name" />
                 <field name="vendor_id" />
                 <field name="property_id" />
-                <newline />
                 <searchpanel>
                     <field
                         name="vendor_id"
                         string="Vendors"
-                        enable_counters="1"
+                        enable_counters="True"
                         select="multi"
                     />
                 </searchpanel>
@@ -67,19 +68,18 @@
         <field name="name">pms.service.tree</field>
         <field name="model">pms.service</field>
         <field name="arch" type="xml">
-            <tree string="Services">
+            <list string="Services">
                 <field name="sequence" widget="handle" />
                 <field name="property_id" />
                 <field name="name" />
                 <field name="vendor_id" />
-            </tree>
+            </list>
         </field>
     </record>
 
     <record model="ir.actions.act_window" id="action_pms_service">
         <field name="name">Services</field>
         <field name="res_model">pms.service</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
-
 </odoo>

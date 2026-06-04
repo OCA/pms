@@ -1,0 +1,37 @@
+<odoo noupdate="1">
+    <record id="demo_amenity_wifi" model="pms.amenity">
+        <field name="name">Wi-Fi</field>
+        <field name="type_id" ref="pms_amenity_type_1" />
+        <field name="default_code">WIFI</field>
+    </record>
+
+    <record id="demo_amenity_tv" model="pms.amenity">
+        <field name="name">Smart TV</field>
+        <field name="type_id" ref="pms_amenity_type_1" />
+        <field name="default_code">TV</field>
+    </record>
+
+    <record id="demo_amenity_shampoo" model="pms.amenity">
+        <field name="name">Shampoo</field>
+        <field name="type_id" ref="pms_amenity_type_0" />
+        <field name="default_code">SHAMP</field>
+    </record>
+
+    <record id="demo_amenity_towels" model="pms.amenity">
+        <field name="name">Towels</field>
+        <field name="type_id" ref="pms_amenity_type_0" />
+        <field name="default_code">TOWEL</field>
+    </record>
+
+    <record id="demo_amenity_microwave" model="pms.amenity">
+        <field name="name">Microwave</field>
+        <field name="type_id" ref="pms_amenity_type_2" />
+        <field name="default_code">MWV</field>
+    </record>
+
+    <record id="demo_amenity_coffee" model="pms.amenity">
+        <field name="name">Coffee Maker</field>
+        <field name="type_id" ref="pms_amenity_type_2" />
+        <field name="default_code">COFFEE</field>
+    </record>
+</odoo>

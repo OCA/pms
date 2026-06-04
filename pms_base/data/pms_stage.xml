@@ -1,5 +1,4 @@
 <odoo>
-
     <record id="pms_stage_new" model="pms.stage">
         <field name="name">New</field>
         <field name="sequence">10</field>
@@ -19,5 +18,4 @@
         <field name="is_closed">True</field>
         <field name="stage_type">property</field>
     </record>
-
 </odoo>

@@ -1,12 +1,11 @@
 <odoo>
-
     <record id="view_partner_form_inherit_pms_base" model="ir.ui.view">
         <field name="name">res.partner.form.inherit.pms.base</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form" />
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
-                <page name="property" string="Property" invisible="1">
+                <page name="property" string="Property" invisible="True">
                     <group>
                         <field name="is_property" />
                     </group>
@@ -20,7 +19,7 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_tree" />
         <field name="arch" type="xml">
-            <field name="parent_id" position="after">
+            <field name="display_name" position="after">
                 <field name="is_property" optional="hide" />
             </field>
         </field>
@@ -43,5 +42,4 @@
             </filter>
         </field>
     </record>
-
 </odoo>

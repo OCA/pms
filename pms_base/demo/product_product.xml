@@ -1,0 +1,25 @@
+<odoo noupdate="1">
+    <record id="demo_product_internet" model="product.product">
+        <field name="name">Internet</field>
+        <field name="type">service</field>
+        <field name="list_price">30.0</field>
+    </record>
+
+    <record id="demo_product_cleaning" model="product.product">
+        <field name="name">Cleaning</field>
+        <field name="type">service</field>
+        <field name="list_price">80.0</field>
+    </record>
+
+    <record id="demo_product_laundry" model="product.product">
+        <field name="name">Laundry</field>
+        <field name="type">service</field>
+        <field name="list_price">25.0</field>
+    </record>
+
+    <record id="demo_product_parking" model="product.product">
+        <field name="name">Parking</field>
+        <field name="type">service</field>
+        <field name="list_price">15.0</field>
+    </record>
+</odoo>

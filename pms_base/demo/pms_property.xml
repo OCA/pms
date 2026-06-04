@@ -1,0 +1,44 @@
+<odoo noupdate="1">
+    <record id="demo_property_downtown" model="pms.property">
+        <field name="name">Downtown Apartment</field>
+        <field name="ref">PROP-001</field>
+        <field name="owner_id" ref="demo_partner_owner" />
+        <field name="company_id" ref="base.main_company" />
+        <field name="team_id" ref="pms_team_default" />
+        <field name="tz">America/New_York</field>
+        <field name="street">123 Main Street</field>
+        <field name="city">New York</field>
+        <field name="country_id" ref="base.us" />
+        <field name="area">85.0</field>
+        <field name="floors_num">12</field>
+        <field name="unit_floor">7</field>
+        <field
+            name="tag_ids"
+            eval="[Command.link(ref('demo_tag_residential')), Command.link(ref('demo_tag_premium'))]"
+        />
+        <field
+            name="amenity_ids"
+            eval="[Command.link(ref('demo_amenity_wifi')), Command.link(ref('demo_amenity_tv')), Command.link(ref('demo_amenity_shampoo')), Command.link(ref('demo_amenity_towels')), Command.link(ref('demo_amenity_coffee'))]"
+        />
+    </record>
+
+    <record id="demo_property_suburban" model="pms.property">
+        <field name="name">Suburban House</field>
+        <field name="ref">PROP-002</field>
+        <field name="owner_id" ref="demo_partner_owner" />
+        <field name="company_id" ref="base.main_company" />
+        <field name="team_id" ref="pms_team_default" />
+        <field name="tz">America/Chicago</field>
+        <field name="street">456 Oak Avenue</field>
+        <field name="city">Chicago</field>
+        <field name="country_id" ref="base.us" />
+        <field name="area">180.0</field>
+        <field name="floors_num">2</field>
+        <field name="unit_floor">1</field>
+        <field name="tag_ids" eval="[Command.link(ref('demo_tag_residential'))]" />
+        <field
+            name="amenity_ids"
+            eval="[Command.link(ref('demo_amenity_wifi')), Command.link(ref('demo_amenity_microwave')), Command.link(ref('demo_amenity_coffee')), Command.link(ref('demo_amenity_towels'))]"
+        />
+    </record>
+</odoo>
