@@ -6,10 +6,9 @@
             name="inherit_id"
             ref="account_asset_management.account_asset_view_form"
         />
-        <field name="group_ids" eval="[(4, ref('pms_base.group_pms_user'))]" />
         <field name="arch" type="xml">
             <field name="active" position="after">
-                <field name="property_id" />
+                <field name="property_id" groups="pms_base.group_pms_user" />
             </field>
         </field>
     </record>
