@@ -1,5 +1,4 @@
 <odoo>
-
     <menuitem
         id="menu_vendor_contracts"
         name="Vendor Contracts"
@@ -7,5 +6,4 @@
         sequence="20"
         action="contract.action_supplier_contract"
     />
-
 </odoo>

@@ -1,6 +1,6 @@
 # Copyright 2019  Pablo Quesada
 # Copyright 2019  Dario Lodeiros
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
 
@@ -16,7 +16,6 @@ class ContractContract(models.Model):
         copy=False,
     )
     property_count = fields.Integer(
-        string="Property Count",
         compute="_compute_get_properties",
         readonly=True,
         copy=False,
