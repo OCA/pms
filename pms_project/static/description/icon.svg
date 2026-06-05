@@ -1,0 +1,14 @@
+<svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+  <!-- Building body -->
+  <path d="M8 48V22L25 8l17 14v26H8Z" fill="#00A09D"/>
+  <!-- Roof highlight -->
+  <path d="M25 8 8 22h34L25 8Z" fill="#00C9C4"/>
+  <!-- Door -->
+  <path d="M20 48V35h10v13H20Z" fill="#007A78"/>
+  <!-- Window left -->
+  <path d="M11 27h8v7h-8v-7Z" fill="#E8F9F9"/>
+  <!-- Window right -->
+  <path d="M31 27h8v7h-8v-7Z" fill="#E8F9F9"/>
+  <!-- Chimney / accent top -->
+  <path d="M29 8V4h6v7l-6-3Z" fill="#00C9C4"/>
+</svg>
