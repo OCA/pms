@@ -36,14 +36,14 @@ This module links recurring contracts to the Property Management System.
 
 It includes:
 
--  **Contract counter on properties**: view active contracts linked to a
-   property.
--  **Property field on contracts**: assign a contract to one or more
-   properties.
--  **Smart buttons**: one-click navigation between properties and their
-   contracts.
--  **Recurring invoice integration**: contract lines are linked to
-   property services for automated billing.
+- **Contract counter on properties**: view active contracts linked to a
+  property.
+- **Property field on contracts**: assign a contract to one or more
+  properties.
+- **Smart buttons**: one-click navigation between properties and their
+  contracts.
+- **Recurring invoice integration**: contract lines are linked to
+  property services for automated billing.
 
 .. IMPORTANT::
    This is an alpha version, the data model and design can change at any time without warning.
@@ -58,7 +58,7 @@ It includes:
 Configuration
 =============
 
--  Go to Properties > Configuration > Settings.
+- Go to Properties > Configuration > Settings.
 
 Usage
 =====
@@ -87,20 +87,20 @@ Authors
 Contributors
 ------------
 
--  Alexandre Díaz
--  Pablo Quesada
--  Jose Luis Algara
--  \`Commit [Sun] <https://www.commitsun.com>\`:
+- Alexandre Díaz
+- Pablo Quesada
+- Jose Luis Algara
+- \`Commit [Sun] <https://www.commitsun.com>\`:
 
-   -  Dario Lodeiros
-   -  Eric Antones
-   -  Sara Lago
-   -  Brais Abeijon
-   -  Miguel Padin
+  - Dario Lodeiros
+  - Eric Antones
+  - Sara Lago
+  - Brais Abeijon
+  - Miguel Padin
 
--  \`Open Source Integrators <https://www.opensourceintegrators.com>\`:
+- \`Open Source Integrators <https://www.opensourceintegrators.com>\`:
 
-   -  Maxime Chambreuil <mchambreuil@opensourceintegrators.com>
+  - Maxime Chambreuil <mchambreuil@opensourceintegrators.com>
 
 Maintainers
 -----------
