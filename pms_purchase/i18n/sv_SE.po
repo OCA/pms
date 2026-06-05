@@ -1,0 +1,84 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pms_purchase
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-04 00:00+0000\n"
+"PO-Revision-Date: 2026-06-04 00:00+0000\n"
+"Last-Translator: Maxime Chambreuil <maxime.chambreuil@graymatterlogic.com>\n"
+"Language-Team: Swedish\n"
+"Language: sv_SE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: pms_purchase
+#: model:ir.model.fields,field_description:pms_purchase.field_pms_property__display_name
+#: model:ir.model.fields,field_description:pms_purchase.field_purchase_order_line__display_name
+#: model:ir.model.fields,field_description:pms_purchase.field_stock_move__display_name
+#: model:ir.model.fields,field_description:pms_purchase.field_stock_putaway_rule__display_name
+msgid "Display Name"
+msgstr "Visningsnamn"
+
+#. module: pms_purchase
+#: model:ir.model.fields,field_description:pms_purchase.field_pms_property__id
+#: model:ir.model.fields,field_description:pms_purchase.field_purchase_order_line__id
+#: model:ir.model.fields,field_description:pms_purchase.field_stock_move__id
+#: model:ir.model.fields,field_description:pms_purchase.field_stock_putaway_rule__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pms_purchase
+#: model:ir.model.fields,field_description:pms_purchase.field_pms_property____last_update
+#: model:ir.model.fields,field_description:pms_purchase.field_purchase_order_line____last_update
+#: model:ir.model.fields,field_description:pms_purchase.field_stock_move____last_update
+#: model:ir.model.fields,field_description:pms_purchase.field_stock_putaway_rule____last_update
+msgid "Last Modified on"
+msgstr "Senast ändrad"
+
+#. module: pms_purchase
+#: model:ir.model.fields,field_description:pms_purchase.field_pms_property__po_line_count
+#: model_terms:ir.ui.view,arch_db:pms_purchase.pms_property_form_inherit_po_lines_view
+msgid "PO Line(s)"
+msgstr "Orderrad(er)"
+
+#. module: pms_purchase
+#: model:ir.model,name:pms_purchase.model_pms_property
+#: model:ir.model.fields,field_description:pms_purchase.field_purchase_order_line__pms_property_id
+msgid "Property"
+msgstr "Fastighet"
+
+#. module: pms_purchase
+#: model:ir.model,name:pms_purchase.model_purchase_order_line
+msgid "Purchase Order Line"
+msgstr "Inköpsorderrad"
+
+#. module: pms_purchase
+#: code:addons/pms_purchase/models/pms_property.py:0
+#, python-format
+msgid "Purchase Order Lines"
+msgstr "Inköpsorderrader"
+
+#. module: pms_purchase
+#: model:ir.model.fields,field_description:pms_purchase.field_pms_property__po_line_ids
+msgid "Purchases"
+msgstr "Inköp"
+
+#. module: pms_purchase
+#: model:ir.model,name:pms_purchase.model_stock_putaway_rule
+msgid "Putaway Rule"
+msgstr "Inlagringsregel"
+
+#. module: pms_purchase
+#: model:ir.model,name:pms_purchase.model_stock_move
+msgid "Stock Move"
+msgstr "Lagerrörelse"
+
+#. module: pms_purchase
+#: model:ir.model.fields,field_description:pms_purchase.field_stock_putaway_rule__location_out_id
+msgid "Store to"
+msgstr "Lagra till"
