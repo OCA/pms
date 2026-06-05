@@ -1,6 +1,6 @@
 # Copyright 2019  Pablo Quesada
 # Copyright 2019  Dario Lodeiros
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
 
@@ -35,13 +35,11 @@ class PmsProperty(models.Model):
         copy=False,
     )
     invoice_count = fields.Integer(
-        string="Invoice Count",
         compute="_compute_invoice_count",
         readonly=True,
         copy=False,
     )
     bill_count = fields.Integer(
-        string="Bill Count",
         compute="_compute_invoice_count",
         readonly=True,
         copy=False,
@@ -49,17 +47,17 @@ class PmsProperty(models.Model):
 
     @api.depends("invoice_line_ids")
     def _compute_invoice_count(self):
-        for property in self:
-            invoices = property.invoice_line_ids.mapped("move_id").filtered(
+        for rec in self:
+            invoices = rec.invoice_line_ids.mapped("move_id").filtered(
                 lambda r: r.move_type in ("out_invoice", "out_refund")
             )
-            bills = property.invoice_line_ids.mapped("move_id").filtered(
+            bills = rec.invoice_line_ids.mapped("move_id").filtered(
                 lambda r: r.move_type in ("in_invoice", "in_refund")
             )
-            property.invoice_ids = invoices
-            property.invoice_count = len(invoices)
-            property.bill_ids = bills
-            property.bill_count = len(bills)
+            rec.invoice_ids = invoices
+            rec.invoice_count = len(invoices)
+            rec.bill_ids = bills
+            rec.bill_count = len(bills)
 
     def action_view_invoices(self):
         action = self.env.ref("account.action_move_out_invoice_type").read()[0]
