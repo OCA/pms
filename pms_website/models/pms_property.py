@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import werkzeug.urls
 
@@ -15,14 +15,16 @@ class PmsProperty(models.Model):
     def _compute_website_url(self):
         for pms_property in self:
             if pms_property.id:
-                pms_property.website_url = "/property/%s" % slug(pms_property)
+                pms_property.website_url = f"/property/{slug(pms_property)}"
 
     def google_map_link(self):
         property_partner = self.sudo().partner_id
         property_partner.geo_localize()
         params = {
-            "q": "%s, %s"
-            % (property_partner.partner_latitude, property_partner.partner_longitude),
+            "q": (
+                f"{property_partner.partner_latitude}"
+                f", {property_partner.partner_longitude}"
+            ),
             "z": 10,
         }
         return "https://maps.google.com/maps?" + werkzeug.urls.url_encode(params)

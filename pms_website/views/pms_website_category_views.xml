@@ -6,14 +6,14 @@
             <form string="Category">
                 <header />
                 <sheet>
-                    <label for="name" class="oe_edit_only" />
+                    <label for="name" />
                     <h1>
-                        <field name="name" required="True" />
+                        <field name="name" required="1" />
                     </h1>
                     <group id="main">
                         <group id="main-left">
                             <field name="parent_id" />
-                            <field name="child_ids" invisible="1" />
+                            <field name="child_ids" invisible="True" />
                         </group>
                         <group id="main-right" />
                     </group>
@@ -24,19 +24,19 @@
     </record>
 
     <record id="view_pms_website_category_form_tree" model="ir.ui.view">
-         <field name="name">pms.website.category.tree</field>
+        <field name="name">pms.website.category.tree</field>
         <field name="model">pms.website.category</field>
         <field name="arch" type="xml">
-            <tree string="Category">
+            <list string="Category">
                 <field name="name" />
-            </tree>
+            </list>
         </field>
     </record>
 
     <record id="action_pms_website_category" model="ir.actions.act_window">
         <field name="name">PMS Category</field>
         <field name="res_model">pms.website.category</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <menuitem
@@ -46,5 +46,4 @@
         sequence="30"
         action="action_pms_website_category"
     />
-
 </odoo>
