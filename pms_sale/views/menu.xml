@@ -1,5 +1,4 @@
 <odoo>
-
     <!-- Dashboard -->
     <menuitem
         name="Reservations"
@@ -67,5 +66,4 @@
         action="action_sale_reservation"
         groups="sales_team.group_sale_salesman"
     />
-
 </odoo>

@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import fields, models
 
@@ -7,12 +7,12 @@ class PMSMailScheduler(models.Model):
     _name = "pms.mail"
     _description = "PMS Automated Mailing"
 
-    name = fields.Char(string="Name", required=True)
+    name = fields.Char(required=True)
     notification_type = fields.Selection(
         [("email", "Email")], string="Send", default="Email"
     )
     template_id = fields.Many2one("mail.template", string="Email Template")
-    interval = fields.Integer("Interval", default=1)
+    interval = fields.Integer(default=1)
     interval_unit = fields.Many2one(
         "uom.uom",
         string="Unit",

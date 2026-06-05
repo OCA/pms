@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import fields, models
@@ -30,14 +30,14 @@ class SaleOrder(models.Model):
         return action
 
     def action_confirm(self):
-        res = super(SaleOrder, self).action_confirm()
+        res = super().action_confirm()
         for sale in self:
             reservation = self.env["pms.reservation"].search(
                 [("sale_order_id", "=", sale.id)]
             )
             if reservation:
                 reservation.action_book()
-                # Set reservation confirm when payment is done by Generate a Payment Link
+                # Set reservation confirm when payment is done by payment link
                 if not sale.has_to_be_paid():
                     reservation.action_confirm()
         return res

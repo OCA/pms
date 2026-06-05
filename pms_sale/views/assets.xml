@@ -1,25 +1,23 @@
 <odoo>
-
-<template
+    <template
         id="assets_backend"
         inherit_id="web.assets_backend"
         name="pms_sale assets backend"
     >
-    <xpath expr="." position="inside">
-        <script
+        <xpath expr="." position="inside">
+            <script
                 type="text/javascript"
                 src="/pms_sale/static/src/js/pms_configurator_controller.js"
             />
-        <script
+            <script
                 type="text/javascript"
                 src="/pms_sale/static/src/js/pms_configurator_view.js"
             />
-        <script
+            <script
                 type="text/javascript"
                 src="/pms_sale/static/src/js/pms_configurator_widget.js"
             />
-        <script type="text/javascript" src="/pms_sale/static/src/js/timeline.js" />
-    </xpath>
-</template>
-
+            <script type="text/javascript" src="/pms_sale/static/src/js/timeline.js" />
+        </xpath>
+    </template>
 </odoo>

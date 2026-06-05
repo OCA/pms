@@ -1,5 +1,4 @@
 <odoo>
-
     <record id="pms_configurator_view_form" model="ir.ui.view">
         <field name="name">pms.configurator.view.form</field>
         <field name="model">pms.configurator</field>
@@ -12,22 +11,20 @@
                         required="1"
                         options="{'no_open': True, 'no_create': True}"
                     />
-                    <field name="currency_id" invisible="1" />
+                    <field name="currency_id" invisible="True" />
                     <field
                         name="reservation_id"
-                        attrs="{
-                            'invisible': [('property_id', '=', False)],
-                            'required': [('property_id', '!=', False)],
-                        }"
+                        invisible="[('property_id', '=', False)]"
+                        required="[('property_id', '!=', False)]"
                         domain="[('property_id', '=', property_id), ('currency_id', '=', currency_id)]"
                         options="{'no_open': True, 'no_create': True}"
                     />
-                    <field name="product_id" invisible="1" />
+                    <field name="product_id" invisible="True" />
                 </group>
                 <group col="4">
                     <field name="start" string="Check In" />
                     <field name="stop" string="Check Out" />
-                    <field name="duration" invisible="1" />
+                    <field name="duration" invisible="True" />
                 </group>
                 <group>
                     <field name="timeline_html" nolabel="1" />
@@ -38,7 +35,7 @@
                             <field name="no_of_guests" />
                         </group>
                         <field name="guest_ids" nolabel="1">
-                            <tree string="Guests" editable="bottom">
+                            <list string="Guests" editable="bottom">
                                 <field
                                     name="partner_id"
                                     domain="[('is_property', '=', False)]"
@@ -46,18 +43,18 @@
                                 <field name="name" />
                                 <field name="phone" />
                                 <field name="email" />
-                            </tree>
+                            </list>
                         </field>
                     </page>
                     <page string="Bookings">
                         <field name="reservation_ids" readonly="1">
-                            <tree>
+                            <list>
                                 <field name="name" />
                                 <field name="start" string="Check In" />
                                 <field name="stop" string="Check Out" />
                                 <field name="duration" />
                                 <field name="stage_id" />
-                            </tree>
+                            </list>
                         </field>
                     </page>
                 </notebook>
@@ -76,5 +73,4 @@
         <field name="target">new</field>
         <field name="view_id" ref="pms_configurator_view_form" />
     </record>
-
 </odoo>

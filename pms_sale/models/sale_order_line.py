@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from datetime import datetime
 
@@ -47,13 +47,11 @@ class SaleOrderLine(models.Model):
                 + self._get_sale_order_line_multiline_description_variants()
             )
         else:
-            return super(
-                SaleOrderLine, self
-            ).get_sale_order_line_multiline_description_sale(product)
+            return super().get_sale_order_line_multiline_description_sale(product)
 
     @api.model
     def create(self, values):
-        rec = super(SaleOrderLine, self).create(values)
+        rec = super().create(values)
         if (
             values.get("product_id")
             and values.get("reservation_id")
@@ -73,7 +71,7 @@ class SaleOrderLine(models.Model):
         return rec
 
     def write(self, values):
-        rec = super(SaleOrderLine, self).write(values)
+        rec = super().write(values)
         if self.pms_reservation_id:
             reserv_vals = {}
             if values.get(
@@ -130,11 +128,11 @@ class SaleOrderLine(models.Model):
         for line in self:
             if line.product_id.reservation_ok and line.pms_reservation_id:
                 line.pms_reservation_id.action_cancel()
-        return super(SaleOrderLine, self).unlink()
+        return super().unlink()
 
     @api.onchange("product_id")
     def product_id_change(self):
-        super(SaleOrderLine, self).product_id_change()
+        res = super().product_id_change()
         if self.reservation_id:
             self.price_unit = self.reservation_id.price
             if self.order_id.pricelist_id:
@@ -155,10 +153,11 @@ class SaleOrderLine(models.Model):
                 )
                 if price != product.lst_price:
                     self.price_unit = price
+        return res
 
     @api.onchange("product_uom", "product_uom_qty")
     def product_uom_change(self):
-        super(SaleOrderLine, self).product_uom_change()
+        res = super().product_uom_change()
         if self.reservation_id:
             self.price_unit = self.reservation_id.price
             if self.order_id.pricelist_id:
@@ -179,6 +178,7 @@ class SaleOrderLine(models.Model):
                 )
                 if price != product.lst_price:
                     self.price_unit = price
+        return res
 
     def _prepare_invoice_line(self, **optional_values):
         result = super()._prepare_invoice_line(**optional_values)

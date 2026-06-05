@@ -1,10 +1,10 @@
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from datetime import datetime, timedelta
 
 import pytz
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
@@ -138,18 +138,19 @@ class PMSConfigurator(models.TransientModel):
         for configurator in self:
             if configurator.no_of_guests > configurator.property_id.no_of_guests:
                 raise ValidationError(
-                    _(
-                        "%s of guests is lower than the %s of guests of the property."
-                        % (
-                            configurator.no_of_guests,
-                            configurator.property_id.no_of_guests,
-                        )
+                    self.env._(  # pylint: disable=W8301
+                        "%(guests)s of guests is lower than"
+                        " the %(max)s of the property."
                     )
+                    % {
+                        "guests": configurator.no_of_guests,
+                        "max": configurator.property_id.no_of_guests,
+                    }
                 )
 
     @api.model
     def default_get(self, fields_vals):
-        result = super(PMSConfigurator, self).default_get(fields_vals)
+        result = super().default_get(fields_vals)
         if not result.get("start"):
             result.update({"start": fields.Date.today()})
         if not result.get("stop"):
@@ -196,13 +197,16 @@ class PMSConfigurator(models.TransientModel):
             if guest_list:
                 result.update({"guest_ids": guest_list})
         ref_id = self.env.ref("pms_sale.action_sale_reservation")
-        timeline_url = "%s/web?#action=%s&model=pms.reservation&view_type=schedule" % (
-            self.env["ir.config_parameter"].sudo().get_param("web.base.url"),
-            ref_id and str(ref_id.id) or "",
+        timeline_url = (
+            "{}/web?#action={}&model=pms.reservation&view_type=schedule".format(
+                self.env["ir.config_parameter"].sudo().get_param("web.base.url"),
+                ref_id and str(ref_id.id) or "",
+            )
         )
         result["timeline_html"] = (
-            "<a class='btn btn-primary' href='%s' alt='Timeline View' target='_blank'"
-            " >Timeline</a>" % (timeline_url)
+            f"<a class='btn btn-primary' href='{timeline_url}'"
+            " alt='Timeline View' target='_blank'"
+            " >Timeline</a>"
         )
         return result
 
@@ -211,9 +215,9 @@ class PMSReservationGuestWizard(models.TransientModel):
     _name = "pms.reservation.guest.wizard"
     _description = "PMS Reservation guest"
 
-    name = fields.Char(string="Name", required=True)
-    phone = fields.Char(string="Phone")
-    email = fields.Char(string="Email")
+    name = fields.Char(required=True)
+    phone = fields.Char()
+    email = fields.Char()
     configurator_id = fields.Many2one("pms.configurator", string="Configurator")
     partner_id = fields.Many2one("res.partner", string="Partner")
 

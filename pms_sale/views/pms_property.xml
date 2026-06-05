@@ -1,5 +1,4 @@
 <odoo>
-
     <record id="view_pms_property_form_inherit_pms_sale" model="ir.ui.view">
         <field name="name">pms.property.form.inherit.pms.sale</field>
         <field name="model">pms.property</field>
@@ -30,5 +29,4 @@
             </xpath>
         </field>
     </record>
-
 </odoo>
