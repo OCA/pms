@@ -36,13 +36,13 @@ This module links asset management to the Property Management System.
 
 It includes:
 
--  **Asset counter on properties**: view the number of fixed assets
-   linked to each property.
--  **Property field on assets**: track which property owns each fixed
-   asset.
--  **Smart button**: navigate directly from a property to its assets.
--  **Depreciation tracking**: monitor asset depreciation and
-   amortization by property.
+- **Asset counter on properties**: view the number of fixed assets
+  linked to each property.
+- **Property field on assets**: track which property owns each fixed
+  asset.
+- **Smart button**: navigate directly from a property to its assets.
+- **Depreciation tracking**: monitor asset depreciation and amortization
+  by property.
 
 .. IMPORTANT::
    This is an alpha version, the data model and design can change at any time without warning.
@@ -57,7 +57,7 @@ It includes:
 Configuration
 =============
 
--  Go to Properties > Configuration > Settings.
+- Go to Properties > Configuration > Settings.
 
 Usage
 =====
@@ -86,20 +86,20 @@ Authors
 Contributors
 ------------
 
--  Alexandre Díaz
--  Pablo Quesada
--  Jose Luis Algara
--  \`Commit [Sun] <https://www.commitsun.com>\`:
+- Alexandre Díaz
+- Pablo Quesada
+- Jose Luis Algara
+- \`Commit [Sun] <https://www.commitsun.com>\`:
 
-   -  Dario Lodeiros
-   -  Eric Antones
-   -  Sara Lago
-   -  Brais Abeijon
-   -  Miguel Padin
+  - Dario Lodeiros
+  - Eric Antones
+  - Sara Lago
+  - Brais Abeijon
+  - Miguel Padin
 
--  \`Open Source Integrators <https://www.opensourceintegrators.com>\`:
+- \`Open Source Integrators <https://www.opensourceintegrators.com>\`:
 
-   -  Maxime Chambreuil <mchambreuil@opensourceintegrators.com>
+  - Maxime Chambreuil <mchambreuil@opensourceintegrators.com>
 
 Maintainers
 -----------
