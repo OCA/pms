@@ -37,12 +37,12 @@ System.
 
 It includes:
 
--  **Inventory location per property**: each property can have a
-   dedicated stock location for tracking its contents.
--  **Content management**: manage the physical inventory associated with
-   each property.
--  **Putaway rules**: configure where items should be stored within a
-   property's location.
+- **Inventory location per property**: each property can have a
+  dedicated stock location for tracking its contents.
+- **Content management**: manage the physical inventory associated with
+  each property.
+- **Putaway rules**: configure where items should be stored within a
+  property's location.
 
 **Table of contents**
 
@@ -91,15 +91,15 @@ Authors
 Contributors
 ------------
 
--  Open Source Integrators <http://www.opensourceintegrators.com>
+- Open Source Integrators <http://www.opensourceintegrators.com>
 
-   -  Zachary Willhide-James <zwillhidejames@opensourceintegrators.com>
-   -  Kent Davis <kdavis@opensourceintegrators.com>
-   -  Maxime Chambreuil <mchambreuil@opensourceintegrators.com>
+  - Zachary Willhide-James <zwillhidejames@opensourceintegrators.com>
+  - Kent Davis <kdavis@opensourceintegrators.com>
+  - Maxime Chambreuil <mchambreuil@opensourceintegrators.com>
 
--  Serpent Consulting Services Pvt. Ltd. <support@serpentcs.com>
+- Serpent Consulting Services Pvt. Ltd. <support@serpentcs.com>
 
-   -  Hardik Suthar <hsuthar@opensourceintegrators.com>
+  - Hardik Suthar <hsuthar@opensourceintegrators.com>
 
 Maintainers
 -----------
