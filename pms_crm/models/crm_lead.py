@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
 
@@ -12,7 +12,6 @@ class CrmLead(models.Model):
         copy=False,
     )
     property_count = fields.Integer(
-        string="Property Count",
         compute="_compute_propert_count",
         readonly=True,
         copy=False,

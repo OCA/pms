@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
 
@@ -12,7 +12,6 @@ class PmsProperty(models.Model):
         copy=False,
     )
     lead_count = fields.Integer(
-        string="Lead Count",
         compute="_compute_lead_count",
         readonly=True,
         copy=False,
@@ -20,8 +19,8 @@ class PmsProperty(models.Model):
 
     @api.depends("lead_ids")
     def _compute_lead_count(self):
-        for property in self:
-            property.lead_count = len(property.lead_ids)
+        for rec in self:
+            rec.lead_count = len(rec.lead_ids)
 
     def action_view_leads(self):
         action = self.env.ref("crm.crm_lead_all_leads").read()[0]
