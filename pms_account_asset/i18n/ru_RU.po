@@ -18,11 +18,13 @@ msgstr ""
 
 #. module: pms_account_asset
 #: model:ir.model,name:pms_account_asset.model_account_asset
+#. module: pms_account_asset
 msgid "Asset"
 msgstr "Основное средство"
 
 #. module: pms_account_asset
 #: model:ir.model.fields,field_description:pms_account_asset.field_pms_property__asset_count
+#. module: pms_account_asset
 msgid "Asset Count"
 msgstr "Количество основных средств"
 
@@ -30,29 +32,34 @@ msgstr "Количество основных средств"
 #: model:ir.model.fields,field_description:pms_account_asset.field_pms_property__asset_ids
 #: model:ir.ui.menu,name:pms_account_asset.menu_assets
 #: model_terms:ir.ui.view,arch_db:pms_account_asset.view_pms_property_form
+#. module: pms_account_asset
 msgid "Assets"
 msgstr "Основные средства"
 
 #. module: pms_account_asset
 #: model:ir.model.fields,field_description:pms_account_asset.field_account_asset__display_name
 #: model:ir.model.fields,field_description:pms_account_asset.field_pms_property__display_name
+#. module: pms_account_asset
 msgid "Display Name"
 msgstr "Отображаемое имя"
 
 #. module: pms_account_asset
 #: model:ir.model.fields,field_description:pms_account_asset.field_account_asset__id
 #: model:ir.model.fields,field_description:pms_account_asset.field_pms_property__id
+#. module: pms_account_asset
 msgid "ID"
 msgstr "ИД"
 
 #. module: pms_account_asset
 #: model:ir.model.fields,field_description:pms_account_asset.field_account_asset____last_update
 #: model:ir.model.fields,field_description:pms_account_asset.field_pms_property____last_update
+#. module: pms_account_asset
 msgid "Last Modified on"
 msgstr "Последнее изменение"
 
 #. module: pms_account_asset
 #: model:ir.model,name:pms_account_asset.model_pms_property
 #: model:ir.model.fields,field_description:pms_account_asset.field_account_asset__property_id
+#. module: pms_account_asset
 msgid "Property"
 msgstr "Объект недвижимости"

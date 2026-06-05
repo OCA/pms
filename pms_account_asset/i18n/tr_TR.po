@@ -16,24 +16,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#. module: pms_account_asset
 msgid "Asset"
 msgstr "Sabit kıymet"
 
+#. module: pms_account_asset
 msgid "Asset Count"
 msgstr "Sabit kıymet sayısı"
 
+#. module: pms_account_asset
 msgid "Assets"
 msgstr "Sabit kıymetler"
 
+#. module: pms_account_asset
 msgid "Display Name"
 msgstr "Görünen ad"
 
+#. module: pms_account_asset
 msgid "ID"
 msgstr "ID"
 
+#. module: pms_account_asset
 msgid "Last Modified on"
 msgstr "Son değiştirilme tarihi"
 
+#. module: pms_account_asset
 msgid "Property"
 msgstr "Mülk"
 
