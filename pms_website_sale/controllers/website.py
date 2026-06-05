@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from datetime import datetime
 
@@ -10,7 +10,7 @@ from odoo.addons.website.controllers.main import QueryURL
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 
 
-class PropertyTableCompute(object):
+class PropertyTableCompute:
     def __init__(self):
         self.table = {}
 
@@ -44,7 +44,7 @@ class PropertyTableCompute(object):
             pos = minpos
             while not self._check_place(pos % ppr, pos // ppr, x, y, ppr):
                 pos += 1
-            # if 21st products (index 20) and the last line is full (ppr products in it), break
+            # if 21st product (index 20) and last line is full (ppr products), break
             # (pos + 1.0) / ppr is the line where the product would be inserted
             # maxy is the number of existing lines
             # + 1.0 is because pos begins at 0, thus pos 20 is actually the 21st block
@@ -191,7 +191,7 @@ class WebsiteSale(WebsiteSale):
         categs = Category.search(categs_domain)
 
         if category:
-            url = "/shop/category/%s" % slug(category)
+            url = f"/shop/category/{slug(category)}"
 
         product_count = len(search_property)
         pager = request.website.pager(

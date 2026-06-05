@@ -1,5 +1,4 @@
 <odoo noupdate="0">
-
     <record id="property_public" model="ir.rule">
         <field name="name">Property</field>
         <field name="model_id" ref="pms_base.model_pms_property" />
@@ -20,5 +19,4 @@
             eval="[(4, ref('website.group_website_publisher'))]"
         />
     </record>
-
 </odoo>

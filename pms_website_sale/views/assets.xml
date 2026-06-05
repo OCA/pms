@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <template
         id="assets_frontend"
         inherit_id="website.assets_frontend"
@@ -24,8 +23,6 @@
                 type="text/javascript"
                 src="/pms_website_sale/static/tests/tours/pms_website_sale_tour.js"
             />
-
         </xpath>
     </template>
-
 </odoo>
