@@ -1,0 +1,1012 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pms_sale
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-04 00:00+0000\n"
+"PO-Revision-Date: 2026-06-04 00:00+0000\n"
+"Last-Translator: Maxime Chambreuil <maxime.chambreuil@graymatterlogic.com>\n"
+"Language-Team: Italian\n"
+"Language: it_IT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: pms_sale
+#: code:addons/pms_sale/wizards/pms_configurator.py:0
+#, python-format
+msgid "%s of guests is lower than the %s of guests of the property."
+msgstr "Il numero di ospiti %s è inferiore al %s della proprietà."
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_pms_team_kanban_inherit_pms_sale
+msgid ""
+"<br/>\n"
+"                        RESERVATION(S)"
+msgstr ""
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_needaction
+msgid "Action Needed"
+msgstr "Azione richiesta"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__activity_ids
+msgid "Activities"
+msgstr "Attività"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Decorazione eccezione attività"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__activity_state
+msgid "Activity State"
+msgstr "Stato attività"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Icona tipo attività"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__adults
+msgid "Adults"
+msgstr "Adulti"
+
+#. module: pms_sale
+#: model:ir.model.fields.selection,name:pms_sale.selection__pms_mail__interval_trigger__after_checkin
+msgid "After Checkin"
+msgstr "Dopo il check-in"
+
+#. module: pms_sale
+#: model:ir.model.fields.selection,name:pms_sale.selection__pms_mail__interval_trigger__after_checkout
+msgid "After Checkout"
+msgstr "Dopo il check-out"
+
+#. module: pms_sale
+#: model:ir.model.fields.selection,name:pms_sale.selection__pms_mail__interval_trigger__after_resev
+msgid "After the reservation"
+msgstr "Dopo la prenotazione"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_attachment_count
+msgid "Attachment Count"
+msgstr "Numero allegati"
+
+#. module: pms_sale
+#. openerp-web
+#: code:addons/pms_sale/static/src/xml/timeline.xml:0
+#, python-format
+msgid "Bedrooms..."
+msgstr "Camere..."
+
+#. module: pms_sale
+#: model:ir.model.fields.selection,name:pms_sale.selection__pms_mail__interval_trigger__before_checkin
+msgid "Before Checkin"
+msgstr "Prima del check-in"
+
+#. module: pms_sale
+#: model:ir.model.fields.selection,name:pms_sale.selection__pms_mail__interval_trigger__before_checkout
+msgid "Before Checkout"
+msgstr "Prima del check-out"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_form
+msgid "Book"
+msgstr "Prenotare"
+
+#. module: pms_sale
+#: model:pms.stage,name:pms_sale.pms_stage_booked
+msgid "Booked"
+msgstr "Prenotato"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__partner_id
+msgid "Booked by"
+msgstr "Prenotato da"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.pms_configurator_view_form
+msgid "Bookings"
+msgstr "Prenotazioni"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.pms_configurator_view_form
+msgid "Cancel"
+msgstr "Annulla"
+
+#. module: pms_sale
+#: model:pms.stage,name:pms_sale.pms_stage_cancelled
+msgid "Cancelled"
+msgstr "Annullato"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.pms_configurator_view_form
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_form
+msgid "Check In"
+msgstr "Check-in"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.pms_configurator_view_form
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_form
+msgid "Check Out"
+msgstr "Check-out"
+
+#. module: pms_sale
+#: model:pms.stage,name:pms_sale.pms_stage_checked_in
+msgid "Checked In"
+msgstr "Arrivato"
+
+#. module: pms_sale
+#: model:pms.stage,name:pms_sale.pms_stage_checked_out
+msgid "Checked Out"
+msgstr "Partito"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property__checkin
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__start
+msgid "Checkin"
+msgstr "Arrivo"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property__checkout
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__stop
+msgid "Checkout"
+msgstr "Partenza"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__children
+msgid "Children"
+msgstr "Bambini"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__color
+msgid "Color Index"
+msgstr "Indice colore"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property__pms_mail_ids
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_pms_property_form_inherit_pms_sale
+msgid "Communication"
+msgstr "Comunicazione"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__company_id
+msgid "Company"
+msgstr "Azienda"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest_wizard__configurator_id
+msgid "Configurator"
+msgstr "Configuratore"
+
+#. module: pms_sale
+#: model:ir.actions.act_window,name:pms_sale.pms_configurator_action
+msgid "Configure Reservation"
+msgstr "Configura prenotazione"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_form
+msgid "Confirm"
+msgstr "Confermare"
+
+#. module: pms_sale
+#: model:pms.stage,name:pms_sale.pms_stage_confirmed
+msgid "Confirmed"
+msgstr "Confermato"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__create_uid
+#: model:ir.model.fields,field_description:pms_sale.field_pms_mail__create_uid
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation__create_uid
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__create_uid
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest__create_uid
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest_wizard__create_uid
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__create_date
+#: model:ir.model.fields,field_description:pms_sale.field_pms_mail__create_date
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation__create_date
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__create_date
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest__create_date
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest_wizard__create_date
+msgid "Created on"
+msgstr "Creato il"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__currency_id
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation__currency_id
+msgid "Currency"
+msgstr "Valuta"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__date
+msgid "Date"
+msgstr "Data"
+
+#. module: pms_sale
+#. openerp-web
+#: code:addons/pms_sale/static/src/xml/timeline.xml:0
+#, python-format
+msgid "Date..."
+msgstr "Data..."
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_pms_property_form_inherit_pms_sale
+msgid "Defaults"
+msgstr "Predefiniti"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_kanban
+msgid "Delete"
+msgstr "Elimina"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_account_move__display_name
+#: model:ir.model.fields,field_description:pms_sale.field_account_move_line__display_name
+#: model:ir.model.fields,field_description:pms_sale.field_account_payment_register__display_name
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__display_name
+#: model:ir.model.fields,field_description:pms_sale.field_pms_mail__display_name
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property__display_name
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation__display_name
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__display_name
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest__display_name
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest_wizard__display_name
+#: model:ir.model.fields,field_description:pms_sale.field_pms_stage__display_name
+#: model:ir.model.fields,field_description:pms_sale.field_pms_team__display_name
+#: model:ir.model.fields,field_description:pms_sale.field_product_product__display_name
+#: model:ir.model.fields,field_description:pms_sale.field_product_template__display_name
+#: model:ir.model.fields,field_description:pms_sale.field_sale_order__display_name
+#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__display_name
+msgid "Display Name"
+msgstr "Nome visualizzato"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_kanban
+msgid "Dropdown menu"
+msgstr "Menu a discesa"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_kanban
+msgid "Edit"
+msgstr "Modifica"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest__email
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest_wizard__email
+#: model:ir.model.fields.selection,name:pms_sale.selection__pms_mail__notification_type__email
+msgid "Email"
+msgstr "E-mail"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_mail__template_id
+msgid "Email Template"
+msgstr "Modello e-mail"
+
+#. module: pms_sale
+#: model:ir.model.fields.selection,name:pms_sale.selection__pms_property__listing_type__entire_home
+msgid "Entire Home"
+msgstr "Intera struttura"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_follower_ids
+msgid "Followers"
+msgstr "Follower"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_channel_ids
+msgid "Followers (Channels)"
+msgstr "Follower (Canali)"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Follower (Partner)"
+
+#. module: pms_sale
+#: model:ir.model.fields,help:pms_sale.field_pms_reservation__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Icona Font Awesome, es. fa-tasks"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__start
+#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__start
+msgid "From"
+msgstr "Da"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__guest_ids
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__guest_ids
+#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__guest_ids
+#: model_terms:ir.ui.view,arch_db:pms_sale.pms_configurator_view_form
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_form
+msgid "Guests"
+msgstr "Ospiti"
+
+#. module: pms_sale
+#: model:ir.model.fields.selection,name:pms_sale.selection__pms_reservation__priority__2
+msgid "High"
+msgstr "Alta"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_account_move__id
+#: model:ir.model.fields,field_description:pms_sale.field_account_move_line__id
+#: model:ir.model.fields,field_description:pms_sale.field_account_payment_register__id
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__id
+#: model:ir.model.fields,field_description:pms_sale.field_pms_mail__id
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property__id
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation__id
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__id
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest__id
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest_wizard__id
+#: model:ir.model.fields,field_description:pms_sale.field_pms_stage__id
+#: model:ir.model.fields,field_description:pms_sale.field_pms_team__id
+#: model:ir.model.fields,field_description:pms_sale.field_product_product__id
+#: model:ir.model.fields,field_description:pms_sale.field_product_template__id
+#: model:ir.model.fields,field_description:pms_sale.field_sale_order__id
+#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__activity_exception_icon
+msgid "Icon"
+msgstr "Icona"
+
+#. module: pms_sale
+#: model:ir.model.fields,help:pms_sale.field_pms_reservation__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Icona per indicare un'attività eccezionale."
+
+#. module: pms_sale
+#: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_needaction
+#: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_unread
+msgid "If checked, new messages require your attention."
+msgstr "Se selezionato, ci sono nuovi messaggi che richiedono attenzione."
+
+#. module: pms_sale
+#: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_has_error
+#: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Se selezionato, alcuni messaggi hanno un errore di consegna."
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_mail__interval
+msgid "Interval"
+msgstr "Intervallo"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__invoice_count
+msgid "Invoice Count"
+msgstr "Numero fatture"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__invoice_status
+msgid "Invoice Status"
+msgstr "Stato fatturazione"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_form
+msgid "Invoices"
+msgstr "Fatture"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_is_follower
+msgid "Is Follower"
+msgstr "È follower"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__reservation_ok
+msgid "Is Reservation?"
+msgstr "È una prenotazione?"
+
+#. module: pms_sale
+#: model:ir.model,name:pms_sale.model_account_move
+msgid "Journal Entry"
+msgstr "Scrittura contabile"
+
+#. module: pms_sale
+#: model:ir.model,name:pms_sale.model_account_move_line
+msgid "Journal Item"
+msgstr "Voce contabile"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_account_move____last_update
+#: model:ir.model.fields,field_description:pms_sale.field_account_move_line____last_update
+#: model:ir.model.fields,field_description:pms_sale.field_account_payment_register____last_update
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator____last_update
+#: model:ir.model.fields,field_description:pms_sale.field_pms_mail____last_update
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property____last_update
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation____last_update
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation____last_update
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest____last_update
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest_wizard____last_update
+#: model:ir.model.fields,field_description:pms_sale.field_pms_stage____last_update
+#: model:ir.model.fields,field_description:pms_sale.field_pms_team____last_update
+#: model:ir.model.fields,field_description:pms_sale.field_product_product____last_update
+#: model:ir.model.fields,field_description:pms_sale.field_product_template____last_update
+#: model:ir.model.fields,field_description:pms_sale.field_sale_order____last_update
+#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line____last_update
+msgid "Last Modified on"
+msgstr "Ultima modifica"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__write_uid
+#: model:ir.model.fields,field_description:pms_sale.field_pms_mail__write_uid
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation__write_uid
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__write_uid
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest__write_uid
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest_wizard__write_uid
+msgid "Last Updated by"
+msgstr "Ultimo aggiornamento da"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__write_date
+#: model:ir.model.fields,field_description:pms_sale.field_pms_mail__write_date
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation__write_date
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__write_date
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest__write_date
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest_wizard__write_date
+msgid "Last Updated on"
+msgstr "Ultimo aggiornamento"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_pms_property_form_inherit_pms_sale
+msgid "Limits"
+msgstr "Limiti"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property__listing_type
+msgid "Listing Type"
+msgstr "Tipo di annuncio"
+
+#. module: pms_sale
+#: model:ir.model.fields.selection,name:pms_sale.selection__pms_reservation__priority__1
+msgid "Low"
+msgstr "Bassa"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_pms_mail_form
+msgid "Mail Scheduler"
+msgstr "Pianificatore e-mail"
+
+#. module: pms_sale
+#: model:ir.actions.act_window,name:pms_sale.action_pms_mail
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_pms_mail_tree
+msgid "Mail Schedulers"
+msgstr "Pianificatori e-mail"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Allegato principale"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property__max_nights
+msgid "Maximum Nights"
+msgstr "Notti massime"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_has_error
+msgid "Message Delivery error"
+msgstr "Errore consegna"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_ids
+msgid "Messages"
+msgstr "Messaggi"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property__min_nights
+msgid "Minimum Nights"
+msgstr "Notti minime"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Scadenza attività"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_mail__name
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation__name
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest__name
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest_wizard__name
+msgid "Name"
+msgstr "Nome"
+
+#. module: pms_sale
+#: code:addons/pms_sale/models/pms_reservation.py:0
+#: code:addons/pms_sale/models/pms_reservation.py:0
+#: code:addons/pms_sale/models/pms_reservation.py:0
+#: code:addons/pms_sale/models/pms_reservation.py:0
+#: model:pms.stage,name:pms_sale.pms_stage_new
+#, python-format
+msgid "New"
+msgstr "Nuovo"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Prossima scadenza"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__activity_summary
+msgid "Next Activity Summary"
+msgstr "Riepilogo attività"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__activity_type_id
+msgid "Next Activity Type"
+msgstr "Tipo prossima attività"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__duration
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__duration
+msgid "Nights"
+msgstr "Notti"
+
+#. module: pms_sale
+#: model:ir.model.fields.selection,name:pms_sale.selection__pms_reservation__priority__0
+msgid "Normal"
+msgstr "Normale"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Numero di azioni"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__no_of_guests
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property__no_of_guests
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__no_of_guests
+#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__no_of_guests
+msgid "Number of Guests"
+msgstr "Numero di ospiti"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_has_error_counter
+msgid "Number of errors"
+msgstr "Numero di errori"
+
+#. module: pms_sale
+#: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "Messaggi che richiedono azione"
+
+#. module: pms_sale
+#: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Messaggi con errore di consegna"
+
+#. module: pms_sale
+#: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_unread_counter
+msgid "Number of unread messages"
+msgstr "Messaggi non letti"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.pms_configurator_view_form
+msgid "Ok"
+msgstr "OK"
+
+#. module: pms_sale
+#: model:ir.actions.act_window,name:pms_sale.reservation_action_from_dashboard
+msgid "Orders"
+msgstr "Ordini"
+
+#. module: pms_sale
+#: model:ir.model,name:pms_sale.model_pms_mail
+msgid "PMS Automated Mailing"
+msgstr "Invio automatico PMS"
+
+#. module: pms_sale
+#: model:ir.model,name:pms_sale.model_pms_configurator
+msgid "PMS Configurator"
+msgstr "Configuratore PMS"
+
+#. module: pms_sale
+#: model:ir.model,name:pms_sale.model_pms_reservation_guest
+#: model:ir.model,name:pms_sale.model_pms_reservation_guest_wizard
+msgid "PMS Reservation guest"
+msgstr "Ospite prenotazione PMS"
+
+#. module: pms_sale
+#: model:ir.model,name:pms_sale.model_pms_stage
+msgid "PMS Stage"
+msgstr "Fase PMS"
+
+#. module: pms_sale
+#: model:ir.model,name:pms_sale.model_pms_team
+msgid "PMS Team"
+msgstr "Team PMS"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest__partner_id
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest_wizard__partner_id
+msgid "Partner"
+msgstr "Partner"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_search
+msgid "Payment Status"
+msgstr "Stato pagamento"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest__phone
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest_wizard__phone
+msgid "Phone"
+msgstr "Telefono"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation__price
+msgid "Price"
+msgstr "Prezzo"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__priority
+msgid "Priority"
+msgstr "Priorità"
+
+#. module: pms_sale
+#: model:ir.model.fields.selection,name:pms_sale.selection__pms_property__listing_type__private_room
+msgid "Private Room"
+msgstr "Stanza privata"
+
+#. module: pms_sale
+#: model:ir.model,name:pms_sale.model_product_product
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__product_id
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation__product_id
+msgid "Product"
+msgstr "Prodotto"
+
+#. module: pms_sale
+#: model:ir.model,name:pms_sale.model_product_template
+msgid "Product Template"
+msgstr "Modello prodotto"
+
+#. module: pms_sale
+#: model:ir.model,name:pms_sale.model_pms_property
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__property_id
+#: model:ir.model.fields,field_description:pms_sale.field_pms_mail__property_id
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation__property_id
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__property_id
+#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__property_id
+#: model_terms:ir.ui.view,arch_db:pms_sale.pms_mail_view_search
+msgid "Property"
+msgstr "Proprietà"
+
+#. module: pms_sale
+#: model:ir.actions.act_window,name:pms_sale.pms_property_reservation_action
+#: model:ir.model,name:pms_sale.model_pms_property_reservation
+#: model_terms:ir.ui.view,arch_db:pms_sale.pms_property_reservation_view_form
+#: model_terms:ir.ui.view,arch_db:pms_sale.pms_property_reservation_view_tree
+msgid "Property Reservation"
+msgstr "Prenotazione proprietà"
+
+#. module: pms_sale
+#: model:ir.model,name:pms_sale.model_account_payment_register
+msgid "Register Payment"
+msgstr "Registra pagamento"
+
+#. module: pms_sale
+#: model:ir.model,name:pms_sale.model_pms_reservation
+#: model:ir.model.fields,field_description:pms_sale.field_account_move_line__pms_reservation_id
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__reservation_ids
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest__reservation_id
+#: model:ir.model.fields,field_description:pms_sale.field_product_product__reservation_ok
+#: model:ir.model.fields,field_description:pms_sale.field_product_template__reservation_ok
+#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__pms_reservation_id
+#: model:ir.model.fields.selection,name:pms_sale.selection__pms_stage__stage_type__reservation
+#: model:product.product,name:pms_sale.product_product_reservation
+#: model:product.template,name:pms_sale.product_product_reservation_product_template
+#: model_terms:ir.ui.view,arch_db:pms_sale.product_template_form_view_inherit_pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.product_template_search_view_inherit_pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_pms_property_form_inherit_pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_form
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_tree
+msgid "Reservation"
+msgstr "Prenotazione"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__name
+msgid "Reservation #"
+msgstr "Prenotazione n."
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_search
+msgid "Reservation Detail"
+msgstr "Dettaglio prenotazione"
+
+#. module: pms_sale
+#: model:ir.actions.act_window,name:pms_sale.pms_reservation_guest_action
+msgid "Reservation Guest"
+msgstr "Ospite della prenotazione"
+
+#. module: pms_sale
+#: model:ir.model.fields,help:pms_sale.field_pms_reservation__name
+msgid "Reservation Number"
+msgstr "Numero prenotazione"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.pms_reservation_guest_view_form
+#: model_terms:ir.ui.view,arch_db:pms_sale.pms_reservation_guest_view_tree
+msgid "Reservation Stage"
+msgstr "Fase prenotazione"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__reservation_id
+#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__reservation_id
+msgid "Reservation Type"
+msgstr "Tipo di prenotazione"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_property__reservation_ids
+msgid "Reservation Types"
+msgstr "Tipi di prenotazione"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_pms_team_kanban_inherit_pms_sale
+msgid "Reservation(s)"
+msgstr "Prenotazione/i"
+
+#. module: pms_sale
+#: model:ir.actions.act_window,name:pms_sale.action_board_reservation
+#: model:ir.actions.act_window,name:pms_sale.action_operations_reservation
+#: model:ir.actions.act_window,name:pms_sale.action_pms_reservation
+#: model:ir.actions.act_window,name:pms_sale.action_report_reservation
+#: model:ir.actions.act_window,name:pms_sale.action_sale_reservation
+#: model:ir.ui.menu,name:pms_sale.menu_board_reservation
+#: model:ir.ui.menu,name:pms_sale.menu_config_reservation
+#: model:ir.ui.menu,name:pms_sale.menu_operations_reservation
+#: model:ir.ui.menu,name:pms_sale.menu_report_reservation
+#: model:ir.ui.menu,name:pms_sale.pms_reservation_timeline
+#: model_terms:ir.ui.view,arch_db:pms_sale.sale_order_view_form_inherit_pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_move_form_inherit_pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_calendar
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_graph
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_pivot
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_timeline
+msgid "Reservations"
+msgstr "Prenotazioni"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_account_bank_statement_line__reservation_count
+#: model:ir.model.fields,field_description:pms_sale.field_account_move__reservation_count
+#: model:ir.model.fields,field_description:pms_sale.field_account_payment__reservation_count
+#: model:ir.model.fields,field_description:pms_sale.field_sale_order__reservation_count
+msgid "Reservations Count"
+msgstr "Conteggio prenotazioni"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__user_id
+msgid "Responsible"
+msgstr "Responsabile"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__activity_user_id
+msgid "Responsible User"
+msgstr "Utente responsabile"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Errore consegna SMS"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest__order_line_id
+msgid "Sale Order"
+msgstr "Ordine di vendita"
+
+#. module: pms_sale
+#: model:ir.model,name:pms_sale.model_sale_order
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__sale_order_id
+msgid "Sales Order"
+msgstr "Ordine cliente"
+
+#. module: pms_sale
+#: model:ir.model,name:pms_sale.model_sale_order_line
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__sale_order_line_id
+msgid "Sales Order Line"
+msgstr "Riga ordine vendita"
+
+#. module: pms_sale
+#. openerp-web
+#: code:addons/pms_sale/static/src/xml/timeline.xml:0
+#, python-format
+msgid "Search"
+msgstr "Cerca"
+
+#. module: pms_sale
+#. openerp-web
+#: code:addons/pms_sale/static/src/xml/timeline.xml:0
+#, python-format
+msgid "Select City"
+msgstr "Seleziona città"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_mail__notification_type
+msgid "Send"
+msgstr "Invia"
+
+#. module: pms_sale
+#: model:ir.model.fields.selection,name:pms_sale.selection__pms_property__listing_type__shared_room
+msgid "Shared Room"
+msgstr "Camera condivisa"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__stage_id
+msgid "Stage"
+msgstr "Fase"
+
+#. module: pms_sale
+#: model:ir.model.fields,help:pms_sale.field_pms_configurator__start
+#: model:ir.model.fields,help:pms_sale.field_pms_reservation__start
+msgid "Start date of the reservation"
+msgstr "Data inizio prenotazione"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_search
+msgid "State"
+msgstr "Stato"
+
+#. module: pms_sale
+#: model:ir.model.fields,help:pms_sale.field_pms_reservation__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: pms_sale
+#: model:ir.model.fields,help:pms_sale.field_pms_configurator__stop
+#: model:ir.model.fields,help:pms_sale.field_pms_reservation__stop
+msgid "Stop date of the reservation"
+msgstr "Data fine prenotazione"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__tag_ids
+msgid "Tags"
+msgstr "Tag"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__team_id
+msgid "Team"
+msgstr "Team"
+
+#. module: pms_sale
+#: code:addons/pms_sale/models/pms_reservation.py:0
+#, python-format
+msgid "The number of nights must be between %s and %s."
+msgstr "Il numero di notti deve essere compreso tra %s e %s."
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_team__no_week_reservation
+#: model:ir.model.fields,field_description:pms_sale.field_pms_team__total_reservation
+msgid "This Week Reservations"
+msgstr "Prenotazioni questa settimana"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_pms_team_kanban_inherit_pms_sale
+msgid "This Week:"
+msgstr "Questa settimana:"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_search
+msgid "This week Reservations"
+msgstr "Prenotazioni settimana"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__timeline_html
+msgid "Timeline HTML"
+msgstr "HTML timeline"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__stop
+#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__stop
+msgid "To"
+msgstr "A"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_team__no_today_reservation
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_search
+msgid "Today Reservations"
+msgstr "Prenotazioni oggi"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_pms_team_kanban_inherit_pms_sale
+msgid "Today:"
+msgstr "Oggi:"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_team__no_tomorrow_reservation
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_search
+msgid "Tomorrow Reservations"
+msgstr "Prenotazioni domani"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_pms_team_kanban_inherit_pms_sale
+msgid "Tomorrow:"
+msgstr "Domani:"
+
+#. module: pms_sale
+#: code:addons/pms_sale/models/pms_reservation.py:0
+#, python-format
+msgid ""
+"Too many guests (%s) on the reservation: the property\n"
+"                         accepts a maximum of %s guests."
+msgstr ""
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_search
+msgid "Total Reservations"
+msgstr "Totale prenotazioni"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_mail__interval_trigger
+msgid "Trigger"
+msgstr "Trigger"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_stage__stage_type
+msgid "Type"
+msgstr "Tipo"
+
+#. module: pms_sale
+#: model:ir.model.fields,help:pms_sale.field_pms_reservation__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Tipo di attività eccezionale."
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_mail__interval_unit
+msgid "Unit"
+msgstr "Unità"
+
+#. module: pms_sale
+#: model:product.product,uom_name:pms_sale.product_product_reservation
+#: model:product.template,uom_name:pms_sale.product_product_reservation_product_template
+msgid "Units"
+msgstr "Unità"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_unread
+msgid "Unread Messages"
+msgstr "Messaggi non letti"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "Contatore messaggi non letti"
+
+#. module: pms_sale
+#: model:ir.model.fields.selection,name:pms_sale.selection__pms_reservation__priority__3
+msgid "Urgent"
+msgstr "Urgente"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__website_message_ids
+msgid "Website Messages"
+msgstr "Messaggi sito web"
+
+#. module: pms_sale
+#: model:ir.model.fields,help:pms_sale.field_pms_reservation__website_message_ids
+msgid "Website communication history"
+msgstr "Storico comunicazioni web"
+
+#. module: pms_sale
+#: code:addons/pms_sale/models/pms_reservation.py:0
+#, python-format
+msgid "You cannot have 2 reservations on the same night at the same property."
+msgstr "Non è possibile avere 2 prenotazioni nella stessa notte per la stessa proprietà."
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_kanban
+msgid "night(s)"
+msgstr "notte/i"
