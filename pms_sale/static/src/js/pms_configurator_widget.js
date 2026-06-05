@@ -110,11 +110,13 @@ odoo.define("pms_sale.product_configurator", function (require) {
                 };
 
                 if (this.recordData.property_id) {
-                    defaultValues.default_property_id = this.recordData.property_id.data.id;
+                    defaultValues.default_property_id =
+                        this.recordData.property_id.data.id;
                 }
 
                 if (this.recordData.reservation_id) {
-                    defaultValues.default_reservation_id = this.recordData.reservation_id.data.id;
+                    defaultValues.default_reservation_id =
+                        this.recordData.reservation_id.data.id;
                 }
                 if (this.recordData.start) {
                     defaultValues.default_start = this.recordData.start;
@@ -123,7 +125,8 @@ odoo.define("pms_sale.product_configurator", function (require) {
                     defaultValues.default_stop = this.recordData.stop;
                 }
                 if (this.recordData.currency_id) {
-                    defaultValues.default_currency_id = this.recordData.currency_id.data.id;
+                    defaultValues.default_currency_id =
+                        this.recordData.currency_id.data.id;
                 }
                 if (this.recordData.id) {
                     defaultValues.sale_line_ine = this.recordData.id;
