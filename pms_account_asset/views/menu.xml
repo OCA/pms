@@ -1,5 +1,4 @@
 <odoo>
-
     <menuitem
         id="menu_assets"
         name="Assets"
@@ -7,5 +6,4 @@
         sequence="30"
         action="account_asset_management.account_asset_action"
     />
-
 </odoo>

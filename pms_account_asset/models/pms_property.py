@@ -1,6 +1,6 @@
 # Copyright 2019  Pablo Quesada
 # Copyright 2019  Dario Lodeiros
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import fields, models
 
@@ -15,15 +15,14 @@ class PmsProperty(models.Model):
         copy=False,
     )
     asset_count = fields.Integer(
-        string="Asset Count",
         compute="_compute_asset_count",
         readonly=True,
         copy=False,
     )
 
     def _compute_asset_count(self):
-        for property in self:
-            property.asset_count = len(property.asset_ids)
+        for rec in self:
+            rec.asset_count = len(rec.asset_ids)
 
     def action_view_assets(self):
         action = self.env.ref("account_asset_management.account_asset_action").read()[0]
