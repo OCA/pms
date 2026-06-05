@@ -5,8 +5,6 @@ import werkzeug.urls
 from odoo import fields, models
 from odoo.tools.translate import html_translate
 
-from odoo.addons.http_routing.models.ir_http import slug
-
 
 class PmsProperty(models.Model):
     _name = "pms.property"
@@ -15,7 +13,9 @@ class PmsProperty(models.Model):
     def _compute_website_url(self):
         for pms_property in self:
             if pms_property.id:
-                pms_property.website_url = f"/property/{slug(pms_property)}"
+                pms_property.website_url = (
+                    f"/property/{self.env['ir.http']._slug(pms_property)}"
+                )
 
     def google_map_link(self):
         property_partner = self.sudo().partner_id
