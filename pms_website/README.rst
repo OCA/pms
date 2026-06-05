@@ -45,7 +45,7 @@ It provides the "Properties" apps with menu, settings, groups and data.
 Configuration
 =============
 
--  Go to Properties > Configuration > Settings.
+- Go to Properties > Configuration > Settings.
 
 Usage
 =====
@@ -74,20 +74,20 @@ Authors
 Contributors
 ------------
 
--  Alexandre Díaz
--  Pablo Quesada
--  Jose Luis Algara
--  \`Commit [Sun] <https://www.commitsun.com>\`:
+- Alexandre Díaz
+- Pablo Quesada
+- Jose Luis Algara
+- \`Commit [Sun] <https://www.commitsun.com>\`:
 
-   -  Dario Lodeiros
-   -  Eric Antones
-   -  Sara Lago
-   -  Brais Abeijon
-   -  Miguel Padin
+  - Dario Lodeiros
+  - Eric Antones
+  - Sara Lago
+  - Brais Abeijon
+  - Miguel Padin
 
--  \`Open Source Integrators <https://www.opensourceintegrators.com>\`:
+- \`Open Source Integrators <https://www.opensourceintegrators.com>\`:
 
-   -  Maxime Chambreuil <mchambreuil@opensourceintegrators.com>
+  - Maxime Chambreuil <mchambreuil@opensourceintegrators.com>
 
 Maintainers
 -----------
