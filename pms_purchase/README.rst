@@ -37,12 +37,12 @@ System.
 
 It includes:
 
--  **Property field on purchase order lines**: assign each purchase
-   order line to a specific property for cost allocation.
--  **Putaway rules for properties**: configure stock putaway strategies
-   per property location.
--  **Filtered purchase reports**: track purchasing activity and costs by
-   property.
+- **Property field on purchase order lines**: assign each purchase order
+  line to a specific property for cost allocation.
+- **Putaway rules for properties**: configure stock putaway strategies
+  per property location.
+- **Filtered purchase reports**: track purchasing activity and costs by
+  property.
 
 **Table of contents**
 
@@ -80,9 +80,9 @@ Authors
 Contributors
 ------------
 
--  \`Open Source Integrators <https://www.opensourceintegrators.com>\`:
+- \`Open Source Integrators <https://www.opensourceintegrators.com>\`:
 
-   -  Maxime Chambreuil <mchambreuil@opensourceintegrators.com>
+  - Maxime Chambreuil <mchambreuil@opensourceintegrators.com>
 
 Maintainers
 -----------
