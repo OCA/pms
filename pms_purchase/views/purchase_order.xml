@@ -1,5 +1,4 @@
 <odoo>
-
     <record id="purchase_order_form_view_inherit" model="ir.ui.view">
         <field name="name">purchase.order.form.view.inherit</field>
         <field name="model">purchase.order</field>
@@ -19,5 +18,4 @@
             </xpath>
         </field>
     </record>
-
 </odoo>
