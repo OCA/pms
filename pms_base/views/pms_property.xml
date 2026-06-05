@@ -234,9 +234,6 @@
         </field>
     </record>
 
-    <!-- TODO [MIG] v19.0: Kanban migrated from kanban-box to card layout.
-         Verify image widget, tag colors and street conditional display.
-         Reference: https://github.com/odoo/odoo/pull/167751 -->
     <record id="view_pms_property_kanban" model="ir.ui.view">
         <field name="name">pms.property.kanban</field>
         <field name="model">pms.property</field>
