@@ -1,3 +1,3 @@
 # Cross-repo OCA addon dependencies whose migration PR is not yet merged.
 # Runboat reads this file via oca_install_addons to install deps before running tests.
-odoo-addon-contract @ git+https://github.com/Tecnativa/contract.git@19.0-mig-contract#subdirectory=contract
+Tecnativa/contract 19.0-mig-contract
