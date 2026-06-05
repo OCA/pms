@@ -1,0 +1,99 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pms_website_sale
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-04 00:00+0000\n"
+"PO-Revision-Date: 2026-06-04 00:00+0000\n"
+"Last-Translator: Maxime Chambreuil <maxime.chambreuil@graymatterlogic.com>\n"
+"Language-Team: Russian\n"
+"Language: ru_RU\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "Add one"
+msgstr "Добавить один"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_categories
+msgid "All Properties"
+msgstr "Все объекты"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "City..."
+msgstr "Город..."
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid ""
+"Click <i>'New'</i> in the top-right corner to create your first property."
+msgstr ""
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "Guest..."
+msgstr "Гость..."
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No Property defined"
+msgstr "Нет определённых объектов"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No property defined in category \""
+msgstr "Нет объекта в категории \""
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No results"
+msgstr "Нет результатов"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No results for \""
+msgstr "Нет результатов для \""
+
+#. module: pms_website_sale
+#: model:website.menu,name:pms_website_sale.menu_property
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "Properties"
+msgstr "Объекты недвижимости"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.sale_order_portal_content
+msgid "Property"
+msgstr "Объект недвижимости"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "Remove one"
+msgstr "Удалить один"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_categories
+msgid "Show categories"
+msgstr "Показать категории"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_item
+msgid "This product is unpublished."
+msgstr "Этот продукт не опубликован."
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_item
+msgid "Unpublished"
+msgstr "Не опубликовано"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "in category \""
+msgstr "в категории \""

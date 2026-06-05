@@ -1,0 +1,99 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pms_website_sale
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-04 00:00+0000\n"
+"PO-Revision-Date: 2026-06-04 00:00+0000\n"
+"Last-Translator: Maxime Chambreuil <maxime.chambreuil@graymatterlogic.com>\n"
+"Language-Team: Dutch\n"
+"Language: nl_NL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "Add one"
+msgstr "Eén toevoegen"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_categories
+msgid "All Properties"
+msgstr "Alle eigendommen"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "City..."
+msgstr "Stad..."
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid ""
+"Click <i>'New'</i> in the top-right corner to create your first property."
+msgstr ""
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "Guest..."
+msgstr "Gast..."
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No Property defined"
+msgstr "Geen eigendom gedefinieerd"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No property defined in category \""
+msgstr "Geen eigendom in categorie \""
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No results"
+msgstr "Geen resultaten"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No results for \""
+msgstr "Geen resultaten voor \""
+
+#. module: pms_website_sale
+#: model:website.menu,name:pms_website_sale.menu_property
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "Properties"
+msgstr "Objecten"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.sale_order_portal_content
+msgid "Property"
+msgstr "Object"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "Remove one"
+msgstr "Eén verwijderen"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_categories
+msgid "Show categories"
+msgstr "Categorieën weergeven"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_item
+msgid "This product is unpublished."
+msgstr "Dit product is niet gepubliceerd."
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_item
+msgid "Unpublished"
+msgstr "Niet gepubliceerd"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "in category \""
+msgstr "in categorie \""
