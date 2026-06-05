@@ -41,6 +41,7 @@
         id="pms_website_sale_search_box"
         inherit_id="website.website_search_box"
         primary="True"
+        priority="99"
     >
         <xpath expr="//div[@role='search']" position="attributes">
             <attribute name="t-attf-class" remove="#{_classes}" separator=" " />
@@ -62,6 +63,7 @@
     <template
         id="pms_search_box"
         inherit_id="pms_website_sale.pms_website_sale_search_box"
+        priority="99"
     >
         <xpath expr="//input[@name='search']" position="replace">
             <select class="form-control mr-3" id="city" name="search">
