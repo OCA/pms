@@ -43,7 +43,7 @@
                         itemprop="description"
                         t-field="property.website_description1"
                         class="oe_structure oe_empty mt16"
-                        t-attf-id="oe_structure_website_sale_property_{{property.id}}_3"
+                        id="oe_structure_website_sale_property_3"
                     />
                     <div class="row">
                         <div
@@ -215,7 +215,7 @@
                         itemprop="description"
                         t-field="property.website_description2"
                         class="oe_structure oe_empty mt16"
-                        t-attf-id="oe_structure_website_sale_property_{{property.id}}_4"
+                        id="oe_structure_website_sale_property_4"
                     />
                 </section>
                 <section class="row section-margin">
