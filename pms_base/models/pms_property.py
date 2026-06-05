@@ -266,8 +266,8 @@ class PmsProperty(models.Model):
 
     @api.model
     def _search_display_name(self, operator, value):
-        from odoo.fields import Domain
-
         if value:
-            return Domain(["|", ("name", operator, value), ("ref", operator, value)])
-        return Domain([])
+            return fields.Domain(
+                ["|", ("name", operator, value), ("ref", operator, value)]
+            )
+        return fields.Domain([])
