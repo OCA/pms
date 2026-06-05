@@ -15,7 +15,7 @@
                 </button>
             </xpath>
             <xpath
-                expr="//field[@name='service_ids']/tree/field[@name='vendor_id']"
+                expr="//field[@name='service_ids']/list/field[@name='vendor_id']"
                 position="after"
             >
                 <field name="contract_id" />
