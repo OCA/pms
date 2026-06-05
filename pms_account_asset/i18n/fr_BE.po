@@ -16,24 +16,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#. module: pms_account_asset
 msgid "Asset"
 msgstr "Immobilisation"
 
+#. module: pms_account_asset
 msgid "Asset Count"
 msgstr "Nombre d'immobilisations"
 
+#. module: pms_account_asset
 msgid "Assets"
 msgstr "Immobilisations"
 
+#. module: pms_account_asset
 msgid "Display Name"
 msgstr "Nom affiché"
 
+#. module: pms_account_asset
 msgid "ID"
 msgstr "ID"
 
+#. module: pms_account_asset
 msgid "Last Modified on"
 msgstr "Dernière modification"
 
+#. module: pms_account_asset
 msgid "Property"
 msgstr "Propriété"
 

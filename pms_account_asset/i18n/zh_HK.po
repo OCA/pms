@@ -16,24 +16,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+#. module: pms_account_asset
 msgid "Asset"
 msgstr "固定資產"
 
+#. module: pms_account_asset
 msgid "Asset Count"
 msgstr "資產數"
 
+#. module: pms_account_asset
 msgid "Assets"
 msgstr "固定資產"
 
+#. module: pms_account_asset
 msgid "Display Name"
 msgstr "顯示名稱"
 
+#. module: pms_account_asset
 msgid "ID"
 msgstr "編號"
 
+#. module: pms_account_asset
 msgid "Last Modified on"
 msgstr "最後修改於"
 
+#. module: pms_account_asset
 msgid "Property"
 msgstr "物業"
 

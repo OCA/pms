@@ -16,24 +16,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
 
+#. module: pms_account_asset
 msgid "Asset"
 msgstr ""
 
+#. module: pms_account_asset
 msgid "Asset Count"
 msgstr ""
 
+#. module: pms_account_asset
 msgid "Assets"
 msgstr ""
 
+#. module: pms_account_asset
 msgid "Display Name"
 msgstr ""
 
+#. module: pms_account_asset
 msgid "ID"
 msgstr ""
 
+#. module: pms_account_asset
 msgid "Last Modified on"
 msgstr ""
 
+#. module: pms_account_asset
 msgid "Property"
 msgstr "Nieruchomość"
 

@@ -16,24 +16,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+#. module: pms_account_asset
 msgid "Asset"
 msgstr "자산"
 
+#. module: pms_account_asset
 msgid "Asset Count"
 msgstr "자산 수"
 
+#. module: pms_account_asset
 msgid "Assets"
 msgstr "자산"
 
+#. module: pms_account_asset
 msgid "Display Name"
 msgstr "표시 이름"
 
+#. module: pms_account_asset
 msgid "ID"
 msgstr "ID"
 
+#. module: pms_account_asset
 msgid "Last Modified on"
 msgstr "마지막 수정일"
 
+#. module: pms_account_asset
 msgid "Property"
 msgstr "부동산"
 
