@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -19,11 +19,6 @@ msgid "# Meetings"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__task_count
-msgid "# Tasks"
-msgstr ""
-
-#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__supplier_invoice_count
 msgid "# Vendor Bills"
 msgstr ""
@@ -32,7 +27,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_team_kanban
 msgid ""
 "<br/>\n"
-"                                                Properties"
+"                                        Properties"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__account_move_count
+msgid "Account Move Count"
 msgstr ""
 
 #. module: pms_base
@@ -96,11 +96,6 @@ msgid "Activity Type Icon"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__additional_info
-msgid "Additional info"
-msgstr ""
-
-#. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
 msgid "Address"
 msgstr ""
@@ -108,6 +103,11 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__type
 msgid "Address Type"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__type_address_label
+msgid "Address Type Description"
 msgstr ""
 
 #. module: pms_base
@@ -162,6 +162,7 @@ msgid "Amenity Types"
 msgstr ""
 
 #. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_room_form
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_service_form
 msgid "Archive"
 msgstr ""
@@ -189,6 +190,16 @@ msgid "Attachment Count"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__autopost_bills
+msgid "Auto-post bills"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__autopost_bills
+msgid "Automatically post bills for this trusted partner"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__receipt_reminder_email
 msgid ""
 "Automatically send a confirmation email to the vendor X days before the "
@@ -198,6 +209,36 @@ msgstr ""
 #. module: pms_base
 #: model:pms.stage,name:pms_base.pms_stage_available
 msgid "Available"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__available_invoice_template_pdf_report_ids
+msgid "Available Invoice Template Pdf Report"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__avatar_1920
+msgid "Avatar"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__avatar_1024
+msgid "Avatar 1024"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__avatar_128
+msgid "Avatar 128"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__avatar_256
+msgid "Avatar 256"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__avatar_512
+msgid "Avatar 512"
 msgstr ""
 
 #. module: pms_base
@@ -247,11 +288,6 @@ msgid "Blacklist"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__mobile_blacklisted
-msgid "Blacklisted Phone Is Mobile"
-msgstr ""
-
-#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__phone_blacklisted
 msgid "Blacklisted Phone is Phone"
 msgstr ""
@@ -272,6 +308,11 @@ msgid "Building Boiler"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__buyer_id
+msgid "Buyer"
+msgstr ""
+
+#. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "CRM"
 msgstr ""
@@ -289,6 +330,11 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_room__capacity
 msgid "Capacity"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__channel_member_ids
+msgid "Channel Member"
 msgstr ""
 
 #. module: pms_base
@@ -340,8 +386,8 @@ msgid "Color Index"
 msgstr ""
 
 #. module: pms_base
+#. odoo-python
 #: code:addons/pms_base/models/pms_stage.py:0
-#, python-format
 msgid "Color code should be Hex Code. Ex:-#FFFFFF"
 msgstr ""
 
@@ -369,6 +415,16 @@ msgid "Company"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__company_registry
+msgid "Company ID"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__company_registry_label
+msgid "Company ID Label"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__company_name
 msgid "Company Name"
 msgstr ""
@@ -379,13 +435,13 @@ msgid "Company Name Entity"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__company_type
-msgid "Company Type"
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__company_registry_placeholder
+msgid "Company Registry Placeholder"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__partner_gid
-msgid "Company database ID"
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__company_type
+msgid "Company Type"
 msgstr ""
 
 #. module: pms_base
@@ -401,6 +457,11 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__contact_address
 msgid "Complete Address"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__complete_name
+msgid "Complete Name"
 msgstr ""
 
 #. module: pms_base
@@ -447,11 +508,6 @@ msgid "Contracts"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__payment_token_count
-msgid "Count Payment Token"
-msgstr ""
-
-#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__message_bounce
 msgid "Counter of the number of bounced emails for this contact"
 msgstr ""
@@ -460,6 +516,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__country_id
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
 msgid "Country"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__country_code
+msgid "Country Code"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model,website_form_label:pms_base.model_res_partner
+msgid "Create a Customer"
 msgstr ""
 
 #. module: pms_base
@@ -499,6 +565,16 @@ msgid "Credit Limit"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__credit_to_invoice
+msgid "Credit To Invoice"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__credit_limit
+msgid "Credit limit specific to this partner."
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__currency_id
 msgid "Currency"
 msgstr ""
@@ -529,18 +605,28 @@ msgid "Dashboard"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__date
-msgid "Date"
-msgstr ""
-
-#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__reminder_date_before_receipt
 msgid "Days Before Receipt"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__days_sales_outstanding
+msgid "Days Sales Outstanding (DSO)"
+msgstr ""
+
+#. module: pms_base
 #: model:pms.team,name:pms_base.pms_team_default
 msgid "Default Team"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__group_rfq
+msgid ""
+"Define if RFQ should be grouped         together based on expected arrival, except for dropship operations.\n"
+"         On Order: Replenishment needs will be grouped together except for MTO.\n"
+"         Daily: Replenishment needs will be grouped if the expected arrival is the same day\n"
+"         Weekly: Replenishment needs will be grouped if the expected arrival is the same week or week day\n"
+"         Always: Replenishment needs will always be grouped."
 msgstr ""
 
 #. module: pms_base
@@ -551,6 +637,11 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__trust
 msgid "Degree of trust you have in this debtor"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_delivery_carrier_id
+msgid "Delivery Method"
 msgstr ""
 
 #. module: pms_base
@@ -590,6 +681,16 @@ msgid "Diningroom"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__display_invoice_edi_format
+msgid "Display Invoice Edi Format"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__display_invoice_template_pdf_report_id
+msgid "Display Invoice Template Pdf Report"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_amenity__display_name
 #: model:ir.model.fields,field_description:pms_base.field_pms_amenity_type__display_name
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__display_name
@@ -608,6 +709,11 @@ msgstr ""
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_2
 msgid "Double"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__duplicate_bank_partner_ids
+msgid "Duplicate Bank Partner"
 msgstr ""
 
 #. module: pms_base
@@ -659,6 +765,16 @@ msgid ""
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__fiscal_country_codes
+msgid "Fiscal Country Codes"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__fiscal_country_group_codes
+msgid "Fiscal Country Group Codes"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__property_account_position_id
 msgid "Fiscal Position"
 msgstr ""
@@ -677,12 +793,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_follower_ids
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_follower_ids
 msgid "Followers"
-msgstr ""
-
-#. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_channel_ids
-#: model:ir.model.fields,field_description:pms_base.field_pms_team__message_channel_ids
-msgid "Followers (Channels)"
 msgstr ""
 
 #. module: pms_base
@@ -743,13 +853,8 @@ msgid "Geolocation Date"
 msgstr ""
 
 #. module: pms_base
-#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_search
-msgid "Group By"
-msgstr ""
-
-#. module: pms_base
-#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_amenity_search
-msgid "Group By..."
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__group_rfq
+msgid "Group RFQ"
 msgstr ""
 
 #. module: pms_base
@@ -768,8 +873,9 @@ msgid "Hall"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__has_unreconciled_entries
-msgid "Has Unreconciled Entries"
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__has_message
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__has_message
+msgid "Has Message"
 msgstr ""
 
 #. module: pms_base
@@ -812,17 +918,13 @@ msgstr ""
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__message_needaction
-#: model:ir.model.fields,help:pms_base.field_pms_property__message_unread
 #: model:ir.model.fields,help:pms_base.field_pms_team__message_needaction
-#: model:ir.model.fields,help:pms_base.field_pms_team__message_unread
 msgid "If checked, new messages require your attention."
 msgstr ""
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__message_has_error
-#: model:ir.model.fields,help:pms_base.field_pms_property__message_has_sms_error
 #: model:ir.model.fields,help:pms_base.field_pms_team__message_has_error
-#: model:ir.model.fields,help:pms_base.field_pms_team__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr ""
 
@@ -838,6 +940,16 @@ msgstr ""
 msgid ""
 "If the sanitized phone number is on the blacklist, the contact won't receive"
 " mass mailing sms anymore, from any list"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__ignore_abnormal_invoice_amount
+msgid "Ignore Abnormal Invoice Amount"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__ignore_abnormal_invoice_date
+msgid "Ignore Abnormal Invoice Date"
 msgstr ""
 
 #. module: pms_base
@@ -866,14 +978,6 @@ msgid "Image 512"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,help:pms_base.field_pms_property__mobile_blacklisted
-msgid ""
-"Indicates if a blacklisted sanitized phone number is a mobile number. Helps "
-"distinguish which number is blacklisted             when there is both a "
-"mobile and phone field in a model."
-msgstr ""
-
-#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__phone_blacklisted
 msgid ""
 "Indicates if a blacklisted sanitized phone number is a phone number. Helps "
@@ -892,6 +996,11 @@ msgid "Information"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__contact_address_inline
+msgid "Inlined Complete Address"
+msgstr ""
+
+#. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Integrations"
 msgstr ""
@@ -907,15 +1016,18 @@ msgid "Internal unique identifier of the amenity"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__invoice_warn
-msgid "Invoice"
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__invoice_edi_format_store
+msgid "Invoice Edi Format Store"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,help:pms_base.field_pms_property__type
-msgid ""
-"Invoice & Delivery addresses are used in sales orders. Private addresses are"
-" only visible by authorized users."
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__invoice_template_pdf_report_id
+msgid "Invoice report"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__invoice_sending_method
+msgid "Invoice sending"
 msgstr ""
 
 #. module: pms_base
@@ -927,6 +1039,21 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_is_follower
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_is_follower
 msgid "Is Follower"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__is_in_call
+msgid "Is In Call"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__is_pickup_location
+msgid "Is Pickup Location"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__is_public
+msgid "Is Public"
 msgstr ""
 
 #. module: pms_base
@@ -962,11 +1089,6 @@ msgid "Job Position"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__journal_item_count
-msgid "Journal Items"
-msgstr ""
-
-#. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_kitchen
 msgid "Kitchen"
 msgstr ""
@@ -984,27 +1106,6 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__lang
 msgid "Language"
-msgstr ""
-
-#. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_amenity____last_update
-#: model:ir.model.fields,field_description:pms_base.field_pms_amenity_type____last_update
-#: model:ir.model.fields,field_description:pms_base.field_pms_property____last_update
-#: model:ir.model.fields,field_description:pms_base.field_pms_room____last_update
-#: model:ir.model.fields,field_description:pms_base.field_pms_room_type____last_update
-#: model:ir.model.fields,field_description:pms_base.field_pms_service____last_update
-#: model:ir.model.fields,field_description:pms_base.field_pms_stage____last_update
-#: model:ir.model.fields,field_description:pms_base.field_pms_tag____last_update
-#: model:ir.model.fields,field_description:pms_base.field_pms_team____last_update
-#: model:ir.model.fields,field_description:pms_base.field_res_company____last_update
-#: model:ir.model.fields,field_description:pms_base.field_res_config_settings____last_update
-#: model:ir.model.fields,field_description:pms_base.field_res_partner____last_update
-msgid "Last Modified on"
-msgstr ""
-
-#. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__last_website_so_id
-msgid "Last Online Sales Order"
 msgstr ""
 
 #. module: pms_base
@@ -1039,19 +1140,6 @@ msgid "Last notification marked as read from base Calendar"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,help:pms_base.field_pms_property__last_time_entries_checked
-msgid ""
-"Last time the invoices & payments matching was performed for this partner. "
-"It is set either if there's not at least an unreconciled debit and an "
-"unreconciled credit or if you click the \"Done\" button."
-msgstr ""
-
-#. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__last_time_entries_checked
-msgid "Latest Invoices & Payments Matching Date"
-msgstr ""
-
-#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__laundry_room
 #: model:pms.amenity.type,name:pms_base.pms_amenity_type_3
 #: model:pms.room.type,name:pms_base.pms_room_type_laundry
@@ -1079,12 +1167,18 @@ msgid "Link purchases to your properties"
 msgstr ""
 
 #. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Link to Projects"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_project
 msgid "Link to Projects and Tasks"
 msgstr ""
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_purchase
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Link to Purchases"
 msgstr ""
 
@@ -1114,9 +1208,8 @@ msgid "Livingroom"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_main_attachment_id
-#: model:ir.model.fields,field_description:pms_base.field_pms_team__message_main_attachment_id
-msgid "Main Attachment"
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__main_user_id
+msgid "Main User"
 msgstr ""
 
 #. module: pms_base
@@ -1132,6 +1225,7 @@ msgstr ""
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_stock
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Manage Content"
 msgstr ""
 
@@ -1188,6 +1282,11 @@ msgid "Manage utility contracts and others recurring invoices/bills"
 msgstr ""
 
 #. module: pms_base
+#: model:res.groups,name:pms_base.group_pms_manager
+msgid "Manager"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.ui.menu,name:pms_base.menu_data
 msgid "Master Data"
 msgstr ""
@@ -1201,11 +1300,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_has_error
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_has_error
 msgid "Message Delivery error"
-msgstr ""
-
-#. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__invoice_warn_msg
-msgid "Message for Invoice"
 msgstr ""
 
 #. module: pms_base
@@ -1227,11 +1321,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_ids
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_ids
 msgid "Messages"
-msgstr ""
-
-#. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__mobile
-msgid "Mobile"
 msgstr ""
 
 #. module: pms_base
@@ -1259,6 +1348,12 @@ msgstr ""
 #. module: pms_base
 #: model:pms.stage,name:pms_base.pms_stage_new
 msgid "New"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_calendar_event_id
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
 msgstr ""
 
 #. module: pms_base
@@ -1309,7 +1404,7 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__message_needaction_counter
 #: model:ir.model.fields,help:pms_base.field_pms_team__message_needaction_counter
-msgid "Number of messages which requires an action"
+msgid "Number of messages requiring action"
 msgstr ""
 
 #. module: pms_base
@@ -1324,9 +1419,8 @@ msgid "Number of rooms"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,help:pms_base.field_pms_property__message_unread_counter
-#: model:ir.model.fields,help:pms_base.field_pms_team__message_unread_counter
-msgid "Number of unread messages"
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__offline_since
+msgid "Offline since"
 msgstr ""
 
 #. module: pms_base
@@ -1351,7 +1445,7 @@ msgstr ""
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__opportunity_count
-msgid "Opportunity"
+msgid "Opportunity Count"
 msgstr ""
 
 #. module: pms_base
@@ -1362,8 +1456,9 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__on_time_rate
 msgid ""
-"Over the past 12 months; the number of products received on time divided by "
-"the number of ordered products."
+"Over the past x days; the number of products received on time divided by the"
+" number of ordered products.x is either the System Parameter "
+"purchase_stock.on_time_delivery_days or the default 365"
 msgstr ""
 
 #. module: pms_base
@@ -1390,6 +1485,11 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model,name:pms_base.model_pms_tag
 msgid "PMS Tag"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__tag_ids
+msgid "PMS Tags"
 msgstr ""
 
 #. module: pms_base
@@ -1425,18 +1525,33 @@ msgid "Parking Lot"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__partner_company_registry_placeholder
+msgid "Partner Company Registry Placeholder"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__use_partner_credit_limit
+msgid "Partner Limit"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__partner_vat_placeholder
+msgid "Partner Vat Placeholder"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__same_company_registry_partner_id
+msgid "Partner with same Company Registry"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__same_vat_partner_id
 msgid "Partner with same Tax ID"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__debit_limit
-msgid "Payable Limit"
-msgstr ""
-
-#. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_payment_method_id
-msgid "Payment Method"
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__payment_token_count
+msgid "Payment Token Count"
 msgstr ""
 
 #. module: pms_base
@@ -1462,16 +1577,13 @@ msgid "Phone Blacklisted"
 msgstr ""
 
 #. module: pms_base
-#: model:pms.room.type,name:pms_base.pms_room_type_play
-msgid "Playroom"
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__phone_mobile_search
+msgid "Phone Number"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,help:pms_base.field_pms_property__property_payment_method_id
-msgid ""
-"Preferred payment method when paying this vendor. This is used to filter "
-"vendor bills by preferred payment method to register payments in mass. Use "
-"cases: create bank files for batch wires, check runs."
+#: model:pms.room.type,name:pms_base.pms_room_type_play
+msgid "Playroom"
 msgstr ""
 
 #. module: pms_base
@@ -1488,6 +1600,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:pms_base.action_pms_property
 #: model:ir.actions.act_window,name:pms_base.property_action_from_dashboard
 #: model:ir.model.fields,field_description:pms_base.field_pms_amenity__property_ids
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__properties
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__property_ids
 #: model:ir.ui.menu,name:pms_base.menu_config_property
 #: model:ir.ui.menu,name:pms_base.menu_pms_data_property
@@ -1496,6 +1609,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_tree
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Properties"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__properties_base_definition_id
+msgid "Properties Base Definition"
 msgstr ""
 
 #. module: pms_base
@@ -1516,7 +1634,6 @@ msgstr ""
 #: model:ir.model.fields.selection,name:pms_base.selection__pms_stage__stage_type__property
 #: model_terms:ir.ui.view,arch_db:pms_base.view_partner_form_inherit_pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
-#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_kanban
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_search
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_room_search
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_partner_filter_inherit_pms_base
@@ -1529,18 +1646,28 @@ msgid "Property Amenity"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_inbound_payment_method_line_id
+msgid "Property Inbound Payment Method Line"
+msgstr ""
+
+#. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Property Information"
 msgstr ""
 
 #. module: pms_base
-#: model:res.groups,name:pms_base.group_pms_user
-msgid "Property Management / User"
+#: model:ir.module.category,name:pms_base.module_category_property_management
+msgid "Property Management"
 msgstr ""
 
 #. module: pms_base
-#: model:res.groups,name:pms_base.group_pms_manager
-msgid "Property Management/ Manager"
+#: model:res.groups.privilege,name:pms_base.res_groups_privilege_property_management
+msgid "Property Management System"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_outbound_payment_method_line_id
+msgid "Property Outbound Payment Method Line"
 msgstr ""
 
 #. module: pms_base
@@ -1584,11 +1711,6 @@ msgid "Purchase Lines"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__purchase_warn
-msgid "Purchase Order"
-msgstr ""
-
-#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__purchase_order_count
 msgid "Purchase Order Count"
 msgstr ""
@@ -1624,6 +1746,12 @@ msgid "Quantities"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__rating_ids
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__receipt_reminder_email
 msgid "Receipt Reminder"
 msgstr ""
@@ -1651,8 +1779,14 @@ msgid "Responsible User"
 msgstr ""
 
 #. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_room_form
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_service_form
+msgid "Restore"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__website_id
-msgid "Restrict publishing to this website."
+msgid "Restrict to a specific website."
 msgstr ""
 
 #. module: pms_base
@@ -1692,9 +1826,8 @@ msgid "Rooms"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_has_sms_error
-#: model:ir.model.fields,field_description:pms_base.field_pms_team__message_has_sms_error
-msgid "SMS Delivery error"
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__rtc_session_ids
+msgid "Rtc Session"
 msgstr ""
 
 #. module: pms_base
@@ -1713,11 +1846,6 @@ msgid "Sales Order"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__sale_warn
-msgid "Sales Warnings"
-msgstr ""
-
-#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__user_id
 msgid "Salesperson"
 msgstr ""
@@ -1730,17 +1858,6 @@ msgstr ""
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_stage_search
 msgid "Search Stages"
-msgstr ""
-
-#. module: pms_base
-#: model:ir.model.fields,help:pms_base.field_pms_property__invoice_warn
-#: model:ir.model.fields,help:pms_base.field_pms_property__picking_warn
-#: model:ir.model.fields,help:pms_base.field_pms_property__purchase_warn
-#: model:ir.model.fields,help:pms_base.field_pms_property__sale_warn
-msgid ""
-"Selecting the \"Warning\" option will notify user with the message, "
-"Selecting \"Blocking Message\" will throw an exception with the message and "
-"block the flow. The Message has to be written in the next field."
 msgstr ""
 
 #. module: pms_base
@@ -1786,6 +1903,11 @@ msgid "Set Icon name from https://fontawesome.com/"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__use_partner_credit_limit
+msgid "Set a value greater than 0.0 to activate a credit limit check"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.actions.act_window,name:pms_base.action_pms_config
 #: model:ir.ui.menu,name:pms_base.menu_pms_config_settings
 msgid "Settings"
@@ -1801,6 +1923,11 @@ msgstr ""
 #: model:res.groups,name:pms_base.group_pms_show_amenity
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Show Amenities"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__show_credit_limit
+msgid "Show Credit Limit"
 msgstr ""
 
 #. module: pms_base
@@ -1825,33 +1952,18 @@ msgid "Show Teams"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__signup_expiration
-msgid "Signup Expiration"
-msgstr ""
-
-#. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__signup_token
-msgid "Signup Token"
-msgstr ""
-
-#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__signup_type
 msgid "Signup Token Type"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__signup_valid
-msgid "Signup Token is Valid"
-msgstr ""
-
-#. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__signup_url
-msgid "Signup URL"
-msgstr ""
-
-#. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_1
 msgid "Single"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__specific_property_product_pricelist
+msgid "Specific Property Product Pricelist"
 msgstr ""
 
 #. module: pms_base
@@ -1888,6 +2000,11 @@ msgid "State"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__application_statistics
+msgid "Stats"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__activity_state
 #: model:ir.model.fields,help:pms_base.field_pms_team__activity_state
 msgid ""
@@ -1895,11 +2012,6 @@ msgid ""
 "Overdue: Due date is already passed\n"
 "Today: Activity date is today\n"
 "Planned: Future activities."
-msgstr ""
-
-#. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__picking_warn
-msgid "Stock Picking"
 msgstr ""
 
 #. module: pms_base
@@ -1923,6 +2035,21 @@ msgid "Street2"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__suggest_based_on
+msgid "Suggest Based On"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__suggest_days
+msgid "Suggest Days"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__suggest_percent
+msgid "Suggest Percent"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__property_purchase_currency_id
 msgid "Supplier Currency"
 msgstr ""
@@ -1938,14 +2065,13 @@ msgid "Tag"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.constraint,message:pms_base.constraint_pms_tag_name_uniq
+#: model:ir.model.constraint,message:pms_base.constraint_pms_tag_sql_name_uniq
 msgid "Tag name already exists!"
 msgstr ""
 
 #. module: pms_base
 #: model:ir.actions.act_window,name:pms_base.action_pms_tag
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__category_id
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__tag_ids
 #: model:ir.ui.menu,name:pms_base.menu_config_tag
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_tag_tree
 msgid "Tags"
@@ -1962,13 +2088,18 @@ msgid "Tax ID"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__vat_label
+msgid "Tax ID Label"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__team_id
 #: model_terms:ir.ui.view,arch_db:pms_base.view_team_form
 msgid "Team"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.constraint,message:pms_base.constraint_pms_team_name_uniq
+#: model:ir.model.constraint,message:pms_base.constraint_pms_team_sql_name_uniq
 msgid "Team name already exists!"
 msgstr ""
 
@@ -1992,10 +2123,10 @@ msgid "Terrace/Patio"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,help:pms_base.field_pms_property__vat
+#: model:ir.model.fields,help:pms_base.field_pms_property__country_code
 msgid ""
-"The Tax Identification Number. Complete it if the contact is subjected to "
-"government taxes. Used in some legal statements."
+"The ISO country code in two chars. \n"
+"You can use this field for quick search."
 msgstr ""
 
 #. module: pms_base
@@ -2005,8 +2136,13 @@ msgid ""
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__website_absolute_url
+msgid "The full absolute URL to access the document through the website."
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__website_url
-msgid "The full URL to access the document through the website."
+msgid "The full relative URL to access the document through the website."
 msgstr ""
 
 #. module: pms_base
@@ -2025,10 +2161,10 @@ msgid "The owner of the property."
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,help:pms_base.field_pms_property__has_unreconciled_entries
+#: model:ir.model.fields,help:pms_base.field_pms_property__company_registry
 msgid ""
-"The partner has at least one unreconciled debit and credit since last time "
-"the invoices & payments matching was performed."
+"The registry number of the company. Use it if it is different from the Tax "
+"ID. It must be unique across all partners of a same country"
 msgstr ""
 
 #. module: pms_base
@@ -2044,24 +2180,15 @@ msgid ""
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,help:pms_base.field_pms_property__property_account_payable_id
+#: model:ir.model.fields,help:pms_base.field_pms_property__main_user_id
 msgid ""
-"This account will be used instead of the default one as the payable account "
-"for the current partner"
-msgstr ""
-
-#. module: pms_base
-#: model:ir.model.fields,help:pms_base.field_pms_property__property_account_receivable_id
-msgid ""
-"This account will be used instead of the default one as the receivable "
-"account for the current partner"
+"There can be several users related to the same partner. When a single user "
+"is needed, this field attempts to find the most appropriate one."
 msgstr ""
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__property_purchase_currency_id
-msgid ""
-"This currency will be used, instead of the default one, for purchases from "
-"the current partner"
+msgid "This currency will be used for purchases from the current partner"
 msgstr ""
 
 #. module: pms_base
@@ -2074,27 +2201,6 @@ msgstr ""
 msgid ""
 "This field is used to search on email address as the primary email field can"
 " contain more than strictly an email address."
-msgstr ""
-
-#. module: pms_base
-#: model:ir.model.fields,help:pms_base.field_pms_property__property_supplier_payment_term_id
-msgid ""
-"This payment term will be used instead of the default one for purchase "
-"orders and vendor bills"
-msgstr ""
-
-#. module: pms_base
-#: model:ir.model.fields,help:pms_base.field_pms_property__property_payment_term_id
-msgid ""
-"This payment term will be used instead of the default one for sales orders "
-"and customer invoices"
-msgstr ""
-
-#. module: pms_base
-#: model:ir.model.fields,help:pms_base.field_pms_property__property_product_pricelist
-msgid ""
-"This pricelist will be used, instead of the default one, for sales to the "
-"current partner"
 msgstr ""
 
 #. module: pms_base
@@ -2112,11 +2218,6 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__tz_offset
 msgid "Timezone offset"
-msgstr ""
-
-#. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__title
-msgid "Title"
 msgstr ""
 
 #. module: pms_base
@@ -2185,18 +2286,6 @@ msgid "Unit of Measure"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_unread
-#: model:ir.model.fields,field_description:pms_base.field_pms_team__message_unread
-msgid "Unread Messages"
-msgstr ""
-
-#. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_unread_counter
-#: model:ir.model.fields,field_description:pms_base.field_pms_team__message_unread_counter
-msgid "Unread Messages Counter"
-msgstr ""
-
-#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_stage__custom_color
 msgid "Use Hex Code only Ex:-#FFFFFF"
 msgstr ""
@@ -2212,18 +2301,28 @@ msgid "Used as default stage"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__property_product_pricelist
+msgid "Used for sales to the current partner"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__property_delivery_carrier_id
+msgid "Used in sales orders."
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_team__sequence
 msgid "Used to sort teams. Lower is better."
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__user_ids
-msgid "Users"
+#: model:res.groups,name:pms_base.group_pms_user
+msgid "User"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,help:pms_base.field_pms_property__currency_id
-msgid "Utility field to express amount currency"
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__user_ids
+msgid "Users"
 msgstr ""
 
 #. module: pms_base
@@ -2263,6 +2362,11 @@ msgid "Website"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__website_absolute_url
+msgid "Website Absolute URL"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_room_type__icon
 #: model:ir.model.fields,field_description:pms_base.field_pms_service__icon
 msgid "Website Icon"
@@ -2291,7 +2395,17 @@ msgid "Website communication history"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.constraint,message:pms_base.constraint_pms_room_room_property_unique
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__group_on
+msgid "Week Day"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__vat
+msgid "You can use '/' to indicate that the customer has no Tax ID."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.constraint,message:pms_base.constraint_pms_room_sql_room_property_unique
 msgid "You cannot have more 2 rooms with the same name in the same property."
 msgstr ""
 
@@ -2303,4 +2417,16 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__zip
 msgid "Zip"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__days_sales_outstanding
+msgid ""
+"[(Total Receivable/Total Revenue) * number of days since the first invoice] "
+"for this customer"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__invoice_edi_format
+msgid "eInvoice format"
 msgstr ""

@@ -43,9 +43,6 @@
         </field>
     </record>
 
-    <!-- TODO [MIG] v19.0: Dashboard kanban migrated from kanban-box to card.
-         Verify button action %(...)d syntax still works and layout renders correctly.
-         Reference: https://github.com/odoo/odoo/pull/167751 -->
     <record id="view_pms_team_kanban" model="ir.ui.view">
         <field name="name">pms.team.kanban</field>
         <field name="model">pms.team</field>
