@@ -446,9 +446,10 @@ class PmsProperty(models.Model):
                 )
                 grouped_rules = {}
                 for group in rule_groups:
-                    date = datetime.datetime.strptime(
-                        group["date:day"], "%d %b %Y"
-                    ).date()
+                    # Use ISO ``__range`` boundary: the ``date:day`` label is
+                    # locale-formatted and ``with_context(lang="en_US")`` is
+                    # ignored when ``en_US`` is not installed.
+                    date = fields.Date.from_string(group["__range"]["date:day"]["from"])
                     for rt in room_types:
                         group_avail = group["plan_avail"]
                         items = self.env["pms.availability.plan.rule"].search(
