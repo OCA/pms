@@ -2032,6 +2032,10 @@ msgstr "Aktion erforderlich"
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__active
 #: model:ir.model.fields,field_description:pms.field_pms_amenity_type__active
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan__active
+#: model:ir.model.fields,field_description:pms.field_pms_board_service__active
+#: model:ir.model.fields,field_description:pms.field_pms_board_service_line__active
+#: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type__active
+#: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type_line__active
 #: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule__active
 #: model:ir.model.fields,field_description:pms.field_pms_property__active
 #: model:ir.model.fields,field_description:pms.field_pms_room__active
@@ -2709,6 +2713,9 @@ msgid "Apply service to children"
 msgstr "Dienst für Kindern anwenden"
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_board_service_form
+#: model_terms:ir.ui.view,arch_db:pms.pms_board_service_room_type_form
+#: model_terms:ir.ui.view,arch_db:pms.pms_board_service_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_closure_reason_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_closure_reason_view_search
 msgid "Archived"
@@ -3091,6 +3098,7 @@ msgstr "Gesperrte Reservierungen können nicht geändert werden"
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__board_service_room_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__board_service_room_id
 #: model:ir.model.fields,field_description:pms.field_product_pricelist_item__board_service_room_type_id
+#: model_terms:ir.ui.view,arch_db:pms.pms_board_service_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_service_line_report_view_tree
 msgid "Board Service"
@@ -6105,6 +6113,21 @@ msgstr ""
 "Wenn diese Option nicht markiert ist, können Sie den Raumtyp ausblenden"
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_board_service_room_type__active
+msgid ""
+"If unchecked, this board service room type assignment will be archived and "
+"hidden from selections without affecting historical reservations that "
+"reference it."
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_board_service__active
+msgid ""
+"If unchecked, this board service will be archived and hidden from selections "
+"without affecting historical records that reference it."
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__image_128
 #: model:ir.model.fields,field_description:pms.field_pms_property__image_1920
 #: model:ir.model.fields,field_description:pms.field_pms_room__image_1920
@@ -7257,6 +7280,16 @@ msgstr ""
 #: model:ir.model,name:pms.model_pms_wizard_reservation_lines_split
 msgid "Lines available to split"
 msgstr "Verfügbare Zeilen zum Splitten"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_board_service_line__active
+msgid "Lines of an archived board service are archived as well."
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_board_service_room_type_line__active
+msgid "Lines of an archived board service room type are archived as well."
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__adults
