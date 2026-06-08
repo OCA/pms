@@ -1,6 +1,5 @@
 <odoo>
-
-   <record id="pms_property_form_inherit_po_lines_view" model="ir.ui.view">
+    <record id="pms_property_form_inherit_po_lines_view" model="ir.ui.view">
         <field name="name">pms.property.form.inherit.po.lines.view</field>
         <field name="model">pms.property</field>
         <field name="inherit_id" ref="pms_base.view_pms_property_form" />
@@ -18,5 +17,4 @@
             </xpath>
         </field>
     </record>
-
 </odoo>

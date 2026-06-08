@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -30,11 +30,8 @@ msgid "ID"
 msgstr ""
 
 #. module: pms_purchase
-#: model:ir.model.fields,field_description:pms_purchase.field_pms_property____last_update
-#: model:ir.model.fields,field_description:pms_purchase.field_purchase_order_line____last_update
-#: model:ir.model.fields,field_description:pms_purchase.field_stock_move____last_update
-#: model:ir.model.fields,field_description:pms_purchase.field_stock_putaway_rule____last_update
-msgid "Last Modified on"
+#: model:ir.model.fields,field_description:pms_purchase.field_stock_putaway_rule__move_to_property
+msgid "Move to Property Location"
 msgstr ""
 
 #. module: pms_purchase
@@ -55,8 +52,8 @@ msgid "Purchase Order Line"
 msgstr ""
 
 #. module: pms_purchase
+#. odoo-python
 #: code:addons/pms_purchase/models/pms_property.py:0
-#, python-format
 msgid "Purchase Order Lines"
 msgstr ""
 
@@ -78,4 +75,11 @@ msgstr ""
 #. module: pms_purchase
 #: model:ir.model.fields,field_description:pms_purchase.field_stock_putaway_rule__location_out_id
 msgid "Store to"
+msgstr ""
+
+#. module: pms_purchase
+#: model:ir.model.fields,help:pms_purchase.field_stock_putaway_rule__move_to_property
+msgid ""
+"When enabled, incoming stock is routed to the property location linked on "
+"the purchase order line."
 msgstr ""

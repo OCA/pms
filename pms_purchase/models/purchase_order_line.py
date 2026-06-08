@@ -1,4 +1,4 @@
-# Copyright (c) 2022 Open Source Integrators
+# Copyright (c) 2022 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
 
@@ -10,8 +10,10 @@ class PurchaseOrderLine(models.Model):
 
     @api.onchange("pms_property_id")
     def _onchange_pms_property_id(self):
-        account_analytic_id = False
         for rec in self:
             if rec.pms_property_id and rec.pms_property_id.analytic_id:
-                account_analytic_id = rec.pms_property_id.analytic_id.id
-            rec.account_analytic_id = account_analytic_id
+                rec.analytic_distribution = {
+                    str(rec.pms_property_id.analytic_id.id): 100
+                }
+            else:
+                rec.analytic_distribution = {}

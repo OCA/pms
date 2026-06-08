@@ -1,4 +1,4 @@
-# Copyright (c) 2022 Open Source Integrators
+# Copyright (c) 2022 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import models
 
@@ -16,15 +16,13 @@ class StockMove(models.Model):
                 lambda x: x.category_id == self.product_id.categ_id
             )
         rules = rules and rules[0] or self.env["stock.putaway.rule"]
-        res = super(StockMove, self)._prepare_move_line_vals(quantity, reserved_quant)
+        res = super()._prepare_move_line_vals(quantity, reserved_quant)
         po = self.picking_id.purchase_id
-        po_warehouse_id = po.picking_type_id.default_location_dest_id.get_warehouse().id
+        po_warehouse_id = po.picking_type_id.default_location_dest_id.warehouse_id.id
         line = self.purchase_line_id
-        property_warehouse_id = (
-            line.pms_property_id.stock_location_id.get_warehouse().id
-        )
+        property_warehouse_id = line.pms_property_id.stock_location_id.warehouse_id.id
         if (
-            rules.method == "move_to_property"
+            rules.move_to_property
             and line.pms_property_id
             and property_warehouse_id == po_warehouse_id
         ):

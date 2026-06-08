@@ -1,6 +1,6 @@
-# Copyright (c) 2022 Open Source Integrators
+# Copyright (c) 2022 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class StockPutawayRule(models.Model):
@@ -18,9 +18,8 @@ class StockPutawayRule(models.Model):
         ondelete="cascade",
         required=False,
     )
-
-    @api.model
-    def _get_putaway_options(self):
-        res = super()._get_putaway_options()
-        res.append(("move_to_property", "Move to the location of the property"))
-        return res
+    move_to_property = fields.Boolean(
+        string="Move to Property Location",
+        help="When enabled, incoming stock is routed to the property location "
+        "linked on the purchase order line.",
+    )

@@ -1,6 +1,6 @@
-# Copyright (c) 2022 Open Source Integrators
+# Copyright (c) 2022 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 
 class PmsProperty(models.Model):
@@ -21,8 +21,8 @@ class PmsProperty(models.Model):
     def action_open_po_line(self):
         view_id = self.env.ref("purchase.purchase_order_line_tree").id
         return {
-            "name": _("Purchase Order Lines"),
-            "view_mode": "tree",
+            "name": self.env._("Purchase Order Lines"),
+            "view_mode": "list",
             "view_id": view_id,
             "res_model": "purchase.order.line",
             "domain": [("id", "in", self.po_line_ids.ids)],
