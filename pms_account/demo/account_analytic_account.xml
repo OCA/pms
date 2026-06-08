@@ -1,0 +1,21 @@
+<odoo noupdate="1">
+    <record id="demo_analytic_downtown" model="account.analytic.account">
+        <field name="name">Downtown Apartment</field>
+        <field name="plan_id" ref="pms_account.analytic_plan_properties" />
+        <field name="property_id" ref="pms_base.demo_property_downtown" />
+    </record>
+
+    <record id="demo_analytic_suburban" model="account.analytic.account">
+        <field name="name">Suburban House</field>
+        <field name="plan_id" ref="pms_account.analytic_plan_properties" />
+        <field name="property_id" ref="pms_base.demo_property_suburban" />
+    </record>
+
+    <record id="pms_base.demo_property_downtown" model="pms.property">
+        <field name="analytic_id" ref="demo_analytic_downtown" />
+    </record>
+
+    <record id="pms_base.demo_property_suburban" model="pms.property">
+        <field name="analytic_id" ref="demo_analytic_suburban" />
+    </record>
+</odoo>
