@@ -1,0 +1,19 @@
+<odoo noupdate="1">
+    <record id="demo_asset_downtown_furniture" model="account.asset">
+        <field name="name">Downtown Apartment – Furniture Set</field>
+        <field name="property_id" ref="pms_base.demo_property_downtown" />
+        <field name="original_value">8000.0</field>
+    </record>
+
+    <record id="demo_asset_suburban_appliances" model="account.asset">
+        <field name="name">Suburban House – Kitchen Appliances</field>
+        <field name="property_id" ref="pms_base.demo_property_suburban" />
+        <field name="original_value">5500.0</field>
+    </record>
+
+    <record id="demo_asset_suburban_hvac" model="account.asset">
+        <field name="name">Suburban House – HVAC System</field>
+        <field name="property_id" ref="pms_base.demo_property_suburban" />
+        <field name="original_value">12000.0</field>
+    </record>
+</odoo>
