@@ -1,0 +1,46 @@
+<odoo noupdate="1">
+    <record id="demo_po_downtown_cleaning" model="purchase.order">
+        <field name="partner_id" ref="pms_base.demo_partner_owner" />
+        <field name="order_line">
+            <record id="demo_po_line_cleaning" model="purchase.order.line">
+                <field name="product_id" ref="pms_base.demo_product_cleaning" />
+                <field name="name">Monthly deep-cleaning service</field>
+                <field name="product_qty">4.0</field>
+                <field
+                    name="date_planned"
+                    eval="(datetime.datetime.now() + datetime.timedelta(days=7)).strftime('%Y-%m-%d %H:%M:%S')"
+                />
+                <field name="price_unit">120.0</field>
+                <field name="pms_property_id" ref="pms_base.demo_property_downtown" />
+            </record>
+        </field>
+    </record>
+
+    <record id="demo_po_suburban_maintenance" model="purchase.order">
+        <field name="partner_id" ref="pms_base.demo_partner_owner" />
+        <field name="order_line">
+            <record id="demo_po_line_laundry" model="purchase.order.line">
+                <field name="product_id" ref="pms_base.demo_product_laundry" />
+                <field name="name">Linen laundering service</field>
+                <field name="product_qty">6.0</field>
+                <field
+                    name="date_planned"
+                    eval="(datetime.datetime.now() + datetime.timedelta(days=14)).strftime('%Y-%m-%d %H:%M:%S')"
+                />
+                <field name="price_unit">35.0</field>
+                <field name="pms_property_id" ref="pms_base.demo_property_suburban" />
+            </record>
+            <record id="demo_po_line_parking" model="purchase.order.line">
+                <field name="product_id" ref="pms_base.demo_product_parking" />
+                <field name="name">Parking facility rental</field>
+                <field name="product_qty">1.0</field>
+                <field
+                    name="date_planned"
+                    eval="(datetime.datetime.now() + datetime.timedelta(days=14)).strftime('%Y-%m-%d %H:%M:%S')"
+                />
+                <field name="price_unit">80.0</field>
+                <field name="pms_property_id" ref="pms_base.demo_property_suburban" />
+            </record>
+        </field>
+    </record>
+</odoo>

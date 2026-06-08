@@ -1,15 +1,22 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-
 from odoo.tests import common
 
 
 class TestPmsProperty(common.TransactionCase):
     def setUp(self):
-        super(TestPmsProperty, self).setUp()
-
-        # Get required Model
+        super().setUp()
         self.pms_property_model = self.env["pms.property"]
+
+    def _create_product(self, name):
+        return self.env["product.product"].create(
+            {
+                "name": name,
+                "type": "consu",
+                "is_storable": True,
+                "purchase_ok": True,
+            }
+        )
 
     def test_pms_property_generate(self):
         partner_a = self.env["res.partner"].create(
@@ -34,6 +41,8 @@ class TestPmsProperty(common.TransactionCase):
 
         PurchaseOrder = self.env["purchase.order"].with_context(tracking_disable=True)
         company = self.env.user.company_id
+        product_1 = self._create_product("Purchase Test Product 1")
+        product_2 = self._create_product("Purchase Test Product 2")
 
         picking_type = self.env["stock.picking.type"].create(
             {
@@ -61,7 +70,7 @@ class TestPmsProperty(common.TransactionCase):
                     0,
                     0,
                     {
-                        "product_id": self.env.ref("product.product_delivery_01").id,
+                        "product_id": product_1.id,
                         "pms_property_id": pms_property_record.id,
                     },
                 )
@@ -75,9 +84,9 @@ class TestPmsProperty(common.TransactionCase):
 
         self.env["stock.putaway.rule"].create(
             {
-                "product_id": self.env.ref("product.product_delivery_02").id,
+                "product_id": product_2.id,
                 "location_in_id": self.env.ref("stock.stock_location_stock").id,
-                "method": "move_to_property",
+                "move_to_property": True,
                 "location_out_id": self.env.ref("stock.stock_location_suppliers").id,
             }
         )
@@ -89,9 +98,7 @@ class TestPmsProperty(common.TransactionCase):
                         0,
                         0,
                         {
-                            "product_id": self.env.ref(
-                                "product.product_delivery_02"
-                            ).id,
+                            "product_id": product_2.id,
                             "pms_property_id": pms_property_record.id,
                         },
                     )
