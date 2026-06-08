@@ -1,0 +1,99 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pms_website_sale
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-04 00:00+0000\n"
+"PO-Revision-Date: 2026-06-04 00:00+0000\n"
+"Last-Translator: Maxime Chambreuil <maxime.chambreuil@graymatterlogic.com>\n"
+"Language-Team: Chinese (Hong Kong)\n"
+"Language: zh_HK\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "Add one"
+msgstr "新增一個"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_categories
+msgid "All Properties"
+msgstr "所有物業"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "City..."
+msgstr "城市..."
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid ""
+"Click <i>'New'</i> in the top-right corner to create your first property."
+msgstr ""
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "Guest..."
+msgstr "客人..."
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No Property defined"
+msgstr "未定義物業"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No property defined in category \""
+msgstr "類別中無物業 \""
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No results"
+msgstr "無結果"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No results for \""
+msgstr "無結果 \""
+
+#. module: pms_website_sale
+#: model:website.menu,name:pms_website_sale.menu_property
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "Properties"
+msgstr "物業"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.sale_order_portal_content
+msgid "Property"
+msgstr "物業"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "Remove one"
+msgstr "移除一個"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_categories
+msgid "Show categories"
+msgstr "顯示類別"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_item
+msgid "This product is unpublished."
+msgstr "此產品未發布。"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_item
+msgid "Unpublished"
+msgstr "未發布"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "in category \""
+msgstr "在類別 \""

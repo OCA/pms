@@ -1,21 +1,17 @@
 <odoo>
-
     <template
         id="sale_order_portal_content"
         inherit_id="sale.sale_order_portal_content"
         name="Sales Order Portal Content"
     >
-        <xpath expr="//tbody[hasclass('sale_tbody')]//tr/t[1]/td[1]" position="inside">
+        <xpath expr="//td[@name='td_product_name']" position="after">
             <td>
                 <t t-if="line.property_id">
                     <t t-esc="line.property_id.name" />
                 </t>
             </td>
         </xpath>
-        <xpath
-            expr="//table[@id='sales_order_table']//thead/tr/th[1]"
-            position="inside"
-        >
+        <xpath expr="//th[@id='product_name_header']" position="after">
             <th>Property</th>
         </xpath>
     </template>
@@ -38,11 +34,11 @@
         </li>
     </template>
 
-
     <template
         id="pms_website_sale_search_box"
         inherit_id="website.website_search_box"
         primary="True"
+        priority="99"
     >
         <xpath expr="//div[@role='search']" position="attributes">
             <attribute name="t-attf-class" remove="#{_classes}" separator=" " />
@@ -64,64 +60,75 @@
     <template
         id="pms_search_box"
         inherit_id="pms_website_sale.pms_website_sale_search_box"
+        priority="99"
     >
         <xpath expr="//input[@name='search']" position="replace">
-
-                <select class="form-control mr-3" id="city" name="search">
-                    <option value="">City...</option>
-                    <t t-foreach="city" t-as="c">
-                        <option t-att-value="c" t-att-selected="c == search_city">
-                            <t t-esc="c" />
-                        </option>
-                    </t>
-                </select>
-                <input
-                class="field_date_range_filtter form-control mr-3"
-                name="date_range"
-                type="text"
-                t-att-value="search_raneg"
-            />
-                <div class="css_quantity input-group mr-3" contenteditable="false">
-                    <div class="input-group-prepend">
-                        <a
-                        t-attf-href="#"
-                        class="btn btn-secondary js_add_cart_json"
-                        aria-label="Remove one"
-                        title="Remove one"
-                        style="color:none;background-color:none;"
-                    >
-                            <i class="fa fa-minus" />
-                        </a>
-                    </div>
+            <div class="row g-2 align-items-end w-100">
+                <div class="col-12 col-sm-auto flex-sm-grow-1">
+                    <label class="form-label small mb-1" for="city">City</label>
+                    <select class="form-select" id="city" name="search">
+                        <option value="">All cities</option>
+                        <t t-foreach="city" t-as="c">
+                            <option t-att-value="c" t-att-selected="c == search_city">
+                                <t t-esc="c" />
+                            </option>
+                        </t>
+                    </select>
+                </div>
+                <div class="col-12 col-sm-auto flex-sm-grow-1">
+                    <label class="form-label small mb-1" for="date_range">Dates</label>
                     <input
-                    type="text"
-                    class="form-control text-center"
-                    style="max-width:60px;"
-                    data-min="1"
-                    name="guest_select"
-                    placeholder="Guest..."
-                    t-att-value="search_guest or ''"
-                />
-                    <div class="input-group-append">
-                        <a
-                        t-attf-href="#"
-                        class="btn btn-secondary float_left js_add_cart_json"
-                        aria-label="Add one"
-                        title="Add one"
-                    >
+                        class="field_date_range_filtter form-control"
+                        id="date_range"
+                        name="date_range"
+                        type="text"
+                        placeholder="Check-in – Check-out"
+                        t-att-value="search_raneg"
+                    />
+                </div>
+                <div class="col-12 col-sm-auto">
+                    <label
+                        class="form-label small mb-1"
+                        for="guest_select"
+                    >Guests</label>
+                    <div class="input-group css_quantity" contenteditable="false">
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary js_add_cart_json"
+                            aria-label="Remove one"
+                            title="Remove one"
+                        >
+                            <i class="fa fa-minus" />
+                        </button>
+                        <input
+                            type="text"
+                            class="form-control text-center"
+                            style="max-width:60px;"
+                            data-min="1"
+                            id="guest_select"
+                            name="guest_select"
+                            placeholder="0"
+                            t-att-value="search_guest or ''"
+                        />
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary js_add_cart_json"
+                            aria-label="Add one"
+                            title="Add one"
+                        >
                             <i class="fa fa-plus" />
-                        </a>
+                        </button>
                     </div>
                 </div>
+            </div>
         </xpath>
     </template>
 
     <template id="search" name="Search Box">
         <t t-call="pms_website_sale.pms_website_sale_search_box">
-             <t t-set="action" t-value="'/property'" />
+            <t t-set="action" t-value="'/property'" />
         </t>
     </template>
-
 
     <!-- make grid view of template -->
     <template id="property_item" name="Property">
@@ -186,7 +193,7 @@
         </form>
     </template>
 
-     <!-- /property listing -->
+    <!-- /property listing -->
     <template id="properties" name="Properties">
         <t t-call="website.layout">
             <t t-set="additional_title">Properties</t>
@@ -266,22 +273,22 @@
                                         <p
                                             t-if="category"
                                         >No property defined in category "<strong
-                                                t-esc="category.display_name"
-                                            />".</p>
+                                            t-esc="category.display_name"
+                                        />".</p>
                                     </t>
                                     <t t-else="">
                                         <h3 class="mt8">No results</h3>
                                         <p>No results for "<strong t-esc='search' />"<t
-                                                t-if="category"
-                                            > in category "<strong
-                                                    t-esc="category.display_name"
-                                                />"</t>.</p>
+                                            t-if="category"
+                                        > in category "<strong
+                                            t-esc="category.display_name"
+                                        />"</t>.</p>
                                     </t>
                                     <p
                                         t-ignore="true"
                                         groups="sales_team.group_sale_manager"
                                     >Click <i
-                                        >'New'</i> in the top-right corner to create your first property.</p>
+                                    >'New'</i> in the top-right corner to create your first property.</p>
                                 </div>
                             </t>
                         </div>
@@ -296,6 +303,208 @@
                 />
             </div>
         </t>
+    </template>
+
+    <template
+        id="property_booking_form"
+        inherit_id="pms_website.property"
+        name="Property Booking Form"
+    >
+        <!-- Book Now button in property details -->
+        <xpath expr="//div[@id='product_details']" position="inside">
+            <div class="mt-3">
+                <t t-if="is_public_user">
+                    <a
+                        t-attf-href="/web/login?redirect=#{property.website_url}"
+                        class="btn btn-primary btn-lg"
+                    >
+                        <i class="fa fa-sign-in" />
+                        Log in to Book
+                    </a>
+                </t>
+                <t t-elif="reservation_types">
+                    <button
+                        type="button"
+                        class="btn btn-primary btn-lg"
+                        data-bs-toggle="modal"
+                        data-bs-target="#pmsBookingModal"
+                    >
+                        <i class="fa fa-calendar" />
+                        Book Now
+                    </button>
+                </t>
+            </div>
+        </xpath>
+
+        <!-- Booking modal -->
+        <xpath
+            expr="//div[hasclass('modal','fade','right') and @id='exampleModalPreview']"
+            position="before"
+        >
+            <t t-if="not is_public_user and reservation_types">
+                <div
+                    class="modal fade"
+                    id="pmsBookingModal"
+                    tabindex="-1"
+                    aria-labelledby="pmsBookingModalLabel"
+                    aria-hidden="true"
+                    t-att-data-property-id="property.id"
+                >
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="pmsBookingModalLabel">
+                                    Book <span t-field="property.name" />
+                                </h5>
+                                <button
+                                    type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Close"
+                                />
+                            </div>
+                            <div class="modal-body">
+                                <form id="pmsBookingForm">
+                                    <div class="row mb-3">
+                                        <div class="col-md-4">
+                                            <label
+                                                for="date_start"
+                                                class="form-label"
+                                            >Check-in</label>
+                                            <input
+                                                type="date"
+                                                class="form-control"
+                                                id="date_start"
+                                                name="date_start"
+                                                required="required"
+                                            />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label
+                                                for="date_end"
+                                                class="form-label"
+                                            >Check-out</label>
+                                            <input
+                                                type="date"
+                                                class="form-control"
+                                                id="date_end"
+                                                name="date_end"
+                                                required="required"
+                                            />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label
+                                                class="form-label"
+                                            >Availability</label>
+                                            <div
+                                                id="pms_availability_status"
+                                                class="mt-2 text-muted small"
+                                            >Select dates to check</div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label
+                                            for="reservation_type_id"
+                                            class="form-label"
+                                        >Reservation Type</label>
+                                        <select
+                                            class="form-select"
+                                            id="reservation_type_id"
+                                            name="reservation_type_id"
+                                            required="required"
+                                        >
+                                            <option value="">-- Select --</option>
+                                            <t t-foreach="reservation_types" t-as="rt">
+                                                <option t-att-value="rt.id">
+                                                    <t t-esc="rt.name" />
+                                                    <t t-if="rt.price">
+                                                        (<t
+                                                        t-esc="rt.price"
+                                                        t-options='{"widget": "float", "precision": 2}'
+                                                    />&#160;<t
+                                                        t-esc="rt.currency_id.symbol"
+                                                    />)
+                                                    </t>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            Guests
+                                            <t t-if="property.no_of_guests">
+                                            <span class="text-muted small">(max
+                                                    <t
+                                                t-esc="property.no_of_guests"
+                                            />)</span>
+                                        </t>
+                                        </label>
+                                        <div id="pms_guest_list">
+                                            <div
+                                                class="pms-guest-row row mb-2 align-items-center"
+                                            >
+                                                <div class="col-md-4">
+                                                    <input
+                                                        type="text"
+                                                        class="form-control"
+                                                        name="guest_name_0"
+                                                        data-guest-field="name"
+                                                        placeholder="Full Name"
+                                                        required="required"
+                                                    />
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <input
+                                                        type="tel"
+                                                        class="form-control"
+                                                        name="guest_phone_0"
+                                                        data-guest-field="phone"
+                                                        placeholder="Phone"
+                                                    />
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <input
+                                                        type="email"
+                                                        class="form-control"
+                                                        name="guest_email_0"
+                                                        data-guest-field="email"
+                                                        placeholder="Email"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-secondary btn-sm mt-2"
+                                            id="pms_add_guest"
+                                            t-att-data-max="property.no_of_guests or 0"
+                                        >
+                                            <i class="fa fa-plus" />
+                                            Add Guest
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary"
+                                    data-bs-dismiss="modal"
+                                >Cancel</button>
+                                <button
+                                    type="button"
+                                    id="pmsAddToCart"
+                                    class="btn btn-primary"
+                                >
+                                    <i class="fa fa-shopping-cart" />
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </xpath>
     </template>
 
     <template
@@ -332,5 +541,4 @@
             </div>
         </xpath>
     </template>
-
 </odoo>
