@@ -1,6 +1,6 @@
 # Copyright 2019  Pablo Quesada
 # Copyright 2019  Dario Lodeiros
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
 
@@ -12,6 +12,42 @@ class PmsProperty(models.Model):
         string="Analytic Account",
         comodel_name="account.analytic.account",
     )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        recs = super().create(vals_list)
+        for rec in recs:
+            if not rec.analytic_id:
+                rec._create_analytic_account()
+        return recs
+
+    def write(self, vals):
+        res = super().write(vals)
+        if "name" or "ref" in vals:
+            for rec in self:
+                if rec.analytic_id:
+                    rec.analytic_id.name = rec.name
+                    rec.analytic_id.code = rec.ref
+                else:
+                    rec._create_analytic_account()
+        return res
+
+    def _create_analytic_account(self):
+        plan = self.env.ref(
+            "pms_account.analytic_plan_properties", raise_if_not_found=False
+        )
+        if not plan:
+            return
+        analytic = self.env["account.analytic.account"].create(
+            {
+                "name": self.name,
+                "plan_id": plan.id,
+                "code": self.ref,
+                "property_id": self.id,
+            }
+        )
+        self.analytic_id = analytic.id
+
     invoice_line_ids = fields.Many2many(
         "account.move.line",
         "pms_property_account_move_line_rel",
@@ -35,13 +71,11 @@ class PmsProperty(models.Model):
         copy=False,
     )
     invoice_count = fields.Integer(
-        string="Invoice Count",
         compute="_compute_invoice_count",
         readonly=True,
         copy=False,
     )
     bill_count = fields.Integer(
-        string="Bill Count",
         compute="_compute_invoice_count",
         readonly=True,
         copy=False,
@@ -49,17 +83,17 @@ class PmsProperty(models.Model):
 
     @api.depends("invoice_line_ids")
     def _compute_invoice_count(self):
-        for property in self:
-            invoices = property.invoice_line_ids.mapped("move_id").filtered(
+        for rec in self:
+            invoices = rec.invoice_line_ids.mapped("move_id").filtered(
                 lambda r: r.move_type in ("out_invoice", "out_refund")
             )
-            bills = property.invoice_line_ids.mapped("move_id").filtered(
+            bills = rec.invoice_line_ids.mapped("move_id").filtered(
                 lambda r: r.move_type in ("in_invoice", "in_refund")
             )
-            property.invoice_ids = invoices
-            property.invoice_count = len(invoices)
-            property.bill_ids = bills
-            property.bill_count = len(bills)
+            rec.invoice_ids = invoices
+            rec.invoice_count = len(invoices)
+            rec.bill_ids = bills
+            rec.bill_count = len(bills)
 
     def action_view_invoices(self):
         action = self.env.ref("account.action_move_out_invoice_type").read()[0]
