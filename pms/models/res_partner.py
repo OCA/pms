@@ -30,7 +30,7 @@ class ResPartner(models.Model):
         ondelete="restrict",
         index=True,
     )
-    default_commission = fields.Integer(string="Commission", help="Default commission")
+    default_commission = fields.Float(string="Commission", help="Default commission")
     commission_type = fields.Selection(
         selection=[
             ("included", "Commission Included in Price"),
