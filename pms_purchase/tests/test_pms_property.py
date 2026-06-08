@@ -6,7 +6,7 @@ from odoo.tests import common
 
 class TestPmsProperty(common.TransactionCase):
     def setUp(self):
-        super(TestPmsProperty, self).setUp()
+        super().setUp()
 
         # Get required Model
         self.pms_property_model = self.env["pms.property"]
