@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import fields, models
 
@@ -13,7 +13,7 @@ class PMSStage(models.Model):
 
     def get_color_information(self):
         # get stage ids
-        stage_ids = self.search([])
+        stage_ids = self.search([], limit=0)
         color_information_dict = []
         for stage in stage_ids:
             color_information_dict.append(

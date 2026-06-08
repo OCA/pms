@@ -1,9 +1,9 @@
-# Copyright (c) 2022 Open Source Integrators
+# Copyright (c) 2022 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo.tests import SavepointCase
+from odoo.tests.common import TransactionCase
 
 
-class TestPMSReservation(SavepointCase):
+class TestPMSReservation(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -57,16 +57,16 @@ class TestPMSReservation(SavepointCase):
 
     def test_read_group_stage_ids(self):
         stages = self.env["pms.stage"]
-        stages = self.reservation._read_group_stage_ids(stages, [], False)
+        stages = self.reservation._read_group_stage_ids(stages, [])
         self.assertEqual(len(stages), 6)
 
     def test_onchange_property_id(self):
         self.reservation.onchange_property_id()
         self.assertEqual(
-            self.reservation.start.strftime("%m/%d/%Y %H:%M"), "06/01/2022 10:00"
+            self.reservation.start.strftime("%m/%d/%Y %H:%M"), "06/01/2022 12:00"
         )
         self.assertEqual(
-            self.reservation.stop.strftime("%m/%d/%Y %H:%M"), "06/15/2022 13:00"
+            self.reservation.stop.strftime("%m/%d/%Y %H:%M"), "06/15/2022 15:00"
         )
 
     def test_check_max_no_of_guests(self):
