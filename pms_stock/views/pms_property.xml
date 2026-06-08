@@ -1,6 +1,5 @@
 <odoo>
-
-     <!-- Used in location -->
+    <!-- Used in location -->
     <record model="ir.actions.act_window" id="location_open_content">
         <field name="context">{'search_default_productgroup': 1}</field>
         <field name="domain">[('location_id', 'child_of', stock_location_id)]</field>
@@ -32,10 +31,9 @@
                     name="%(pms_stock.location_open_content)d"
                     context="{'stock_location_id': stock_location_id}"
                     type="action"
-                    attrs="{'invisible': [('stock_location_id', '=', False)]}"
+                    invisible="('stock_location_id', '=', False)"
                 />
             </xpath>
         </field>
     </record>
-
 </odoo>
