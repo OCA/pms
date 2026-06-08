@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
 
@@ -8,11 +8,10 @@ class CrmLead(models.Model):
 
     property_ids = fields.Many2many(
         "pms.property",
-        string="Properties",
+        string="PMS Properties",
         copy=False,
     )
     property_count = fields.Integer(
-        string="Property Count",
         compute="_compute_propert_count",
         readonly=True,
         copy=False,
