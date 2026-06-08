@@ -1,0 +1,3 @@
+- Install **Website**, **eCommerce**, **PMS Website**, and **PMS Sale**.
+- Publish properties on the website and define reservation types with prices.
+- The **Properties** menu is added automatically on the website.

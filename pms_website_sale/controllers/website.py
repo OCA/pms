@@ -1,16 +1,16 @@
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from datetime import datetime
 
 from odoo import http
 from odoo.http import request
 
-from odoo.addons.http_routing.models.ir_http import slug
+from odoo.addons.pms_website.controllers.website import Website as PmsPropertyWebsite
 from odoo.addons.website.controllers.main import QueryURL
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 
 
-class PropertyTableCompute(object):
+class PropertyTableCompute:
     def __init__(self):
         self.table = {}
 
@@ -44,7 +44,7 @@ class PropertyTableCompute(object):
             pos = minpos
             while not self._check_place(pos % ppr, pos // ppr, x, y, ppr):
                 pos += 1
-            # if 21st products (index 20) and the last line is full (ppr products in it), break
+            # if 21st product (index 20) and last line is full (ppr products), break
             # (pos + 1.0) / ppr is the line where the product would be inserted
             # maxy is the number of existing lines
             # + 1.0 is because pos begins at 0, thus pos 20 is actually the 21st block
@@ -110,15 +110,8 @@ class WebsiteSale(WebsiteSale):
 
     def _get_pricelist_context(self):
         pricelist_context = dict(request.env.context)
-        pricelist = False
-        if not pricelist_context.get("pricelist"):
-            pricelist = request.website.get_current_pricelist()
-            pricelist_context["pricelist"] = pricelist.id
-        else:
-            pricelist = request.env["product.pricelist"].browse(
-                pricelist_context["pricelist"]
-            )
-
+        pricelist = request.pricelist
+        pricelist_context["pricelist"] = pricelist.id
         return pricelist_context, pricelist
 
     def _update_property_values(self, Property, post):
@@ -171,8 +164,8 @@ class WebsiteSale(WebsiteSale):
 
         pricelist_context, pricelist = self._get_pricelist_context()
 
-        request.context = dict(
-            request.context, pricelist=pricelist.id, partner=request.env.user.partner_id
+        request.update_context(
+            pricelist=pricelist.id, partner=request.env.user.partner_id
         )
 
         Property = request.env["pms.property"].with_context(bin_size=True)
@@ -191,7 +184,7 @@ class WebsiteSale(WebsiteSale):
         categs = Category.search(categs_domain)
 
         if category:
-            url = "/shop/category/%s" % slug(category)
+            url = f"/shop/category/{request.env['ir.http']._slug(category)}"
 
         product_count = len(search_property)
         pager = request.website.pager(
@@ -225,3 +218,132 @@ class WebsiteSale(WebsiteSale):
         )
 
         return request.render("pms_website_sale.properties", values)
+
+
+class PmsWebsiteSale(PmsPropertyWebsite):
+    def _prepare_property_values(self, pms_property, category, search, **kwargs):
+        values = super()._prepare_property_values(
+            pms_property, category, search, **kwargs
+        )
+        reservation_types = (
+            request.env["pms.property.reservation"]
+            .sudo()
+            .search(
+                [
+                    "|",
+                    ("property_id", "=", pms_property.id),
+                    ("property_id", "=", False),
+                ]
+            )
+        )
+        values["reservation_types"] = reservation_types
+        values["is_public_user"] = request.env.user._is_public()
+        return values
+
+    @http.route(
+        ["/property/<int:property_id>/check_availability"],
+        type="jsonrpc",
+        auth="public",
+        website=True,
+        methods=["POST"],
+    )
+    def check_availability(self, property_id, date_start=None, date_end=None, **kwargs):
+        if not date_start or not date_end:
+            return {"available": False, "error": "Missing dates"}
+        try:
+            start = datetime.strptime(date_start, "%Y-%m-%d")
+            end = datetime.strptime(date_end, "%Y-%m-%d")
+        except ValueError:
+            return {"available": False, "error": "Invalid dates"}
+        stage_new = request.env.ref("pms_sale.pms_stage_new", raise_if_not_found=False)
+        stage_cancelled = request.env.ref(
+            "pms_sale.pms_stage_cancelled", raise_if_not_found=False
+        )
+        excluded_stage_ids = [s.id for s in [stage_new, stage_cancelled] if s]
+        conflicting = (
+            request.env["pms.reservation"]
+            .sudo()
+            .search(
+                [
+                    ("property_id", "=", property_id),
+                    ("stage_id", "not in", excluded_stage_ids),
+                    ("start", "<=", end),
+                    ("stop", ">=", start),
+                ]
+            )
+        )
+        return {"available": not bool(conflicting)}
+
+    @http.route(
+        ["/property/<int:property_id>/add_to_cart"],
+        type="jsonrpc",
+        auth="public",
+        website=True,
+        methods=["POST"],
+    )
+    def property_add_to_cart(
+        self,
+        property_id,
+        date_start=None,
+        date_end=None,
+        reservation_type_id=None,
+        guests=None,
+        **kwargs,
+    ):
+        pms_property = request.env["pms.property"].sudo().browse(property_id)
+        if (
+            not pms_property.exists()
+            or not pms_property.can_access_from_current_website()
+        ):
+            return {"error": "Property not found", "redirect": "/property"}
+
+        if request.env.user._is_public():
+            return {
+                "error": "Login required",
+                "redirect": f"/web/login?redirect={pms_property.website_url}",
+            }
+
+        try:
+            start = datetime.strptime(date_start or "", "%Y-%m-%d")
+            end = datetime.strptime(date_end or "", "%Y-%m-%d")
+        except ValueError:
+            return {"error": "Invalid dates"}
+
+        reservation_type = (
+            request.env["pms.property.reservation"]
+            .sudo()
+            .browse(int(reservation_type_id or 0))
+        )
+        if not reservation_type.exists():
+            return {"error": "Invalid reservation type"}
+
+        guests = [g for g in (guests or []) if g.get("name", "").strip()]
+        if not guests:
+            return {"error": "At least one guest is required"}
+
+        reservation = (
+            request.env["pms.reservation"]
+            .sudo()
+            .create(
+                {
+                    "property_id": pms_property.id,
+                    "start": start,
+                    "stop": end,
+                    "no_of_guests": len(guests),
+                    "guest_ids": [(0, 0, g) for g in guests],
+                    "partner_id": request.env.user.partner_id.id,
+                }
+            )
+        )
+        duration = (end - start).days
+        order = request.cart or request.website._create_cart()
+        request.env["sale.order.line"].sudo().create(
+            {
+                "order_id": order.id,
+                "product_id": reservation_type.product_id.id,
+                "product_uom_qty": duration,
+                "price_unit": reservation_type.price,
+                "pms_reservation_id": reservation.id,
+            }
+        )
+        return {"redirect": "/shop/cart"}

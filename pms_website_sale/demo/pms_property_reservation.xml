@@ -1,0 +1,7 @@
+<odoo noupdate="1">
+    <record id="demo_reservation_type_online" model="pms.property.reservation">
+        <field name="name">Online Booking</field>
+        <field name="product_id" ref="pms_sale.product_product_reservation" />
+        <field name="price">175.0</field>
+    </record>
+</odoo>
