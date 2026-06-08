@@ -1,5 +1,4 @@
 <odoo>
-
     <record id="view_contract_form" model="ir.ui.view">
         <field name="name">contract.contract.property.form</field>
         <field name="model">contract.contract</field>
@@ -25,5 +24,4 @@
             </xpath>
         </field>
     </record>
-
 </odoo>
