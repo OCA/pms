@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
 
@@ -20,16 +20,15 @@ class PmsPropertyReservation(models.Model):
             elif not rec.price:
                 rec.price = 0
 
-    name = fields.Char(string="Name", required=True)
+    name = fields.Char(required=True)
     product_id = fields.Many2one(
         "product.product",
         string="Product",
         required=True,
         domain=[("reservation_ok", "=", True)],
-        default=_default_product_id,
+        default=lambda self: self._default_product_id(),
     )
     price = fields.Float(
-        string="Price",
         compute="_compute_price",
         digits="Product Price",
         readonly=False,
@@ -46,4 +45,4 @@ class PmsPropertyReservation(models.Model):
         """Compute a multiline description of this ticket. It is used when ticket
         description are necessary without having to encode it manually, like sales
         information."""
-        return "%s\n%s" % (self.display_name, self.property_id.display_name)
+        return f"{self.display_name}\n{self.property_id.display_name}"

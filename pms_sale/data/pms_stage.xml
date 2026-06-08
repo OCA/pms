@@ -1,5 +1,4 @@
 <odoo>
-
     <record id="pms_stage_new" model="pms.stage">
         <field name="name">New</field>
         <field name="sequence">10</field>
@@ -48,5 +47,4 @@
         <field name="stage_type">reservation</field>
         <field name="team_ids" eval="[(4, ref('pms_base.pms_team_default'))]" />
     </record>
-
 </odoo>

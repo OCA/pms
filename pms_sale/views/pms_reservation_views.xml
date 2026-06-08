@@ -1,5 +1,4 @@
 <odoo>
-
     <record id="view_reservation_form" model="ir.ui.view">
         <field name="name">pms.reservation.form</field>
         <field name="model">pms.reservation</field>
@@ -13,7 +12,7 @@
                         class="oe_highlight"
                         type="object"
                         groups="pms_base.group_pms_manager"
-                        attrs="{'invisible': [('stage_id', '!=', (%(pms_sale.pms_stage_new)d))]}"
+                        invisible="('stage_id', '!=', (%(pms_sale.pms_stage_new)d))"
                     />
                     <button
                         id="action_confirm"
@@ -22,7 +21,7 @@
                         class="oe_highlight"
                         type="object"
                         groups="pms_base.group_pms_manager"
-                        attrs="{'invisible': [('stage_id', '!=', (%(pms_sale.pms_stage_booked)d))]}"
+                        invisible="('stage_id', '!=', (%(pms_sale.pms_stage_booked)d))"
                     />
                     <button
                         id="action_check_in"
@@ -31,7 +30,7 @@
                         class="oe_highlight"
                         type="object"
                         groups="pms_base.group_pms_manager"
-                        attrs="{'invisible': [('stage_id', '!=', (%(pms_sale.pms_stage_confirmed)d))]}"
+                        invisible="('stage_id', '!=', (%(pms_sale.pms_stage_confirmed)d))"
                     />
                     <button
                         id="action_check_out"
@@ -40,7 +39,7 @@
                         class="oe_highlight"
                         type="object"
                         groups="pms_base.group_pms_manager"
-                        attrs="{'invisible': [('stage_id', '!=', (%(pms_sale.pms_stage_checked_in)d))]}"
+                        invisible="('stage_id', '!=', (%(pms_sale.pms_stage_checked_in)d))"
                     />
                     <field
                         name="stage_id"
@@ -58,7 +57,7 @@
                             class="oe_stat_button"
                             icon="fa-pencil-square-o"
                             groups="account.group_account_invoice"
-                            attrs="{'invisible': [('invoice_count', '=', 0)]}"
+                            invisible="('invoice_count', '=', 0)"
                         >
                             <field
                                 name="invoice_count"
@@ -80,8 +79,8 @@
                             />
                             <field name="partner_id" required="1" />
                             <field name="user_id" required="1" />
-                            <field name="sale_order_id" invisible="1" />
-                            <field name="sale_order_line_id" invisible="1" />
+                            <field name="sale_order_id" invisible="True" />
+                            <field name="sale_order_line_id" invisible="True" />
                         </group>
                         <group id="main-right">
                             <field name="date" />
@@ -106,7 +105,7 @@
                                 <field name="no_of_guests" />
                             </group>
                             <field name="guest_ids" nolabel="1">
-                                <tree string="Guests" editable="bottom">
+                                <list string="Guests" editable="bottom">
                                     <field
                                         name="partner_id"
                                         domain="[('is_property', '=', False)]"
@@ -114,20 +113,12 @@
                                     <field name="name" />
                                     <field name="phone" />
                                     <field name="email" />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers" />
-                    <field name="activity_ids" widget="mail_activity" />
-                    <field
-                        name="message_ids"
-                        widget="mail_thread"
-                        options="{'post_refresh': 'recipients'}"
-                    />
-                </div>
+                <chatter />
             </form>
         </field>
     </record>
@@ -136,14 +127,14 @@
         <field name="name">pms.reservation.tree</field>
         <field name="model">pms.reservation</field>
         <field name="arch" type="xml">
-            <tree string="Reservation">
+            <list string="Reservation">
                 <field name="name" />
                 <field name="partner_id" />
                 <field name="start" />
                 <field name="stop" />
                 <field name="property_id" />
                 <field name="stage_id" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -224,7 +215,7 @@
             <calendar
                 string="Reservations"
                 date_start="start"
-                date_delay="stop"
+                date_stop="stop"
                 color="stage_id"
             >
                 <field name="name" />
@@ -251,81 +242,36 @@
                 <field name="user_id" />
                 <field name="color" />
                 <templates>
-                    <t t-name="kanban-box">
-                        <div
-                            t-attf-class="#{kanban_color(record.color.raw_value)} oe_kanban_global_click"
-                            name="pms_reservation"
-                        >
-                            <div class="o_dropdown_kanban dropdown">
-                                <a
-                                    role="button"
-                                    class="dropdown-toggle o-no-caret btn"
-                                    data-toggle="dropdown"
-                                    href="#"
-                                    aria-label="Dropdown menu"
-                                    title="Dropdown menu"
-                                >
-                                    <span class="fa fa-ellipsis-v" />
-                                </a>
-                                <div class="dropdown-menu" role="menu">
-                                    <a
-                                        t-if="widget.editable"
-                                        role="menuitem"
-                                        type="edit"
-                                        class="dropdown-item"
-                                    >Edit
-                                    </a>
-                                    <a
-                                        t-if="widget.deletable"
-                                        role="menuitem"
-                                        type="delete"
-                                        class="dropdown-item"
-                                    >
-                                        Delete
-                                    </a>
-                                    <div role="separator" class="dropdown-divider" />
-                                    <ul
-                                        class="oe_kanban_colorpicker"
-                                        data-field="color"
-                                    />
-                                </div>
-                            </div>
-                            <div class="oe_kanban_content">
-                                <div>
-                                    <strong class="o_kanban_record_title">
-                                        <field name="name" />
-                                    </strong>
-                                </div>
-                                <div>
-                                    <field
-                                        name="tag_ids"
-                                        widget="many2many_tags"
-                                        options="{'color_field': 'color'}"
-                                    />
-                                </div><div>
-                                    <field name="partner_id" /> @ <field
-                                        name="property_id"
-                                    />
-                                </div>
-                                <div><field name="duration" /> night(s)</div>
-                                <div class="o_kanban_record_bottom">
-                                    <div class="oe_kanban_bottom_left">
-                                        <field name="priority" widget="priority" />
-                                        <field
-                                            name="activity_ids"
-                                            widget="kanban_activity"
-                                        />
-                                    </div>
-                                    <div class="oe_kanban_bottom_right">
-                                        <field
-                                            name="user_id"
-                                            widget="many2one_avatar_user"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="oe_clear" />
+                    <t t-name="card">
+                        <field name="name" class="fw-bold o_kanban_record_title" />
+                        <field
+                            name="tag_ids"
+                            widget="many2many_tags"
+                            options="{'color_field': 'color'}"
+                        />
+                        <div>
+                            <field name="partner_id" /> @ <field name="property_id" />
                         </div>
+                        <div><field name="duration" /> night(s)</div>
+                        <footer>
+                            <field name="priority" widget="priority" />
+                            <field name="activity_ids" widget="kanban_activity" />
+                            <field
+                                name="user_id"
+                                widget="many2one_avatar_user"
+                                class="ms-auto"
+                            />
+                        </footer>
+                    </t>
+                    <t t-name="menu">
+                        <a role="menuitem" type="edit" class="dropdown-item">Edit</a>
+                        <a
+                            role="menuitem"
+                            type="delete"
+                            class="dropdown-item"
+                        >Delete</a>
+                        <div role="separator" class="dropdown-divider" />
+                        <ul class="oe_kanban_colorpicker" data-field="color" />
                     </t>
                 </templates>
             </kanban>
@@ -357,7 +303,7 @@
     <record id="action_board_reservation" model="ir.actions.act_window">
         <field name="name">Reservations</field>
         <field name="res_model">pms.reservation</field>
-        <field name="view_mode">timeline,kanban,calendar,tree,form</field>
+        <field name="view_mode">timeline,kanban,calendar,list,form</field>
     </record>
 
     <record id="action_sale_reservation" model="ir.actions.act_window">
@@ -370,7 +316,7 @@
     <record id="action_operations_reservation" model="ir.actions.act_window">
         <field name="name">Reservations</field>
         <field name="res_model">pms.reservation</field>
-        <field name="view_mode">kanban,tree,form,timeline,calendar</field>
+        <field name="view_mode">kanban,list,form,timeline,calendar</field>
     </record>
 
     <record id="action_report_reservation" model="ir.actions.act_window">
@@ -382,15 +328,14 @@
     <record id="action_pms_reservation" model="ir.actions.act_window">
         <field name="name">Reservations</field>
         <field name="res_model">pms.reservation</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <record id="reservation_action_from_dashboard" model="ir.actions.act_window">
         <field name="name">Orders</field>
         <field name="res_model">pms.reservation</field>
-        <field name="view_mode">kanban,tree,form,calendar</field>
+        <field name="view_mode">kanban,list,form,calendar</field>
         <field name="context">{'default_team_id': active_id}</field>
         <field name="domain">[('team_id', '=', active_id)]</field>
     </record>
-
 </odoo>
