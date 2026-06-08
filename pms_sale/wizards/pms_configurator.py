@@ -1,10 +1,10 @@
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from datetime import datetime, timedelta
 
 import pytz
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
@@ -77,9 +77,27 @@ class PMSConfigurator(models.TransientModel):
     guest_ids = fields.One2many(
         "pms.reservation.guest.wizard", "configurator_id", string="Guests"
     )
+    price = fields.Float(related="reservation_id.price", readonly=True)
     currency_id = fields.Many2one("res.currency", string="Currency")
+    existing_reservation_id = fields.Integer()
     reservation_ids = fields.Many2many("pms.reservation")
     timeline_html = fields.Html("Timeline HTML", readonly=True)
+
+    def _update_bookings_tab(self):
+        if not self.property_id:
+            self.reservation_ids = [(5,)]
+            return
+        domain = [
+            ("property_id", "=", self.property_id.id),
+            ("stage_id.is_closed", "=", False),
+        ]
+        if self.start and self.stop:
+            domain += [("start", "<", self.stop), ("stop", ">", self.start)]
+        else:
+            domain += [("stop", ">", fields.Datetime.now())]
+        if self.existing_reservation_id:
+            domain += [("id", "!=", self.existing_reservation_id)]
+        self.reservation_ids = [(6, 0, self.env["pms.reservation"].search(domain).ids)]
 
     @api.onchange("property_id")
     def onchange_property_id(self):
@@ -94,8 +112,8 @@ class PMSConfigurator(models.TransientModel):
             and self.property_id.checkout
         ):
             if (
-                str(self.start) != (self._context.get("default_start") or "")
-            ) or self.property_id.id != self._context.get("default_property_id"):
+                str(self.start) != (self.env.context.get("default_start") or "")
+            ) or self.property_id.id != self.env.context.get("default_property_id"):
                 start_datetime = (
                     str(self.start.date())
                     + " "
@@ -107,8 +125,8 @@ class PMSConfigurator(models.TransientModel):
                 start_datetime = with_timezone.astimezone(utc)
                 self.start = start_datetime.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
             if (
-                str(self.stop) != (self._context.get("default_stop") or "")
-            ) or self.property_id.id != self._context.get("default_property_id"):
+                str(self.stop) != (self.env.context.get("default_stop") or "")
+            ) or self.property_id.id != self.env.context.get("default_property_id"):
                 end_datetime = (
                     str(self.stop.date())
                     + " "
@@ -119,90 +137,133 @@ class PMSConfigurator(models.TransientModel):
                 )
                 end_datetime = with_timezone.astimezone(utc)
                 self.stop = end_datetime.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-            stages = [
-                self.env.ref("pms_sale.pms_stage_booked").id,
-                self.env.ref("pms_sale.pms_stage_confirmed").id,
-                self.env.ref("pms_sale.pms_stage_checked_in").id,
+        self._update_bookings_tab()
+
+    @api.onchange("start", "stop")
+    def onchange_dates(self):
+        self._update_bookings_tab()
+
+    @api.constrains("property_id", "start", "stop")
+    def _check_no_overlapping_reservation(self):
+        for configurator in self:
+            if not (
+                configurator.property_id and configurator.start and configurator.stop
+            ):
+                continue
+            domain = [
+                ("property_id", "=", configurator.property_id.id),
+                ("start", "<", configurator.stop),
+                ("stop", ">", configurator.start),
+                ("stage_id.is_closed", "=", False),
+                ("stage_id.is_default", "=", False),
             ]
-            reservations = self.env["pms.reservation"].search(
-                [
-                    ("property_id", "=", self.property_id.id),
-                    ("stop", ">", fields.Datetime.now()),
-                    ("stage_id", "in", stages),
-                ]
-            )
-            self.reservation_ids = [(6, 0, reservations.ids)]
+            if configurator.existing_reservation_id:
+                domain += [("id", "!=", configurator.existing_reservation_id)]
+            conflicts = self.env["pms.reservation"].search(domain)
+            if conflicts:
+                refs = ", ".join(conflicts.mapped("name"))
+                raise ValidationError(
+                    self.env._(
+                        "%(property)s is already booked for %(start)s – %(stop)s."
+                        " Conflicting reservations: %(refs)s.",
+                        property=configurator.property_id.display_name,
+                        start=configurator.start.strftime("%b %d, %Y"),
+                        stop=configurator.stop.strftime("%b %d, %Y"),
+                        refs=refs,
+                    )
+                )
 
     @api.constrains("property_id", "no_of_guests")
     def _check_max_no_of_guests(self):
         for configurator in self:
             if configurator.no_of_guests > configurator.property_id.no_of_guests:
                 raise ValidationError(
-                    _(
-                        "%s of guests is lower than the %s of guests of the property."
-                        % (
-                            configurator.no_of_guests,
-                            configurator.property_id.no_of_guests,
-                        )
+                    self.env._(  # pylint: disable=W8301
+                        "%(guests)s of guests is lower than"
+                        " the %(max)s of the property."
                     )
+                    % {
+                        "guests": configurator.no_of_guests,
+                        "max": configurator.property_id.no_of_guests,
+                    }
                 )
 
     @api.model
     def default_get(self, fields_vals):
-        result = super(PMSConfigurator, self).default_get(fields_vals)
-        if not result.get("start"):
-            result.update({"start": fields.Date.today()})
-        if not result.get("stop"):
-            result.update({"stop": fields.Date.today()})
-        if self._context.get("web_partner_id"):
-            partner_rec = self.env["res.partner"].browse(
-                self._context.get("web_partner_id")
-            )
-            if partner_rec:
-                result.update(
-                    {
-                        "guest_ids": [
-                            (
-                                0,
-                                0,
-                                {
-                                    "partner_id": partner_rec.id,
-                                    "name": partner_rec.name,
-                                    "email": partner_rec.email,
-                                    "phone": partner_rec.phone,
-                                },
-                            )
-                        ]
-                    }
-                )
-        guest_list = []
-        if self._context.get("sale_line_ine"):
-            guest_ids = self.env["pms.reservation.guest"].search_read(
-                [("order_line_id", "=", self._context.get("sale_line_ine"))]
-            )
-            for guest in guest_ids:
-                guest_list.append(
+        result = super().default_get(fields_vals)
+        existing_reservation_id = self.env.context.get(
+            "default_existing_reservation_id"
+        )
+        if existing_reservation_id:
+            reservation = self.env["pms.reservation"].browse(existing_reservation_id)
+            if reservation.exists():
+                result["existing_reservation_id"] = reservation.id
+                result["property_id"] = reservation.property_id.id
+                result["start"] = reservation.start
+                result["stop"] = reservation.stop
+                if reservation.start and reservation.stop:
+                    result["duration"] = int(
+                        self._get_duration(reservation.start, reservation.stop)
+                    )
+                if reservation.reservation_type_id:
+                    result["reservation_id"] = reservation.reservation_type_id.id
+                result["guest_ids"] = [
                     (
                         0,
                         0,
                         {
-                            "partner_id": guest.get("partner_id"),
-                            "name": guest.get("name"),
-                            "email": guest.get("email"),
-                            "phone": guest.get("phone"),
+                            "partner_id": g.partner_id.id,
+                            "name": g.name,
+                            "email": g.email or False,
+                            "phone": g.phone or False,
                         },
                     )
-                )
-            if guest_list:
-                result.update({"guest_ids": guest_list})
+                    for g in reservation.guest_ids
+                ]
+        if not result.get("start"):
+            result["start"] = fields.Date.today()
+        if not result.get("stop"):
+            result["stop"] = fields.Date.today()
+        if self.env.context.get("web_partner_id") and not result.get("guest_ids"):
+            partner_rec = self.env["res.partner"].browse(
+                self.env.context.get("web_partner_id")
+            )
+            if partner_rec:
+                result["guest_ids"] = [
+                    (
+                        0,
+                        0,
+                        {
+                            "partner_id": partner_rec.id,
+                            "name": partner_rec.name,
+                            "email": partner_rec.email,
+                            "phone": partner_rec.phone,
+                        },
+                    )
+                ]
+        property_id = result.get("property_id")
+        if property_id:
+            domain = [
+                ("property_id", "=", property_id),
+                ("stage_id.is_closed", "=", False),
+                ("stop", ">", fields.Datetime.now()),
+            ]
+            if existing_reservation_id:
+                domain += [("id", "!=", existing_reservation_id)]
+            result["reservation_ids"] = [
+                (6, 0, self.env["pms.reservation"].search(domain).ids)
+            ]
         ref_id = self.env.ref("pms_sale.action_sale_reservation")
-        timeline_url = "%s/web?#action=%s&model=pms.reservation&view_type=schedule" % (
-            self.env["ir.config_parameter"].sudo().get_param("web.base.url"),
-            ref_id and str(ref_id.id) or "",
+        timeline_url = (
+            "{}/web?#action={}&model=pms.reservation&view_type=schedule".format(
+                self.env["ir.config_parameter"].sudo().get_param("web.base.url"),
+                ref_id and str(ref_id.id) or "",
+            )
         )
         result["timeline_html"] = (
-            "<a class='btn btn-primary' href='%s' alt='Timeline View' target='_blank'"
-            " >Timeline</a>" % (timeline_url)
+            f"<a class='btn btn-primary' href='{timeline_url}'"
+            " alt='Timeline View' target='_blank'"
+            " >Timeline</a>"
         )
         return result
 
@@ -211,9 +272,9 @@ class PMSReservationGuestWizard(models.TransientModel):
     _name = "pms.reservation.guest.wizard"
     _description = "PMS Reservation guest"
 
-    name = fields.Char(string="Name", required=True)
-    phone = fields.Char(string="Phone")
-    email = fields.Char(string="Email")
+    name = fields.Char(required=True)
+    phone = fields.Char()
+    email = fields.Char()
     configurator_id = fields.Many2one("pms.configurator", string="Configurator")
     partner_id = fields.Many2one("res.partner", string="Partner")
 

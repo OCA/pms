@@ -1,5 +1,4 @@
 <odoo>
-
     <record id="view_pms_team_kanban_inherit_pms_sale" model="ir.ui.view">
         <field name="name">pms.team.kanban</field>
         <field name="model">pms.team</field>
@@ -30,13 +29,13 @@
                         <div class="col-12">
                             Today:
                             <a
-                                name="%(pms_sale.reservation_action_from_dashboard)d"
-                                type="action"
-                                context="{'search_default_today_reservation': 1}"
-                            >
+                            name="%(pms_sale.reservation_action_from_dashboard)d"
+                            type="action"
+                            context="{'search_default_today_reservation': 1}"
+                        >
                                 <t
-                                    t-esc="record.no_today_reservation.value"
-                                /> Reservation(s)
+                            t-esc="record.no_today_reservation.value"
+                        /> Reservation(s)
                             </a>
                         </div>
                     </div>
@@ -44,10 +43,10 @@
                         <div class="col-12">
                             Tomorrow:
                             <a
-                                name="%(pms_sale.reservation_action_from_dashboard)d"
-                                type="action"
-                                context="{'search_default_tomorrow_reservation': 1}"
-                            >
+                            name="%(pms_sale.reservation_action_from_dashboard)d"
+                            type="action"
+                            context="{'search_default_tomorrow_reservation': 1}"
+                        >
                             <t t-esc="record.no_tomorrow_reservation.value" />
                             Reservation(s)
                             </a>
@@ -57,10 +56,10 @@
                         <div class="col-12">
                             This Week:
                            <a
-                                name="%(pms_sale.reservation_action_from_dashboard)d"
-                                type="action"
-                                context="{'search_default_this_reservation': 1}"
-                            >
+                            name="%(pms_sale.reservation_action_from_dashboard)d"
+                            type="action"
+                            context="{'search_default_this_reservation': 1}"
+                        >
                                 <t t-esc="record.no_week_reservation.value" />
                             Reservation(s)
                             </a>
@@ -70,5 +69,4 @@
             </xpath>
         </field>
     </record>
-
 </odoo>

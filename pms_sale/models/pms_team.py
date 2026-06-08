@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from datetime import timedelta
 
@@ -18,19 +18,19 @@ class PMSTeam(models.Model):
         string="This Week Reservations", compute="_compute_no_reservations"
     )
     total_reservation = fields.Integer(
-        string="This Week Reservations", compute="_compute_no_reservations"
+        string="Total Reservations", compute="_compute_no_reservations"
     )
 
     def _compute_no_reservations(self):
-        start = fields.date.today() - timedelta(days=fields.date.today().weekday())
+        start = fields.Date.today() - timedelta(days=fields.Date.today().weekday())
         end = start + timedelta(days=6)
         reservation_obj = self.env["pms.reservation"]
         for rec in self:
             today_reservation_count = reservation_obj.search_count(
                 [
                     ("team_id", "=", rec.id),
-                    ("start", ">=", fields.date.today()),
-                    ("start", "<=", fields.date.today()),
+                    ("start", ">=", fields.Date.today()),
+                    ("start", "<=", fields.Date.today()),
                     (
                         "stage_id",
                         "!=",
@@ -42,8 +42,8 @@ class PMSTeam(models.Model):
             tomorrow_reservation_count = reservation_obj.search_count(
                 [
                     ("team_id", "=", rec.id),
-                    ("start", ">=", fields.date.today()),
-                    ("stop", "<=", fields.date.today() + timedelta(1)),
+                    ("start", ">=", fields.Date.today()),
+                    ("stop", "<=", fields.Date.today() + timedelta(1)),
                     (
                         "stage_id",
                         "!=",

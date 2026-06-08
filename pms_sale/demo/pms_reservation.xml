@@ -1,0 +1,77 @@
+<odoo noupdate="1">
+    <!-- Checked-out reservation (past stay) -->
+    <record id="demo_reservation_past" model="pms.reservation">
+        <field name="property_id" ref="pms_base.demo_property_downtown" />
+        <field
+            name="start"
+            eval="(datetime.datetime.now() - datetime.timedelta(days=14)).strftime('%Y-%m-%d 15:00:00')"
+        />
+        <field
+            name="stop"
+            eval="(datetime.datetime.now() - datetime.timedelta(days=10)).strftime('%Y-%m-%d 11:00:00')"
+        />
+        <field name="partner_id" ref="demo_guest_alice" />
+        <field name="stage_id" ref="pms_stage_checked_out" />
+        <field
+            name="guest_ids"
+            eval="[(0, 0, {'name': 'Alice Johnson', 'email': 'alice.johnson@example.com', 'phone': '+1 555-0101'})]"
+        />
+    </record>
+
+    <!-- Currently checked-in reservation -->
+    <record id="demo_reservation_current" model="pms.reservation">
+        <field name="property_id" ref="pms_base.demo_property_suburban" />
+        <field
+            name="start"
+            eval="(datetime.datetime.now() - datetime.timedelta(days=2)).strftime('%Y-%m-%d 16:00:00')"
+        />
+        <field
+            name="stop"
+            eval="(datetime.datetime.now() + datetime.timedelta(days=3)).strftime('%Y-%m-%d 10:00:00')"
+        />
+        <field name="partner_id" ref="demo_guest_bob" />
+        <field name="stage_id" ref="pms_stage_checked_in" />
+        <field
+            name="guest_ids"
+            eval="[(0, 0, {'name': 'Bob Williams', 'email': 'bob.williams@example.com', 'phone': '+1 555-0202'}), (0, 0, {'name': 'Sarah Williams', 'email': 'sarah.williams@example.com'})]"
+        />
+    </record>
+
+    <!-- Confirmed upcoming reservation -->
+    <record id="demo_reservation_confirmed" model="pms.reservation">
+        <field name="property_id" ref="pms_base.demo_property_downtown" />
+        <field
+            name="start"
+            eval="(datetime.datetime.now() + datetime.timedelta(days=7)).strftime('%Y-%m-%d 15:00:00')"
+        />
+        <field
+            name="stop"
+            eval="(datetime.datetime.now() + datetime.timedelta(days=10)).strftime('%Y-%m-%d 11:00:00')"
+        />
+        <field name="partner_id" ref="demo_guest_carol" />
+        <field name="stage_id" ref="pms_stage_confirmed" />
+        <field
+            name="guest_ids"
+            eval="[(0, 0, {'name': 'Carol Martinez', 'email': 'carol.martinez@example.com', 'phone': '+1 555-0303'})]"
+        />
+    </record>
+
+    <!-- New reservation (just requested) -->
+    <record id="demo_reservation_new" model="pms.reservation">
+        <field name="property_id" ref="pms_base.demo_property_suburban" />
+        <field
+            name="start"
+            eval="(datetime.datetime.now() + datetime.timedelta(days=20)).strftime('%Y-%m-%d 16:00:00')"
+        />
+        <field
+            name="stop"
+            eval="(datetime.datetime.now() + datetime.timedelta(days=25)).strftime('%Y-%m-%d 10:00:00')"
+        />
+        <field name="partner_id" ref="demo_guest_alice" />
+        <field name="stage_id" ref="pms_stage_new" />
+        <field
+            name="guest_ids"
+            eval="[(0, 0, {'name': 'Alice Johnson', 'email': 'alice.johnson@example.com', 'phone': '+1 555-0101'}), (0, 0, {'name': 'Tom Johnson', 'phone': '+1 555-0104'})]"
+        />
+    </record>
+</odoo>

@@ -1,9 +1,9 @@
-# Copyright (c) 2022 Open Source Integrators
+# Copyright (c) 2022 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo.tests import SavepointCase
+from odoo.tests.common import TransactionCase
 
 
-class TestPMSProperty(SavepointCase):
+class TestPMSProperty(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

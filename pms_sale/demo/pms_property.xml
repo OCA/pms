@@ -1,0 +1,19 @@
+<odoo noupdate="1">
+    <record id="pms_base.demo_property_downtown" model="pms.property">
+        <field name="checkin">15.0</field>
+        <field name="checkout">11.0</field>
+        <field name="no_of_guests">4</field>
+        <field name="min_nights">1</field>
+        <field name="max_nights">30</field>
+        <field name="listing_type">entire_home</field>
+    </record>
+
+    <record id="pms_base.demo_property_suburban" model="pms.property">
+        <field name="checkin">16.0</field>
+        <field name="checkout">10.0</field>
+        <field name="no_of_guests">8</field>
+        <field name="min_nights">2</field>
+        <field name="max_nights">60</field>
+        <field name="listing_type">entire_home</field>
+    </record>
+</odoo>

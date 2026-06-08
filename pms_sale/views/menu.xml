@@ -1,5 +1,4 @@
 <odoo>
-
     <!-- Dashboard -->
     <menuitem
         name="Reservations"
@@ -63,9 +62,8 @@
         id="pms_reservation_timeline"
         name="Reservations"
         parent="sale.sale_order_menu"
-        sequence="2"
+        sequence="25"
         action="action_sale_reservation"
         groups="sales_team.group_sale_salesman"
     />
-
 </odoo>

@@ -1,10 +1,10 @@
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from datetime import datetime, timedelta
 
 import pytz
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
@@ -40,7 +40,7 @@ class PmsReservation(models.Model):
         readonly=True,
         index=True,
         copy=False,
-        default=lambda self: _("New"),
+        default=lambda self: self.env._("New"),
     )
     start = fields.Datetime(
         "Checkin",
@@ -62,20 +62,23 @@ class PmsReservation(models.Model):
     duration = fields.Integer(
         "Nights", compute="_compute_duration", store=True, readonly=False
     )
-    date = fields.Datetime(string="Date", default=lambda self: fields.Datetime.now())
+    date = fields.Datetime(default=lambda self: fields.Datetime.now())
     stage_id = fields.Many2one(
         "pms.stage",
         string="Stage",
         store=True,
         tracking=True,
         index=True,
-        default=_default_stage_id,
+        default=lambda self: self._default_stage_id(),
         group_expand="_read_group_stage_ids",
     )
     team_id = fields.Many2one(
         "pms.team", string="Team", related="property_id.team_id", store=True
     )
     property_id = fields.Many2one("pms.property", string="Property")
+    reservation_type_id = fields.Many2one(
+        "pms.property.reservation", string="Reservation Type"
+    )
     sale_order_id = fields.Many2one("sale.order", string="Sales Order")
     sale_order_line_id = fields.Many2one("sale.order.line", string="Sales Order Line")
     invoice_status = fields.Selection(
@@ -90,8 +93,8 @@ class PmsReservation(models.Model):
         string="Company",
         default=lambda self: self.env.company.id,
     )
-    adults = fields.Integer(string="Adults")
-    children = fields.Integer(string="Children")
+    adults = fields.Integer()
+    children = fields.Integer()
     no_of_guests = fields.Integer(
         "Number of Guests", compute="_compute_no_of_guests", store=True
     )
@@ -100,14 +103,12 @@ class PmsReservation(models.Model):
     )
     priority = fields.Selection(
         AVAILABLE_PRIORITIES,
-        string="Priority",
         index=True,
         default=AVAILABLE_PRIORITIES[0][0],
     )
     tag_ids = fields.Many2many("pms.tag", string="Tags")
     color = fields.Integer("Color Index", default=0)
     invoice_count = fields.Integer(
-        string="Invoice Count",
         compute="_compute_invoice_count",
         readonly=True,
         copy=False,
@@ -147,22 +148,23 @@ class PmsReservation(models.Model):
             reservation.invoice_count = len(invoices)
 
     @api.model
-    def _read_group_stage_ids(self, stages, domain, order):
+    def _read_group_stage_ids(self, stages, domain):
         search_domain = [("stage_type", "=", "reservation")]
         if self.env.context.get("default_team_id"):
             search_domain = [
                 "&",
                 ("team_ids", "in", self.env.context["default_team_id"]),
             ] + search_domain
-        return stages.search(search_domain, order=order)
+        return stages.search(search_domain)
 
-    @api.model
-    def create(self, vals):
-        if vals.get("name", _("New")) == _("New"):
-            vals["name"] = self.env["ir.sequence"].next_by_code("pms.reservation") or _(
-                "New"
-            )
-        return super().create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get("name", self.env._("New")) == self.env._("New"):
+                vals["name"] = self.env["ir.sequence"].next_by_code(
+                    "pms.reservation"
+                ) or self.env._("New")
+        return super().create(vals_list)
 
     @api.onchange("property_id")
     def onchange_property_id(self):
@@ -206,14 +208,14 @@ class PmsReservation(models.Model):
         for reservation in self:
             if reservation.no_of_guests > reservation.property_id.no_of_guests:
                 raise ValidationError(
-                    _(
-                        """Too many guests (%s) on the reservation: the property
-                         accepts a maximum of %s guests."""
-                        % (
-                            reservation.no_of_guests,
-                            reservation.property_id.no_of_guests,
-                        )
+                    self.env._(  # pylint: disable=W8301
+                        "Too many guests (%(guests)s) on the reservation: "
+                        "the property accepts a maximum of %(max)s guests."
                     )
+                    % {
+                        "guests": reservation.no_of_guests,
+                        "max": reservation.property_id.no_of_guests,
+                    }
                 )
 
     @api.constrains("property_id", "stage_id", "start", "stop")
@@ -235,7 +237,7 @@ class PmsReservation(models.Model):
                 )
                 if reservation:
                     raise ValidationError(
-                        _(
+                        self.env._(
                             "You cannot have 2 reservations on the same night at the "
                             "same property."
                         )
@@ -249,13 +251,13 @@ class PmsReservation(models.Model):
                 and rec.property_id.max_nights < rec.duration
             ):
                 raise ValidationError(
-                    _(
-                        "The number of nights must be between %s and %s."
-                        % (
-                            rec.property_id.min_nights,
-                            rec.property_id.max_nights,
-                        )
+                    self.env._(  # pylint: disable=W8301
+                        "The number of nights must be between %(min)s and %(max)s."
                     )
+                    % {
+                        "min": rec.property_id.min_nights,
+                        "max": rec.property_id.max_nights,
+                    }
                 )
 
     def action_book(self):
