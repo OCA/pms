@@ -1,5 +1,4 @@
 <odoo>
-
     <record id="view_task_form2_pms" model="ir.ui.view">
         <field name="name">project.task.form.pms</field>
         <field name="model">project.task</field>
@@ -12,5 +11,4 @@
             </xpath>
         </field>
     </record>
-
 </odoo>

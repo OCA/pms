@@ -1,11 +1,12 @@
-# Copyright (C) 2022 Open Source Integrators
+# Copyright (C) 2022 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from odoo.fields import Command
 from odoo.tests.common import TransactionCase
 
 
 class TestProjectTask(TransactionCase):
     def setUp(self):
-        super(TestProjectTask, self).setUp()
+        super().setUp()
         user_group_employee = self.env.ref("base.group_user")
         user_group_project_user = self.env.ref("project.group_project_user")
         self.partner_1 = self.env["res.partner"].create(
@@ -13,7 +14,7 @@ class TestProjectTask(TransactionCase):
         )
         self.project_pigs = (
             self.env["project.project"]
-            .with_context({"mail_create_nolog": True})
+            .with_context(mail_create_nolog=True)
             .create(
                 {
                     "name": "Pigs",
@@ -25,7 +26,7 @@ class TestProjectTask(TransactionCase):
         )
         self.user_projectuser = (
             self.env["res.users"]
-            .with_context({"no_reset_password": True})
+            .with_context(no_reset_password=True)
             .create(
                 {
                     "name": "Armande ProjectUser",
@@ -39,11 +40,11 @@ class TestProjectTask(TransactionCase):
         )
         self.testtask = self.task_1 = (
             self.env["project.task"]
-            .with_context({"mail_create_nolog": True})
+            .with_context(mail_create_nolog=True)
             .create(
                 {
                     "name": "Pigs UserTask",
-                    "user_id": self.user_projectuser.id,
+                    "user_ids": [Command.set([self.user_projectuser.id])],
                     "project_id": self.project_pigs.id,
                 }
             )
