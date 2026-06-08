@@ -1,0 +1,99 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pms_website_sale
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-04 00:00+0000\n"
+"PO-Revision-Date: 2026-06-04 00:00+0000\n"
+"Last-Translator: Maxime Chambreuil <maxime.chambreuil@graymatterlogic.com>\n"
+"Language-Team: Arabic\n"
+"Language: ar_001\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "Add one"
+msgstr "أضف واحداً"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_categories
+msgid "All Properties"
+msgstr "جميع العقارات"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "City..."
+msgstr "المدينة..."
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid ""
+"Click <i>'New'</i> in the top-right corner to create your first property."
+msgstr ""
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "Guest..."
+msgstr "ضيف..."
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No Property defined"
+msgstr "لا توجد عقارات محددة"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No property defined in category \""
+msgstr "لا عقار في الفئة \""
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No results"
+msgstr "لا نتائج"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No results for \""
+msgstr "لا نتائج لـ \""
+
+#. module: pms_website_sale
+#: model:website.menu,name:pms_website_sale.menu_property
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "Properties"
+msgstr "عقارات"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.sale_order_portal_content
+msgid "Property"
+msgstr "عقار"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "Remove one"
+msgstr "إزالة واحد"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_categories
+msgid "Show categories"
+msgstr "عرض الفئات"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_item
+msgid "This product is unpublished."
+msgstr "هذا المنتج غير منشور."
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_item
+msgid "Unpublished"
+msgstr "غير منشور"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "in category \""
+msgstr "في الفئة \""

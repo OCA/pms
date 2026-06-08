@@ -1,0 +1,19 @@
+<odoo noupdate="1">
+    <record id="demo_website_sale_reservation" model="pms.reservation">
+        <field name="property_id" ref="pms_base.demo_property_downtown" />
+        <field
+            name="start"
+            eval="(datetime.datetime.now() + datetime.timedelta(days=30)).strftime('%Y-%m-%d 15:00:00')"
+        />
+        <field
+            name="stop"
+            eval="(datetime.datetime.now() + datetime.timedelta(days=33)).strftime('%Y-%m-%d 11:00:00')"
+        />
+        <field name="partner_id" ref="pms_sale.demo_guest_alice" />
+        <field name="stage_id" ref="pms_sale.pms_stage_confirmed" />
+        <field
+            name="guest_ids"
+            eval="[(0, 0, {'name': 'Alice Johnson', 'email': 'alice.johnson@example.com', 'phone': '+1 555-0101'})]"
+        />
+    </record>
+</odoo>

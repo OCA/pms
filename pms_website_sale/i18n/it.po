@@ -1,0 +1,218 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pms_website_sale
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-07-15 07:46+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
+"Language-Team: none\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.15.2\n"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_booking_form
+msgid "(max"
+msgstr "(massimo"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_booking_form
+msgid ""
+"<i class=\"fa fa-calendar\"/>\n"
+"                        Book Now"
+msgstr ""
+"<i class=\"fa fa-calendar\"/>\n"
+"                        Prenota ora"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_booking_form
+msgid ""
+"<i class=\"fa fa-plus\"/>\n"
+"                                            Add Guest"
+msgstr ""
+"<i class=\"fa fa-plus\"/>\n"
+"                                            Aggiungi ospite"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_booking_form
+msgid ""
+"<i class=\"fa fa-shopping-cart\"/>\n"
+"                                    Add to Cart"
+msgstr ""
+"<i class=\"fa fa-shopping-cart\"/>\n"
+"                                    Aggiungi al carrello"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_booking_form
+msgid ""
+"<i class=\"fa fa-sign-in\"/>\n"
+"                        Log in to Book"
+msgstr ""
+"<i class=\"fa fa-sign-in\"/>\n"
+"                        Accedi per prenotare"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_booking_form
+msgid "<option value=\"\">-- Select --</option>"
+msgstr "<option value=\"\">-- Seleziona --</option>"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "<option value=\"\">All cities</option>"
+msgstr "<option value=\"\">Tutte le città</option>"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "Add one"
+msgstr "Aggiungi uno"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_categories
+msgid "All Properties"
+msgstr "Tutte le proprietà"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_booking_form
+msgid "Availability"
+msgstr "Disponibilità"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_booking_form
+msgid "Book"
+msgstr "Prenota"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_booking_form
+msgid "Cancel"
+msgstr "Annulla"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_booking_form
+msgid "Check-in"
+msgstr "Check-in"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "Check-in – Check-out"
+msgstr "Check-in – Check-out"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_booking_form
+msgid "Check-out"
+msgstr "Check-out"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "City"
+msgstr "Città"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid ""
+"Click <i>'New'</i> in the top-right corner to create your first property."
+msgstr ""
+"Cliccare su <i>'Nuova'</i> nell'angolo in alto a destra per creare la prima "
+"proprietà."
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_booking_form
+msgid "Close"
+msgstr "Chiudi"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "Dates"
+msgstr "Date"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_booking_form
+msgid "Email"
+msgstr "E-mail"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_booking_form
+msgid "Full Name"
+msgstr "Nome completo"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_booking_form
+msgid "Guests"
+msgstr "Ospiti"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No Property defined"
+msgstr "Nessuna proprietà definita"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No property defined in category \""
+msgstr "Nessuna proprietà definita nella categoria \""
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No results"
+msgstr "Nessun risultato"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "No results for \""
+msgstr "Nessun risultato per \""
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_booking_form
+msgid "Phone"
+msgstr "Telefono"
+
+#. module: pms_website_sale
+#: model:website.menu,name:pms_website_sale.menu_property
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "Properties"
+msgstr "Proprietà"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.sale_order_portal_content
+msgid "Property"
+msgstr "Proprietà"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.pms_search_box
+msgid "Remove one"
+msgstr "Rimuovi uno"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_booking_form
+msgid "Reservation Type"
+msgstr "Tipo prenotazione"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_booking_form
+msgid "Select dates to check"
+msgstr "Selezionare le date da controllare"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_categories
+msgid "Show categories"
+msgstr "Visualizza categorie"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_item
+msgid "This product is unpublished."
+msgstr "Questo prodotto non è pubblicato."
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.property_item
+msgid "Unpublished"
+msgstr "Non pubblicato"
+
+#. module: pms_website_sale
+#: model_terms:ir.ui.view,arch_db:pms_website_sale.properties
+msgid "in category \""
+msgstr "nella categoria \""

@@ -1,23 +1,29 @@
-odoo.define("pms_website_sale.pms_property", function (require) {
+// Copyright (c) 2021 Gray Matter Logic
+// License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+(function () {
     "use strict";
 
-    const publicWidget = require("web.public.widget");
-
-    publicWidget.registry.pmsProperty = publicWidget.Widget.extend({
-        selector: ".oe_property_filtter",
-        jsLibs: [
-            "/web/static/lib/daterangepicker/daterangepicker.js",
-            "/web/static/src/js/libs/daterangepicker.js",
-        ],
-        cssLibs: ["/web/static/lib/daterangepicker/daterangepicker.css"],
-        start: function () {
-            var def = this._super.apply(this, arguments);
-            $(".field_date_range_filtter").daterangepicker({
+    function initPropertyFilter() {
+        const dateInput = document.querySelector(".field_date_range_filtter");
+        if (!dateInput) {
+            return;
+        }
+        if (
+            window.jQuery &&
+            window.jQuery.fn &&
+            window.jQuery.fn.daterangepicker &&
+            window.moment
+        ) {
+            window.jQuery(dateInput).daterangepicker({
                 autoApply: true,
-                mindate: new moment(),
+                minDate: window.moment(),
             });
+        }
+    }
 
-            return def;
-        },
-    });
-});
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initPropertyFilter);
+    } else {
+        initPropertyFilter();
+    }
+})();
