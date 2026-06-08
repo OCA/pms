@@ -1,6 +1,6 @@
-# Copyright (c) 2021 Open Source Integrators
+# Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 
 class PMSWebsiteCategory(models.Model):
@@ -29,16 +29,14 @@ class PMSWebsiteCategory(models.Model):
     @api.constrains("parent_id")
     def check_parent_id(self):
         if not self._check_recursion():
-            raise ValueError(_("Error ! You cannot create recursive categories."))
+            raise ValueError(
+                self.env._("Error ! You cannot create recursive categories.")
+            )
 
-    def name_get(self):
-        res = []
+    @api.depends("name", "parent_id", "parents_and_self")
+    def _compute_display_name(self):
         for category in self:
-            for category in self:
-                res.append(
-                    (category.id, " / ".join(category.parents_and_self.mapped("name")))
-                )
-        return res
+            category.display_name = " / ".join(category.parents_and_self.mapped("name"))
 
     def _compute_parents_and_self_new(self):
         for category in self:

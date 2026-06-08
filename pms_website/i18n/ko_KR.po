@@ -4,16 +4,17 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0+e-20211202\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-23 19:54+0000\n"
-"PO-Revision-Date: 2021-12-23 19:54+0000\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"POT-Creation-Date: 2026-06-04 00:00+0000\n"
+"PO-Revision-Date: 2026-06-04 00:00+0000\n"
+"Last-Translator: Maxime Chambreuil <maxime.chambreuil@graymatterlogic.com>\n"
+"Language-Team: Korean\n"
+"Language: ko_KR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
-"Plural-Forms: \n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
@@ -28,8 +29,6 @@ msgid ""
 "<span class=\"fa fa-circle-o\"/>\n"
 "                                                        <span class=\"normal\">Pet-friendly apartments.</span>"
 msgstr ""
-"<span class=\"fa fa-circle-o\"/>\n"
-"                                                        <span class=\"normal\">Admite mascotas.</span>"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
@@ -37,77 +36,75 @@ msgid ""
 "<span class=\"fa fa-circle-o\"/>\n"
 "                                                        <span class=\"normal\">Pets Are  Not Allowed.</span>"
 msgstr ""
-"<span class=\"fa fa-circle-o\"/>\n"
-"                                                        <span class=\"normal\">No admite mascotas.</span>"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "<span class=\"normal\">Check in:</span>"
-msgstr ""
+msgstr "<span class=\"normal\">체크인:</span>"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "AM"
-msgstr ""
+msgstr "오전"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "All Amenities"
-msgstr "Todas las amenidades"
+msgstr "모든 편의시설"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "Amenities"
-msgstr "Amenidades"
+msgstr "편의시설"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "Bathrooms"
-msgstr "Baños"
+msgstr "욕실"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "Bedrooms"
-msgstr "Recamaras"
+msgstr "침실"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_property__can_publish
 #. module: pms_website
 msgid "Can Publish"
-msgstr "Puede publicar"
+msgstr "게시 가능"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "Cancelation Policy"
-msgstr "Política de cancelación"
+msgstr "취소 정책"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_property__property_category_ids
 #: model:ir.ui.menu,name:pms_website.menu_pms_website_category
 #. module: pms_website
 msgid "Categories"
-msgstr "Categorías"
+msgstr "카테고리"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.view_pms_website_category_form
 #: model_terms:ir.ui.view,arch_db:pms_website.view_pms_website_category_form_tree
 #. module: pms_website
 msgid "Category"
-msgstr "Categoría"
+msgstr "카테고리"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__name
 #: model:ir.model.fields,help:pms_website.field_pms_website_category__name
 #. module: pms_website
 msgid "Category Name"
-msgstr "Nombre de categoría"
+msgstr "카테고리 이름"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
@@ -121,37 +118,37 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "Check in &amp; Check out"
-msgstr ""
+msgstr "체크인 및 체크아웃"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__child_ids
 #. module: pms_website
 msgid "Children Property category"
-msgstr "Categoría hija"
+msgstr "하위 부동산 카테고리"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "Close"
-msgstr "Cerrar"
+msgstr "닫기"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__create_uid
 #. module: pms_website
 msgid "Created by"
-msgstr "Creado por"
+msgstr "만든 사람"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__create_date
 #. module: pms_website
 msgid "Created on"
-msgstr "Creado el"
+msgstr "생성일"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "Discover the featured amenities on this property"
-msgstr "Descubre las amenidades de esa propiedad"
+msgstr "이 부동산의 주요 편의시설을 알아보세요"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_amenity__display_name
@@ -159,44 +156,44 @@ msgstr "Descubre las amenidades de esa propiedad"
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__display_name
 #. module: pms_website
 msgid "Display Name"
-msgstr ""
+msgstr "표시 이름"
 
 #. module: pms_website
 #: code:addons/pms_website/models/pms_website_category.py:0
 #, python-format
 #. module: pms_website
 msgid "Error ! You cannot create recursive categories."
-msgstr "Error! No pueden crear categorías recursivas."
+msgstr "오류! 재귀 카테고리를 만들 수 없습니다."
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "Explore all amenities"
-msgstr "Explorar todas las amenidades"
+msgstr "모든 편의시설 탐색"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "Explore all amenities available in this property"
-msgstr "xplorar todas las amenidades disponibles en esta propiedad"
+msgstr "이 부동산에서 이용 가능한 모든 편의시설을 탐색하세요"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "Free parking spots nearby"
-msgstr "Estacionamiento gratis cerca"
+msgstr "근처 무료 주차 공간"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "Guest(s)"
-msgstr "Huespede(s)"
+msgstr "투숙객"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "House Rules"
-msgstr "Reglas"
+msgstr "하우스 룰"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_amenity__id
@@ -204,43 +201,43 @@ msgstr "Reglas"
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__id
 #. module: pms_website
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__image_1920
 #. module: pms_website
 msgid "Image"
-msgstr "Imagen"
+msgstr "이미지"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__image_1024
 #. module: pms_website
 msgid "Image 1024"
-msgstr "Imagen 1024"
+msgstr "이미지 1024"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__image_128
 #. module: pms_website
 msgid "Image 128"
-msgstr "Imagen 128"
+msgstr "이미지 128"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__image_256
 #. module: pms_website
 msgid "Image 256"
-msgstr "Imagen 256"
+msgstr "이미지 256"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__image_512
 #. module: pms_website
 msgid "Image 512"
-msgstr "Imagen 512"
+msgstr "이미지 512"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_property__is_published
 #. module: pms_website
 msgid "Is Published"
-msgstr "Es publicada"
+msgstr "게시됨"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_amenity____last_update
@@ -248,68 +245,68 @@ msgstr "Es publicada"
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category____last_update
 #. module: pms_website
 msgid "Last Modified on"
-msgstr "Ultima modificación el"
+msgstr "마지막 수정일"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__write_uid
 #. module: pms_website
 msgid "Last Updated by"
-msgstr "Ultima modificación por"
+msgstr "마지막 업데이트 by"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__write_date
 #. module: pms_website
 msgid "Last Updated on"
-msgstr "Ultima modificación el"
+msgstr "마지막 업데이트일"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "Main Amenities"
-msgstr "Amenidades principales"
+msgstr "주요 편의시설"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_amenity__is_main_amenity
 #: model:ir.model.fields,help:pms_website.field_pms_amenity__is_main_amenity
 #. module: pms_website
 msgid "Main Amenity"
-msgstr "Amenidad principal"
+msgstr "주요 편의시설"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "PM"
-msgstr ""
+msgstr "오후"
 
 #. module: pms_website
 #: model:ir.actions.act_window,name:pms_website.action_pms_website_category
 #. module: pms_website
 msgid "PMS Category"
-msgstr "Categoría"
+msgstr "PMS 카테고리"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__parent_id
 #. module: pms_website
 msgid "Parent Category"
-msgstr "Categoría padre"
+msgstr "상위 카테고리"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__parent_path
 #. module: pms_website
 msgid "Parent Path"
-msgstr "Camino padre"
+msgstr "상위 경로"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__parents_and_self
 #. module: pms_website
 msgid "Parents And Self"
-msgstr ""
+msgstr "상위 및 자신"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "Parking Availability"
-msgstr "Disponibilidad de estacionamiento"
+msgstr "주차 가능 여부"
 
 #. module: pms_website
 #: model:ir.model,name:pms_website.model_pms_property
@@ -317,102 +314,102 @@ msgstr "Disponibilidad de estacionamiento"
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "Property"
-msgstr "Propiedad"
+msgstr "부동산"
 
 #. module: pms_website
 #: model:ir.model,name:pms_website.model_pms_amenity
 #. module: pms_website
 msgid "Property Amenity"
-msgstr "Amenidad"
+msgstr "부동산 편의시설"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_property__website_description1
 #. module: pms_website
 msgid "Property Description"
-msgstr "Descripción de la propiedad"
+msgstr "부동산 설명"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_property__website_description2
 #. module: pms_website
 msgid "Property Description 2"
-msgstr "2da descripción de la propiedad"
+msgstr "부동산 설명 2"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 #. module: pms_website
 msgid "Property Name"
-msgstr "Nombre de la propiedad"
+msgstr "부동산 이름"
 
 #. module: pms_website
 #: model:ir.model.fields,help:pms_website.field_pms_property__website_id
 #: model:ir.model.fields,help:pms_website.field_pms_website_category__website_id
 #. module: pms_website
 msgid "Restrict publishing to this website."
-msgstr "Restringir la publicación en este sitio web."
+msgstr "이 웹사이트에만 게시 제한."
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__is_seo_optimized
 #. module: pms_website
 msgid "SEO optimized"
-msgstr ""
+msgstr "SEO 최적화"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__seo_name
 #. module: pms_website
 msgid "Seo name"
-msgstr ""
+msgstr "SEO 이름"
 
 #. module: pms_website
 #: model:ir.model.fields,help:pms_website.field_pms_property__website_url
 #. module: pms_website
 msgid "The full URL to access the document through the website."
-msgstr ""
+msgstr "웹사이트를 통해 문서에 액세스하기 위한 전체 URL."
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_property__website_published
 #. module: pms_website
 msgid "Visible on current website"
-msgstr "Visible en el sitio web"
+msgstr "현재 웹사이트에서 보임"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_property__website_id
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__website_id
 #. module: pms_website
 msgid "Website"
-msgstr "Sitio web"
+msgstr "웹사이트"
 
 #. module: pms_website
 #: model:ir.model,name:pms_website.model_pms_website_category
 #. module: pms_website
 msgid "Website Property Category"
-msgstr "Categoría del sitio web"
+msgstr "웹사이트 부동산 카테고리"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_property__website_url
 #. module: pms_website
 msgid "Website URL"
-msgstr "URL del sitio web"
+msgstr "웹사이트 URL"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__website_meta_description
 #. module: pms_website
 msgid "Website meta description"
-msgstr ""
+msgstr "웹사이트 메타 설명"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__website_meta_keywords
 #. module: pms_website
 msgid "Website meta keywords"
-msgstr ""
+msgstr "웹사이트 메타 키워드"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__website_meta_title
 #. module: pms_website
 msgid "Website meta title"
-msgstr ""
+msgstr "웹사이트 메타 제목"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__website_meta_og_img
 #. module: pms_website
 msgid "Website opengraph image"
-msgstr ""
+msgstr "웹사이트 OpenGraph 이미지"

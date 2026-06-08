@@ -1,9 +1,8 @@
 <odoo>
-
     <template id="property" name="Property" track="1">
         <t t-call="website.layout">
             <t t-set="additional_title" t-value="property.name" />
-             <div
+            <div
                 class="oe_structure oe_empty"
                 id="oe_structure_website_sale_property_1"
             />
@@ -44,21 +43,21 @@
                         itemprop="description"
                         t-field="property.website_description1"
                         class="oe_structure oe_empty mt16"
-                        t-attf-id="oe_structure_website_sale_property_{{property.id}}_3"
+                        id="oe_structure_website_sale_property_3"
                     />
                     <div class="row">
-                            <div
+                        <div
                             id="o-carousel-product"
                             class="carousel slide"
                             data-ride="carousel"
                             data-interval="0"
                         >
-                                <div
+                            <div
                                 t-field="property.image_1920"
                                 class="d-flex align-items-center justify-content-center h-100"
                                 t-options='{"widget": "image", "preview_image": "image_1024", "class": "product_detail_img mh-100", "alt-field": "name", "itemprop": "image"}'
                             />
-                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12 pt-3 pb-3 " id="product_details">
@@ -88,7 +87,7 @@
                                 class="list-group direction-vertical "
                                 style="font-size: 15px;line-height: 20px;"
                             >
-                             <table>
+                                <table>
                                     <tr>
                                         <h5 t-if="property.parent_id">
                                             <i class="fa fa-building" />
@@ -114,9 +113,9 @@
 
                                         <td t-if="property.qty_living_room">
                                             <span
-                                                style="font-size: 20px; line-height: 40px;"
-                                                t-esc="property.qty_living_room"
-                                            /> Bedrooms
+                                            style="font-size: 20px; line-height: 40px;"
+                                            t-esc="property.qty_living_room"
+                                        /> Bedrooms
                                         </td>
 
                                         <td t-if="property.qty_half_bathroom">
@@ -133,55 +132,59 @@
 
                                         <td t-if="property.qty_half_bathroom">
                                             <span
-                                                style="font-size: 20px; line-height: 40px;"
-                                                t-esc="property.qty_half_bathroom"
-                                            /> Bathrooms
+                                            style="font-size: 20px; line-height: 40px;"
+                                            t-esc="property.qty_half_bathroom"
+                                        /> Bathrooms
                                         </td>
                                         <td t-if="property.no_of_guests">
-                                        <div class="pt-0 pr-3">
-                                            <span class="fa fa-users" />
-                                        </div>
-                                    </td>
-                                    <td t-if="property.no_of_guests">
+                                            <div class="pt-0 pr-3">
+                                                <span class="fa fa-users" />
+                                            </div>
+                                        </td>
+                                        <td t-if="property.no_of_guests">
                                         <span
-                                                style="font-size: 20px;"
-                                                t-field="property.no_of_guests"
-                                            /> Guest(s)
+                                            style="font-size: 20px;"
+                                            t-field="property.no_of_guests"
+                                        /> Guest(s)
                                     </td>
 
-                                                <!-- <span
+                                        <!-- <span
                                                     style="font-size: 20px;"
                                                     t-esc="room.name"
                                                 /> -->
                                     </tr>
 
-                                <tr>
-                                    <!-- <td> -->
-                                    <td>
-                                        <div class="pt-0 pr-3">
-                                            <span class="fa fa-home" />
-                                        </div>
-                                    </td>
-                                    <td><span t-field="property.area" /></td>
-                                </tr>
-                                <!-- <div class=s"pt-5 pr-0"> -->
-                                <t
+                                    <tr>
+                                        <!-- <td> -->
+                                        <td>
+                                            <div class="pt-0 pr-3">
+                                                <span class="fa fa-home" />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span t-field="property.area" />
+                                        </td>
+                                    </tr>
+                                    <!-- <div class=s"pt-5 pr-0"> -->
+                                    <t
                                         t-if="property.service_ids"
                                         t-foreach="property.sudo().service_ids"
                                         t-as="service"
                                     >
-                                <tr>
-                                    <td>
-                                        <div class="pt-0 pr-3">
-                                            <span t-attf-class="{{service.icon}}" />
-                                        </div>
-                                    </td>
-                                    <td class="w-25">
-                                        <span t-esc="service.name.name" />
-                                    </td>
-                                </tr>
-                                </t>
-                            </table>
+                                        <tr>
+                                            <td>
+                                                <div class="pt-0 pr-3">
+                                                    <span
+                                                        t-attf-class="{{service.icon}}"
+                                                    />
+                                                </div>
+                                            </td>
+                                            <td class="w-25">
+                                                <span t-esc="service.name.name" />
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </table>
                             </ul>
                         </div>
                     </div>
@@ -205,7 +208,6 @@
                                         >Free parking spots nearby</p>
                                     </div>
                                 </div>
-
                             </li>
                         </ul>
                     </div>
@@ -213,7 +215,7 @@
                         itemprop="description"
                         t-field="property.website_description2"
                         class="oe_structure oe_empty mt16"
-                        t-attf-id="oe_structure_website_sale_property_{{property.id}}_4"
+                        id="oe_structure_website_sale_property_4"
                     />
                 </section>
                 <section class="row section-margin">
@@ -250,17 +252,21 @@
                                                     </t>
                                                     <span
                                                         class="normal"
-                                                    >Check in:</span> <span
+                                                    >Check in:</span>
+                                                    <span
                                                         t-field="property.checkin"
                                                         t-options='{"widget": "float", "precision": 2}'
-                                                    /> <span t-esc="tz" />
+                                                    />
+                                                    <span t-esc="tz" />
                                                     <br />
                                                     <span
                                                         class="normal"
-                                                    >Check out:</span> <span
+                                                    >Check out:</span>
+                                                    <span
                                                         t-field="property.checkout"
                                                         t-options='{"widget": "float", "precision": 2}'
-                                                    /> <span t-esc="tz" />
+                                                    />
+                                                    <span t-esc="tz" />
                                                 </div>
                                             </div>
                                         </div>
@@ -354,9 +360,9 @@
                                             <span class="fa fa-circle-o" />
                                         </div>
                                         <div class="flex-grow-1">
-                                            <p class="mb-1"> <span
-                                                    t-esc="amenity.name"
-                                                /></p>
+                                            <p class="mb-1">
+                                                <span t-esc="amenity.name" />
+                                            </p>
                                         </div>
                                     </li>
                                 </t>
@@ -364,19 +370,19 @@
                         </ul>
                     </div>
                     <div class="row">
-                    <div class="w-100 d-flex col-12 mt-5">
-                        <button
+                        <div class="w-100 d-flex col-12 mt-5">
+                            <button
                                 class="btn btn-primary d-flex align-items-center justify-content-center btn-square btn btn-outline-dark mx-auto "
                                 style="background:white; width:100%; max-width: 380px;"
                                 data-toggle="modal"
                                 data-target="#exampleModalPreview"
                             >
-                            <p class="mb-0 normal text-dark">Explore all amenities</p>
-                        </button>
-
+                                <p
+                                    class="mb-0 normal text-dark"
+                                >Explore all amenities</p>
+                            </button>
+                        </div>
                     </div>
-                </div>
-
                 </section>
 
                 <div
@@ -407,7 +413,9 @@
                                     class="close"
                                     data-dismiss="modal"
                                     aria-label="Close"
-                                ><span class="fa fa-times" /></button>
+                                >
+                                    <span class="fa fa-times" />
+                                </button>
                             </div>
                             <div class="modal-body">
                                 <ul
@@ -427,9 +435,9 @@
                                                     <span class="fa fa-circle-o" />
                                                 </div>
                                                 <div class="flex-grow-1">
-                                                    <p class="mb-1"> <span
-                                                            t-esc="amenity.name"
-                                                        /></p>
+                                                    <p class="mb-1">
+                                                        <span t-esc="amenity.name" />
+                                                    </p>
                                                 </div>
                                             </li>
                                         </t>
@@ -459,9 +467,9 @@
                                                     <span class="fa fa-circle-o" />
                                                 </div>
                                                 <div class="flex-grow-1">
-                                                    <p class="mb-1"> <span
-                                                            t-esc="amenity.name"
-                                                        /></p>
+                                                    <p class="mb-1">
+                                                        <span t-esc="amenity.name" />
+                                                    </p>
                                                 </div>
                                             </li>
                                         </t>
@@ -478,5 +486,4 @@
             />
         </t>
     </template>
-
 </odoo>
