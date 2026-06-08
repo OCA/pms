@@ -1,0 +1,121 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pms_account
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-04 00:00+0000\n"
+"PO-Revision-Date: 2026-06-04 00:00+0000\n"
+"Last-Translator: Maxime Chambreuil <maxime.chambreuil@graymatterlogic.com>\n"
+"Language-Team: Chinese (Hong Kong)\n"
+"Language: zh_HK\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pms_account
+#: model_terms:ir.ui.view,arch_db:pms_account.view_pms_property_form
+msgid "Accounting"
+msgstr "會計"
+
+#. module: pms_account
+#: model:ir.model.fields,field_description:pms_account.field_pms_property__analytic_id
+msgid "Analytic Account"
+msgstr "分析帳戶"
+
+#. module: pms_account
+#: model:ir.model.fields,field_description:pms_account.field_pms_property__bill_count
+msgid "Bill Count"
+msgstr "帳單數"
+
+#. module: pms_account
+#: model:ir.model.fields,field_description:pms_account.field_pms_property__bill_ids
+#: model_terms:ir.ui.view,arch_db:pms_account.view_pms_property_form
+msgid "Bills"
+msgstr "帳單"
+
+#. module: pms_account
+#: model:ir.model.fields,field_description:pms_account.field_account_move__display_name
+#: model:ir.model.fields,field_description:pms_account.field_account_move_line__display_name
+#: model:ir.model.fields,field_description:pms_account.field_pms_property__display_name
+#: model:ir.model.fields,field_description:pms_account.field_pms_service__display_name
+msgid "Display Name"
+msgstr "顯示名稱"
+
+#. module: pms_account
+#: model:ir.model.fields,field_description:pms_account.field_account_move__id
+#: model:ir.model.fields,field_description:pms_account.field_account_move_line__id
+#: model:ir.model.fields,field_description:pms_account.field_pms_property__id
+#: model:ir.model.fields,field_description:pms_account.field_pms_service__id
+msgid "ID"
+msgstr "編號"
+
+#. module: pms_account
+#: model:ir.model.fields,field_description:pms_account.field_pms_property__invoice_count
+msgid "Invoice Count"
+msgstr "發票數"
+
+#. module: pms_account
+#: model:ir.model.fields,field_description:pms_account.field_pms_property__invoice_line_ids
+msgid "Invoice Lines"
+msgstr "發票明細"
+
+#. module: pms_account
+#: model:ir.model.fields,field_description:pms_account.field_pms_property__invoice_ids
+#: model_terms:ir.ui.view,arch_db:pms_account.view_pms_property_form
+msgid "Invoices"
+msgstr "發票"
+
+#. module: pms_account
+#: model:ir.model,name:pms_account.model_account_move
+msgid "Journal Entry"
+msgstr "會計分錄"
+
+#. module: pms_account
+#: model:ir.model,name:pms_account.model_account_move_line
+msgid "Journal Item"
+msgstr "憑證行"
+
+#. module: pms_account
+#: model:ir.model.fields,field_description:pms_account.field_account_move____last_update
+#: model:ir.model.fields,field_description:pms_account.field_account_move_line____last_update
+#: model:ir.model.fields,field_description:pms_account.field_pms_property____last_update
+#: model:ir.model.fields,field_description:pms_account.field_pms_service____last_update
+msgid "Last Modified on"
+msgstr "最後修改於"
+
+#. module: pms_account
+#: model:ir.model.fields,field_description:pms_account.field_account_bank_statement_line__property_count
+#: model:ir.model.fields,field_description:pms_account.field_account_move__property_count
+#: model:ir.model.fields,field_description:pms_account.field_account_move_line__property_ids
+#: model:ir.model.fields,field_description:pms_account.field_account_payment__property_count
+#: model_terms:ir.ui.view,arch_db:pms_account.view_account_invoice_form
+#: model_terms:ir.ui.view,arch_db:pms_account.view_invoice_search
+#: model_terms:ir.ui.view,arch_db:pms_account.view_vendor_bill_form
+msgid "Properties"
+msgstr "物業"
+
+#. module: pms_account
+#: model:ir.model.fields,field_description:pms_account.field_account_bank_statement_line__property_ids
+#: model:ir.model.fields,field_description:pms_account.field_account_move__property_ids
+#: model:ir.model.fields,field_description:pms_account.field_account_payment__property_ids
+msgid "Properties associated to this invoice"
+msgstr "與此發票關聯的物業"
+
+#. module: pms_account
+#: model:ir.model,name:pms_account.model_pms_property
+msgid "Property"
+msgstr "物業"
+
+#. module: pms_account
+#: model:ir.model,name:pms_account.model_pms_service
+msgid "Property Service"
+msgstr "物業服務"
+
+#. module: pms_account
+#: model:ir.model.fields,field_description:pms_account.field_pms_service__vendor_id
+msgid "Vendor"
+msgstr "供應商"
