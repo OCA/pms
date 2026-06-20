@@ -1,0 +1,11 @@
+[project]
+name = "odoo-addons-oca-pms"
+version = "19.0.20260620.0"
+dependencies = [
+    "odoo-addon-pms_base==19.0.*",
+]
+classifiers=[
+    "Programming Language :: Python",
+    "Framework :: Odoo",
+    "Framework :: Odoo :: 19.0",
+]
