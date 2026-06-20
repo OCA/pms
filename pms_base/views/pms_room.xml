@@ -1,0 +1,95 @@
+<odoo>
+    <record model="ir.ui.view" id="view_pms_room_form">
+        <field name="name">pms.room.form</field>
+        <field name="model">pms.room</field>
+        <field name="arch" type="xml">
+            <form string="Room">
+                <header />
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_archive"
+                            string="Archive"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-archive"
+                            invisible="not active"
+                        />
+                        <button
+                            name="action_unarchive"
+                            string="Restore"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-archive"
+                            invisible="active"
+                        />
+                    </div>
+                    <label for="name" />
+                    <h1>
+                        <field name="name" required="1" />
+                    </h1>
+                    <group id="main">
+                        <group id="main-left">
+                            <field name="property_id" />
+                        </group>
+                        <group id="main-right">
+                            <field name="type_id" />
+                            <field name="capacity" />
+                            <field name="area" />
+                        </group>
+                    </group>
+                    <notebook />
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_pms_room_search">
+        <field name="name">pms.room.search</field>
+        <field name="model">pms.room</field>
+        <field name="arch" type="xml">
+            <search string="Room">
+                <field name="name" />
+                <field name="type_id" />
+                <field name="capacity" />
+                <searchpanel>
+                    <field
+                        name="property_id"
+                        string="Property"
+                        enable_counters="True"
+                        select="multi"
+                    />
+                    <field
+                        name="type_id"
+                        string="Room Types"
+                        enable_counters="True"
+                        icon="fa-hotel"
+                        color="#784f73"
+                    />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_pms_room_tree">
+        <field name="name">pms.room.tree</field>
+        <field name="model">pms.room</field>
+        <field name="arch" type="xml">
+            <list string="Rooms" editable="bottom" multi_edit="1" sample="1">
+                <field name="sequence" widget="handle" />
+                <field name="property_id" />
+                <field name="name" />
+                <field name="type_id" />
+                <field name="capacity" />
+                <field name="area" />
+            </list>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_pms_room">
+        <field name="name">Rooms</field>
+        <field name="res_model">pms.room</field>
+        <field name="view_id" ref="view_pms_room_tree" />
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,53 @@
+<odoo noupdate="0">
+    <!-- Module category for Settings app grouping -->
+    <record model="ir.module.category" id="module_category_property_management">
+        <field name="name">Property Management</field>
+        <field name="sequence">100</field>
+    </record>
+
+    <!-- Privilege: groups the User and Manager groups under one privilege entry -->
+    <record model="res.groups.privilege" id="res_groups_privilege_property_management">
+        <field name="name">Property Management System</field>
+        <field name="category_id" ref="module_category_property_management" />
+    </record>
+
+    <!-- Group: PMS User -->
+    <record id="group_pms_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_property_management" />
+        <field name="implied_by_ids" eval="[Command.link(ref('base.group_user'))]" />
+    </record>
+
+    <!-- Group: PMS Manager -->
+    <record id="group_pms_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_property_management" />
+        <field
+            name="implied_ids"
+            eval="[Command.link(ref('pms_base.group_pms_user'))]"
+        />
+        <field
+            name="user_ids"
+            eval="[Command.link(ref('base.user_root')), Command.link(ref('base.user_admin'))]"
+        />
+    </record>
+
+    <!-- Feature-flag groups (no privilege — shown as checkboxes in Settings) -->
+    <record id="group_pms_show_amenity" model="res.groups">
+        <field name="name">Show Amenities</field>
+    </record>
+
+    <record id="group_pms_show_room" model="res.groups">
+        <field name="name">Show Rooms</field>
+    </record>
+
+    <record id="group_pms_show_service" model="res.groups">
+        <field name="name">Show Services</field>
+    </record>
+
+    <record id="group_pms_show_team" model="res.groups">
+        <field name="name">Show Teams</field>
+    </record>
+</odoo>

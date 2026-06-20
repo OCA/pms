@@ -1,0 +1,92 @@
+<odoo>
+    <record id="view_team_form" model="ir.ui.view">
+        <field name="name">pms.team.view.form</field>
+        <field name="model">pms.team</field>
+        <field name="arch" type="xml">
+            <form string="Team">
+                <header />
+                <sheet>
+                    <div class="oe_button_box" name="button_box" />
+                    <label for="name" />
+                    <h1>
+                        <field name="name" required="1" />
+                    </h1>
+                    <group id="main">
+                        <group id="main-left">
+                            <field name="description" />
+                        </group>
+                        <group id="main-right">
+                            <field name="sequence" />
+                            <field
+                                name="company_id"
+                                groups="base.group_multi_company"
+                            />
+                        </group>
+                    </group>
+                    <notebook />
+                </sheet>
+                <chatter />
+            </form>
+        </field>
+    </record>
+
+    <record id="view_team_tree" model="ir.ui.view">
+        <field name="name">pms.team.view.tree</field>
+        <field name="model">pms.team</field>
+        <field name="arch" type="xml">
+            <list string="Teams">
+                <field name="sequence" widget="handle" groups="base.group_no_one" />
+                <field name="name" />
+                <field name="description" />
+                <field name="company_id" groups="base.group_multi_company" />
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pms_team_kanban" model="ir.ui.view">
+        <field name="name">pms.team.kanban</field>
+        <field name="model">pms.team</field>
+        <field name="arch" type="xml">
+            <kanban
+                class="oe_background_grey o_kanban_dashboard o_emphasize_colors"
+                create="0"
+            >
+                <field name="name" />
+                <field name="property_count" />
+                <templates>
+                    <t t-name="card">
+                        <div class="o_kanban_card_header">
+                            <div class="o_kanban_card_header_title">
+                                <div class="o_primary fw-bold">
+                                    <field name="name" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container o_kanban_card_content">
+                            <div class="row">
+                                <div class="col-5 o_kanban_primary_left">
+                                    <button
+                                        class="btn btn-primary"
+                                        name="%(pms_base.property_action_from_dashboard)d"
+                                        type="action"
+                                        t-att-context="{'default_team_id': record.id.value, 'search_default_team_id': record.id.value}"
+                                    >
+                                        <field name="property_count" />
+                                        <br />
+                                        Properties
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="action_pms_team" model="ir.actions.act_window">
+        <field name="name">PMS Teams</field>
+        <field name="res_model">pms.team</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+</odoo>
