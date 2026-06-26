@@ -1,0 +1,42 @@
+<odoo noupdate="1">
+    <record id="demo_lead_downtown_inquiry" model="crm.lead">
+        <field name="name">Long-term rental inquiry – Downtown Apartment</field>
+        <field name="partner_name">David Chen</field>
+        <field name="email_from">david.chen@example.com</field>
+        <field name="phone">+1 555-0401</field>
+        <field
+            name="description"
+        >Interested in a 3-month stay starting next quarter.</field>
+        <field
+            name="property_ids"
+            eval="[Command.link(ref('pms_base.demo_property_downtown'))]"
+        />
+    </record>
+
+    <record id="demo_lead_suburban_inquiry" model="crm.lead">
+        <field name="name">Summer vacation rental – Suburban House</field>
+        <field name="partner_name">Emma Davis</field>
+        <field name="email_from">emma.davis@example.com</field>
+        <field name="phone">+1 555-0402</field>
+        <field
+            name="description"
+        >Family looking for a house for 2 weeks in summer.</field>
+        <field
+            name="property_ids"
+            eval="[Command.link(ref('pms_base.demo_property_suburban'))]"
+        />
+    </record>
+
+    <record id="demo_lead_multi_property" model="crm.lead">
+        <field name="name">Portfolio investment – Multiple properties</field>
+        <field name="partner_name">GreenStay Investments</field>
+        <field name="email_from">info@greenstay.example.com</field>
+        <field
+            name="description"
+        >Investor evaluating both properties for long-term lease.</field>
+        <field
+            name="property_ids"
+            eval="[Command.link(ref('pms_base.demo_property_downtown')), Command.link(ref('pms_base.demo_property_suburban'))]"
+        />
+    </record>
+</odoo>
