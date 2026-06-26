@@ -2,7 +2,9 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from datetime import timedelta
+from datetime import datetime, timedelta
+
+import pytz
 
 from odoo import _, api, fields, models
 
@@ -426,11 +428,23 @@ class PmsService(models.Model):
                         service.service_line_ids = lines
                     else:
                         if not service.service_line_ids:
-                            target_date = (
-                                reservation.checkin
-                                if consumed_on == "checkin"
-                                else reservation.checkout
-                            )
+                            if consumed_on == "checkin":
+                                target_date = reservation.checkin
+                            elif not product.per_day and reservation.state == "onboard":
+                                # A non per-day service added to a reservation
+                                # that is already on board is charged on the
+                                # current date (in the property timezone)
+                                # instead of the checkout date.
+                                property_tz = (
+                                    reservation.pms_property_id.tz
+                                    or service.env.user.tz
+                                    or "UTC"
+                                )
+                                target_date = datetime.now(
+                                    pytz.timezone(property_tz)
+                                ).date()
+                            else:
+                                target_date = reservation.checkout
                             price_unit = service._get_price_unit_line(target_date)
                             service.service_line_ids = [
                                 (
