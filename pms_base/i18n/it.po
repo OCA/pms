@@ -15,6 +15,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__meeting_count
+msgid "# Meetings"
+msgstr ""
+
+#. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_team_kanban
 msgid ""
 "<br/>\n"
@@ -89,8 +94,8 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__lang
 msgid ""
-"All the emails and documents sent to this contact will be translated in this"
-" language."
+"All the emails and documents sent to this contact will be translated in this "
+"language."
 msgstr ""
 
 #. module: pms_base
@@ -234,6 +239,11 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__is_blacklisted
 msgid "Blacklist"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__phone_blacklisted
+msgid "Blacklisted Phone is Phone"
 msgstr ""
 
 #. module: pms_base
@@ -597,6 +607,13 @@ msgid ""
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__phone_sanitized
+msgid ""
+"Field used to store sanitized phone number. Helps speeding up searches and "
+"comparisons."
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__floors_num
 msgid "Floor"
 msgstr ""
@@ -748,6 +765,13 @@ msgid ""
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__phone_sanitized_blacklisted
+msgid ""
+"If the sanitized phone number is on the blacklist, the contact won't receive "
+"mass mailing sms anymore, from any list"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__image_1920
 msgid "Image"
 msgstr ""
@@ -770,6 +794,14 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__image_512
 msgid "Image 512"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__phone_blacklisted
+msgid ""
+"Indicates if a blacklisted sanitized phone number is a phone number. Helps "
+"distinguish which number is blacklisted             when there is both a "
+"mobile and phone field in a model."
 msgstr ""
 
 #. module: pms_base
@@ -889,6 +921,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_pms_tag__write_date
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__write_date
 msgid "Last Updated on"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__calendar_last_notif_ack
+msgid "Last notification marked as read from base Calendar"
 msgstr ""
 
 #. module: pms_base
@@ -1044,6 +1081,11 @@ msgid "Master Data"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__meeting_ids
+msgid "Meetings"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_has_error
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_has_error
 msgid "Message Delivery error"
@@ -1080,6 +1122,12 @@ msgstr ""
 #. module: pms_base
 #: model:pms.stage,name:pms_base.pms_stage_new
 msgid "New"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_calendar_event_id
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
 msgstr ""
 
 #. module: pms_base
@@ -1152,6 +1200,16 @@ msgstr ""
 #. module: pms_base
 #: model:ir.ui.menu,name:pms_base.menu_operations
 msgid "Operations"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__opportunity_ids
+msgid "Opportunities"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__opportunity_count
+msgid "Opportunity Count"
 msgstr ""
 
 #. module: pms_base
@@ -1242,6 +1300,16 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__phone
 msgid "Phone"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__phone_sanitized_blacklisted
+msgid "Phone Blacklisted"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__phone_mobile_search
+msgid "Phone Number"
 msgstr ""
 
 #. module: pms_base
@@ -1458,6 +1526,11 @@ msgid "Salesperson"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__phone_sanitized
+msgid "Sanitized Number"
+msgstr ""
+
+#. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_stage_search
 msgid "Search Stages"
 msgstr ""
@@ -1541,6 +1614,11 @@ msgstr ""
 #: model:res.groups,name:pms_base.group_pms_show_team
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Show Teams"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__signup_type
+msgid "Signup Token Type"
 msgstr ""
 
 #. module: pms_base
@@ -1731,8 +1809,8 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__email_normalized
 msgid ""
-"This field is used to search on email address as the primary email field can"
-" contain more than strictly an email address."
+"This field is used to search on email address as the primary email field can "
+"contain more than strictly an email address."
 msgstr ""
 
 #. module: pms_base
@@ -1851,6 +1929,18 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__website
 msgid "Website Link"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__website_message_ids
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__website_message_ids
+#: model:ir.model.fields,help:pms_base.field_pms_team__website_message_ids
+msgid "Website communication history"
 msgstr ""
 
 #. module: pms_base
