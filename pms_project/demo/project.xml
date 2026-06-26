@@ -1,0 +1,47 @@
+<odoo noupdate="1">
+    <record id="demo_project_downtown" model="project.project">
+        <field name="name">Downtown Apartment – Maintenance</field>
+        <field name="property_id" ref="pms_base.demo_property_downtown" />
+    </record>
+
+    <record id="demo_project_suburban" model="project.project">
+        <field name="name">Suburban House – Maintenance</field>
+        <field name="property_id" ref="pms_base.demo_property_suburban" />
+    </record>
+
+    <record id="demo_task_hvac" model="project.task">
+        <field name="name">Annual HVAC inspection</field>
+        <field name="project_id" ref="demo_project_downtown" />
+        <field
+            name="pms_property_ids"
+            eval="[Command.link(ref('pms_base.demo_property_downtown'))]"
+        />
+    </record>
+
+    <record id="demo_task_plumbing" model="project.task">
+        <field name="name">Fix kitchen faucet leak</field>
+        <field name="project_id" ref="demo_project_suburban" />
+        <field
+            name="pms_property_ids"
+            eval="[Command.link(ref('pms_base.demo_property_suburban'))]"
+        />
+    </record>
+
+    <record id="demo_task_repaint" model="project.task">
+        <field name="name">Repaint living room walls</field>
+        <field name="project_id" ref="demo_project_suburban" />
+        <field
+            name="pms_property_ids"
+            eval="[Command.link(ref('pms_base.demo_property_suburban'))]"
+        />
+    </record>
+
+    <record id="demo_task_deep_clean" model="project.task">
+        <field name="name">Post-stay deep cleaning</field>
+        <field name="project_id" ref="demo_project_downtown" />
+        <field
+            name="pms_property_ids"
+            eval="[Command.link(ref('pms_base.demo_property_downtown'))]"
+        />
+    </record>
+</odoo>
