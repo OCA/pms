@@ -1454,6 +1454,12 @@ msgid "Quantities"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__rating_ids
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__ref
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
 msgid "Reference"
@@ -1717,6 +1723,11 @@ msgstr ""
 #: model:ir.ui.menu,name:pms_base.menu_config_tag
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_tag_tree
 msgid "Tags"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__task_ids
+msgid "Tasks"
 msgstr ""
 
 #. module: pms_base
