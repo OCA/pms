@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -28,10 +28,8 @@ msgid "ID"
 msgstr ""
 
 #. module: pms_project
-#: model:ir.model.fields,field_description:pms_project.field_pms_property____last_update
-#: model:ir.model.fields,field_description:pms_project.field_project_project____last_update
-#: model:ir.model.fields,field_description:pms_project.field_project_task____last_update
-msgid "Last Modified on"
+#: model:ir.model.fields,field_description:pms_project.field_project_task__pms_property_ids
+msgid "PMS Properties"
 msgstr ""
 
 #. module: pms_project
@@ -40,7 +38,6 @@ msgid "Project"
 msgstr ""
 
 #. module: pms_project
-#: model:ir.model.fields,field_description:pms_project.field_project_task__pms_property_ids
 #: model_terms:ir.ui.view,arch_db:pms_project.view_task_form2_pms
 msgid "Properties"
 msgstr ""
@@ -61,4 +58,18 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_project.field_pms_property__task_ids
 #: model_terms:ir.ui.view,arch_db:pms_project.pms_property_views_form_project
 msgid "Tasks"
+msgstr ""
+
+#. module: pms_project
+#: model:ir.model.fields,help:pms_project.field_project_task__display_name
+msgid ""
+"Use these keywords in the title to set new tasks:\n"
+"\n"
+"            #tags Set tags on the task\n"
+"            @user Assign the task to a user\n"
+"            ! Set the task a medium priority\n"
+"            !! Set the task a high priority\n"
+"            !!! Set the task a urgent priority\n"
+"\n"
+"            Make sure to use the right format and order e.g. Improve the configuration screen #feature #v16 @Mitchell !"
 msgstr ""
