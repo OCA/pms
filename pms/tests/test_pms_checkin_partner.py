@@ -613,6 +613,54 @@ class TestPmsCheckinPartner(TestPms):
             "Reservations not set like Departure delayed",
         )
 
+    @freeze_time("2012-01-14")
+    def test_auto_departure_delayed_idempotent(self):
+        """
+        A reservation already flagged as 'departure_delayed' on its checkout
+        day stays in auto_departure_delayed's search domain. A second cron run
+        must not rewrite its state again: a no-op rewrite bumps write_date and
+        retriggers the folio's stored amount tracking, flooding the chatter
+        with empty changes (untaxed amount logged as 0.0 -> 0.0). The method
+        must be idempotent.
+        """
+
+        # ARRANGE
+        self.reservation_1.write(
+            {
+                "checkin": datetime.date.today(),
+                "checkout": datetime.date.today() + datetime.timedelta(days=3),
+                "adults": 1,
+            }
+        )
+        PmsReservation = self.env["pms.reservation"]
+        self.checkin1.action_on_board()
+
+        # ACTION 1: first cron run on the checkout day, the onboard reservation
+        # transitions to departure_delayed (a real state change).
+        with freeze_time("2012-01-17 12:00:00"):
+            PmsReservation.auto_departure_delayed()
+        self.assertEqual(
+            self.reservation_1.state,
+            "departure_delayed",
+            "Reservations not set like Departure delayed",
+        )
+        write_date_after_first_run = self.reservation_1.write_date
+
+        # ACTION 2: a later cron run on the same checkout day, over the already
+        # flagged reservation.
+        with freeze_time("2012-01-17 13:00:00"):
+            PmsReservation.auto_departure_delayed()
+
+        # ASSERT: the reservation must not be written again (idempotent). A
+        # no-op rewrite would bump write_date and retrigger the folio amount
+        # tracking, flooding the chatter with empty changes.
+        self.assertEqual(
+            self.reservation_1.write_date,
+            write_date_after_first_run,
+            "auto_departure_delayed is not idempotent: a second run rewrote "
+            "an already departure_delayed reservation",
+        )
+
     # REVIEW: Redesing constrains mobile&mail control
     # @freeze_time("2010-12-10")
     # def test_not_valid_emails(self):
