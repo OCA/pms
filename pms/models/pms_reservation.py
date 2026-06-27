@@ -2607,7 +2607,13 @@ class PmsReservation(models.Model):
         for reservation in reservations:
             if reservation.overnight_room:
                 if reservation.checkout == fields.Datetime.today().date():
-                    reservation.state = "departure_delayed"
+                    # Reservations already flagged on a previous run stay in the
+                    # search domain (state == "departure_delayed"). Skip the
+                    # write when the state does not change: reassigning the same
+                    # value retriggers the folio's stored amount tracking on
+                    # every cron run, flooding the chatter with empty changes.
+                    if reservation.state != "departure_delayed":
+                        reservation.state = "departure_delayed"
                 else:
                     reservation.autocheckout(reservation)
             else:
