@@ -1,0 +1,53 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pms_stock
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-04 00:00+0000\n"
+"PO-Revision-Date: 2026-06-04 00:00+0000\n"
+"Last-Translator: Maxime Chambreuil <maxime.chambreuil@graymatterlogic.com>\n"
+"Language-Team: Polish\n"
+"Language: pl_PL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#. module: pms_stock
+#: model:ir.actions.act_window,name:pms_stock.location_open_content
+#: model_terms:ir.ui.view,arch_db:pms_stock.view_pms_property_form_stock
+msgid "Content"
+msgstr "Zawartość"
+
+#. module: pms_stock
+#: model:ir.model.fields,field_description:pms_stock.field_pms_property__display_name
+msgid "Display Name"
+msgstr "Wyświetlana nazwa"
+
+#. module: pms_stock
+#: model:ir.model.fields,field_description:pms_stock.field_pms_property__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pms_stock
+#: model_terms:ir.ui.view,arch_db:pms_stock.view_pms_property_form_stock
+msgid "Inventory"
+msgstr "Magazyn"
+
+#. module: pms_stock
+#: model:ir.model.fields,field_description:pms_stock.field_pms_property__stock_location_id
+msgid "Inventory Location"
+msgstr "Lokalizacja magazynu"
+
+#. module: pms_stock
+#: model:ir.model.fields,field_description:pms_stock.field_pms_property____last_update
+msgid "Last Modified on"
+msgstr "Ostatnio zmodyfikowano"
+
+#. module: pms_stock
+#: model:ir.model,name:pms_stock.model_pms_property
+msgid "Property"
+msgstr "Nieruchomość"

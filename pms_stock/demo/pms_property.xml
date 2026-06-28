@@ -1,0 +1,9 @@
+<odoo noupdate="1">
+    <record id="pms_base.demo_property_downtown" model="pms.property">
+        <field name="stock_location_id" ref="demo_stock_location_downtown" />
+    </record>
+
+    <record id="pms_base.demo_property_suburban" model="pms.property">
+        <field name="stock_location_id" ref="demo_stock_location_suburban" />
+    </record>
+</odoo>
