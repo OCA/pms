@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -19,6 +19,7 @@ msgid "Accounting"
 msgstr ""
 
 #. module: pms_account
+#: model:ir.model,name:pms_account.model_account_analytic_account
 #: model:ir.model.fields,field_description:pms_account.field_pms_property__analytic_id
 msgid "Analytic Account"
 msgstr ""
@@ -35,6 +36,7 @@ msgid "Bills"
 msgstr ""
 
 #. module: pms_account
+#: model:ir.model.fields,field_description:pms_account.field_account_analytic_account__display_name
 #: model:ir.model.fields,field_description:pms_account.field_account_move__display_name
 #: model:ir.model.fields,field_description:pms_account.field_account_move_line__display_name
 #: model:ir.model.fields,field_description:pms_account.field_pms_property__display_name
@@ -43,6 +45,7 @@ msgid "Display Name"
 msgstr ""
 
 #. module: pms_account
+#: model:ir.model.fields,field_description:pms_account.field_account_analytic_account__id
 #: model:ir.model.fields,field_description:pms_account.field_account_move__id
 #: model:ir.model.fields,field_description:pms_account.field_account_move_line__id
 #: model:ir.model.fields,field_description:pms_account.field_pms_property__id
@@ -77,18 +80,10 @@ msgid "Journal Item"
 msgstr ""
 
 #. module: pms_account
-#: model:ir.model.fields,field_description:pms_account.field_account_move____last_update
-#: model:ir.model.fields,field_description:pms_account.field_account_move_line____last_update
-#: model:ir.model.fields,field_description:pms_account.field_pms_property____last_update
-#: model:ir.model.fields,field_description:pms_account.field_pms_service____last_update
-msgid "Last Modified on"
-msgstr ""
-
-#. module: pms_account
+#: model:account.analytic.plan,name:pms_account.analytic_plan_properties
 #: model:ir.model.fields,field_description:pms_account.field_account_bank_statement_line__property_count
 #: model:ir.model.fields,field_description:pms_account.field_account_move__property_count
 #: model:ir.model.fields,field_description:pms_account.field_account_move_line__property_ids
-#: model:ir.model.fields,field_description:pms_account.field_account_payment__property_count
 #: model_terms:ir.ui.view,arch_db:pms_account.view_account_invoice_form
 #: model_terms:ir.ui.view,arch_db:pms_account.view_invoice_search
 #: model_terms:ir.ui.view,arch_db:pms_account.view_vendor_bill_form
@@ -98,12 +93,12 @@ msgstr ""
 #. module: pms_account
 #: model:ir.model.fields,field_description:pms_account.field_account_bank_statement_line__property_ids
 #: model:ir.model.fields,field_description:pms_account.field_account_move__property_ids
-#: model:ir.model.fields,field_description:pms_account.field_account_payment__property_ids
 msgid "Properties associated to this invoice"
 msgstr ""
 
 #. module: pms_account
 #: model:ir.model,name:pms_account.model_pms_property
+#: model:ir.model.fields,field_description:pms_account.field_account_analytic_account__property_id
 msgid "Property"
 msgstr ""
 
