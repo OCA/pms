@@ -22,10 +22,30 @@ msgid "# Meetings"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__supplier_invoice_count
+msgid "# Vendor Bills"
+msgstr ""
+
+#. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_team_kanban
 msgid ""
 "<br/>\n"
 "                                        Properties"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__account_move_count
+msgid "Account Move Count"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_account_payable_id
+msgid "Account Payable"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_account_receivable_id
+msgid "Account Receivable"
 msgstr ""
 
 #. module: pms_base
@@ -173,9 +193,24 @@ msgid "Attachment Count"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__autopost_bills
+msgid "Auto-post bills"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__autopost_bills
+msgid "Automatically post bills for this trusted partner"
+msgstr ""
+
+#. module: pms_base
 #: model:pms.stage,name:pms_base.pms_stage_available
 msgid "Available"
 msgstr "Verfügbar"
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__available_invoice_template_pdf_report_ids
+msgid "Available Invoice Template Pdf Report"
+msgstr ""
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__avatar_1920
@@ -207,6 +242,11 @@ msgstr ""
 #: model:pms.room.type,name:pms_base.pms_room_type_balcony
 msgid "Balcony"
 msgstr "Balkon"
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__bank_account_count
+msgid "Bank"
+msgstr ""
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__bank_ids
@@ -345,6 +385,11 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model,name:pms_base.model_res_company
 msgid "Companies"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__ref_company_ids
+msgid "Companies that refers to partner"
 msgstr ""
 
 #. module: pms_base
@@ -491,14 +536,49 @@ msgid "Created on"
 msgstr "Erstellt am"
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__credit_limit
+msgid "Credit Limit"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__credit_to_invoice
+msgid "Credit To Invoice"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__credit_limit
+msgid "Credit limit specific to this partner."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__partner_id
 msgid "Current property"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_payment_term_id
+msgid "Customer Payment Terms"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__customer_rank
+msgid "Customer Rank"
 msgstr ""
 
 #. module: pms_base
 #: model:ir.ui.menu,name:pms_base.menu_board
 msgid "Dashboard"
 msgstr "Armaturenbrett"
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__days_sales_outstanding
+msgid "Days Sales Outstanding (DSO)"
+msgstr ""
 
 #. module: pms_base
 #: model:pms.team,name:pms_base.pms_team_default
@@ -509,6 +589,11 @@ msgstr "Standardteam"
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Define your unit of measure when entering area"
 msgstr "Maßeinheit für die Flächeneingabe definieren"
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__trust
+msgid "Degree of trust you have in this debtor"
+msgstr ""
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_stage__description
@@ -547,6 +632,16 @@ msgid "Diningroom"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__display_invoice_edi_format
+msgid "Display Invoice Edi Format"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__display_invoice_template_pdf_report_id
+msgid "Display Invoice Template Pdf Report"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_amenity__display_name
 #: model:ir.model.fields,field_description:pms_base.field_pms_amenity_type__display_name
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__display_name
@@ -566,6 +661,11 @@ msgstr "Anzeigename"
 #: model:pms.room.type,name:pms_base.pms_room_type_2
 msgid "Double"
 msgstr "Doppelzimmer"
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__duplicate_bank_partner_ids
+msgid "Duplicate Bank Partner"
+msgstr ""
 
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_0
@@ -613,6 +713,21 @@ msgstr ""
 msgid ""
 "Field used to store sanitized phone number. Helps speeding up searches and "
 "comparisons."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__fiscal_country_codes
+msgid "Fiscal Country Codes"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__fiscal_country_group_codes
+msgid "Fiscal Country Group Codes"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_account_position_id
+msgid "Fiscal Position"
 msgstr ""
 
 #. module: pms_base
@@ -774,6 +889,16 @@ msgid ""
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__ignore_abnormal_invoice_amount
+msgid "Ignore Abnormal Invoice Amount"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__ignore_abnormal_invoice_date
+msgid "Ignore Abnormal Invoice Date"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__image_1920
 msgid "Image"
 msgstr ""
@@ -834,6 +959,26 @@ msgstr "Interne Referenz"
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_amenity__default_code
 msgid "Internal unique identifier of the amenity"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__invoice_edi_format_store
+msgid "Invoice Edi Format Store"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__invoice_template_pdf_report_id
+msgid "Invoice report"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__invoice_sending_method
+msgid "Invoice sending"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__invoice_ids
+msgid "Invoices"
 msgstr ""
 
 #. module: pms_base
@@ -1283,6 +1428,26 @@ msgid "Parking Lot"
 msgstr "Parkplatz"
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__partner_company_registry_placeholder
+msgid "Partner Company Registry Placeholder"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__contract_ids
+msgid "Partner Contracts"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__use_partner_credit_limit
+msgid "Partner Limit"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__partner_vat_placeholder
+msgid "Partner Vat Placeholder"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__same_company_registry_partner_id
 msgid "Partner with same Company Registry"
 msgstr ""
@@ -1379,6 +1544,11 @@ msgid "Property Amenity"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_inbound_payment_method_line_id
+msgid "Property Inbound Payment Method Line"
+msgstr ""
+
+#. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Property Information"
 msgstr "Immobilieninformationen"
@@ -1391,6 +1561,11 @@ msgstr ""
 #. module: pms_base
 #: model:res.groups.privilege,name:pms_base.res_groups_privilege_property_management
 msgid "Property Management System"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_outbound_payment_method_line_id
+msgid "Property Outbound Payment Method Line"
 msgstr ""
 
 #. module: pms_base
@@ -1586,6 +1761,11 @@ msgid "Set Icon name from https://fontawesome.com/"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__use_partner_credit_limit
+msgid "Set a value greater than 0.0 to activate a credit limit check"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.actions.act_window,name:pms_base.action_pms_config
 #: model:ir.ui.menu,name:pms_base.menu_pms_config_settings
 msgid "Settings"
@@ -1602,6 +1782,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Show Amenities"
 msgstr "Ausstattungen anzeigen"
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__show_credit_limit
+msgid "Show Credit Limit"
+msgstr ""
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__group_pms_show_room
@@ -1708,6 +1893,11 @@ msgid "Street2"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__supplier_rank
+msgid "Supplier Rank"
+msgstr ""
+
+#. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_tag_form
 msgid "Tag"
 msgstr "Etikett"
@@ -1786,6 +1976,12 @@ msgid ""
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__property_account_position_id
+msgid ""
+"The fiscal position determines the taxes/accounts used for this contact."
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__user_id
 msgid "The internal user in charge of this contact."
 msgstr ""
@@ -1847,6 +2043,31 @@ msgstr ""
 #: model:pms.amenity.type,name:pms_base.pms_amenity_type_0
 msgid "Toiletries"
 msgstr "Toilettenartikel"
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__total_invoiced
+msgid "Total Invoiced"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__debit
+msgid "Total Payable"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__credit
+msgid "Total Receivable"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__credit
+msgid "Total amount this customer owes you."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__debit
+msgid "Total amount you have to pay to this vendor."
+msgstr ""
 
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_3
@@ -1924,6 +2145,11 @@ msgid "Vendor"
 msgstr "Lieferant"
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_supplier_payment_term_id
+msgid "Vendor Payment Terms"
+msgstr ""
+
+#. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_service_search
 msgid "Vendors"
 msgstr "Lieferanten"
@@ -1971,6 +2197,18 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__zip
 msgid "Zip"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__days_sales_outstanding
+msgid ""
+"[(Total Receivable/Total Revenue) * number of days since the first invoice] "
+"for this customer"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__invoice_edi_format
+msgid "eInvoice format"
 msgstr ""
 
 #~ msgid "Mobile"
