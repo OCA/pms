@@ -493,6 +493,11 @@ msgid "Contact"
 msgstr "Contacto"
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__contract_ids
+msgid "Contracts"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__message_bounce
 msgid "Counter of the number of bounced emails for this contact"
 msgstr "Contador del número de correos rebotados de este contacto"
@@ -1444,11 +1449,6 @@ msgid "Partner Company Registry Placeholder"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__contract_ids
-msgid "Partner Contracts"
-msgstr ""
-
-#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__use_partner_credit_limit
 msgid "Partner Limit"
 msgstr ""
@@ -1610,6 +1610,11 @@ msgid "Publish your properties on your website"
 msgstr "Publica tus propiedades en tu sitio web"
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__purchase_contract_count
+msgid "Purchase Contracts"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__qty_bedroom
 msgid "Qty Bedroom"
 msgstr "Número de recámaras"
@@ -1712,6 +1717,11 @@ msgstr "Cuartos"
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__rtc_session_ids
 msgid "Rtc Session"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__sale_contract_count
+msgid "Sale Contracts"
 msgstr ""
 
 #. module: pms_base
