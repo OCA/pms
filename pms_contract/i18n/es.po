@@ -1,0 +1,89 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pms_contract
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0+e-20211202\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-12-23 19:39+0000\n"
+"PO-Revision-Date: 2021-12-23 19:39+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pms_contract
+#: model:ir.model,name:pms_contract.model_contract_contract
+#: model:ir.model.fields,field_description:pms_contract.field_pms_service__contract_id
+msgid "Contract"
+msgstr "Contrato"
+
+#. module: pms_contract
+#: model:ir.model.fields,field_description:pms_contract.field_pms_property__contract_count
+msgid "Contract Count"
+msgstr "Numéro de contrato"
+
+#. module: pms_contract
+#: model:ir.model,name:pms_contract.model_contract_line
+msgid "Contract Line"
+msgstr "Línea de contrato"
+
+#. module: pms_contract
+#: model:ir.model.fields,field_description:pms_contract.field_pms_property__contract_ids
+#: model_terms:ir.ui.view,arch_db:pms_contract.view_pms_property_form
+msgid "Contracts"
+msgstr "Contratos"
+
+#. module: pms_contract
+#: model:ir.model.fields,field_description:pms_contract.field_contract_contract__display_name
+#: model:ir.model.fields,field_description:pms_contract.field_contract_line__display_name
+#: model:ir.model.fields,field_description:pms_contract.field_pms_property__display_name
+#: model:ir.model.fields,field_description:pms_contract.field_pms_service__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pms_contract
+#: model:ir.model.fields,field_description:pms_contract.field_contract_contract__id
+#: model:ir.model.fields,field_description:pms_contract.field_contract_line__id
+#: model:ir.model.fields,field_description:pms_contract.field_pms_property__id
+#: model:ir.model.fields,field_description:pms_contract.field_pms_service__id
+msgid "ID"
+msgstr ""
+
+#. module: pms_contract
+#: model:ir.model.fields,field_description:pms_contract.field_contract_contract____last_update
+#: model:ir.model.fields,field_description:pms_contract.field_contract_line____last_update
+#: model:ir.model.fields,field_description:pms_contract.field_pms_property____last_update
+#: model:ir.model.fields,field_description:pms_contract.field_pms_service____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: pms_contract
+#: model:ir.model.fields,field_description:pms_contract.field_contract_contract__property_ids
+#: model_terms:ir.ui.view,arch_db:pms_contract.view_contract_form
+msgid "Properties"
+msgstr "Propiedades"
+
+#. module: pms_contract
+#: model:ir.model,name:pms_contract.model_pms_property
+#: model:ir.model.fields,field_description:pms_contract.field_contract_line__property_id
+msgid "Property"
+msgstr "Propiedad"
+
+#. module: pms_contract
+#: model:ir.model.fields,field_description:pms_contract.field_contract_contract__property_count
+msgid "Property Count"
+msgstr "Numéro de propiedades"
+
+#. module: pms_contract
+#: model:ir.model,name:pms_contract.model_pms_service
+msgid "Property Service"
+msgstr "Servicio de propiedad"
+
+#. module: pms_contract
+#: model:ir.ui.menu,name:pms_contract.menu_vendor_contracts
+msgid "Vendor Contracts"
+msgstr "Contratos de proveedores"
