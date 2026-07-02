@@ -26,6 +26,7 @@ addon | version | maintainers | summary
 [pms_contract](pms_contract/) | 19.0.1.0.0 | <a href='https://github.com/eantones'><img src='https://github.com/eantones.png' width='32' height='32' style='border-radius:50%;' alt='eantones'/></a> | Manage contracts related to your properties
 [pms_crm](pms_crm/) | 19.0.1.0.0 | <a href='https://github.com/max3903'><img src='https://github.com/max3903.png' width='32' height='32' style='border-radius:50%;' alt='max3903'/></a> | Link leads to properties
 [pms_project](pms_project/) | 19.0.1.0.0 | <a href='https://github.com/max3903'><img src='https://github.com/max3903.png' width='32' height='32' style='border-radius:50%;' alt='max3903'/></a> | Link projects and tasks to properties
+[pms_stock](pms_stock/) | 19.0.1.0.0 | <a href='https://github.com/max3903'><img src='https://github.com/max3903.png' width='32' height='32' style='border-radius:50%;' alt='max3903'/></a> | Manage the content of a property.
 
 [//]: # (end addons)
 
