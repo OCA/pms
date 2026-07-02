@@ -569,6 +569,11 @@ msgid "Current property"
 msgstr "Propriété actuelle"
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_stock_customer
+msgid "Customer Location"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__property_payment_term_id
 msgid "Customer Payment Terms"
 msgstr ""
@@ -1252,6 +1257,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_has_error
 msgid "Message Delivery error"
 msgstr "Erreur de livraison de message"
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__picking_warn_msg
+msgid "Message for Stock Picking"
+msgstr ""
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_ids
@@ -2032,6 +2042,18 @@ msgid ""
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__property_stock_customer
+msgid ""
+"The stock location used as destination when sending goods to this contact."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__property_stock_supplier
+msgid ""
+"The stock location used as source when receiving goods from this contact."
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__main_user_id
 msgid ""
 "There can be several users related to the same partner. When a single user "
@@ -2175,6 +2197,11 @@ msgstr "Utilisateurs"
 #: model:ir.model.fields,field_description:pms_base.field_pms_service__vendor_id
 msgid "Vendor"
 msgstr "Fournisseur"
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_stock_supplier
+msgid "Vendor Location"
+msgstr ""
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__property_supplier_payment_term_id
