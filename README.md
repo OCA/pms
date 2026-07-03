@@ -22,6 +22,7 @@ Available addons
 addon | version | maintainers | summary
 --- | --- | --- | ---
 [pms_account](pms_account/) | 19.0.1.0.0 | <a href='https://github.com/max3903'><img src='https://github.com/max3903.png' width='32' height='32' style='border-radius:50%;' alt='max3903'/></a> | Manage the accounting aspects of your properties
+[pms_account_asset](pms_account_asset/) | 19.0.1.0.0 | <a href='https://github.com/eantones'><img src='https://github.com/eantones.png' width='32' height='32' style='border-radius:50%;' alt='eantones'/></a> | Manage the assets related to your properties
 [pms_base](pms_base/) | 19.0.1.0.0 | <a href='https://github.com/max3903'><img src='https://github.com/max3903.png' width='32' height='32' style='border-radius:50%;' alt='max3903'/></a> | Manage properties
 [pms_contract](pms_contract/) | 19.0.1.0.0 | <a href='https://github.com/eantones'><img src='https://github.com/eantones.png' width='32' height='32' style='border-radius:50%;' alt='eantones'/></a> | Manage contracts related to your properties
 [pms_crm](pms_crm/) | 19.0.1.0.0 | <a href='https://github.com/max3903'><img src='https://github.com/max3903.png' width='32' height='32' style='border-radius:50%;' alt='max3903'/></a> | Link leads to properties

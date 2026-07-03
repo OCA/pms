@@ -1,8 +1,9 @@
 [project]
 name = "odoo-addons-oca-pms"
-version = "19.0.20260703.0"
+version = "19.0.20260703.1"
 dependencies = [
     "odoo-addon-pms_account==19.0.*",
+    "odoo-addon-pms_account_asset==19.0.*",
     "odoo-addon-pms_base==19.0.*",
     "odoo-addon-pms_contract==19.0.*",
     "odoo-addon-pms_crm==19.0.*",
