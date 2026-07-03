@@ -1,5 +1,4 @@
 <odoo>
-
     <function name="write" model="ir.model.data">
         <function name="search" model="ir.model.data">
             <value
@@ -14,5 +13,4 @@
             name="domain_force"
         >['|', ('id', 'child_of', user.commercial_partner_id.id), ('is_property', '=', True)]</field>
     </record>
-
- </odoo>
+</odoo>

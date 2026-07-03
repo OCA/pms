@@ -1,5 +1,4 @@
 <odoo>
-
     <record id="view_pms_amenity_form_inherit_pms_website" model="ir.ui.view">
         <field name="name">pms.amenity.form.inherit</field>
         <field name="model">pms.amenity</field>
@@ -10,5 +9,4 @@
             </field>
         </field>
     </record>
-
 </odoo>

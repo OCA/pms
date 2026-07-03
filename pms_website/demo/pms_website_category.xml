@@ -1,0 +1,14 @@
+<odoo noupdate="1">
+    <record id="demo_website_category_apartments" model="pms.website.category">
+        <field name="name">Apartments</field>
+    </record>
+
+    <record id="demo_website_category_houses" model="pms.website.category">
+        <field name="name">Houses</field>
+    </record>
+
+    <record id="demo_website_category_urban" model="pms.website.category">
+        <field name="name">Urban Stays</field>
+        <field name="parent_id" ref="demo_website_category_apartments" />
+    </record>
+</odoo>
