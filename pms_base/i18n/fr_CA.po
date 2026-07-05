@@ -324,6 +324,11 @@ msgid "CRM"
 msgstr "CRM"
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__can_publish
+msgid "Can Publish"
+msgstr ""
+
+#. module: pms_base
 #: model:pms.stage,name:pms_base.pms_stage_cancelled
 msgid "Cancelled"
 msgstr "Annulé"
@@ -1054,6 +1059,11 @@ msgid "Is Public"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__is_published
+msgid "Is Published"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__is_company
 msgid "Is a Company"
 msgstr "Est une société"
@@ -1766,6 +1776,11 @@ msgid "Restore"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__website_id
+msgid "Restrict to a specific website."
+msgstr ""
+
+#. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_room_form
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_room_search
 msgid "Room"
@@ -2114,6 +2129,16 @@ msgid ""
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__website_absolute_url
+msgid "The full absolute URL to access the document through the website."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__website_url
+msgid "The full relative URL to access the document through the website."
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__user_id
 msgid "The internal user in charge of this contact."
 msgstr "L'utilisateur interne responsable de ce contact."
@@ -2313,9 +2338,25 @@ msgid "Vendors"
 msgstr "Fournisseurs"
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__website_published
+msgid "Visible on current website"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__visitor_ids
+msgid "Visitors"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__website_id
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Website"
 msgstr "Site web"
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__website_absolute_url
+msgid "Website Absolute URL"
+msgstr ""
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_room_type__icon
@@ -2332,6 +2373,11 @@ msgstr "Lien du site web"
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__website_message_ids
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__website_message_ids
 msgid "Website Messages"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__website_url
+msgid "Website URL"
 msgstr ""
 
 #. module: pms_base
