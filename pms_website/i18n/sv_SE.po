@@ -1,0 +1,415 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pms_website
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-04 00:00+0000\n"
+"PO-Revision-Date: 2026-06-04 00:00+0000\n"
+"Last-Translator: Maxime Chambreuil <maxime.chambreuil@graymatterlogic.com>\n"
+"Language-Team: Swedish\n"
+"Language: sv_SE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+msgid ""
+"<br/>\n"
+"                                                    <span class=\"normal\">Check out:</span>"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+msgid ""
+"<span class=\"fa fa-circle-o\"/>\n"
+"                                                        <span class=\"normal\">Pet-friendly apartments.</span>"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+msgid ""
+"<span class=\"fa fa-circle-o\"/>\n"
+"                                                        <span class=\"normal\">Pets Are  Not Allowed.</span>"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "<span class=\"normal\">Check in:</span>"
+msgstr "<span class=\"normal\">Incheckning:</span>"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "AM"
+msgstr "FM"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "All Amenities"
+msgstr "Alla bekvämligheter"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "Amenities"
+msgstr "Bekvämligheter"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "Bathrooms"
+msgstr "Badrum"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "Bedrooms"
+msgstr "Sovrum"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_property__can_publish
+#. module: pms_website
+msgid "Can Publish"
+msgstr "Kan publicera"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "Cancelation Policy"
+msgstr "Avbokningspolicy"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_property__property_category_ids
+#: model:ir.ui.menu,name:pms_website.menu_pms_website_category
+#. module: pms_website
+msgid "Categories"
+msgstr "Kategorier"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.view_pms_website_category_form
+#: model_terms:ir.ui.view,arch_db:pms_website.view_pms_website_category_form_tree
+#. module: pms_website
+msgid "Category"
+msgstr "Kategori"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__name
+#: model:ir.model.fields,help:pms_website.field_pms_website_category__name
+#. module: pms_website
+msgid "Category Name"
+msgstr "Kategorinamn"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+msgid ""
+"Change of plans? No worries. You can cancel up to 72 hours before your "
+"check-in date for a full refund. For reservations close to check-in or "
+"special cases, please contact our team, we will be glad to help."
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "Check in &amp; Check out"
+msgstr "Incheckning och utcheckning"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__child_ids
+#. module: pms_website
+msgid "Children Property category"
+msgstr "Underkategori för fastighet"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "Close"
+msgstr "Stäng"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__create_uid
+#. module: pms_website
+msgid "Created by"
+msgstr "Skapad av"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__create_date
+#. module: pms_website
+msgid "Created on"
+msgstr "Skapad"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "Discover the featured amenities on this property"
+msgstr "Upptäck de utvalda bekvämligheter i den här fastigheten"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_amenity__display_name
+#: model:ir.model.fields,field_description:pms_website.field_pms_property__display_name
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__display_name
+#. module: pms_website
+msgid "Display Name"
+msgstr "Visningsnamn"
+
+#. module: pms_website
+#: code:addons/pms_website/models/pms_website_category.py:0
+#, python-format
+#. module: pms_website
+msgid "Error ! You cannot create recursive categories."
+msgstr "Fel! Du kan inte skapa rekursiva kategorier."
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "Explore all amenities"
+msgstr "Utforska alla bekvämligheter"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "Explore all amenities available in this property"
+msgstr "Utforska alla bekvämligheter i den här fastigheten"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "Free parking spots nearby"
+msgstr "Gratis parkeringsplatser i närheten"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "Guest(s)"
+msgstr "Gäst(er)"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "House Rules"
+msgstr "Husregler"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_amenity__id
+#: model:ir.model.fields,field_description:pms_website.field_pms_property__id
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__id
+#. module: pms_website
+msgid "ID"
+msgstr "ID"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__image_1920
+#. module: pms_website
+msgid "Image"
+msgstr "Bild"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__image_1024
+#. module: pms_website
+msgid "Image 1024"
+msgstr "Bild 1024"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__image_128
+#. module: pms_website
+msgid "Image 128"
+msgstr "Bild 128"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__image_256
+#. module: pms_website
+msgid "Image 256"
+msgstr "Bild 256"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__image_512
+#. module: pms_website
+msgid "Image 512"
+msgstr "Bild 512"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_property__is_published
+#. module: pms_website
+msgid "Is Published"
+msgstr "Är publicerad"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_amenity____last_update
+#: model:ir.model.fields,field_description:pms_website.field_pms_property____last_update
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category____last_update
+#. module: pms_website
+msgid "Last Modified on"
+msgstr "Senast ändrad"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__write_uid
+#. module: pms_website
+msgid "Last Updated by"
+msgstr "Senast uppdaterad av"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__write_date
+#. module: pms_website
+msgid "Last Updated on"
+msgstr "Senast uppdaterad"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "Main Amenities"
+msgstr "Huvudbekvämligheter"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_amenity__is_main_amenity
+#: model:ir.model.fields,help:pms_website.field_pms_amenity__is_main_amenity
+#. module: pms_website
+msgid "Main Amenity"
+msgstr "Huvud-bekvämlighet"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "PM"
+msgstr "EM"
+
+#. module: pms_website
+#: model:ir.actions.act_window,name:pms_website.action_pms_website_category
+#. module: pms_website
+msgid "PMS Category"
+msgstr "PMS-kategori"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__parent_id
+#. module: pms_website
+msgid "Parent Category"
+msgstr "Föräldrakategori"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__parent_path
+#. module: pms_website
+msgid "Parent Path"
+msgstr "Föräldrasökväg"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__parents_and_self
+#. module: pms_website
+msgid "Parents And Self"
+msgstr "Föräldrar och sig själv"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "Parking Availability"
+msgstr "Parkeringstillgänglighet"
+
+#. module: pms_website
+#: model:ir.model,name:pms_website.model_pms_property
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__property_ids
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "Property"
+msgstr "Fastighet"
+
+#. module: pms_website
+#: model:ir.model,name:pms_website.model_pms_amenity
+#. module: pms_website
+msgid "Property Amenity"
+msgstr "Fastighetsbékvämlihet"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_property__website_description1
+#. module: pms_website
+msgid "Property Description"
+msgstr "Fastighetsbeskrivning"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_property__website_description2
+#. module: pms_website
+msgid "Property Description 2"
+msgstr "Fastighetsbeskrivning 2"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+#. module: pms_website
+msgid "Property Name"
+msgstr "Fastighetsnamn"
+
+#. module: pms_website
+#: model:ir.model.fields,help:pms_website.field_pms_property__website_id
+#: model:ir.model.fields,help:pms_website.field_pms_website_category__website_id
+#. module: pms_website
+msgid "Restrict publishing to this website."
+msgstr "Begränsa publicering till den här webbplatsen."
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__is_seo_optimized
+#. module: pms_website
+msgid "SEO optimized"
+msgstr "SEO-optimerad"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__seo_name
+#. module: pms_website
+msgid "Seo name"
+msgstr "SEO-namn"
+
+#. module: pms_website
+#: model:ir.model.fields,help:pms_website.field_pms_property__website_url
+#. module: pms_website
+msgid "The full URL to access the document through the website."
+msgstr "Den fullständiga URL:en för att komma åt dokumentet via webbplatsen."
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_property__website_published
+#. module: pms_website
+msgid "Visible on current website"
+msgstr "Synlig på aktuell webbplats"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_property__website_id
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__website_id
+#. module: pms_website
+msgid "Website"
+msgstr "Webbplats"
+
+#. module: pms_website
+#: model:ir.model,name:pms_website.model_pms_website_category
+#. module: pms_website
+msgid "Website Property Category"
+msgstr "Webbplats fastighetskategori"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_property__website_url
+#. module: pms_website
+msgid "Website URL"
+msgstr "Webbplats-URL"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__website_meta_description
+#. module: pms_website
+msgid "Website meta description"
+msgstr "Webbplats metabeskrivning"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__website_meta_keywords
+#. module: pms_website
+msgid "Website meta keywords"
+msgstr "Webbplats meta-nyckelord"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__website_meta_title
+#. module: pms_website
+msgid "Website meta title"
+msgstr "Webbplats metatitel"
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__website_meta_og_img
+#. module: pms_website
+msgid "Website opengraph image"
+msgstr "Webbplats OpenGraph-bild"

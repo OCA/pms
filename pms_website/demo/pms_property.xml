@@ -1,0 +1,35 @@
+<odoo noupdate="1">
+    <record id="pms_base.demo_property_downtown" model="pms.property">
+        <field name="is_published">True</field>
+        <field name="website_description1">
+            &lt;p&gt;A modern apartment in the heart of New York City, steps away from iconic
+            landmarks, restaurants, and public transport. Fully furnished with high-speed
+            Wi-Fi, a smart TV, and a fully equipped kitchen.&lt;/p&gt;
+        </field>
+        <field name="website_description2">
+            &lt;p&gt;Perfect for business travelers and tourists alike. The building features
+            a 24-hour doorman, a fitness center, and rooftop terrace access.&lt;/p&gt;
+        </field>
+        <field
+            name="property_category_ids"
+            eval="[Command.link(ref('demo_website_category_apartments')), Command.link(ref('demo_website_category_urban'))]"
+        />
+    </record>
+
+    <record id="pms_base.demo_property_suburban" model="pms.property">
+        <field name="is_published">True</field>
+        <field name="website_description1">
+            &lt;p&gt;A spacious two-story family home in a quiet Chicago suburb, surrounded
+            by parks and top-rated schools. Features a large backyard, 4 bedrooms, and
+            a fully equipped kitchen.&lt;/p&gt;
+        </field>
+        <field name="website_description2">
+            &lt;p&gt;Ideal for families and groups. Close to shopping centers, restaurants,
+            and just 30 minutes from downtown Chicago by train.&lt;/p&gt;
+        </field>
+        <field
+            name="property_category_ids"
+            eval="[Command.link(ref('demo_website_category_houses'))]"
+        />
+    </record>
+</odoo>
