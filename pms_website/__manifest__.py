@@ -3,7 +3,7 @@
 {
     "name": "PMS - Website",
     "summary": "Publish properties on the website",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.1.0",
     "development_status": "Beta",
     "category": "Generic Modules/Property Management System",
     "website": "https://github.com/OCA/pms",
@@ -12,11 +12,13 @@
     "depends": ["pms_base", "website"],
     "demo": [
         "demo/pms_website_category.xml",
+        "demo/pms_amenity.xml",
         "demo/pms_property.xml",
     ],
     "data": [
         "security/ir.model.access.csv",
         "data/rule.xml",
+        "views/website_menu.xml",
         "views/pms_property_template.xml",
         "views/pms_property.xml",
         "views/pms_amenity_views.xml",

@@ -1,6 +1,11 @@
 <odoo noupdate="1">
     <record id="pms_base.demo_property_downtown" model="pms.property">
         <field name="is_published">True</field>
+        <field
+            name="image_1920"
+            type="base64"
+            file="pms_website/static/img/demo_property_downtown.jpg"
+        />
         <field name="website_description1">
             &lt;p&gt;A modern apartment in the heart of New York City, steps away from iconic
             landmarks, restaurants, and public transport. Fully furnished with high-speed
@@ -18,6 +23,11 @@
 
     <record id="pms_base.demo_property_suburban" model="pms.property">
         <field name="is_published">True</field>
+        <field
+            name="image_1920"
+            type="base64"
+            file="pms_website/static/img/demo_property_suburban.jpg"
+        />
         <field name="website_description1">
             &lt;p&gt;A spacious two-story family home in a quiet Chicago suburb, surrounded
             by parks and top-rated schools. Features a large backyard, 4 bedrooms, and

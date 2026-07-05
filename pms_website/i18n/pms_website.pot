@@ -14,6 +14,26 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "<option value=\"\">All categories</option>"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "<option value=\"\">All cities</option>"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "<option value=\"\">All tags</option>"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "<option value=\"\">Any bedrooms</option>"
+msgstr ""
+
+#. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 msgid ""
 "<span class=\"fa fa-circle-o\"/>\n"
@@ -29,6 +49,11 @@ msgstr ""
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
+msgid "<span class=\"fs-6 fw-normal\"> m²</span>"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
 msgid "All Amenities"
 msgstr ""
 
@@ -39,12 +64,23 @@ msgstr ""
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
-msgid "Bathrooms"
+msgid "Area"
 msgstr ""
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
+msgid "Bathrooms"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+#: model_terms:ir.ui.view,arch_db:pms_website.property
 msgid "Bedrooms"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "Browse our available properties and find your next stay."
 msgstr ""
 
 #. module: pms_website
@@ -64,6 +100,7 @@ msgid "Categories"
 msgstr ""
 
 #. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
 #: model_terms:ir.ui.view,arch_db:pms_website.view_pms_website_category_form
 #: model_terms:ir.ui.view,arch_db:pms_website.view_pms_website_category_form_tree
 msgid "Category"
@@ -94,8 +131,23 @@ msgid "Children Property category"
 msgstr ""
 
 #. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "City"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "Clear"
+msgstr ""
+
+#. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 msgid "Close"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+msgid "Contact us"
 msgstr ""
 
 #. module: pms_website
@@ -106,11 +158,6 @@ msgstr ""
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__create_date
 msgid "Created on"
-msgstr ""
-
-#. module: pms_website
-#: model_terms:ir.ui.view,arch_db:pms_website.property
-msgid "Discover the featured amenities on this property"
 msgstr ""
 
 #. module: pms_website
@@ -133,17 +180,17 @@ msgstr ""
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
-msgid "Explore all amenities available in this property"
+msgid "Explore all amenities available in this property."
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "Filter"
 msgstr ""
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 msgid "Free parking spots nearby"
-msgstr ""
-
-#. module: pms_website
-#: model_terms:ir.ui.view,arch_db:pms_website.property
-msgid "Guest(s)"
 msgstr ""
 
 #. module: pms_website
@@ -199,14 +246,14 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: pms_website
-#: model_terms:ir.ui.view,arch_db:pms_website.property
-msgid "Main Amenities"
-msgstr ""
-
-#. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_amenity__is_main_amenity
 #: model:ir.model.fields,help:pms_website.field_pms_amenity__is_main_amenity
 msgid "Main Amenity"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "No published properties are available right now."
 msgstr ""
 
 #. module: pms_website
@@ -240,9 +287,15 @@ msgid "Please contact the property manager for check-in and check-out times."
 msgstr ""
 
 #. module: pms_website
+#: model:website.menu,name:pms_website.menu_properties
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+msgid "Properties"
+msgstr ""
+
+#. module: pms_website
 #: model:ir.model,name:pms_website.model_pms_property
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__property_ids
-#: model_terms:ir.ui.view,arch_db:pms_website.property
 msgid "Property"
 msgstr ""
 
@@ -280,6 +333,16 @@ msgstr ""
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__seo_name
 msgid "Seo name"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+msgid "Services"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "Tag"
 msgstr ""
 
 #. module: pms_website
@@ -336,4 +399,19 @@ msgstr ""
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__website_meta_og_img
 msgid "Website opengraph image"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "bedroom"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "bedrooms"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "m²"
 msgstr ""
