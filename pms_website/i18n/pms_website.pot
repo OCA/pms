@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -12,13 +12,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-
-#. module: pms_website
-#: model_terms:ir.ui.view,arch_db:pms_website.property
-msgid ""
-"<br/>\n"
-"                                                    <span class=\"normal\">Check out:</span>"
-msgstr ""
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
@@ -32,16 +25,6 @@ msgstr ""
 msgid ""
 "<span class=\"fa fa-circle-o\"/>\n"
 "                                                        <span class=\"normal\">Pets Are  Not Allowed.</span>"
-msgstr ""
-
-#. module: pms_website
-#: model_terms:ir.ui.view,arch_db:pms_website.property
-msgid "<span class=\"normal\">Check in:</span>"
-msgstr ""
-
-#. module: pms_website
-#: model_terms:ir.ui.view,arch_db:pms_website.property
-msgid "AM"
 msgstr ""
 
 #. module: pms_website
@@ -138,8 +121,8 @@ msgid "Display Name"
 msgstr ""
 
 #. module: pms_website
+#. odoo-python
 #: code:addons/pms_website/models/pms_website_category.py:0
-#, python-format
 msgid "Error ! You cannot create recursive categories."
 msgstr ""
 
@@ -206,13 +189,6 @@ msgid "Is Published"
 msgstr ""
 
 #. module: pms_website
-#: model:ir.model.fields,field_description:pms_website.field_pms_amenity____last_update
-#: model:ir.model.fields,field_description:pms_website.field_pms_property____last_update
-#: model:ir.model.fields,field_description:pms_website.field_pms_website_category____last_update
-msgid "Last Modified on"
-msgstr ""
-
-#. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__write_uid
 msgid "Last Updated by"
 msgstr ""
@@ -231,11 +207,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_website.field_pms_amenity__is_main_amenity
 #: model:ir.model.fields,help:pms_website.field_pms_amenity__is_main_amenity
 msgid "Main Amenity"
-msgstr ""
-
-#. module: pms_website
-#: model_terms:ir.ui.view,arch_db:pms_website.property
-msgid "PM"
 msgstr ""
 
 #. module: pms_website
@@ -261,6 +232,11 @@ msgstr ""
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 msgid "Parking Availability"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+msgid "Please contact the property manager for check-in and check-out times."
 msgstr ""
 
 #. module: pms_website
@@ -293,7 +269,7 @@ msgstr ""
 #. module: pms_website
 #: model:ir.model.fields,help:pms_website.field_pms_property__website_id
 #: model:ir.model.fields,help:pms_website.field_pms_website_category__website_id
-msgid "Restrict publishing to this website."
+msgid "Restrict to a specific website."
 msgstr ""
 
 #. module: pms_website
@@ -307,8 +283,13 @@ msgid "Seo name"
 msgstr ""
 
 #. module: pms_website
+#: model:ir.model.fields,help:pms_website.field_pms_property__website_absolute_url
+msgid "The full absolute URL to access the document through the website."
+msgstr ""
+
+#. module: pms_website
 #: model:ir.model.fields,help:pms_website.field_pms_property__website_url
-msgid "The full URL to access the document through the website."
+msgid "The full relative URL to access the document through the website."
 msgstr ""
 
 #. module: pms_website
@@ -320,6 +301,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_website.field_pms_property__website_id
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__website_id
 msgid "Website"
+msgstr ""
+
+#. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_property__website_absolute_url
+msgid "Website Absolute URL"
 msgstr ""
 
 #. module: pms_website
