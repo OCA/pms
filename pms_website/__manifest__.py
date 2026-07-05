@@ -12,11 +12,13 @@
     "depends": ["pms_base", "website"],
     "demo": [
         "demo/pms_website_category.xml",
+        "demo/pms_amenity.xml",
         "demo/pms_property.xml",
     ],
     "data": [
         "security/ir.model.access.csv",
         "data/rule.xml",
+        "views/website_menu.xml",
         "views/pms_property_template.xml",
         "views/pms_property.xml",
         "views/pms_amenity_views.xml",
