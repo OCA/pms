@@ -1,0 +1,22 @@
+<odoo noupdate="1">
+    <record id="demo_reservation_type_downtown_std" model="pms.property.reservation">
+        <field name="name">Standard Night</field>
+        <field name="product_id" ref="product_product_reservation" />
+        <field name="price">150.0</field>
+        <field name="property_id" ref="pms_base.demo_property_downtown" />
+    </record>
+
+    <record id="demo_reservation_type_downtown_prem" model="pms.property.reservation">
+        <field name="name">Premium Night</field>
+        <field name="product_id" ref="product_product_reservation" />
+        <field name="price">250.0</field>
+        <field name="property_id" ref="pms_base.demo_property_downtown" />
+    </record>
+
+    <record id="demo_reservation_type_suburban" model="pms.property.reservation">
+        <field name="name">Standard Night</field>
+        <field name="product_id" ref="product_product_reservation" />
+        <field name="price">200.0</field>
+        <field name="property_id" ref="pms_base.demo_property_suburban" />
+    </record>
+</odoo>

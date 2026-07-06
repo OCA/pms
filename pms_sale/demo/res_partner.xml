@@ -1,0 +1,19 @@
+<odoo noupdate="1">
+    <record id="demo_guest_alice" model="res.partner">
+        <field name="name">Alice Johnson</field>
+        <field name="email">alice.johnson@example.com</field>
+        <field name="phone">+1 555-0101</field>
+    </record>
+
+    <record id="demo_guest_bob" model="res.partner">
+        <field name="name">Bob Williams</field>
+        <field name="email">bob.williams@example.com</field>
+        <field name="phone">+1 555-0202</field>
+    </record>
+
+    <record id="demo_guest_carol" model="res.partner">
+        <field name="name">Carol Martinez</field>
+        <field name="email">carol.martinez@example.com</field>
+        <field name="phone">+1 555-0303</field>
+    </record>
+</odoo>
