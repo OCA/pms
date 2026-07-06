@@ -1311,6 +1311,11 @@ msgid "Message for Purchase Order"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__sale_warn_msg
+msgid "Message for Sales Order"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__picking_warn_msg
 msgid "Message for Stock Picking"
 msgstr ""
@@ -1546,6 +1551,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__same_vat_partner_id
 msgid "Partner with same Tax ID"
 msgstr "Contacto con el mismo VAT"
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__payment_token_count
+msgid "Payment Token Count"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__payment_token_ids
+msgid "Payment Tokens"
+msgstr ""
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__pets
@@ -1821,6 +1836,16 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__sale_contract_count
 msgid "Sale Contracts"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__sale_order_count
+msgid "Sale Order Count"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__sale_order_ids
+msgid "Sales Order"
 msgstr ""
 
 #. module: pms_base
