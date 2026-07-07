@@ -363,8 +363,8 @@ class PmsReservationLine(models.Model):
                 ):
                     if self.env.context.get("force_overbooking"):
                         line.room_id = reservation.room_type_id.room_ids.filtered(
-                            lambda r, line=line: r.pms_property_id
-                            == line.pms_property_id
+                            lambda r, line=line: r.active
+                            and r.pms_property_id == line.pms_property_id
                         )[0]
                     else:
                         raise ValidationError(
@@ -377,11 +377,22 @@ class PmsReservationLine(models.Model):
                     rooms_ranking = dict()
 
                     # we go through the rooms of the type
-                    for room in self.env["pms.room"].search(
-                        [
-                            ("room_type_id", "=", reservation.room_type_id.id),
-                            ("pms_property_id", "=", reservation.pms_property_id.id),
-                        ]
+                    # (force active_test to avoid picking archived rooms when
+                    # the context carries active_test=False, e.g. connector
+                    # imports)
+                    for room in (
+                        self.env["pms.room"]
+                        .with_context(active_test=True)
+                        .search(
+                            [
+                                ("room_type_id", "=", reservation.room_type_id.id),
+                                (
+                                    "pms_property_id",
+                                    "=",
+                                    reservation.pms_property_id.id,
+                                ),
+                            ]
+                        )
                     ):
                         # we iterate the dates from the date of the line to the checkout
                         for date_iterator in [

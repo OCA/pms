@@ -220,3 +220,72 @@ class TestPmsReservationLines(TestPms):
                     "room_id": self.room_day.id,
                 }
             )
+
+    @freeze_time("2000-12-01")
+    def test_no_archived_room_in_split_assignment(self):
+        """
+        Room auto-assignment must never pick archived rooms, even when
+        the environment context carries active_test=False (e.g. records
+        created from connector imports, where the binder returns records
+        with that context).
+
+        No active double room is free for the whole stay, so the
+        assignment falls back to the night-by-night ranking. An archived
+        room, having no reservation lines, always ranks best and would
+        win the ranking if not filtered out, leaving the reservation
+        assigned to a room that is invisible in the planning and does
+        not consume availability.
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=2)
+        # room1 is taken the first night, room2 the second night,
+        # so no active double room is free for the entire stay
+        self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkin + datetime.timedelta(days=1),
+                "preferred_room_id": self.room1.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+        self.env["pms.reservation"].create(
+            {
+                "checkin": checkin + datetime.timedelta(days=1),
+                "checkout": checkout,
+                "preferred_room_id": self.room2.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+        self.room3.active = False
+
+        # ACT
+        reservation = (
+            self.env["pms.reservation"]
+            .with_context(active_test=False)
+            .create(
+                {
+                    "checkin": checkin,
+                    "checkout": checkout,
+                    "room_type_id": self.room_type_double.id,
+                    "partner_id": self.partner1.id,
+                    "pms_property_id": self.pms_property1.id,
+                    "sale_channel_origin_id": self.sale_channel_direct.id,
+                }
+            )
+        )
+
+        # ASSERT
+        self.assertNotIn(
+            self.room3,
+            reservation.reservation_line_ids.room_id,
+            "Archived rooms must not be auto-assigned to reservations",
+        )
+        self.assertTrue(
+            all(reservation.reservation_line_ids.room_id.mapped("active")),
+            "All rooms auto-assigned to a reservation must be active",
+        )
