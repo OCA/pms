@@ -1,0 +1,23 @@
+<odoo noupdate="1">
+    <!-- Main amenities shown on the property page -->
+    <record id="pms_base.demo_amenity_wifi" model="pms.amenity">
+        <field name="is_main_amenity">True</field>
+    </record>
+    <record id="pms_base.demo_amenity_tv" model="pms.amenity">
+        <field name="is_main_amenity">True</field>
+    </record>
+    <record id="pms_base.demo_amenity_coffee" model="pms.amenity">
+        <field name="is_main_amenity">True</field>
+    </record>
+    <record id="pms_base.demo_amenity_microwave" model="pms.amenity">
+        <field name="is_main_amenity">True</field>
+    </record>
+
+    <!-- Secondary amenities shown in the modal -->
+    <record id="pms_base.demo_amenity_shampoo" model="pms.amenity">
+        <field name="is_main_amenity">False</field>
+    </record>
+    <record id="pms_base.demo_amenity_towels" model="pms.amenity">
+        <field name="is_main_amenity">False</field>
+    </record>
+</odoo>
