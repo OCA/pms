@@ -525,6 +525,11 @@ msgid "Country Code"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model,website_form_label:pms_base.model_res_partner
+msgid "Create a Customer"
+msgstr ""
+
+#. module: pms_base
 #: model_terms:ir.actions.act_window,help:pms_base.action_pms_tag
 msgid "Create a tag."
 msgstr ""
@@ -637,6 +642,11 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__trust
 msgid "Degree of trust you have in this debtor"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_delivery_carrier_id
+msgid "Delivery Method"
 msgstr ""
 
 #. module: pms_base
@@ -1039,6 +1049,11 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__is_in_call
 msgid "Is In Call"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__is_pickup_location
+msgid "Is Pickup Location"
 msgstr ""
 
 #. module: pms_base
@@ -2120,14 +2135,6 @@ msgid ""
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,help:pms_base.field_pms_property__vat
-msgid ""
-"The Tax Identification Number. Values here will be validated based on the "
-"country format. You can use '/' to indicate that the partner is not subject "
-"to tax."
-msgstr ""
-
-#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__property_account_position_id
 msgid ""
 "The fiscal position determines the taxes/accounts used for this contact."
@@ -2304,6 +2311,11 @@ msgid "Used for sales to the current partner"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__property_delivery_carrier_id
+msgid "Used in sales orders."
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_team__sequence
 msgid "Used to sort teams. Lower is better."
 msgstr ""
@@ -2390,6 +2402,11 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__group_on
 msgid "Week Day"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__vat
+msgid "You can use '/' to indicate that the customer has no Tax ID."
 msgstr ""
 
 #. module: pms_base
