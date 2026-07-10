@@ -14,184 +14,193 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
 
 #. module: pms_website
-#: model_terms:ir.ui.view,arch_db:pms_website.property
-msgid ""
-"<br/>\n"
-"                                                    <span class=\"normal\">Check out:</span>"
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "<option value=\"\">All categories</option>"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "<option value=\"\">All cities</option>"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "<option value=\"\">All tags</option>"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "<option value=\"\">Any bedrooms</option>"
 msgstr ""
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 msgid ""
 "<span class=\"fa fa-circle-o\"/>\n"
-"                                                        <span class=\"normal\">Pet-friendly apartments.</span>"
+"                                                        <span "
+"class=\"normal\">Pet-friendly apartments.</span>"
 msgstr ""
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 msgid ""
 "<span class=\"fa fa-circle-o\"/>\n"
-"                                                        <span class=\"normal\">Pets Are  Not Allowed.</span>"
+"                                                        <span "
+"class=\"normal\">Pets Are  Not Allowed.</span>"
 msgstr ""
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
-#. module: pms_website
-msgid "<span class=\"normal\">Check in:</span>"
-msgstr "<span class=\"normal\">Zameldowanie:</span>"
+msgid "<span class=\"fs-6 fw-normal\"> m²</span>"
+msgstr ""
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
-#. module: pms_website
-msgid "AM"
-msgstr "AM"
-
-#. module: pms_website
-#: model_terms:ir.ui.view,arch_db:pms_website.property
-#. module: pms_website
 msgid "All Amenities"
 msgstr "Wszystkie udogodnienia"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
-#. module: pms_website
 msgid "Amenities"
 msgstr "Udogodnienia"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
+msgid "Area"
+msgstr ""
+
 #. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
 msgid "Bathrooms"
 msgstr "Łazienki"
 
 #. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
 #: model_terms:ir.ui.view,arch_db:pms_website.property
-#. module: pms_website
 msgid "Bedrooms"
 msgstr "Sypialnie"
 
 #. module: pms_website
-#: model:ir.model.fields,field_description:pms_website.field_pms_property__can_publish
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "Browse our available properties and find your next stay."
+msgstr ""
+
 #. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_property__can_publish
 msgid "Can Publish"
 msgstr "Może publikować"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
-#. module: pms_website
 msgid "Cancelation Policy"
 msgstr "Polityka anulowania"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_property__property_category_ids
 #: model:ir.ui.menu,name:pms_website.menu_pms_website_category
-#. module: pms_website
 msgid "Categories"
 msgstr "Kategorie"
 
 #. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
 #: model_terms:ir.ui.view,arch_db:pms_website.view_pms_website_category_form
 #: model_terms:ir.ui.view,arch_db:pms_website.view_pms_website_category_form_tree
-#. module: pms_website
 msgid "Category"
 msgstr "Kategoria"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__name
 #: model:ir.model.fields,help:pms_website.field_pms_website_category__name
-#. module: pms_website
 msgid "Category Name"
 msgstr "Nazwa kategorii"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 msgid ""
-"Change of plans? No worries. You can cancel up to 72 hours before your "
-"check-in date for a full refund. For reservations close to check-in or "
-"special cases, please contact our team, we will be glad to help."
+"Change of plans? No worries. You can cancel up to 72 hours before your check-"
+"in date for a full refund. For reservations close to check-in or special "
+"cases, please contact our team, we will be glad to help."
 msgstr ""
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
-#. module: pms_website
 msgid "Check in &amp; Check out"
 msgstr "Zameldowanie i wymeldowanie"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__child_ids
-#. module: pms_website
 msgid "Children Property category"
 msgstr "Podkategoria nieruchomości"
 
 #. module: pms_website
-#: model_terms:ir.ui.view,arch_db:pms_website.property
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "City"
+msgstr ""
+
 #. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "Clear"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
 msgid "Close"
 msgstr "Zamknij"
 
 #. module: pms_website
-#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__create_uid
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+msgid "Contact us"
+msgstr ""
+
 #. module: pms_website
+#: model:ir.model.fields,field_description:pms_website.field_pms_website_category__create_uid
 msgid "Created by"
 msgstr "Utworzone przez"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__create_date
-#. module: pms_website
 msgid "Created on"
 msgstr "Utworzone"
-
-#. module: pms_website
-#: model_terms:ir.ui.view,arch_db:pms_website.property
-#. module: pms_website
-msgid "Discover the featured amenities on this property"
-msgstr "Odkryj wyróżnione udogodnienia tej nieruchomości"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_amenity__display_name
 #: model:ir.model.fields,field_description:pms_website.field_pms_property__display_name
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__display_name
-#. module: pms_website
 msgid "Display Name"
 msgstr "Wyświetlana nazwa"
 
 #. module: pms_website
+#. odoo-python
 #: code:addons/pms_website/models/pms_website_category.py:0
-#, python-format
-#. module: pms_website
 msgid "Error ! You cannot create recursive categories."
 msgstr "Błąd! Nie można tworzyć kategorii rekurencyjnych."
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
-#. module: pms_website
 msgid "Explore all amenities"
 msgstr "Poznaj wszystkie udogodnienia"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
+msgid "Explore all amenities available in this property."
+msgstr ""
+
 #. module: pms_website
-msgid "Explore all amenities available in this property"
-msgstr "Poznaj wszystkie udogodnienia dostępne w tej nieruchomości"
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "Filter"
+msgstr ""
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
-#. module: pms_website
 msgid "Free parking spots nearby"
 msgstr "Bezpłatne miejsca parkingowe w pobliżu"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
-#. module: pms_website
-msgid "Guest(s)"
-msgstr "Gość/Goście"
-
-#. module: pms_website
-#: model_terms:ir.ui.view,arch_db:pms_website.property
-#. module: pms_website
 msgid "House Rules"
 msgstr "Zasady domu"
 
@@ -199,217 +208,246 @@ msgstr "Zasady domu"
 #: model:ir.model.fields,field_description:pms_website.field_pms_amenity__id
 #: model:ir.model.fields,field_description:pms_website.field_pms_property__id
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__id
-#. module: pms_website
 msgid "ID"
 msgstr "ID"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__image_1920
-#. module: pms_website
 msgid "Image"
 msgstr "Obraz"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__image_1024
-#. module: pms_website
 msgid "Image 1024"
 msgstr "Obraz 1024"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__image_128
-#. module: pms_website
 msgid "Image 128"
 msgstr "Obraz 128"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__image_256
-#. module: pms_website
 msgid "Image 256"
 msgstr "Obraz 256"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__image_512
-#. module: pms_website
 msgid "Image 512"
 msgstr "Obraz 512"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_property__is_published
-#. module: pms_website
 msgid "Is Published"
 msgstr "Jest opublikowany"
 
 #. module: pms_website
-#: model:ir.model.fields,field_description:pms_website.field_pms_amenity____last_update
-#: model:ir.model.fields,field_description:pms_website.field_pms_property____last_update
-#: model:ir.model.fields,field_description:pms_website.field_pms_website_category____last_update
-#. module: pms_website
-msgid "Last Modified on"
-msgstr "Ostatnia modyfikacja"
-
-#. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__write_uid
-#. module: pms_website
 msgid "Last Updated by"
 msgstr "Ostatnio zaktualizowane przez"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__write_date
-#. module: pms_website
 msgid "Last Updated on"
 msgstr "Ostatnia aktualizacja"
 
 #. module: pms_website
-#: model_terms:ir.ui.view,arch_db:pms_website.property
-#. module: pms_website
-msgid "Main Amenities"
-msgstr "Główne udogodnienia"
-
-#. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_amenity__is_main_amenity
 #: model:ir.model.fields,help:pms_website.field_pms_amenity__is_main_amenity
-#. module: pms_website
 msgid "Main Amenity"
 msgstr "Główne udogodnienie"
 
 #. module: pms_website
-#: model_terms:ir.ui.view,arch_db:pms_website.property
-#. module: pms_website
-msgid "PM"
-msgstr "PM"
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "No published properties are available right now."
+msgstr ""
 
 #. module: pms_website
 #: model:ir.actions.act_window,name:pms_website.action_pms_website_category
-#. module: pms_website
 msgid "PMS Category"
 msgstr "Kategoria PMS"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__parent_id
-#. module: pms_website
 msgid "Parent Category"
 msgstr "Kategoria nadrzędna"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__parent_path
-#. module: pms_website
 msgid "Parent Path"
 msgstr "Ścieżka nadrzędna"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__parents_and_self
-#. module: pms_website
 msgid "Parents And Self"
 msgstr "Rodzice i siebie"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
-#. module: pms_website
 msgid "Parking Availability"
 msgstr "Dostępność parkingu"
 
 #. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+msgid "Please contact the property manager for check-in and check-out times."
+msgstr ""
+
+#. module: pms_website
+#: model:website.menu,name:pms_website.menu_properties
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+msgid "Properties"
+msgstr ""
+
+#. module: pms_website
 #: model:ir.model,name:pms_website.model_pms_property
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__property_ids
-#: model_terms:ir.ui.view,arch_db:pms_website.property
-#. module: pms_website
 msgid "Property"
 msgstr "Nieruchomość"
 
 #. module: pms_website
 #: model:ir.model,name:pms_website.model_pms_amenity
-#. module: pms_website
 msgid "Property Amenity"
 msgstr "Udogodnienie nieruchomości"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_property__website_description1
-#. module: pms_website
 msgid "Property Description"
 msgstr "Opis nieruchomości"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_property__website_description2
-#. module: pms_website
 msgid "Property Description 2"
 msgstr "Opis nieruchomości 2"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
-#. module: pms_website
 msgid "Property Name"
 msgstr "Nazwa nieruchomości"
 
 #. module: pms_website
 #: model:ir.model.fields,help:pms_website.field_pms_property__website_id
 #: model:ir.model.fields,help:pms_website.field_pms_website_category__website_id
-#. module: pms_website
-msgid "Restrict publishing to this website."
-msgstr "Ogranicz publikowanie do tej witryny."
+msgid "Restrict to a specific website."
+msgstr ""
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__is_seo_optimized
-#. module: pms_website
 msgid "SEO optimized"
 msgstr "Zoptymalizowany SEO"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__seo_name
-#. module: pms_website
 msgid "Seo name"
 msgstr "Nazwa SEO"
 
 #. module: pms_website
-#: model:ir.model.fields,help:pms_website.field_pms_property__website_url
+#: model_terms:ir.ui.view,arch_db:pms_website.property
+msgid "Services"
+msgstr ""
+
 #. module: pms_website
-msgid "The full URL to access the document through the website."
-msgstr "Pełny adres URL dostępu do dokumentu przez stronę internetową."
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "Tag"
+msgstr ""
+
+#. module: pms_website
+#: model:ir.model.fields,help:pms_website.field_pms_property__website_absolute_url
+msgid "The full absolute URL to access the document through the website."
+msgstr ""
+
+#. module: pms_website
+#: model:ir.model.fields,help:pms_website.field_pms_property__website_url
+msgid "The full relative URL to access the document through the website."
+msgstr ""
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_property__website_published
-#. module: pms_website
 msgid "Visible on current website"
 msgstr "Widoczny na bieżącej stronie"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_property__website_id
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__website_id
-#. module: pms_website
 msgid "Website"
 msgstr "Strona internetowa"
 
 #. module: pms_website
-#: model:ir.model,name:pms_website.model_pms_website_category
+#: model:ir.model.fields,field_description:pms_website.field_pms_property__website_absolute_url
+msgid "Website Absolute URL"
+msgstr ""
+
 #. module: pms_website
+#: model:ir.model,name:pms_website.model_pms_website_category
 msgid "Website Property Category"
 msgstr "Kategoria nieruchomości strony"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_property__website_url
-#. module: pms_website
 msgid "Website URL"
 msgstr "URL strony"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__website_meta_description
-#. module: pms_website
 msgid "Website meta description"
 msgstr "Opis meta strony"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__website_meta_keywords
-#. module: pms_website
 msgid "Website meta keywords"
 msgstr "Słowa kluczowe meta strony"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__website_meta_title
-#. module: pms_website
 msgid "Website meta title"
 msgstr "Tytuł meta strony"
 
 #. module: pms_website
 #: model:ir.model.fields,field_description:pms_website.field_pms_website_category__website_meta_og_img
-#. module: pms_website
 msgid "Website opengraph image"
 msgstr "Obraz OpenGraph strony"
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "bedroom"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "bedrooms"
+msgstr ""
+
+#. module: pms_website
+#: model_terms:ir.ui.view,arch_db:pms_website.properties
+msgid "m²"
+msgstr ""
+
+#~ msgid "<span class=\"normal\">Check in:</span>"
+#~ msgstr "<span class=\"normal\">Zameldowanie:</span>"
+
+#~ msgid "AM"
+#~ msgstr "AM"
+
+#~ msgid "Discover the featured amenities on this property"
+#~ msgstr "Odkryj wyróżnione udogodnienia tej nieruchomości"
+
+#~ msgid "Explore all amenities available in this property"
+#~ msgstr "Poznaj wszystkie udogodnienia dostępne w tej nieruchomości"
+
+#~ msgid "Guest(s)"
+#~ msgstr "Gość/Goście"
+
+#~ msgid "Last Modified on"
+#~ msgstr "Ostatnia modyfikacja"
+
+#~ msgid "Main Amenities"
+#~ msgstr "Główne udogodnienia"
+
+#~ msgid "PM"
+#~ msgstr "PM"
+
+#~ msgid "Restrict publishing to this website."
+#~ msgstr "Ogranicz publikowanie do tej witryny."
+
+#~ msgid "The full URL to access the document through the website."
+#~ msgstr "Pełny adres URL dostępu do dokumentu przez stronę internetową."
