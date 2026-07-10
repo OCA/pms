@@ -1,0 +1,5 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_pms_property_portal,access_property_portal,pms_base.model_pms_property,base.group_portal,1,0,0,0
+access_pms_website_category_portal,access_pms_website_category_portal,pms_website.model_pms_website_category,base.group_portal,1,0,0,0
+access_pm_property_reservation_public,access_pm_property_reservation,pms_sale.model_pms_property_reservation,base.group_public,1,0,0,0
+access_pm_property_reservation_portal,access_pm_property_reservation_portal,pms_sale.model_pms_property_reservation,base.group_portal,1,0,0,0
