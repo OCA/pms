@@ -1,6 +1,6 @@
 [project]
 name = "odoo-addons-oca-pms"
-version = "19.0.20260706.0"
+version = "19.0.20260710.0"
 dependencies = [
     "odoo-addon-pms_account==19.0.*",
     "odoo-addon-pms_account_asset==19.0.*",
@@ -12,6 +12,7 @@ dependencies = [
     "odoo-addon-pms_sale==19.0.*",
     "odoo-addon-pms_stock==19.0.*",
     "odoo-addon-pms_website==19.0.*",
+    "odoo-addon-pms_website_sale==19.0.*",
 ]
 classifiers=[
     "Programming Language :: Python",
