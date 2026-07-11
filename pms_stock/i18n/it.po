@@ -6,41 +6,43 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2026-07-11 12:28+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. module: pms_stock
 #: model:ir.actions.act_window,name:pms_stock.location_open_content
 #: model_terms:ir.ui.view,arch_db:pms_stock.view_pms_property_form_stock
 msgid "Content"
-msgstr ""
+msgstr "Contenuto"
 
 #. module: pms_stock
 #: model:ir.model.fields,field_description:pms_stock.field_pms_property__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nome visualizzato"
 
 #. module: pms_stock
 #: model:ir.model.fields,field_description:pms_stock.field_pms_property__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: pms_stock
 #: model_terms:ir.ui.view,arch_db:pms_stock.view_pms_property_form_stock
 msgid "Inventory"
-msgstr ""
+msgstr "Inventario"
 
 #. module: pms_stock
 #: model:ir.model.fields,field_description:pms_stock.field_pms_property__stock_location_id
 msgid "Inventory Location"
-msgstr ""
+msgstr "Ubicazione di inventario"
 
 #. module: pms_stock
 #: model:ir.model,name:pms_stock.model_pms_property
 msgid "Property"
-msgstr ""
+msgstr "Proprietà"
