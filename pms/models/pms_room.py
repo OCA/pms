@@ -28,6 +28,14 @@ class PmsRoom(models.Model):
         "Changing the position changes the sequence",
         default=0,
     )
+    assignment_sequence = fields.Integer(
+        help="Order used to automatically assign rooms on reservations "
+        "without a specific room preassigned (OTAs, web, etc.); "
+        "rooms with lower values are assigned first. "
+        "It is independent of the display order (sequence). "
+        "By default it takes the same value as the sequence.",
+        default=0,
+    )
     pms_property_id = fields.Many2one(
         string="Property",
         help="Properties with access to the element;"
@@ -352,6 +360,8 @@ class PmsRoom(models.Model):
                     vals.update({"short_name": short_name})
                 else:
                     vals.update({"short_name": vals["name"]})
+            if "assignment_sequence" not in vals and "sequence" in vals:
+                vals["assignment_sequence"] = vals["sequence"]
         records = super().create(vals_list)
         records._trigger_avail_recompute(
             records.mapped("pms_property_id").ids,

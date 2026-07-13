@@ -348,9 +348,12 @@ class PmsReservationLine(models.Model):
                                 )
 
                     # otherwise we assign the first of those
-                    # available for the entire stay
+                    # available for the entire stay following the
+                    # room assignment order (assignment_sequence)
                     else:
-                        line.room_id = rooms_available[0]
+                        line.room_id = rooms_available.sorted(
+                            key=lambda r: (r.assignment_sequence, r.sequence, r.id)
+                        )[0]
                 # check that the reservation cannot be allocated even by dividing it
                 elif not self.env["pms.property"].splitted_availability(
                     checkin=reservation.checkin,
