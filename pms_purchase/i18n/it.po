@@ -6,13 +6,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2026-07-14 11:42+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. module: pms_purchase
 #: model:ir.model.fields,field_description:pms_purchase.field_pms_property__display_name
@@ -20,7 +22,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_purchase.field_stock_move__display_name
 #: model:ir.model.fields,field_description:pms_purchase.field_stock_putaway_rule__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nome visualizzato"
 
 #. module: pms_purchase
 #: model:ir.model.fields,field_description:pms_purchase.field_pms_property__id
@@ -28,55 +30,55 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_purchase.field_stock_move__id
 #: model:ir.model.fields,field_description:pms_purchase.field_stock_putaway_rule__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: pms_purchase
 #: model:ir.model.fields,field_description:pms_purchase.field_stock_putaway_rule__move_to_property
 msgid "Move to Property Location"
-msgstr ""
+msgstr "Sposta in ubicazione proprietà"
 
 #. module: pms_purchase
 #: model:ir.model.fields,field_description:pms_purchase.field_pms_property__po_line_count
 #: model_terms:ir.ui.view,arch_db:pms_purchase.pms_property_form_inherit_po_lines_view
 msgid "PO Line(s)"
-msgstr ""
+msgstr "Righe OV"
 
 #. module: pms_purchase
 #: model:ir.model,name:pms_purchase.model_pms_property
 #: model:ir.model.fields,field_description:pms_purchase.field_purchase_order_line__pms_property_id
 msgid "Property"
-msgstr ""
+msgstr "Proprietà"
 
 #. module: pms_purchase
 #: model:ir.model,name:pms_purchase.model_purchase_order_line
 msgid "Purchase Order Line"
-msgstr ""
+msgstr "Riga ordine di acquisto"
 
 #. module: pms_purchase
 #. odoo-python
 #: code:addons/pms_purchase/models/pms_property.py:0
 msgid "Purchase Order Lines"
-msgstr ""
+msgstr "Righe ordine di acquisto"
 
 #. module: pms_purchase
 #: model:ir.model.fields,field_description:pms_purchase.field_pms_property__po_line_ids
 msgid "Purchases"
-msgstr ""
+msgstr "Acquisti"
 
 #. module: pms_purchase
 #: model:ir.model,name:pms_purchase.model_stock_putaway_rule
 msgid "Putaway Rule"
-msgstr ""
+msgstr "Regola stoccaggio"
 
 #. module: pms_purchase
 #: model:ir.model,name:pms_purchase.model_stock_move
 msgid "Stock Move"
-msgstr ""
+msgstr "Movimento di magazzino"
 
 #. module: pms_purchase
 #: model:ir.model.fields,field_description:pms_purchase.field_stock_putaway_rule__location_out_id
 msgid "Store to"
-msgstr ""
+msgstr "Deposita in"
 
 #. module: pms_purchase
 #: model:ir.model.fields,help:pms_purchase.field_stock_putaway_rule__move_to_property
@@ -84,3 +86,5 @@ msgid ""
 "When enabled, incoming stock is routed to the property location linked on "
 "the purchase order line."
 msgstr ""
+"Quando abilitata, la merce in arrivo è inoltrata nell'ubicazione della "
+"proprietà collegata alla riga dell'ordine di vendita."
