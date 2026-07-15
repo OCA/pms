@@ -6,23 +6,25 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2026-07-15 12:46+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__meeting_count
 msgid "# Meetings"
-msgstr ""
+msgstr "N° riunioni"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__supplier_invoice_count
 msgid "# Vendor Bills"
-msgstr ""
+msgstr "N. fatture fornitore"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_team_kanban
@@ -30,32 +32,34 @@ msgid ""
 "<br/>\n"
 "                                        Properties"
 msgstr ""
+"<br/>\n"
+"                                        Proprietà"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__account_move_count
 msgid "Account Move Count"
-msgstr ""
+msgstr "Conto movimento contabile"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__property_account_payable_id
 msgid "Account Payable"
-msgstr ""
+msgstr "Conto di debito"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__property_account_receivable_id
 msgid "Account Receivable"
-msgstr ""
+msgstr "Conto di credito"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Accounting"
-msgstr ""
+msgstr "Contabilità"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_needaction
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_needaction
 msgid "Action Needed"
-msgstr ""
+msgstr "Azione richiesta"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_amenity__active
@@ -65,51 +69,51 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_pms_service__active
 #: model:ir.model.fields,field_description:pms_base.field_pms_stage__active
 msgid "Active"
-msgstr ""
+msgstr "Attivo"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__active_lang_count
 msgid "Active Lang Count"
-msgstr ""
+msgstr "Numero lingue attive"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_ids
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_ids
 msgid "Activities"
-msgstr ""
+msgstr "Attività"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_exception_decoration
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_exception_decoration
 msgid "Activity Exception Decoration"
-msgstr ""
+msgstr "Decorazione eccezione attività"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_state
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_state
 msgid "Activity State"
-msgstr ""
+msgstr "Stato attività"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_type_icon
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_type_icon
 msgid "Activity Type Icon"
-msgstr ""
+msgstr "Icona tipo attività"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
 msgid "Address"
-msgstr ""
+msgstr "Indirizzo"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__type
 msgid "Address Type"
-msgstr ""
+msgstr "Tipo indirizzo"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__type_address_label
 msgid "Address Type Description"
-msgstr ""
+msgstr "Descrizione tipo indirizzo"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__lang
@@ -117,16 +121,18 @@ msgid ""
 "All the emails and documents sent to this contact will be translated in this "
 "language."
 msgstr ""
+"Tutte le email e i documenti inviati a questo contatto verranno tradotti in "
+"questa lingua."
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Allow customers to book reservations online"
-msgstr ""
+msgstr "Consente ai clienti di riservare una prenotazione online"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_website_sale
 msgid "Allow online booking"
-msgstr ""
+msgstr "Consente prenotazione online"
 
 #. module: pms_base
 #: model:ir.actions.act_window,name:pms_base.action_pms_amenity
@@ -137,68 +143,68 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_amenity_search
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
 msgid "Amenities"
-msgstr ""
+msgstr "Dotazioni"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__amenity_ids
 msgid "Amenities available in this property"
-msgstr ""
+msgstr "Dotazioni disponibili in questa proprietà"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_amenity_form
 msgid "Amenity"
-msgstr ""
+msgstr "Dotazione"
 
 #. module: pms_base
 #: model:ir.model,name:pms_base.model_pms_amenity_type
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_room_amenity_type_form
 msgid "Amenity Type"
-msgstr ""
+msgstr "Tipo dotazione"
 
 #. module: pms_base
 #: model:ir.actions.act_window,name:pms_base.action_pms_amenity_type
 #: model:ir.ui.menu,name:pms_base.menu_pms_config_property_amenity_type
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_amenity_type_tree
 msgid "Amenity Types"
-msgstr ""
+msgstr "Tipi dotazione"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_room_form
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_service_form
 msgid "Archive"
-msgstr ""
+msgstr "Archivia"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_search
 msgid "Archived"
-msgstr ""
+msgstr "In archivio"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__area
 #: model:ir.model.fields,field_description:pms_base.field_pms_room__area
 msgid "Area"
-msgstr ""
+msgstr "Superficie"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Area (UoM)"
-msgstr ""
+msgstr "Superficie (UdM)"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_attachment_count
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_attachment_count
 msgid "Attachment Count"
-msgstr ""
+msgstr "Conteggio allegati"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__autopost_bills
 msgid "Auto-post bills"
-msgstr ""
+msgstr "Auto invia fattura"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__autopost_bills
 msgid "Automatically post bills for this trusted partner"
-msgstr ""
+msgstr "Invia automaticamente le fatture per questo partner affidabile"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__receipt_reminder_email
@@ -206,206 +212,208 @@ msgid ""
 "Automatically send a confirmation email to the vendor X days before the "
 "expected receipt date, asking him to confirm the exact date."
 msgstr ""
+"Invia automaticamente una email al fornitore X giorni prima della data "
+"fattura prevista, chiedendo la conferma della data."
 
 #. module: pms_base
 #: model:pms.stage,name:pms_base.pms_stage_available
 msgid "Available"
-msgstr ""
+msgstr "Disponibile"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__available_invoice_template_pdf_report_ids
 msgid "Available Invoice Template Pdf Report"
-msgstr ""
+msgstr "Resoconto PDF modello fattura disponibile"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__avatar_1920
 msgid "Avatar"
-msgstr ""
+msgstr "Avatar"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__avatar_1024
 msgid "Avatar 1024"
-msgstr ""
+msgstr "Avatar 1024"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__avatar_128
 msgid "Avatar 128"
-msgstr ""
+msgstr "Avatar 128"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__avatar_256
 msgid "Avatar 256"
-msgstr ""
+msgstr "Avatar 256"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__avatar_512
 msgid "Avatar 512"
-msgstr ""
+msgstr "Avatar 512"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__balcony
 #: model:pms.room.type,name:pms_base.pms_room_type_balcony
 msgid "Balcony"
-msgstr ""
+msgstr "Terrazzo"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__bank_account_count
 msgid "Bank"
-msgstr ""
+msgstr "Banca"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__bank_ids
 msgid "Banks"
-msgstr ""
+msgstr "Banche"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__barcode
 msgid "Barcode"
-msgstr ""
+msgstr "Codice a barre"
 
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_basement
 msgid "Basement"
-msgstr ""
+msgstr "Cantina"
 
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_bath
 msgid "Bathroom"
-msgstr ""
+msgstr "Bagno"
 
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_bed
 msgid "Bedroom"
-msgstr ""
+msgstr "Camera da letto"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
 msgid "Bedroom(s)"
-msgstr ""
+msgstr "Camera(e) da letto"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__is_blacklisted
 msgid "Blacklist"
-msgstr ""
+msgstr "Blacklist"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__phone_blacklisted
 msgid "Blacklisted Phone is Phone"
-msgstr ""
+msgstr "Il numero in blacklist è un telefono fisso"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_bounce
 msgid "Bounce"
-msgstr ""
+msgstr "Respingi"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_search
 msgid "Building"
-msgstr ""
+msgstr "Edificio"
 
 #. module: pms_base
 #: model:ir.model.fields.selection,name:pms_base.selection__pms_property__heating__boiler_building
 msgid "Building Boiler"
-msgstr ""
+msgstr "Boiler edificio"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__buyer_id
 msgid "Buyer"
-msgstr ""
+msgstr "Acquirente"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "CRM"
-msgstr ""
+msgstr "CRM"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__can_publish
 msgid "Can Publish"
-msgstr ""
+msgstr "Può pubblicare"
 
 #. module: pms_base
 #: model:pms.stage,name:pms_base.pms_stage_cancelled
 msgid "Cancelled"
-msgstr ""
+msgstr "Annullata"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_room__capacity
 msgid "Capacity"
-msgstr ""
+msgstr "Capacità"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__channel_member_ids
 msgid "Channel Member"
-msgstr ""
+msgstr "Membro canale"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__channel_ids
 msgid "Channels"
-msgstr ""
+msgstr "Canali"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__is_company
 msgid "Check if the contact is a company, otherwise it is a person"
-msgstr ""
+msgstr "Controlla se il contatto è un'azienda, altrimenti è una persona"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__employee
 msgid "Check this box if this contact is an Employee."
-msgstr ""
+msgstr "Seleziona questa casella se questo contatto è un dipendente."
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
 msgid "Child Property"
-msgstr ""
+msgstr "Proprietà figlio"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__childs_property_count
 msgid "Children Count"
-msgstr ""
+msgstr "Conteggio figli"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__property_child_ids
 msgid "Children Property"
-msgstr ""
+msgstr "Proprietà figli"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__city
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
 msgid "City"
-msgstr ""
+msgstr "Città"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_stage__custom_color
 msgid "Color Code"
-msgstr ""
+msgstr "Codice colore"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__color
 #: model:ir.model.fields,field_description:pms_base.field_pms_tag__color
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__color
 msgid "Color Index"
-msgstr ""
+msgstr "Indice colore"
 
 #. module: pms_base
 #. odoo-python
 #: code:addons/pms_base/models/pms_stage.py:0
 msgid "Color code should be Hex Code. Ex:-#FFFFFF"
-msgstr ""
+msgstr "Il codice colore deve essere esadecimale. Es:-#FFFFFF"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__commercial_partner_id
 msgid "Commercial Entity"
-msgstr ""
+msgstr "Entità commerciale"
 
 #. module: pms_base
 #: model:ir.model,name:pms_base.model_res_company
 msgid "Companies"
-msgstr ""
+msgstr "Aziende"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__ref_company_ids
 msgid "Companies that refers to partner"
-msgstr ""
+msgstr "Aziende che si riferiscono al fornitore"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__company_id
@@ -413,126 +421,126 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_pms_tag__company_id
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__company_id
 msgid "Company"
-msgstr ""
+msgstr "Azienda"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__company_registry
 msgid "Company ID"
-msgstr ""
+msgstr "ID azienda"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__company_registry_label
 msgid "Company ID Label"
-msgstr ""
+msgstr "Etichetta ID azienda"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__company_name
 msgid "Company Name"
-msgstr ""
+msgstr "Nome azienda"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__commercial_company_name
 msgid "Company Name Entity"
-msgstr ""
+msgstr "Entità nome azienda"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__company_registry_placeholder
 msgid "Company Registry Placeholder"
-msgstr ""
+msgstr "Segnaposto registro azienda"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__company_type
 msgid "Company Type"
-msgstr ""
+msgstr "Tipo azienda"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_tag__company_id
 msgid "Company related to this tag"
-msgstr ""
+msgstr "Azienda collegata a questa etichetta"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_team__company_id
 msgid "Company related to this team"
-msgstr ""
+msgstr "Azienda collegata a questo team"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__contact_address
 msgid "Complete Address"
-msgstr ""
+msgstr "Indirizzo completo"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__complete_name
 msgid "Complete Name"
-msgstr ""
+msgstr "Nome completo"
 
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_4
 msgid "Conference Room"
-msgstr ""
+msgstr "Sala riunioni"
 
 #. module: pms_base
 #: model:ir.model,name:pms_base.model_res_config_settings
 msgid "Config Settings"
-msgstr ""
+msgstr "Impostazioni configurazione"
 
 #. module: pms_base
 #: model:ir.ui.menu,name:pms_base.menu_config
 msgid "Configuration"
-msgstr ""
+msgstr "Configurazione"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_connector_guesty
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Connect with Guesty"
-msgstr ""
+msgstr "Connessione con Guesty"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_connector_wubook
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Connect with Wubook"
-msgstr ""
+msgstr "Connessione con Wubook"
 
 #. module: pms_base
 #: model:pms.amenity.type,name:pms_base.pms_amenity_type_1
 msgid "Connectivity"
-msgstr ""
+msgstr "Connettività"
 
 #. module: pms_base
 #: model:ir.model,name:pms_base.model_res_partner
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__child_ids
 msgid "Contact"
-msgstr ""
+msgstr "Contatto"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__contract_ids
 msgid "Contracts"
-msgstr ""
+msgstr "Contratti"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__message_bounce
 msgid "Counter of the number of bounced emails for this contact"
-msgstr ""
+msgstr "Contatore del numero di e-mail respinte per questo contatto"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__country_id
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
 msgid "Country"
-msgstr ""
+msgstr "Nazione"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__country_code
 msgid "Country Code"
-msgstr ""
+msgstr "Codice nazione"
 
 #. module: pms_base
 #: model:ir.model,website_form_label:pms_base.model_res_partner
 msgid "Create a Customer"
-msgstr ""
+msgstr "Crea un cliente"
 
 #. module: pms_base
 #: model_terms:ir.actions.act_window,help:pms_base.action_pms_tag
 msgid "Create a tag."
-msgstr ""
+msgstr "Crea un'etichetta."
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_amenity__create_uid
@@ -545,7 +553,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_pms_tag__create_uid
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Creato da"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_amenity__create_date
@@ -558,67 +566,67 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_pms_tag__create_date
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Creato il"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__credit_limit
 msgid "Credit Limit"
-msgstr ""
+msgstr "Fido"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__credit_to_invoice
 msgid "Credit To Invoice"
-msgstr ""
+msgstr "Accredito in fattura"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__credit_limit
 msgid "Credit limit specific to this partner."
-msgstr ""
+msgstr "Fido specifico di questo partner."
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__currency_id
 msgid "Currency"
-msgstr ""
+msgstr "Valuta"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__partner_id
 msgid "Current property"
-msgstr ""
+msgstr "Proprietà attuale"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__property_stock_customer
 msgid "Customer Location"
-msgstr ""
+msgstr "Località cliente"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__property_payment_term_id
 msgid "Customer Payment Terms"
-msgstr ""
+msgstr "Termini pagamento cliente"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__customer_rank
 msgid "Customer Rank"
-msgstr ""
+msgstr "Classe cliente"
 
 #. module: pms_base
 #: model:ir.ui.menu,name:pms_base.menu_board
 msgid "Dashboard"
-msgstr ""
+msgstr "Bacheca"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__reminder_date_before_receipt
 msgid "Days Before Receipt"
-msgstr ""
+msgstr "Giorni antecedenti la fattura"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__days_sales_outstanding
 msgid "Days Sales Outstanding (DSO)"
-msgstr ""
+msgstr "Giorni medi di accredito vendite (DSO)"
 
 #. module: pms_base
 #: model:pms.team,name:pms_base.pms_team_default
 msgid "Default Team"
-msgstr ""
+msgstr "Team predefinito"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__group_rfq
@@ -633,67 +641,78 @@ msgid ""
 "is the same week or week day\n"
 "         Always: Replenishment needs will always be grouped."
 msgstr ""
+"Definire se le richieste di offerta (RFQ)         devono essere raggruppate "
+"in base alla data di arrivo prevista, ad eccezione delle operazioni di "
+"dropshipping.\n"
+"         Su ordine: le esigenze di rifornimento saranno raggruppate, ad "
+"eccezione degli ordini su misura (MTO).\n"
+"         Giornaliera: le esigenze di rifornimento saranno raggruppate se la "
+"data di arrivo prevista è lo stesso giorno.\n"
+"         Settimanale: le esigenze di rifornimento saranno raggruppate se la "
+"data di arrivo prevista è la stessa settimana o lo stesso giorno della "
+"settimana.\n"
+"         Sempre: le esigenze di rifornimento saranno sempre raggruppate."
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Define your unit of measure when entering area"
-msgstr ""
+msgstr "Definire l'unità di misura quando si inserisce la superficie"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__trust
 msgid "Degree of trust you have in this debtor"
-msgstr ""
+msgstr "Grado di affidabilità che ha questo debitore"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__property_delivery_carrier_id
 msgid "Delivery Method"
-msgstr ""
+msgstr "Metodo di consegna"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_stage__description
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__description
 msgid "Description"
-msgstr ""
+msgstr "Descrizione"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_amenity__active
 msgid "Determines if amenity is active"
-msgstr ""
+msgstr "Determina se la dotazione è attiva"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_amenity_type__active
 msgid "Determines if amenity type is active"
-msgstr ""
+msgstr "Determina se il tipo dotazione è attivo"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_room__active
 msgid "Determines if room is active"
-msgstr ""
+msgstr "Determina se la camera è attiva"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_service__active
 msgid "Determines if service is active"
-msgstr ""
+msgstr "Determina se il servizio è attivo"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
 msgid "Dining Room(s)"
-msgstr ""
+msgstr "Sala(e) da pranzo"
 
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_dining
 msgid "Diningroom"
-msgstr ""
+msgstr "Sala da pranzo"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__display_invoice_edi_format
 msgid "Display Invoice Edi Format"
-msgstr ""
+msgstr "Visualizza formato EDI fattura"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__display_invoice_template_pdf_report_id
 msgid "Display Invoice Template Pdf Report"
-msgstr ""
+msgstr "Visualizza resoconto PDF modello fattura"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_amenity__display_name
@@ -709,22 +728,22 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__display_name
 #: model:ir.model.fields,field_description:pms_base.field_res_partner__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nome visualizzato"
 
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_2
 msgid "Double"
-msgstr ""
+msgstr "Doppia"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__duplicate_bank_partner_ids
 msgid "Duplicate Bank Partner"
-msgstr ""
+msgstr "Duplica banca partner"
 
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_0
 msgid "Economic"
-msgstr ""
+msgstr "Economica"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__partner_share
@@ -733,26 +752,29 @@ msgid ""
 "partner is a customer without access or with a limited access created for "
 "sharing data."
 msgstr ""
+"O cliente (non un utente) o utente condiviso. Indicato che l'attuale partner "
+"è un cliente senza accesso o con un accesso limitato creato per la "
+"condivisione dei dati."
 
 #. module: pms_base
 #: model:ir.model.fields.selection,name:pms_base.selection__pms_property__heating__tankless_electric
 msgid "Electric (Tankless)"
-msgstr ""
+msgstr "Elettrica (senza serbatoio)"
 
 #. module: pms_base
 #: model:ir.model.fields.selection,name:pms_base.selection__pms_property__heating__boiler_electric
 msgid "Electric Boiler"
-msgstr ""
+msgstr "Boiler elettrico"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__email
 msgid "Email"
-msgstr ""
+msgstr "E-mail"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__employee
 msgid "Employee"
-msgstr ""
+msgstr "Dipendente"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_room__sequence
@@ -761,6 +783,8 @@ msgid ""
 "Field used to change the position of the rooms in tree view.Changing the "
 "position changes the sequence"
 msgstr ""
+"Campo utilizzato per modificare la posizione della camera nella vista tree. "
+"Modificando la posizione si modifica la sequenza"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__phone_sanitized
@@ -768,125 +792,127 @@ msgid ""
 "Field used to store sanitized phone number. Helps speeding up searches and "
 "comparisons."
 msgstr ""
+"Campo utilizzato per salvare il numero di telefono ripulito. Aiuta ad "
+"accelerare ricerche e comparazioni."
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__fiscal_country_codes
 msgid "Fiscal Country Codes"
-msgstr ""
+msgstr "Codici fiscali nazione"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__fiscal_country_group_codes
 msgid "Fiscal Country Group Codes"
-msgstr ""
+msgstr "Codici fiscali gruppo azienda"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__property_account_position_id
 msgid "Fiscal Position"
-msgstr ""
+msgstr "Posizione fiscale"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__floors_num
 msgid "Floor"
-msgstr ""
+msgstr "Piano"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_stage__fold
 msgid "Folded in Kanban"
-msgstr ""
+msgstr "Minimizzato nel Kanban"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_follower_ids
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_follower_ids
 msgid "Followers"
-msgstr ""
+msgstr "Follower"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_partner_ids
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_partner_ids
 msgid "Followers (Partners)"
-msgstr ""
+msgstr "Seguito da (partner)"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__activity_type_icon
 #: model:ir.model.fields,help:pms_base.field_pms_team__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
-msgstr ""
+msgstr "Icona Font Awesome es. fa-tasks"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__email_formatted
 msgid "Format email address \"Name <email@domain>\""
-msgstr ""
+msgstr "Formattazione indirizzo email \"Nome <email@domain>\""
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__email_formatted
 msgid "Formatted Email"
-msgstr ""
+msgstr "Email formattata"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_tag__full_name
 msgid "Full Name"
-msgstr ""
+msgstr "Nome completo"
 
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_garage
 msgid "Garage"
-msgstr ""
+msgstr "Garage"
 
 #. module: pms_base
 #: model:ir.model.fields.selection,name:pms_base.selection__pms_property__heating__tankless_gas
 msgid "Gas (Tankless)"
-msgstr ""
+msgstr "Gas (senza serbatoio)"
 
 #. module: pms_base
 #: model:ir.model.fields.selection,name:pms_base.selection__pms_property__heating__boiler_gas
 msgid "Gas Boiler"
-msgstr ""
+msgstr "Boiler a gas"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__partner_latitude
 msgid "Geo Latitude"
-msgstr ""
+msgstr "Latitudine geografica"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__partner_longitude
 msgid "Geo Longitude"
-msgstr ""
+msgstr "Longitudine geografica"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__date_localization
 msgid "Geolocation Date"
-msgstr ""
+msgstr "Data geolocalizzazione"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__group_rfq
 msgid "Group RFQ"
-msgstr ""
+msgstr "Raggruppa RdP"
 
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_half_bath
 msgid "Half Bathroom"
-msgstr ""
+msgstr "Bagno di servizio"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
 msgid "Half Bathroom(s)"
-msgstr ""
+msgstr "Bagno(i) di servizio"
 
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_hall
 msgid "Hall"
-msgstr ""
+msgstr "Sala"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__has_message
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__has_message
 msgid "Has Message"
-msgstr ""
+msgstr "Ha un messaggio"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__heating
 msgid "Heating"
-msgstr ""
+msgstr "Riscaldamento"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_amenity__id
@@ -902,36 +928,36 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__id
 #: model:ir.model.fields,field_description:pms_base.field_res_partner__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__im_status
 msgid "IM Status"
-msgstr ""
+msgstr "Stato IM"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_exception_icon
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_exception_icon
 msgid "Icon"
-msgstr ""
+msgstr "Icona"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__activity_exception_icon
 #: model:ir.model.fields,help:pms_base.field_pms_team__activity_exception_icon
 msgid "Icon to indicate an exception activity."
-msgstr ""
+msgstr "Icona per indicare un'attività eccezione."
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__message_needaction
 #: model:ir.model.fields,help:pms_base.field_pms_team__message_needaction
 msgid "If checked, new messages require your attention."
-msgstr ""
+msgstr "Se selezionata, nuovi messaggi richiedono attenzione."
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__message_has_error
 #: model:ir.model.fields,help:pms_base.field_pms_team__message_has_error
 msgid "If checked, some messages have a delivery error."
-msgstr ""
+msgstr "Se selezionata, alcuni messaggi hanno un errore di consegna."
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__is_blacklisted
@@ -939,6 +965,8 @@ msgid ""
 "If the email address is on the blacklist, the contact won't receive mass "
 "mailing anymore, from any list"
 msgstr ""
+"Se l'indirizzo e-mail è sulla lista nera, il contatto non riceverà più la "
+"posta di massa, da qualsiasi lista"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__phone_sanitized_blacklisted
@@ -946,41 +974,43 @@ msgid ""
 "If the sanitized phone number is on the blacklist, the contact won't receive "
 "mass mailing sms anymore, from any list"
 msgstr ""
+"Se il numero di telefono ripulito è nella blacklist, il contatto non "
+"riceverà più SMS di massa, da qualsiasi lista"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__ignore_abnormal_invoice_amount
 msgid "Ignore Abnormal Invoice Amount"
-msgstr ""
+msgstr "Ignora valore anormale fattura"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__ignore_abnormal_invoice_date
 msgid "Ignore Abnormal Invoice Date"
-msgstr ""
+msgstr "Ignora data anormale fattura"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__image_1920
 msgid "Image"
-msgstr ""
+msgstr "Immgine"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__image_1024
 msgid "Image 1024"
-msgstr ""
+msgstr "Immagine 1024"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__image_128
 msgid "Image 128"
-msgstr ""
+msgstr "Immagine 128"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__image_256
 msgid "Image 256"
-msgstr ""
+msgstr "Immagine 256"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__image_512
 msgid "Image 512"
-msgstr ""
+msgstr "Immagine 512"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__phone_blacklisted
@@ -989,129 +1019,132 @@ msgid ""
 "distinguish which number is blacklisted             when there is both a "
 "mobile and phone field in a model."
 msgstr ""
+"Indica se un numero di telefono ripulito è un numero di telefono. Aiuta a "
+"distinguere quale numero è in blacklist             quando ci sono campi "
+"telefono per il fisso e il cellulare nel modello."
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__industry_id
 msgid "Industry"
-msgstr ""
+msgstr "Settore"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
 msgid "Information"
-msgstr ""
+msgstr "Informazione"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__contact_address_inline
 msgid "Inlined Complete Address"
-msgstr ""
+msgstr "Indirizzi completi allineati"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Integrations"
-msgstr ""
+msgstr "Integrazioni"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_amenity__default_code
 msgid "Internal Reference"
-msgstr ""
+msgstr "Riferimento interno"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_amenity__default_code
 msgid "Internal unique identifier of the amenity"
-msgstr ""
+msgstr "Identificativo univoco interno della dotazione"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__invoice_edi_format_store
 msgid "Invoice Edi Format Store"
-msgstr ""
+msgstr "Deposito formato EDI fattura"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__invoice_template_pdf_report_id
 msgid "Invoice report"
-msgstr ""
+msgstr "Resoconto fattura"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__invoice_sending_method
 msgid "Invoice sending"
-msgstr ""
+msgstr "Invio fattura"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__invoice_ids
 msgid "Invoices"
-msgstr ""
+msgstr "Fatture"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_is_follower
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_is_follower
 msgid "Is Follower"
-msgstr ""
+msgstr "Segue"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__is_in_call
 msgid "Is In Call"
-msgstr ""
+msgstr "È in chiamata"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__is_pickup_location
 msgid "Is Pickup Location"
-msgstr ""
+msgstr "È ubicazione di presa"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__is_public
 msgid "Is Public"
-msgstr ""
+msgstr "È pubblico"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__is_published
 msgid "Is Published"
-msgstr ""
+msgstr "È pubblicata"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__is_company
 msgid "Is a Company"
-msgstr ""
+msgstr "È un'azienda"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__is_property
 #: model:ir.model.fields,field_description:pms_base.field_res_partner__is_property
 #: model:ir.model.fields,field_description:pms_base.field_res_users__is_property
 msgid "Is a Property"
-msgstr ""
+msgstr "È una proprietà"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_stage__is_closed
 msgid "Is a close stage"
-msgstr ""
+msgstr "È una fase chiusa"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_stage__is_default
 msgid "Is a default stage"
-msgstr ""
+msgstr "È una fase predefinita"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__function
 msgid "Job Position"
-msgstr ""
+msgstr "Posizione lavorativa"
 
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_kitchen
 msgid "Kitchen"
-msgstr ""
+msgstr "Cucina"
 
 #. module: pms_base
 #: model:pms.amenity.type,name:pms_base.pms_amenity_type_2
 msgid "Kitchen facilities"
-msgstr ""
+msgstr "Servizi cucina"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
 msgid "Kitchen(s)"
-msgstr ""
+msgstr "Cucina(e)"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__lang
 msgid "Language"
-msgstr ""
+msgstr "Lingua"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_amenity__write_uid
@@ -1124,7 +1157,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_pms_tag__write_uid
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Ultimo aggiornamento di"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_amenity__write_date
@@ -1137,129 +1170,129 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_pms_tag__write_date
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Ultimo aggiornamento il"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__calendar_last_notif_ack
 msgid "Last notification marked as read from base Calendar"
-msgstr ""
+msgstr "Ultima notifica contrassegnata come letta dal calendario di base"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__laundry_room
 #: model:pms.amenity.type,name:pms_base.pms_amenity_type_3
 #: model:pms.room.type,name:pms_base.pms_room_type_laundry
 msgid "Laundry Room"
-msgstr ""
+msgstr "Lavanderia"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_crm
 msgid "Link a property to a lead"
-msgstr ""
+msgstr "Collega una proprietà ad un contatto"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Link a property to a stock location"
-msgstr ""
+msgstr "Collega una proprietà ad una ubicazione di magazzino"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Link projects and tasks to your properties"
-msgstr ""
+msgstr "Collega progetti e lavori alle proprietà"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Link purchases to your properties"
-msgstr ""
+msgstr "Collega gli acquisti alle proprietà"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Link to Projects"
-msgstr ""
+msgstr "Collega ai progetti"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_project
 msgid "Link to Projects and Tasks"
-msgstr ""
+msgstr "Collega a progetti e lavori"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_purchase
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Link to Purchases"
-msgstr ""
+msgstr "Collega agli acquisti"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Link your leads to a property"
-msgstr ""
+msgstr "Collega i contatti ad una proprietà"
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__room_ids
 msgid "List of rooms in the property."
-msgstr ""
+msgstr "Elenco delle camere nella proprietà."
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__service_ids
 msgid "List of services available in the property."
-msgstr ""
+msgstr "Elenco dei servizi disponibili nella proprietà."
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
 msgid "Living Rom(s)"
-msgstr ""
+msgstr "Soggiorno(i)"
 
 #. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_living
 msgid "Livingroom"
-msgstr ""
+msgstr "Soggiorno"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__main_user_id
 msgid "Main User"
-msgstr ""
+msgstr "Utente pricipale"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_account
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Manage Accounting"
-msgstr ""
+msgstr "Gestisci la contabilità"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_account_asset
 msgid "Manage Assets"
-msgstr ""
+msgstr "Gestisci i cespiti"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_stock
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Manage Content"
-msgstr ""
+msgstr "Gestisci i contenuti"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_contract
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Manage Contracts"
-msgstr ""
+msgstr "Gestisci i contratti"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Manage Depreciation and Amortization"
-msgstr ""
+msgstr "Gestisci svalutazioni e ammortamenti"
 
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_sale
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Manage Reservations"
-msgstr ""
+msgstr "Gestisci prenotazioni"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Manage accounting related information"
-msgstr ""
+msgstr "Gestisci le informazioni relative alla contabilità"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Manage amenities related to your properties"
-msgstr ""
+msgstr "Gestisci le dotazioni collegate alle proprietà"
 
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
