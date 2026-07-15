@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-07-15 07:46+0000\n"
+"PO-Revision-Date: 2026-07-15 12:46+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -76,7 +76,7 @@ msgstr "Dotazioni"
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
 msgid "Area"
-msgstr "Area"
+msgstr "Superficie"
 
 #. module: pms_website
 #: model_terms:ir.ui.view,arch_db:pms_website.property
