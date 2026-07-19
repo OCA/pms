@@ -195,6 +195,65 @@ class TestPmsReservationLines(TestPms):
         )
 
     @freeze_time("2000-12-01")
+    def test_auto_assignment_follows_assignment_sequence(self):
+        """
+        Check that the automatic room assignment of a reservation without
+        room preassigned follows the assignment_sequence order of the rooms
+        instead of the display order (sequence).
+        """
+        # ARRANGE
+        # Display order: room1 < room2 < room3
+        # Assignment order: room3 < room2 < room1
+        self.room1.write({"sequence": 1, "assignment_sequence": 3})
+        self.room2.write({"sequence": 2, "assignment_sequence": 2})
+        self.room3.write({"sequence": 3, "assignment_sequence": 1})
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+
+        # ASSERT
+        self.assertEqual(
+            reservation.reservation_line_ids.room_id,
+            self.room3,
+            "The room with the lowest assignment_sequence should be "
+            "assigned first on reservations without room preassigned",
+        )
+
+    def test_room_assignment_sequence_defaults_to_sequence(self):
+        """
+        Check that the assignment_sequence of a new room takes the same
+        value as the sequence when it is not explicitly set.
+        """
+        # ACT
+        room = self.env["pms.room"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "name": "Double 105",
+                "room_type_id": self.room_type_double.id,
+                "capacity": 2,
+                "sequence": 7,
+            }
+        )
+
+        # ASSERT
+        self.assertEqual(
+            room.assignment_sequence,
+            7,
+            "The assignment_sequence of a new room should default " "to its sequence",
+        )
+
+    @freeze_time("2000-12-01")
     def test_modify_reservation_with_incompatible_overnight_classes(self):
         """
         Check that when modifying a reservation with incompatible overnight

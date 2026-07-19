@@ -29,6 +29,7 @@
                     </div>
                     <group>
                         <field name="sequence" />
+                        <field name="assignment_sequence" />
                     </group>
                     <notebook>
                         <page name="information_pms_room" string="Information">
@@ -247,6 +248,7 @@
                 <field name="extra_beds_allowed" />
                 <field name="room_amenity_ids" widget="many2many_tags" />
                 <field name="short_name" />
+                <field name="assignment_sequence" optional="show" />
                 <field name="parent_id" optional="hide" />
             </tree>
         </field>
