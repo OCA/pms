@@ -2749,6 +2749,11 @@ msgid "Assigned Employees"
 msgstr "Zugewiesene Mitarbeiter"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room__assignment_sequence
+msgid "Assignment Sequence"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__pms_folio_ids
 #: model:ir.model.fields,help:pms.field_res_partner__pms_folio_ids
 #: model:ir.model.fields,help:pms.field_res_users__pms_folio_ids
@@ -8345,6 +8350,15 @@ msgstr "Bestelldatum"
 #: model:ir.model.fields,help:pms.field_pms_reservation__date_order
 msgid "Order date of reservation"
 msgstr "Bestelldatum der Reservierung"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room__assignment_sequence
+msgid ""
+"Order used to automatically assign rooms on reservations without a specific "
+"room preassigned (OTAs, web, etc.); rooms with lower values are assigned "
+"first. It is independent of the display order (sequence). By default it "
+"takes the same value as the sequence."
+msgstr ""
 
 #. module: pms
 #. odoo-python
