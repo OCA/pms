@@ -36,10 +36,34 @@ class TestTouristTaxComputation(TestPms):
             }
         )
 
+        cls.room_type_quad = cls.env["pms.room.type"].create(
+            {
+                "pms_property_ids": [cls.pms_property1.id],
+                "name": "Quad Test",
+                "default_code": "QUA_Test",
+                "class_id": cls.room_type_class1.id,
+            }
+        )
+
+        cls.room2 = cls.env["pms.room"].create(
+            {
+                "pms_property_id": cls.pms_property1.id,
+                "name": "Quad 201",
+                "room_type_id": cls.room_type_quad.id,
+                "capacity": 4,
+            }
+        )
+
         cls.partner_adult = cls.env["res.partner"].create(
             {
                 "firstname": "Adult",
                 "birthdate_date": "1990-01-01",
+            }
+        )
+
+        cls.partner_adult_no_birthdate = cls.env["res.partner"].create(
+            {
+                "firstname": "AdultNoBirthdate",
             }
         )
 
@@ -298,3 +322,161 @@ class TestTouristTaxComputation(TestPms):
         for line in high.service_line_ids:
             self.assertEqual(line.day_qty, 1)
             self.assertEqual(line.price_unit, 2.0)
+
+    @freeze_time("2025-07-01")
+    def test_tourist_tax_partial_checkin_counts_declared_guests(self):
+        """
+        Test that with 3 declared adults and only one of them registered,
+        the tax is still computed for the 3 declared guests.
+        """
+        self.env["product.product"].create(
+            {
+                "name": "Tourist Tax",
+                "list_price": 2.0,
+                "is_tourist_tax": True,
+                "per_person": True,
+                "tourist_tax_date_start": "06-01",
+                "tourist_tax_date_end": "09-30",
+                "tourist_tax_apply_from_night": 1,
+                "tourist_tax_apply_to_night": 3,
+                "tourist_tax_min_age": 14,
+            }
+        )
+
+        checkin = fields.Date.today()
+        checkout = checkin + datetime.timedelta(days=3)
+
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_quad.id,
+                "partner_id": self.partner_adult.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+                "adults": 3,
+                "checkin_partner_ids": [
+                    (0, 0, {"partner_id": self.partner_adult.id}),
+                ],
+                "pms_property_id": self.pms_property1.id,
+                "pricelist_id": self.pricelist1.id,
+            }
+        )
+
+        tax_services = reservation.service_ids.filtered(
+            lambda s: s.product_id.product_tmpl_id.is_tourist_tax
+        )
+        self.assertEqual(
+            len(tax_services), 1, "Should generate one tourist tax service"
+        )
+        for line in tax_services.service_line_ids:
+            self.assertEqual(
+                line.day_qty,
+                3,
+                "All declared adults should be taxed, registered or not",
+            )
+
+    @freeze_time("2025-07-01")
+    def test_tourist_tax_partial_checkin_excludes_declared_children(self):
+        """
+        Test that with 2 adults and 2 children declared and only one adult
+        registered, the tax is computed for the 2 declared adults only.
+        """
+        self.env["product.product"].create(
+            {
+                "name": "Tourist Tax",
+                "list_price": 2.0,
+                "is_tourist_tax": True,
+                "per_person": True,
+                "tourist_tax_date_start": "06-01",
+                "tourist_tax_date_end": "09-30",
+                "tourist_tax_apply_from_night": 1,
+                "tourist_tax_apply_to_night": 3,
+                "tourist_tax_min_age": 14,
+            }
+        )
+
+        checkin = fields.Date.today()
+        checkout = checkin + datetime.timedelta(days=3)
+
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_quad.id,
+                "partner_id": self.partner_adult.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+                "adults": 2,
+                "children": 2,
+                "checkin_partner_ids": [
+                    (0, 0, {"partner_id": self.partner_adult.id}),
+                ],
+                "pms_property_id": self.pms_property1.id,
+                "pricelist_id": self.pricelist1.id,
+            }
+        )
+
+        tax_services = reservation.service_ids.filtered(
+            lambda s: s.product_id.product_tmpl_id.is_tourist_tax
+        )
+        self.assertEqual(
+            len(tax_services), 1, "Should generate one tourist tax service"
+        )
+        for line in tax_services.service_line_ids:
+            self.assertEqual(
+                line.day_qty,
+                2,
+                "Only the declared adults should be taxed",
+            )
+
+    @freeze_time("2025-07-01")
+    def test_tourist_tax_registered_guest_without_birthdate_counts(self):
+        """
+        Test that a registered guest without birthdate is counted as a
+        declared adult instead of being excluded from the tax.
+        """
+        self.env["product.product"].create(
+            {
+                "name": "Tourist Tax",
+                "list_price": 2.0,
+                "is_tourist_tax": True,
+                "per_person": True,
+                "tourist_tax_date_start": "06-01",
+                "tourist_tax_date_end": "09-30",
+                "tourist_tax_apply_from_night": 1,
+                "tourist_tax_apply_to_night": 3,
+                "tourist_tax_min_age": 14,
+            }
+        )
+
+        checkin = fields.Date.today()
+        checkout = checkin + datetime.timedelta(days=3)
+
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner_adult.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+                "adults": 2,
+                "checkin_partner_ids": [
+                    (0, 0, {"partner_id": self.partner_adult.id}),
+                    (0, 0, {"partner_id": self.partner_adult_no_birthdate.id}),
+                ],
+                "pms_property_id": self.pms_property1.id,
+                "pricelist_id": self.pricelist1.id,
+            }
+        )
+
+        tax_services = reservation.service_ids.filtered(
+            lambda s: s.product_id.product_tmpl_id.is_tourist_tax
+        )
+        self.assertEqual(
+            len(tax_services), 1, "Should generate one tourist tax service"
+        )
+        for line in tax_services.service_line_ids:
+            self.assertEqual(
+                line.day_qty,
+                2,
+                "Guests without birthdate should be taxed as declared adults",
+            )
