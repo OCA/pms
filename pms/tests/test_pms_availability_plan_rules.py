@@ -628,3 +628,55 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                     "partner_id": self.partner1.id,
                 }
             )
+
+    def test_room_deactivation_updates_plan_avail(self):
+        """
+        Check that deactivating a room propagates to the plan rules.
+        --------------------------------------------------------------
+        Room type with 2 rooms, one reservation and an availability rule
+        for the same date: plan_avail is 1. Deactivating the remaining
+        free room must leave the room type with a single (occupied)
+        active room, so both the rule's real_avail and plan_avail must
+        be recomputed to 0. plan_avail is the value channel exports
+        read, so a stale value here oversells on the OTAs.
+        """
+        # ARRANGE
+        checkin = fields.date.today() + datetime.timedelta(days=1)
+        checkout = checkin + datetime.timedelta(days=1)
+        rule = self.env["pms.availability.plan.rule"].create(
+            {
+                "availability_plan_id": self.test_room_type_availability1.id,
+                "room_type_id": self.test_room_type_double.id,
+                "date": checkin,
+                "pms_property_id": self.pms_property3.id,
+            }
+        )
+        reservation = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.pms_property3.id,
+                "checkin": checkin,
+                "checkout": checkout,
+                "partner_id": self.partner1.id,
+                "room_type_id": self.test_room_type_double.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
+            }
+        )
+        self.assertEqual(
+            rule.plan_avail,
+            1,
+            "One of the two rooms is occupied, plan_avail should be 1",
+        )
+        free_room = (
+            self.test_room1_double + self.test_room2_double
+        ) - reservation.reservation_line_ids.room_id
+
+        # ACT
+        free_room.active = False
+
+        # ASSERT
+        self.assertEqual(
+            rule.plan_avail,
+            0,
+            "The only active room of the room type is occupied, the"
+            "rule's plan_avail should have been recomputed to 0",
+        )
