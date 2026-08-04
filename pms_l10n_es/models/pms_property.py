@@ -48,6 +48,24 @@ class PmsProperty(models.Model):
         comodel_name="pms.ine.tourism.type.category",
         help="Hotel category in the Ministry of Tourism. Used for INE statistics.",
     )
+    ine_informant_name = fields.Char(
+        string="INE Informant Name",
+        help="Contact person reported in the INFORMANTE block of the INE "
+        "Tourist Apartments Occupancy Survey (EOAP).",
+    )
+    ine_informant_job = fields.Char(
+        string="INE Informant Job Position",
+        help="Job position of the INE informant (EOAP).",
+    )
+    ine_informant_phone = fields.Char(
+        string="INE Informant Phone",
+        help="Phone of the INE informant (EOAP). If empty, the property "
+        "phone is used.",
+    )
+    ine_informant_email = fields.Char(
+        string="INE Informant Email",
+        help="Email of the INE informant (EOAP).",
+    )
     spanish_tourism_classification_id = fields.Many2one(
         comodel_name="pms.tourism.classification",
         string="Spanish Tourism Classification",

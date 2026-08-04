@@ -1,8 +1,12 @@
+import base64
 import datetime
+from decimal import Decimal
 
 from freezegun import freeze_time
+from lxml import etree
 
 from odoo.exceptions import ValidationError
+from odoo.modules.module import get_module_resource
 
 from .common import TestPms
 
@@ -1046,3 +1050,148 @@ class TestWizardINE(TestPms):
             self.env["pms.ine.wizard"].ine_countries(
                 start_date, end_date, self.pms_property1.id
             )
+
+    def _configure_ine_property(self, survey_type="hotel"):
+        self.company1.vat = "ESA12345674"
+        self.pms_property1.write(
+            {
+                "street": "Fake Street 123",
+                "zip": "28001",
+                "city": "Madrid",
+                "phone": "+34600000000",
+                "website": "https://www.example.com",
+                "ine_tourism_number": "REG-12345",
+                "ine_permanent_staff": 2,
+            }
+        )
+        self.pms_property1.partner_id.state_id = self.env.ref("base.state_es_m")
+        if survey_type == "apartments":
+            self.pms_property1.ine_category_id = self.env.ref(
+                "pms_l10n_es.turism_category_57"
+            )
+            self.pms_property1.write(
+                {
+                    "ine_informant_name": "Informant Name",
+                    "ine_informant_job": "Reception",
+                    "ine_informant_email": "informant@example.com",
+                }
+            )
+        else:
+            self.pms_property1.ine_category_id = self.env.ref(
+                "pms_l10n_es.turism_category_1"
+            )
+
+    def _generate_ine_document(self):
+        wizard = self.env["pms.ine.wizard"].new(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "start_date": datetime.date(2021, 2, 1),
+                "end_date": datetime.date(2021, 2, 28),
+            }
+        )
+        wizard.ine_generate_xml()
+        return etree.fromstring(base64.b64decode(wizard.txt_binary))
+
+    def _assert_valid_against_schema(self, document, fixture_name):
+        xsd_path = get_module_resource("pms_l10n_es", "tests/fixtures", fixture_name)
+        schema = etree.XMLSchema(etree.parse(xsd_path))
+        self.assertTrue(
+            schema.validate(document),
+            "\n".join(str(error) for error in schema.error_log),
+        )
+
+    def test_generate_xml_hotel_validates_iria_schema(self):
+        """The hotel survey must carry the IRIA namespace and honor its XSD."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        # ACT
+        document = self._generate_ine_document()
+        # ASSERT
+        self.assertTrue(
+            document.tag.endswith("}ENCUESTA"),
+            "The hotel survey root element must be namespace-qualified",
+        )
+        self._assert_valid_against_schema(document, "iria_hotel_survey.xsd")
+
+    def test_generate_xml_hotel_percents_sum_exactly_100(self):
+        """Printed occupancy percentages must add up to exactly 100.00."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        # ACT
+        document = self._generate_ine_document()
+        # ASSERT
+        namespace = document.tag[1:].split("}")[0]
+        prices_tag = document.find("{%s}PRECIOS" % namespace)
+        total = sum(
+            Decimal(element.text) for element in prices_tag if "PCTN_" in element.tag
+        )
+        self.assertEqual(total, Decimal("100.00"))
+
+    def test_generate_xml_hotel_decimals_have_two_digits(self):
+        """All decimal values must be printed with exactly 2 decimals."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        # ACT
+        document = self._generate_ine_document()
+        # ASSERT
+        namespace = document.tag[1:].split("}")[0]
+        prices_tag = document.find("{%s}PRECIOS" % namespace)
+        for element in prices_tag:
+            self.assertRegex(element.text, r"^\d+\.\d{2}$")
+
+    def test_generate_xml_apartments_validates_iria_schema(self):
+        """The apartments survey must carry the IRIA namespace and honor
+        its XSD."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property(survey_type="apartments")
+        # ACT
+        document = self._generate_ine_document()
+        # ASSERT
+        self.assertTrue(
+            document.tag.endswith("}APARTAMENTOS"),
+            "The apartments survey root element must be namespace-qualified",
+        )
+        self._assert_valid_against_schema(document, "iria_apartments_survey.xsd")
+
+    def test_apartments_capacity_typologies(self):
+        """Rooms are grouped by typology, inferring it from capacity when
+        it is not set explicitly."""
+        # ARRANGE
+        self.room_double_1.ine_apartment_type = "apt_4_6"
+        rooms = self.env["pms.room"].search(
+            [
+                ("pms_property_id", "=", self.pms_property1.id),
+                ("in_ine", "=", True),
+            ]
+        )
+        # ACT
+        capacity = self.env["pms.ine.wizard"].ine_apartments_capacity(
+            self.pms_property1
+        )
+        # ASSERT
+        self.assertEqual(capacity["apt_4_6"]["units"], 1)
+        self.assertEqual(
+            sum(capacity[apartment_type]["units"] for apartment_type in capacity),
+            len(rooms),
+        )
+        self.assertEqual(
+            sum(capacity[apartment_type]["seats"] for apartment_type in capacity),
+            sum(rooms.mapped("capacity")),
+        )
+
+    def test_apartments_missing_informant_raises(self):
+        """The apartments survey requires the informant contact data."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property(survey_type="apartments")
+        self.pms_property1.ine_informant_email = False
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="Cannot generate the apartments survey without informant",
+        ):
+            self._generate_ine_document()

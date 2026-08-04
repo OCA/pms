@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:iv="https://iria.ine.es/schemas/15b6131c-259d-42ff-96a1-3fe0800dfdd1" xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="https://iria.ine.es/schemas/15b6131c-259d-42ff-96a1-3fe0800dfdd1" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="APARTAMENTOS">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="CABECERA">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="FECHA_REFERENCIA">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="MES" type="iv:MES_TYPE"/>
+										<xs:element name="ANYO" type="iv:ANYO_TYPE"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="DIAS_ABIERTO_MES_REFERENCIA" type="iv:DIAS_ABIERTO_MES_REFERENCIA_TYPE"/>
+							<xs:element name="RAZON_SOCIAL" type="iv:RAZON_SOCIAL_TYPE"/>
+							<xs:element name="NOMBRE_ESTABLECIMIENTO" type="iv:NOMBRE_ESTABLECIMIENTO_TYPE"/>
+							<xs:element name="CIF_NIF" type="iv:CIF_NIF_TYPE"/>
+							<xs:element name="DIRECCION" type="iv:DIRECCION_TYPE"/>
+							<xs:element name="CODIGO_POSTAL" type="iv:CODIGO_POSTAL_TYPE"/>
+							<xs:element name="LOCALIDAD" type="iv:LOCALIDAD_TYPE" minOccurs="0"/>
+							<xs:element name="MUNICIPIO" type="iv:MUNICIPIO_TYPE"/>
+							<xs:element name="PROVINCIA" type="iv:PROVINCIA_TYPE"/>
+							<xs:element name="TELEFONO_1" type="iv:TELEFONO_1_TYPE"/>
+							<xs:element name="TELEFONO_2" type="iv:TELEFONO_2_TYPE" minOccurs="0"/>
+							<xs:element name="FAX_1" type="iv:FAX_1_TYPE" minOccurs="0"/>
+							<xs:element name="FAX_2" type="iv:FAX_2_TYPE" minOccurs="0"/>
+							<xs:element name="URL" type="iv:URL_TYPE" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="CABECERA_APARTAMENTOS">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="CATEGORIA" type="iv:CATEGORIA_TYPE"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="INFORMANTE">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="NOMBRE" type="iv:NOMBRE_TYPE"/>
+							<xs:element name="CARGO" type="iv:CARGO_TYPE"/>
+							<xs:element name="TELEFONOINF" type="iv:TELEFONOINF_TYPE"/>
+							<xs:element name="FAXINF" type="iv:FAXINF_TYPE" minOccurs="0"/>
+							<xs:element name="EMAIL" type="iv:EMAIL_TYPE"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="EMPRESA_GESTORA" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="RAZON_SOCIAL" type="iv:RAZON_SOCIAL_TYPE"/>
+							<xs:element name="DIRECCION" type="iv:DIRECCION_TYPE"/>
+							<xs:element name="CODIGO_POSTAL" type="iv:CODIGO_POSTAL_TYPE"/>
+							<xs:element name="MUNICIPIO" type="iv:MUNICIPIO_TYPE"/>
+							<xs:element name="PROVINCIA" type="iv:PROVINCIA_TYPE"/>
+							<xs:element name="TELEFONO" type="iv:TELEFONO_TYPE"/>
+							<xs:element name="FAX" type="iv:FAX_TYPE" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="ALOJAMIENTO">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="RESIDENCIA" maxOccurs="99999">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ID_PAIS" type="iv:ID_PAIS_TYPE" minOccurs="0"/>
+										<xs:element name="ID_PROVINCIA_ISLA" type="iv:ID_PROVINCIA_ISLA_TYPE" minOccurs="0"/>
+										<xs:element name="MOVIMIENTO" maxOccurs="31">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="N_DIA" type="iv:N_DIA_TYPE"/>
+													<xs:element name="ENTRADAS" type="iv:ENTRADAS_TYPE"/>
+													<xs:element name="SALIDAS" type="iv:SALIDAS_TYPE"/>
+													<xs:element name="PERNOCTACIONES" type="iv:PERNOCTACIONES_TYPE"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+								<xs:key name="CLAVE_N_DIA">
+									<xs:selector xpath="iv:MOVIMIENTO"/>
+									<xs:field xpath="iv:N_DIA"/>
+								</xs:key>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+					<xs:unique name="CLAVE_PAIS">
+						<xs:selector xpath="iv:RESIDENCIA"/>
+						<xs:field xpath="iv:ID_PAIS"/>
+					</xs:unique>
+					<xs:unique name="CLAVE_PROVINCIA_ISLA">
+						<xs:selector xpath="iv:RESIDENCIA"/>
+						<xs:field xpath="iv:ID_PROVINCIA_ISLA"/>
+					</xs:unique>
+				</xs:element>
+				<xs:element name="CAPACIDAD">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="N_APARTAMENTOS_ESTUDIO" type="iv:N_APARTAMENTOS_ESTUDIO_TYPE"/>
+							<xs:element name="N_APARTAMENTOS_2-4pax" type="iv:N_APARTAMENTOS_2-4PAX_TYPE"/>
+							<xs:element name="N_APARTAMENTOS_4-6pax" type="iv:N_APARTAMENTOS_4-6PAX_TYPE"/>
+							<xs:element name="N_APARTAMENTOS_OTROS" type="iv:N_APARTAMENTOS_OTROS_TYPE"/>
+							<xs:element name="PLAZAS_TOTALES_APARTAMENTOS_ESTUDIO" type="iv:PLAZAS_TOTALES_APARTAMENTOS_ESTUDIO_TYPE"/>
+							<xs:element name="PLAZAS_TOTALES_APARTAMENTOS_2-4pax" type="iv:PLAZAS_TOTALES_APARTAMENTOS_2-4PAX_TYPE"/>
+							<xs:element name="PLAZAS_TOTALES_APARTAMENTOS_4-6pax" type="iv:PLAZAS_TOTALES_APARTAMENTOS_4-6PAX_TYPE"/>
+							<xs:element name="PLAZAS_TOTALES_APARTAMENTOS_OTROS" type="iv:PLAZAS_TOTALES_APARTAMENTOS_OTROS_TYPE"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="OCUPACION">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="MOVIMIENTO" maxOccurs="31">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="N_DIA_AP" type="iv:N_DIA_AP_TYPE"/>
+										<xs:element name="APARTAMENTOS_OCUPADOS_ESTUDIO" type="iv:APARTAMENTOS_OCUPADOS_ESTUDIO_TYPE"/>
+										<xs:element name="APARTAMENTOS_OCUPADOS_2-4pax" type="iv:APARTAMENTOS_OCUPADOS_2-4PAX_TYPE"/>
+										<xs:element name="APARTAMENTOS_OCUPADOS_4-6pax" type="iv:APARTAMENTOS_OCUPADOS_4-6PAX_TYPE"/>
+										<xs:element name="APARTAMENTOS_OCUPADOS_OTROS" type="iv:APARTAMENTOS_OCUPADOS_OTROS_TYPE"/>
+										<xs:element name="PLAZAS_SUPLETORIAS" type="iv:PLAZAS_SUPLETORIAS_TYPE"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+					<xs:key name="CLAVE_N_DIA_AP">
+						<xs:selector xpath="iv:MOVIMIENTO"/>
+						<xs:field xpath="iv:N_DIA_AP"/>
+					</xs:key>
+				</xs:element>
+				<xs:element name="PRECIOS">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ESTUDIOS">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="TARIFA_NORMAL" type="iv:TARIFA_NORMAL_TYPE"/>
+										<xs:element name="PCTN_TARIFA_NORMAL" type="iv:PCTN_TARIFA_NORMAL_TYPE"/>
+										<xs:element name="TARIFA_FIN_DE_SEMANA" type="iv:TARIFA_FIN_DE_SEMANA_TYPE"/>
+										<xs:element name="PCTN_TARIFA_FIN_DE_SEMANA" type="iv:PCTN_TARIFA_FIN_DE_SEMANA_TYPE"/>
+										<xs:element name="TARIFA_TOUROPERADOR" type="iv:TARIFA_TOUROPERADOR_TYPE"/>
+										<xs:element name="PCTN_TARIFA_TOUROPERADOR" type="iv:PCTN_TARIFA_TOUROPERADOR_TYPE"/>
+										<xs:element name="TARIFA_OTRAS" type="iv:TARIFA_OTRAS_TYPE"/>
+										<xs:element name="PCTN_TARIFA_OTRAS" type="iv:PCTN_TARIFA_OTRAS_TYPE"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="APARTAMENTOS_2-4pax">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="TARIFA_NORMAL" type="iv:TARIFA_NORMAL_TYPE"/>
+										<xs:element name="PCTN_TARIFA_NORMAL" type="iv:PCTN_TARIFA_NORMAL_TYPE"/>
+										<xs:element name="TARIFA_FIN_DE_SEMANA" type="iv:TARIFA_FIN_DE_SEMANA_TYPE"/>
+										<xs:element name="PCTN_TARIFA_FIN_DE_SEMANA" type="iv:PCTN_TARIFA_FIN_DE_SEMANA_TYPE"/>
+										<xs:element name="TARIFA_TOUROPERADOR" type="iv:TARIFA_TOUROPERADOR_TYPE"/>
+										<xs:element name="PCTN_TARIFA_TOUROPERADOR" type="iv:PCTN_TARIFA_TOUROPERADOR_TYPE"/>
+										<xs:element name="TARIFA_OTRAS" type="iv:TARIFA_OTRAS_TYPE"/>
+										<xs:element name="PCTN_TARIFA_OTRAS" type="iv:PCTN_TARIFA_OTRAS_TYPE"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="APARTAMENTOS_4-6pax">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="TARIFA_NORMAL" type="iv:TARIFA_NORMAL_TYPE"/>
+										<xs:element name="PCTN_TARIFA_NORMAL" type="iv:PCTN_TARIFA_NORMAL_TYPE"/>
+										<xs:element name="TARIFA_FIN_DE_SEMANA" type="iv:TARIFA_FIN_DE_SEMANA_TYPE"/>
+										<xs:element name="PCTN_TARIFA_FIN_DE_SEMANA" type="iv:PCTN_TARIFA_FIN_DE_SEMANA_TYPE"/>
+										<xs:element name="TARIFA_TOUROPERADOR" type="iv:TARIFA_TOUROPERADOR_TYPE"/>
+										<xs:element name="PCTN_TARIFA_TOUROPERADOR" type="iv:PCTN_TARIFA_TOUROPERADOR_TYPE"/>
+										<xs:element name="TARIFA_OTRAS" type="iv:TARIFA_OTRAS_TYPE"/>
+										<xs:element name="PCTN_TARIFA_OTRAS" type="iv:PCTN_TARIFA_OTRAS_TYPE"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="OTROS">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="TARIFA_NORMAL" type="iv:TARIFA_NORMAL_TYPE"/>
+										<xs:element name="PCTN_TARIFA_NORMAL" type="iv:PCTN_TARIFA_NORMAL_TYPE"/>
+										<xs:element name="TARIFA_FIN_DE_SEMANA" type="iv:TARIFA_FIN_DE_SEMANA_TYPE"/>
+										<xs:element name="PCTN_TARIFA_FIN_DE_SEMANA" type="iv:PCTN_TARIFA_FIN_DE_SEMANA_TYPE"/>
+										<xs:element name="TARIFA_TOUROPERADOR" type="iv:TARIFA_TOUROPERADOR_TYPE"/>
+										<xs:element name="PCTN_TARIFA_TOUROPERADOR" type="iv:PCTN_TARIFA_TOUROPERADOR_TYPE"/>
+										<xs:element name="TARIFA_OTRAS" type="iv:TARIFA_OTRAS_TYPE"/>
+										<xs:element name="PCTN_TARIFA_OTRAS" type="iv:PCTN_TARIFA_OTRAS_TYPE"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="PERSONAL_OCUPADO">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="PERSONAL_NO_REMUNERADO" type="iv:PERSONAL_NO_REMUNERADO_TYPE"/>
+							<xs:element name="PERSONAL_REMUNERADO_FIJO" type="iv:PERSONAL_REMUNERADO_FIJO_TYPE"/>
+							<xs:element name="PERSONAL_REMUNERADO_EVENTUAL" type="iv:PERSONAL_REMUNERADO_EVENTUAL_TYPE"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="MES_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="2"/>
+			<xs:minLength value="2"/>
+			<xs:pattern value="(01|02|03|04|05|06|07|08|09|10|11|12)"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ANYO_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="4"/>
+			<xs:minLength value="4"/>
+			<xs:pattern value="20[0-9]{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DIAS_ABIERTO_MES_REFERENCIA_TYPE">
+		<xs:restriction base="xs:string">
+        		<xs:maxLength value="2"/>
+        		<xs:minLength value="2"/>
+			<xs:pattern value="(01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31)"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="RAZON_SOCIAL_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NOMBRE_ESTABLECIMIENTO_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CIF_NIF_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="9"/>
+			<xs:minLength value="9"/>
+			<xs:pattern value="[A-Z0-9][0-9]{7}[A-Z0-9]"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DIRECCION_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CODIGO_POSTAL_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="5"/>
+			<xs:minLength value="5"/>
+			<xs:pattern value="[0-9]{5}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LOCALIDAD_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MUNICIPIO_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="33"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PROVINCIA_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="25"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TELEFONO_1_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="13"/>
+			<xs:minLength value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TELEFONO_2_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="13"/>
+			<xs:minLength value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="FAX_1_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="13"/>
+			<xs:minLength value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="FAX_2_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="13"/>
+			<xs:minLength value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="URL_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CATEGORIA_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="20"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NOMBRE_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CARGO_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TELEFONOINF_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="13"/>
+			<xs:minLength value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="FAXINF_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="13"/>
+			<xs:minLength value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EMAIL_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TELEFONO_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="13"/>
+			<xs:minLength value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="FAX_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="13"/>
+			<xs:minLength value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ID_PAIS_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="3"/>
+			<xs:minLength value="3"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ID_PROVINCIA_ISLA_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="5"/>
+			<xs:minLength value="5"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="N_DIA_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="2"/>
+			<xs:minLength value="2"/>
+			<xs:pattern value="(01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31)"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ENTRADAS_TYPE">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SALIDAS_TYPE">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PERNOCTACIONES_TYPE">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="N_APARTAMENTOS_ESTUDIO_TYPE">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="N_APARTAMENTOS_2-4PAX_TYPE">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="N_APARTAMENTOS_4-6PAX_TYPE">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="N_APARTAMENTOS_OTROS_TYPE">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PLAZAS_TOTALES_APARTAMENTOS_ESTUDIO_TYPE">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PLAZAS_TOTALES_APARTAMENTOS_2-4PAX_TYPE">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PLAZAS_TOTALES_APARTAMENTOS_4-6PAX_TYPE">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PLAZAS_TOTALES_APARTAMENTOS_OTROS_TYPE">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="N_DIA_AP_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="2"/>
+			<xs:minLength value="2"/>
+			<xs:pattern value="(01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31)"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="APARTAMENTOS_OCUPADOS_ESTUDIO_TYPE">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="APARTAMENTOS_OCUPADOS_2-4PAX_TYPE">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="APARTAMENTOS_OCUPADOS_4-6PAX_TYPE">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="APARTAMENTOS_OCUPADOS_OTROS_TYPE">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PLAZAS_SUPLETORIAS_TYPE">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TARIFA_NORMAL_TYPE">
+		<xs:restriction base="xs:decimal">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999.99"/>
+			<xs:fractionDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PCTN_TARIFA_NORMAL_TYPE">
+		<xs:restriction base="xs:decimal">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="100.00"/>
+			<xs:fractionDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TARIFA_FIN_DE_SEMANA_TYPE">
+		<xs:restriction base="xs:decimal">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999.99"/>
+			<xs:fractionDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PCTN_TARIFA_FIN_DE_SEMANA_TYPE">
+		<xs:restriction base="xs:decimal">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="100.00"/>
+			<xs:fractionDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TARIFA_TOUROPERADOR_TYPE">
+		<xs:restriction base="xs:decimal">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999.99"/>
+			<xs:fractionDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PCTN_TARIFA_TOUROPERADOR_TYPE">
+		<xs:restriction base="xs:decimal">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="100.00"/>
+			<xs:fractionDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TARIFA_OTRAS_TYPE">
+		<xs:restriction base="xs:decimal">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999.99"/>
+			<xs:fractionDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PCTN_TARIFA_OTRAS_TYPE">
+		<xs:restriction base="xs:decimal">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="100.00"/>
+			<xs:fractionDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PERSONAL_NO_REMUNERADO_TYPE">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PERSONAL_REMUNERADO_FIJO_TYPE">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PERSONAL_REMUNERADO_EVENTUAL_TYPE">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="999"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

@@ -69,10 +69,7 @@
                         attrs="{'invisible': [('txt_filename','=', False)]}"
                     >
                         <b>
-                            <a
-                                href="https://arce.ine.es/ARCE/jsp/encuestaXml.jsp"
-                                target="_blank"
-                            >
+                            <a href="https://iria.ine.es/" target="_blank">
                                 Send survey to Spanish National Institute of Statistics (INE)
                                 <i class="fa fa-signal" />
                             </a>

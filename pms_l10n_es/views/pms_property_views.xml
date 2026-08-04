@@ -58,6 +58,10 @@
                             <field name="ine_permanent_staff" />
                             <field name="ine_eventual_staff" />
                             <field name="ine_unpaid_staff" />
+                            <field name="ine_informant_name" />
+                            <field name="ine_informant_job" />
+                            <field name="ine_informant_phone" />
+                            <field name="ine_informant_email" />
                         </group>
                     </div>
                 </div>
