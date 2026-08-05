@@ -1222,3 +1222,85 @@ class TestWizardINE(TestPms):
             msg="Cannot generate the apartments survey without informant",
         ):
             self._generate_ine_document()
+
+    def test_generate_xml_requires_whole_month(self):
+        """The INE only accepts files covering the whole reference month."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        wizard = self.env["pms.ine.wizard"].new(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "start_date": datetime.date(2021, 2, 1),
+                "end_date": datetime.date(2021, 2, 7),
+            }
+        )
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="Cannot generate the INE file for a partial month",
+        ):
+            wizard.ine_generate_xml()
+
+    def test_generate_xml_requires_guest_movements(self):
+        """A period without guest movements cannot produce a valid file."""
+        # ARRANGE
+        self._configure_ine_property()
+        wizard = self.env["pms.ine.wizard"].new(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "start_date": datetime.date(2021, 2, 1),
+                "end_date": datetime.date(2021, 2, 28),
+            }
+        )
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="Cannot generate the INE file without guest movements",
+        ):
+            wizard.ine_generate_xml()
+
+    def test_generate_xml_short_phone_raises(self):
+        """The survey schema requires at least 9 digits in the phone."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        self.pms_property1.phone = "12345"
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError, msg="Cannot generate the INE file with a short phone"
+        ):
+            self._generate_ine_document()
+
+    def test_generate_xml_hotel_rate_and_percentage_are_consistent(self):
+        """Every client type with a rate reports a non-zero percentage and
+        vice versa, as the INE content validations require."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        # ACT
+        document = self._generate_ine_document()
+        # ASSERT
+        prices_tag = document.find("PRECIOS")
+        # the INE does not name both tags of a client type symmetrically
+        client_types = [
+            ("ADR_TOUROPERADOR_TRADICIONAL", "TOUROPERADOR_TRADICIONAL"),
+            ("ADR_TOUROPERADOR_ONLINE", "TOUROPERADOR_ONLINE"),
+            ("ADR_EMPRESAS", "EMPRESAS"),
+            ("ADR_AGENCIA_DE_VIAJE_TRADICIONAL", "AGENCIA_TRADICIONAL"),
+            ("ADR_AGENCIA_DE_VIAJE_ONLINE", "AGENCIA_ONLINE"),
+            ("ADR_PARTICULARES", "PARTICULARES"),
+            ("ADR_GRUPOS", "GRUPOS"),
+            ("ADR_INTERNET", "INTERNET"),
+            ("ADR_OTROS", "OTROS"),
+        ]
+        for adr_tag, percent_key in client_types:
+            rate = Decimal(prices_tag.find(adr_tag).text)
+            percent = Decimal(
+                prices_tag.find("PCTN_HABITACIONES_OCUPADAS_" + percent_key).text
+            )
+            self.assertEqual(
+                rate > 0,
+                percent > 0,
+                f"{adr_tag}: rate {rate} and percentage {percent} are inconsistent",
+            )

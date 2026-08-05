@@ -524,6 +524,15 @@ class WizardIne(models.TransientModel):
         if not pms_property_id.phone:
             raise ValidationError(_("The property phone is not established."))
 
+        if len(pms_property_id.phone.replace(" ", "")) < 9:
+            raise ValidationError(
+                _(
+                    "The property phone '%s' is too short: the INE survey "
+                    "requires at least 9 digits.",
+                    pms_property_id.phone,
+                )
+            )
+
         if not pms_property_id.ine_category_id:
             raise ValidationError(_("The property category is not established."))
 
@@ -555,6 +564,27 @@ class WizardIne(models.TransientModel):
         if not pms_property_id.ine_informant_email:
             raise ValidationError(_("The INE informant email is not established."))
 
+    def _check_ine_period(self):
+        """The INE requires the whole month in the XML file.
+
+        The questionnaire the establishment receives asks for a single week
+        (hotels) or fortnight (apartments), but the file must always carry
+        every day of the reference month.
+        """
+        last_day = calendar.monthrange(self.start_date.year, self.start_date.month)[1]
+        if self.start_date.day != 1 or self.end_date != self.start_date.replace(
+            day=last_day
+        ):
+            raise ValidationError(
+                _(
+                    "The INE file must contain the whole reference month, "
+                    "regardless of the week or fortnight requested in the "
+                    "questionnaire. Select from %(first)s to %(last)s.",
+                    first=self.start_date.replace(day=1),
+                    last=self.start_date.replace(day=last_day),
+                )
+            )
+
     def _ine_get_root_attrs(self, survey_type):
         """Return the root element attributes for the survey.
 
@@ -584,6 +614,7 @@ class WizardIne(models.TransientModel):
 
     def ine_generate_xml(self):
         self.check_ine_mandatory_fields(self.pms_property_id)
+        self._check_ine_period()
 
         number_of_rooms = sum(
             self.env["pms.room"]
@@ -800,11 +831,18 @@ class WizardIne(models.TransientModel):
             # content validation rejects files whose percentage columns
             # exceed 100.00, and float rounding artifacts have caused
             # rejected files in the past.
+            # The INE also requires the percentage and the ADR of each client
+            # type to be consistent: a client type with a rate must report a
+            # non-zero percentage and vice versa.
             cents = {
-                group: int(round(value * 10000 / total_percent))
+                group: int(round(value * 10000 / total_percent)) if adrs[group] else 0
                 for group, value in percents.items()
             }
-            cents[max(cents, key=cents.get)] += 10000 - sum(cents.values())
+            for group, value in cents.items():
+                if adrs[group] and not value:
+                    cents[group] = 1
+            if any(cents.values()):
+                cents[max(cents, key=cents.get)] += 10000 - sum(cents.values())
             percents = {group: value / 100.0 for group, value in cents.items()}
         else:
             for group in percents:
@@ -1092,7 +1130,11 @@ class WizardIne(models.TransientModel):
         return survey_tag
 
     def _ine_append_guest_movements(self, accommodation_tag):
-        """Fill the ALOJAMIENTO block (shared by all INE occupancy surveys)."""
+        """Fill the ALOJAMIENTO block (shared by all INE occupancy surveys).
+
+        The schema requires at least one RESIDENCIA, so a period without
+        guest movements cannot produce a valid file.
+        """
         countries = self.ine_countries(
             self.start_date, self.end_date, self.pms_property_id.id
         )
@@ -1129,3 +1171,12 @@ class WizardIne(models.TransientModel):
                         ET.SubElement(movement, "PERNOCTACIONES").text = str(
                             value_dates.get("pernoctations") or 0
                         )
+
+        if not len(accommodation_tag):
+            raise ValidationError(
+                _(
+                    "There are no guest movements in the selected period, so "
+                    "the INE file cannot be generated: the survey schema "
+                    "requires at least one place of residence."
+                )
+            )
