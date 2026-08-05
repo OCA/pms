@@ -9,6 +9,7 @@ from ..wizards.traveller_report import CREATE_OPERATION_CODE
 CODE_SPAIN = "ES"
 CODE_NIF = "D"
 CODE_NIE = "N"
+AGE_OF_MAJORITY = 18
 
 _logger = logging.getLogger(__name__)
 
@@ -66,6 +67,17 @@ class PmsCheckinPartner(models.Model):
                 record.support_number = last_update_document[0].support_number
         return res
 
+    def _is_minor(self):
+        """Whether the guest is under the age of majority.
+
+        A guest with no birthdate yet is not considered a minor: their age is
+        unknown, not known to be under age.
+        """
+        self.ensure_one()
+        return bool(self.birthdate_date) and self.birthdate_date > (
+            fields.Date.today() - relativedelta(years=AGE_OF_MAJORITY)
+        )
+
     def _checkin_mandatory_fields(self):
         self.ensure_one()
         mandatory_fields = super()._checkin_mandatory_fields()
@@ -81,25 +93,27 @@ class PmsCheckinPartner(models.Model):
             ]
         )
 
-        if self.birthdate_date:
-            # Checkins with age greater than 14 must have an identity document
-            if self.birthdate_date <= fields.Date.today() - relativedelta(years=14):
-                mandatory_fields.extend(
-                    [
-                        "document_number",
-                        "document_type",
-                        "document_country_id",
-                    ]
-                )
-            # Checkins with age lower than 18 must have a relationship
-            # with another checkin partner
-            if self.birthdate_date > fields.Date.today() - relativedelta(years=18):
-                mandatory_fields.extend(
-                    [
-                        "ses_partners_relationship",
-                        "ses_related_checkin_partner_id",
-                    ]
-                )
+        # Checkins with age greater than 14 must have an identity document
+        if self.birthdate_date and self.birthdate_date <= (
+            fields.Date.today() - relativedelta(years=14)
+        ):
+            mandatory_fields.extend(
+                [
+                    "document_number",
+                    "document_type",
+                    "document_country_id",
+                ]
+            )
+
+        # Minors must have a relationship with another checkin partner, unless
+        # the folio declares that they travel unaccompanied
+        if self._is_minor() and not self.folio_id.ses_unaccompanied_minors:
+            mandatory_fields.extend(
+                [
+                    "ses_partners_relationship",
+                    "ses_related_checkin_partner_id",
+                ]
+            )
 
         if self.country_id and self.country_id.code == CODE_SPAIN:
             mandatory_fields.extend(
@@ -136,6 +150,10 @@ class PmsCheckinPartner(models.Model):
             ]
         )
         return manual_fields
+
+    def action_on_board(self):
+        self.folio_id._check_ses_unaccompanied_minors()
+        return super().action_on_board()
 
     def get_document_vals(self):
         vals = super().get_document_vals()
