@@ -66,6 +66,27 @@ class WizardIne(models.TransientModel):
     adr = fields.Float(string="Range ADR")
     revpar = fields.Float(string="Range RevPAR")
 
+    ine_order_number = fields.Char(
+        string="INE Order Number",
+        compute="_compute_ine_order_number",
+        readonly=False,
+        store=False,
+        help="Order number of the INE questionnaire. It comes from the "
+        "property when it is already known, and it is kept there when it "
+        "is filled in here.",
+    )
+
+    @api.depends("pms_property_id")
+    def _compute_ine_order_number(self):
+        for record in self:
+            record.ine_order_number = record.pms_property_id.ine_order_number
+
+    def _store_ine_order_number(self):
+        """Keep the order number in the property: it does not change."""
+        number = (self.ine_order_number or "").strip()
+        if number and number != self.pms_property_id.ine_order_number:
+            self.pms_property_id.sudo().ine_order_number = number
+
     @api.model
     def _ine_get_extra_beds(self, pms_property_id, date):
         """Extra beds occupied on a given date (INE criteria).
@@ -615,6 +636,7 @@ class WizardIne(models.TransientModel):
     def ine_generate_xml(self):
         self.check_ine_mandatory_fields(self.pms_property_id)
         self._check_ine_period()
+        self._store_ine_order_number()
 
         number_of_rooms = sum(
             self.env["pms.room"]

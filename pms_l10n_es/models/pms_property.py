@@ -48,6 +48,13 @@ class PmsProperty(models.Model):
         comodel_name="pms.ine.tourism.type.category",
         help="Hotel category in the Ministry of Tourism. Used for INE statistics.",
     )
+    ine_order_number = fields.Char(
+        string="INE Order Number",
+        help="Order number of the INE questionnaire (11 characters). It is "
+        "fixed for each establishment, so it is kept here to submit the "
+        "questionnaire. The control code, on the contrary, changes with "
+        "every questionnaire and is single use, so it is never stored.",
+    )
     ine_informant_name = fields.Char(
         string="INE Informant Name",
         help="Contact person reported in the INFORMANTE block of the INE "

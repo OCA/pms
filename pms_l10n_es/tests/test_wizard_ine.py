@@ -1304,3 +1304,31 @@ class TestWizardINE(TestPms):
                 percent > 0,
                 f"{adr_tag}: rate {rate} and percentage {percent} are inconsistent",
             )
+
+    def test_order_number_is_kept_in_the_property(self):
+        """The order number is fixed per establishment: it is prefilled from
+        the property and kept there when filled in the wizard."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        wizard = self.env["pms.ine.wizard"].new(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "start_date": datetime.date(2021, 2, 1),
+                "end_date": datetime.date(2021, 2, 28),
+            }
+        )
+        self.assertFalse(wizard.ine_order_number)
+        # ACT
+        wizard.ine_order_number = "2026HOT0361"
+        wizard.ine_generate_xml()
+        # ASSERT
+        self.assertEqual(self.pms_property1.ine_order_number, "2026HOT0361")
+        prefilled = self.env["pms.ine.wizard"].new(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "start_date": datetime.date(2021, 2, 1),
+                "end_date": datetime.date(2021, 2, 28),
+            }
+        )
+        self.assertEqual(prefilled.ine_order_number, "2026HOT0361")
