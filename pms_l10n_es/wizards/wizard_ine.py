@@ -10,21 +10,18 @@ from odoo.exceptions import ValidationError
 # TODO: Review code (code iso ?)
 CODE_SPAIN = "ES"
 
-# The INE moved the XML questionnaire upload from ARCE to IRIA. IRIA schemas
-# are namespace-qualified (elementFormDefault="qualified"): files without the
-# proper default namespace are rejected at upload time with an XSD error on
-# line 1. The namespace URIs below are the targetNamespace values of the
-# current schema versions and can be overridden through config parameters if
-# the INE publishes a new questionnaire version.
+# The INE replaced the ARCE platform with IRIA. Two variants of each survey
+# schema coexist: the one published by the INE, which declares no target
+# namespace and is the reference one, and the one the IRIA application
+# generates for the questionnaire, which is namespace-qualified. The INE
+# confirmed that the published schema is the one to follow, and both variants
+# have been accepted on upload (the hotel file without namespace and the
+# apartments file with it). Files are therefore built after the published
+# schema, and the namespace can be set per survey through a config parameter
+# for the questionnaires that require the qualified variant.
 INE_XML_NAMESPACE_PARAMS = {
-    "hotel": (
-        "pms_l10n_es.ine_xml_namespace_hotel",
-        "https://iria.ine.es/schemas/ec7dbd57-d3ab-473a-a3e5-d32d8c1e17a0",
-    ),
-    "apartments": (
-        "pms_l10n_es.ine_xml_namespace_apartments",
-        "https://iria.ine.es/schemas/15b6131c-259d-42ff-96a1-3fe0800dfdd1",
-    ),
+    "hotel": ("pms_l10n_es.ine_xml_namespace_hotel", ""),
+    "apartments": ("pms_l10n_es.ine_xml_namespace_apartments", ""),
 }
 
 INE_APARTMENT_TYPES = ["studio", "apt_2_4", "apt_4_6", "other"]
@@ -558,9 +555,16 @@ class WizardIne(models.TransientModel):
         if not pms_property_id.ine_informant_email:
             raise ValidationError(_("The INE informant email is not established."))
 
-    def _ine_get_xml_namespace(self, survey_type):
+    def _ine_get_root_attrs(self, survey_type):
+        """Return the root element attributes for the survey.
+
+        The default namespace is only declared when the questionnaire
+        requires the namespace-qualified schema variant (see
+        INE_XML_NAMESPACE_PARAMS).
+        """
         param, default = INE_XML_NAMESPACE_PARAMS[survey_type]
-        return self.env["ir.config_parameter"].sudo().get_param(param, default)
+        namespace = self.env["ir.config_parameter"].sudo().get_param(param, default)
+        return {"xmlns": namespace} if namespace else {}
 
     @api.model
     def _ine_format_decimal(self, value):
@@ -634,9 +638,7 @@ class WizardIne(models.TransientModel):
 
     def _ine_build_xml_hotel(self):
         # INE XML
-        survey_tag = ET.Element(
-            "ENCUESTA", {"xmlns": self._ine_get_xml_namespace("hotel")}
-        )
+        survey_tag = ET.Element("ENCUESTA", self._ine_get_root_attrs("hotel"))
 
         # INE XML -> PROPERTY
         header_tag = ET.SubElement(survey_tag, "CABECERA")
@@ -957,9 +959,7 @@ class WizardIne(models.TransientModel):
         """
         pms_property = self.pms_property_id
 
-        survey_tag = ET.Element(
-            "APARTAMENTOS", {"xmlns": self._ine_get_xml_namespace("apartments")}
-        )
+        survey_tag = ET.Element("APARTAMENTOS", self._ine_get_root_attrs("apartments"))
 
         # EOAP XML -> CABECERA
         header_tag = ET.SubElement(survey_tag, "CABECERA")

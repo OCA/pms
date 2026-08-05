@@ -1100,18 +1100,32 @@ class TestWizardINE(TestPms):
             "\n".join(str(error) for error in schema.error_log),
         )
 
-    def test_generate_xml_hotel_validates_iria_schema(self):
-        """The hotel survey must carry the IRIA namespace and honor its XSD."""
+    def test_generate_xml_hotel_validates_published_schema(self):
+        """By default the hotel survey follows the schema published by the
+        INE, which declares no namespace."""
         # ARRANGE
         self.ideal_scenario()
         self._configure_ine_property()
         # ACT
         document = self._generate_ine_document()
         # ASSERT
-        self.assertTrue(
-            document.tag.endswith("}ENCUESTA"),
-            "The hotel survey root element must be namespace-qualified",
+        self.assertEqual(document.tag, "ENCUESTA")
+        self._assert_valid_against_schema(document, "ine_hotel_survey_published.xsd")
+
+    def test_generate_xml_hotel_qualified_namespace(self):
+        """When the questionnaire requires the namespace-qualified variant,
+        the namespace is taken from the config parameter."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        namespace = "https://iria.ine.es/schemas/ec7dbd57-d3ab-473a-a3e5-d32d8c1e17a0"
+        self.env["ir.config_parameter"].sudo().set_param(
+            "pms_l10n_es.ine_xml_namespace_hotel", namespace
         )
+        # ACT
+        document = self._generate_ine_document()
+        # ASSERT
+        self.assertEqual(document.tag, "{%s}ENCUESTA" % namespace)
         self._assert_valid_against_schema(document, "iria_hotel_survey.xsd")
 
     def test_generate_xml_hotel_percents_sum_exactly_100(self):
@@ -1122,8 +1136,7 @@ class TestWizardINE(TestPms):
         # ACT
         document = self._generate_ine_document()
         # ASSERT
-        namespace = document.tag[1:].split("}")[0]
-        prices_tag = document.find("{%s}PRECIOS" % namespace)
+        prices_tag = document.find("PRECIOS")
         total = sum(
             Decimal(element.text) for element in prices_tag if "PCTN_" in element.tag
         )
@@ -1137,24 +1150,38 @@ class TestWizardINE(TestPms):
         # ACT
         document = self._generate_ine_document()
         # ASSERT
-        namespace = document.tag[1:].split("}")[0]
-        prices_tag = document.find("{%s}PRECIOS" % namespace)
+        prices_tag = document.find("PRECIOS")
         for element in prices_tag:
             self.assertRegex(element.text, r"^\d+\.\d{2}$")
 
-    def test_generate_xml_apartments_validates_iria_schema(self):
-        """The apartments survey must carry the IRIA namespace and honor
-        its XSD."""
+    def test_generate_xml_apartments_validates_published_schema(self):
+        """By default the apartments survey follows the schema published by
+        the INE, which declares no namespace."""
         # ARRANGE
         self.ideal_scenario()
         self._configure_ine_property(survey_type="apartments")
         # ACT
         document = self._generate_ine_document()
         # ASSERT
-        self.assertTrue(
-            document.tag.endswith("}APARTAMENTOS"),
-            "The apartments survey root element must be namespace-qualified",
+        self.assertEqual(document.tag, "APARTAMENTOS")
+        self._assert_valid_against_schema(
+            document, "ine_apartments_survey_published.xsd"
         )
+
+    def test_generate_xml_apartments_qualified_namespace(self):
+        """The namespace-qualified variant of the apartments survey, which is
+        the one accepted so far on upload, honors the questionnaire schema."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property(survey_type="apartments")
+        namespace = "https://iria.ine.es/schemas/15b6131c-259d-42ff-96a1-3fe0800dfdd1"
+        self.env["ir.config_parameter"].sudo().set_param(
+            "pms_l10n_es.ine_xml_namespace_apartments", namespace
+        )
+        # ACT
+        document = self._generate_ine_document()
+        # ASSERT
+        self.assertEqual(document.tag, "{%s}APARTAMENTOS" % namespace)
         self._assert_valid_against_schema(document, "iria_apartments_survey.xsd")
 
     def test_apartments_capacity_typologies(self):

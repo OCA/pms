@@ -1,0 +1,674 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="TURISMO_RURAL">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="CABECERA" type="CABECERA">
+					<xs:annotation>
+						<xs:documentation>Datos de identificacion del establecimiento.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="CABECERA_TURISMO_RURAL">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="TIPO">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:minLength value="1"/>
+										<xs:maxLength value="50"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="CATEGORIA">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:minLength value="1"/>
+										<xs:maxLength value="20"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="HABITACIONES_DISPONIBLES">
+								<xs:simpleType>
+									<xs:restriction base="xs:positiveInteger">
+										<xs:totalDigits value="4"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="PLAZAS_DISPONIBLES_SIN_SUPLETORIAS">
+								<xs:simpleType>
+									<xs:restriction base="xs:positiveInteger">
+										<xs:totalDigits value="4"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="INFORMANTE" type="INFORMANTE"/>
+				<xs:element name="TIPO_VIVIENDA">
+					<xs:complexType>
+						<xs:choice>
+							<xs:element name="VIVIENDA_UNICA" fixed="1"/>
+							<xs:sequence>
+								<xs:element name="VIVIENDA_DIVIDIDA_UNIDADES" fixed="1"/>
+								<xs:element name="NUMERO_ALOJAMIENTOS_INDEPENDIENTES">
+									<xs:simpleType>
+										<xs:restriction base="xs:unsignedLong">
+											<xs:totalDigits value="4"/>
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:element>
+							</xs:sequence>
+						</xs:choice>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="MODALIDAD_ALQUILER">
+					<xs:complexType>
+						<xs:choice>
+							<xs:element name="ALQUILER_HABITACIONES" fixed="1"/>
+							<xs:element name="ALQUILER_VIVIENDA_COMPLETA" fixed="1"/>
+							<xs:element name="AMBAS" fixed="1"/>
+						</xs:choice>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="ALOJAMIENTO" type="ALOJAMIENTO"/>
+				<xs:element name="HABITACIONES">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="HABITACIONES_MOVIMIENTO" maxOccurs="31">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="N_DIA_TR" type="N_DIAType"/>
+										<xs:element name="HABITACIONES_USO_COMPARTIDO">
+											<xs:simpleType>
+												<xs:restriction base="xs:unsignedLong">
+													<xs:totalDigits value="4"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="ALOJAMIENTOS_INDEPENDIENTES">
+											<xs:simpleType>
+												<xs:restriction base="xs:unsignedLong">
+													<xs:totalDigits value="4"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="PLAZAS_SUPLETORIAS">
+											<xs:simpleType>
+												<xs:restriction base="xs:unsignedLong">
+													<xs:totalDigits value="4"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+					<xs:key name="CLAVE_N_DIA_TR">
+						<xs:selector xpath="HABITACIONES_MOVIMIENTO"/>
+						<xs:field xpath="N_DIA_TR"/>
+					</xs:key>
+				</xs:element>
+				<xs:element name="PRECIOS">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ALQUILER_VIVIENDA_POR_HABITACIONES" type="TARIFA_TURISMO_RURAL"/>
+							<xs:element name="ALQUILER_VIVIENDA_COMPLETA" type="TARIFA_TURISMO_RURAL"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="PERSONAL_OCUPADO" type="PERSONAL"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="APARTAMENTOS">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="CABECERA" type="CABECERA">
+					<xs:annotation>
+						<xs:documentation>Datos de identificacion del establecimiento.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="CABECERA_APARTAMENTOS">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="CATEGORIA">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:minLength value="1"/>
+										<xs:maxLength value="20"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="INFORMANTE" type="INFORMANTE"/>
+				<xs:element name="EMPRESA_GESTORA" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Datos de la empresa gestora</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="RAZON_SOCIAL">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:minLength value="1"/>
+										<xs:maxLength value="100"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="DIRECCION">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:minLength value="1"/>
+										<xs:maxLength value="100"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="CODIGO_POSTAL">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:length value="5"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="MUNICIPIO">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:minLength value="1"/>
+										<xs:maxLength value="33"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="PROVINCIA">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:minLength value="1"/>
+										<xs:maxLength value="25"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="TELEFONO">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:minLength value="9"/>
+										<xs:maxLength value="13"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="FAX" minOccurs="0">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:minLength value="9"/>
+										<xs:maxLength value="13"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="ALOJAMIENTO" type="ALOJAMIENTO"/>
+				<xs:element name="CAPACIDAD">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="N_APARTAMENTOS_ESTUDIO">
+								<xs:simpleType>
+									<xs:restriction base="xs:unsignedLong">
+										<xs:totalDigits value="4"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="N_APARTAMENTOS_2-4pax">
+								<xs:simpleType>
+									<xs:restriction base="xs:unsignedLong">
+										<xs:totalDigits value="4"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="N_APARTAMENTOS_4-6pax">
+								<xs:simpleType>
+									<xs:restriction base="xs:unsignedLong">
+										<xs:totalDigits value="4"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="N_APARTAMENTOS_OTROS">
+								<xs:simpleType>
+									<xs:restriction base="xs:unsignedLong">
+										<xs:totalDigits value="4"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="PLAZAS_TOTALES_APARTAMENTOS_ESTUDIO">
+								<xs:simpleType>
+									<xs:restriction base="xs:unsignedLong">
+										<xs:totalDigits value="4"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="PLAZAS_TOTALES_APARTAMENTOS_2-4pax">
+								<xs:simpleType>
+									<xs:restriction base="xs:unsignedLong">
+										<xs:totalDigits value="4"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="PLAZAS_TOTALES_APARTAMENTOS_4-6pax">
+								<xs:simpleType>
+									<xs:restriction base="xs:unsignedLong">
+										<xs:totalDigits value="4"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="PLAZAS_TOTALES_APARTAMENTOS_OTROS">
+								<xs:simpleType>
+									<xs:restriction base="xs:unsignedLong">
+										<xs:totalDigits value="4"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="OCUPACION">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="MOVIMIENTO" maxOccurs="31">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="N_DIA_AP" type="N_DIAType"/>
+										<xs:element name="APARTAMENTOS_OCUPADOS_ESTUDIO">
+											<xs:simpleType>
+												<xs:restriction base="xs:unsignedLong">
+													<xs:totalDigits value="4"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="APARTAMENTOS_OCUPADOS_2-4pax">
+											<xs:simpleType>
+												<xs:restriction base="xs:unsignedLong">
+													<xs:totalDigits value="4"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="APARTAMENTOS_OCUPADOS_4-6pax">
+											<xs:simpleType>
+												<xs:restriction base="xs:unsignedLong">
+													<xs:totalDigits value="4"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="APARTAMENTOS_OCUPADOS_OTROS">
+											<xs:simpleType>
+												<xs:restriction base="xs:unsignedLong">
+													<xs:totalDigits value="4"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="PLAZAS_SUPLETORIAS">
+											<xs:simpleType>
+												<xs:restriction base="xs:unsignedLong">
+													<xs:totalDigits value="4"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+					<xs:key name="CLAVE_N_DIA_AP">
+						<xs:selector xpath="MOVIMIENTO"/>
+						<xs:field xpath="N_DIA_AP"/>
+					</xs:key>
+				</xs:element>
+				<xs:element name="PRECIOS">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ESTUDIOS" type="TARIFA_APARTAMENTOS"/>
+							<xs:element name="APARTAMENTOS_2-4pax" type="TARIFA_APARTAMENTOS"/>
+							<xs:element name="APARTAMENTOS_4-6pax" type="TARIFA_APARTAMENTOS"/>
+							<xs:element name="OTROS" type="TARIFA_APARTAMENTOS"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="PERSONAL_OCUPADO" type="PERSONAL"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="N_DIAType">
+		<xs:restriction base="xs:string">
+			<xs:length value="2"/>
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="02"/>
+			<xs:enumeration value="03"/>
+			<xs:enumeration value="04"/>
+			<xs:enumeration value="05"/>
+			<xs:enumeration value="06"/>
+			<xs:enumeration value="07"/>
+			<xs:enumeration value="08"/>
+			<xs:enumeration value="09"/>
+			<xs:enumeration value="10"/>
+			<xs:enumeration value="11"/>
+			<xs:enumeration value="12"/>
+			<xs:enumeration value="13"/>
+			<xs:enumeration value="14"/>
+			<xs:enumeration value="15"/>
+			<xs:enumeration value="16"/>
+			<xs:enumeration value="17"/>
+			<xs:enumeration value="18"/>
+			<xs:enumeration value="19"/>
+			<xs:enumeration value="20"/>
+			<xs:enumeration value="21"/>
+			<xs:enumeration value="22"/>
+			<xs:enumeration value="23"/>
+			<xs:enumeration value="24"/>
+			<xs:enumeration value="25"/>
+			<xs:enumeration value="26"/>
+			<xs:enumeration value="27"/>
+			<xs:enumeration value="28"/>
+			<xs:enumeration value="29"/>
+			<xs:enumeration value="30"/>
+			<xs:enumeration value="31"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PctnType">
+		<xs:restriction base="xs:decimal">
+			<xs:maxInclusive value="100"/>
+			<xs:minInclusive value="0"/>
+			<xs:totalDigits value="5"/>
+			<xs:fractionDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PreciosType">
+		<xs:restriction base="xs:decimal">
+			<xs:totalDigits value="6"/>
+			<xs:fractionDigits value="2"/>
+			<xs:minInclusive value="0.00"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="CABECERA">
+		<xs:sequence>
+			<xs:element name="FECHA_REFERENCIA">
+				<xs:annotation>
+					<xs:documentation>Mes y año de referencia de los datos</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="MES">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:length value="2"/>
+									<xs:enumeration value="01"/>
+									<xs:enumeration value="02"/>
+									<xs:enumeration value="03"/>
+									<xs:enumeration value="04"/>
+									<xs:enumeration value="05"/>
+									<xs:enumeration value="06"/>
+									<xs:enumeration value="07"/>
+									<xs:enumeration value="08"/>
+									<xs:enumeration value="09"/>
+									<xs:enumeration value="10"/>
+									<xs:enumeration value="11"/>
+									<xs:enumeration value="12"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="ANYO">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:length value="4"/>
+									<xs:pattern value="20[0-9]{2}"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="DIAS_ABIERTO_MES_REFERENCIA" type="N_DIAType"/>
+			<xs:element name="RAZON_SOCIAL">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="100"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="NOMBRE_ESTABLECIMIENTO">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="100"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="CIF_NIF">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:length value="9"/>
+						<xs:pattern value="[A-Z0-9][0-9]{7}[A-Z0-9]"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="DIRECCION">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="100"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="CODIGO_POSTAL">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:length value="5"/>
+						<xs:pattern value="[0-9]{5}"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="LOCALIDAD" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="100"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MUNICIPIO">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="33"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="PROVINCIA">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="25"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="TELEFONO_1">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="9"/>
+						<xs:maxLength value="13"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="TELEFONO_2" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="9"/>
+						<xs:maxLength value="13"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="FAX_1" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="9"/>
+						<xs:maxLength value="13"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="FAX_2" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="9"/>
+						<xs:maxLength value="13"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="URL" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="100"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="INFORMANTE">
+		<xs:sequence>
+			<xs:element name="NOMBRE">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="100"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="CARGO">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="100"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="TELEFONOINF">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="9"/>
+						<xs:maxLength value="13"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="FAXINF" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="9"/>
+						<xs:maxLength value="13"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="EMAIL">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="100"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ALOJAMIENTO">
+		<xs:sequence>
+			<xs:element name="RESIDENCIA" id="ID_PAIS" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:choice>
+							<xs:element name="ID_PROVINCIA_ISLA">
+								<xs:annotation>
+									<xs:documentation>Codificación según ANEXO 4</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:length value="5"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="ID_PAIS">
+								<xs:annotation>
+									<xs:documentation>Codificación A3 de la ISO eliminando España</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:length value="3"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:choice>
+						<xs:element name="MOVIMIENTO" maxOccurs="31">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="N_DIA" type="N_DIAType"/>
+									<xs:element name="ENTRADAS">
+										<xs:simpleType>
+											<xs:restriction base="xs:unsignedLong">
+												<xs:totalDigits value="4"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="SALIDAS">
+										<xs:simpleType>
+											<xs:restriction base="xs:unsignedLong">
+												<xs:totalDigits value="4"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="PERNOCTACIONES">
+										<xs:simpleType>
+											<xs:restriction base="xs:unsignedLong">
+												<xs:totalDigits value="4"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+				<xs:key name="DIA_UNICO">
+					<xs:selector xpath="MOVIMIENTO"/>
+					<xs:field xpath="N_DIA"/>
+				</xs:key>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TARIFA_TURISMO_RURAL">
+		<xs:sequence>
+			<xs:element name="TARIFA_NORMAL" type="PreciosType"/>
+			<xs:element name="PCTN_OCUPADAS_NORMAL" type="PctnType"/>
+			<xs:element name="TARIFA_FIN_DE_SEMANA" type="PreciosType"/>
+			<xs:element name="PCTN_OCUPADAS_FIN_DE_SEMANA" type="PctnType"/>
+			<xs:element name="TARIFA_OTRAS" type="PreciosType"/>
+			<xs:element name="PCTN_OCUPADAS_OTRAS" type="PctnType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TARIFA_APARTAMENTOS">
+		<xs:sequence>
+			<xs:element name="TARIFA_NORMAL" type="PreciosType"/>
+			<xs:element name="PCTN_TARIFA_NORMAL" type="PctnType"/>
+			<xs:element name="TARIFA_FIN_DE_SEMANA" type="PreciosType"/>
+			<xs:element name="PCTN_TARIFA_FIN_DE_SEMANA" type="PctnType"/>
+			<xs:element name="TARIFA_TOUROPERADOR" type="PreciosType"/>
+			<xs:element name="PCTN_TARIFA_TOUROPERADOR" type="PctnType"/>
+			<xs:element name="TARIFA_OTRAS" type="PreciosType"/>
+			<xs:element name="PCTN_TARIFA_OTRAS" type="PctnType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PERSONAL">
+		<xs:sequence>
+			<xs:element name="PERSONAL_NO_REMUNERADO" type="xs:nonNegativeInteger"/>
+			<xs:element name="PERSONAL_REMUNERADO_FIJO" type="xs:nonNegativeInteger"/>
+			<xs:element name="PERSONAL_REMUNERADO_EVENTUAL" type="xs:nonNegativeInteger"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
