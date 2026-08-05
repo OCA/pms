@@ -3,7 +3,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import datetime
 import logging
-import time
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
@@ -833,27 +832,25 @@ class PmsReservation(models.Model):
     @api.depends("checkin", "arrival_hour")
     def _compute_checkin_datetime(self):
         for reservation in self:
-            checkin_hour = int(reservation.arrival_hour[0:2])
-            checkin_minut = int(reservation.arrival_hour[3:5])
-            checkin_time = datetime.time(checkin_hour, checkin_minut)
-            checkin_datetime = datetime.datetime.combine(
-                reservation.checkin, checkin_time
-            )
+            if not reservation.checkin or not reservation.arrival_hour:
+                reservation.checkin_datetime = False
+                continue
             reservation.checkin_datetime = (
-                reservation.pms_property_id.date_property_timezone(checkin_datetime)
+                reservation.pms_property_id.datetime_from_hour_str(
+                    reservation.checkin, reservation.arrival_hour
+                )
             )
 
     @api.depends("checkout", "departure_hour")
     def _compute_checkout_datetime(self):
         for reservation in self:
-            checkout_hour = int(reservation.departure_hour[0:2])
-            checkout_minut = int(reservation.departure_hour[3:5])
-            checkout_time = datetime.time(checkout_hour, checkout_minut)
-            checkout_datetime = datetime.datetime.combine(
-                reservation.checkout, checkout_time
-            )
+            if not reservation.checkout or not reservation.departure_hour:
+                reservation.checkout_datetime = False
+                continue
             reservation.checkout_datetime = (
-                reservation.pms_property_id.date_property_timezone(checkout_datetime)
+                reservation.pms_property_id.datetime_from_hour_str(
+                    reservation.checkout, reservation.departure_hour
+                )
             )
 
     @api.depends(
@@ -1856,28 +1853,28 @@ class PmsReservation(models.Model):
 
     @api.constrains("arrival_hour")
     def _check_arrival_hour(self):
+        pms_property = self.env["pms.property"]
         for record in self:
-            if record.arrival_hour:
-                try:
-                    time.strptime(record.arrival_hour, "%H:%M")
-                except ValueError as err:
-                    raise ValidationError(
-                        _("Format Arrival Hour (HH:MM) Error: %s", record.arrival_hour)
-                    ) from err
+            if record.arrival_hour and not pms_property.is_valid_hour_str(
+                record.arrival_hour
+            ):
+                raise ValidationError(
+                    _("Format Arrival Hour (HH:MM) Error: %s", record.arrival_hour)
+                )
 
     @api.constrains("departure_hour")
     def _check_departure_hour(self):
+        pms_property = self.env["pms.property"]
         for record in self:
-            if record.departure_hour:
-                try:
-                    time.strptime(record.departure_hour, "%H:%M")
-                except ValueError as err:
-                    raise ValidationError(
-                        _(
-                            "Format Departure Hour (HH:MM) Error: %s",
-                            record.departure_hour,
-                        )
-                    ) from err
+            if record.departure_hour and not pms_property.is_valid_hour_str(
+                record.departure_hour
+            ):
+                raise ValidationError(
+                    _(
+                        "Format Departure Hour (HH:MM) Error: %s",
+                        record.departure_hour,
+                    )
+                )
 
     @api.constrains("agency_id")
     def _no_agency_as_agency(self):

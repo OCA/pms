@@ -4,7 +4,7 @@
 
 import base64
 import datetime
-import time
+import re
 
 import pytz
 
@@ -14,6 +14,8 @@ from odoo.osv import expression
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
 from odoo.addons.base.models.res_partner import _tz_get
+
+HOUR_STR_PATTERN = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")
 
 
 def get_default_logo():
@@ -79,10 +81,10 @@ class PmsProperty(models.Model):
         default=lambda self: self.env.ref("product.list0").id,
     )
     default_arrival_hour = fields.Char(
-        string="Arrival Hour", help="HH:mm Format", default="14:00"
+        string="Arrival Hour", help="HH:mm Format", default="14:00", required=True
     )
     default_departure_hour = fields.Char(
-        string="Departure Hour", help="HH:mm Format", default="12:00"
+        string="Departure Hour", help="HH:mm Format", default="12:00", required=True
     )
     folio_sequence_id = fields.Many2one(
         string="Folio Sequence",
@@ -577,24 +579,46 @@ class PmsProperty(models.Model):
     @api.constrains("default_arrival_hour")
     def _check_arrival_hour(self):
         for record in self:
-            try:
-                time.strptime(record.default_arrival_hour, "%H:%M")
-            except ValueError as e:
+            if not self.is_valid_hour_str(record.default_arrival_hour):
                 raise ValidationError(
                     _("Format Arrival Hour (HH:MM) Error: %s")
                     % record.default_arrival_hour
-                ) from e
+                )
 
     @api.constrains("default_departure_hour")
     def _check_departure_hour(self):
         for record in self:
-            try:
-                time.strptime(record.default_departure_hour, "%H:%M")
-            except ValueError as e:
+            if not self.is_valid_hour_str(record.default_departure_hour):
                 raise ValidationError(
                     _("Format Departure Hour (HH:MM) Error: %s")
                     % record.default_departure_hour
-                ) from e
+                )
+
+    @api.model
+    def is_valid_hour_str(self, hour_str):
+        """Return whether hour_str is a zero-padded 24h "HH:MM" string.
+
+        Stricter on purpose than time.strptime(hour_str, "%H:%M"), which
+        also accepts hours without zero padding ("8:00") that the hour
+        consumers, parsing by position, cannot read back.
+        """
+        return bool(hour_str) and bool(HOUR_STR_PATTERN.match(hour_str))
+
+    @api.model
+    def hour_str_to_time(self, hour_str):
+        """Return the "HH:MM" hour_str as a datetime.time."""
+        if not self.is_valid_hour_str(hour_str):
+            raise ValidationError(_("Format Hour (HH:MM) Error: %s") % hour_str)
+        hour, minute = hour_str.split(":")
+        return datetime.time(int(hour), int(minute))
+
+    def datetime_from_hour_str(self, local_date, hour_str):
+        """Return local_date at hour_str, from property to user timezone."""
+        self.ensure_one()
+        local_dt = datetime.datetime.combine(
+            local_date, self.hour_str_to_time(hour_str)
+        )
+        return self.date_property_timezone(local_dt)
 
     def date_property_timezone(self, dt):
         self.ensure_one()

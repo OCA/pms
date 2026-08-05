@@ -8,7 +8,7 @@ from odoo.tests import tagged
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
-from .common import TestPms
+from .common import INVALID_HOURS, TestPms
 
 
 @tagged("post_install", "-at_install")
@@ -1265,48 +1265,99 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
         """
         Check that the format of the arrival_hour field is correct(HH:mm)
         -------------
-        Create a reservation with the wrong arrival hour date
-        format (HH:mm:ss), this should throw an error.
+        Create a reservation for each hour that is not a zero-padded 24h
+        "HH:mm" string, this should throw an error.
         """
         self.host1 = self.env["res.partner"].create(
             {
                 "firstname": "Host1",
             }
         )
-        with self.assertRaises(ValidationError):
-            self.env["pms.reservation"].create(
-                {
-                    "checkin": fields.date.today(),
-                    "checkout": fields.date.today() + datetime.timedelta(days=3),
-                    "pms_property_id": self.pms_property1.id,
-                    "partner_id": self.host1.id,
-                    "arrival_hour": "14:00:00",
-                }
-            )
+        for hour in INVALID_HOURS:
+            with self.subTest(hour=hour), self.assertRaises(ValidationError):
+                self.env["pms.reservation"].create(
+                    {
+                        "checkin": fields.date.today(),
+                        "checkout": fields.date.today() + datetime.timedelta(days=3),
+                        "pms_property_id": self.pms_property1.id,
+                        "partner_id": self.host1.id,
+                        "arrival_hour": hour,
+                    }
+                )
 
     @freeze_time("2012-01-14")
     def test_check_format_departure_hour(self):
         """
         Check that the format of the departure_hour field is correct(HH:mm)
         -------------
-        Create a reservation with the wrong departure hour date
-        format (HH:mm:ss), this should throw an error.
+        Create a reservation for each hour that is not a zero-padded 24h
+        "HH:mm" string, this should throw an error.
         """
         self.host1 = self.env["res.partner"].create(
             {
                 "firstname": "Host1",
             }
         )
-        with self.assertRaises(ValidationError):
-            self.env["pms.reservation"].create(
-                {
-                    "checkin": fields.date.today(),
-                    "checkout": fields.date.today() + datetime.timedelta(days=3),
-                    "pms_property_id": self.pms_property1.id,
-                    "partner_id": self.host1.id,
-                    "departure_hour": "14:00:00",
-                }
-            )
+        for hour in INVALID_HOURS:
+            with self.subTest(hour=hour), self.assertRaises(ValidationError):
+                self.env["pms.reservation"].create(
+                    {
+                        "checkin": fields.date.today(),
+                        "checkout": fields.date.today() + datetime.timedelta(days=3),
+                        "pms_property_id": self.pms_property1.id,
+                        "partner_id": self.host1.id,
+                        "departure_hour": hour,
+                    }
+                )
+
+    @freeze_time("2012-01-14")
+    def test_checkin_checkout_datetime_hours(self):
+        """
+        Check that the exact arrival and departure keep the property hours
+        -------------
+        Create a reservation on a property arriving at 08:00 and leaving
+        at 00:00, and check that both datetimes are on those hours.
+        """
+        self.env.user.tz = "UTC"
+        self.pms_property1.tz = "UTC"
+        self.pms_property1.default_arrival_hour = "08:00"
+        self.pms_property1.default_departure_hour = "00:00"
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=3),
+                "pms_property_id": self.pms_property1.id,
+                "partner_id": self.partner1.id,
+                "room_type_id": self.room_type_double.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+        self.assertEqual(
+            reservation.checkin_datetime,
+            datetime.datetime.combine(reservation.checkin, datetime.time(8, 0)),
+        )
+        self.assertEqual(
+            reservation.checkout_datetime,
+            datetime.datetime.combine(reservation.checkout, datetime.time(0, 0)),
+        )
+
+    def test_checkin_checkout_datetime_without_hours(self):
+        """
+        Check that a reservation without hours has no exact arrival
+        -------------
+        On a new reservation the checkin and checkout dates are not set
+        yet, so both datetimes are computed from missing values.
+        """
+        reservation = self.env["pms.reservation"].new(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_id": self.partner1.id,
+                "arrival_hour": False,
+                "departure_hour": False,
+            }
+        )
+        self.assertFalse(reservation.checkin_datetime)
+        self.assertFalse(reservation.checkout_datetime)
 
     @freeze_time("2012-01-14")
     def test_check_property_integrity_room(self):

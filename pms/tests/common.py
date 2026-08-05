@@ -1,5 +1,16 @@
 from odoo.tests import common
 
+INVALID_HOURS = [
+    "8:00",
+    "8:0",
+    "1400",
+    "14:00:00",
+    "24:00",
+    "14:99",
+    "aa:bb",
+    "14:",
+]
+
 
 class TestPms(common.TransactionCase):
     @classmethod
