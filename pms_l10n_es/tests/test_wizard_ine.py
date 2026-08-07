@@ -1,5 +1,6 @@
 import base64
 import datetime
+import xml.etree.ElementTree as ET
 from decimal import Decimal
 
 from freezegun import freeze_time
@@ -1223,24 +1224,90 @@ class TestWizardINE(TestPms):
         ):
             self._generate_ine_document()
 
-    def test_generate_xml_requires_whole_month(self):
-        """The INE only accepts files covering the whole reference month."""
+    def test_generate_xml_expands_partial_month(self):
+        """A period shorter than the month is expanded to the whole month."""
         # ARRANGE
         self.ideal_scenario()
         self._configure_ine_property()
         wizard = self.env["pms.ine.wizard"].new(
             {
                 "pms_property_id": self.pms_property1.id,
-                "start_date": datetime.date(2021, 2, 1),
-                "end_date": datetime.date(2021, 2, 7),
+                "start_date": datetime.date(2021, 2, 8),
+                "end_date": datetime.date(2021, 2, 14),
             }
         )
+        # ACT
+        wizard.ine_generate_xml()
+        # ASSERT
+        self.assertEqual(wizard.start_date, datetime.date(2021, 2, 1))
+        self.assertEqual(wizard.end_date, datetime.date(2021, 2, 28))
+
+    def test_generate_xml_range_crossing_months(self):
+        """A range reaching into the next month reports the first one only.
+
+        Keeping both months repeats day numbers inside a place of residence
+        and the survey schema rejects the file, because the day is a key
+        there.
+        """
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        namespace = "https://iria.ine.es/schemas/ec7dbd57-d3ab-473a-a3e5-d32d8c1e17a0"
+        self.env["ir.config_parameter"].sudo().set_param(
+            "pms_l10n_es.ine_xml_namespace_hotel", namespace
+        )
+        wizard = self.env["pms.ine.wizard"].new(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "start_date": datetime.date(2021, 2, 1),
+                "end_date": datetime.date(2021, 3, 1),
+            }
+        )
+        # ACT
+        wizard.ine_generate_xml()
+        document = etree.fromstring(base64.b64decode(wizard.txt_binary))
+        # ASSERT
+        self.assertEqual(wizard.end_date, datetime.date(2021, 2, 28))
+        for residency_tag in document.iter("{%s}RESIDENCIA" % namespace):
+            days = [
+                movement_tag.findtext("{%s}N_DIA" % namespace)
+                for movement_tag in residency_tag
+                if movement_tag.tag.endswith("MOVIMIENTO")
+            ]
+            self.assertEqual(len(days), len(set(days)), "Repeated day in a residence")
+        self._assert_valid_against_schema(document, "iria_hotel_survey.xsd")
+
+    def test_check_xml_content_detects_broken_daily_chain(self):
+        """Guests cannot vanish: the INE checks the daily chain per residence."""
+        # ARRANGE
+        self._configure_ine_property()
+        wizard = self.env["pms.ine.wizard"].new(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "start_date": datetime.date(2021, 2, 1),
+                "end_date": datetime.date(2021, 2, 28),
+            }
+        )
+        survey_tag = ET.Element("ENCUESTA")
+        header_tag = ET.SubElement(survey_tag, "CABECERA")
+        ET.SubElement(header_tag, "DIAS_ABIERTO_MES_REFERENCIA").text = "28"
+        accommodation_tag = ET.SubElement(survey_tag, "ALOJAMIENTO")
+        residency_tag = ET.SubElement(accommodation_tag, "RESIDENCIA")
+        ET.SubElement(residency_tag, "ID_PROVINCIA_ISLA").text = "ES300"
+        for day, (arrivals, departures, stays) in {
+            1: (2, 0, 2),
+            2: (0, 0, 0),  # two guests disappear without checking out
+        }.items():
+            movement_tag = ET.SubElement(residency_tag, "MOVIMIENTO")
+            ET.SubElement(movement_tag, "N_DIA").text = "%02d" % day
+            ET.SubElement(movement_tag, "ENTRADAS").text = str(arrivals)
+            ET.SubElement(movement_tag, "SALIDAS").text = str(departures)
+            ET.SubElement(movement_tag, "PERNOCTACIONES").text = str(stays)
         # ACT & ASSERT
         with self.assertRaises(
-            ValidationError,
-            msg="Cannot generate the INE file for a partial month",
+            ValidationError, msg="A broken daily chain must be reported"
         ):
-            wizard.ine_generate_xml()
+            wizard._ine_check_xml_content(survey_tag)
 
     def test_generate_xml_requires_guest_movements(self):
         """A period without guest movements cannot produce a valid file."""
