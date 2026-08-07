@@ -513,78 +513,14 @@ class WizardIne(models.TransientModel):
 
     @api.model
     def check_ine_mandatory_fields(self, pms_property_id):
-        if not pms_property_id.name:
-            raise ValidationError(_("The property name is not established."))
+        """Refuse to build the file when the property is not ready.
 
-        if not pms_property_id.company_id.vat:
-            raise ValidationError(_("The company VAT is not established."))
-
-        if not pms_property_id.company_id.name:
-            raise ValidationError(_("The company name is not established."))
-
-        if not pms_property_id.name:
-            raise ValidationError(_("The property name is not established."))
-
-        if not pms_property_id.ine_tourism_number:
-            raise ValidationError(_("The property tourism number is not established."))
-
-        if not pms_property_id.ine_tourism_number:
-            raise ValidationError(_("The property tourism number is not established."))
-
-        if not pms_property_id.street:
-            raise ValidationError(_("The property street is not established."))
-
-        if not pms_property_id.zip:
-            raise ValidationError(_("The property zip is not established."))
-
-        if not pms_property_id.city:
-            raise ValidationError(_("The property city is not established."))
-
-        if not pms_property_id.partner_id.state_id:
-            raise ValidationError(_("The property state is not established."))
-
-        if not pms_property_id.phone:
-            raise ValidationError(_("The property phone is not established."))
-
-        if len(pms_property_id.phone.replace(" ", "")) < 9:
-            raise ValidationError(
-                _(
-                    "The property phone '%s' is too short: the INE survey "
-                    "requires at least 9 digits.",
-                    pms_property_id.phone,
-                )
-            )
-
-        if not pms_property_id.ine_category_id:
-            raise ValidationError(_("The property category is not established."))
-
-        province = (
-            pms_property_id.partner_id.state_id.ine_tourism_province_name
-            or pms_property_id.partner_id.state_id.name
-        )
-        if len(province) > 25:
-            raise ValidationError(
-                _(
-                    "The province literal '%s' exceeds the 25 characters "
-                    "allowed by the INE survey. Set the 'INE Tourism "
-                    "Province Name' field on the property state.",
-                    province,
-                )
-            )
-
-        if pms_property_id.ine_category_id.survey_type == "apartments":
-            self._check_ine_apartments_mandatory_fields(pms_property_id)
-
-    @api.model
-    def _check_ine_apartments_mandatory_fields(self, pms_property_id):
-        if not pms_property_id.ine_informant_name:
-            raise ValidationError(_("The INE informant name is not established."))
-        if not pms_property_id.ine_informant_job:
-            raise ValidationError(
-                _("The INE informant job position is not established.")
-            )
-        if not pms_property_id.ine_informant_email:
-            raise ValidationError(_("The INE informant email is not established."))
+        The checks live in the property, so that the interface can list
+        what is missing instead of waiting for the download to fail.
+        """
+        problems = pms_property_id.ine_configuration_problems()
+        if problems:
+            raise ValidationError("\n".join(problems))
 
     def _ine_normalize_period(self):
         """Expand the requested period to the whole reference month.
@@ -840,29 +776,6 @@ class WizardIne(models.TransientModel):
         self.check_ine_mandatory_fields(self.pms_property_id)
         self._ine_normalize_period()
         self._store_ine_order_number()
-
-        number_of_rooms = sum(
-            self.env["pms.room"]
-            .search(
-                [
-                    ("in_ine", "=", True),
-                    ("pms_property_id", "=", self.pms_property_id.id),
-                ]
-            )
-            .mapped("capacity")
-        )
-
-        if number_of_rooms > self.pms_property_id.ine_seats:
-            raise ValidationError(
-                _(
-                    "The number of seats, excluding extra beds ({num_rooms})"
-                    + " exceeds the number of seats "
-                    "established in the property ({ine_seats})"
-                ).format(
-                    num_rooms=str(number_of_rooms),
-                    ine_seats=str(self.pms_property_id.ine_seats),
-                )
-            )
 
         if self._ine_survey_type() == "apartments":
             survey_tag = self._ine_build_xml_apartments()

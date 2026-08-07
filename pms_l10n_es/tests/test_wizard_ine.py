@@ -1277,6 +1277,45 @@ class TestWizardINE(TestPms):
             self.assertEqual(len(days), len(set(days)), "Repeated day in a residence")
         self._assert_valid_against_schema(document, "iria_hotel_survey.xsd")
 
+    def test_configuration_problems_list_every_missing_field(self):
+        """The property reports all the missing data at once, not the first."""
+        # ARRANGE
+        self._configure_ine_property()
+        self.pms_property1.write(
+            {
+                "ine_tourism_number": False,
+                "city": False,
+                "phone": "123",
+            }
+        )
+        # ACT
+        problems = self.pms_property1.ine_configuration_problems()
+        # ASSERT
+        self.assertFalse(self.pms_property1.ine_ready)
+        self.assertEqual(len(problems), 3, "\n".join(problems))
+        self.assertEqual(self.pms_property1.ine_blocking_reasons, "\n".join(problems))
+
+    def test_configuration_problems_seats_below_room_capacity(self):
+        """Declaring fewer seats than the rooms offer breaks the survey."""
+        # ARRANGE
+        self._configure_ine_property()
+        self.pms_property1.ine_seats = 0
+        # ACT
+        problems = self.pms_property1.ine_configuration_problems()
+        # ASSERT
+        self.assertFalse(self.pms_property1.ine_ready)
+        self.assertTrue(
+            any("seats" in problem for problem in problems), "\n".join(problems)
+        )
+
+    def test_configuration_problems_empty_when_ready(self):
+        """A fully configured property reports nothing to fix."""
+        # ARRANGE
+        self._configure_ine_property()
+        # ACT & ASSERT
+        self.assertEqual(self.pms_property1.ine_configuration_problems(), [])
+        self.assertTrue(self.pms_property1.ine_ready)
+
     def test_check_xml_content_detects_broken_daily_chain(self):
         """Guests cannot vanish: the INE checks the daily chain per residence."""
         # ARRANGE
