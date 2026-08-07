@@ -65,6 +65,20 @@
                             <field name="ine_informant_email" />
                         </group>
                     </div>
+                    <div class="col-12">
+                        <field name="ine_ready" invisible="1" />
+                        <div
+                            class="alert alert-warning"
+                            role="alert"
+                            attrs="{'invisible': [('ine_ready', '=', True)]}"
+                        >
+                            <field
+                                name="ine_blocking_reasons"
+                                nolabel="1"
+                                readonly="1"
+                            />
+                        </div>
+                    </div>
                 </div>
             </xpath>
         </field>
