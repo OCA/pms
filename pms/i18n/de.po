@@ -130,6 +130,11 @@ msgstr ""
 "        "
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__budget_count
+msgid "# Budgets"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__product_variant_count
 msgid "# Product Variants"
 msgstr "# Produkt-Varianten"
