@@ -58,6 +58,43 @@ class TestPmsSesCommunication(TestPms):
             "Creating a reservation should create a notification with operation A",
         )
 
+    def test_create_notification_when_room_has_independent_ses_account(self):
+        # ARRANGE
+        self.pms_property1.institution = False
+        self.room_double_1.institution_independent_account = True
+        self.room_double_1.institution = "ses"
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type.id,
+                "preferred_room_id": self.room_double_1.id,
+                "checkin": "2021-01-01",
+                "checkout": "2021-01-02",
+                "adults": 2,
+                "children": 0,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
+                "partner_name": "Test reservation",
+            }
+        )
+        # ASSERT
+        self.assertTrue(
+            reservation.is_ses,
+            "A reservation in a room with an independent SES account "
+            "should be flagged as SES",
+        )
+        last_notification = self.env["pms.ses.communication"].search(
+            [
+                ("reservation_id", "=", reservation.id),
+            ]
+        )
+        self.assertEqual(
+            last_notification.operation,
+            "A",
+            "Creating a reservation in a room with an independent SES "
+            "account should create a notification with operation A",
+        )
+
     def test_not_create_notification_when_cancel_reservation_and_not_sent(self):
         # ARRANGE
         reservation = self.env["pms.reservation"].create(

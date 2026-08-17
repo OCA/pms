@@ -147,7 +147,7 @@ class PmsCheckinPartner(models.Model):
         for record in self:
             if (
                 "state" in vals
-                and record.reservation_id.pms_property_id.institution == "ses"
+                and record.reservation_id.is_ses
                 and record.state == "onboard"
             ):
                 previous_incomplete_traveller_communication = self.env[
