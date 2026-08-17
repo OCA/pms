@@ -61,7 +61,7 @@ class PmsReservation(models.Model):
 
     def _compute_ses_status_reservation(self):
         for record in self:
-            if record.pms_property_id.institution != "ses":
+            if not record.is_ses:
                 record.ses_status_reservation = "not_applicable"
                 continue
             communication = record.ses_communication_ids.filtered(
@@ -76,7 +76,7 @@ class PmsReservation(models.Model):
 
     def _compute_ses_status_traveller_report(self):
         for record in self:
-            if record.pms_property_id.institution != "ses":
+            if not record.is_ses:
                 record.ses_status_traveller_report = "not_applicable"
                 continue
             communication = record.ses_communication_ids.filtered(
@@ -108,10 +108,7 @@ class PmsReservation(models.Model):
     def create(self, vals_list):
         reservations = super().create(vals_list)
         for reservation in reservations:
-            if (
-                reservation.pms_property_id.institution == "ses"
-                and reservation.reservation_type != "out"
-            ):
+            if reservation.is_ses and reservation.reservation_type != "out":
                 self.create_communication(reservation.id, CREATE_OPERATION_CODE, "RH")
         return reservations
 
