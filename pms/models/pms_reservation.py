@@ -1438,23 +1438,27 @@ class PmsReservation(models.Model):
             else:
                 record.shared_folio = False
 
+    # NOTE: no dependency on folio_id.partner_name on purpose: a recompute
+    # triggered by a folio rename cannot see the reservation's own stored
+    # partner_name (the cache is invalidated), so it would overwrite the
+    # guest names. Folio renames are propagated from pms.folio.write()
+    # instead, only to the reservations that inherited the folio name.
     @api.depends(
         "partner_id",
         "partner_id.name",
         "agency_id",
         "reservation_type",
         "out_service_description",
-        "folio_id.partner_name",
     )
     def _compute_partner_name(self):
         for record in self:
             if record.partner_id and record.partner_id != record.agency_id:
                 record.partner_name = record.partner_id.name
-            if (record.folio_id and not record.partner_name) or (
-                record.folio_id
-                and record.folio_id.partner_name
-                and record.folio_id.partner_name != record.partner_name
-            ):
+            elif not record.partner_name and record.folio_id.partner_name:
+                # Fall back to the folio holder only when the reservation has
+                # no guest name of its own: on group/company folios the folio
+                # is held by the company while each reservation keeps the
+                # name of its occupant, which must not be overwritten.
                 record.partner_name = record.folio_id.partner_name
             elif record.agency_id and not record.partner_name:
                 # if the customer not is the agency but we dont know the customer's
@@ -2057,7 +2061,12 @@ class PmsReservation(models.Model):
             if vals.get("folio_id"):
                 folio = self.env["pms.folio"].browse(vals["folio_id"])
                 default_vals = {"pms_property_id": folio.pms_property_id.id}
-                if folio.partner_id:
+                if vals.get("partner_id") or vals.get("partner_name"):
+                    # The caller sets the reservation guest explicitly: it
+                    # can differ from the folio holder (e.g. group/company
+                    # folios), so don't inherit the folio identity
+                    pass
+                elif folio.partner_id:
                     default_vals["partner_id"] = folio.partner_id.id
                 elif folio.partner_name:
                     default_vals["partner_name"] = folio.partner_name

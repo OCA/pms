@@ -1791,6 +1791,121 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
         )
 
     @freeze_time("2012-01-14")
+    def test_reservation_guest_name_not_overwritten_by_folio(self):
+        """
+        Check that a reservation with its own partner_name (the guest)
+        keeps it when the folio is held by another partner (e.g. a
+        company folio with the guest names per reservation)
+        ----------
+        Create a folio held by a company partner. Then create a
+        reservation in that folio with an explicit partner_name.
+        The reservation must keep the guest name and the folio must
+        keep the company name.
+        """
+        # ARRANGE
+        company = self.env["res.partner"].create(
+            {
+                "name": "Company Holder",
+                "is_company": True,
+            }
+        )
+        folio = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_id": company.id,
+            }
+        )
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": "2012-01-14",
+                "checkout": "2012-01-17",
+                "pms_property_id": self.pms_property1.id,
+                "folio_id": folio.id,
+                "room_type_id": self.room_type_double.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+                "partner_name": "Guest Name",
+            }
+        )
+        reservation.flush_recordset()
+        reservation.invalidate_recordset(["partner_name", "partner_id"])
+        # ASSERT
+        self.assertEqual(
+            reservation.partner_name,
+            "Guest Name",
+            "The reservation guest name was overwritten by the folio " "partner name",
+        )
+        self.assertEqual(
+            reservation.partner_id,
+            company,
+            "The reservation billing partner must stay the folio holder",
+        )
+        self.assertEqual(
+            folio.partner_name,
+            company.name,
+            "The folio partner name doesn't correspond to the company",
+        )
+
+    @freeze_time("2012-01-14")
+    def test_folio_rename_only_propagates_to_inherited_names(self):
+        """
+        Check that renaming the folio partner_name propagates to the
+        reservations that inherited the folio name but not to the
+        reservations with their own guest name
+        ----------
+        Create a folio with partner_name and two reservations: one
+        without partner_name (inherits the folio name) and one with an
+        explicit guest name. Rename the folio partner_name and check
+        that only the inherited one is updated.
+        """
+        # ARRANGE
+        folio = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": "Original Holder",
+            }
+        )
+        inherited_reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": "2012-01-14",
+                "checkout": "2012-01-17",
+                "pms_property_id": self.pms_property1.id,
+                "folio_id": folio.id,
+                "room_type_id": self.room_type_double.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+        guest_reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": "2012-01-14",
+                "checkout": "2012-01-17",
+                "pms_property_id": self.pms_property1.id,
+                "folio_id": folio.id,
+                "room_type_id": self.room_type_double.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+                "partner_name": "Guest Name",
+            }
+        )
+        # ACT
+        folio.write({"partner_name": "New Holder"})
+        (inherited_reservation | guest_reservation).flush_recordset()
+        (inherited_reservation | guest_reservation).invalidate_recordset(
+            ["partner_name"]
+        )
+        # ASSERT
+        self.assertEqual(
+            inherited_reservation.partner_name,
+            "New Holder",
+            "The folio rename wasn't propagated to the reservation "
+            "that inherited the folio name",
+        )
+        self.assertEqual(
+            guest_reservation.partner_name,
+            "Guest Name",
+            "The folio rename overwrote the reservation guest name",
+        )
+
+    @freeze_time("2012-01-14")
     def test_partner_is_agency_not_invoice_to_agency(self):
         """
         Check that a reservation without partner_name but with
