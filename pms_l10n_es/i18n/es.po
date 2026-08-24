@@ -57,6 +57,15 @@ msgid ""
 msgstr ""
 
 #. module: pms_l10n_es
+#. odoo-python
+#: code:addons/pms_l10n_es/models/pms_folio.py:0
+#, python-format
+msgid ""
+"%(guests)s is of age, so the unaccompanied minors declaration of folio "
+"%(folio)s does not hold. Uncheck the declaration or review the birthdates."
+msgstr ""
+
+#. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_report_invoice_document
 msgid "<strong>Tourism Classification:</strong>"
 msgstr ""
@@ -67,10 +76,22 @@ msgid "Abuelo/a"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_folio__ses_all_guests_minors
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_reservation__ses_all_guests_minors
+msgid "All guests are minors"
+msgstr ""
+
+#. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "All reservation rooms must have the same institution property id."
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_folio__ses_minors_authorization
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_reservation__ses_minors_authorization
+msgid "Authorization signed by the legal guardian of the minors."
 msgstr ""
 
 #. module: pms_l10n_es
@@ -258,6 +279,14 @@ msgid "Eventual Staff"
 msgstr "Personal Eventual"
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_folio__ses_all_guests_minors
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_reservation__ses_all_guests_minors
+msgid ""
+"Every guest of the folio whose birthdate is known is under the age of "
+"majority."
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__txt_binary
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__txt_binary
 msgid "File Download"
@@ -299,6 +328,18 @@ msgstr ""
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "Group By"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_folio__ses_minors_authorization
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_reservation__ses_minors_authorization
+msgid "Guardian authorization"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_folio__ses_minors_authorization_filename
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_reservation__ses_minors_authorization_filename
+msgid "Guardian authorization filename"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -536,6 +577,11 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__ot
 msgid "Otro"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model,name:pms_l10n_es.model_pms_folio
+msgid "PMS Folio"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -963,6 +1009,15 @@ msgid ""
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_folio__ses_unaccompanied_minors
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_reservation__ses_unaccompanied_minors
+msgid ""
+"The minors travel on their own with the authorization of their legal "
+"guardian. No relationship with an accompanying guest is required on their "
+"checkin data."
+msgstr ""
+
+#. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
@@ -1187,6 +1242,12 @@ msgstr ""
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__ses_url
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_room__ses_url
 msgid "URL to send the data to SES"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_folio__ses_unaccompanied_minors
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_reservation__ses_unaccompanied_minors
+msgid "Unaccompanied minors"
 msgstr ""
 
 #. module: pms_l10n_es
