@@ -1521,6 +1521,9 @@ class PmsFolio(models.Model):
         if "sale_channel_origin_id" in vals:
             reservations_to_update = self.get_reservations_to_update_channel(vals)
             services_to_update = self.get_services_to_update_channel(vals)
+        folio_old_partner_names = {}
+        if vals.get("partner_name") or vals.get("partner_id"):
+            folio_old_partner_names = {folio.id: folio.partner_name for folio in self}
 
         res = super().write(vals)
         if vals.get("partner_id"):
@@ -1533,6 +1536,19 @@ class PmsFolio(models.Model):
 
         if services_to_update:
             services_to_update.sale_channel_origin_id = vals["sale_channel_origin_id"]
+
+        if folio_old_partner_names:
+            # Propagate the folio holder rename only to reservations that
+            # inherited the previous folio name (or have no name), keeping
+            # the guest names that were set explicitly on each reservation.
+            for folio in self:
+                old_name = folio_old_partner_names.get(folio.id)
+                new_name = folio.partner_name
+                if not new_name or new_name == old_name:
+                    continue
+                folio.reservation_ids.filtered(
+                    lambda r, old=old_name: not r.partner_name or r.partner_name == old
+                ).partner_name = new_name
 
         return res
 
