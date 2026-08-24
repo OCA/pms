@@ -13,6 +13,17 @@
                     options="{'no_create': True,'no_open': True}"
                     attrs="{'invisible': [('is_pms_available', '=', False)]}"
                 />
+                <!-- multi_pms_properties injects a domain referring to
+                     pms_property_ids into every relational field of this model
+                     declared with check_pms_properties=True, item_ids among them.
+                     A view cannot use a field restricted to a narrower group, so
+                     the field must stay available (hidden) for the other users.
+                     Same pattern as company_id/check_company in core views. -->
+                <field
+                    name="pms_property_ids"
+                    groups="!pms.group_pms_user"
+                    invisible="1"
+                />
             </xpath>
             <xpath expr="//field[@name='country_group_ids']" position="before">
                 <field

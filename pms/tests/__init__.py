@@ -46,3 +46,4 @@ from . import test_pms_tourist_tax
 from . import test_pms_payment
 from . import test_res_partner
 from . import test_pms_property
+from . import test_view_check_pms_properties
