@@ -8,6 +8,7 @@
                 <field name="is_pms_available" />
                 <field
                     name="pms_property_ids"
+                    groups="pms.group_pms_user"
                     widget="many2many_tags"
                     options="{'no_create': True,'no_open': True}"
                     attrs="{'invisible': [('is_pms_available', '=', False)]}"
@@ -16,18 +17,22 @@
             <xpath expr="//field[@name='country_group_ids']" position="before">
                 <field
                     name="pricelist_type"
+                    groups="pms.group_pms_user"
                     attrs="{'invisible': [('is_pms_available', '=', False)]}"
                 />
                 <field
                     name="cancelation_rule_id"
+                    groups="pms.group_pms_user"
                     attrs="{'invisible': [('is_pms_available', '=', False)]}"
                 />
                 <field
                     name="availability_plan_id"
+                    groups="pms.group_pms_user"
                     attrs="{'invisible': [('is_pms_available', '=', False)]}"
                 />
                 <field
                     name="pms_sale_channel_ids"
+                    groups="pms.group_pms_user"
                     widget="many2many_tags"
                     attrs="{'invisible': [('is_pms_available', '=', False)]}"
                 />

@@ -6,10 +6,15 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='applied_on']" position="before">
                 <field name="allowed_board_service_product_ids" invisible="1" />
-                <field name="allowed_board_service_room_type_ids" invisible="1" />
+                <field
+                    name="allowed_board_service_room_type_ids"
+                    invisible="1"
+                    groups="pms.group_pms_user"
+                />
 
                 <field
                     name="board_service_room_type_id"
+                    groups="pms.group_pms_user"
                     options="{'no_create': True,'no_open': True}"
                     domain="[('id', 'in',allowed_board_service_room_type_ids)]"
                 />
@@ -18,6 +23,7 @@
             <xpath expr="//field[@name='min_quantity']" position="before">
                 <field
                     name="pms_property_ids"
+                    groups="pms.group_pms_user"
                     widget="many2many_tags"
                     options="{'no_create': True,'no_open': True}"
                 />
