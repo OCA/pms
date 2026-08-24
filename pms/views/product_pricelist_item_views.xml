@@ -27,6 +27,14 @@
                     widget="many2many_tags"
                     options="{'no_create': True,'no_open': True}"
                 />
+                <!-- Kept available (hidden) for non PMS users: the domain
+                     injected by multi_pms_properties into product_tmpl_id and
+                     pricelist_id refers to pms_property_ids. -->
+                <field
+                    name="pms_property_ids"
+                    groups="!pms.group_pms_user"
+                    invisible="1"
+                />
             </xpath>
             <xpath expr="//field[@name='min_quantity']" position="after">
                 <label for="date_start_consumption" string="Consumption" />

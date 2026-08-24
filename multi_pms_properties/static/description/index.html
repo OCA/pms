@@ -406,6 +406,16 @@ or with the <tt class="docutils literal"><span class="pre">--load</span></tt> co
 <tt class="docutils literal">check_pms_properties like field attribute to check relational record properties consistence</tt>
 <tt class="docutils literal">This module not implement propety dependent fields</tt></p>
 </li>
+<li><p class="first"><tt class="docutils literal">check_pms_properties</tt> injects a domain referring to the property field of the
+model, so any view showing such a field must keep <tt class="docutils literal">pms_property_id(s)</tt>
+available for every group combination. Restricting it with <tt class="docutils literal">groups</tt> makes Odoo
+refuse to validate the view. To hide it from some users, add a companion node
+instead, the same way core does with <tt class="docutils literal">company_id</tt> and <tt class="docutils literal">check_company</tt>:</p>
+<pre class="literal-block">
+&lt;field name=&quot;pms_property_ids&quot; groups=&quot;pms.group_pms_user&quot; /&gt;
+&lt;field name=&quot;pms_property_ids&quot; groups=&quot;!pms.group_pms_user&quot; invisible=&quot;1&quot; /&gt;
+</pre>
+</li>
 </ul>
 </div>
 <div class="section" id="bug-tracker">
