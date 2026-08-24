@@ -165,6 +165,13 @@ class PmsAvailability(models.Model):
         )
         if avails:
             self.env.add_to_compute(self._fields["real_avail"], avails)
+            # ``add_to_compute`` marks ``real_avail`` itself but, unlike
+            # ``modified()``, does not expand the dependency closure:
+            # stored fields depending on it — the related
+            # ``pms.availability.plan.rule.real_avail`` and, through it,
+            # ``plan_avail`` (the value channel exports read) — would
+            # keep their stale values. Mark them explicitly.
+            avails.modified(["real_avail"])
 
     @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
     def _compute_parent_avail_id(self):
