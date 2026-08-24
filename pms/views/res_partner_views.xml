@@ -34,7 +34,6 @@
         <field name="name">res.partner.view.form</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form" />
-        <!--<field name="groups_id" eval="[(4, ref('pms.group_pms_user'))]" />-->
         <field name="arch" type="xml">
             <xpath expr='//div[@name="button_box"]' position='inside'>
                 <button
@@ -42,6 +41,7 @@
                     type="object"
                     icon="fa-bed"
                     name="action_partner_reservations"
+                    groups="pms.group_pms_user"
                     help="Reservations related with this contact"
                 >
                     <field
@@ -55,6 +55,7 @@
                     type="object"
                     icon="fa-file"
                     name="action_partner_folios"
+                    groups="pms.group_pms_user"
                     help="Folios related with this contact"
                 >
                     <field string="Folios" name="folios_count" widget="statinfo" />
@@ -69,12 +70,17 @@
                 expr="//notebook/page[@name='sales_purchases']/group/group/field[@name='company_id']"
                 position="after"
             >
-                <field name="pms_property_ids" widget="many2many_tags" />
+                <field
+                    name="pms_property_ids"
+                    widget="many2many_tags"
+                    groups="pms.group_pms_user"
+                />
             </xpath>
             <xpath expr="//page[@name='internal_notes']" position="after">
                 <page
                     name="agency"
                     string="Agency"
+                    groups="pms.group_pms_user"
                     attrs="{'invisible':[('is_agency','!=',True)]}"
                 >
                     <group>
