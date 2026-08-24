@@ -2706,20 +2706,29 @@ class PmsReservation(models.Model):
         )
 
     def _get_applicable_guest_count(self, product):
-        count = len(
-            self._get_guests_by_age(
-                product.tourist_tax_min_age,
-                product.tourist_tax_max_age,
-            )
+        """Count the guests the tax applies to.
+
+        Guests with a known birthdate are classified by age; guests not yet
+        registered (or registered without birthdate) are counted from the
+        declared occupancy, so a partial check-in never lowers the tax below
+        what the reservation declares.
+        """
+        min_age = product.tourist_tax_min_age
+        max_age = product.tourist_tax_max_age
+        known_guests = self.checkin_partner_ids.filtered("birthdate_date")
+        matching_known = len(self._get_guests_by_age(min_age, max_age) & known_guests)
+        unknown_count = max(0, self.adults + self.children - len(known_guests))
+        if not min_age:
+            # Without a minimum age, guests of unknown age are counted,
+            # consistent with _get_guests_by_age
+            return matching_known + unknown_count
+        # With a minimum age, assume unregistered adults meet it and
+        # declared children not yet identified as minors stay below it
+        known_minors = len(
+            known_guests.filtered(lambda g: self._guest_age(g.birthdate_date) < min_age)
         )
-        # If not hosts found, consider all guests (if not min_age or max_age is set)
-        # or only adults min_age
-        if count == 0:
-            if not product.tourist_tax_min_age:
-                count = self.adults + self.children
-            else:
-                count = self.adults
-        return count
+        unknown_children = max(0, self.children - known_minors)
+        return matching_known + max(0, unknown_count - unknown_children)
 
     def _get_product_price(self, product, quantity, night_date):
         product = product.with_context(
@@ -2807,20 +2816,18 @@ class PmsReservation(models.Model):
 
         return cmds
 
-    def _get_guests_by_age(self, min_age=None, max_age=None):
+    @api.model
+    def _guest_age(self, birthdate):
         today = fields.Date.today()
-        guests = self.checkin_partner_ids
+        return (today - birthdate).days // 365 if birthdate else 0
 
-        def age(birthdate):
-            return (today - birthdate).days // 365 if birthdate else 0
-
-        filtered = guests.filtered(
+    def _get_guests_by_age(self, min_age=None, max_age=None):
+        return self.checkin_partner_ids.filtered(
             lambda g: (
-                (not min_age or age(g.birthdate_date) >= min_age)
-                and (not max_age or age(g.birthdate_date) <= max_age)
+                (not min_age or self._guest_age(g.birthdate_date) >= min_age)
+                and (not max_age or self._guest_age(g.birthdate_date) <= max_age)
             )
         )
-        return filtered
 
     def _is_mmdd_in_range(self, check_date, start_mmdd, end_mmdd):
         """Check if a date falls between two MM-DD values,
