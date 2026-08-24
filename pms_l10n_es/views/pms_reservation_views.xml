@@ -29,6 +29,24 @@
                     </field>
                 </page>
             </xpath>
+            <xpath
+                expr="//page[@name='persons']/field[@name='checkin_partner_ids']"
+                position="before"
+            >
+                <field name="ses_all_guests_minors" invisible="1" />
+                <!-- Kept visible while declared, so it can always be unchecked
+                     even after a guest of age joins the reservation. -->
+                <group
+                    attrs="{'invisible': [('ses_all_guests_minors','=',False),('ses_unaccompanied_minors','=',False)]}"
+                >
+                    <field name="ses_unaccompanied_minors" />
+                    <field
+                        name="ses_minors_authorization"
+                        filename="ses_minors_authorization_filename"
+                    />
+                    <field name="ses_minors_authorization_filename" invisible="1" />
+                </group>
+            </xpath>
         </field>
     </record>
 </odoo>

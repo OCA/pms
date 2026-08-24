@@ -46,6 +46,25 @@ class PmsReservation(models.Model):
         ],
         compute="_compute_ses_status_traveller_report",
     )
+    # The unaccompanied minors declaration belongs to the folio, because the
+    # party is not split by room: the guardians may be booked in one reservation
+    # and the minors in another one. It is exposed here because the reservation
+    # is where it gets managed.
+    ses_all_guests_minors = fields.Boolean(
+        related="folio_id.ses_all_guests_minors",
+    )
+    ses_unaccompanied_minors = fields.Boolean(
+        related="folio_id.ses_unaccompanied_minors",
+        readonly=False,
+    )
+    ses_minors_authorization = fields.Binary(
+        related="folio_id.ses_minors_authorization",
+        readonly=False,
+    )
+    ses_minors_authorization_filename = fields.Char(
+        related="folio_id.ses_minors_authorization_filename",
+        readonly=False,
+    )
 
     @api.depends("pms_property_id", "preferred_room_id")
     def _compute_is_ses(self):
