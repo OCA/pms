@@ -5653,6 +5653,13 @@ msgid "Format Departure Hour (HH:MM) Error: %s"
 msgstr "Format Abreiseuhrzeit (HH:MM) Fehler: %s"
 
 #. module: pms
+#. odoo-python
+#: code:addons/pms/models/pms_property.py:0
+#, python-format
+msgid "Format Hour (HH:MM) Error: %s"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__email_formatted
 #: model:ir.model.fields,help:pms.field_pms_room__email_formatted
 msgid "Format email address \"Name <email@domain>\""
