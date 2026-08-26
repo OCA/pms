@@ -348,3 +348,160 @@ class TestPmsReservationLines(TestPms):
             all(reservation.reservation_line_ids.room_id.mapped("active")),
             "All rooms auto-assigned to a reservation must be active",
         )
+
+    @freeze_time("2000-12-01")
+    def test_move_reservation_to_room_without_capacity(self):
+        """
+        Check that a reservation cannot be moved to a room that
+        cannot hold its occupancy.
+
+        The capacity was only checked on create and when the number of adults
+        changed, so moving the reservation to a smaller room (planning
+        drag&drop, room swap, ...) allowed to overload the room.
+        """
+        # ARRANGE
+        single_room = self.env["pms.room"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "name": "Single 105",
+                "room_type_id": self.room_type_double.id,
+                "capacity": 1,
+                "extra_beds_allowed": 0,
+            }
+        )
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=3),
+                "preferred_room_id": self.room1.id,
+                "adults": 2,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="A reservation of 2 adults should not fit in a room for 1",
+        ):
+            reservation.reservation_line_ids.write({"room_id": single_room.id})
+
+    @freeze_time("2000-12-01")
+    def test_change_preferred_room_without_capacity(self):
+        """
+        Check that the capacity is also checked when the room is changed
+        through the preferred room of the reservation, whose recompute of
+        the room of the lines does not go through pms.reservation.line.write.
+        """
+        # ARRANGE
+        single_room = self.env["pms.room"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "name": "Single 106",
+                "room_type_id": self.room_type_double.id,
+                "capacity": 1,
+                "extra_beds_allowed": 0,
+            }
+        )
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=3),
+                "preferred_room_id": self.room1.id,
+                "adults": 2,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="A reservation of 2 adults should not fit in a room for 1",
+        ):
+            reservation.write({"preferred_room_id": single_room.id})
+
+    @freeze_time("2000-12-01")
+    def test_move_reservation_to_room_with_extra_beds(self):
+        """
+        Check that a reservation can be moved to a room whose capacity is
+        only enough with its allowed extra beds.
+
+        The extra bed services are not always created yet when the room
+        changes, so the allowed extra beds of the room are taken into account
+        to avoid blocking legitimate room changes.
+        """
+        # ARRANGE
+        extra_bed_room = self.env["pms.room"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "name": "Single 107",
+                "room_type_id": self.room_type_double.id,
+                "capacity": 1,
+                "extra_beds_allowed": 1,
+            }
+        )
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=3),
+                "preferred_room_id": self.room1.id,
+                "adults": 2,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+
+        # ACT
+        reservation.reservation_line_ids.write({"room_id": extra_bed_room.id})
+
+        # ASSERT
+        self.assertEqual(
+            reservation.reservation_line_ids.room_id,
+            extra_bed_room,
+            "The reservation should fit in a room with an allowed extra bed",
+        )
+
+    @freeze_time("2000-12-01")
+    def test_move_reservation_avoiding_capacity_check(self):
+        """
+        Check that the capacity check on room changes can be skipped
+        through the context, to allow massive or automated changes.
+        """
+        # ARRANGE
+        single_room = self.env["pms.room"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "name": "Single 108",
+                "room_type_id": self.room_type_double.id,
+                "capacity": 1,
+                "extra_beds_allowed": 0,
+            }
+        )
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=3),
+                "preferred_room_id": self.room1.id,
+                "adults": 2,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+
+        # ACT
+        reservation.reservation_line_ids.with_context(avoid_capacity_check=True).write(
+            {"room_id": single_room.id}
+        )
+
+        # ASSERT
+        self.assertEqual(
+            reservation.reservation_line_ids.room_id,
+            single_room,
+            "The capacity check should be skipped with avoid_capacity_check",
+        )
