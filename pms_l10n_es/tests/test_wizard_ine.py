@@ -1348,6 +1348,110 @@ class TestWizardINE(TestPms):
         ):
             wizard._ine_check_xml_content(survey_tag)
 
+    def test_extra_beds_from_guests_over_room_capacity(self):
+        """A guest beyond the places of the room sleeps in an extra bed.
+
+        Most establishments never sell an extra bed as a service, so the
+        only trace of a cot is the guest registered in a room that does not
+        have a fixed bed for them.
+        """
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.date(2021, 2, 10),
+                "checkout": datetime.date(2021, 2, 11),
+                "preferred_room_id": self.room_double_3.id,
+                "partner_id": self.partner_1.id,
+                "adults": 2,
+                # a child that does not take a place of the room: the
+                # commercial reading of a cot, and what the establishments
+                # of the fleet record for a baby
+                "children": 1,
+                "children_occupying": 0,
+                "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
+            }
+        )
+        for partner in (self.partner_1, self.partner_2, self.partner_3):
+            checkin = self.env["pms.checkin.partner"].create(
+                {
+                    "partner_id": partner.id,
+                    "reservation_id": reservation.id,
+                    "street": "Test street 1",
+                    "city": "Test city",
+                    "zip": "08001",
+                }
+            )
+            with freeze_time("2021-02-10"):
+                checkin.action_on_board()
+        # ACT
+        extra_beds = self.env["pms.ine.wizard"]._ine_get_extra_beds(
+            self.pms_property1, datetime.date(2021, 2, 10)
+        )
+        # ASSERT: three guests in a room offering two places
+        self.assertEqual(extra_beds, 1)
+
+    def test_extra_beds_keep_the_sold_services(self):
+        """Selling the extra bed is still a valid way of reporting it."""
+        # ARRANGE: reservation 4 carries an extra bed service
+        self.ideal_scenario()
+        # ACT
+        extra_beds = self.env["pms.ine.wizard"]._ine_get_extra_beds(
+            self.pms_property1, datetime.date(2021, 2, 2)
+        )
+        # ASSERT
+        self.assertEqual(extra_beds, 1)
+
+    def test_generate_xml_reports_the_extra_beds(self):
+        """The file carries the extra beds and stays within the seats.
+
+        Overnight stays over the declared seats are rejected by the INE
+        (XML_12), and that is what happens when the guest is counted but
+        the bed they sleep in is not.
+        """
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        self.pms_property1.ine_seats = 10
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.date(2021, 2, 10),
+                "checkout": datetime.date(2021, 2, 11),
+                "preferred_room_id": self.room_double_3.id,
+                "partner_id": self.partner_1.id,
+                "adults": 2,
+                # a child that does not take a place of the room: the
+                # commercial reading of a cot, and what the establishments
+                # of the fleet record for a baby
+                "children": 1,
+                "children_occupying": 0,
+                "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
+            }
+        )
+        for partner in (self.partner_1, self.partner_2, self.partner_3):
+            checkin = self.env["pms.checkin.partner"].create(
+                {
+                    "partner_id": partner.id,
+                    "reservation_id": reservation.id,
+                    "street": "Test street 1",
+                    "city": "Test city",
+                    "zip": "08001",
+                }
+            )
+            with freeze_time("2021-02-10"):
+                checkin.action_on_board()
+        # ACT
+        document = self._generate_ine_document()
+        # ASSERT
+        movement_tag = document.find(
+            "HABITACIONES/HABITACIONES_MOVIMIENTO[HABITACIONES_N_DIA='10']"
+        )
+        self.assertEqual(movement_tag.findtext("PLAZAS_SUPLETORIAS"), "1")
+        self._assert_valid_against_schema(document, "ine_hotel_survey_published.xsd")
+
     def test_generate_xml_requires_guest_movements(self):
         """A period without guest movements cannot produce a valid file."""
         # ARRANGE

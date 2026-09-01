@@ -67,6 +67,13 @@ class WizardIne(models.TransientModel):
     adr = fields.Float(string="Range ADR")
     revpar = fields.Float(string="Range RevPAR")
 
+    ine_notes = fields.Text(
+        string="INE Notes",
+        readonly=True,
+        help="What the generated file is worth a second look for, such as "
+        "the nights reported with an extra bed.",
+    )
+
     ine_order_number = fields.Char(
         string="INE Order Number",
         compute="_compute_ine_order_number",
@@ -91,6 +98,63 @@ class WizardIne(models.TransientModel):
     @api.model
     def _ine_get_extra_beds(self, pms_property_id, date):
         """Extra beds occupied on a given date (INE criteria).
+
+        The INE counts as an extra bed every bed without a fixed character
+        that is not among the places the establishment has declared, cots
+        included (survey methodology, 5.10). Two sources are combined and
+        the larger one wins: the extra beds sold as a service, and the
+        guests registered in a room beyond the places it offers, who sleep
+        in an extra bed whether or not anybody recorded the service.
+
+        The second source is what makes the file survive: most
+        establishments have no extra bed product at all, so on its own the
+        first one reports no extra beds and the INE rejects the file as
+        soon as the guests of a night exceed the declared seats.
+        """
+        return max(
+            self._ine_get_sold_extra_beds(pms_property_id, date),
+            self._ine_get_unseated_guests(pms_property_id, date),
+        )
+
+    @api.model
+    def _ine_get_unseated_guests(self, pms_property_id, date):
+        """Guests registered beyond the places their rooms offer.
+
+        The declared seats are the fixed beds, so anybody sleeping in the
+        establishment who is not covered by one of them is occupying an
+        extra bed. Counting them per reservation keeps a room short of
+        guests from hiding another one over its capacity.
+        """
+        unseated = 0
+        reservation_lines = self.env["pms.reservation.line"].search(
+            [
+                ("pms_property_id", "=", pms_property_id.id),
+                ("date", "=", date),
+                ("occupies_availability", "=", True),
+                ("room_id.in_ine", "=", True),
+                ("reservation_id.reservation_type", "=", "normal"),
+                ("reservation_id.state", "in", ["confirmed", "onboard", "done"]),
+            ]
+        )
+        for reservation in reservation_lines.mapped("reservation_id"):
+            seats = sum(
+                reservation_lines.filtered(
+                    lambda line, reservation=reservation: line.reservation_id
+                    == reservation
+                ).mapped("room_id.capacity")
+            )
+            guests = len(
+                reservation.checkin_partner_ids.filtered(
+                    lambda checkin: checkin.state
+                    not in ["dummy", "draft", "cancel", "precheckin"]
+                )
+            )
+            unseated += max(0, guests - seats)
+        return unseated
+
+    @api.model
+    def _ine_get_sold_extra_beds(self, pms_property_id, date):
+        """Extra beds sold as a service on a given date.
 
         Children occupying an extra bed are excluded because they have no
         check-in partner data.
@@ -726,6 +790,34 @@ class WizardIne(models.TransientModel):
                 )
         return problems
 
+    def _ine_extra_bed_notes(self, survey_tag):
+        """List the nights reported with an extra bed.
+
+        Reporting them is what keeps the file valid, but a room whose
+        capacity is set too low would report an extra bed every single
+        night, so they are listed instead of passing unnoticed.
+        """
+        if survey_tag.tag == "ENCUESTA":
+            movement_tags = survey_tag.findall("HABITACIONES/HABITACIONES_MOVIMIENTO")
+            day_tag = "HABITACIONES_N_DIA"
+        else:
+            movement_tags = survey_tag.findall("OCUPACION/MOVIMIENTO")
+            day_tag = "N_DIA_AP"
+        days = [
+            movement_tag.findtext(day_tag)
+            for movement_tag in movement_tags
+            if int(movement_tag.findtext("PLAZAS_SUPLETORIAS") or 0)
+        ]
+        if not days:
+            return False
+        return _(
+            "Extra beds reported on %(count)s nights (days %(days)s), for "
+            "guests registered beyond the places their room offers. Review "
+            "the capacity of those rooms if you did not expect it.",
+            count=len(days),
+            days=", ".join(days),
+        )
+
     def _ine_check_xml_content(self, survey_tag):
         """Run the INE content validations before handing over the file.
 
@@ -783,6 +875,7 @@ class WizardIne(models.TransientModel):
             survey_tag = self._ine_build_xml_hotel()
 
         self._ine_check_xml_content(survey_tag)
+        self.ine_notes = self._ine_extra_bed_notes(survey_tag)
 
         xmlstr = '<?xml version="1.0" encoding="UTF-8"?>'
         xmlstr += ET.tostring(survey_tag).decode("utf-8")

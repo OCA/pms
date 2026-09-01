@@ -56,6 +56,19 @@
                 </div>
 
                 <div class="row">
+                    <div class="col-12">
+                        <group>
+                            <field
+                                name="ine_notes"
+                                nolabel="1"
+                                readonly="1"
+                                attrs="{'invisible': [('ine_notes','=', False)]}"
+                            />
+                        </group>
+                    </div>
+                </div>
+
+                <div class="row">
                     <div class="col-6">
                         <button
                             name="ine_generate_xml"
