@@ -1452,6 +1452,36 @@ class TestWizardINE(TestPms):
         self.assertEqual(movement_tag.findtext("PLAZAS_SUPLETORIAS"), "1")
         self._assert_valid_against_schema(document, "ine_hotel_survey_published.xsd")
 
+    def test_country_code_falls_back_to_the_alpha_3(self):
+        """Every country the INE lists is reached through its alpha-3."""
+        # ACT & ASSERT
+        self.assertEqual(
+            self.env["pms.ine.wizard"]._ine_get_country_code(self.country_italy),
+            "ITA",
+        )
+
+    def test_country_code_of_the_ine_wins_over_the_alpha_3(self):
+        """Kosovo has no alpha-3 in ISO, and the INE codes it as KOS."""
+        # ARRANGE
+        kosovo = self.env.ref("base.xk")
+        # ACT & ASSERT
+        self.assertFalse(kosovo.code_alpha3)
+        self.assertEqual(
+            self.env["pms.ine.wizard"]._ine_get_country_code(kosovo), "KOS"
+        )
+
+    def test_country_without_code_is_reported(self):
+        """A country with no code would empty ID_PAIS and fail the schema."""
+        # ARRANGE
+        country = self.env["res.country"].create(
+            {"name": "Country without codes", "code": "ZZ"}
+        )
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError, msg="A country with no INE code must be reported"
+        ):
+            self.env["pms.ine.wizard"]._ine_get_country_code(country)
+
     def test_generate_xml_requires_guest_movements(self):
         """A period without guest movements cannot produce a valid file."""
         # ARRANGE

@@ -1362,6 +1362,31 @@ class WizardIne(models.TransientModel):
 
         return survey_tag
 
+    @api.model
+    def _ine_get_country_code(self, country):
+        """Code of the country of residence, as the INE expects it.
+
+        The INE keeps its own country list, which follows ISO 3166-1
+        alpha-3 except where ISO has no code: Kosovo is KOS for them and
+        has no alpha-3 at all in Odoo. Those exceptions live in
+        res.country.ine_country_code.
+
+        A country with no code of its own would silently produce an empty
+        ID_PAIS and a file rejected by the schema, with nothing pointing at
+        the guest who caused it, so it is reported here instead.
+        """
+        code = country.ine_get_country_code()
+        if not code:
+            raise ValidationError(
+                _(
+                    "The country of residence '%(country)s' has no code for "
+                    "the INE survey. Set the INE country code on the "
+                    "country, using the list published by the INE.",
+                    country=country.name,
+                )
+            )
+        return code
+
     def _ine_append_guest_movements(self, accommodation_tag):
         """Fill the ALOJAMIENTO block (shared by all INE occupancy surveys).
 
@@ -1375,7 +1400,9 @@ class WizardIne(models.TransientModel):
             if key_country != CODE_SPAIN:
                 country = self.env["res.country"].search([("code", "=", key_country)])
                 residency_tag = ET.SubElement(accommodation_tag, "RESIDENCIA")
-                ET.SubElement(residency_tag, "ID_PAIS").text = country.code_alpha3
+                ET.SubElement(
+                    residency_tag, "ID_PAIS"
+                ).text = self._ine_get_country_code(country)
                 for key_date, value_dates in value_country.items():
                     movement = ET.SubElement(residency_tag, "MOVIMIENTO")
                     ET.SubElement(movement, "N_DIA").text = f"{key_date.day:02}"
