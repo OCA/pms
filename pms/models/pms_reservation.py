@@ -940,7 +940,6 @@ class PmsReservation(models.Model):
             else:
                 if not reservation.reservation_line_ids:
                     reservation.reservation_line_ids = False
-            reservation.check_in_out_dates()
 
     @api.depends("board_service_room_id", "adults", "children")
     def _compute_board_service_ids(self):
@@ -1199,7 +1198,6 @@ class PmsReservation(models.Model):
                     record.checkin = record.folio_id.reservation_ids[0].checkin
                 else:
                     record.checkin = fields.date.today()
-            record.check_in_out_dates()
 
     @api.depends("reservation_line_ids", "checkin")
     def _compute_checkout(self):
@@ -1218,13 +1216,11 @@ class PmsReservation(models.Model):
             # default checkout if checkin is set
             elif record.checkin and not record.checkout:
                 if len(record.folio_id.reservation_ids) > 1:
-                    record.checkin = record.folio_id.reservation_ids[0].checkout
+                    record.checkout = record.folio_id.reservation_ids[0].checkout
                 else:
                     record.checkout = record.checkin + datetime.timedelta(days=1)
             elif not record.checkout:
                 record.checkout = False
-            # date checking
-            record.check_in_out_dates()
 
     # pylint: disable=W8110
     def _compute_precheckin_url(self):
@@ -1767,6 +1763,7 @@ class PmsReservation(models.Model):
             sale_channel_origin_id = folio.sale_channel_origin_id
         return sale_channel_origin_id
 
+    @api.constrains("checkin", "checkout")
     def check_in_out_dates(self):
         """
         1.-When date_order is less then checkin date or
@@ -1797,6 +1794,10 @@ class PmsReservation(models.Model):
         of the set of ordinal dates is one more than the length of the set
         """
         for record in self:
+            if not record.reservation_line_ids:
+                # an inconsistent checkin/checkout pair builds no lines at all;
+                # check_in_out_dates is the one reporting it
+                continue
             if min(record.reservation_line_ids.mapped("date")) != record.checkin:
                 raise UserError(
                     _(

@@ -232,6 +232,90 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
         )
 
     @freeze_time("2012-01-14")
+    def test_reservation_default_dates_from_folio(self):
+        """
+        Check the dates defaulted to a reservation added to a folio that
+        already holds one.
+        ----------------
+        A reservation created with neither dates nor reservation lines takes
+        them from the first reservation of its folio, so both stays run in
+        parallel. The checkout was being written on the checkin field, leaving
+        the new reservation without a checkout of its own.
+        """
+        # ARRANGE
+        checkin = fields.date.today() + datetime.timedelta(days=8)
+        checkout = checkin + datetime.timedelta(days=2)
+        folio = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+        self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "folio_id": folio.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "folio_id": folio.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+
+        # ASSERT
+        self.assertEqual(
+            reservation.checkin,
+            checkin,
+            "The reservation should start the day the folio does",
+        )
+        self.assertEqual(
+            reservation.checkout,
+            checkout,
+            "The reservation should end the day the folio does",
+        )
+
+    @freeze_time("2012-01-14")
+    def test_reservation_checkout_before_checkin(self):
+        """
+        Check that a reservation cannot end before it starts.
+        ----------------
+        The dates are validated by a constraint, so the pair is checked once
+        both of them have been computed.
+        """
+        # ARRANGE
+        checkin = fields.date.today() + datetime.timedelta(days=8)
+
+        # ACT & ASSERT
+        with self.assertRaises(
+            UserError,
+            msg="Error, it has been allowed to create a reservation ending "
+            "before it starts",
+        ):
+            self.env["pms.reservation"].create(
+                {
+                    "checkin": checkin,
+                    "checkout": checkin - datetime.timedelta(days=1),
+                    "room_type_id": self.room_type_double.id,
+                    "partner_id": self.partner1.id,
+                    "pms_property_id": self.pms_property1.id,
+                    "sale_channel_origin_id": self.sale_channel_direct.id,
+                }
+            )
+
+    @freeze_time("2012-01-14")
     def test_create_reservation_start_date(self):
         """
         Check that the reservation checkin and the first reservation date are equal.
