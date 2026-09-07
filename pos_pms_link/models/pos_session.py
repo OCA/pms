@@ -140,12 +140,11 @@ class PosSession(models.Model):
         return result
 
     def _loader_params_pms_reservation(self):
+        today = fields.Date.context_today(self)
         domain = [
-            "|",
-            ("state", "=", "onboard"),
-            "&",
-            ("checkout", "=", fields.Datetime.now().date()),
             ("state", "!=", "cancel"),
+            ("checkin", "<=", today),
+            ("checkout", ">=", today),
         ]
         if self.config_id and self.config_id.reservation_allowed_propertie_ids:
             domain.append(
