@@ -31,7 +31,7 @@ addon | version | maintainers | summary
 [pms_l10n_es_tbai](pms_l10n_es_tbai/) | 16.0.1.1.0 |  | PMS TicketBAI Integration
 [pms_partner_identification](pms_partner_identification/) | 16.0.2.3.0 |  | Add identification models in pms
 [pms_partner_second_lastname](pms_partner_second_lastname/) | 16.0.2.2.0 |  | Add lastname2 in pms models
-[pos_pms_link](pos_pms_link/) | 16.0.1.0.0 |  | Allows to use PMS reservations on the POS interface
+[pos_pms_link](pos_pms_link/) | 16.0.1.1.0 |  | Allows to use PMS reservations on the POS interface
 
 [//]: # (end addons)
 
