@@ -672,7 +672,39 @@ class PmsReservationLine(models.Model):
         ):
             raise ValidationError(_("Blocked reservations can't be modified"))
         res = super().write(vals)
+        if vals.get("room_id"):
+            self._check_room_capacity()
         return res
+
+    def _check_room_capacity(self):
+        """Check that the room can hold the occupancy of the reservation.
+
+        pms.reservation only checks the capacity on create and when 'adults'
+        change, so changing the room (planning drag&drop, room swap or a new
+        preferred room) was not validated at all. We use the maximum capacity
+        of the room (capacity + allowed extra beds) instead of the extra beds
+        actually sold, to avoid false positives in intermediate states where
+        the extra bed service is not created yet.
+        """
+        if self.env.context.get("avoid_capacity_check"):
+            return
+        for record in self:
+            reservation = record.reservation_id
+            if not record.room_id or reservation.reservation_type == "out":
+                continue
+            occupancy = reservation.adults + reservation.children_occupying
+            max_capacity = record.room_id.capacity + record.room_id.extra_beds_allowed
+            if occupancy > max_capacity:
+                raise ValidationError(
+                    _(
+                        "The room %(room)s can't hold %(occupancy)s guests "
+                        "(maximum capacity: %(capacity)s) (%(reservation)s)",
+                        room=record.room_id.display_name,
+                        occupancy=occupancy,
+                        capacity=max_capacity,
+                        reservation=reservation.name,
+                    )
+                )
 
     # Constraints and onchanges
     @api.constrains("date")

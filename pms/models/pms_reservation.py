@@ -2219,6 +2219,11 @@ class PmsReservation(models.Model):
             # (p.e. flush) that not take access to possible extra beds service in vals
             if "adults" in vals:
                 record._check_capacity()
+            # The room of the lines is recomputed from the preferred room, so
+            # that write does not go through pms.reservation.line.write and the
+            # capacity of the new room would not be checked anywhere
+            if "preferred_room_id" in vals:
+                record.reservation_line_ids._check_room_capacity()
             if (
                 "checkin" in vals
                 or "checkout" in vals
