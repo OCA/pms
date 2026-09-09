@@ -10745,6 +10745,15 @@ msgstr ""
 
 #. module: pms
 #. odoo-python
+#: code:addons/pms/models/pms_reservation_line.py:0
+#, python-format
+msgid ""
+"The room %(room)s can't hold %(occupancy)s guests (maximum capacity: "
+"%(capacity)s) (%(reservation)s)"
+msgstr ""
+
+#. module: pms
+#. odoo-python
 #: code:addons/pms/wizards/wizard_split_join_swap_reservation.py:0
 #, python-format
 msgid "The room does not exist"
