@@ -1343,7 +1343,7 @@ class PmsFolio(models.Model):
                 self.payment_ids.filtered(lambda pay: len(pay.folio_ids) == 1)
                 .mapped("move_id.line_ids")
                 .filtered(
-                    lambda x: x.account_id.internal_type == "asset_receivable"
+                    lambda x: x.account_id.account_type == "asset_receivable"
                     and x.parent_state == "posted"
                 )
             )
