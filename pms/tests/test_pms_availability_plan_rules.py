@@ -152,107 +152,6 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
             "because there's no availability rules for them.",
         )
 
-    def test_plan_avail_update_to_one(self):
-        """
-        Check that the plan avail on a room is updated when the real avail is changed
-        --------------------------------------------------------------
-        Room type with 2 rooms, new reservation with this room type, the plan avail
-        must to be updated to 1. You must know that the pricelist2 is linked
-        with the plan test_room_type_availability1
-        """
-        # ARRANGE
-        checkin = fields.date.today()
-        checkout = (fields.datetime.today() + datetime.timedelta(days=4)).date()
-        room_type = self.test_room_type_double
-
-        self.test_room_type_availability_rule1 = self.env[
-            "pms.availability.plan.rule"
-        ].create(
-            {
-                "availability_plan_id": self.test_room_type_availability1.id,
-                "room_type_id": self.test_room_type_double.id,
-                "date": fields.datetime.today(),
-                "pms_property_id": self.pms_property3.id,
-            }
-        )
-        # ACT
-        self.env["pms.reservation"].create(
-            {
-                "pms_property_id": self.pms_property3.id,
-                "checkin": checkin,
-                "checkout": checkout,
-                "partner_id": self.partner1.id,
-                "room_type_id": room_type.id,
-                "sale_channel_origin_id": self.sale_channel_direct1.id,
-            }
-        )
-        result = self.test_room_type_availability_rule1.plan_avail
-
-        # ASSERT
-        self.assertEqual(
-            result,
-            1,
-            "There should be only one room in the result of the availability plan"
-            "because the real avail is 1 and the availability plan"
-            "is updated.",
-        )
-
-    def test_plan_avail_update_to_zero(self):
-        """
-        Check that the plan avail on a room is updated when the real avail is changed
-        with real avail 0
-        --------------------------------------------------------------
-        Room type with 2 rooms, two new reservations with this room type, the plan avail
-        must to be updated to 0. You must know that the pricelist2 is linked
-        with the plan test_room_type_availability1
-        """
-        # ARRANGE
-        checkin = fields.date.today()
-        checkout = (fields.datetime.today() + datetime.timedelta(days=4)).date()
-        room_type = self.test_room_type_double
-
-        self.test_room_type_availability_rule1 = self.env[
-            "pms.availability.plan.rule"
-        ].create(
-            {
-                "availability_plan_id": self.test_room_type_availability1.id,
-                "room_type_id": self.test_room_type_double.id,
-                "date": fields.datetime.today(),
-                "pms_property_id": self.pms_property3.id,
-            }
-        )
-        # ACT
-        self.env["pms.reservation"].create(
-            {
-                "pms_property_id": self.pms_property3.id,
-                "checkin": checkin,
-                "checkout": checkout,
-                "partner_id": self.partner1.id,
-                "room_type_id": room_type.id,
-                "sale_channel_origin_id": self.sale_channel_direct1.id,
-            }
-        )
-        self.env["pms.reservation"].create(
-            {
-                "pms_property_id": self.pms_property3.id,
-                "checkin": checkin,
-                "checkout": checkout,
-                "partner_id": self.partner1.id,
-                "room_type_id": room_type.id,
-                "sale_channel_origin_id": self.sale_channel_direct1.id,
-            }
-        )
-        result = self.test_room_type_availability_rule1.plan_avail
-
-        # ASSERT
-        self.assertEqual(
-            result,
-            0,
-            "There should be zero in the result of the availability plan"
-            "because the real avail is 0 and the availability plan"
-            "is updated.",
-        )
-
     def test_availability_rooms_all_lines(self):
         """
         Check the availability of rooms in a property with an availability plan without
@@ -388,8 +287,6 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
         4. max_stay = 2
         5. min_stay_arrival = 5
         6. max_stay_arrival = 3
-        7. quota = 0
-        8. max_avail = 0
         For each test case, it is verified through the free_room_ids compute field,
         that double rooms are not available since the rules are applied to this
         room type.
@@ -420,8 +317,6 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "max_stay": 0,
                 "min_stay_arrival": 0,
                 "max_stay_arrival": 0,
-                "quota": -1,
-                "max_avail": -1,
                 "date": checkin,
             },
             {
@@ -432,8 +327,6 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "max_stay": 0,
                 "min_stay_arrival": 0,
                 "max_stay_arrival": 0,
-                "quota": -1,
-                "max_avail": -1,
                 "date": checkout,
             },
             {
@@ -444,8 +337,6 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "max_stay": 0,
                 "min_stay_arrival": 0,
                 "max_stay_arrival": 0,
-                "quota": -1,
-                "max_avail": -1,
                 "date": checkin,
             },
             {
@@ -456,8 +347,6 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "max_stay": 2,
                 "min_stay_arrival": 0,
                 "max_stay_arrival": 0,
-                "quota": -1,
-                "max_avail": -1,
                 "date": checkin,
             },
             {
@@ -468,8 +357,6 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "max_stay": 0,
                 "min_stay_arrival": 5,
                 "max_stay_arrival": 0,
-                "quota": -1,
-                "max_avail": -1,
                 "date": checkin,
             },
             {
@@ -480,32 +367,6 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "max_stay": 0,
                 "min_stay_arrival": 0,
                 "max_stay_arrival": 3,
-                "quota": -1,
-                "max_avail": -1,
-                "date": checkin,
-            },
-            {
-                "closed": False,
-                "closed_arrival": False,
-                "closed_departure": False,
-                "min_stay": 0,
-                "max_stay": 0,
-                "min_stay_arrival": 0,
-                "max_stay_arrival": 0,
-                "quota": 0,
-                "max_avail": -1,
-                "date": checkin,
-            },
-            {
-                "closed": False,
-                "closed_arrival": False,
-                "closed_departure": False,
-                "min_stay": 0,
-                "max_stay": 0,
-                "min_stay_arrival": 0,
-                "max_stay_arrival": 0,
-                "quota": -1,
-                "max_avail": 0,
                 "date": checkin,
             },
         ]
@@ -514,6 +375,10 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
             with self.subTest(k=test_case):
                 # ACT
                 self.test_room_type_availability_rule1.write(test_case)
+                # free_room_ids is a non stored compute with depends_context and
+                # no field dependency, so writing the rule does not invalidate
+                # it and every case would read the value of the first one.
+                self.env.invalidate_all()
 
                 pms_property = self.pms_property3.with_context(
                     checkin=checkin,
@@ -575,70 +440,16 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 }
             )
 
-    def test_rule_update_quota_on_create_reservation(self):
+    def test_room_deactivation_updates_real_avail(self):
         """
-        Check that the availability rule with quota = 1 for a room
-        type does not allow you to create more reservations than 1
-        for that room type.
-        """
-
-        # ARRANGE
-
-        self.test_room_type_availability_rule1 = self.env[
-            "pms.availability.plan.rule"
-        ].create(
-            {
-                "availability_plan_id": self.test_room_type_availability1.id,
-                "room_type_id": self.test_room_type_double.id,
-                "date": datetime.date.today(),
-                "quota": 1,
-                "pms_property_id": self.pms_property3.id,
-            }
-        )
-        self.pricelist2.pms_property_ids = [
-            (4, self.pms_property1.id),
-            (4, self.pms_property2.id),
-            (4, self.pms_property3.id),
-        ]
-        r1 = self.env["pms.reservation"].create(
-            {
-                "pms_property_id": self.pms_property3.id,
-                "checkin": datetime.date.today(),
-                "checkout": datetime.date.today() + datetime.timedelta(days=1),
-                "adults": 2,
-                "room_type_id": self.test_room_type_double.id,
-                "pricelist_id": self.pricelist2.id,
-                "partner_id": self.partner1.id,
-                "sale_channel_origin_id": self.sale_channel_direct1.id,
-            }
-        )
-        r1.flush_recordset()
-        with self.assertRaises(
-            ValidationError,
-            msg="The quota shouldnt be enough to create a new reservation",
-        ):
-            self.env["pms.reservation"].create(
-                {
-                    "pms_property_id": self.pms_property3.id,
-                    "checkin": datetime.date.today(),
-                    "checkout": datetime.date.today() + datetime.timedelta(days=1),
-                    "adults": 2,
-                    "room_type_id": self.test_room_type_double.id,
-                    "pricelist_id": self.pricelist2.id,
-                    "partner_id": self.partner1.id,
-                }
-            )
-
-    def test_room_deactivation_updates_plan_avail(self):
-        """
-        Check that deactivating a room propagates to the plan rules.
+        Check that deactivating a room propagates to the availability.
         --------------------------------------------------------------
-        Room type with 2 rooms, one reservation and an availability rule
-        for the same date: plan_avail is 1. Deactivating the remaining
-        free room must leave the room type with a single (occupied)
-        active room, so both the rule's real_avail and plan_avail must
-        be recomputed to 0. plan_avail is the value channel exports
-        read, so a stale value here oversells on the OTAs.
+        Room type with 2 rooms and one reservation for the date: the
+        physical availability is 1. Deactivating the remaining free room
+        must leave the room type with a single (occupied) active room, so
+        real_avail has to be recomputed to 0. That is the value the
+        commercial inventory is intersected with, so a stale one oversells
+        on the OTAs.
         """
         # ARRANGE
         checkin = fields.date.today() + datetime.timedelta(days=1)
@@ -662,9 +473,9 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
             }
         )
         self.assertEqual(
-            rule.plan_avail,
+            rule.real_avail,
             1,
-            "One of the two rooms is occupied, plan_avail should be 1",
+            "One of the two rooms is occupied, real_avail should be 1",
         )
         free_room = (
             self.test_room1_double + self.test_room2_double
@@ -675,8 +486,8 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
 
         # ASSERT
         self.assertEqual(
-            rule.plan_avail,
+            rule.real_avail,
             0,
-            "The only active room of the room type is occupied, the"
-            "rule's plan_avail should have been recomputed to 0",
+            "The only active room of the room type is occupied, so"
+            " real_avail should have been recomputed to 0",
         )

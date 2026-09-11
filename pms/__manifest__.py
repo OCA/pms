@@ -4,7 +4,7 @@
 {
     "name": "PMS (Property Management System)",
     "summary": "A property management system",
-    "version": "16.0.4.20.0",
+    "version": "16.0.5.0.0",
     "development_status": "Beta",
     "category": "Generic Modules/Property Management System",
     "website": "https://github.com/OCA/pms",
@@ -74,6 +74,7 @@
         "views/pms_room_type_class_views.xml",
         "views/pms_availability_plan_views.xml",
         "views/pms_availability_plan_rule_views.xml",
+        "views/pms_inventory_rule_views.xml",
         "views/res_partner_views.xml",
         "views/product_pricelist_views.xml",
         "views/product_pricelist_item_views.xml",
@@ -87,6 +88,7 @@
         "views/traveller_report_template.xml",
         "wizards/wizard_split_join_swap_reservation.xml",
         "wizards/wizard_massive_changes.xml",
+        "wizards/wizard_massive_inventory_changes.xml",
         "wizards/wizard_advanced_filters.xml",
         "wizards/folio_payment_link_views.xml",
         "views/payment_transaction_views.xml",
@@ -118,6 +120,10 @@
     "assets": {
         "web.assets_frontend": [
             "pms/static/src/js/payment_form.js",
+        ],
+        "web.assets_backend": [
+            "pms/static/src/views/inventory_rule_list.esm.js",
+            "pms/static/src/views/inventory_rule_list.xml",
         ],
     },
     "pre_init_hook": "pre_init_hook",

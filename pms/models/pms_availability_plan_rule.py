@@ -60,18 +60,6 @@ class PmsAvailabilityPlanRule(models.Model):
     closed_arrival = fields.Boolean(
         default=False,
     )
-    quota = fields.Integer(
-        help="Generic Quota assigned.",
-        readonly=False,
-        store=True,
-        compute="_compute_quota",
-    )
-    max_avail = fields.Integer(
-        help="Maximum simultaneous availability on own Booking Engine",
-        readonly=False,
-        store=True,
-        compute="_compute_max_avail",
-    )
     pms_property_id = fields.Many2one(
         string="Property",
         help="Properties with access to the element",
@@ -94,10 +82,6 @@ class PmsAvailabilityPlanRule(models.Model):
     real_avail = fields.Integer(
         string="Real availability",
         related="avail_id.real_avail",
-        store="True",
-    )
-    plan_avail = fields.Integer(
-        compute="_compute_plan_avail",
         store="True",
     )
 
@@ -133,32 +117,6 @@ class PmsAvailabilityPlanRule(models.Model):
                     )
             else:
                 record.avail_id = False
-
-    @api.depends("quota", "max_avail", "real_avail")
-    def _compute_plan_avail(self):
-        for record in self:
-            real_avail = record.real_avail
-            plan_avail = min(
-                [
-                    record.max_avail if record.max_avail >= 0 else real_avail,
-                    record.quota if record.quota >= 0 else real_avail,
-                    real_avail,
-                ]
-            )
-            if not record.plan_avail or record.plan_avail != plan_avail:
-                record.plan_avail = plan_avail
-
-    @api.depends("room_type_id")
-    def _compute_quota(self):
-        for record in self:
-            if not record.quota:
-                record.quota = record.room_type_id.default_quota
-
-    @api.depends("room_type_id")
-    def _compute_max_avail(self):
-        for record in self:
-            if not record.max_avail:
-                record.max_avail = record.room_type_id.default_max_avail
 
     @api.constrains("min_stay", "min_stay_arrival", "max_stay", "max_stay_arrival")
     def _check_min_max_stay(self):

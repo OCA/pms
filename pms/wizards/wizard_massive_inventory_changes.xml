@@ -1,0 +1,103 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="pms_inventory_massive_changes_wizard" model="ir.ui.view">
+        <field name="name">pms.inventory.massive.changes.wizard.form</field>
+        <field name="model">pms.inventory.massive.changes.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Massive Inventory Changes">
+                <group>
+                    <group>
+                        <field
+                            name="pms_property_ids"
+                            widget="many2many_tags"
+                            options="{'no_create': True}"
+                        />
+                        <field
+                            name="room_type_ids"
+                            widget="many2many_tags"
+                            options="{'no_create': True}"
+                        />
+                    </group>
+                    <group>
+                        <field name="date_from" />
+                        <field name="date_to" />
+                    </group>
+                </group>
+                <group string="Days of the week">
+                    <field name="apply_on_all_week" />
+                    <div
+                        colspan="2"
+                        attrs="{'invisible': [('apply_on_all_week', '=', True)]}"
+                    >
+                        <field name="apply_on_monday" />
+                        <label for="apply_on_monday" />
+                        <field name="apply_on_tuesday" />
+                        <label for="apply_on_tuesday" />
+                        <field name="apply_on_wednesday" />
+                        <label for="apply_on_wednesday" />
+                        <field name="apply_on_thursday" />
+                        <label for="apply_on_thursday" />
+                        <field name="apply_on_friday" />
+                        <label for="apply_on_friday" />
+                        <field name="apply_on_saturday" />
+                        <label for="apply_on_saturday" />
+                        <field name="apply_on_sunday" />
+                        <label for="apply_on_sunday" />
+                    </div>
+                    <div colspan="2" class="text-muted">
+                        Consecutive days are grouped, so the weekends of a season
+                        become one rule per weekend, not one per day.
+                    </div>
+                </group>
+                <group string="Scope">
+                    <field name="level" />
+                    <field
+                        name="sale_channel_id"
+                        attrs="{'invisible': [('level', '!=', 'sale_channel')], 'required': [('level', '=', 'sale_channel')]}"
+                    />
+                    <field
+                        name="agency_id"
+                        options="{'no_create': True}"
+                        attrs="{'invisible': [('level', '!=', 'agency')], 'required': [('level', '=', 'agency')]}"
+                    />
+                </group>
+                <group string="Inventory">
+                    <group>
+                        <field name="apply_quota" widget="boolean_toggle" />
+                        <field
+                            name="quota"
+                            attrs="{'invisible': [('apply_quota', '=', False)], 'required': [('apply_quota', '=', True)]}"
+                        />
+                    </group>
+                    <group>
+                        <field name="apply_max_avail" widget="boolean_toggle" />
+                        <field
+                            name="max_avail"
+                            attrs="{'invisible': [('apply_max_avail', '=', False)], 'required': [('apply_max_avail', '=', True)]}"
+                        />
+                    </group>
+                    <div colspan="2" class="text-muted">
+                        Use <b>-1</b> for no limit and <b>0</b> to close the scope.
+                        The value you do not apply is written as the current default
+                        of the room type, so the rule stays neutral for it.
+                    </div>
+                </group>
+                <footer>
+                    <button
+                        name="apply_inventory_changes"
+                        string="Create rules"
+                        type="object"
+                        class="btn-primary"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_wizard_massive_inventory_changes" model="ir.actions.act_window">
+        <field name="name">Massive Inventory Changes</field>
+        <field name="res_model">pms.inventory.massive.changes.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

@@ -6,7 +6,15 @@
         <field name="arch" type="xml">
             <form string="Property Configuration">
                 <sheet>
-                    <div class="o_button_box" name="button_box" />
+                    <div class="o_button_box" name="button_box">
+                        <button
+                            name="action_open_inventory_rules"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-cubes"
+                            string="Inventory"
+                        />
+                    </div>
                     <label for="name" class="oe_edit_only" />
                     <h1>
                         <field name="name" class="oe_inline" />

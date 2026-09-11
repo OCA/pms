@@ -3,7 +3,7 @@
 
 import datetime
 
-from odoo import api, fields, models
+from odoo import fields, models
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
 
@@ -72,34 +72,8 @@ class PmsAvailabilityPlan(models.Model):
                 (item.closed and item.date != checkout),
                 (item.closed_arrival and checkin == item.date),
                 (item.closed_departure and checkout == item.date),
-                ((item.quota == 0 or item.max_avail == 0) and item.date != checkout),
             ]
         )
-
-    @api.model
-    def update_quota(
-        self,
-        pricelist_id,
-        room_type_id,
-        date,
-        pms_property_id,
-    ):
-        if pricelist_id and room_type_id and date:
-            rule = self.env["pms.availability.plan.rule"].search(
-                [
-                    ("availability_plan_id.pms_pricelist_ids", "in", pricelist_id),
-                    ("room_type_id", "=", room_type_id),
-                    ("date", "=", date),
-                    ("pms_property_id", "=", pms_property_id),
-                ]
-            )
-            # applies a rule
-            if rule:
-                rule.ensure_one()
-                if rule and rule.quota != -1 and rule.quota > 0:
-                    rule.quota -= 1
-                    return True
-        return False
 
     # Action methods
     def open_massive_changes_wizard(self):

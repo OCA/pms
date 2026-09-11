@@ -609,13 +609,6 @@ class PmsReservationLine(models.Model):
             # Set default channel
             if not line.sale_channel_id:
                 line.sale_channel_id = reservation.sale_channel_origin_id.id
-            # Update quota
-            self.env["pms.availability.plan"].update_quota(
-                pricelist_id=reservation.pricelist_id.id,
-                room_type_id=reservation.room_type_id.id,
-                date=line.date,
-                pms_property_id=reservation.pms_property_id.id,
-            )
         return records
 
     @api.depends("sale_channel_id", "reservation_id.agency_id")

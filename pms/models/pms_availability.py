@@ -165,12 +165,9 @@ class PmsAvailability(models.Model):
         )
         if avails:
             self.env.add_to_compute(self._fields["real_avail"], avails)
-            # ``add_to_compute`` marks ``real_avail`` itself but, unlike
-            # ``modified()``, does not expand the dependency closure:
-            # stored fields depending on it — the related
-            # ``pms.availability.plan.rule.real_avail`` and, through it,
-            # ``plan_avail`` (the value channel exports read) — would
-            # keep their stale values. Mark them explicitly.
+            # ``add_to_compute`` marks ``real_avail`` but, unlike
+            # ``modified()``, does not expand the closure: the stored fields
+            # depending on it would keep their stale values.
             avails.modified(["real_avail"])
 
     @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
@@ -232,6 +229,54 @@ class PmsAvailability(models.Model):
                                 },
                             )
                         ]
+
+    @api.model
+    def get_real_avail_map(
+        self, pms_property_id, date_from, date_to, room_type_ids=None
+    ):
+        """Physical availability of a property, night by night.
+
+        Rows of this model are only created on demand, from a rule or from a
+        reservation line, so most future dates simply have none. Those fall
+        back to the number of active rooms the room type has in the property,
+        which is the physical availability of an untouched night.
+
+        :return: ``{(room_type_id, date): real_avail}`` with an entry for
+            every requested (room type, night).
+        """
+        date_from = fields.Date.to_date(date_from)
+        date_to = fields.Date.to_date(date_to)
+        pms_property = self.env["pms.property"].browse(pms_property_id)
+        if room_type_ids:
+            room_types = self.env["pms.room.type"].browse(list(room_type_ids))
+        else:
+            room_types = pms_property.room_ids.mapped("room_type_id")
+        total_rooms = {
+            room_type.id: len(
+                room_type.room_ids.filtered(
+                    lambda room, prop=pms_property: room.pms_property_id == prop
+                )
+            )
+            for room_type in room_types
+        }
+        stored = {
+            (avail.room_type_id.id, avail.date): avail.real_avail
+            for avail in self.sudo().search(
+                [
+                    ("pms_property_id", "=", pms_property_id),
+                    ("date", ">=", date_from),
+                    ("date", "<=", date_to),
+                    ("room_type_id", "in", list(total_rooms)),
+                ]
+            )
+        }
+        avail_map = {}
+        for offset in range((date_to - date_from).days + 1):
+            date = date_from + datetime.timedelta(days=offset)
+            for room_type_id, rooms in total_rooms.items():
+                key = (room_type_id, date)
+                avail_map[key] = stored.get(key, rooms)
+        return avail_map
 
     @api.model
     def get_rooms_not_avail(

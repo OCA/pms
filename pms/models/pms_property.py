@@ -227,6 +227,9 @@ class PmsProperty(models.Model):
         """,
     )
 
+    # NOTE: ``sale_channel_id`` and ``agency_id`` are part of the key because
+    # the inventory is resolved per scope. Without them the cache would serve
+    # the value of the first scope of the transaction to every other one.
     @api.depends_context(
         "checkin",
         "checkout",
@@ -239,6 +242,8 @@ class PmsProperty(models.Model):
         "class_id",
         "overnight_rooms",
         "current_lines",
+        "sale_channel_id",
+        "agency_id",
     )
     def _compute_free_room_ids(self):
         checkin = self._context["checkin"]
@@ -261,40 +266,41 @@ class PmsProperty(models.Model):
         real_avail = self._context.get("real_avail", False)
         overnight_rooms = self._context.get("overnight_rooms", False)
         capacity = self._context.get("capacity", False)
+        sale_channel_id = self._context.get("sale_channel_id", False)
+        agency_id = self._context.get("agency_id", False)
         for pms_property in self:
             free_rooms = pms_property.get_real_free_rooms(
                 checkin, checkout, current_lines
             )
+            if not real_avail:
+                # The inventory does NOT depend on the rate, so unlike the
+                # restrictions below it applies even with no pricelist given.
+                # Only room types closed for the whole stay are dropped:
+                # ``free_room_ids`` is all-or-nothing, counting is for
+                # ``availability``.
+                closed_room_type_ids = pms_property._get_closed_room_type_ids(
+                    checkin,
+                    checkout,
+                    room_type_id=room_type_id,
+                    sale_channel_id=sale_channel_id,
+                    agency_id=agency_id,
+                )
+                if closed_room_type_ids:
+                    free_rooms = free_rooms.filtered(
+                        lambda x, closed=closed_room_type_ids: x.room_type_id.id
+                        not in closed
+                    )
             if pricelist_id and not real_avail:
-                # TODO: only closed_departure take account checkout date!
-                domain_rules = [
-                    ("date", ">=", checkin),
-                    ("date", "<=", checkout),
-                    ("pms_property_id", "=", pms_property.id),
-                ]
-                if room_type_id:
-                    domain_rules.append(("room_type_id", "=", room_type_id))
-
-                pricelist = self.env["product.pricelist"].browse(pricelist_id)
-                if pricelist.availability_plan_id:
-                    domain_rules.append(
-                        ("availability_plan_id", "=", pricelist.availability_plan_id.id)
+                # The sale restrictions do depend on the rate, so they are only
+                # applied when a pricelist is given.
+                restricted_ids = pms_property._get_restricted_room_type_ids(
+                    checkin, checkout, pricelist_id, room_type_id=room_type_id
+                )
+                if restricted_ids:
+                    free_rooms = free_rooms.filtered(
+                        lambda x, restricted=restricted_ids: x.room_type_id.id
+                        not in restricted
                     )
-                    rule_items = self.env["pms.availability.plan.rule"].search(
-                        domain_rules
-                    )
-
-                    if len(rule_items) > 0:
-                        room_types_to_remove = []
-                        for item in rule_items:
-                            if pricelist.availability_plan_id.any_rule_applies(
-                                checkin, checkout, item
-                            ):
-                                room_types_to_remove.append(item.room_type_id.id)
-                        free_rooms = free_rooms.filtered(
-                            lambda x, rttr=room_types_to_remove: x.room_type_id.id
-                            not in rttr
-                        )
             if class_id:
                 free_rooms = free_rooms.filtered(
                     lambda x: x.room_type_id.class_id.id == class_id
@@ -359,6 +365,67 @@ class PmsProperty(models.Model):
             )
         return self.env["pms.room"].with_context(active_test=True).search(domain_rooms)
 
+    def _get_restricted_room_type_ids(
+        self, checkin, checkout, pricelist_id, room_type_id=False
+    ):
+        """Room type ids the sale restrictions of a rate close for this stay.
+
+        The restrictions (min/max stay, closed, closed on arrival or
+        departure) are an all-or-nothing gate per room type: ``any_rule_applies``
+        already weighs each rule against the dates of the stay, so a room type
+        with a rule that applies cannot be sold for this stay at all.
+
+        The checkout date IS included in the search, because
+        ``closed_departure`` is expressed on it.
+        """
+        self.ensure_one()
+        if not pricelist_id:
+            return set()
+        plan = self.env["product.pricelist"].browse(pricelist_id).availability_plan_id
+        if not plan:
+            return set()
+        domain = [
+            ("date", ">=", checkin),
+            ("date", "<=", checkout),
+            ("pms_property_id", "=", self.id),
+            ("availability_plan_id", "=", plan.id),
+        ]
+        if room_type_id:
+            domain.append(("room_type_id", "=", room_type_id))
+        return {
+            item.room_type_id.id
+            for item in self.env["pms.availability.plan.rule"].search(domain)
+            if plan.any_rule_applies(checkin, checkout, item)
+        }
+
+    def _get_closed_room_type_ids(
+        self,
+        checkin,
+        checkout,
+        room_type_id=False,
+        sale_channel_id=False,
+        agency_id=False,
+    ):
+        """Room type ids the commercial inventory closes on any night sold.
+
+        The checkout night is excluded: nothing is sold on it.
+        """
+        self.ensure_one()
+        date_to = checkout - datetime.timedelta(days=1)
+        if date_to < checkin:
+            return set()
+        caps = self.env["pms.inventory.rule"].get_inventory_caps(
+            self.id,
+            checkin,
+            date_to,
+            room_type_ids=[room_type_id] if room_type_id else None,
+            sale_channel_id=sale_channel_id or None,
+            agency_id=agency_id or None,
+        )
+        return {key[0] for key, cap in caps.items() if cap == 0}
+
+    # NOTE: see the note on ``_compute_free_room_ids`` about why the scope of
+    # the commercial inventory belongs in this key.
     @api.depends_context(
         "checkin",
         "checkout",
@@ -371,6 +438,8 @@ class PmsProperty(models.Model):
         "class_id",
         "overnight_rooms",
         "current_lines",
+        "sale_channel_id",
+        "agency_id",
     )
     def _compute_availability(self):
         for record in self:
@@ -391,6 +460,8 @@ class PmsProperty(models.Model):
             real_avail = self._context.get("real_avail", False)
             overnight_rooms = self._context.get("overnight_rooms", False)
             capacity = self._context.get("capacity", False)
+            sale_channel_id = self._context.get("sale_channel_id", False)
+            agency_id = self._context.get("agency_id", False)
             pms_property = record.with_context(
                 checkin=checkin,
                 checkout=checkout,
@@ -401,105 +472,57 @@ class PmsProperty(models.Model):
                 real_avail=real_avail,
                 overnight_rooms=overnight_rooms,
                 capacity=capacity,
+                sale_channel_id=sale_channel_id,
+                agency_id=agency_id,
             )
             count_avail_rooms = len(pms_property.free_room_ids)
             if current_lines and not isinstance(current_lines, list):
                 current_lines = [current_lines]
 
-            domain_rules = [
-                ("date", ">=", checkin),
-                ("date", "<=", checkout),
-                ("pms_property_id", "=", pms_property.id),
-            ]
-            if room_type_id:
-                domain_rules.append(("room_type_id", "=", room_type_id))
-
-            room_types = (
-                [self.env["pms.room.type"].browse(room_type_id)]
-                if room_type_id
-                else record.room_ids.mapped("room_type_id")
-            )
-
-            pricelist = False
-            if pricelist_id:
-                pricelist = self.env["product.pricelist"].browse(pricelist_id)
-            if pricelist and pricelist.availability_plan_id and not real_avail:
-                # The availability between two dates is given in two steps:
-                # 1- the date with minimum availability is obtained for each room_type
-                # 2- the availabilities of the room_type with dispo > 0 are added
-                days = [
-                    checkin + datetime.timedelta(days=i)
-                    for i in range((checkout - checkin).days + 1)
-                ]
-                day_avail = {}
-                domain_rules.append(
-                    ("availability_plan_id", "=", pricelist.availability_plan_id.id)
+            if not real_avail:
+                # The availability of a stay is the availability of its worst
+                # night: for every night sold, add up what each room type can
+                # still sell, and keep the minimum across nights.
+                room_types = (
+                    self.env["pms.room.type"].browse(room_type_id)
+                    if room_type_id
+                    else record.room_ids.mapped("room_type_id")
                 )
-                rule_groups = (
-                    self.env["pms.availability.plan.rule"]
-                    .sudo()
-                    .with_context(lang="en_US")
-                    .read_group(
-                        domain_rules,
-                        ["plan_avail:sum"],
-                        ["date:day"],
-                        lazy=False,
+                restricted_ids = record._get_restricted_room_type_ids(
+                    checkin, checkout, pricelist_id, room_type_id=room_type_id
+                )
+                # The checkout night is not sold, so it is not counted.
+                last_night = checkout - datetime.timedelta(days=1)
+                if last_night >= checkin:
+                    caps = self.env["pms.inventory.rule"].get_inventory_caps(
+                        record.id,
+                        checkin,
+                        last_night,
+                        room_type_ids=room_types.ids,
+                        sale_channel_id=sale_channel_id or None,
+                        agency_id=agency_id or None,
                     )
-                )
-                grouped_rules = {}
-                for group in rule_groups:
-                    # Use ISO ``__range`` boundary: the ``date:day`` label is
-                    # locale-formatted and ``with_context(lang="en_US")`` is
-                    # ignored when ``en_US`` is not installed.
-                    date = fields.Date.from_string(group["__range"]["date:day"]["from"])
-                    for rt in room_types:
-                        group_avail = group["plan_avail"]
-                        items = self.env["pms.availability.plan.rule"].search(
-                            group["__domain"]
-                        )
-                        for item in items:
-                            if pricelist.availability_plan_id.any_rule_applies(
-                                checkin, checkout, item
-                            ):
-                                group_avail -= item.plan_avail
-                        grouped_rules[(date, rt.id)] = (
-                            grouped_rules.get((date, rt.id), 0) + group_avail
-                        )
-                # Avoid take account availability for checkout date
-                for day in days[:-1]:
-                    total_avail_day = 0
-                    for rt in room_types:
-                        key = (day, rt.id)
-                        if key in grouped_rules:
-                            total_avail_day += grouped_rules[key]
-                        else:
-                            # If not rule found for the any date/room_type
-                            # we need take account the default availability
-                            # of the room type
-                            # ATENTION: default avail not apply for checkout date
-                            default_avail = min(
-                                filter(
-                                    lambda x: x != -1,
-                                    [
-                                        rt.default_quota,
-                                        rt.default_max_avail,
-                                        len(
-                                            record.with_context(
-                                                checkin=day,
-                                                checkout=day + datetime.timedelta(1),
-                                                room_type_id=rt.id,
-                                                current_lines=current_lines,
-                                                pricelist_id=pricelist.id,
-                                                real_avail=True,
-                                            ).free_room_ids
-                                        ),
-                                    ],
-                                )
+                    real_avail_map = self.env["pms.availability"].get_real_avail_map(
+                        record.id,
+                        checkin,
+                        last_night,
+                        room_type_ids=room_types.ids,
+                    )
+                    day_avail = {}
+                    for offset in range((last_night - checkin).days + 1):
+                        day = checkin + datetime.timedelta(days=offset)
+                        total_avail_day = 0
+                        for room_type in room_types:
+                            if room_type.id in restricted_ids:
+                                continue
+                            physical = real_avail_map.get((room_type.id, day), 0)
+                            cap = caps.get((room_type.id, day))
+                            total_avail_day += (
+                                physical if cap is None else min(cap, physical)
                             )
-                            total_avail_day += default_avail
-                    day_avail[day] = total_avail_day
-                if day_avail:
-                    count_avail_rooms = min(day_avail.values())
+                        day_avail[day] = total_avail_day
+                    if day_avail:
+                        count_avail_rooms = min(day_avail.values())
             record.availability = count_avail_rooms
 
     @api.model
@@ -512,6 +535,8 @@ class PmsProperty(models.Model):
         current_lines=False,
         pricelist=False,
         real_avail=False,
+        sale_channel_id=False,
+        agency_id=False,
     ):
         if isinstance(checkin, str):
             checkin = datetime.datetime.strptime(
@@ -533,6 +558,8 @@ class PmsProperty(models.Model):
                 current_lines=current_lines,
                 pricelist_id=pricelist.id,
                 real_avail=real_avail,
+                sale_channel_id=sale_channel_id,
+                agency_id=agency_id,
             )
 
             if len(pms_property.free_room_ids) < 1:
@@ -630,6 +657,25 @@ class PmsProperty(models.Model):
             dt = dt.astimezone(pytz.utc)
             dt = dt.replace(tzinfo=None)
         return dt
+
+    def action_open_inventory_rules(self):
+        """Open the inventory rules of this property.
+
+        The rules are reached through an action instead of a One2many on the
+        property: this form is already heavy and a property can hold a lot of
+        rules, so embedding them would load all of them on every open.
+        """
+        self.ensure_one()
+        action = self.env["ir.actions.act_window"]._for_xml_id(
+            "pms.pms_inventory_rule_action"
+        )
+        action["domain"] = [("pms_property_id", "=", self.id)]
+        action["context"] = dict(
+            self.env.context,
+            search_default_future=1,
+            default_pms_property_id=self.id,
+        )
+        return action
 
     def _get_payment_methods(self, automatic_included=False, room_ids=False):
         # We use automatic_included to True to see absolutely
