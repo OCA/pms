@@ -175,6 +175,7 @@ class BookingEngine(models.TransientModel):
         "start_date",
         "end_date",
         "pricelist_id",
+        "agency_id",
     )
     def _compute_availability_results(self):
         for record in self:
@@ -199,6 +200,10 @@ class BookingEngine(models.TransientModel):
                         checkout=record.end_date,
                         room_type_id=room_type_iterator.id,
                         pricelist_id=record.pricelist_id.id,
+                        # ``channel_type_id`` is a pms.sale.channel despite the
+                        # name, and it is derived from the agency.
+                        sale_channel_id=record.channel_type_id.id,
+                        agency_id=record.agency_id.id,
                     )
                     rooms_available_qty = pms_property.availability
 
@@ -356,15 +361,18 @@ class AvailabilityWizard(models.TransientModel):
                     )
                 )
 
-    @api.depends("room_type_id", "checkin", "checkout")
+    @api.depends("room_type_id", "checkin", "checkout", "booking_engine_id.agency_id")
     def _compute_rooms_available_qty(self):
         for record in self:
-            pms_property = record.booking_engine_id.pms_property_id
+            booking_engine = record.booking_engine_id
+            pms_property = booking_engine.pms_property_id
             pms_property = pms_property.with_context(
                 checkin=record.checkin,
                 checkout=record.checkout,
                 room_type_id=record.room_type_id.id,
-                pricelist_id=record.booking_engine_id.pricelist_id.id,
+                pricelist_id=booking_engine.pricelist_id.id,
+                sale_channel_id=booking_engine.channel_type_id.id,
+                agency_id=booking_engine.agency_id.id,
             )
             record.rooms_available_qty = pms_property.availability
 

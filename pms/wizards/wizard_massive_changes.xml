@@ -308,47 +308,6 @@
                     </div>
                 </div>
                 <div class="row pt-4">
-                    <div class="col-4 pr-0">
-                        <div class="border h-100  pt-2 px-2 ">
-                            <div class="row">
-                                <div class="col-2">
-                                    <field name="apply_quota" widget="boolean_toggle" />
-                                </div>
-                                <div class="col-6">
-                                    <label for="quota" />
-                                </div>
-                                <div class="col-4">
-                                    <field
-                                            name="quota"
-                                            nolabel="1"
-                                            attrs="{'invisible':[('apply_quota','=',False)], 'required':[('apply_quota','=',True)]}"
-                                        />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-5 pr-0">
-                        <div class="border h-100  pt-2 px-2">
-                            <div class="row">
-                                <div class="col-2">
-                                    <field
-                                            name="apply_max_avail"
-                                            widget="boolean_toggle"
-                                        />
-                                </div>
-                                <div class="col-6">
-                                    <label for="max_avail" />
-                                </div>
-                                <div class="col-4">
-                                    <field
-                                            name="max_avail"
-                                            nolabel="1"
-                                            attrs="{'invisible':[('apply_max_avail','=',False)],'required':[('apply_max_avail','=',True)]}"
-                                        />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <div class="col-3">
                         <div class="border h-100 pt-2 px-2">
                             <div class="row">
@@ -411,14 +370,6 @@
                     <tree>
                         <field name="date" />
                         <field name="room_type_id" />
-                        <field
-                            name="quota"
-                            attrs="{'column_invisible':[('parent.apply_quota', '==', False)]}"
-                        />
-                        <field
-                            name="max_avail"
-                            attrs="{'column_invisible':[('parent.apply_max_avail', '==', False)]}"
-                        />
                         <field
                             name="min_stay"
                             attrs="{'column_invisible':[('parent.apply_min_stay', '==', False)]}"

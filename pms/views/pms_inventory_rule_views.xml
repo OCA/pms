@@ -1,0 +1,194 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="pms_inventory_rule_view_tree" model="ir.ui.view">
+        <field name="name">pms.inventory.rule.tree</field>
+        <field name="model">pms.inventory.rule</field>
+        <field name="arch" type="xml">
+            <tree
+                name="Inventory rules"
+                editable="bottom"
+                multi_edit="1"
+                js_class="pms_inventory_rule_list"
+                decoration-danger="quota == 0 or max_avail == 0"
+            >
+                <field name="pms_property_id" />
+                <field name="room_type_id" />
+                <field name="date_from" />
+                <field name="date_to" />
+                <field name="sale_channel_id" />
+                <field name="agency_id" options="{'no_create': True}" />
+                <field name="quota" />
+                <field name="max_avail" />
+                <field name="active" optional="hide" />
+            </tree>
+        </field>
+    </record>
+    <record id="pms_inventory_rule_view_form" model="ir.ui.view">
+        <field name="name">pms.inventory.rule.form</field>
+        <field name="model">pms.inventory.rule</field>
+        <field name="arch" type="xml">
+            <form string="Inventory Rule">
+                <sheet>
+                    <group>
+                        <group>
+                            <field
+                                name="pms_property_id"
+                                options="{'no_create': True,'no_open': True}"
+                            />
+                            <field name="room_type_id" />
+                        </group>
+                        <group>
+                            <field name="date_from" />
+                            <field name="date_to" />
+                            <field name="active" />
+                        </group>
+                    </group>
+                    <group string="Scope">
+                        <field
+                            name="sale_channel_id"
+                            attrs="{'invisible': [('agency_id', '!=', False)]}"
+                        />
+                        <field
+                            name="agency_id"
+                            options="{'no_create': True}"
+                            attrs="{'invisible': [('sale_channel_id', '!=', False)]}"
+                        />
+                        <div colspan="2" class="text-muted">
+                            Leave both empty for a general rule. A rule cannot be
+                            limited to a sale channel and to an agency at the same
+                            time. The effective limit is the lowest one across the
+                            scopes that apply.
+                        </div>
+                    </group>
+                    <group string="Inventory">
+                        <field name="quota" />
+                        <field name="max_avail" />
+                        <div colspan="2" class="text-muted">
+                            Use <b>-1</b> for no limit and <b>0</b> to close the
+                            scope. Values apply to each night of the range. With no
+                            rule at all, the room type defaults are used.
+                        </div>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="pms_inventory_rule_view_timeline" model="ir.ui.view">
+        <field name="name">pms.inventory.rule.timeline</field>
+        <field name="model">pms.inventory.rule</field>
+        <field name="arch" type="xml">
+            <!-- One row per room type and one bar per rule, which is how the
+                 overlap of a season and the periods written on top of it can
+                 be seen at all. ``colors`` only takes ONE comparison per
+                 entry, hence the two for the closures. -->
+            <timeline
+                string="Inventory"
+                date_start="date_from"
+                date_stop="date_to"
+                default_group_by="room_type_id"
+                stack="True"
+                mode="month"
+                event_open_popup="True"
+                colors="#e06666: quota == 0; #e06666: max_avail == 0"
+            >
+                <field name="pms_property_id" />
+                <field name="room_type_id" />
+                <field name="quota" />
+                <field name="max_avail" />
+                <field name="sale_channel_id" />
+                <field name="agency_id" />
+                <templates>
+                    <div t-name="timeline-item">
+                        <div>
+                            Q <t t-esc="record.quota" /> / M <t
+                                t-esc="record.max_avail"
+                            />
+                        </div>
+                    </div>
+                </templates>
+            </timeline>
+        </field>
+    </record>
+    <record id="pms_inventory_rule_view_search" model="ir.ui.view">
+        <field name="name">pms.inventory.rule.search</field>
+        <field name="model">pms.inventory.rule</field>
+        <field name="arch" type="xml">
+            <search string="Inventory Rules">
+                <field name="room_type_id" />
+                <field name="sale_channel_id" />
+                <field name="agency_id" />
+                <filter
+                    name="future"
+                    string="Current and future"
+                    domain="[('date_to', '&gt;=', context_today().strftime('%Y-%m-%d'))]"
+                />
+                <separator />
+                <filter
+                    name="scope_general"
+                    string="General"
+                    domain="[('sale_channel_id', '=', False), ('agency_id', '=', False)]"
+                />
+                <filter
+                    name="scope_sale_channel"
+                    string="By Sale Channel"
+                    domain="[('sale_channel_id', '!=', False)]"
+                />
+                <filter
+                    name="scope_agency"
+                    string="By Agency"
+                    domain="[('agency_id', '!=', False)]"
+                />
+                <separator />
+                <filter
+                    name="closed"
+                    string="Closed"
+                    domain="['|', ('quota', '=', 0), ('max_avail', '=', 0)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_by_pms_property_id"
+                        string="Property"
+                        context="{'group_by': 'pms_property_id'}"
+                    />
+                    <filter
+                        name="group_by_room_type_id"
+                        string="Room Type"
+                        context="{'group_by': 'room_type_id'}"
+                    />
+                    <filter
+                        name="group_by_sale_channel_id"
+                        string="Sale Channel"
+                        context="{'group_by': 'sale_channel_id'}"
+                    />
+                    <filter
+                        name="group_by_agency_id"
+                        string="Agency"
+                        context="{'group_by': 'agency_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="pms_inventory_rule_action" model="ir.actions.act_window">
+        <field name="name">Inventory</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pms.inventory.rule</field>
+        <field name="view_mode">tree,timeline,form</field>
+        <field name="context">{'search_default_future': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create an inventory rule</p>
+            <p>
+                Inventory rules limit how many rooms of a type the property puts on
+                sale, either in general, through a sale channel or through an
+                agency. They do not depend on the rate.
+            </p>
+        </field>
+    </record>
+    <menuitem
+        id="pms_inventory_rule_menu"
+        name="Inventory"
+        action="pms_inventory_rule_action"
+        parent="pms.revenue_management_menu"
+        sequence="10"
+    />
+</odoo>

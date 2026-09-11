@@ -136,15 +136,6 @@ class AvailabilityWizard(models.TransientModel):
     closed_arrival = fields.Boolean(
         default=False,
     )
-    quota = fields.Integer(
-        help="Generic Quota assigned.",
-        default=-1,
-    )
-    max_avail = fields.Integer(
-        string="Max. Availability",
-        help="Maximum simultaneous availability on own Booking Engine.",
-        default=-1,
-    )
     apply_on_monday = fields.Boolean(
         string="Apply Availability Rule on mondays",
         default=False,
@@ -194,16 +185,6 @@ class AvailabilityWizard(models.TransientModel):
 
     apply_max_stay_arrival = fields.Boolean(
         string="Apply changes to Max. Stay Arrival",
-        default=False,
-    )
-
-    apply_quota = fields.Boolean(
-        string="Apply changes to Quota",
-        default=False,
-    )
-
-    apply_max_avail = fields.Boolean(
-        string="Apply changes to Max. Avail.",
         default=False,
     )
 
@@ -407,8 +388,6 @@ class AvailabilityWizard(models.TransientModel):
         "apply_on_sunday",
         "apply_on_all_week",
         "availability_plan_ids",
-        "apply_quota",
-        "apply_max_avail",
         "apply_min_stay",
         "apply_min_stay_arrival",
         "apply_max_stay",
@@ -423,8 +402,6 @@ class AvailabilityWizard(models.TransientModel):
         "closed",
         "closed_arrival",
         "closed_departure",
-        "quota",
-        "max_avail",
     )
     def _compute_rules_to_overwrite(self):
         for record in self:
@@ -742,10 +719,6 @@ class AvailabilityWizard(models.TransientModel):
         apply_max_stay,
         max_stay_arrival,
         apply_max_stay_arrival,
-        quota,
-        apply_quota,
-        max_avail,
-        apply_max_avail,
         closed,
         apply_closed,
         closed_arrival,
@@ -773,8 +746,6 @@ class AvailabilityWizard(models.TransientModel):
                     if apply_max_stay_arrival
                     else {}
                 )
-                vals.update({"quota": quota} if apply_quota else {})
-                vals.update({"max_avail": max_avail} if apply_max_avail else {})
 
                 vals.update({"closed": closed} if apply_closed else {})
                 vals.update(
@@ -802,8 +773,6 @@ class AvailabilityWizard(models.TransientModel):
                             "availability_plan_id": avail_plan_id.id,
                             "date": date,
                             "room_type_id": room_type.id,
-                            "quota": quota,
-                            "max_avail": max_avail,
                             "min_stay": min_stay,
                             "min_stay_arrival": min_stay_arrival,
                             "max_stay": max_stay,
@@ -958,10 +927,6 @@ class AvailabilityWizard(models.TransientModel):
                         self.apply_max_stay,
                         self.max_stay_arrival,
                         self.apply_max_stay_arrival,
-                        self.quota,
-                        self.apply_quota,
-                        self.max_avail,
-                        self.apply_max_avail,
                         self.closed,
                         self.apply_closed,
                         self.closed_arrival,

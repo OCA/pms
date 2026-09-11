@@ -169,6 +169,15 @@
                 user.pms_property_ids.ids)]
             </field>
         </record>
+        <record id="pms_inventory_rule_property_rule" model="ir.rule">
+            <field name="name">PMS Inventory Rule Property Rule</field>
+            <field name="model_id" ref="model_pms_inventory_rule" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                ['|',('pms_property_id','=',False),('pms_property_id', 'in',
+                user.pms_property_ids.ids)]
+            </field>
+        </record>
         <record id="pms_service_property_rule" model="ir.rule">
             <field name="name">PMS Service Property Rule</field>
             <field name="model_id" ref="model_pms_service" />

@@ -581,15 +581,12 @@ class TestPmsBookingEngine(TestPms):
     def test_check_quota_avail(self):
         """
         Check that the availability for a room type in the booking engine
-        wizard is correct by creating an availability_plan_rule with quota.
+        wizard is correct by creating an inventory rule with quota.
         -----------------
-        An availability_plan_rule with quota = 1 is created for the double
-        room type. A booking engine wizard is created with the checkin same
-        date as the availability_plan_rule and with pricelist1, which also has
-        the availability_plan set that contains the availability_plan_rule
-        created before. Then the availability is searched for the type of
-        double room which must be 1 because the availavility_plan_rule quota
-        for that room is 1.
+        An inventory rule with quota = 1 is created for the double room type
+        on the checkin date. A booking engine wizard is created for that same
+        date, and the availability of the double room type must be 1, because
+        the quota of the inventory rule for that room type is 1.
         """
 
         # ARRANGE
@@ -597,18 +594,12 @@ class TestPmsBookingEngine(TestPms):
         # checkin & checkout
         checkin = fields.date.today()
         checkout = fields.date.today() + datetime.timedelta(days=1)
-        self.availability_plan1 = self.env["pms.availability.plan"].create(
-            {
-                "name": "Availability plan for TEST",
-                "pms_pricelist_ids": [(6, 0, [self.pricelist1.id])],
-            }
-        )
-        self.env["pms.availability.plan.rule"].create(
+        self.env["pms.inventory.rule"].create(
             {
                 "quota": 1,
                 "room_type_id": self.test_room_type_double.id,
-                "availability_plan_id": self.availability_plan1.id,
-                "date": fields.date.today(),
+                "date_from": checkin,
+                "date_to": checkin,
                 "pms_property_id": self.pms_property1.id,
             }
         )

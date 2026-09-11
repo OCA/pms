@@ -108,11 +108,32 @@ class PmsRoomType(models.Model):
                     checkout=self._context.get("checkout"),
                     room_type_id=room_type.id,
                     pricelist_id=self._context.get("pricelist_id") or False,
+                    sale_channel_id=self._context.get("sale_channel_id") or False,
+                    agency_id=self._context.get("agency_id") or False,
                 )
                 avail = pms_property.availability
                 name += " (%s)" % avail
             result.append((room_type.id, name))
         return result
+
+    def action_open_inventory_rules(self):
+        """Open the inventory rules of this room type.
+
+        Reached through an action and not a One2many, for the same reason as
+        in ``pms.property``: a room type can hold a lot of rules and they
+        would all load on every open of the form.
+        """
+        self.ensure_one()
+        action = self.env["ir.actions.act_window"]._for_xml_id(
+            "pms.pms_inventory_rule_action"
+        )
+        action["domain"] = [("room_type_id", "=", self.id)]
+        action["context"] = dict(
+            self.env.context,
+            search_default_future=1,
+            default_room_type_id=self.id,
+        )
+        return action
 
     @api.depends("room_ids", "room_ids.active")
     def _compute_total_rooms_count(self):

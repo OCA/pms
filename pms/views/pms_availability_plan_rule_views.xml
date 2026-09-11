@@ -19,10 +19,6 @@
                         <field name="max_stay_arrival" />
                     </group>
                     <group>
-                        <field name="quota" />
-                        <field name="max_avail" />
-                    </group>
-                    <group>
                         <field name="closed" />
                         <field name="closed_departure" />
                         <field name="closed_arrival" />
@@ -45,8 +41,6 @@
                 <field name="availability_plan_id" />
                 <field name="date" />
                 <field name="room_type_id" />
-                <field name="quota" />
-                <field name="max_avail" />
                 <field name="min_stay" />
                 <field name="max_stay" />
                 <field name="min_stay_arrival" />
