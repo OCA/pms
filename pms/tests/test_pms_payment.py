@@ -210,3 +210,98 @@ class TestPmsPayment(TestPms, AccountTestInvoicingCommon):
             wizard_form.payment_method_line_id,
             "Payment method line should be cleared when journal has no allowed lines",
         )
+
+    # =========================================================================
+    # reconcile: payment partner realignment
+    # =========================================================================
+
+    def _ensure_pms_payment_method(self):
+        """Return a payment method line usable by the PMS test property.
+
+        The PMS test company is created from scratch, so it cannot register
+        payments nor invoice folios until a chart is loaded on it.
+        """
+        company = self.pms_property1.company_id
+        if not company.chart_template_id:
+            chart_template = self.env.ref(
+                "l10n_generic_coa.configurable_chart_template",
+                raise_if_not_found=False,
+            ) or self.env["account.chart.template"].search([], limit=1)
+            chart_template.try_loading(company=company, install_demo=False)
+        journals = self.env["account.journal"].search(
+            [("type", "=", "bank"), ("company_id", "=", company.id)]
+        )
+        journals.inbound_payment_method_line_ids.allowed_on_pms = True
+        return self.pms_property1._get_payment_methods()[0]
+
+    def _pay_and_invoice(self, folio, payment_partner, invoice_partner):
+        """Pay a folio with one partner and invoice it to another one."""
+        method_line = self._ensure_pms_payment_method()
+        self.env["pms.folio"].do_payment(
+            payment_method_line=method_line,
+            user=self.env.user,
+            amount=folio.pending_amount,
+            folio=folio,
+            partner=payment_partner,
+        )
+        payment = self.env["account.payment"].search(
+            [("folio_ids", "in", folio.id)], limit=1
+        )
+        invoices = folio._create_invoices(partner_invoice_id=invoice_partner.id)
+        invoices.filtered(lambda move: move.state == "draft").action_post()
+        return payment, invoices
+
+    def _reconcile_receivable(self, payment, invoices):
+        lines = (payment.move_id.line_ids + invoices.line_ids).filtered(
+            lambda line: line.account_id.account_type == "asset_receivable"
+            and not line.reconciled
+        )
+        lines.reconcile()
+
+    def test_reconcile_sets_payment_partner_from_invoice(self):
+        """Reconciling propagates the invoice partner to the payment items."""
+        folio = self._create_folio_with_reservation()
+        anonymous = self.env["res.partner"].create({"name": "Anonymous Test"})
+        customer = self.env["res.partner"].create({"name": "Customer Test"})
+        folio.partner_id = customer
+        payment, invoices = self._pay_and_invoice(folio, anonymous, customer)
+        self._reconcile_receivable(payment, invoices)
+        self.assertEqual(
+            payment.partner_id,
+            customer,
+            "The payment partner should be taken from the reconciled invoice",
+        )
+        self.assertEqual(
+            payment.move_id.line_ids.partner_id,
+            customer,
+            "The journal items should follow the partner of the payment",
+        )
+
+    def test_reconcile_realigns_items_when_partner_already_set(self):
+        """Journal items are realigned even if the payment partner is right.
+
+        The partner of a payment can be corrected without rewriting its journal
+        items, and in that case reconciling used to leave them on the old
+        partner because there was nothing left to propagate.
+        """
+        folio = self._create_folio_with_reservation()
+        anonymous = self.env["res.partner"].create({"name": "Anonymous Test"})
+        customer = self.env["res.partner"].create({"name": "Customer Test"})
+        folio.partner_id = customer
+        payment, invoices = self._pay_and_invoice(folio, anonymous, customer)
+        # Reproduce a payment whose partner was corrected without the journal
+        # items being rewritten.
+        payment_no_sync = payment.with_context(skip_account_move_synchronization=True)
+        payment_no_sync.write({"partner_id": customer.id})
+        payment_no_sync.move_id.write({"partner_id": customer.id})
+        self.assertEqual(
+            payment.move_id.line_ids.partner_id,
+            anonymous,
+            "The journal items should still hold the old partner before reconciling",
+        )
+        self._reconcile_receivable(payment, invoices)
+        self.assertEqual(
+            payment.move_id.line_ids.partner_id,
+            customer,
+            "The journal items should be realigned with the payment partner",
+        )
