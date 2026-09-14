@@ -368,7 +368,8 @@
                     attrs="{'invisible':[('massive_changes_on','=','pricelist')]}"
                 >
                     <tree>
-                        <field name="date" />
+                        <field name="date_from" />
+                        <field name="date_to" />
                         <field name="room_type_id" />
                         <field
                             name="min_stay"

@@ -6,6 +6,8 @@ from odoo import _, api, fields, models, tools
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
+from . import date_ranges
+
 # Scope levels. Their order is not a precedence: the effective value is the
 # ``min`` across the levels that apply, never the most specific one.
 LEVEL_GENERAL = "general"
@@ -192,19 +194,7 @@ class PmsInventoryRule(models.Model):
         :param dates: an iterable of dates, in any order and with repeats.
         :return: a list of ``(date_from, date_to)`` tuples, both included.
         """
-        ranges = []
-        start = previous = None
-        for date in sorted(set(dates)):
-            if start is None:
-                start = previous = date
-            elif date == previous + datetime.timedelta(days=1):
-                previous = date
-            else:
-                ranges.append((start, previous))
-                start = previous = date
-        if start is not None:
-            ranges.append((start, previous))
-        return ranges
+        return date_ranges.collapse_dates(dates)
 
     # Resolution
 

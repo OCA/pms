@@ -253,7 +253,12 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
             {
                 "availability_plan_id": self.test_room_type_availability1.id,
                 "room_type_id": self.test_room_type_double.id,
-                "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
+                "date_from": (
+                    fields.datetime.today() + datetime.timedelta(days=2)
+                ).date(),
+                "date_to": (
+                    fields.datetime.today() + datetime.timedelta(days=2)
+                ).date(),
                 "closed": True,  # <- (1/2)
                 "pms_property_id": self.pms_property3.id,
             }
@@ -300,7 +305,8 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
             {
                 "availability_plan_id": self.test_room_type_availability1.id,
                 "room_type_id": self.test_room_type_double.id,
-                "date": fields.date.today(),
+                "date_from": fields.date.today(),
+                "date_to": fields.date.today(),
                 "pms_property_id": self.pms_property3.id,
             }
         )
@@ -317,7 +323,8 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "max_stay": 0,
                 "min_stay_arrival": 0,
                 "max_stay_arrival": 0,
-                "date": checkin,
+                "date_from": checkin,
+                "date_to": checkin,
             },
             {
                 "closed": False,
@@ -327,7 +334,8 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "max_stay": 0,
                 "min_stay_arrival": 0,
                 "max_stay_arrival": 0,
-                "date": checkout,
+                "date_from": checkout,
+                "date_to": checkout,
             },
             {
                 "closed": False,
@@ -337,7 +345,8 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "max_stay": 0,
                 "min_stay_arrival": 0,
                 "max_stay_arrival": 0,
-                "date": checkin,
+                "date_from": checkin,
+                "date_to": checkin,
             },
             {
                 "closed": False,
@@ -347,7 +356,8 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "max_stay": 2,
                 "min_stay_arrival": 0,
                 "max_stay_arrival": 0,
-                "date": checkin,
+                "date_from": checkin,
+                "date_to": checkin,
             },
             {
                 "closed": False,
@@ -357,7 +367,8 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "max_stay": 0,
                 "min_stay_arrival": 5,
                 "max_stay_arrival": 0,
-                "date": checkin,
+                "date_from": checkin,
+                "date_to": checkin,
             },
             {
                 "closed": False,
@@ -367,7 +378,8 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "max_stay": 0,
                 "min_stay_arrival": 0,
                 "max_stay_arrival": 3,
-                "date": checkin,
+                "date_from": checkin,
+                "date_to": checkin,
             },
         ]
 
@@ -414,7 +426,12 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
             {
                 "availability_plan_id": self.test_room_type_availability1.id,
                 "room_type_id": self.test_room_type_double.id,
-                "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
+                "date_from": (
+                    fields.datetime.today() + datetime.timedelta(days=2)
+                ).date(),
+                "date_to": (
+                    fields.datetime.today() + datetime.timedelta(days=2)
+                ).date(),
                 "closed": True,
                 "pms_property_id": self.pms_property3.id,
             }
@@ -454,14 +471,6 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
         # ARRANGE
         checkin = fields.date.today() + datetime.timedelta(days=1)
         checkout = checkin + datetime.timedelta(days=1)
-        rule = self.env["pms.availability.plan.rule"].create(
-            {
-                "availability_plan_id": self.test_room_type_availability1.id,
-                "room_type_id": self.test_room_type_double.id,
-                "date": checkin,
-                "pms_property_id": self.pms_property3.id,
-            }
-        )
         reservation = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.pms_property3.id,
@@ -472,8 +481,15 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
+        availability = self.env["pms.availability"].search(
+            [
+                ("pms_property_id", "=", self.pms_property3.id),
+                ("room_type_id", "=", self.test_room_type_double.id),
+                ("date", "=", checkin),
+            ]
+        )
         self.assertEqual(
-            rule.real_avail,
+            availability.real_avail,
             1,
             "One of the two rooms is occupied, real_avail should be 1",
         )
@@ -486,7 +502,7 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
 
         # ASSERT
         self.assertEqual(
-            rule.real_avail,
+            availability.real_avail,
             0,
             "The only active room of the room type is occupied, so"
             " real_avail should have been recomputed to 0",

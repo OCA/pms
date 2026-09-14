@@ -652,7 +652,8 @@ class TestPmsBookingEngine(TestPms):
                 "min_stay": 3,
                 "room_type_id": self.test_room_type_double.id,
                 "availability_plan_id": self.availability_plan1.id,
-                "date": fields.date.today(),
+                "date_from": fields.date.today(),
+                "date_to": fields.date.today(),
                 "pms_property_id": self.pms_property1.id,
             }
         )

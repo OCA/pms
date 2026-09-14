@@ -53,7 +53,13 @@ class PmsAvailabilityPlan(models.Model):
     )
 
     @classmethod
-    def any_rule_applies(cls, checkin, checkout, item):
+    def any_rule_applies(cls, checkin, checkout, rule, date):
+        """Whether a rule forbids a stay on one of its nights.
+
+        The night has to be given apart from the rule: a rule covers a range
+        now, and three of these clauses weigh the night against the arrival
+        and the departure of the stay.
+        """
         if isinstance(checkin, str):
             checkin = datetime.datetime.strptime(
                 checkin, DEFAULT_SERVER_DATE_FORMAT
@@ -65,13 +71,13 @@ class PmsAvailabilityPlan(models.Model):
         reservation_len = (checkout - checkin).days
         return any(
             [
-                (0 < item.max_stay < reservation_len and item.date != checkout),
-                (0 < item.min_stay > reservation_len and item.date != checkout),
-                (0 < item.max_stay_arrival < reservation_len and checkin == item.date),
-                (0 < item.min_stay_arrival > reservation_len and checkin == item.date),
-                (item.closed and item.date != checkout),
-                (item.closed_arrival and checkin == item.date),
-                (item.closed_departure and checkout == item.date),
+                (0 < rule.max_stay < reservation_len and date != checkout),
+                (0 < rule.min_stay > reservation_len and date != checkout),
+                (0 < rule.max_stay_arrival < reservation_len and checkin == date),
+                (0 < rule.min_stay_arrival > reservation_len and checkin == date),
+                (rule.closed and date != checkout),
+                (rule.closed_arrival and checkin == date),
+                (rule.closed_departure and checkout == date),
             ]
         )
 

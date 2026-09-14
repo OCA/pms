@@ -22,8 +22,8 @@ class TestPmsWizardMassiveChanges(TestPms):
 
     def test_num_availability_rules_create(self):
         """
-        Rules should be created consistently for 1,2,3,4 days
-        subtests: {1 day -> 1 rule, n days -> n rules}
+        A period should land as ONE rule covering it.
+        subtests: {1 day, 2 days, 3 days, 4 days}
         """
         # ARRANGE
         room_type_double = self.env["pms.room.type"].create(
@@ -36,31 +36,35 @@ class TestPmsWizardMassiveChanges(TestPms):
         )
         for days in [0, 1, 2, 3]:
             with self.subTest(k=days):
-                num_exp_rules_to_create = days + 1
+                date_to = fields.date.today() + datetime.timedelta(days=days)
                 # ACT
                 self.env["pms.massive.changes.wizard"].create(
                     {
                         "massive_changes_on": "availability_plan",
                         "availability_plan_ids": [(6, 0, [self.availability_plan1.id])],
                         "start_date": fields.date.today(),
-                        "end_date": fields.date.today() + datetime.timedelta(days=days),
+                        "end_date": date_to,
                         "room_type_ids": [(6, 0, [room_type_double.id])],
                         "pms_property_ids": [self.pms_property1.id],
                     }
                 ).apply_massive_changes()
                 # ASSERT
+                rules = self.availability_plan1.rule_ids.filtered(
+                    lambda rule, end=date_to: rule.date_from == fields.date.today()
+                    and rule.date_to == end
+                )
                 self.assertEqual(
-                    len(self.availability_plan1.rule_ids),
-                    num_exp_rules_to_create,
-                    "the number of rules created should contains all the "
-                    "days between start and finish (both included)",
+                    len(rules),
+                    1,
+                    "the period should land as a single rule covering it, "
+                    "not as one rule per night",
                 )
 
     def test_num_availability_rules_create_no_room_type(self):
         """
-        Rules should be created consistently for all rooms & days.
-        (days * num rooom types)
-        Create rules for 4 days and for all room types.
+        Rules should be created consistently for all room types.
+        Create rules over 4 days for all room types: one rule each, since a
+        record covers the whole period.
         """
         # ARRANGE
         date_from = fields.date.today()
@@ -73,7 +77,7 @@ class TestPmsWizardMassiveChanges(TestPms):
                 ("pms_property_ids", "in", self.pms_property1.id),
             ]
         )
-        num_exp_rules_to_create = ((date_to - date_from).days + 1) * num_room_types
+        num_exp_rules_to_create = num_room_types
 
         # ACT
         self.env["pms.massive.changes.wizard"].create(
@@ -90,8 +94,18 @@ class TestPmsWizardMassiveChanges(TestPms):
         self.assertEqual(
             len(self.availability_plan1.rule_ids),
             num_exp_rules_to_create,
-            "the number of rules created by the wizard should consider all "
-            "room types",
+            "the wizard should create one rule per room type, covering the "
+            "whole period",
+        )
+        self.assertEqual(
+            self.availability_plan1.rule_ids.mapped("date_from"),
+            [date_from] * num_room_types,
+            "every rule should start on the first day of the period",
+        )
+        self.assertEqual(
+            self.availability_plan1.rule_ids.mapped("date_to"),
+            [date_to] * num_room_types,
+            "every rule should end on the last day of the period",
         )
 
     def test_value_availability_rules_create(self):
@@ -183,6 +197,9 @@ class TestPmsWizardMassiveChanges(TestPms):
                 # ARRANGE
                 wizard.write(
                     {
+                        # Without this the week day selection is ignored and
+                        # the whole period applies.
+                        "apply_on_all_week": False,
                         "apply_on_monday": test_case[0],
                         "apply_on_tuesday": test_case[1],
                         "apply_on_wednesday": test_case[2],
@@ -194,14 +211,19 @@ class TestPmsWizardMassiveChanges(TestPms):
                 )
                 # ACT
                 wizard.apply_massive_changes()
-                availability_rules = self.availability_plan1.rule_ids.sorted(
-                    key=lambda s: s.date
-                )
                 # ASSERT
+                rules = self.availability_plan1.rule_ids.filtered(
+                    lambda rule, day=index: rule.date_from.timetuple()[6] == day
+                )
                 self.assertTrue(
-                    availability_rules[index].date.timetuple()[6] == index
-                    and test_case[index],
+                    rules,
                     "Rule not created on correct day of week.",
+                )
+                self.assertEqual(
+                    rules.mapped("date_from"),
+                    rules.mapped("date_to"),
+                    "A single week day gives ranges of one night, since the "
+                    "nights it selects are not consecutive.",
                 )
 
     def test_several_availability_plans(self):

@@ -2,6 +2,7 @@
 # Copyright 2018  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from . import date_ranges
 from . import ir_http
 from . import ir_config_parameter
 

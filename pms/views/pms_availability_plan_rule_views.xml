@@ -7,7 +7,8 @@
             <form string="Availability Plans">
                 <group>
                     <field name="room_type_id" required="True" />
-                    <field name="date" />
+                    <field name="date_from" />
+                    <field name="date_to" />
                 </group>
                 <group>
                     <group>
@@ -39,7 +40,8 @@
         <field name="arch" type="xml">
             <tree name="Availability rules">
                 <field name="availability_plan_id" />
-                <field name="date" />
+                <field name="date_from" />
+                <field name="date_to" />
                 <field name="room_type_id" />
                 <field name="min_stay" />
                 <field name="max_stay" />

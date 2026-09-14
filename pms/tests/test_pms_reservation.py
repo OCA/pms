@@ -1101,7 +1101,8 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
                 "pms_property_id": self.pms_property1.id,
                 "room_type_id": self.room_type_double.id,
                 "availability_plan_id": self.room_type_availability.id,
-                "date": fields.date.today() + datetime.timedelta(days=153),
+                "date_from": fields.date.today() + datetime.timedelta(days=153),
+                "date_to": fields.date.today() + datetime.timedelta(days=153),
             }
         )
         reservation = self.env["pms.reservation"].create(

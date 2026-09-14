@@ -384,18 +384,17 @@ class PmsProperty(models.Model):
         plan = self.env["product.pricelist"].browse(pricelist_id).availability_plan_id
         if not plan:
             return set()
-        domain = [
-            ("date", ">=", checkin),
-            ("date", "<=", checkout),
-            ("pms_property_id", "=", self.id),
-            ("availability_plan_id", "=", plan.id),
-        ]
-        if room_type_id:
-            domain.append(("room_type_id", "=", room_type_id))
+        winner = self.env["pms.availability.plan.rule"]._resolve_rules(
+            plan.id,
+            self.id,
+            checkin,
+            checkout,
+            room_type_ids=[room_type_id] if room_type_id else None,
+        )
         return {
-            item.room_type_id.id
-            for item in self.env["pms.availability.plan.rule"].search(domain)
-            if plan.any_rule_applies(checkin, checkout, item)
+            room_type
+            for (room_type, date), rule in winner.items()
+            if plan.any_rule_applies(checkin, checkout, rule, date)
         }
 
     def _get_closed_room_type_ids(
@@ -799,12 +798,16 @@ class PmsProperty(models.Model):
                 for availability_plan in self.env["pms.availability.plan"].browse(
                     availability_plan_ids
                 ):
+                    # A single night range on top of whatever covers today:
+                    # the resolver takes the rule written last, so the season
+                    # underneath does not have to be cut in two.
                     rule = self.env["pms.availability.plan.rule"].search(
                         [
                             ("pms_property_id", "=", pms_property.id),
                             ("room_type_id", "=", room_type.id),
                             ("availability_plan_id", "=", availability_plan.id),
-                            ("date", "=", fields.date.today()),
+                            ("date_from", "=", fields.date.today()),
+                            ("date_to", "=", fields.date.today()),
                         ]
                     )
                     if not rule:
@@ -813,7 +816,8 @@ class PmsProperty(models.Model):
                                 "pms_property_id": pms_property.id,
                                 "room_type_id": room_type.id,
                                 "availability_plan_id": availability_plan.id,
-                                "date": fields.date.today(),
+                                "date_from": fields.date.today(),
+                                "date_to": fields.date.today(),
                                 "closed": True,
                             }
                         )

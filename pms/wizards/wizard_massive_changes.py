@@ -2,6 +2,8 @@ import datetime
 
 from odoo import _, api, fields, models
 
+from ..models import date_ranges
+
 
 class AvailabilityWizard(models.TransientModel):
     _name = "pms.massive.changes.wizard"
@@ -352,14 +354,14 @@ class AvailabilityWizard(models.TransientModel):
         if self.room_type_ids:
             domain.append(("room_type_id", "in", self.room_type_ids.ids))
         if self.start_date:
-            domain.append(("date", ">=", self.start_date))
+            domain.append(("date_to", ">=", self.start_date))
         if self.end_date:
-            domain.append(("date", "<=", self.end_date))
+            domain.append(("date_from", "<=", self.end_date))
 
         rules = self.env["pms.availability.plan.rule"]
         if self.start_date and self.end_date:
             rules = rules.search(domain)
-            if not self.apply_on_all_week and self.start_date and self.end_date:
+            if not self.apply_on_all_week:
                 week_days_to_apply = (
                     self.apply_on_monday,
                     self.apply_on_tuesday,
@@ -369,11 +371,26 @@ class AvailabilityWizard(models.TransientModel):
                     self.apply_on_saturday,
                     self.apply_on_sunday,
                 )
+                # A range spans several week days, so it is touched when ANY
+                # of the nights it shares with the window falls on a day that
+                # is marked.
                 rules = rules.filtered(
-                    lambda x: week_days_to_apply[x.date.timetuple()[6]]
+                    lambda rule, days=week_days_to_apply: self._covers_week_day(
+                        rule, days
+                    )
                 )
 
         return rules
+
+    def _covers_week_day(self, rule, week_days_to_apply):
+        """Whether the rule has a night on a marked week day, inside the window."""
+        self.ensure_one()
+        start = max(rule.date_from, self.start_date)
+        end = min(rule.date_to, self.end_date)
+        return any(
+            week_days_to_apply[(start + datetime.timedelta(days=offset)).timetuple()[6]]
+            for offset in range((end - start).days + 1)
+        )
 
     @api.depends(
         "start_date",
@@ -725,7 +742,8 @@ class AvailabilityWizard(models.TransientModel):
         apply_closed_arrival,
         closed_departure,
         apply_closed_departure,
-        date,
+        date_from,
+        date_to,
         rules_to_overwrite,
         pms_property,
     ):
@@ -757,21 +775,25 @@ class AvailabilityWizard(models.TransientModel):
                     else {}
                 )
 
-                if date in rules_to_overwrite.mapped(
-                    "date"
-                ) and room_type in rules_to_overwrite.mapped("room_type_id"):
-                    overwrite = rules_to_overwrite.filtered(
-                        lambda x, rt=room_type: x.room_type_id == rt
-                        and x.date == date
-                        and x.pms_property_id.id == pms_property.id
-                    )
+                # Only a rule covering exactly this period is rewritten.
+                # Anything else is written on top and resolved when reading,
+                # so a season does not have to be cut up to change a week.
+                overwrite = rules_to_overwrite.filtered(
+                    lambda x, rt=room_type, plan=avail_plan_id: x.room_type_id == rt
+                    and x.availability_plan_id == plan
+                    and x.date_from == date_from
+                    and x.date_to == date_to
+                    and x.pms_property_id.id == pms_property.id
+                )
+                if overwrite:
                     overwrite.write(vals)
                     new_items += overwrite.ids
                 else:
                     plan_rule = self.env["pms.availability.plan.rule"].create(
                         {
                             "availability_plan_id": avail_plan_id.id,
-                            "date": date,
+                            "date_from": date_from,
+                            "date_to": date_to,
                             "room_type_id": room_type.id,
                             "min_stay": min_stay,
                             "min_stay_arrival": min_stay_arrival,
@@ -841,27 +863,27 @@ class AvailabilityWizard(models.TransientModel):
 
         # dates between start and end (both included)
         items = []
-        for date in [
-            self.start_date + datetime.timedelta(days=x)
-            for x in range(0, (self.end_date - self.start_date).days + 1)
-        ]:
-            if (
-                not self.apply_on_all_week
-                and not week_days_to_apply[date.timetuple()[6]]
-            ):
-                continue
+        dates = []
+        for offset in range(0, (self.end_date - self.start_date).days + 1):
+            date = self.start_date + datetime.timedelta(days=offset)
+            if self.apply_on_all_week or week_days_to_apply[date.timetuple()[6]]:
+                dates.append(date)
 
-            if not self.room_type_ids:
-                room_types = self.env["pms.room.type"].search(
-                    [
-                        "|",
-                        ("pms_property_ids", "=", False),
-                        ("pms_property_ids", "in", self.pms_property_ids.ids),
-                    ]
-                )
-            else:
-                room_types = self.room_type_ids
+        if not self.room_type_ids:
+            room_types = self.env["pms.room.type"].search(
+                [
+                    "|",
+                    ("pms_property_ids", "=", False),
+                    ("pms_property_ids", "in", self.pms_property_ids.ids),
+                ]
+            )
+        else:
+            room_types = self.room_type_ids
 
+        if self.massive_changes_on == "availability_plan":
+            return self._apply_availability_plan_changes(dates, room_types)
+
+        for date in dates:
             for pms_property in self.pms_property_ids:
                 if (
                     self.massive_changes_on == "pricelist"
@@ -915,27 +937,41 @@ class AvailabilityWizard(models.TransientModel):
                                 vals
                             )
                             items.append(pricelist_item.id)
-                elif self.massive_changes_on == "availability_plan":
-                    new_items = self.create_availability_plans_rules(
-                        room_types,
-                        self.availability_plan_ids,
-                        self.min_stay,
-                        self.apply_min_stay,
-                        self.min_stay_arrival,
-                        self.apply_min_stay_arrival,
-                        self.max_stay,
-                        self.apply_max_stay,
-                        self.max_stay_arrival,
-                        self.apply_max_stay_arrival,
-                        self.closed,
-                        self.apply_closed,
-                        self.closed_arrival,
-                        self.apply_closed_arrival,
-                        self.closed_departure,
-                        self.apply_closed_departure,
-                        date,
-                        self.rules_to_overwrite,
-                        pms_property,
-                    )
-                    items = items + new_items if new_items else items
+        return items
+
+    def _apply_availability_plan_changes(self, dates, room_types):
+        """Write the restrictions of the wizard as the fewest ranges.
+
+        The rules cover a period, so the nights selected are collapsed before
+        writing: a change over a season lands as one rule per room type and
+        plan, and a week day selection breaks it into as many ranges as the
+        pattern needs.
+        """
+        self.ensure_one()
+        items = []
+        for date_from, date_to in date_ranges.collapse_dates(dates):
+            for pms_property in self.pms_property_ids:
+                new_items = self.create_availability_plans_rules(
+                    room_types,
+                    self.availability_plan_ids,
+                    self.min_stay,
+                    self.apply_min_stay,
+                    self.min_stay_arrival,
+                    self.apply_min_stay_arrival,
+                    self.max_stay,
+                    self.apply_max_stay,
+                    self.max_stay_arrival,
+                    self.apply_max_stay_arrival,
+                    self.closed,
+                    self.apply_closed,
+                    self.closed_arrival,
+                    self.apply_closed_arrival,
+                    self.closed_departure,
+                    self.apply_closed_departure,
+                    date_from,
+                    date_to,
+                    self.rules_to_overwrite,
+                    pms_property,
+                )
+                items = items + new_items if new_items else items
         return items

@@ -90,7 +90,12 @@ class TestPmsMultiproperty(TestPms):
             {
                 "availability_plan_id": self.availability_plan1.id,
                 "room_type_id": self.room_type1.id,
-                "date": (fields.datetime.today() + datetime.timedelta(days=1)).date(),
+                "date_from": (
+                    fields.datetime.today() + datetime.timedelta(days=1)
+                ).date(),
+                "date_to": (
+                    fields.datetime.today() + datetime.timedelta(days=1)
+                ).date(),
                 "closed": True,
                 "pms_property_id": self.pms_property1.id,
             }
@@ -101,7 +106,12 @@ class TestPmsMultiproperty(TestPms):
             {
                 "availability_plan_id": self.availability_plan1.id,
                 "room_type_id": self.room_type1.id,
-                "date": (fields.datetime.today() + datetime.timedelta(days=1)).date(),
+                "date_from": (
+                    fields.datetime.today() + datetime.timedelta(days=1)
+                ).date(),
+                "date_to": (
+                    fields.datetime.today() + datetime.timedelta(days=1)
+                ).date(),
                 "pms_property_id": self.pms_property2.id,
             }
         )
@@ -233,7 +243,12 @@ class TestPmsMultiproperty(TestPms):
             {
                 "availability_plan_id": self.availability_plan1.id,
                 "room_type_id": self.room_type1.id,
-                "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
+                "date_from": (
+                    fields.datetime.today() + datetime.timedelta(days=2)
+                ).date(),
+                "date_to": (
+                    fields.datetime.today() + datetime.timedelta(days=2)
+                ).date(),
                 "closed": True,
                 "pms_property_id": self.pms_property1.id,
             }

@@ -45,12 +45,6 @@ class PmsAvailability(models.Model):
         inverse_name="avail_id",
         check_pms_properties=True,
     )
-    avail_rule_ids = fields.One2many(
-        string="Avail record rules",
-        comodel_name="pms.availability.plan.rule",
-        inverse_name="avail_id",
-        check_pms_properties=True,
-    )
     real_avail = fields.Integer(
         store=True,
         readonly=True,
