@@ -1,12 +1,38 @@
+"""INE occupancy surveys: build the questionnaire the establishment uploads.
+
+The INE runs one occupancy survey per kind of establishment. Two of them
+accept an XML questionnaire and are the ones built here, picked from the
+INE category of the property:
+
+- EOH, hotel establishments, root element ENCUESTA.
+- EOAP, tourist apartments, root element APARTAMENTOS.
+
+Both are monthly and cover the natural month, even though the
+questionnaire the establishment receives asks for a single week (hotels)
+or fortnight (apartments).
+
+The INE replaced the ARCE platform with IRIA, where the file can no longer
+be edited after uploading, so whatever is wrong in it comes back as a
+rejection. Two schema variants coexist: the one the INE publishes, which
+declares no namespace and is the reference, and the namespace-qualified
+one the IRIA application generates for a questionnaire. Both have been
+accepted on upload; see INE_XML_NAMESPACE_PARAMS.
+
+Building a file goes through three steps, in this order: the property is
+asked whether it has everything the survey needs (pms.property), the XML
+is built, and the content rules the INE applies after the schema are run
+over it (ine_content_checks).
+"""
 import base64
 import calendar
 import datetime
 import math
 import xml.etree.ElementTree as ET
-from collections import defaultdict
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+
+from .ine_content_checks import check_survey_content, extra_bed_nights
 
 # TODO: Review code (code iso ?)
 CODE_SPAIN = "ES"
@@ -24,6 +50,9 @@ INE_XML_NAMESPACE_PARAMS = {
     "hotel": ("pms_l10n_es.ine_xml_namespace_hotel", ""),
     "apartments": ("pms_l10n_es.ine_xml_namespace_apartments", ""),
 }
+
+# Both survey schemas limit TELEFONO_1 to 13 characters.
+INE_PHONE_MAX_LENGTH = 13
 
 INE_APARTMENT_TYPES = ["studio", "apt_2_4", "apt_4_6", "other"]
 INE_APARTMENT_XML_SUFFIXES = {
@@ -632,182 +661,57 @@ class WizardIne(models.TransientModel):
     def _ine_survey_type(self):
         return self.pms_property_id.ine_category_id.survey_type or "hotel"
 
-    def _ine_read_movements(self, residency_tag):
-        """Return {day: (arrivals, departures, overnight stays)}."""
-        movements = {}
-        for movement_tag in residency_tag.findall("MOVIMIENTO"):
-            day = int(movement_tag.findtext("N_DIA"))
-            movements[day] = (
-                int(movement_tag.findtext("ENTRADAS")),
-                int(movement_tag.findtext("SALIDAS")),
-                int(movement_tag.findtext("PERNOCTACIONES")),
-            )
-        return movements
+    @api.model
+    def _ine_get_country_code(self, country):
+        """Code of the country of residence, as the INE expects it.
 
-    def _ine_check_guest_movements(self, survey_tag, days_in_month):
-        """Validate the ALOJAMIENTO block, shared by every occupancy survey."""
-        problems = []
-        overnight_stays = defaultdict(int)
-        days_with_movement = set()
-        for residency_tag in survey_tag.findall("ALOJAMIENTO/RESIDENCIA"):
-            residence = residency_tag.findtext("ID_PAIS") or residency_tag.findtext(
-                "ID_PROVINCIA_ISLA"
-            )
-            days = [
-                int(movement_tag.findtext("N_DIA"))
-                for movement_tag in residency_tag.findall("MOVIMIENTO")
-            ]
-            for day in sorted({day for day in days if days.count(day) > 1}):
-                problems.append(
-                    _(
-                        "Place of residence %(residence)s: day %(day)s is "
-                        "reported twice. The survey schema uses the day as a "
-                        "key, so it can only appear once.",
-                        residence=residence,
-                        day=day,
-                    )
-                )
-            movements = self._ine_read_movements(residency_tag)
-            previous_stays = None
-            for day in range(1, days_in_month + 1):
-                arrivals, departures, stays = movements.get(day, (0, 0, 0))
-                if day in movements:
-                    days_with_movement.add(day)
-                    overnight_stays[day] += stays
-                if min(arrivals, departures, stays) < 0:
-                    problems.append(
-                        _(
-                            "Place of residence %(residence)s, day %(day)s: "
-                            "negative values are not allowed.",
-                            residence=residence,
-                            day=day,
-                        )
-                    )
-                if stays < arrivals:
-                    problems.append(
-                        _(
-                            "Place of residence %(residence)s, day %(day)s: "
-                            "%(stays)s overnight stays for %(arrivals)s "
-                            "arrivals. Every guest checking in stays at "
-                            "least that night.",
-                            residence=residence,
-                            day=day,
-                            stays=stays,
-                            arrivals=arrivals,
-                        )
-                    )
-                expected = (previous_stays or 0) + arrivals - departures
-                if previous_stays is not None and stays != expected:
-                    problems.append(
-                        _(
-                            "Place of residence %(residence)s, day %(day)s: "
-                            "%(stays)s overnight stays, but the previous day "
-                            "had %(previous)s with %(arrivals)s arrivals and "
-                            "%(departures)s departures, so the INE expects "
-                            "%(expected)s.",
-                            residence=residence,
-                            day=day,
-                            stays=stays,
-                            previous=previous_stays,
-                            arrivals=arrivals,
-                            departures=departures,
-                            expected=expected,
-                        )
-                    )
-                previous_stays = stays
-        return problems, overnight_stays, days_with_movement
+        The INE keeps its own country list, which follows ISO 3166-1
+        alpha-3 except where ISO has no code: Kosovo is KOS for them and
+        has no alpha-3 at all in Odoo. Those exceptions live in
+        res.country.ine_country_code.
 
-    def _ine_check_hotel_rooms(self, survey_tag, overnight_stays):
-        """Validate the HABITACIONES block against the guest movements."""
-        problems = []
-        rooms_total = int(survey_tag.findtext("CABECERA/HABITACIONES") or 0)
-        seats = int(
-            survey_tag.findtext("CABECERA/PLAZAS_DISPONIBLES_SIN_SUPLETORIAS") or 0
-        )
-        for movement_tag in survey_tag.findall("HABITACIONES/HABITACIONES_MOVIMIENTO"):
-            day = int(movement_tag.findtext("HABITACIONES_N_DIA"))
-            double_as_double = int(
-                movement_tag.findtext("HABITACIONES_DOBLES_USO_DOBLE")
+        A country with no code of its own would silently produce an empty
+        ID_PAIS and a file rejected by the schema, with nothing pointing at
+        the guest who caused it, so it is reported here instead.
+        """
+        code = country.ine_get_country_code()
+        if not code:
+            raise ValidationError(
+                _(
+                    "The country of residence '%(country)s' has no code for "
+                    "the INE survey. Set the INE country code on the "
+                    "country, using the list published by the INE.",
+                    country=country.name,
+                )
             )
-            occupied = (
-                double_as_double
-                + int(movement_tag.findtext("HABITACIONES_DOBLES_USO_INDIVIDUAL"))
-                + int(movement_tag.findtext("HABITACIONES_OTRAS"))
+        return code
+
+    def _ine_format_phone(self, phone):
+        """Phone as the survey schemas take it: no spaces, 13 characters."""
+        return (phone or "").replace(" ", "")[:INE_PHONE_MAX_LENGTH]
+
+    def _ine_check_xml_content(self, survey_tag):
+        """Refuse to hand over a file the INE would reject.
+
+        The rules themselves live in ine_content_checks, away from the
+        wizard, because they only need the built XML.
+        """
+        days_in_month = calendar.monthrange(
+            self.start_date.year, self.start_date.month
+        )[1]
+        problems = check_survey_content(survey_tag, days_in_month)
+        if problems:
+            raise ValidationError(
+                _(
+                    "The INE would reject this file. Fix the following and "
+                    "generate it again:\n\n- %s",
+                    "\n- ".join(problems),
+                )
             )
-            extra_beds = int(movement_tag.findtext("PLAZAS_SUPLETORIAS"))
-            stays = overnight_stays.get(day, 0)
-            if bool(occupied) != bool(stays):
-                problems.append(
-                    _(
-                        "Day %(day)s: %(rooms)s occupied rooms and "
-                        "%(stays)s overnight stays. The INE expects both to "
-                        "be zero or both greater than zero.",
-                        day=day,
-                        rooms=occupied,
-                        stays=stays,
-                    )
-                )
-            if occupied > stays:
-                problems.append(
-                    _(
-                        "Day %(day)s: %(rooms)s occupied rooms for only "
-                        "%(stays)s overnight stays.",
-                        day=day,
-                        rooms=occupied,
-                        stays=stays,
-                    )
-                )
-            if stays and occupied == stays and double_as_double:
-                problems.append(
-                    _(
-                        "Day %(day)s: as many occupied rooms as overnight "
-                        "stays, so no double room can be reported as used by "
-                        "two people.",
-                        day=day,
-                    )
-                )
-            if stays > seats + extra_beds:
-                problems.append(
-                    _(
-                        "Day %(day)s: %(stays)s overnight stays exceed the "
-                        "%(seats)s available seats plus %(extra)s extra "
-                        "beds. Check the seats declared in the property.",
-                        day=day,
-                        stays=stays,
-                        seats=seats,
-                        extra=extra_beds,
-                    )
-                )
-            if occupied > rooms_total:
-                problems.append(
-                    _(
-                        "Day %(day)s: %(rooms)s occupied rooms exceed the "
-                        "%(total)s rooms of the establishment.",
-                        day=day,
-                        rooms=occupied,
-                        total=rooms_total,
-                    )
-                )
-        return problems
 
     def _ine_extra_bed_notes(self, survey_tag):
-        """List the nights reported with an extra bed.
-
-        Reporting them is what keeps the file valid, but a room whose
-        capacity is set too low would report an extra bed every single
-        night, so they are listed instead of passing unnoticed.
-        """
-        if survey_tag.tag == "ENCUESTA":
-            movement_tags = survey_tag.findall("HABITACIONES/HABITACIONES_MOVIMIENTO")
-            day_tag = "HABITACIONES_N_DIA"
-        else:
-            movement_tags = survey_tag.findall("OCUPACION/MOVIMIENTO")
-            day_tag = "N_DIA_AP"
-        days = [
-            movement_tag.findtext(day_tag)
-            for movement_tag in movement_tags
-            if int(movement_tag.findtext("PLAZAS_SUPLETORIAS") or 0)
-        ]
+        """Tell back the nights reported with an extra bed."""
+        days = extra_bed_nights(survey_tag)
         if not days:
             return False
         return _(
@@ -817,52 +721,6 @@ class WizardIne(models.TransientModel):
             count=len(days),
             days=", ".join(days),
         )
-
-    def _ine_check_xml_content(self, survey_tag):
-        """Run the INE content validations before handing over the file.
-
-        These are the checks the INE applies once the file passes the
-        schema. Running them here turns a rejection the establishment would
-        only find out about days later, on the INE portal, into an error
-        naming the day and the figures involved.
-        """
-        days_in_month = calendar.monthrange(
-            self.start_date.year, self.start_date.month
-        )[1]
-        days_open = int(
-            survey_tag.findtext("CABECERA/DIAS_ABIERTO_MES_REFERENCIA") or 0
-        )
-        problems, overnight_stays, days_with_movement = self._ine_check_guest_movements(
-            survey_tag, days_in_month
-        )
-        if days_open > days_in_month:
-            problems.append(
-                _(
-                    "The file reports %(open)s days open in a month of "
-                    "%(days)s days.",
-                    open=days_open,
-                    days=days_in_month,
-                )
-            )
-        if len(days_with_movement) > days_open:
-            problems.append(
-                _(
-                    "The file reports guest movements on %(moved)s days but "
-                    "only %(open)s days open.",
-                    moved=len(days_with_movement),
-                    open=days_open,
-                )
-            )
-        if survey_tag.tag == "ENCUESTA":
-            problems += self._ine_check_hotel_rooms(survey_tag, overnight_stays)
-        if problems:
-            raise ValidationError(
-                _(
-                    "The INE would reject this file. Fix the following and "
-                    "generate it again:\n\n- %s",
-                    "\n- ".join(problems),
-                )
-            )
 
     def ine_generate_xml(self):
         self.check_ine_mandatory_fields(self.pms_property_id)
@@ -881,12 +739,9 @@ class WizardIne(models.TransientModel):
         xmlstr += ET.tostring(survey_tag).decode("utf-8")
 
         self.txt_binary = base64.b64encode(xmlstr.encode("utf-8"))
-        self.txt_filename = (
-            "INE_"
-            + str(self.start_date.month)
-            + "_"
-            + str(self.start_date.year)
-            + ".xml"
+        self.txt_filename = "INE_%02d_%d.xml" % (
+            self.start_date.month,
+            self.start_date.year,
         )
 
         return {
@@ -931,9 +786,9 @@ class WizardIne(models.TransientModel):
         ET.SubElement(header_tag, "LOCALIDAD").text = self.pms_property_id.city
         ET.SubElement(header_tag, "MUNICIPIO").text = self.pms_property_id.city
         ET.SubElement(header_tag, "PROVINCIA").text = self._ine_get_province_name()
-        ET.SubElement(
-            header_tag, "TELEFONO_1"
-        ).text = self.pms_property_id.phone.replace(" ", "")[0:12]
+        ET.SubElement(header_tag, "TELEFONO_1").text = self._ine_format_phone(
+            self.pms_property_id.phone
+        )
         ET.SubElement(
             header_tag, "TIPO"
         ).text = self.pms_property_id.ine_category_id.type
@@ -1251,9 +1106,9 @@ class WizardIne(models.TransientModel):
         ET.SubElement(header_tag, "LOCALIDAD").text = pms_property.city
         ET.SubElement(header_tag, "MUNICIPIO").text = pms_property.city
         ET.SubElement(header_tag, "PROVINCIA").text = self._ine_get_province_name()
-        ET.SubElement(header_tag, "TELEFONO_1").text = pms_property.phone.replace(
-            " ", ""
-        )[0:13]
+        ET.SubElement(header_tag, "TELEFONO_1").text = self._ine_format_phone(
+            pms_property.phone
+        )
         if pms_property.website:
             ET.SubElement(header_tag, "URL").text = pms_property.website[0:100]
 
@@ -1267,9 +1122,9 @@ class WizardIne(models.TransientModel):
         informant_tag = ET.SubElement(survey_tag, "INFORMANTE")
         ET.SubElement(informant_tag, "NOMBRE").text = pms_property.ine_informant_name
         ET.SubElement(informant_tag, "CARGO").text = pms_property.ine_informant_job
-        ET.SubElement(informant_tag, "TELEFONOINF").text = (
+        ET.SubElement(informant_tag, "TELEFONOINF").text = self._ine_format_phone(
             pms_property.ine_informant_phone or pms_property.phone
-        ).replace(" ", "")[0:13]
+        )
         ET.SubElement(informant_tag, "EMAIL").text = pms_property.ine_informant_email
 
         # EOAP XML -> ALOJAMIENTO (shared with the hotel survey)
@@ -1361,31 +1216,6 @@ class WizardIne(models.TransientModel):
         self.ine_calculate_revpar(self.start_date, self.end_date)
 
         return survey_tag
-
-    @api.model
-    def _ine_get_country_code(self, country):
-        """Code of the country of residence, as the INE expects it.
-
-        The INE keeps its own country list, which follows ISO 3166-1
-        alpha-3 except where ISO has no code: Kosovo is KOS for them and
-        has no alpha-3 at all in Odoo. Those exceptions live in
-        res.country.ine_country_code.
-
-        A country with no code of its own would silently produce an empty
-        ID_PAIS and a file rejected by the schema, with nothing pointing at
-        the guest who caused it, so it is reported here instead.
-        """
-        code = country.ine_get_country_code()
-        if not code:
-            raise ValidationError(
-                _(
-                    "The country of residence '%(country)s' has no code for "
-                    "the INE survey. Set the INE country code on the "
-                    "country, using the list published by the INE.",
-                    country=country.name,
-                )
-            )
-        return code
 
     def _ine_append_guest_movements(self, accommodation_tag):
         """Fill the ALOJAMIENTO block (shared by all INE occupancy surveys).

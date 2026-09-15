@@ -9,6 +9,7 @@ from lxml import etree
 from odoo.exceptions import ValidationError
 from odoo.modules.module import get_module_resource
 
+from ..wizards.ine_content_checks import check_survey_content
 from .common import TestPms
 
 
@@ -1347,6 +1348,43 @@ class TestWizardINE(TestPms):
             ValidationError, msg="A broken daily chain must be reported"
         ):
             wizard._ine_check_xml_content(survey_tag)
+
+    def test_content_rules_run_without_a_record(self):
+        """The rules only need the built file, so they read on their own."""
+        # ARRANGE
+        survey_tag = ET.Element("ENCUESTA")
+        header_tag = ET.SubElement(survey_tag, "CABECERA")
+        ET.SubElement(header_tag, "DIAS_ABIERTO_MES_REFERENCIA").text = "28"
+        accommodation_tag = ET.SubElement(survey_tag, "ALOJAMIENTO")
+        residency_tag = ET.SubElement(accommodation_tag, "RESIDENCIA")
+        ET.SubElement(residency_tag, "ID_PROVINCIA_ISLA").text = "ES300"
+        for day, (arrivals, departures, stays) in {
+            1: (2, 0, 2),
+            2: (0, 0, 0),  # two guests disappear without checking out
+        }.items():
+            movement_tag = ET.SubElement(residency_tag, "MOVIMIENTO")
+            ET.SubElement(movement_tag, "N_DIA").text = "%02d" % day
+            ET.SubElement(movement_tag, "ENTRADAS").text = str(arrivals)
+            ET.SubElement(movement_tag, "SALIDAS").text = str(departures)
+            ET.SubElement(movement_tag, "PERNOCTACIONES").text = str(stays)
+        # ACT
+        problems = check_survey_content(survey_tag, 28)
+        # ASSERT: the message has to name the day, which is what the
+        # establishment needs to find the guest behind it
+        self.assertEqual(len(problems), 1)
+        self.assertIn("ES300", problems[0])
+        self.assertIn("2", problems[0])
+
+    def test_phone_keeps_the_thirteen_characters_of_the_schema(self):
+        """The survey schemas take up to 13 characters in TELEFONO_1."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        self.pms_property1.phone = "+34 971 30 41 24 9"
+        # ACT
+        document = self._generate_ine_document()
+        # ASSERT
+        self.assertEqual(document.findtext("CABECERA/TELEFONO_1"), "+349713041249")
 
     def test_extra_beds_from_guests_over_room_capacity(self):
         """A guest beyond the places of the room sleeps in an extra bed.
