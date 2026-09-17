@@ -163,3 +163,65 @@ class TestPmsResUser(TestPms):
             user1.company_id,
             "Active property doesn't belong to active company",
         )
+
+    def test_user_without_properties(self):
+        """
+        Successful user creation without properties
+        Check a user that does not operate any property (portal users, users
+        of other business lines sharing the database) can be created with both
+        property fields empty.
+
+        Company_A ---> Property_A1, Property_A2
+        Company_B ---> Property_B1
+
+        """
+        # ARRANGE
+        Users = self.env["res.users"]
+        # ACT
+        user1 = Users.create(
+            {
+                "name": "Test User",
+                "login": "test_user",
+                "company_ids": [(4, self.company_A.id)],
+                "company_id": self.company_A.id,
+                "pms_property_ids": [(6, 0, [])],
+                "pms_property_id": False,
+            }
+        )
+        # ASSERT
+        self.assertFalse(
+            user1.pms_property_id,
+            "The user should not have an active property",
+        )
+
+    def test_allowed_properties_without_default_property(self):
+        """
+        Successful user creation with allowed properties and no active one
+        Check a user can be created with allowed properties while the active
+        property is left empty.
+
+        Company_A ---> Property_A1, Property_A2
+        Company_B ---> Property_B1
+
+        """
+        # ARRANGE
+        Users = self.env["res.users"]
+        # ACT
+        user1 = Users.create(
+            {
+                "name": "Test User",
+                "login": "test_user",
+                "company_ids": [(4, self.company_A.id)],
+                "company_id": self.company_A.id,
+                "pms_property_ids": [
+                    (4, self.property_A1.id),
+                    (4, self.property_A2.id),
+                ],
+                "pms_property_id": False,
+            }
+        )
+        # ASSERT
+        self.assertFalse(
+            user1.pms_property_id,
+            "The user should not have an active property",
+        )
