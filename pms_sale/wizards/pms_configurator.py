@@ -82,6 +82,7 @@ class PMSConfigurator(models.TransientModel):
     existing_reservation_id = fields.Integer()
     reservation_ids = fields.Many2many("pms.reservation")
     timeline_html = fields.Html("Timeline HTML", readonly=True)
+    partner_id = fields.Many2one("res.partner", string="Booked by")
 
     def _update_bookings_tab(self):
         if not self.property_id:
@@ -199,6 +200,7 @@ class PMSConfigurator(models.TransientModel):
             if reservation.exists():
                 result["existing_reservation_id"] = reservation.id
                 result["property_id"] = reservation.property_id.id
+                result["partner_id"] = reservation.partner_id.id
                 result["start"] = reservation.start
                 result["stop"] = reservation.stop
                 if reservation.start and reservation.stop:
@@ -224,6 +226,8 @@ class PMSConfigurator(models.TransientModel):
             result["start"] = fields.Date.today()
         if not result.get("stop"):
             result["stop"] = fields.Date.today()
+        if self.env.context.get("web_partner_id") and not result.get("partner_id"):
+            result["partner_id"] = self.env.context["web_partner_id"]
         if self.env.context.get("web_partner_id") and not result.get("guest_ids"):
             partner_rec = self.env["res.partner"].browse(
                 self.env.context.get("web_partner_id")
