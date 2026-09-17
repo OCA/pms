@@ -35,7 +35,14 @@ class ResUsers(models.Model):
 
     @api.constrains("pms_property_id", "pms_property_ids")
     def _check_property_in_allowed_properties(self):
-        if any(user.pms_property_id not in user.pms_property_ids for user in self):
+        # An empty pms_property_id is valid: users that do not operate any
+        # property (portal users, users of other business lines) must be able
+        # to leave both fields empty. Note that an empty recordset is never
+        # 'in' another recordset, so the emptiness has to be checked first.
+        if any(
+            user.pms_property_id and user.pms_property_id not in user.pms_property_ids
+            for user in self
+        ):
             raise ValidationError(
                 _("The chosen property is not in the allowed properties for this user")
             )
