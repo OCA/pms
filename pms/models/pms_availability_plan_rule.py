@@ -127,6 +127,9 @@ class PmsAvailabilityPlanRule(models.Model):
     ):
         """Expand the ranges of a plan into the rule that wins on every night.
 
+        A plan can inherit from another: a night the plan itself does not
+        configure takes the rule of its parent, and so on up the chain.
+
         :param date_from: first night to resolve, included.
         :param date_to: last night to resolve, included. Callers weighing
             ``closed_departure`` have to include the checkout night, which is
@@ -137,8 +140,15 @@ class PmsAvailabilityPlanRule(models.Model):
         """
         date_from = fields.Date.to_date(date_from)
         date_to = fields.Date.to_date(date_to)
+        depths = (
+            self.env["pms.availability.plan"]
+            .browse(availability_plan_id)
+            ._inheritance_chain()
+            if availability_plan_id
+            else {availability_plan_id: 0}
+        )
         domain = [
-            ("availability_plan_id", "=", availability_plan_id),
+            ("availability_plan_id", "in", list(depths)),
             ("pms_property_id", "=", pms_property_id),
             ("date_from", "<=", date_to),
             ("date_to", ">=", date_from),
@@ -146,10 +156,22 @@ class PmsAvailabilityPlanRule(models.Model):
         if room_type_ids:
             domain.append(("room_type_id", "in", list(room_type_ids)))
         winner = {}
-        # Sorting ascending and overwriting gives "last written wins" for
-        # free. Sorted in Python because ``write_date`` is not indexed and the
+        # Sorting ascending and overwriting gives "the last one wins" for free.
+        # Sorted in Python because ``write_date`` is not indexed and the
         # recordset is a handful of rows once the ranges are in place.
-        rules = self.search(domain).sorted(key=lambda rule: (rule.write_date, rule.id))
+        #
+        # INVARIANT: depth comes BEFORE ``write_date``. A rule of the child
+        # always beats one of the parent, whenever each was written. Folding
+        # both into one criterion would let a parent edited today win over a
+        # child written last year, which is inheritance breaking silently on
+        # the day somebody touches the general plan.
+        rules = self.search(domain).sorted(
+            key=lambda rule: (
+                depths[rule.availability_plan_id.id],
+                rule.write_date,
+                rule.id,
+            )
+        )
         for rule in rules:
             start = max(rule.date_from, date_from)
             end = min(rule.date_to, date_to)

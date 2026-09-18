@@ -24,6 +24,7 @@ from . import test_pms_pricelist
 from . import test_pms_checkin_partner
 from . import test_pms_sale_channel
 from . import test_pms_folio
+from . import test_pms_availability_plan_inheritance
 from . import test_pms_availability_plan_rules
 from . import test_pms_inventory_rule
 from . import test_pms_wizard_massive_inventory_changes

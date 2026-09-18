@@ -3,7 +3,8 @@
 
 import datetime
 
-from odoo import fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
 
@@ -51,6 +52,46 @@ class PmsAvailabilityPlan(models.Model):
         "Availability plan without removing it.",
         default=True,
     )
+    parent_id = fields.Many2one(
+        string="Inherits From",
+        help="Plan this one falls back to. A night this plan does not "
+        "configure takes the rule of its parent, and so on up the chain.",
+        comodel_name="pms.availability.plan",
+        ondelete="restrict",
+        index=True,
+    )
+    child_ids = fields.One2many(
+        string="Inherited By",
+        comodel_name="pms.availability.plan",
+        inverse_name="parent_id",
+    )
+
+    @api.constrains("parent_id")
+    def _check_parent_recursion(self):
+        if not self._check_recursion():
+            raise ValidationError(_("An availability plan cannot inherit from itself."))
+
+    def _inheritance_chain(self):
+        """Plans whose rules apply to this one, and how far down each sits.
+
+        NOTE: ``parent_id`` is deliberately NOT declared with
+        ``check_pms_properties``. A parent open to every property is the
+        normal case for a plan meant to be inherited, and the properties a
+        child can actually override in are already settled by its own rules,
+        which are checked against it.
+
+        :return: ``{plan_id: depth}``, the root of the chain being 0 and this
+            plan the deepest.
+        """
+        self.ensure_one()
+        chain, plan = [], self
+        # The constraint keeps the chain from closing on itself; the guard is
+        # there so that data that predates it cannot hang the server.
+        while plan and plan.id not in chain:
+            chain.append(plan.id)
+            plan = plan.parent_id
+        last = len(chain) - 1
+        return {plan_id: last - index for index, plan_id in enumerate(chain)}
 
     @classmethod
     def any_rule_applies(cls, checkin, checkout, rule, date):
