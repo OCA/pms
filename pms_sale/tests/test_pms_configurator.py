@@ -7,7 +7,6 @@ class TestPMSConfigurator(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.product = cls.env.ref("pms_sale.product_product_reservation")
         cls.partner_owner = cls.env["res.partner"].create({"name": "Property Owner"})
         cls.property = cls.env["pms.property"].create(
             {
