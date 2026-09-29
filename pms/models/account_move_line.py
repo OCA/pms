@@ -85,7 +85,7 @@ class AccountMoveLine(models.Model):
                 )
         return res
 
-    @api.depends("move_id")
+    @api.depends("move_id", "move_id.pms_property_id")
     def _compute_pms_property_id(self):
         for rec in self:
             if rec.move_id and rec.move_id.pms_property_id:
