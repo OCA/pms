@@ -379,17 +379,104 @@ ul.auto-toc {
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><a class="reference internal" href="#bug-tracker" id="toc-entry-1">Bug Tracker</a></li>
-<li><a class="reference internal" href="#credits" id="toc-entry-2">Credits</a><ul>
-<li><a class="reference internal" href="#authors" id="toc-entry-3">Authors</a></li>
-<li><a class="reference internal" href="#contributors" id="toc-entry-4">Contributors</a></li>
-<li><a class="reference internal" href="#maintainers" id="toc-entry-5">Maintainers</a></li>
+<li><a class="reference internal" href="#configuration" id="toc-entry-1">Configuration</a><ul>
+<li><a class="reference internal" href="#ine-occupancy-surveys" id="toc-entry-2">INE occupancy surveys</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage" id="toc-entry-3">Usage</a><ul>
+<li><a class="reference internal" href="#ine-occupancy-surveys-1" id="toc-entry-4">INE occupancy surveys</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#known-issues-roadmap" id="toc-entry-5">Known issues / Roadmap</a></li>
+<li><a class="reference internal" href="#bug-tracker" id="toc-entry-6">Bug Tracker</a></li>
+<li><a class="reference internal" href="#credits" id="toc-entry-7">Credits</a><ul>
+<li><a class="reference internal" href="#authors" id="toc-entry-8">Authors</a></li>
+<li><a class="reference internal" href="#contributors" id="toc-entry-9">Contributors</a></li>
+<li><a class="reference internal" href="#maintainers" id="toc-entry-10">Maintainers</a></li>
 </ul>
 </li>
 </ul>
 </div>
+<div class="section" id="configuration">
+<h2><a class="toc-backref" href="#toc-entry-1">Configuration</a></h2>
+<div class="section" id="ine-occupancy-surveys">
+<h3><a class="toc-backref" href="#toc-entry-2">INE occupancy surveys</a></h3>
+<p>The INE runs a monthly occupancy survey per kind of establishment. Two of
+them accept an XML questionnaire and are the ones this module builds, the
+hotel establishments survey (EOH) and the tourist apartments one (EOAP).
+Which of the two is built comes from the INE category of the property, so
+there is nothing else to choose.</p>
+<p>On the property, under the INE settings:</p>
+<ol class="arabic simple">
+<li><strong>Tourism number</strong>: the registration number in the tourism registry.</li>
+<li><strong>Category</strong>: the type and category the establishment is listed under in
+the INE directory. Its survey type decides the questionnaire.</li>
+<li><strong>Beds available excluding extra beds</strong>: the places of the directory,
+counting fixed beds only.</li>
+<li><strong>Staff</strong>: permanent, temporary and unpaid.</li>
+<li><strong>Order number</strong>: eleven characters, printed on the questionnaire. It is
+fixed for the establishment, so it is kept here once filled in. The
+control code is single use and is never stored.</li>
+<li><strong>Informant</strong>: name, job position, phone and email. Only the tourist
+apartments survey carries them, where they are mandatory.</li>
+</ol>
+<p>The property lists what is still missing in <em>INE configuration warnings</em>,
+so the whole configuration can be completed before trying to build a file.</p>
+<p>Rooms reported to the survey are the ones flagged <em>In INE</em>. For the tourist
+apartments survey each of them also carries a typology (studio, 2-4 pax,
+4-6 pax or other); left empty, it is inferred from the capacity of the room.</p>
+<p>Provinces and countries are taken from the lists the INE publishes next to
+the survey schemas, which do not always match the ones of Odoo:</p>
+<ul class="simple">
+<li><tt class="docutils literal">res.country.state</tt> carries the province literal of the specification,
+limited to 25 characters, seeded for the 52 Spanish provinces.</li>
+<li><tt class="docutils literal">res.country</tt> carries a code of its own for the countries the INE does
+not code as ISO 3166-1 alpha-3 does.</li>
+</ul>
+<p>Files are built after the schema the INE publishes, which declares no
+namespace. A questionnaire asking for the namespace-qualified variant
+instead is served by setting the namespace in the system parameters
+<tt class="docutils literal">pms_l10n_es.ine_xml_namespace_hotel</tt> or
+<tt class="docutils literal">pms_l10n_es.ine_xml_namespace_apartments</tt>.</p>
+</div>
+</div>
+<div class="section" id="usage">
+<h2><a class="toc-backref" href="#toc-entry-3">Usage</a></h2>
+<div class="section" id="ine-occupancy-surveys-1">
+<h3><a class="toc-backref" href="#toc-entry-4">INE occupancy surveys</a></h3>
+<p>Go to <em>Reservations &gt; Generate INE file</em>, pick the property and a date in
+the month to report, and generate.</p>
+<p>The questionnaire the establishment receives asks for a single week
+(hotels) or fortnight (apartments), but the file always covers the whole
+natural month, so the period is expanded to the month of the start date.
+A file built for part of a month is rejected: the INE checks the daily
+chain of every place of residence, and the first day of a partial file
+never matches it.</p>
+<p>Before handing the file over, the same content rules the INE applies after
+the schema are run over it, and a file that would be rejected raises an
+error naming the day and the figures behind it instead of being
+downloaded.</p>
+<p>The file is then uploaded to the IRIA portal of the INE. Note that IRIA no
+longer allows editing a questionnaire once it has been uploaded.</p>
+</div>
+</div>
+<div class="section" id="known-issues-roadmap">
+<h2><a class="toc-backref" href="#toc-entry-5">Known issues / Roadmap</a></h2>
+<ul class="simple">
+<li>Only the hotel establishments (EOH) and tourist apartments (EOAP)
+occupancy surveys accept an XML questionnaire. The rural tourism,
+campings and hostels surveys have no XML channel and are answered
+through the INE portal.</li>
+<li>The questionnaire is built here but still uploaded by hand to the IRIA
+portal. The INE offers a web service to submit it, which needs no prior
+registration, and it is not implemented yet.</li>
+<li><tt class="docutils literal">DIAS_ABIERTO_MES_REFERENCIA</tt> is reported as the days of the month.
+A seasonal establishment open for part of it declares more days than it
+opened, which dilutes its own occupancy rate.</li>
+</ul>
+</div>
 <div class="section" id="bug-tracker">
-<h2><a class="toc-backref" href="#toc-entry-1">Bug Tracker</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-6">Bug Tracker</a></h2>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/OCA/pms/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
@@ -397,15 +484,15 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
-<h2><a class="toc-backref" href="#toc-entry-2">Credits</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-7">Credits</a></h2>
 <div class="section" id="authors">
-<h3><a class="toc-backref" href="#toc-entry-3">Authors</a></h3>
+<h3><a class="toc-backref" href="#toc-entry-8">Authors</a></h3>
 <ul class="simple">
 <li>Commit [Sun]</li>
 </ul>
 </div>
 <div class="section" id="contributors">
-<h3><a class="toc-backref" href="#toc-entry-4">Contributors</a></h3>
+<h3><a class="toc-backref" href="#toc-entry-9">Contributors</a></h3>
 <ul class="simple">
 <li>Jose Luis Algara</li>
 <li><cite>Commit [Sun] &lt;https://www.commitsun.com&gt;</cite>:<ul>
@@ -413,12 +500,13 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 <li>Sara Lago</li>
 <li>Brais Abeijon</li>
 <li>Miguel Padin</li>
+<li>David Pacheco</li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="section" id="maintainers">
-<h3><a class="toc-backref" href="#toc-entry-5">Maintainers</a></h3>
+<h3><a class="toc-backref" href="#toc-entry-10">Maintainers</a></h3>
 <p>This module is maintained by the OCA.</p>
 <a class="reference external image-reference" href="https://odoo-community.org">
 <img alt="Odoo Community Association" src="https://odoo-community.org/logo.png" />
