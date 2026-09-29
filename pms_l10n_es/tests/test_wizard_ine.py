@@ -1,9 +1,15 @@
+import base64
 import datetime
+import xml.etree.ElementTree as ET
+from decimal import Decimal
 
 from freezegun import freeze_time
+from lxml import etree
 
 from odoo.exceptions import ValidationError
+from odoo.modules.module import get_module_resource
 
+from ..wizards.ine_content_checks import check_survey_content
 from .common import TestPms
 
 
@@ -1046,3 +1052,561 @@ class TestWizardINE(TestPms):
             self.env["pms.ine.wizard"].ine_countries(
                 start_date, end_date, self.pms_property1.id
             )
+
+    def _configure_ine_property(self, survey_type="hotel"):
+        self.company1.vat = "ESA12345674"
+        self.pms_property1.write(
+            {
+                "street": "Fake Street 123",
+                "zip": "28001",
+                "city": "Madrid",
+                "phone": "+34600000000",
+                "website": "https://www.example.com",
+                "ine_tourism_number": "REG-12345",
+                "ine_permanent_staff": 2,
+            }
+        )
+        self.pms_property1.partner_id.state_id = self.env.ref("base.state_es_m")
+        if survey_type == "apartments":
+            self.pms_property1.ine_category_id = self.env.ref(
+                "pms_l10n_es.turism_category_57"
+            )
+            self.pms_property1.write(
+                {
+                    "ine_informant_name": "Informant Name",
+                    "ine_informant_job": "Reception",
+                    "ine_informant_email": "informant@example.com",
+                }
+            )
+        else:
+            self.pms_property1.ine_category_id = self.env.ref(
+                "pms_l10n_es.turism_category_1"
+            )
+
+    def _generate_ine_document(self):
+        wizard = self.env["pms.ine.wizard"].new(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "start_date": datetime.date(2021, 2, 1),
+                "end_date": datetime.date(2021, 2, 28),
+            }
+        )
+        wizard.ine_generate_xml()
+        return etree.fromstring(base64.b64decode(wizard.txt_binary))
+
+    def _assert_valid_against_schema(self, document, fixture_name):
+        xsd_path = get_module_resource("pms_l10n_es", "tests/fixtures", fixture_name)
+        schema = etree.XMLSchema(etree.parse(xsd_path))
+        self.assertTrue(
+            schema.validate(document),
+            "\n".join(str(error) for error in schema.error_log),
+        )
+
+    def test_generate_xml_hotel_validates_published_schema(self):
+        """By default the hotel survey follows the schema published by the
+        INE, which declares no namespace."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        # ACT
+        document = self._generate_ine_document()
+        # ASSERT
+        self.assertEqual(document.tag, "ENCUESTA")
+        self._assert_valid_against_schema(document, "ine_hotel_survey_published.xsd")
+
+    def test_generate_xml_hotel_qualified_namespace(self):
+        """When the questionnaire requires the namespace-qualified variant,
+        the namespace is taken from the config parameter."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        namespace = "https://iria.ine.es/schemas/ec7dbd57-d3ab-473a-a3e5-d32d8c1e17a0"
+        self.env["ir.config_parameter"].sudo().set_param(
+            "pms_l10n_es.ine_xml_namespace_hotel", namespace
+        )
+        # ACT
+        document = self._generate_ine_document()
+        # ASSERT
+        self.assertEqual(document.tag, "{%s}ENCUESTA" % namespace)
+        self._assert_valid_against_schema(document, "iria_hotel_survey.xsd")
+
+    def test_generate_xml_hotel_percents_sum_exactly_100(self):
+        """Printed occupancy percentages must add up to exactly 100.00."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        # ACT
+        document = self._generate_ine_document()
+        # ASSERT
+        prices_tag = document.find("PRECIOS")
+        total = sum(
+            Decimal(element.text) for element in prices_tag if "PCTN_" in element.tag
+        )
+        self.assertEqual(total, Decimal("100.00"))
+
+    def test_generate_xml_hotel_decimals_have_two_digits(self):
+        """All decimal values must be printed with exactly 2 decimals."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        # ACT
+        document = self._generate_ine_document()
+        # ASSERT
+        prices_tag = document.find("PRECIOS")
+        for element in prices_tag:
+            self.assertRegex(element.text, r"^\d+\.\d{2}$")
+
+    def test_generate_xml_apartments_validates_published_schema(self):
+        """By default the apartments survey follows the schema published by
+        the INE, which declares no namespace."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property(survey_type="apartments")
+        # ACT
+        document = self._generate_ine_document()
+        # ASSERT
+        self.assertEqual(document.tag, "APARTAMENTOS")
+        self._assert_valid_against_schema(
+            document, "ine_apartments_survey_published.xsd"
+        )
+
+    def test_generate_xml_apartments_qualified_namespace(self):
+        """The namespace-qualified variant of the apartments survey, which is
+        the one accepted so far on upload, honors the questionnaire schema."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property(survey_type="apartments")
+        namespace = "https://iria.ine.es/schemas/15b6131c-259d-42ff-96a1-3fe0800dfdd1"
+        self.env["ir.config_parameter"].sudo().set_param(
+            "pms_l10n_es.ine_xml_namespace_apartments", namespace
+        )
+        # ACT
+        document = self._generate_ine_document()
+        # ASSERT
+        self.assertEqual(document.tag, "{%s}APARTAMENTOS" % namespace)
+        self._assert_valid_against_schema(document, "iria_apartments_survey.xsd")
+
+    def test_apartments_capacity_typologies(self):
+        """Rooms are grouped by typology, inferring it from capacity when
+        it is not set explicitly."""
+        # ARRANGE
+        self.room_double_1.ine_apartment_type = "apt_4_6"
+        rooms = self.env["pms.room"].search(
+            [
+                ("pms_property_id", "=", self.pms_property1.id),
+                ("in_ine", "=", True),
+            ]
+        )
+        # ACT
+        capacity = self.env["pms.ine.wizard"].ine_apartments_capacity(
+            self.pms_property1
+        )
+        # ASSERT
+        self.assertEqual(capacity["apt_4_6"]["units"], 1)
+        self.assertEqual(
+            sum(capacity[apartment_type]["units"] for apartment_type in capacity),
+            len(rooms),
+        )
+        self.assertEqual(
+            sum(capacity[apartment_type]["seats"] for apartment_type in capacity),
+            sum(rooms.mapped("capacity")),
+        )
+
+    def test_apartments_missing_informant_raises(self):
+        """The apartments survey requires the informant contact data."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property(survey_type="apartments")
+        self.pms_property1.ine_informant_email = False
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="Cannot generate the apartments survey without informant",
+        ):
+            self._generate_ine_document()
+
+    def test_generate_xml_expands_partial_month(self):
+        """A period shorter than the month is expanded to the whole month."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        wizard = self.env["pms.ine.wizard"].new(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "start_date": datetime.date(2021, 2, 8),
+                "end_date": datetime.date(2021, 2, 14),
+            }
+        )
+        # ACT
+        wizard.ine_generate_xml()
+        # ASSERT
+        self.assertEqual(wizard.start_date, datetime.date(2021, 2, 1))
+        self.assertEqual(wizard.end_date, datetime.date(2021, 2, 28))
+
+    def test_generate_xml_range_crossing_months(self):
+        """A range reaching into the next month reports the first one only.
+
+        Keeping both months repeats day numbers inside a place of residence
+        and the survey schema rejects the file, because the day is a key
+        there.
+        """
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        namespace = "https://iria.ine.es/schemas/ec7dbd57-d3ab-473a-a3e5-d32d8c1e17a0"
+        self.env["ir.config_parameter"].sudo().set_param(
+            "pms_l10n_es.ine_xml_namespace_hotel", namespace
+        )
+        wizard = self.env["pms.ine.wizard"].new(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "start_date": datetime.date(2021, 2, 1),
+                "end_date": datetime.date(2021, 3, 1),
+            }
+        )
+        # ACT
+        wizard.ine_generate_xml()
+        document = etree.fromstring(base64.b64decode(wizard.txt_binary))
+        # ASSERT
+        self.assertEqual(wizard.end_date, datetime.date(2021, 2, 28))
+        for residency_tag in document.iter("{%s}RESIDENCIA" % namespace):
+            days = [
+                movement_tag.findtext("{%s}N_DIA" % namespace)
+                for movement_tag in residency_tag
+                if movement_tag.tag.endswith("MOVIMIENTO")
+            ]
+            self.assertEqual(len(days), len(set(days)), "Repeated day in a residence")
+        self._assert_valid_against_schema(document, "iria_hotel_survey.xsd")
+
+    def test_configuration_problems_list_every_missing_field(self):
+        """The property reports all the missing data at once, not the first."""
+        # ARRANGE
+        self._configure_ine_property()
+        self.pms_property1.write(
+            {
+                "ine_tourism_number": False,
+                "city": False,
+                "phone": "123",
+            }
+        )
+        # ACT
+        problems = self.pms_property1.ine_configuration_problems()
+        # ASSERT
+        self.assertFalse(self.pms_property1.ine_ready)
+        self.assertEqual(len(problems), 3, "\n".join(problems))
+        self.assertEqual(self.pms_property1.ine_blocking_reasons, "\n".join(problems))
+
+    def test_configuration_problems_seats_below_room_capacity(self):
+        """Declaring fewer seats than the rooms offer breaks the survey."""
+        # ARRANGE
+        self._configure_ine_property()
+        self.pms_property1.ine_seats = 0
+        # ACT
+        problems = self.pms_property1.ine_configuration_problems()
+        # ASSERT
+        self.assertFalse(self.pms_property1.ine_ready)
+        self.assertTrue(
+            any("seats" in problem for problem in problems), "\n".join(problems)
+        )
+
+    def test_configuration_problems_empty_when_ready(self):
+        """A fully configured property reports nothing to fix."""
+        # ARRANGE
+        self._configure_ine_property()
+        # ACT & ASSERT
+        self.assertEqual(self.pms_property1.ine_configuration_problems(), [])
+        self.assertTrue(self.pms_property1.ine_ready)
+
+    def test_check_xml_content_detects_broken_daily_chain(self):
+        """Guests cannot vanish: the INE checks the daily chain per residence."""
+        # ARRANGE
+        self._configure_ine_property()
+        wizard = self.env["pms.ine.wizard"].new(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "start_date": datetime.date(2021, 2, 1),
+                "end_date": datetime.date(2021, 2, 28),
+            }
+        )
+        survey_tag = ET.Element("ENCUESTA")
+        header_tag = ET.SubElement(survey_tag, "CABECERA")
+        ET.SubElement(header_tag, "DIAS_ABIERTO_MES_REFERENCIA").text = "28"
+        accommodation_tag = ET.SubElement(survey_tag, "ALOJAMIENTO")
+        residency_tag = ET.SubElement(accommodation_tag, "RESIDENCIA")
+        ET.SubElement(residency_tag, "ID_PROVINCIA_ISLA").text = "ES300"
+        for day, (arrivals, departures, stays) in {
+            1: (2, 0, 2),
+            2: (0, 0, 0),  # two guests disappear without checking out
+        }.items():
+            movement_tag = ET.SubElement(residency_tag, "MOVIMIENTO")
+            ET.SubElement(movement_tag, "N_DIA").text = "%02d" % day
+            ET.SubElement(movement_tag, "ENTRADAS").text = str(arrivals)
+            ET.SubElement(movement_tag, "SALIDAS").text = str(departures)
+            ET.SubElement(movement_tag, "PERNOCTACIONES").text = str(stays)
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError, msg="A broken daily chain must be reported"
+        ):
+            wizard._ine_check_xml_content(survey_tag)
+
+    def test_content_rules_run_without_a_record(self):
+        """The rules only need the built file, so they read on their own."""
+        # ARRANGE
+        survey_tag = ET.Element("ENCUESTA")
+        header_tag = ET.SubElement(survey_tag, "CABECERA")
+        ET.SubElement(header_tag, "DIAS_ABIERTO_MES_REFERENCIA").text = "28"
+        accommodation_tag = ET.SubElement(survey_tag, "ALOJAMIENTO")
+        residency_tag = ET.SubElement(accommodation_tag, "RESIDENCIA")
+        ET.SubElement(residency_tag, "ID_PROVINCIA_ISLA").text = "ES300"
+        for day, (arrivals, departures, stays) in {
+            1: (2, 0, 2),
+            2: (0, 0, 0),  # two guests disappear without checking out
+        }.items():
+            movement_tag = ET.SubElement(residency_tag, "MOVIMIENTO")
+            ET.SubElement(movement_tag, "N_DIA").text = "%02d" % day
+            ET.SubElement(movement_tag, "ENTRADAS").text = str(arrivals)
+            ET.SubElement(movement_tag, "SALIDAS").text = str(departures)
+            ET.SubElement(movement_tag, "PERNOCTACIONES").text = str(stays)
+        # ACT
+        problems = check_survey_content(survey_tag, 28)
+        # ASSERT: the message has to name the day, which is what the
+        # establishment needs to find the guest behind it
+        self.assertEqual(len(problems), 1)
+        self.assertIn("ES300", problems[0])
+        self.assertIn("2", problems[0])
+
+    def test_phone_keeps_the_thirteen_characters_of_the_schema(self):
+        """The survey schemas take up to 13 characters in TELEFONO_1."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        self.pms_property1.phone = "+34 971 30 41 24 9"
+        # ACT
+        document = self._generate_ine_document()
+        # ASSERT
+        self.assertEqual(document.findtext("CABECERA/TELEFONO_1"), "+349713041249")
+
+    def test_extra_beds_from_guests_over_room_capacity(self):
+        """A guest beyond the places of the room sleeps in an extra bed.
+
+        Most establishments never sell an extra bed as a service, so the
+        only trace of a cot is the guest registered in a room that does not
+        have a fixed bed for them.
+        """
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.date(2021, 2, 10),
+                "checkout": datetime.date(2021, 2, 11),
+                "preferred_room_id": self.room_double_3.id,
+                "partner_id": self.partner_1.id,
+                "adults": 2,
+                # a child that does not take a place of the room: the
+                # commercial reading of a cot, and what the establishments
+                # of the fleet record for a baby
+                "children": 1,
+                "children_occupying": 0,
+                "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
+            }
+        )
+        for partner in (self.partner_1, self.partner_2, self.partner_3):
+            checkin = self.env["pms.checkin.partner"].create(
+                {
+                    "partner_id": partner.id,
+                    "reservation_id": reservation.id,
+                    "street": "Test street 1",
+                    "city": "Test city",
+                    "zip": "08001",
+                }
+            )
+            with freeze_time("2021-02-10"):
+                checkin.action_on_board()
+        # ACT
+        extra_beds = self.env["pms.ine.wizard"]._ine_get_extra_beds(
+            self.pms_property1, datetime.date(2021, 2, 10)
+        )
+        # ASSERT: three guests in a room offering two places
+        self.assertEqual(extra_beds, 1)
+
+    def test_extra_beds_keep_the_sold_services(self):
+        """Selling the extra bed is still a valid way of reporting it."""
+        # ARRANGE: reservation 4 carries an extra bed service
+        self.ideal_scenario()
+        # ACT
+        extra_beds = self.env["pms.ine.wizard"]._ine_get_extra_beds(
+            self.pms_property1, datetime.date(2021, 2, 2)
+        )
+        # ASSERT
+        self.assertEqual(extra_beds, 1)
+
+    def test_generate_xml_reports_the_extra_beds(self):
+        """The file carries the extra beds and stays within the seats.
+
+        Overnight stays over the declared seats are rejected by the INE
+        (XML_12), and that is what happens when the guest is counted but
+        the bed they sleep in is not.
+        """
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        self.pms_property1.ine_seats = 10
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.date(2021, 2, 10),
+                "checkout": datetime.date(2021, 2, 11),
+                "preferred_room_id": self.room_double_3.id,
+                "partner_id": self.partner_1.id,
+                "adults": 2,
+                # a child that does not take a place of the room: the
+                # commercial reading of a cot, and what the establishments
+                # of the fleet record for a baby
+                "children": 1,
+                "children_occupying": 0,
+                "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
+            }
+        )
+        for partner in (self.partner_1, self.partner_2, self.partner_3):
+            checkin = self.env["pms.checkin.partner"].create(
+                {
+                    "partner_id": partner.id,
+                    "reservation_id": reservation.id,
+                    "street": "Test street 1",
+                    "city": "Test city",
+                    "zip": "08001",
+                }
+            )
+            with freeze_time("2021-02-10"):
+                checkin.action_on_board()
+        # ACT
+        document = self._generate_ine_document()
+        # ASSERT
+        movement_tag = document.find(
+            "HABITACIONES/HABITACIONES_MOVIMIENTO[HABITACIONES_N_DIA='10']"
+        )
+        self.assertEqual(movement_tag.findtext("PLAZAS_SUPLETORIAS"), "1")
+        self._assert_valid_against_schema(document, "ine_hotel_survey_published.xsd")
+
+    def test_country_code_falls_back_to_the_alpha_3(self):
+        """Every country the INE lists is reached through its alpha-3."""
+        # ACT & ASSERT
+        self.assertEqual(
+            self.env["pms.ine.wizard"]._ine_get_country_code(self.country_italy),
+            "ITA",
+        )
+
+    def test_country_code_of_the_ine_wins_over_the_alpha_3(self):
+        """Kosovo has no alpha-3 in ISO, and the INE codes it as KOS."""
+        # ARRANGE
+        kosovo = self.env.ref("base.xk")
+        # ACT & ASSERT
+        self.assertFalse(kosovo.code_alpha3)
+        self.assertEqual(
+            self.env["pms.ine.wizard"]._ine_get_country_code(kosovo), "KOS"
+        )
+
+    def test_country_without_code_is_reported(self):
+        """A country with no code would empty ID_PAIS and fail the schema."""
+        # ARRANGE
+        country = self.env["res.country"].create(
+            {"name": "Country without codes", "code": "ZZ"}
+        )
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError, msg="A country with no INE code must be reported"
+        ):
+            self.env["pms.ine.wizard"]._ine_get_country_code(country)
+
+    def test_generate_xml_requires_guest_movements(self):
+        """A period without guest movements cannot produce a valid file."""
+        # ARRANGE
+        self._configure_ine_property()
+        wizard = self.env["pms.ine.wizard"].new(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "start_date": datetime.date(2021, 2, 1),
+                "end_date": datetime.date(2021, 2, 28),
+            }
+        )
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="Cannot generate the INE file without guest movements",
+        ):
+            wizard.ine_generate_xml()
+
+    def test_generate_xml_short_phone_raises(self):
+        """The survey schema requires at least 9 digits in the phone."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        self.pms_property1.phone = "12345"
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError, msg="Cannot generate the INE file with a short phone"
+        ):
+            self._generate_ine_document()
+
+    def test_generate_xml_hotel_rate_and_percentage_are_consistent(self):
+        """Every client type with a rate reports a non-zero percentage and
+        vice versa, as the INE content validations require."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        # ACT
+        document = self._generate_ine_document()
+        # ASSERT
+        prices_tag = document.find("PRECIOS")
+        # the INE does not name both tags of a client type symmetrically
+        client_types = [
+            ("ADR_TOUROPERADOR_TRADICIONAL", "TOUROPERADOR_TRADICIONAL"),
+            ("ADR_TOUROPERADOR_ONLINE", "TOUROPERADOR_ONLINE"),
+            ("ADR_EMPRESAS", "EMPRESAS"),
+            ("ADR_AGENCIA_DE_VIAJE_TRADICIONAL", "AGENCIA_TRADICIONAL"),
+            ("ADR_AGENCIA_DE_VIAJE_ONLINE", "AGENCIA_ONLINE"),
+            ("ADR_PARTICULARES", "PARTICULARES"),
+            ("ADR_GRUPOS", "GRUPOS"),
+            ("ADR_INTERNET", "INTERNET"),
+            ("ADR_OTROS", "OTROS"),
+        ]
+        for adr_tag, percent_key in client_types:
+            rate = Decimal(prices_tag.find(adr_tag).text)
+            percent = Decimal(
+                prices_tag.find("PCTN_HABITACIONES_OCUPADAS_" + percent_key).text
+            )
+            self.assertEqual(
+                rate > 0,
+                percent > 0,
+                f"{adr_tag}: rate {rate} and percentage {percent} are inconsistent",
+            )
+
+    def test_order_number_is_kept_in_the_property(self):
+        """The order number is fixed per establishment: it is prefilled from
+        the property and kept there when filled in the wizard."""
+        # ARRANGE
+        self.ideal_scenario()
+        self._configure_ine_property()
+        wizard = self.env["pms.ine.wizard"].new(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "start_date": datetime.date(2021, 2, 1),
+                "end_date": datetime.date(2021, 2, 28),
+            }
+        )
+        self.assertFalse(wizard.ine_order_number)
+        # ACT
+        wizard.ine_order_number = "2026HOT0361"
+        wizard.ine_generate_xml()
+        # ASSERT
+        self.assertEqual(self.pms_property1.ine_order_number, "2026HOT0361")
+        prefilled = self.env["pms.ine.wizard"].new(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "start_date": datetime.date(2021, 2, 1),
+                "end_date": datetime.date(2021, 2, 28),
+            }
+        )
+        self.assertEqual(prefilled.ine_order_number, "2026HOT0361")

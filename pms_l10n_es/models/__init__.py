@@ -1,4 +1,5 @@
 from . import pms_property
+from . import res_country
 from . import res_country_state
 from . import pms_ine_tourism_type_category
 from . import pms_room

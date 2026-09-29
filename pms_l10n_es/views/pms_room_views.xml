@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='sequence']" position="after">
                  <field name="in_ine" />
+                 <field name="ine_apartment_type" />
                  <field name="institution_independent_account" />
             </xpath>
             <xpath expr="//notebook" position="inside">

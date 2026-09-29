@@ -5,3 +5,4 @@
   * Sara Lago
   * Brais Abeijon
   * Miguel Padin
+  * David Pacheco
