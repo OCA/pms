@@ -2356,6 +2356,7 @@ class PmsReservation(models.Model):
 
     def action_cancel(self):
         self._check_block_modify_past_out_service_cancel()
+        self._check_block_cancel_invoiced()
         for record in self:
             # else state = cancel
             if not record.allowed_cancel:
@@ -2407,6 +2408,42 @@ class PmsReservation(models.Model):
                 )
             raise UserError(
                 _("You cannot delete an out-of-service block already in the past.")
+            )
+
+    def _check_block_cancel_invoiced(self):
+        """Refuse to cancel a reservation whose nights are already invoiced.
+
+        Cancelling sets a 100% cancellation discount on every night, so the folio
+        stops expecting the accommodation line and drops it, and
+        folio.sale.line.unlink() refuses to drop a line invoiced in a posted move.
+        Without this check the cancellation dies deep inside the recomputation of
+        the folio sale lines, with a message about sale order lines that tells the
+        user nothing about what to do. The invoice has to be refunded first: the
+        refund brings the invoiced quantity back to zero and releases the
+        reservation.
+        """
+        for record in self:
+            blocked_lines = record.folio_id.sale_line_ids.filtered(
+                lambda line, res=record: line.reservation_id == res
+                and line.qty_invoiced
+                and not line.invoice_lines.move_id.filtered(
+                    lambda move: move.state == "draft"
+                )
+            )
+            if not blocked_lines:
+                continue
+            invoices = blocked_lines.invoice_lines.move_id.filtered(
+                lambda move: move.state == "posted"
+            )
+            raise UserError(
+                _(
+                    "The reservation %(reservation)s is already invoiced in "
+                    "%(invoices)s, so it cannot be cancelled. Refund that invoice "
+                    "first: the refund releases the reservation and then it can be "
+                    "cancelled.",
+                    reservation=record.name,
+                    invoices=", ".join(invoices.mapped("name")),
+                )
             )
 
     def _check_block_modify_past_out_service_cancel(self):
