@@ -16,11 +16,19 @@
                             options="{'no_create': True,'no_open': True}"
                         />
                         <separator />
-                        <label for="name" string="Max. days InTime before Checkin" />
-                        <field name="days_intime" />
+                        <label
+                            for="days_intime"
+                            string="Free cancellation up to (days before check-in)"
+                            attrs="{'invisible': [('is_non_refundable', '=', True)]}"
+                        />
+                        <field
+                            name="days_intime"
+                            attrs="{'invisible': [('is_non_refundable', '=', True)]}"
+                        />
                     </h3>
                     <group>
                         <group string="Late">
+                            <field name="is_non_refundable" />
                             <field name="penalty_late" />
                             <field name="apply_on_late" />
                             <field
@@ -48,6 +56,7 @@
         <field name="arch" type="xml">
             <tree name="Cancelation Rules">
                 <field name="name" />
+                <field name="is_non_refundable" />
                 <field name="days_intime" />
                 <field name="penalty_late" />
                 <field name="apply_on_late" />

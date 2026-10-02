@@ -1732,6 +1732,73 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
         reservation.flush_recordset()
         self.assertEqual(reservation.cancelled_reason, "late", "-----------")
 
+    def _create_reservation_with_rule(self, rule_vals, days_to_checkin):
+        rule = self.env["pms.cancelation.rule"].create(
+            dict(
+                {
+                    "name": "Cancelation Rule Test",
+                    "pms_property_ids": [self.pms_property1.id],
+                },
+                **rule_vals,
+            )
+        )
+        pricelist = self.env["product.pricelist"].create(
+            {
+                "name": "Pricelist Test",
+                "pms_property_ids": [self.pms_property1.id],
+                "cancelation_rule_id": rule.id,
+                "availability_plan_id": self.availability_plan1.id,
+                "is_pms_available": True,
+            }
+        )
+        partner = self.env["res.partner"].create({"firstname": "Host1"})
+        checkin = fields.date.today() + datetime.timedelta(days=days_to_checkin)
+        return self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkin + datetime.timedelta(days=3),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": partner.id,
+                "pms_property_id": self.pms_property1.id,
+                "pricelist_id": pricelist.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+
+    @freeze_time("2012-01-14")
+    def test_cancelation_reason_non_refundable(self):
+        """
+        A non-refundable rule applies the late penalty whenever the
+        reservation is cancelled before check-in, however far ahead.
+        """
+        reservation = self._create_reservation_with_rule(
+            {"is_non_refundable": True, "days_intime": 0}, days_to_checkin=30
+        )
+        reservation.action_cancel()
+        reservation.flush_recordset()
+        self.assertEqual(
+            reservation.cancelled_reason,
+            "late",
+            "A non-refundable rule must always apply the late penalty",
+        )
+
+    @freeze_time("2012-01-14")
+    def test_cancelation_reason_zero_days_is_free_until_arrival(self):
+        """
+        Without the non-refundable flag, 0 free cancellation days means
+        that cancellation is free until the day of arrival.
+        """
+        reservation = self._create_reservation_with_rule(
+            {"days_intime": 0}, days_to_checkin=30
+        )
+        reservation.action_cancel()
+        reservation.flush_recordset()
+        self.assertEqual(
+            reservation.cancelled_reason,
+            "intime",
+            "With 0 free cancellation days, cancelling before arrival is free",
+        )
+
     @freeze_time("2012-01-14")
     def test_compute_checkin_partner_count(self):
         """
