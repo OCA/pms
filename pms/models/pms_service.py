@@ -597,7 +597,11 @@ class PmsService(models.Model):
 
     def _get_price_unit_line(self, date=False):
         self.ensure_one()
-        if self.reservation_id.reservation_type in ("normal", "staff"):
+        Folio = self.env["pms.folio"]
+        if (
+            self.reservation_id.reservation_type
+            in Folio._get_reservation_types_with_service_pricing()
+        ):
             folio = self.folio_id
             reservation = self.reservation_id
             origin = reservation if reservation else folio
