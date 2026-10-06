@@ -141,11 +141,7 @@ class WizardIne(models.TransientModel):
                     and x.occupies_availability
                 )
                 if reservation_lines:
-                    extra_beds += (
-                        ebsl.day_qty
-                        - reservation_lines.reservation_id.children_occupying
-                    )
-                    # children occuppying do not have checkin partner data
+                    extra_beds += ebsl.day_qty
 
             # search all rooms
             all_rooms = (
