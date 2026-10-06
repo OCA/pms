@@ -50,6 +50,7 @@
                                     attrs="{'invisible':[('parent_id', '=', False)]}"
                                 />
                                 <field name="capacity" />
+                                <field name="children_capacity" />
                                 <field name="extra_beds_allowed" />
                                 <field name="short_name" />
                                 <!-- <field name="uom_id" invisible="1" /> -->
@@ -245,6 +246,7 @@
                 <field name="room_type_id" />
                 <field name="ubication_id" />
                 <field name="capacity" />
+                <field name="children_capacity" optional="show" />
                 <field name="extra_beds_allowed" />
                 <field name="room_amenity_ids" widget="many2many_tags" />
                 <field name="short_name" />

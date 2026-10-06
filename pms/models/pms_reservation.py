@@ -356,12 +356,9 @@ class PmsReservation(models.Model):
         compute="_compute_adults",
         tracking=True,
     )
-    children_occupying = fields.Integer(
-        help="Number of children there in guest list whose presence counts",
-    )
     children = fields.Integer(
-        help="Number total of children there in guest list,"
-        "whose presence counts or not",
+        help="Number of children there in guest list. They take the regular "
+        "places of the room first, and only overflow into its children places",
         readonly=False,
         tracking=True,
     )
@@ -2215,9 +2212,10 @@ class PmsReservation(models.Model):
 
         for record in self:
             record._check_services(vals)
-            # Only check if adult to avoid to check capacity in intermediate states
-            # (p.e. flush) that not take access to possible extra beds service in vals
-            if "adults" in vals:
+            # Only check on occupancy changes to avoid checking capacity in
+            # intermediate states (p.e. flush) that not take access to possible
+            # extra beds service in vals
+            if "adults" in vals or "children" in vals:
                 record._check_capacity()
             # The room of the lines is recomputed from the preferred room, so
             # that write does not go through pms.reservation.line.write and the

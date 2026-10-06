@@ -685,23 +685,31 @@ class PmsReservationLine(models.Model):
         of the room (capacity + allowed extra beds) instead of the extra beds
         actually sold, to avoid false positives in intermediate states where
         the extra bed service is not created yet.
+
+        Children count too: they take regular places first and only overflow
+        into the children places of the room.
         """
         if self.env.context.get("avoid_capacity_check"):
             return
         for record in self:
             reservation = record.reservation_id
-            if not record.room_id or reservation.reservation_type == "out":
+            room = record.room_id
+            if not room or reservation.reservation_type == "out":
                 continue
-            occupancy = reservation.adults + reservation.children_occupying
-            max_capacity = record.room_id.capacity + record.room_id.extra_beds_allowed
-            if occupancy > max_capacity:
+            if not room.fits_occupancy(
+                reservation.adults, reservation.children, room.extra_beds_allowed
+            ):
                 raise ValidationError(
                     _(
-                        "The room %(room)s can't hold %(occupancy)s guests "
-                        "(maximum capacity: %(capacity)s) (%(reservation)s)",
-                        room=record.room_id.display_name,
-                        occupancy=occupancy,
-                        capacity=max_capacity,
+                        "The room %(room)s can't hold %(adults)s adults and "
+                        "%(children)s children (capacity: %(capacity)s, "
+                        "children places: %(children_capacity)s) "
+                        "(%(reservation)s)",
+                        room=room.display_name,
+                        adults=reservation.adults,
+                        children=reservation.children,
+                        capacity=room.capacity + room.extra_beds_allowed,
+                        children_capacity=room.children_capacity,
                         reservation=reservation.name,
                     )
                 )
