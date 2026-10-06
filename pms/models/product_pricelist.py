@@ -71,6 +71,14 @@ class ProductPricelist(models.Model):
         help="If the pricelist is available in the PMS",
         default=False,
     )
+    occupancy_ids = fields.One2many(
+        string="Occupancy Prices",
+        help="How the price of each room type changes with the number of "
+        "adults staying in it",
+        comodel_name="pms.pricelist.occupancy",
+        inverse_name="pricelist_id",
+        check_pms_properties=True,
+    )
 
     def _get_applicable_rules_domain(self, products, date, **kwargs):
         domain = super()._get_applicable_rules_domain(products, date, **kwargs)

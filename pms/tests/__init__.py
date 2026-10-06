@@ -19,6 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from . import test_pms_pricelist_occupancy
 from . import test_pms_reservation
 from . import test_pms_pricelist
 from . import test_pms_checkin_partner

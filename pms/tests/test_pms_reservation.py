@@ -4,7 +4,7 @@ from freezegun import freeze_time
 
 from odoo import fields
 from odoo.exceptions import UserError, ValidationError
-from odoo.tests import tagged
+from odoo.tests import Form, tagged
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
@@ -959,6 +959,135 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
                 }
             )
             reservation.flush_recordset()
+
+    def _occupancy_priced_reservation(self):
+        """A reservation of a room type priced for two adults, 20% less each."""
+        self.room_type_double.default_occupancy = 2
+        self.env["pms.pricelist.occupancy"].create(
+            {
+                "pricelist_id": self.pricelist1.id,
+                "room_type_id": self.room_type_double.id,
+                "decrease_mode": "percent",
+                "decrease_value": 20.0,
+            }
+        )
+        return self.env["pms.reservation"].create(
+            {
+                "adults": 2,
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pricelist_id": self.pricelist1.id,
+                "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+
+    def test_changing_the_adults_keeps_the_prices(self):
+        """The nights keep their price, as they do when the pricelist or the
+        room type change: a price already given is only updated on purpose."""
+        # ARRANGE
+        reservation = self._occupancy_priced_reservation()
+        price_for_two = reservation.reservation_line_ids[0].price
+        self.assertTrue(
+            price_for_two, "The night needs a price for the test to mean anything"
+        )
+        # ACT
+        reservation.adults = 1
+        # ASSERT
+        self.assertAlmostEqual(
+            reservation.reservation_line_ids[0].price,
+            price_for_two,
+            places=2,
+            msg="Changing the adults should not reprice the nights by itself",
+        )
+
+    def test_changing_the_adults_flags_the_prices_as_outdated(self):
+        """The form tells the prices no longer match the adults staying."""
+        # ARRANGE
+        reservation = self._occupancy_priced_reservation()
+        form = Form(reservation)
+        self.assertFalse(
+            form.show_update_pricelist, "Nothing changed yet, nothing to update"
+        )
+        # ACT
+        form.adults = 1
+        # ASSERT
+        self.assertTrue(
+            form.show_update_pricelist,
+            "Changing the adults should offer to update the prices",
+        )
+
+    def test_updating_the_prices_follows_the_adults(self):
+        """Updating the prices on purpose prices the nights for the adults
+        staying, every time it is asked for."""
+        # ARRANGE
+        reservation = self._occupancy_priced_reservation()
+        price_for_two = reservation.reservation_line_ids[0].price
+        # ACT & ASSERT
+        reservation.adults = 1
+        reservation.update_prices()
+        self.assertAlmostEqual(
+            reservation.reservation_line_ids[0].price,
+            price_for_two * 0.8,
+            places=2,
+            msg="One adult below the default occupancy should discount 20%",
+        )
+        reservation.adults = 2
+        reservation.update_prices()
+        self.assertAlmostEqual(
+            reservation.reservation_line_ids[0].price,
+            price_for_two,
+            places=2,
+            msg="Going back to two adults should bring the price back",
+        )
+
+    def test_a_night_added_later_is_priced_for_the_adults(self):
+        """A night with no price yet is priced for the adults staying, while
+        the nights that had one keep it."""
+        # ARRANGE
+        reservation = self._occupancy_priced_reservation()
+        price_for_two = reservation.reservation_line_ids[0].price
+        reservation.adults = 1
+        # ACT
+        reservation.checkout = fields.date.today() + datetime.timedelta(days=2)
+        # ASSERT
+        nights = reservation.reservation_line_ids.sorted("date")
+        self.assertEqual(len(nights), 2, "The reservation should hold two nights")
+        self.assertAlmostEqual(
+            nights[0].price,
+            price_for_two,
+            places=2,
+            msg="The night that had a price should keep it",
+        )
+        self.assertAlmostEqual(
+            nights[1].price,
+            price_for_two * 0.8,
+            places=2,
+            msg="The new night should be priced for one adult",
+        )
+
+    def test_prices_written_along_with_the_adults_are_kept(self):
+        """Whoever writes the adults and the prices of the nights together,
+        as a channel manager does with what an OTA sold, gets those prices."""
+        # ARRANGE
+        reservation = self._occupancy_priced_reservation()
+        night = reservation.reservation_line_ids
+        # ACT
+        reservation.write(
+            {
+                "adults": 1,
+                "reservation_line_ids": [(1, night.id, {"price": 70.0})],
+            }
+        )
+        # ASSERT
+        self.assertAlmostEqual(
+            night.price,
+            70.0,
+            places=2,
+            msg="The price written should not be replaced by the pricelist one",
+        )
 
     def test_reservation_action_assign(self):
         """

@@ -218,7 +218,21 @@ class ProductPricelistItem(models.Model):
                 product, quantity, uom, date, currency, **kwargs
             )
 
-        return price
+        return self._apply_occupancy_price(product, price, **kwargs)
+
+    def _apply_occupancy_price(self, product, price, **kwargs):
+        """Derive the price for the occupancy asked for, if any.
+
+        The price of the rule is the one for the default occupancy of the room
+        type. Callers that do not ask for an occupancy get that price, so this
+        is transparent to anything pricing a room type without guests in hand.
+        """
+        occupancy = kwargs.get("occupancy")
+        room_type = product.room_type_id if occupancy else False
+        if not room_type:
+            return price
+        pricelist = kwargs.get("pricelist") or self.pricelist_id
+        return room_type._get_occupancy_price(price, occupancy, pricelist)
 
     def _compute_base_consumption_price(
         self, product, quantity, uom, date, target_currency, **kwargs

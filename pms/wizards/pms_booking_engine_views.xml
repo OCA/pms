@@ -104,6 +104,10 @@
                                     force_save="1"
                                 />
                                 <field
+                                    name="adults"
+                                    attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
+                                />
+                                <field
                                     name="board_service_room_id"
                                     attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
                                 />

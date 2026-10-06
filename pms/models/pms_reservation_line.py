@@ -231,7 +231,6 @@ class PmsReservationLine(models.Model):
         qty = 1.0
         uom = product.uom_id
         currency = self.currency_id or self.order_id.company_id.currency_id
-        consumption_date = self.date
 
         price = pricelist_rule._compute_consumption_price(
             product,
@@ -239,11 +238,24 @@ class PmsReservationLine(models.Model):
             uom,
             order_date,
             currency=currency,
-            consumption_date=consumption_date,
-            pms_property_id=self.pms_property_id.id,
+            **self._get_price_kwargs(),
         )
 
         return price
+
+    def _get_price_kwargs(self):
+        """What the pricelist resolves the price of this night with.
+
+        Kept apart so that modules pricing on more than the adults staying can
+        add to it without repeating how a night is priced.
+        """
+        self.ensure_one()
+        return {
+            "consumption_date": self.date,
+            "pms_property_id": self.pms_property_id.id,
+            "occupancy": self.reservation_id.adults,
+            "pricelist": self.reservation_id.pricelist_id,
+        }
 
     def _get_product_price_context(self):
         """Gives the context for product price computation.
