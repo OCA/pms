@@ -4,6 +4,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools import str2bool
 
 
 class PmsRoom(models.Model):
@@ -77,7 +78,14 @@ class PmsRoom(models.Model):
         check_pms_properties=True,
     )
     capacity = fields.Integer(
-        help="The maximum number of people that can occupy a room"
+        help="Number of places where anyone can sleep, adults or children"
+    )
+    children_capacity = fields.Integer(
+        help="Number of places where only children can sleep, such as child "
+        "bunk beds. Adults never occupy them, children occupy them only once "
+        "the regular capacity is full",
+        required=True,
+        default=0,
     )
     extra_beds_allowed = fields.Integer(
         help="Number of extra beds allowed in room",
@@ -314,16 +322,15 @@ class PmsRoom(models.Model):
                     and x.product_id.is_extra_bed is True
                 )
                 num_extra_beds = sum(extra_beds.mapped("day_qty")) if extra_beds else 0
-            if line.room_id:
-                if (
-                    reservation.adults + reservation.children_occupying
-                ) > line.room_id.get_capacity(num_extra_beds):
-                    raise ValidationError(
-                        _(
-                            "Persons can't be higher than room capacity (%s)",
-                            reservation.name,
-                        )
+            if line.room_id and not line.room_id.fits_occupancy(
+                reservation.adults, reservation.children, num_extra_beds
+            ):
+                raise ValidationError(
+                    _(
+                        "Persons can't be higher than room capacity (%s)",
+                        reservation.name,
                     )
+                )
 
     @api.constrains("short_name")
     def _check_short_name(self):
@@ -430,3 +437,36 @@ class PmsRoom(models.Model):
                     _("Extra beds can't be greater than allowed beds for this room")
                 )
             return record.capacity + extra_bed
+
+    @api.model
+    def _children_occupy_capacity(self):
+        """Whether children take a place in the room.
+
+        Off unless the property turns it on, which is how it worked until
+        now: counting them refuses reservations that properties have been
+        taking, so it is theirs to decide and not something an upgrade does.
+        """
+        return str2bool(
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("pms.children_occupy_capacity"),
+            default=False,
+        )
+
+    def fits_occupancy(self, adults, children=0, extra_bed=0):
+        """Whether the room can hold the given guests.
+
+        Children sleep in the regular capacity as well, and only overflow
+        into 'children_capacity' once it is full. Adults never occupy those
+        places, so a room with free children places can still be full.
+
+        Whether children take a place at all is up to the property, see
+        _children_occupy_capacity.
+        """
+        self.ensure_one()
+        capacity = self.get_capacity(extra_bed)
+        if adults > capacity:
+            return False
+        if not self._children_occupy_capacity():
+            return True
+        return adults + children <= capacity + self.children_capacity

@@ -326,6 +326,7 @@
             <field name="room_type_id" ref="pms_room_type_single" />
             <field name="ubication_id" ref="pms_ubication_1st_floor" />
             <field name="capacity">1</field>
+            <field name="children_capacity">1</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
         </record>
         <record id="pms_room_single_02" model="pms.room">
@@ -333,6 +334,7 @@
             <field name="room_type_id" ref="pms_room_type_single" />
             <field name="ubication_id" ref="pms_ubication_1st_floor" />
             <field name="capacity">1</field>
+            <field name="children_capacity">1</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
         </record>
         <record id="pms_room_single_03" model="pms.room">
@@ -340,6 +342,7 @@
             <field name="room_type_id" ref="pms_room_type_single" />
             <field name="ubication_id" ref="pms_ubication_1st_floor" />
             <field name="capacity">1</field>
+            <field name="children_capacity">1</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
         </record>
         <record id="pms_room_single_04" model="pms.room">
@@ -347,6 +350,7 @@
             <field name="room_type_id" ref="pms_room_type_single" />
             <field name="ubication_id" ref="pms_ubication_1st_floor" />
             <field name="capacity">1</field>
+            <field name="children_capacity">1</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
         </record>
         <record id="pms_room_single_05" model="pms.room">
@@ -354,6 +358,7 @@
             <field name="room_type_id" ref="pms_room_type_single" />
             <field name="ubication_id" ref="pms_ubication_1st_floor" />
             <field name="capacity">1</field>
+            <field name="children_capacity">1</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
         </record>
         <!-- double rooms (My Property) -->
