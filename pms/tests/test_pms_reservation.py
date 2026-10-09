@@ -816,6 +816,39 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
                 }
             )
 
+    def _children_occupy_capacity(self):
+        """Count children towards the capacity, which is off by default."""
+        self.env["ir.config_parameter"].sudo().set_param(
+            "pms.children_occupy_capacity", "True"
+        )
+
+    @freeze_time("2012-01-14")
+    def test_children_do_not_occupy_by_default(self):
+        """Children take no place unless the property says otherwise.
+
+        Properties have been taking these reservations all along, so counting
+        children is theirs to turn on and never something an upgrade does.
+        """
+        # NO ARRANGE
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "adults": 2,
+                "children": 3,
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                "preferred_room_id": self.room1.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+        reservation.flush_recordset()
+        # ASSERT
+        self.assertEqual(
+            reservation.children, 3, "The children should fit in a double room"
+        )
+
     @freeze_time("2012-01-14")
     def test_manage_children_raise(self):
         # TEST CASE
@@ -823,27 +856,204 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
         Check if the error occurs when trying to put more people than the
         capacity of the room.
         --------------
-         Create a reservation with a double room whose capacity is two and try to create
-         it with two adults and a child occupying the room.
+         Create a reservation with a double room whose capacity is two and no
+         children places, and try to create it with two adults and a child.
         """
-        # NO ARRANGE
+        # ARRANGE
+        self._children_occupy_capacity()
         # ACT & ASSERT
-        with self.assertRaises(
+        with self.assertRaisesRegex(
             ValidationError,
+            "capacity",
             msg="The number of people is greater than the capacity of the room",
         ):
             reservation = self.env["pms.reservation"].create(
                 {
                     "adults": 2,
-                    "children_occupying": 1,
+                    "children": 1,
                     "checkin": datetime.datetime.now(),
                     "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                     "preferred_room_id": self.room1.id,
                     "partner_id": self.partner1.id,
                     "pms_property_id": self.pms_property1.id,
+                    "sale_channel_origin_id": self.sale_channel_direct.id,
                 }
             )
             reservation.flush_recordset()
+
+    @freeze_time("2012-01-14")
+    def test_children_use_children_capacity(self):
+        """
+        Check that children overflow into the children places of the room.
+        --------------
+        Create a room with two regular places and one children place, and a
+        reservation with two adults and one child: the child does not fit in
+        the regular places but takes the children one.
+        """
+        # ARRANGE
+        self._children_occupy_capacity()
+        room = self.env["pms.room"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "name": "Double with bunk bed",
+                "room_type_id": self.room_type_double.id,
+                "capacity": 2,
+                "children_capacity": 1,
+            }
+        )
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "adults": 2,
+                "children": 1,
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                "preferred_room_id": room.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+        reservation.flush_recordset()
+        # ASSERT
+        self.assertEqual(
+            reservation.children,
+            1,
+            "The child should take the children place of the room",
+        )
+
+    @freeze_time("2012-01-14")
+    def test_adults_do_not_use_children_capacity(self):
+        """
+        Check that adults never take the children places of the room.
+        --------------
+        Create a room with two regular places and two children places, and try
+        to book it for three adults: the room holds four guests but only two
+        of them can be adults.
+        """
+        # ARRANGE
+        room = self.env["pms.room"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "name": "Double with two bunk beds",
+                "room_type_id": self.room_type_double.id,
+                "capacity": 2,
+                "children_capacity": 2,
+            }
+        )
+        # ACT & ASSERT
+        with self.assertRaisesRegex(
+            ValidationError,
+            "capacity",
+            msg="Adults cannot occupy the children places of the room",
+        ):
+            reservation = self.env["pms.reservation"].create(
+                {
+                    "adults": 3,
+                    "checkin": datetime.datetime.now(),
+                    "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                    "preferred_room_id": room.id,
+                    "partner_id": self.partner1.id,
+                    "pms_property_id": self.pms_property1.id,
+                    "sale_channel_origin_id": self.sale_channel_direct.id,
+                }
+            )
+            reservation.flush_recordset()
+
+    def _occupancy_priced_reservation(self):
+        """A reservation of a room type priced for two adults, 20% less each."""
+        self.room_type_double.default_occupancy = 2
+        self.env["pms.pricelist.occupancy"].create(
+            {
+                "pricelist_id": self.pricelist1.id,
+                "room_type_id": self.room_type_double.id,
+                "decrease_mode": "percent",
+                "decrease_value": 20.0,
+            }
+        )
+        return self.env["pms.reservation"].create(
+            {
+                "adults": 2,
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pricelist_id": self.pricelist1.id,
+                "pms_property_id": self.pms_property1.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+
+    def test_price_follows_the_number_of_adults(self):
+        """Dropping an adult reprices the nights of the reservation."""
+        # ARRANGE
+        reservation = self._occupancy_priced_reservation()
+        price_for_two = reservation.reservation_line_ids[0].price
+        self.assertTrue(
+            price_for_two, "The night needs a price for the test to mean anything"
+        )
+        # ACT
+        reservation.adults = 1
+        # ASSERT
+        self.assertAlmostEqual(
+            reservation.reservation_line_ids[0].price,
+            price_for_two * 0.8,
+            places=2,
+            msg="One adult below the default occupancy should discount 20%",
+        )
+
+    def test_price_follows_the_adults_back_and_forth(self):
+        """Repricing keeps working, not just the first time."""
+        # ARRANGE
+        reservation = self._occupancy_priced_reservation()
+        price_for_two = reservation.reservation_line_ids[0].price
+        # ACT
+        reservation.adults = 1
+        reservation.adults = 2
+        # ASSERT
+        self.assertAlmostEqual(
+            reservation.reservation_line_ids[0].price,
+            price_for_two,
+            places=2,
+            msg="Going back to two adults should bring the price back",
+        )
+
+    def test_a_night_added_with_its_price_still_reprices(self):
+        """Every night is repriced, including one added afterwards.
+
+        The interface sends the price it already computed when a night is
+        added, so a night can be born with one and must be repriced all the
+        same.
+        """
+        # ARRANGE
+        reservation = self._occupancy_priced_reservation()
+        first_night = reservation.reservation_line_ids[0]
+        reservation.write(
+            {
+                "checkout": fields.date.today() + datetime.timedelta(days=2),
+                "reservation_line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "date": fields.date.today() + datetime.timedelta(days=1),
+                            "price": first_night.price,
+                        },
+                    )
+                ],
+            }
+        )
+        nights = reservation.reservation_line_ids.sorted("date")
+        self.assertEqual(len(nights), 2, "The reservation should hold two nights")
+        # ACT
+        reservation.adults = 1
+        # ASSERT
+        self.assertAlmostEqual(
+            nights[0].price,
+            nights[1].price,
+            places=2,
+            msg="Both nights should be repriced, not just the first one",
+        )
 
     def test_reservation_action_assign(self):
         """

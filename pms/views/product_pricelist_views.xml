@@ -107,6 +107,50 @@
 
 
 
+            <xpath expr="//page[@name='pricelist_rules']" position="after">
+                <page
+                    name="pricelist_occupancy"
+                    string="Occupancy"
+                    groups="pms.group_pms_user"
+                    attrs="{'invisible': [('is_pms_available', '=', False)]}"
+                >
+                    <field name="occupancy_ids">
+                        <tree>
+                            <field name="room_type_id" />
+                            <field name="summary" />
+                        </tree>
+                        <form>
+                            <!-- multi_pms_properties injects a domain on
+                                 room_type_id referring to pms_property_ids,
+                                 which a view can only use if it is present. -->
+                            <field name="pms_property_ids" invisible="1" />
+                            <group>
+                                <field
+                                    name="room_type_id"
+                                    options="{'no_create': True}"
+                                />
+                            </group>
+                            <group>
+                                <group
+                                    name="occupancy_above"
+                                    string="Above the default occupancy"
+                                >
+                                    <field name="increase_mode" />
+                                    <field name="increase_value" />
+                                </group>
+                                <group
+                                    name="occupancy_below"
+                                    string="Below the default occupancy"
+                                >
+                                    <field name="decrease_mode" />
+                                    <field name="decrease_value" />
+                                </group>
+                            </group>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+
             <xpath expr="//widget[@name='web_ribbon']" position="after">
                 <div class="oe_button_box " name="button_box">
                     <button

@@ -261,6 +261,7 @@ class BookingEngine(models.TransientModel):
                         "pricelist_id": record.pricelist_id.id,
                         "pms_property_id": folio.pms_property_id.id,
                         "board_service_room_id": line.board_service_room_id.id,
+                        "adults": line.adults,
                     }
                     reservation_values.append((0, 0, res_dict))
             folio.write(
@@ -314,6 +315,13 @@ class AvailabilityWizard(models.TransientModel):
         compute="_compute_rooms_available_qty",
     )
     rooms_selected_qty = fields.Integer(string="Number of Rooms Selected")
+    adults = fields.Integer(
+        help="Number of adults staying in each room, which the price is "
+        "derived from. Defaults to the occupancy the room type guarantees",
+        compute="_compute_adults",
+        store=True,
+        readonly=False,
+    )
     price_per_room = fields.Float(
         string="Price per room",
         help="Price per room in folio",
@@ -368,7 +376,14 @@ class AvailabilityWizard(models.TransientModel):
             )
             record.rooms_available_qty = pms_property.availability
 
-    @api.depends("room_type_id", "board_service_room_id", "checkin", "checkout")
+    @api.depends("room_type_id")
+    def _compute_adults(self):
+        for record in self:
+            record.adults = record.room_type_id.max_occupancy
+
+    @api.depends(
+        "room_type_id", "board_service_room_id", "checkin", "checkout", "adults"
+    )
     def _compute_price_per_room(self):
         for record in self:
             record.price_per_room = self._get_price_by_room_type(
@@ -378,6 +393,7 @@ class AvailabilityWizard(models.TransientModel):
                 checkout=record.checkout,
                 pricelist_id=record.booking_engine_id.pricelist_id.id,
                 pms_property_id=record.booking_engine_id.pms_property_id.id,
+                adults=record.adults,
             )
 
     @api.depends("price_per_room", "rooms_selected_qty")
@@ -413,6 +429,7 @@ class AvailabilityWizard(models.TransientModel):
                 quantity=1,
                 consumption_date=date_iterator,
                 pms_property_id=pms_property_id,
+                occupancy=adults,
             )
             room_type_total_price_per_room += self.env[
                 "account.tax"

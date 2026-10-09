@@ -73,6 +73,22 @@ class PmsRoomType(models.Model):
         compute="_compute_total_rooms_count",
         store=True,
     )
+    max_occupancy = fields.Integer(
+        string="Max. Occupancy",
+        help="Occupancy the room type guarantees: the smallest capacity among "
+        "its rooms, as any of them can be the one assigned. Zero when the "
+        "room type has no rooms yet",
+        compute="_compute_max_occupancy",
+        store=True,
+    )
+    default_occupancy = fields.Integer(
+        help="Occupancy the price of this room type is given for. Prices for "
+        "a different number of adults are derived from it. Zero to price the "
+        "room type regardless of its occupancy",
+        compute="_compute_default_occupancy",
+        store=True,
+        readonly=False,
+    )
     default_max_avail = fields.Integer(
         string="Default Max. Availability",
         help="Maximum simultaneous availability on own Booking Engine "
@@ -118,6 +134,52 @@ class PmsRoomType(models.Model):
     def _compute_total_rooms_count(self):
         for record in self:
             record.total_rooms_count = len(record.room_ids)
+
+    @api.depends("room_ids", "room_ids.active", "room_ids.capacity")
+    def _compute_max_occupancy(self):
+        """The smallest capacity among the rooms of the type.
+
+        The smallest and not the largest one: any room of the type can be the
+        one assigned, so a larger capacity is not guaranteed and selling it
+        would end up in an overbooking.
+        """
+        for record in self:
+            capacities = record.room_ids.mapped("capacity")
+            record.max_occupancy = min(capacities) if capacities else 0
+
+    @api.depends("max_occupancy")
+    def _compute_default_occupancy(self):
+        """Keep the occupancy the price is given for within reach of the rooms.
+
+        It defaults to the maximum occupancy and follows it down when a smaller
+        room joins the type, as otherwise adding that room would be refused. A
+        room type priced for fewer guests than it holds keeps its own value.
+        """
+        for record in self:
+            default_occupancy = record.default_occupancy or record.max_occupancy
+            if record.max_occupancy:
+                default_occupancy = min(default_occupancy, record.max_occupancy)
+            record.default_occupancy = default_occupancy
+
+    @api.constrains("default_occupancy")
+    def _check_default_occupancy(self):
+        """A room type cannot be priced for more guests than it guarantees.
+
+        Only on the value itself, never on max_occupancy: a smaller room
+        joining the type brings the default down (see
+        _compute_default_occupancy) and adding that room must not be refused.
+        Room types with no rooms are left alone, as they come before them.
+        """
+        for record in self:
+            if record.max_occupancy and record.default_occupancy > record.max_occupancy:
+                raise ValidationError(
+                    _(
+                        "The default occupancy of %(room_type)s can't be "
+                        "higher than the occupancy it guarantees (%(max)s)",
+                        room_type=record.display_name,
+                        max=record.max_occupancy,
+                    )
+                )
 
     @api.model
     def get_room_types_by_property(self, pms_property_id, default_code=None):
@@ -215,6 +277,38 @@ class PmsRoomType(models.Model):
             lambda r: not r.pms_property_id or r.pms_property_id.id == pms_property_id
         ).mapped("capacity")
         return min(capacities) if any(capacities) else 0
+
+    def _get_occupancy_rule(self, pricelist):
+        """The occupancy modifiers this pricelist holds for the room type."""
+        self.ensure_one()
+        if not pricelist:
+            return self.env["pms.pricelist.occupancy"]
+        return self.env["pms.pricelist.occupancy"].search(
+            [
+                ("pricelist_id", "=", pricelist.id),
+                ("room_type_id", "=", self.id),
+            ],
+            limit=1,
+        )
+
+    def _get_occupancy_price(self, price, occupancy, pricelist):
+        """Derive the price of the room type for a given number of adults.
+
+        The price of a pricelist is the one for the default occupancy of the
+        room type, and the configured modifiers derive the rest from it. Room
+        types with no default occupancy, or pricelists with no modifiers for
+        them, are priced the same no matter how many guests stay.
+        """
+        self.ensure_one()
+        if not occupancy or not self.default_occupancy:
+            return price
+        difference = occupancy - self.default_occupancy
+        if not difference:
+            return price
+        occupancy_rule = self._get_occupancy_rule(pricelist)
+        if not occupancy_rule:
+            return price
+        return max(occupancy_rule._apply(price, difference), 0)
 
     @api.model
     def get_default_board_service(self, pms_property_id, room_type_id, pricelist_id):

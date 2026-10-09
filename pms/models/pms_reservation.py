@@ -356,12 +356,9 @@ class PmsReservation(models.Model):
         compute="_compute_adults",
         tracking=True,
     )
-    children_occupying = fields.Integer(
-        help="Number of children there in guest list whose presence counts",
-    )
     children = fields.Integer(
-        help="Number total of children there in guest list,"
-        "whose presence counts or not",
+        help="Number of children there in guest list. They take the regular "
+        "places of the room first, and only overflow into its children places",
         readonly=False,
         tracking=True,
     )
@@ -2215,10 +2212,15 @@ class PmsReservation(models.Model):
 
         for record in self:
             record._check_services(vals)
-            # Only check if adult to avoid to check capacity in intermediate states
-            # (p.e. flush) that not take access to possible extra beds service in vals
-            if "adults" in vals:
+            # Only check on occupancy changes to avoid checking capacity in
+            # intermediate states (p.e. flush) that not take access to possible
+            # extra beds service in vals
+            if "adults" in vals or "children" in vals:
                 record._check_capacity()
+            # The price of a night is derived from the occupancy, and the
+            # compute keeps the price it already has
+            if any(field in vals for field in self._occupancy_price_fields()):
+                record._update_occupancy_prices()
             # The room of the lines is recomputed from the preferred room, so
             # that write does not go through pms.reservation.line.write and the
             # capacity of the new room would not be checked anywhere
@@ -2310,6 +2312,21 @@ class PmsReservation(models.Model):
                 ):
                     services_to_update_channel += service
         return services_to_update_channel
+
+    def _occupancy_price_fields(self):
+        """Fields whose change reprices the nights of the reservation.
+
+        Modules pricing on more than the adults staying add their own, so that
+        changing them reprices as well.
+        """
+        return ["adults"]
+
+    def _update_occupancy_prices(self):
+        """Reprice the nights after the occupancy changed."""
+        for record in self:
+            record.reservation_line_ids.with_context(
+                force_recompute=True
+            )._compute_price()
 
     def update_prices(self):
         self.ensure_one()
