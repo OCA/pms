@@ -650,6 +650,189 @@ class TestPmsFolioInvoice(TestPms, AccountTestInvoicingCommon):
             "The quantity of board services to be invoice is wrong",
         )
 
+    def _create_invoiced_reservation(self, nights=3):
+        reservation = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.property.id,
+                "checkin": datetime.date.today(),
+                "checkout": datetime.date.today() + datetime.timedelta(days=nights),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner_id.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
+            }
+        )
+        reservation.folio_id._create_invoices().action_post()
+        return reservation
+
+    def _room_sale_lines(self, reservation):
+        return reservation.folio_id.sale_line_ids.filtered(
+            lambda line: line.reservation_id == reservation
+            and not line.display_type
+            and not line.service_id
+        )
+
+    def test_extend_invoiced_stay_with_cheaper_nights(self):
+        """
+        Check that an invoiced stay can be extended with cheaper nights.
+        ------------
+        read_group sorts the nights of a reservation by price and they were
+        paired with the existing sale lines by position, so a new night
+        cheaper than the invoiced ones handed its price to the invoiced sale
+        line and the locked folio check refused the whole change.
+        """
+        # ARRANGE
+        reservation = self._create_invoiced_reservation()
+        invoiced_line = self._room_sale_lines(reservation)
+        invoiced_price = invoiced_line.price_unit
+        invoiced_nights = invoiced_line.reservation_line_ids
+
+        # ACT
+        reservation.write(
+            {
+                "reservation_line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "date": reservation.checkout + datetime.timedelta(days=i),
+                            "price": invoiced_price - 5,
+                            "room_id": reservation.preferred_room_id.id,
+                        },
+                    )
+                    for i in range(2)
+                ]
+            }
+        )
+
+        # ASSERT
+        self.assertEqual(
+            (invoiced_line.price_unit, invoiced_line.reservation_line_ids),
+            (invoiced_price, invoiced_nights),
+            "The invoiced sale line should keep its price and nights",
+        )
+        new_line = self._room_sale_lines(reservation) - invoiced_line
+        self.assertEqual(
+            (new_line.price_unit, new_line.product_uom_qty),
+            (invoiced_price - 5, 2),
+            "The new nights should go to a new sale line with their price",
+        )
+
+    def test_advance_checkin_of_invoiced_stay_with_cheaper_night(self):
+        """
+        Check that an invoiced stay can start earlier with a cheaper night.
+        ------------
+        The new night sorts first by date and by price, and no sale line
+        holds it yet. It must not take the invoiced sale line, which still
+        belongs to the invoiced nights.
+        """
+        # ARRANGE
+        reservation = self._create_invoiced_reservation()
+        invoiced_line = self._room_sale_lines(reservation)
+        invoiced_price = invoiced_line.price_unit
+
+        # ACT
+        reservation.write(
+            {
+                "reservation_line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "date": reservation.checkin - datetime.timedelta(days=1),
+                            "price": invoiced_price - 5,
+                            "room_id": reservation.preferred_room_id.id,
+                        },
+                    )
+                ]
+            }
+        )
+
+        # ASSERT
+        self.assertEqual(
+            (invoiced_line.price_unit, invoiced_line.product_uom_qty),
+            (invoiced_price, 3),
+            "The invoiced sale line should keep its price and nights",
+        )
+        room_lines = self._room_sale_lines(reservation).sorted("sequence")
+        self.assertEqual(
+            room_lines.mapped("price_unit"),
+            [invoiced_price - 5, invoiced_price],
+            "The earlier night should come first in the folio",
+        )
+
+    def test_add_cheaper_service_line_to_invoiced_service(self):
+        """
+        Check that an invoiced service accepts a new cheaper day.
+        ------------
+        Service lines were paired with their sale lines by position too, so
+        the same locked folio error was raised for services.
+        """
+        # ARRANGE
+        product = self.env["product.product"].create(
+            {"name": "Test Product 1", "per_day": True, "list_price": 10}
+        )
+        reservation = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.property.id,
+                "checkin": datetime.date.today(),
+                "checkout": datetime.date.today() + datetime.timedelta(days=3),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner_id.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
+            }
+        )
+        service = self.env["pms.service"].create(
+            {
+                "is_board_service": False,
+                "product_id": product.id,
+                "reservation_id": reservation.id,
+            }
+        )
+        reservation.folio_id._create_invoices().action_post()
+        invoiced_line = reservation.folio_id.sale_line_ids.filtered(
+            lambda line: line.service_id == service
+        )
+        invoiced_price = invoiced_line.price_unit
+        invoiced_qty = invoiced_line.product_uom_qty
+
+        # ACT
+        service.write(
+            {
+                "service_line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "date": max(service.service_line_ids.mapped("date"))
+                            + datetime.timedelta(days=1),
+                            "price_unit": invoiced_price - 2,
+                            "day_qty": 1,
+                        },
+                    )
+                ]
+            }
+        )
+
+        # ASSERT
+        self.assertEqual(
+            (invoiced_line.price_unit, invoiced_line.product_uom_qty),
+            (invoiced_price, invoiced_qty),
+            "The invoiced service sale line should keep its price and quantity",
+        )
+        new_line = (
+            reservation.folio_id.sale_line_ids.filtered(
+                lambda line: line.service_id == service
+            )
+            - invoiced_line
+        )
+        self.assertEqual(
+            new_line.price_unit,
+            invoiced_price - 2,
+            "The new day should go to a new sale line with its price",
+        )
+
     def _test_invoice_line_group_by_room_type_sections(self):
         """Test create and invoice from the Folio, and check qty invoice/to invoice,
         and the grouped invoice lines by room type, by one

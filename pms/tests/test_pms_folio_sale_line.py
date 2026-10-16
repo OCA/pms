@@ -1367,3 +1367,77 @@ class TestPmsFolioSaleLine(TestPms):
             section,
             "The sale line should point at the first section of the reservation",
         )
+
+    def test_comp_fsl_rooms_ordered_by_first_night(self):
+        """
+        Check that the room sale lines follow the stay, not the price.
+        ------------
+        read_group sorts the nights by price, so the folio and the invoice
+        listed the cheapest nights first whatever their dates were.
+        """
+        # ARRANGE
+        r_test = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
+            }
+        )
+
+        # ACT
+        nights = r_test.reservation_line_ids.sorted("date")
+        nights[0].price = 112
+        nights[1].price = 99
+        nights[2].price = 105
+
+        # ASSERT
+        room_lines = r_test.folio_id.sale_line_ids.filtered(
+            lambda x: not x.display_type
+        ).sorted("sequence")
+        self.assertEqual(
+            room_lines.mapped("price_unit"),
+            [112, 99, 105],
+            "Room sale lines should be ordered by their first night",
+        )
+
+    def test_comp_fsl_rooms_price_change_keeps_line_of_most_nights(self):
+        """
+        Check that a new price on one night keeps the line of the others.
+        ------------
+        Changing the price of the first night splits the line in two groups.
+        The existing sale line must stay with the group holding most of its
+        nights, not with the group that sorts first.
+        """
+        # ARRANGE
+        r_test = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
+            }
+        )
+        r_test.flush_recordset()
+        previous_line = r_test.folio_id.sale_line_ids.filtered(
+            lambda x: not x.display_type
+        )
+        previous_price = previous_line.price_unit
+        nights = r_test.reservation_line_ids.sorted("date")
+
+        # ACT
+        nights[0].price = previous_price + 50
+        r_test.flush_recordset()
+
+        # ASSERT
+        self.assertEqual(
+            (previous_line.price_unit, previous_line.reservation_line_ids),
+            (previous_price, nights[1:]),
+            "The existing sale line should keep the nights that kept its price",
+        )
