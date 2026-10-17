@@ -2331,6 +2331,60 @@ class PmsFolio(models.Model):
         }
 
     @api.model
+    def _get_sale_line_groups(
+        self, read_group_result, model_name, sale_lines, lines_field
+    ):
+        """Pair every read_group item with its lines and the sale line to reuse.
+
+        read_group sorts the groups by their groupby fields, so the price used
+        to decide the order of the folio sale lines and, through them, of the
+        invoice lines. The groups are returned by the first date of their
+        lines instead, so the stay reads in chronological order.
+
+        Each existing sale line is reused by the group it shares most lines
+        with, so it keeps its own lines and price. Pairing them by position
+        handed an invoiced sale line the group of another price as soon as
+        that group sorted before it, which the locked folio check rejects
+        (e.g. extending an invoiced stay with cheaper nights). Groups sharing
+        no line with any sale line take the unused ones in order.
+
+        :return: list of (item, lines, sale line or empty recordset) and the
+                 sale lines left unused
+        """
+        groups = []
+        for item in read_group_result:
+            lines = self.env[model_name].search(item["__domain"])
+            groups.append((item, lines))
+        groups.sort(
+            key=lambda group: min(
+                (date for date in group[1].mapped("date") if date),
+                default=datetime.date.max,
+            )
+        )
+        overlaps = sorted(
+            (
+                (len(sale_line[lines_field] & lines), index, sale_line)
+                for index, (_item, lines) in enumerate(groups)
+                for sale_line in sale_lines
+            ),
+            key=lambda overlap: -overlap[0],
+        )
+        owners = {}
+        unused_sale_lines = sale_lines
+        for shared, index, sale_line in overlaps:
+            if shared and index not in owners and sale_line in unused_sale_lines:
+                owners[index] = sale_line
+                unused_sale_lines -= sale_line
+        result = []
+        for index, (item, lines) in enumerate(groups):
+            sale_line = owners.get(index)
+            if not sale_line:
+                sale_line = unused_sale_lines[:1]
+                unused_sale_lines -= sale_line
+            result.append((item, lines, sale_line))
+        return result, unused_sale_lines
+
+    @api.model
     def _get_reservation_sale_lines(self, folio, reservation, sequence):
         sale_reservation_vals = []
         if not reservation.sale_line_ids.filtered(lambda x: x.name == reservation.name):
@@ -2400,14 +2454,19 @@ class PmsFolio(models.Model):
             and not x.service_id
         )
 
-        for index, item in enumerate(expected_reservation_lines):
+        groups, unused_sale_lines = self._get_sale_line_groups(
+            expected_reservation_lines,
+            "pms.reservation.line",
+            current_sale_line_ids,
+            "reservation_line_ids",
+        )
+        for item, lines_to, current_sale_line in groups:
             sequence += 1
-            lines_to = self.env["pms.reservation.line"].search(item["__domain"])
             final_discount = self.concat_discounts(
                 item["discount"], item["cancel_discount"]
             )
             partner_invoice = lines_to.mapped("default_invoice_to")
-            if current_sale_line_ids and index <= (len(current_sale_line_ids) - 1):
+            if current_sale_line:
                 current = {
                     "price_unit": item["price"],
                     "discount": final_discount,
@@ -2416,12 +2475,10 @@ class PmsFolio(models.Model):
                     "default_invoice_to": (
                         partner_invoice[0].id
                         if partner_invoice
-                        else current_sale_line_ids[index].default_invoice_to
+                        else current_sale_line.default_invoice_to
                     ),
                 }
-                sale_reservation_vals.append(
-                    (1, current_sale_line_ids[index].id, current)
-                )
+                sale_reservation_vals.append((1, current_sale_line.id, current))
             else:
                 new = {
                     "reservation_id": reservation.id,
@@ -2437,14 +2494,7 @@ class PmsFolio(models.Model):
                     ),
                 }
                 sale_reservation_vals.append((0, 0, new))
-        folio_sale_lines_to_remove = []
-        if len(expected_reservation_lines) < len(current_sale_line_ids):
-            folio_sale_lines_to_remove = [
-                value.id
-                for index, value in enumerate(current_sale_line_ids)
-                if index > (len(expected_reservation_lines) - 1)
-            ]
-        return sale_reservation_vals, folio_sale_lines_to_remove
+        return sale_reservation_vals, unused_sale_lines.ids
 
     def _get_reservation_note_vals(self, reservation, sequence):
         try:
@@ -2498,15 +2548,18 @@ class PmsFolio(models.Model):
                 and x.service_id.id == s.id
             )
 
-            for index, item in enumerate(expected_reservation_services):
-                lines_to = self.env["pms.service.line"].search(item["__domain"])
+            groups, unused_sale_lines = self._get_sale_line_groups(
+                expected_reservation_services,
+                "pms.service.line",
+                current_sale_service_ids,
+                "service_line_ids",
+            )
+            for item, lines_to, current_sale_line in groups:
                 final_discount = self.concat_discounts(
                     item["discount"], item["cancel_discount"]
                 )
                 partner_invoice = lines_to.mapped("default_invoice_to")
-                if current_sale_service_ids and index <= (
-                    len(current_sale_service_ids) - 1
-                ):
+                if current_sale_line:
                     current = {
                         "price_unit": item["price_unit"],
                         "discount": final_discount,
@@ -2515,12 +2568,10 @@ class PmsFolio(models.Model):
                         "default_invoice_to": (
                             partner_invoice[0].id
                             if partner_invoice
-                            else current_sale_service_ids[index].default_invoice_to
+                            else current_sale_line.default_invoice_to
                         ),
                     }
-                    sale_service_vals.append(
-                        (1, current_sale_service_ids[index].id, current)
-                    )
+                    sale_service_vals.append((1, current_sale_line.id, current))
                 else:
                     new = {
                         "service_id": service.id,
@@ -2538,12 +2589,7 @@ class PmsFolio(models.Model):
                     }
                     sale_service_vals.append((0, 0, new))
                 sequence = sequence + 1
-            if len(expected_reservation_services) < len(current_sale_service_ids):
-                folio_sale_lines_to_remove = [
-                    value.id
-                    for index, value in enumerate(current_sale_service_ids)
-                    if index > (len(expected_reservation_services) - 1)
-                ]
+            folio_sale_lines_to_remove.extend(unused_sale_lines.ids)
         return sale_service_vals, folio_sale_lines_to_remove
 
     @api.model
@@ -2589,23 +2635,24 @@ class PmsFolio(models.Model):
                     and x.service_id.id == fs.id
                 )
 
-                for index, item in enumerate(expected_folio_services):
-                    lines_to = self.env["pms.service.line"].search(item["__domain"])
+                groups, unused_sale_lines = self._get_sale_line_groups(
+                    expected_folio_services,
+                    "pms.service.line",
+                    current_folio_service_ids,
+                    "service_line_ids",
+                )
+                for item, lines_to, current_sale_line in groups:
                     final_discount = self.concat_discounts(
                         item["discount"], item["cancel_discount"]
                     )
-                    if current_folio_service_ids and index <= (
-                        len(current_folio_service_ids) - 1
-                    ):
+                    if current_sale_line:
                         current = {
                             "price_unit": item["price_unit"],
                             "discount": final_discount,
                             "service_line_ids": [(6, 0, lines_to.ids)],
                             "sequence": sequence,
                         }
-                        sale_folio_lines.append(
-                            (1, current_folio_service_ids[index].id, current)
-                        )
+                        sale_folio_lines.append((1, current_sale_line.id, current))
                     else:
                         new = {
                             "service_id": folio_service.id,
@@ -2618,12 +2665,7 @@ class PmsFolio(models.Model):
                             "sequence": sequence,
                         }
                         sale_folio_lines.append((0, 0, new))
-                if len(expected_folio_services) < len(current_folio_service_ids):
-                    sale_folio_lines_to_remove = [
-                        value.id
-                        for index, value in enumerate(current_folio_service_ids)
-                        if index > (len(expected_folio_services) - 1)
-                    ]
+                sale_folio_lines_to_remove.extend(unused_sale_lines.ids)
         else:
             sale_folio_lines_to_remove = folio.sale_line_ids.filtered(
                 lambda x: x.name == _("Others")
