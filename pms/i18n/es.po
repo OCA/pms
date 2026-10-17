@@ -5913,6 +5913,13 @@ msgid "Invoice Count"
 msgstr "Recuento de facturas"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__invoice_extras_to_agency
+#: model:ir.model.fields,field_description:pms.field_res_partner__invoice_extras_to_agency
+#: model:ir.model.fields,field_description:pms.field_res_users__invoice_extras_to_agency
+msgid "Invoice Extras to Agency"
+msgstr "Facturar extras a la agencia"
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.view_folio_advance_payment_inv
 msgid "Invoice Folio Order"
 msgstr "Facturación del Pedido del Folio"
@@ -7464,6 +7471,19 @@ msgstr "Solo servicios"
 #: model:ir.model.fields,help:pms.field_pms_folio__agency_id
 msgid "Only allowed if the field of partner is_agency is True"
 msgstr "Solo se permite si el campo del partner is_agency es True"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__invoice_extras_to_agency
+#: model:ir.model.fields,help:pms.field_res_partner__invoice_extras_to_agency
+#: model:ir.model.fields,help:pms.field_res_users__invoice_extras_to_agency
+msgid ""
+"Only for agencies invoiced always. Unchecked: the agency is invoiced the "
+"nights and the board services, and the guest the extra services. Checked: "
+"the agency is also invoiced the extra services."
+msgstr ""
+"Solo para agencias con «Facturar a la agencia: Siempre». Desmarcado: a la "
+"agencia se le facturan las noches y el régimen, y al huésped los servicios "
+"extra. Marcado: a la agencia se le facturan también los servicios extra."
 
 #. module: pms
 #: model:ir.model.constraint,message:pms.constraint_pms_availability_room_type_registry_unique

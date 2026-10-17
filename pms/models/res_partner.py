@@ -56,6 +56,12 @@ class ResPartner(models.Model):
         default="never",
         required=True,
     )
+    invoice_extras_to_agency = fields.Boolean(
+        string="Invoice Extras to Agency",
+        help="Only for agencies invoiced always. Unchecked: the agency is invoiced "
+        "the nights and the board services, and the guest the extra services. "
+        "Checked: the agency is also invoiced the extra services.",
+    )
     pms_property_ids = fields.Many2many(
         string="Properties",
         help="Properties with access to the element"

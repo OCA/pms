@@ -5478,6 +5478,13 @@ msgid "Invoice Count"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__invoice_extras_to_agency
+#: model:ir.model.fields,field_description:pms.field_res_partner__invoice_extras_to_agency
+#: model:ir.model.fields,field_description:pms.field_res_users__invoice_extras_to_agency
+msgid "Invoice Extras to Agency"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.view_folio_advance_payment_inv
 msgid "Invoice Folio Order"
 msgstr ""
@@ -6991,6 +6998,16 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__agency_id
 msgid "Only allowed if the field of partner is_agency is True"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__invoice_extras_to_agency
+#: model:ir.model.fields,help:pms.field_res_partner__invoice_extras_to_agency
+#: model:ir.model.fields,help:pms.field_res_users__invoice_extras_to_agency
+msgid ""
+"Only for agencies invoiced always. Unchecked: the agency is invoiced the "
+"nights and the board services, and the guest the extra services. Checked: "
+"the agency is also invoiced the extra services."
 msgstr ""
 
 #. module: pms
