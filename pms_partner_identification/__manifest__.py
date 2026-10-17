@@ -1,6 +1,6 @@
 {
     "name": "PMS partner identification",
-    "version": "16.0.2.3.0",
+    "version": "16.0.2.4.0",
     "summary": "Add identification models in pms",
     "development_status": "Beta",
     "category": "Generic Modules/Property Management System",
