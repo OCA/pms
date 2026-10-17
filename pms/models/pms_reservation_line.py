@@ -241,6 +241,8 @@ class PmsReservationLine(models.Model):
             currency=currency,
             consumption_date=consumption_date,
             pms_property_id=self.pms_property_id.id,
+            # With no rule, a room type deriving its price needs the pricelist
+            pricelist=self.reservation_id.pricelist_id,
         )
 
         return price
