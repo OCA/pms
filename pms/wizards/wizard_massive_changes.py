@@ -65,10 +65,23 @@ class AvailabilityWizard(models.TransientModel):
     room_type_ids = fields.Many2many(
         comodel_name="pms.room.type",
         string="Room Type",
+        help="Room types to apply the changes to. Leave it empty to apply them "
+        "to all the room types of the properties, except for the prices of the "
+        "room types whose price is derived from another one",
         check_pms_properties=True,
         compute="_compute_room_type_ids",
         readonly=False,
         store=True,
+    )
+    price_derived_room_type_ids = fields.Many2many(
+        string="Left Out (Derived Price)",
+        help="Room types whose price is derived from another one in the selected "
+        "pricelists. As no room type is selected, the new price is not set on "
+        "them: they keep following the room type their price is derived from, "
+        "except on the dates they have a price of their own, which is kept. "
+        "Select them explicitly to give them a price of their own",
+        comodel_name="pms.room.type",
+        compute="_compute_price_derived_room_type_ids",
     )
 
     board_service_room_type_ids = fields.Many2many(
@@ -278,6 +291,48 @@ class AvailabilityWizard(models.TransientModel):
                 or record.apply_pricelists_on == "service"
             ):
                 record.room_type_ids = False
+
+    @api.depends(
+        "massive_changes_on",
+        "apply_pricelists_on",
+        "room_type_ids",
+        "pricelist_ids",
+        "pms_property_ids",
+    )
+    def _compute_price_derived_room_type_ids(self):
+        for record in self:
+            # The pricelist the wizard is opened from may not be set yet
+            pricelists = record.pricelist_ids or self.env["product.pricelist"].browse(
+                self._context.get("pricelist_id")
+            )
+            room_types = self.env["pms.room.type"]
+            for pricelist in pricelists:
+                room_types |= record._get_price_derived_room_types(pricelist)
+            record.price_derived_room_type_ids = room_types.filtered(
+                lambda room_type, record=record: not room_type.pms_property_ids
+                or room_type.pms_property_ids & record.pms_property_ids
+            )
+
+    def _get_price_derived_room_types(self, pricelist):
+        """Room types left out of the price changes on the pricelist.
+
+        With no room type selected, prices are set on all the room types of the
+        properties but on the ones whose price is derived in the pricelist: an
+        item of their own would be an override and they would no longer follow
+        their base room type. Selecting them explicitly sets it anyway.
+        """
+        self.ensure_one()
+        if (
+            self.massive_changes_on != "pricelist"
+            or self.apply_pricelists_on != "room_types"
+            or self.room_type_ids
+        ):
+            return self.env["pms.room.type"]
+        return (
+            self.env["pms.room.type"]
+            .search([("price_base_room_type_id", "!=", False)])
+            ._get_price_derivation(pricelist)
+        )
 
     @api.depends("apply_pricelists_on", "board_service")
     def _compute_board_service_room_type_ids(self):
@@ -536,7 +591,9 @@ class AvailabilityWizard(models.TransientModel):
                 )
 
                 if record.start_date and record.end_date:
-                    items = self.env["product.pricelist.item"].search(domain)
+                    items = record._exclude_price_derived_items(
+                        self.env["product.pricelist.item"].search(domain)
+                    )
                     if (
                         not record.apply_on_all_week
                         and record.start_date
@@ -561,6 +618,21 @@ class AvailabilityWizard(models.TransientModel):
                     record.pricelist_items_to_overwrite = False
             else:
                 record.pricelist_items_to_overwrite = False
+
+    def _exclude_price_derived_items(self, items):
+        """Keep the items of the room types left out of the price changes.
+
+        Those are overrides of a derived price set on purpose: the changes
+        neither replace nor remove them (see _get_price_derived_room_types).
+        """
+        self.ensure_one()
+        derived_products = {
+            pricelist: self._get_price_derived_room_types(pricelist).product_id
+            for pricelist in items.pricelist_id
+        }
+        return items.filtered(
+            lambda item: item.product_id not in derived_products[item.pricelist_id]
+        )
 
     @api.depends(
         "rules_to_overwrite",
@@ -869,6 +941,10 @@ class AvailabilityWizard(models.TransientModel):
             self.apply_on_saturday,
             self.apply_on_sunday,
         )
+        price_derived_room_types = {
+            pricelist: self._get_price_derived_room_types(pricelist)
+            for pricelist in self.pricelist_ids
+        }
 
         # dates between start and end (both included)
         items = []
@@ -898,16 +974,17 @@ class AvailabilityWizard(models.TransientModel):
                     self.massive_changes_on == "pricelist"
                     and self.apply_pricelists_on == "room_types"
                 ):
-                    new_items = self.create_pricelists_items_room_types(
-                        room_types,
-                        self.pricelist_ids,
-                        self.price,
-                        self.min_quantity,
-                        pms_property,
-                        date,
-                        self.date_types,
-                    )
-                    items = items + new_items if new_items else items
+                    for pricelist in self.pricelist_ids:
+                        new_items = self.create_pricelists_items_room_types(
+                            room_types - price_derived_room_types[pricelist],
+                            pricelist,
+                            self.price,
+                            self.min_quantity,
+                            pms_property,
+                            date,
+                            self.date_types,
+                        )
+                        items = items + new_items if new_items else items
 
                 elif (
                     self.massive_changes_on == "pricelist"
