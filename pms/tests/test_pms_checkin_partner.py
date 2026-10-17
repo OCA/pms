@@ -1424,3 +1424,21 @@ class TestPmsCheckinPartner(TestPms):
             lang_es.code,
             "Partner lang should match folio lang",
         )
+
+    def test_country_without_state_survives_partner_and_nationality(self):
+        """A residence country without state (most foreign countries) must not
+        be cleared when the guest gets a partner or a nationality.
+        """
+        france = self.env.ref("base.fr")
+        checkin = self.reservation_1.checkin_partner_ids.filtered(
+            lambda c: not c.partner_id
+        )[:1]
+        checkin.write(
+            {"firstname": "Jean", "lastname": "Dupont", "country_id": france.id}
+        )
+        checkin.partner_id = self.env["res.partner"].create(
+            {"firstname": "Jean", "lastname": "Dupont"}
+        )
+        self.assertEqual(checkin.country_id, france)
+        checkin.nationality_id = france
+        self.assertEqual(checkin.country_id, france)

@@ -316,7 +316,7 @@ class PmsCheckinPartner(models.Model):
         for record in self:
             if not record.country_id and record.partner_id.country_id:
                 record.country_id = record.partner_id.country_id
-            elif not record.state_id:
+            elif not record.country_id:
                 record.country_id = False
 
     @api.depends("partner_id")
