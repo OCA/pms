@@ -2454,7 +2454,7 @@ class PmsReservation(models.Model):
                             days = 1
                         elif rule.apply_on_noshow == "days":
                             days = rule.days_late - 1
-                    elif days_diff < pricelist.cancelation_rule_id.days_intime:
+                    elif rule.is_non_refundable or days_diff < rule.days_intime:
                         record.cancelled_reason = "late"
                         penalty_percent = rule.penalty_late
                         if rule.apply_on_late == "first":

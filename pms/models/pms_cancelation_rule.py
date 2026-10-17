@@ -37,9 +37,16 @@ class PmsCancelationRule(models.Model):
     active = fields.Boolean(
         help="Determines if cancelation rule is active", default=True
     )
+    is_non_refundable = fields.Boolean(
+        string="Non-refundable",
+        help="There is no free cancellation period: the late penalty applies "
+        "whenever the reservation is cancelled before check-in.",
+    )
     days_intime = fields.Integer(
-        string="Days Late",
-        help="Maximum number of days for free cancellation before Checkin",
+        string="Free Cancellation Days",
+        help="Minimum number of days before check-in to cancel free of charge. "
+        "Later cancellations apply the late penalty. With 0, cancellation "
+        "is free until the day of arrival.",
     )
     penalty_late = fields.Integer(
         string="% Penalty Late",

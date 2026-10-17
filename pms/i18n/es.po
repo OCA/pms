@@ -3853,8 +3853,8 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule__days_intime
-msgid "Days Late"
-msgstr "Nº de días pre-checkin"
+msgid "Free Cancellation Days"
+msgstr "Días de cancelación gratuita"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__days_to_checkin
@@ -6734,8 +6734,8 @@ msgstr "La Estancia Máxima no puede ser menor que cero"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_cancelation_rule_form
-msgid "Max. days InTime before Checkin"
-msgstr "Máximo de días a tiempo antes del Checkin"
+msgid "Free cancellation up to (days before check-in)"
+msgstr "Cancelación gratuita hasta (días antes del check-in)"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__tourist_tax_max_age
@@ -6751,9 +6751,14 @@ msgstr "Importe máximo para crear la factura simplificada"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_cancelation_rule__days_intime
-msgid "Maximum number of days for free cancellation before Checkin"
+msgid ""
+"Minimum number of days before check-in to cancel free of charge. Later "
+"cancellations apply the late penalty. With 0, cancellation is free until the "
+"day of arrival."
 msgstr ""
-"Número máximo de días para que la cancelación sea gratis antes del checkin"
+"Antelación mínima, en días antes del check-in, para cancelar sin coste. Las "
+"cancelaciones posteriores aplican la penalización por cancelación tardía. Con "
+"0, la cancelación es gratuita hasta el día de llegada."
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_availability_plan_rule__max_avail
@@ -15190,3 +15195,17 @@ msgstr ""
 
 #~ msgid "host state"
 #~ msgstr "Provincia"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_cancelation_rule__is_non_refundable
+msgid "Non-refundable"
+msgstr "No reembolsable"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_cancelation_rule__is_non_refundable
+msgid ""
+"There is no free cancellation period: the late penalty applies whenever the "
+"reservation is cancelled before check-in."
+msgstr ""
+"No hay periodo de cancelación gratuita: la penalización por cancelación tardía "
+"se aplica siempre que se cancele la reserva antes del check-in."
