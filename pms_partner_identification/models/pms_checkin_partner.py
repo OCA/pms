@@ -211,7 +211,6 @@ class PmsCheckinPartner(models.Model):
                     [
                         ("partner_id", "=", record.partner_id.id),
                         ("category_id", "=", record.document_type.id),
-                        ("country_id", "=", record.document_country_id.id),
                     ],
                     limit=1,
                 )
