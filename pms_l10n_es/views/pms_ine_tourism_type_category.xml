@@ -9,6 +9,7 @@
                     <group>
                         <field name="type" />
                         <field name="category" />
+                        <field name="survey_type" />
                     </group>
                 </sheet>
             </form>
@@ -21,6 +22,7 @@
             <tree>
                 <field name="type" />
                 <field name="category" />
+                <field name="survey_type" />
             </tree>
         </field>
     </record>

@@ -9,6 +9,7 @@
                     <div class="col-6">
                        <group>
                            <field name="pms_property_id" />
+                           <field name="ine_order_number" />
                        </group>
                    </div>
                     <div class="col-6">
@@ -55,6 +56,19 @@
                 </div>
 
                 <div class="row">
+                    <div class="col-12">
+                        <group>
+                            <field
+                                name="ine_notes"
+                                nolabel="1"
+                                readonly="1"
+                                attrs="{'invisible': [('ine_notes','=', False)]}"
+                            />
+                        </group>
+                    </div>
+                </div>
+
+                <div class="row">
                     <div class="col-6">
                         <button
                             name="ine_generate_xml"
@@ -69,10 +83,7 @@
                         attrs="{'invisible': [('txt_filename','=', False)]}"
                     >
                         <b>
-                            <a
-                                href="https://arce.ine.es/ARCE/jsp/encuestaXml.jsp"
-                                target="_blank"
-                            >
+                            <a href="https://iria.ine.es/" target="_blank">
                                 Send survey to Spanish National Institute of Statistics (INE)
                                 <i class="fa fa-signal" />
                             </a>
