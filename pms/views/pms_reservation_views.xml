@@ -425,7 +425,7 @@
                             <field
                                 name="pricelist_id"
                                 options="{'no_open':True,'no_create': True}"
-                                attrs="{'invisible': [('reservation_type', '!=', 'normal')]}"
+                                attrs="{'invisible': [('reservation_type', '=', 'out')]}"
                             />
                             <!--<field
                                 name="agency_id"
@@ -462,7 +462,7 @@
                             />
                             <field
                                 name="agency_id"
-                                attrs="{'invisible': [('reservation_type', '!=', 'normal')]}"
+                                attrs="{'invisible': [('reservation_type', '=', 'out')]}"
                             />
                             <field name="sale_channel_origin_id" />
                             <field

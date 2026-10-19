@@ -1217,18 +1217,20 @@ class TestPmsFolioSaleLine(TestPms):
 
     def test_no_sale_lines_staff_reservation(self):
         """
-        Check that the sale_line_ids of a folio whose reservation
-        is of type 'staff' are created with price 0.
+        Check that the folio sale lines linked to a staff reservation
+        are not created.
+
         -----
         A reservation is created with the reservation_type field
-        with value 'staff'. Then it is verified that the
-        sale_line_ids of the folio created with the creation of
-        the reservation have price 0.
+        set to 'staff'. Then it is verified that the folio created
+        together with the reservation has no sale lines linked to
+        the reservation lines.
         """
         # ARRANGE
         self.partner1 = self.env["res.partner"].create({"name": "Alberto"})
-        checkin = fields.date.today()
-        checkout = fields.date.today() + datetime.timedelta(days=1)
+        checkin = fields.Date.today()
+        checkout = fields.Date.today() + datetime.timedelta(days=1)
+
         # ACT
         reservation = self.env["pms.reservation"].create(
             {
@@ -1243,11 +1245,23 @@ class TestPmsFolioSaleLine(TestPms):
                 "adults": 1,
             }
         )
+
+        # Sale lines of this folio that are linked to any reservation line
+        # of this reservation. Adjust the field name if it is
+        # reservation_line_id instead of reservation_line_ids.
+        sale_lines_linked = reservation.folio_id.sale_line_ids.filtered(
+            lambda line: line.reservation_line_ids
+            and any(
+                rl in reservation.reservation_line_ids
+                for rl in line.reservation_line_ids
+            )
+        )
+
         # ASSERT
-        self.assertEqual(
-            reservation.folio_id.sale_line_ids.mapped("price_unit")[0],
-            0,
-            "Staff folio sale lines should have price 0",
+        self.assertFalse(
+            sale_lines_linked,
+            "Staff reservations should not create folio sale lines linked "
+            "to reservation lines.",
         )
 
     def test_no_sale_lines_out_reservation(self):
