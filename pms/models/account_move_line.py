@@ -131,27 +131,31 @@ class AccountMoveLine(models.Model):
         """
         # Update partner in payments and statement lines
         res = super().reconcile()
-        for record in self:
-            if record.payment_id:
-                old_payment_partner = record.payment_id.partner_id
-                new_payment_partner = record.payment_id.mapped(
-                    "reconciled_invoice_ids.partner_id"
-                )
-                if (
-                    old_payment_partner != new_payment_partner
-                    and len(new_payment_partner) == 1
-                ):
-                    record.payment_id.partner_id = new_payment_partner
-                    if old_payment_partner:
-                        record.payment_id.message_post(
-                            body=_(
-                                "Partner modify automatically from"
-                                " invoice: {old_partner} to {new_partner}"
-                            ).format(
-                                old_partner=old_payment_partner.name,
-                                new_partner=new_payment_partner.name,
-                            )
+        for payment in self.payment_id:
+            old_payment_partner = payment.partner_id
+            new_payment_partner = payment.reconciled_invoice_ids.partner_id
+            if (
+                old_payment_partner != new_payment_partner
+                and len(new_payment_partner) == 1
+            ):
+                payment.partner_id = new_payment_partner
+                if old_payment_partner:
+                    payment.message_post(
+                        body=_(
+                            "Partner modify automatically from"
+                            " invoice: {old_partner} to {new_partner}"
+                        ).format(
+                            old_partner=old_payment_partner.name,
+                            new_partner=new_payment_partner.name,
                         )
+                    )
+            # Writing the partner on the payment is what makes Odoo rewrite its
+            # journal items (_synchronize_to_moves). When the partner is already
+            # the right one (p.e. it was corrected by hand before reconciling)
+            # nothing is written and the journal items keep the stale partner
+            # forever, so they have to be realigned explicitly.
+            payment._realign_move_lines_partner()
+        for record in self:
             if record.statement_line_id:
                 old_statement_partner = record.statement_line_id.partner_id
                 new_payment_partner = record.payment_id.mapped(
