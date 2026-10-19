@@ -1,6 +1,7 @@
 # Copyright 2017  Alexandre Díaz, Pablo Quesada, Darío Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models, tools
+from odoo import _, api, fields, models, tools
+from odoo.exceptions import UserError
 
 
 class ProductPricelistItem(models.Model):
@@ -233,8 +234,18 @@ class ProductPricelistItem(models.Model):
 
         :returns: base price, expressed in provided pricelist currency
         :rtype: float
+
+        With no rule (empty self), a room type deriving its price from another
+        one gets it from the price of that room type instead of its list price.
         """
         target_currency.ensure_one()
+
+        if not self:
+            price = self._compute_derived_room_type_price(
+                product, quantity, uom, date, target_currency, **kwargs
+            )
+            if price is not None:
+                return price
 
         rule_base = self.base or "list_price"
         if rule_base == "pricelist" and self.base_pricelist_id:
@@ -254,3 +265,84 @@ class ProductPricelistItem(models.Model):
                 price, target_currency, self.env.company, date, round=False
             )
         return price
+
+    def _compute_derived_room_type_price(
+        self, product, quantity, uom, date, target_currency, **kwargs
+    ):
+        """Price of a room type derived from the price of its base room type.
+
+        Only reached when the pricelist has no rule at all for the product:
+        any rule covering the room type, its own items (overrides) as well as
+        generic rules, wins over the derivation. The base room type is priced
+        by the same pricelist, so it can derive its price in turn.
+
+        :returns: the derived price, in the target currency, or None when the
+            product is not a room type deriving its price in the pricelist of
+            the computation (``kwargs["pricelist"]``)
+        """
+        pricelist = kwargs.get("pricelist")
+        if (
+            not pricelist
+            or not kwargs.get("consumption_date")
+            or not kwargs.get("pms_property_id")
+            or product._name != "product.product"
+        ):
+            return None
+        # Cheap lookup restricted to room types with a base one, as most
+        # products priced with no rule are not room types deriving their price.
+        # As superuser: the derivation is configuration, the price must not
+        # depend on what the user pricing can access
+        room_type = (
+            self.env["pms.room.type"]
+            .sudo()
+            .with_context(active_test=False)
+            .search(
+                [
+                    ("product_id", "=", product.id),
+                    ("price_base_room_type_id", "!=", False),
+                ],
+                limit=1,
+            )
+        )
+        if not room_type._get_price_derivation(pricelist):
+            return None
+        depth = kwargs.get("price_derivation_depth", 0)
+        if depth >= room_type._price_derivation_max_depth:
+            raise UserError(
+                _(
+                    "The price of %(room_type)s is derived through too many levels.",
+                    room_type=room_type.display_name,
+                )
+            )
+        base_product = room_type.price_base_room_type_id.product_id
+        base_price = pricelist._get_product_price(
+            base_product,
+            quantity,
+            uom=base_product.uom_id,
+            date=date,
+            price_derivation_depth=depth + 1,
+            **self._get_price_derivation_base_kwargs(kwargs),
+        )
+        price = room_type._derive_price(base_price, pricelist.currency_id)
+        if base_product.uom_id != uom:
+            price = base_product.uom_id._compute_price(price, uom)
+        if pricelist.currency_id != target_currency:
+            price = pricelist.currency_id._convert(
+                price, target_currency, self.env.company, date, round=False
+            )
+        return price
+
+    @api.model
+    def _get_price_derivation_base_kwargs(self, kwargs):
+        """What the price of a base room type is computed with.
+
+        The dimensions of the stay only: the base room type is priced for its
+        default occupancy, and whatever depends on the guests (occupancy,
+        children...) is applied afterwards to the derived room type, by the
+        computation of its own price. Extend it to forward other dimensions.
+        """
+        return {
+            key: kwargs[key]
+            for key in ("consumption_date", "pms_property_id")
+            if key in kwargs
+        }
