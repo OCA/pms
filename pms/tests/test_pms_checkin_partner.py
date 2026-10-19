@@ -871,6 +871,42 @@ class TestPmsCheckinPartner(TestPms):
             "Partner should have been created and associated with the checkin",
         )
 
+    def test_contact_data_saved_in_partner_created_by_checkin(self):
+        """
+        The email and mobile entered together with the data that creates
+        the partner are saved in the new partner
+        """
+        # ACT
+        checkin = self.env["pms.checkin.partner"].create(
+            {
+                "firstname": "Pepe",
+                "lastname": "Paz",
+                "email": "pepe@example.com",
+                "mobile": "666777888",
+                "reservation_id": self.reservation_1.id,
+            }
+        )
+
+        # ASSERT
+        self.assertEqual(checkin.partner_id.email, "pepe@example.com")
+        self.assertEqual(checkin.partner_id.mobile, "666777888")
+
+    def test_contact_data_saved_in_partner_created_on_checkin_write(self):
+        """
+        The mobile written together with the names that create the partner
+        is saved in the new partner
+        """
+        # ARRANGE
+        checkin = self.env["pms.checkin.partner"].create(
+            {"reservation_id": self.reservation_1.id}
+        )
+
+        # ACT
+        checkin.write({"firstname": "Pepe", "lastname": "Paz", "mobile": "666777888"})
+
+        # ASSERT
+        self.assertEqual(checkin.partner_id.mobile, "666777888")
+
     def test_add_partner_data_from_checkin(self):
         """
         If the checkin_partner has some data that the partner doesn't have,
