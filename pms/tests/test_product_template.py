@@ -26,12 +26,6 @@ class TestProductTemplate(TestPms):
             }
         )
         cls.partner = cls.env["res.partner"].create({"name": "partner1"})
-        cls.board_service = cls.env["pms.board.service"].create(
-            {
-                "name": "Board service test",
-                "default_code": "BST",
-            }
-        )
         # create a sale channel
         cls.sale_channel_direct1 = cls.env["pms.sale.channel"].create(
             {
@@ -47,25 +41,10 @@ class TestProductTemplate(TestPms):
         Date of service line with consumed on 'after' should match checkout date.
         """
         # ARRANGE
-        product = self.env["product.product"].create(
-            {
-                "name": "Product test",
-                "per_day": True,
-                "consumed_on": "after",
-            }
-        )
-        self.env["pms.board.service.line"].create(
-            {
-                "product_id": product.id,
-                "pms_board_service_id": self.board_service.id,
-                "adults": True,
-            }
-        )
-        board_service_room_type = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type.id,
-                "pms_board_service_id": self.board_service.id,
-            }
+        board_service = self._create_board_service(
+            "Product test",
+            per_day=True,
+            consumed_on="after",
         )
         date_checkin = fields.date.today()
         date_checkout = fields.date.today() + datetime.timedelta(days=1)
@@ -77,7 +56,7 @@ class TestProductTemplate(TestPms):
                 "room_type_id": self.room_type.id,
                 "pms_property_id": self.pms_property1.id,
                 "partner_id": self.partner.id,
-                "board_service_room_id": board_service_room_type.id,
+                "board_service_id": board_service.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
                 "adults": 2,
             }
@@ -96,25 +75,10 @@ class TestProductTemplate(TestPms):
         Date of service line with consumed on 'before' should match checkin date.
         """
         # ARRANGE
-        product = self.env["product.product"].create(
-            {
-                "name": "Product test",
-                "per_day": True,
-                "consumed_on": "before",
-            }
-        )
-        self.env["pms.board.service.line"].create(
-            {
-                "product_id": product.id,
-                "pms_board_service_id": self.board_service.id,
-                "adults": True,
-            }
-        )
-        board_service_room_type = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type.id,
-                "pms_board_service_id": self.board_service.id,
-            }
+        board_service = self._create_board_service(
+            "Product test",
+            per_day=True,
+            consumed_on="before",
         )
         date_checkin = fields.date.today()
         date_checkout = fields.date.today() + datetime.timedelta(days=1)
@@ -126,7 +90,7 @@ class TestProductTemplate(TestPms):
                 "room_type_id": self.room_type.id,
                 "pms_property_id": self.pms_property1.id,
                 "partner_id": self.partner.id,
-                "board_service_room_id": board_service_room_type.id,
+                "board_service_id": board_service.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
                 "adults": 2,
             }
@@ -145,27 +109,13 @@ class TestProductTemplate(TestPms):
         Reservation should created succesfully.
         """
         # ARRANGE
-        product = self.env["product.product"].create(
-            {
-                "name": "Product test",
-                "per_day": True,
-                "daily_limit": 2,
-                "per_person": True,
-            }
+        board_service = self._create_board_service(
+            "Product test",
+            per_day=True,
+            per_person=True,
         )
-        self.env["pms.board.service.line"].create(
-            {
-                "product_id": product.id,
-                "pms_board_service_id": self.board_service.id,
-                "adults": True,
-            }
-        )
-        board_service_room_type = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type.id,
-                "pms_board_service_id": self.board_service.id,
-            }
-        )
+        # The daily limit is configured per property
+        board_service.with_context(property=self.pms_property1.id).daily_limit = 2
         date_checkin = fields.date.today()
         date_checkout = fields.date.today() + datetime.timedelta(days=1)
         # ACT
@@ -176,7 +126,7 @@ class TestProductTemplate(TestPms):
                 "room_type_id": self.room_type.id,
                 "pms_property_id": self.pms_property1.id,
                 "partner_id": self.partner.id,
-                "board_service_room_id": board_service_room_type.id,
+                "board_service_id": board_service.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
@@ -196,27 +146,13 @@ class TestProductTemplate(TestPms):
         """
         # ARRANGE
         self.room.capacity = 1
-        product = self.env["product.product"].create(
-            {
-                "name": "Product test",
-                "per_day": True,
-                "daily_limit": 2,
-                "per_person": True,
-            }
+        board_service = self._create_board_service(
+            "Product test",
+            per_day=True,
+            per_person=True,
         )
-        self.env["pms.board.service.line"].create(
-            {
-                "product_id": product.id,
-                "pms_board_service_id": self.board_service.id,
-                "adults": True,
-            }
-        )
-        board_service_room_type = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type.id,
-                "pms_board_service_id": self.board_service.id,
-            }
-        )
+        # The daily limit is configured per property
+        board_service.with_context(property=self.pms_property1.id).daily_limit = 2
         date_checkin = fields.date.today()
         date_checkout = fields.date.today() + datetime.timedelta(days=1)
         # ACT
@@ -227,7 +163,7 @@ class TestProductTemplate(TestPms):
                 "room_type_id": self.room_type.id,
                 "pms_property_id": self.pms_property1.id,
                 "partner_id": self.partner.id,
-                "board_service_room_id": board_service_room_type.id,
+                "board_service_id": board_service.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
@@ -248,29 +184,15 @@ class TestProductTemplate(TestPms):
         Reservation creation should fail.
         """
         # ARRANGE
-        product = self.env["product.product"].create(
-            {
-                "name": "Product test",
-                "per_day": True,
-                "type": "service",
-                "daily_limit": 1,
-                "list_price": 15.0,
-                "per_person": True,
-            }
+        board_service = self._create_board_service(
+            "Product test",
+            per_day=True,
+            type="service",
+            list_price=15.0,
+            per_person=True,
         )
-        self.env["pms.board.service.line"].create(
-            {
-                "product_id": product.id,
-                "pms_board_service_id": self.board_service.id,
-                "adults": True,
-            }
-        )
-        board_service_room_type = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type.id,
-                "pms_board_service_id": self.board_service.id,
-            }
-        )
+        # The daily limit is configured per property
+        board_service.with_context(property=self.pms_property1.id).daily_limit = 1
         date_checkin = fields.date.today()
         date_checkout = fields.date.today() + datetime.timedelta(days=1)
         # ACT & ASSERT
@@ -284,7 +206,7 @@ class TestProductTemplate(TestPms):
                     "room_type_id": self.room_type.id,
                     "pms_property_id": self.pms_property1.id,
                     "partner_id": self.partner.id,
-                    "board_service_room_id": board_service_room_type.id,
+                    "board_service_id": board_service.id,
                     "adults": 2,
                     "sale_channel_origin_id": self.sale_channel_direct1.id,
                 }

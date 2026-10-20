@@ -255,443 +255,66 @@ class TestPmsMultiproperty(TestPms):
                         "pms_property_id"
                     ]
 
-    # BOARD SERVICE LINE
-    def test_pms_bsl_product_property_integrity(self):
+    # BOARD SERVICE
+    def test_reservation_board_service_property_integrity(self):
         """
-        Creation of a board service line without property, of a product
-        only available for a specific property.
+        A reservation can't include a board service only available for
+        another property.
         """
         # ARRANGE
-        product1 = self.env["product.product"].create(
-            {"name": "Product", "pms_property_ids": [self.pms_property1.id]}
+        board_service = self._create_board_service(
+            "Board Service", pms_property_ids=[self.pms_property2.id]
         )
-        board_service1 = self.env["pms.board.service"].create(
+        room_type = self.env["pms.room.type"].create(
             {
-                "name": "Board Service",
-                "default_code": "CB",
+                "pms_property_ids": [self.pms_property1.id],
+                "name": "Single",
+                "default_code": "SIN",
+                "class_id": self.room_type_class1.id,
             }
         )
+        self.env["pms.room"].create(
+            {
+                "name": "Room 101",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": room_type.id,
+            }
+        )
+        sale_channel = self.env["pms.sale.channel"].create(
+            {"name": "Door", "channel_type": "direct"}
+        )
         # ACT & ASSERT
-        with self.assertRaises(
-            UserError, msg="Board service line shouldnt be created."
-        ):
-            self.env["pms.board.service.line"].create(
+        with self.assertRaisesRegex(UserError, "board_service_id"):
+            self.env["pms.reservation"].create(
                 {
-                    "product_id": product1.id,
-                    "pms_board_service_id": board_service1.id,
-                    "adults": True,
+                    "checkin": fields.date.today(),
+                    "checkout": fields.date.today() + datetime.timedelta(days=1),
+                    "pms_property_id": self.pms_property1.id,
+                    "room_type_id": room_type.id,
+                    "partner_name": "Guest",
+                    "sale_channel_origin_id": sale_channel.id,
+                    "board_service_id": board_service.id,
                 }
             )
 
-    def test_pms_bsl_board_service_property_integrity(self):
+    def test_board_rule_board_service_property_integrity(self):
         """
-        Creation of a board service line without property, of board service
-        only available for a specific property.
+        An availability plan can't close, in a property, a board service only
+        available for another property.
         """
         # ARRANGE
-        pms_property2 = self.env["pms.property"].create(
-            {
-                "name": "Property 1",
-                "company_id": self.company1.id,
-                "default_pricelist_id": self.pricelist1.id,
-            }
-        )
-        product1 = self.env["product.product"].create(
-            {"name": "Product", "pms_property_ids": [self.pms_property1.id]}
-        )
-
-        board_service1 = self.env["pms.board.service"].create(
-            {
-                "name": "Board Service",
-                "default_code": "CB",
-                "pms_property_ids": [pms_property2.id],
-            }
+        board_service = self._create_board_service(
+            "Board Service", pms_property_ids=[self.pms_property2.id]
         )
         # ACT & ASSERT
-        with self.assertRaises(
-            UserError, msg="Board service line shouldnt be created."
-        ):
-            self.env["pms.board.service.line"].create(
+        with self.assertRaisesRegex(UserError, "board_service_id"):
+            self.env["pms.availability.plan.board.rule"].create(
                 {
-                    "product_id": product1.id,
-                    "pms_board_service_id": board_service1.id,
-                    "adults": True,
-                }
-            )
-
-    def test_pms_bsl_board_service_line_prop_integrity(self):
-        """
-        Creation of a board service line with a specific property,
-        of board service without property.
-        """
-        # ARRANGE
-        pms_property2 = self.env["pms.property"].create(
-            {
-                "name": "Property 1",
-                "company_id": self.company1.id,
-                "default_pricelist_id": self.pricelist1.id,
-            }
-        )
-        product1 = self.env["product.product"].create(
-            {"name": "Product", "pms_property_ids": [self.pms_property1.id]}
-        )
-        board_service1 = self.env["pms.board.service"].create(
-            {
-                "name": "Board Service",
-                "default_code": "CB",
-            }
-        )
-        # ACT & ASSERT
-        with self.assertRaises(
-            UserError, msg="Board service line shouldnt be created."
-        ):
-            self.env["pms.board.service.line"].create(
-                {
-                    "product_id": product1.id,
-                    "pms_board_service_id": board_service1.id,
-                    "pms_property_ids": [pms_property2.id],
-                    "adults": True,
-                }
-            )
-
-    # BOARD SERVICE ROOM TYPE
-    def test_create_rt_props_gt_bs_props(self):
-        """
-        Create board service for a room type and the room type
-        have MORE properties than the board service.
-        Record of board_service_room_type should contain the
-        board service properties.
-        """
-        # ARRANGE
-        pms_property2 = self.env["pms.property"].create(
-            {
-                "name": "Property 2",
-                "company_id": self.company1.id,
-                "default_pricelist_id": self.pricelist1.id,
-            }
-        )
-
-        room_type_double = self.env["pms.room.type"].create(
-            {
-                "pms_property_ids": [self.pms_property1.id, pms_property2.id],
-                "name": "Double Test",
-                "default_code": "DBL_Test",
-                "class_id": self.room_type_class1.id,
-                "list_price": 25,
-            }
-        )
-        board_service_test = self.board_service = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service",
-                "default_code": "TPS",
-                "pms_property_ids": [self.pms_property1.id],
-            }
-        )
-        # ACT
-        new_bsrt = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": room_type_double.id,
-                "pms_board_service_id": board_service_test.id,
-                "pms_property_id": self.pms_property1.id,
-            }
-        )
-        # ASSERT
-        self.assertIn(
-            new_bsrt.pms_property_id.id,
-            board_service_test.pms_property_ids.ids,
-            "Record of board_service_room_type should contain the"
-            " board service properties.",
-        )
-
-    def test_create_rt_props_lt_bs_props(self):
-        """
-        Create board service for a room type and the room type
-        have LESS properties than the board service.
-        Record of board_service_room_type should contain the
-        room types properties.
-        """
-        # ARRANGE
-        pms_property2 = self.env["pms.property"].create(
-            {
-                "name": "Property 2",
-                "company_id": self.company1.id,
-                "default_pricelist_id": self.pricelist1.id,
-            }
-        )
-        room_type1 = self.env["pms.room.type"].create(
-            {
-                "pms_property_ids": [self.pms_property1.id],
-                "name": "Double Test",
-                "default_code": "DBL_Test",
-                "class_id": self.room_type_class1.id,
-                "list_price": 25,
-            }
-        )
-        board_service1 = self.board_service = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service",
-                "default_code": "TPS",
-                "pms_property_ids": [self.pms_property1.id, pms_property2.id],
-            }
-        )
-        # ACT
-        new_bsrt = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": room_type1.id,
-                "pms_board_service_id": board_service1.id,
-                "pms_property_id": self.pms_property1.id,
-            }
-        )
-        # ASSERT
-        self.assertIn(
-            new_bsrt.pms_property_id.id,
-            room_type1.pms_property_ids.ids,
-            "Record of board_service_room_type should contain the"
-            " room types properties.",
-        )
-
-    def _test_create_rt_props_eq_bs_props(self):
-        """
-        Create board service for a room type and the room type
-        have THE SAME properties than the board service.
-        Record of board_service_room_type should contain the
-        room types properties that matchs with the board
-        service properties
-        """
-        # ARRANGE
-        room_type1 = self.env["pms.room.type"].create(
-            {
-                "pms_property_ids": [self.pms_property1.id],
-                "name": "Double Test",
-                "default_code": "DBL_Test",
-                "class_id": self.room_type_class1.id,
-                "list_price": 25,
-            }
-        )
-        board_service1 = self.board_service = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service",
-                "default_code": "TPS",
-                "pms_property_ids": [self.pms_property1.id],
-            }
-        )
-        # ACT
-        new_bsrt = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": room_type1.id,
-                "pms_board_service_id": board_service1.id,
-                "pms_property_id": self.pms_property1.id,
-            }
-        )
-        # ASSERT
-        self.assertIn(
-            new_bsrt.pms_property_ids.ids == room_type1.pms_property_ids.ids
-            and new_bsrt.pms_property_ids.ids == board_service1.pms_property_ids.ids,
-            "Record of board_service_room_type should contain the room "
-            "types properties and matchs with the board service properties",
-        )
-
-    def test_create_rt_no_props_and_bs_props(self):
-        """
-        Create board service for a room type and the room type
-        hasn't properties but the board services.
-        Record of board_service_room_type should contain the
-        board service properties.
-        """
-        # ARRANGE
-        room_type1 = self.env["pms.room.type"].create(
-            {
-                "name": "Double Test",
-                "default_code": "DBL_Test",
-                "class_id": self.room_type_class1.id,
-                "list_price": 25,
-            }
-        )
-        board_service1 = self.board_service = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service",
-                "default_code": "TPS",
-                "pms_property_ids": [self.pms_property1.id],
-            }
-        )
-        # ACT
-        new_bsrt = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": room_type1.id,
-                "pms_board_service_id": board_service1.id,
-                "pms_property_id": self.pms_property1.id,
-            }
-        )
-        # ASSERT
-        self.assertIn(
-            new_bsrt.pms_property_id.id,
-            board_service1.pms_property_ids.ids,
-            "Record of board_service_room_type should contain the"
-            " board service properties.",
-        )
-
-    def test_create_rt_props_and_bs_no_props(self):
-        """
-        Create board service for a room type and the board service
-        hasn't properties but the room type.
-        Record of board_service_room_type should contain the
-        room type properties.
-        """
-        # ARRANGE
-        pms_property2 = self.env["pms.property"].create(
-            {
-                "name": "Property 2",
-                "company_id": self.company1.id,
-                "default_pricelist_id": self.pricelist1.id,
-            }
-        )
-        room_type1 = self.env["pms.room.type"].create(
-            {
-                "pms_property_ids": [self.pms_property1.id, pms_property2.id],
-                "name": "Double Test",
-                "default_code": "DBL_Test",
-                "class_id": self.room_type_class1.id,
-                "list_price": 25,
-            }
-        )
-        board_service1 = self.board_service = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service",
-                "default_code": "TPS",
-                "pms_property_ids": [self.pms_property1.id],
-            }
-        )
-        # ACT
-        new_bsrt = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": room_type1.id,
-                "pms_board_service_id": board_service1.id,
-                "pms_property_id": self.pms_property1.id,
-            }
-        )
-        # ASSERT
-        self.assertIn(
-            new_bsrt.pms_property_id.id,
-            room_type1.pms_property_ids.ids,
-            "Record of board_service_room_type should contain the"
-            " room type properties.",
-        )
-
-    def test_create_rt_no_props_and_bs_no_props(self):
-        """
-        Create board service for a room type and the board service
-        has no properties and neither does the room type
-        Record of board_service_room_type shouldnt contain properties.
-        """
-        # ARRANGE
-
-        room_type1 = self.env["pms.room.type"].create(
-            {
-                "name": "Double Test",
-                "default_code": "DBL_Test",
-                "class_id": self.room_type_class1.id,
-                "list_price": 25,
-            }
-        )
-        board_service1 = self.board_service = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service",
-                "default_code": "TPS",
-            }
-        )
-        # ACT
-        new_bsrt = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": room_type1.id,
-                "pms_board_service_id": board_service1.id,
-            }
-        )
-        # ASSERT
-        self.assertFalse(
-            new_bsrt.pms_property_id.id,
-            "Record of board_service_room_type shouldnt contain properties.",
-        )
-
-    def test_pms_bsrtl_product_property_integrity(self):
-        """
-        Creation of a board service room type line without property, of a product
-        only available for a specific property.
-        """
-        # ARRANGE
-
-        product1 = self.env["product.product"].create(
-            {"name": "Product", "pms_property_ids": self.pms_property1}
-        )
-        board_service1 = self.env["pms.board.service"].create(
-            {
-                "name": "Board Service",
-                "default_code": "CB",
-            }
-        )
-        room_type1 = self.env["pms.room.type"].create(
-            {
-                "name": "Room Type",
-                "default_code": "Type1",
-                "class_id": self.room_type_class1.id,
-            }
-        )
-        board_service_room_type1 = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_board_service_id": board_service1.id,
-                "pms_room_type_id": room_type1.id,
-            }
-        )
-
-        # ACT & ASSERT
-        with self.assertRaises(
-            UserError, msg="Board service room type line shouldnt be created."
-        ):
-            self.env["pms.board.service.room.type.line"].create(
-                {
-                    "pms_board_service_room_type_id": board_service_room_type1.id,
-                    "product_id": product1.id,
-                }
-            )
-
-    def test_pms_bsrtl_board_service_line_prop_integrity(self):
-        """
-        Creation of a board service room type line with a specific property,
-        of board service without property.
-        """
-        # ARRANGE
-        product1 = self.env["product.product"].create(
-            {"name": "Product", "pms_property_ids": [self.pms_property1.id]}
-        )
-        board_service1 = self.env["pms.board.service"].create(
-            {
-                "name": "Board Service",
-                "default_code": "CB",
-            }
-        )
-
-        room_type1 = self.env["pms.room.type"].create(
-            {
-                "name": "Room Type",
-                "default_code": "Type1",
-                "class_id": self.room_type_class1.id,
-            }
-        )
-        board_service_room_type1 = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_board_service_id": board_service1.id,
-                "pms_room_type_id": room_type1.id,
-            }
-        )
-
-        # ACT & ASSERT
-        with self.assertRaises(
-            UserError, msg="Board service line shouldnt be created."
-        ):
-            self.env["pms.board.service.room.type.line"].create(
-                {
-                    "product_id": product1.id,
-                    "pms_property_id": self.pms_property2.id,
-                    "pms_board_service_room_type_id": board_service_room_type1.id,
+                    "availability_plan_id": self.availability_plan1.id,
+                    "pms_property_id": self.pms_property1.id,
+                    "board_service_id": board_service.id,
+                    "date_from": fields.date.today(),
+                    "date_to": fields.date.today(),
                 }
             )
 
@@ -832,11 +455,10 @@ class TestPmsMultiproperty(TestPms):
         +---------------+------+------+------+----+----+
         """
         # ARRANGE
-        self.board_service1 = self.env["pms.board.service"].create(
-            {
-                "name": "Board Service Test",
-                "default_code": "CB",
-            }
+        self.board_service1 = self._create_board_service(
+            "Board Service Test",
+            default_code="CB",
+            pms_property_ids=[self.pms_property2.id, self.pms_property3.id],
         )
         host1 = self.env["res.partner"].create(
             {
@@ -894,18 +516,11 @@ class TestPmsMultiproperty(TestPms):
             }
         )
 
-        board_service_room_type1 = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_board_service_id": self.board_service1.id,
-                "pms_room_type_id": room_type_test.id,
-                "pms_property_ids": [self.pms_property2.id, self.pms_property3.id],
-            }
-        )
         test_cases = [
             {"preferred_room_id": room.id},
             {"room_type_id": room_type_test.id},
             {"pricelist_id": pricelist2.id},
-            {"board_service_room_id": board_service_room_type1.id},
+            {"board_service_id": self.board_service1.id},
         ]
 
         for test_case in test_cases:

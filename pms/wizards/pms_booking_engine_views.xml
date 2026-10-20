@@ -107,8 +107,10 @@
                                     name="adults"
                                     attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
                                 />
+                                <field name="allowed_board_service_ids" invisible="1" />
                                 <field
-                                    name="board_service_room_id"
+                                    name="board_service_id"
+                                    options="{'no_create': True}"
                                     attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
                                 />
                                 <field

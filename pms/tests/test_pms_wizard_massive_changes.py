@@ -776,413 +776,51 @@ class TestPmsWizardMassiveChanges(TestPms):
             "The wizard should create as many items as room types given.",
         )
 
-    def test_one_board_service_room_type_no_board_service(self):
+    def test_board_service_variant_price_overwrites_only_its_items(self):
         """
-        Call to wizard with one board service room type and no
-        board service.
-        The wizard must create as many pricelist items as there
-        are services on the given board service.
-        """
-        # ARRANGE
-        room_type_single = self.env["pms.room.type"].create(
-            {
-                "pms_property_ids": [self.pms_property1.id],
-                "name": "Double Test",
-                "default_code": "DBL_Test",
-                "class_id": self.room_type_class1.id,
-            }
-        )
-        board_service_only_breakfast = self.env["pms.board.service"].create(
-            {
-                "name": "Test Only Breakfast",
-                "default_code": "CB1",
-                "pms_property_ids": [self.pms_property1.id],
-            }
-        )
-        service_breakfast = self.env["product.product"].create(
-            {"name": "Test Breakfast"}
-        )
-        board_service_single = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": room_type_single.id,
-                "pms_board_service_id": board_service_only_breakfast.id,
-                "pms_property_id": self.pms_property1.id,
-            }
-        )
-        board_service_line_single_1 = self.env["pms.board.service.line"].create(
-            {
-                "product_id": service_breakfast.id,
-                "pms_board_service_id": board_service_only_breakfast.id,
-                "adults": True,
-            }
-        )
-        date_from = fields.date.today()
-        date_to = fields.date.today()
-        wizard_result = self.env["pms.massive.changes.wizard"].create(
-            {
-                "massive_changes_on": "pricelist",
-                "pricelist_ids": [(6, 0, [self.pricelist1.id])],
-                "apply_pricelists_on": "board_services",
-                "board_service_room_type_ids": [
-                    (
-                        6,
-                        0,
-                        [board_service_single.id],
-                    )
-                ],
-                "pms_property_ids": [self.pms_property1.id],
-                "start_date": date_from,
-                "end_date": date_to,
-                "date_types": "consumption_dates",
-            }
-        )
-        # ACT
-        wizard_result.apply_massive_changes()
-
-        items_created = self.env["product.pricelist.item"].search(
-            [
-                ("pricelist_id", "=", self.pricelist1.id),
-                ("pms_property_ids", "=", self.pms_property1.id),
-                ("product_id", "=", board_service_line_single_1.product_id.id),
-            ]
-        )
-        # ASSERT
-        self.assertIn(
-            service_breakfast,
-            items_created.mapped("product_id"),
-            "The wizard must create as many pricelist items as there "
-            "are services on the given board service.",
-        )
-
-    def test_one_board_service_room_type_with_board_service(self):
-        """
-        Call to wizard with one board service room type and
-        board service.
-        The wizard must create one pricelist items with
-        the board service given.
+        A board service variant is priced as a service. Pricing it again on
+        the same dates replaces its previous price and leaves the prices of
+        the other products of those dates untouched.
         """
         # ARRANGE
-        room_type_single = self.env["pms.room.type"].create(
-            {
-                "pms_property_ids": [self.pms_property1.id],
-                "name": "Double Test",
-                "default_code": "DBL_Test",
-                "class_id": self.room_type_class1.id,
-            }
+        board_service = self._create_board_service(
+            "Test Breakfast", guests=("adult", "child")
         )
-        board_service_only_breakfast = self.env["pms.board.service"].create(
-            {
-                "name": "Test Only Breakfast",
-                "default_code": "CB1",
-                "pms_property_ids": [self.pms_property1.id],
-            }
-        )
-        service_breakfast = self.env["product.product"].create(
-            {"name": "Test Breakfast"}
-        )
-        board_service_single = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": room_type_single.id,
-                "pms_board_service_id": board_service_only_breakfast.id,
-                "pms_property_id": self.pms_property1.id,
-            }
-        )
-        board_service_line_single_1 = self.env["pms.board.service.line"].create(
-            {
-                "product_id": service_breakfast.id,
-                "pms_board_service_id": board_service_only_breakfast.id,
-                "adults": True,
-            }
-        )
+        child_breakfast = self._board_service_variant(board_service, "children")
+        adult_breakfast = self._board_service_variant(board_service, "adults")
         date_from = fields.date.today()
         date_to = fields.date.today()
-        wizard_result = self.env["pms.massive.changes.wizard"].create(
-            {
-                "massive_changes_on": "pricelist",
-                "pricelist_ids": [(6, 0, [self.pricelist1.id])],
-                "apply_pricelists_on": "board_services",
-                "board_service_room_type_ids": [
-                    (
-                        6,
-                        0,
-                        [board_service_single.id],
-                    )
-                ],
-                "board_service": board_service_line_single_1.product_id.id,
-                "pms_property_ids": [self.pms_property1.id],
-                "start_date": date_from,
-                "end_date": date_to,
-                "date_types": "consumption_dates",
-            }
-        )
-        # ACT
-        wizard_result.apply_massive_changes()
 
-        items_created = self.env["product.pricelist.item"].search(
+        def price_service(service, price):
+            self.env["pms.massive.changes.wizard"].create(
+                {
+                    "massive_changes_on": "pricelist",
+                    "pricelist_ids": [(6, 0, [self.pricelist1.id])],
+                    "apply_pricelists_on": "service",
+                    "service": service.id,
+                    "price": price,
+                    "pms_property_ids": [self.pms_property1.id],
+                    "start_date": date_from,
+                    "end_date": date_to,
+                    "date_types": "consumption_dates",
+                }
+            ).apply_massive_changes()
+
+        price_service(adult_breakfast, 10)
+        price_service(child_breakfast, 5)
+        # ACT
+        price_service(child_breakfast, 4)
+        # ASSERT
+        items = self.env["product.pricelist.item"].search(
             [
                 ("pricelist_id", "=", self.pricelist1.id),
-                ("pms_property_ids", "=", self.pms_property1.id),
-                ("product_id", "=", board_service_line_single_1.product_id.id),
+                ("product_id", "in", board_service.product_variant_ids.ids),
             ]
         )
-        # ASSERT
-        self.assertIn(
-            service_breakfast,
-            items_created.mapped("product_id"),
-            "The wizard must create one pricelist items with "
-            " the board service given.",
-        )
-
-    def test_several_board_service_room_type_no_board_service(self):
-        """
-        Call to wizard with several board service room type and no
-        board service.
-        The wizard must create as many pricelist items as there
-        are services on the given board services.
-        """
-        # ARRANGE
-        room_type_single = self.env["pms.room.type"].create(
-            {
-                "pms_property_ids": [self.pms_property1.id],
-                "name": "Double Test",
-                "default_code": "SNG_Test",
-                "class_id": self.room_type_class1.id,
-            }
-        )
-        room_type_double = self.env["pms.room.type"].create(
-            {
-                "pms_property_ids": [self.pms_property1.id],
-                "name": "Double Test",
-                "default_code": "DBL_Test",
-                "class_id": self.room_type_class1.id,
-            }
-        )
-        board_service_only_breakfast = self.env["pms.board.service"].create(
-            {
-                "name": "Test Only Breakfast",
-                "default_code": "CB1",
-                "pms_property_ids": [self.pms_property1.id],
-            }
-        )
-        board_service_half_board = self.env["pms.board.service"].create(
-            {
-                "name": "Test Half Board",
-                "default_code": "CB2",
-                "pms_property_ids": [self.pms_property1.id],
-            }
-        )
-        service_breakfast = self.env["product.product"].create(
-            {"name": "Test Breakfast"}
-        )
-        service_dinner = self.env["product.product"].create({"name": "Test Dinner"})
-        board_service_single = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": room_type_single.id,
-                "pms_board_service_id": board_service_only_breakfast.id,
-                "pms_property_id": self.pms_property1.id,
-            }
-        )
-        board_service_double = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": room_type_double.id,
-                "pms_board_service_id": board_service_half_board.id,
-                "pms_property_id": self.pms_property1.id,
-            }
-        )
-        self.env["pms.board.service.line"].create(
-            {
-                "product_id": service_breakfast.id,
-                "pms_board_service_id": board_service_only_breakfast.id,
-                "adults": True,
-            }
-        )
-        self.env["pms.board.service.line"].create(
-            {
-                "product_id": service_breakfast.id,
-                "pms_board_service_id": board_service_half_board.id,
-                "adults": True,
-            }
-        )
-        self.env["pms.board.service.line"].create(
-            {
-                "product_id": service_dinner.id,
-                "pms_board_service_id": board_service_half_board.id,
-                "adults": True,
-            }
-        )
-        date_from = fields.date.today()
-        date_to = fields.date.today()
-        product_ids_expected = (
-            board_service_double.pms_board_service_id.board_service_line_ids.mapped(
-                "product_id"
-            ).ids
-            + board_service_single.pms_board_service_id.board_service_line_ids.mapped(
-                "product_id"
-            ).ids
-        )
-        wizard_result = self.env["pms.massive.changes.wizard"].create(
-            {
-                "massive_changes_on": "pricelist",
-                "pricelist_ids": [(6, 0, [self.pricelist1.id])],
-                "apply_pricelists_on": "board_services",
-                "board_service_room_type_ids": [
-                    (
-                        6,
-                        0,
-                        [
-                            board_service_single.id,
-                            board_service_double.id,
-                        ],
-                    )
-                ],
-                "pms_property_ids": [self.pms_property1.id],
-                "start_date": date_from,
-                "end_date": date_to,
-                "date_types": "consumption_dates",
-            }
-        )
-        # ACT
-        wizard_result.apply_massive_changes()
-        items_created = self.env["product.pricelist.item"].search(
-            [
-                ("pricelist_id", "=", self.pricelist1.id),
-                ("pms_property_ids", "=", self.pms_property1.id),
-                ("product_id", "in", product_ids_expected),
-            ]
-        )
-        # ASSERT
         self.assertEqual(
-            set(product_ids_expected),
-            set(items_created.mapped("product_id").ids),
-            "The wizard should create as many pricelist items as there"
-            " are services on the given board services.",
-        )
-
-    def test_several_board_service_room_type_with_board_service(self):
-        """
-        Call to wizard with several board service room types and
-        board service.
-        The wizard must create as many pricelist items as there
-        are services on the given board services.
-        """
-        # ARRANGE
-        room_type_single = self.env["pms.room.type"].create(
-            {
-                "pms_property_ids": [self.pms_property1.id],
-                "name": "Double Test",
-                "default_code": "SNG_Test",
-                "class_id": self.room_type_class1.id,
-            }
-        )
-        room_type_double = self.env["pms.room.type"].create(
-            {
-                "pms_property_ids": [self.pms_property1.id],
-                "name": "Double Test",
-                "default_code": "DBL_Test",
-                "class_id": self.room_type_class1.id,
-            }
-        )
-        board_service_only_breakfast = self.env["pms.board.service"].create(
-            {
-                "name": "Test Only Breakfast",
-                "default_code": "CB1",
-                "pms_property_ids": [self.pms_property1.id],
-            }
-        )
-        board_service_half_board = self.env["pms.board.service"].create(
-            {
-                "name": "Test Half Board",
-                "default_code": "CB2",
-                "pms_property_ids": [self.pms_property1.id],
-            }
-        )
-        service_breakfast = self.env["product.product"].create(
-            {"name": "Test Breakfast"}
-        )
-        service_dinner = self.env["product.product"].create({"name": "Test Dinner"})
-        board_service_single = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": room_type_single.id,
-                "pms_board_service_id": board_service_only_breakfast.id,
-                "pms_property_id": self.pms_property1.id,
-            }
-        )
-        board_service_double = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": room_type_double.id,
-                "pms_board_service_id": board_service_half_board.id,
-                "pms_property_id": self.pms_property1.id,
-            }
-        )
-        self.env["pms.board.service.line"].create(
-            {
-                "product_id": service_breakfast.id,
-                "pms_board_service_id": board_service_only_breakfast.id,
-                "adults": True,
-            }
-        )
-        self.env["pms.board.service.line"].create(
-            {
-                "product_id": service_breakfast.id,
-                "pms_board_service_id": board_service_half_board.id,
-                "adults": True,
-            }
-        )
-        self.env["pms.board.service.line"].create(
-            {
-                "product_id": service_dinner.id,
-                "pms_board_service_id": board_service_half_board.id,
-                "adults": True,
-            }
-        )
-        date_from = fields.date.today()
-        date_to = fields.date.today()
-        board_service_id_double = board_service_double.pms_board_service_id
-        board_service_id_single = board_service_single.pms_board_service_id
-        product_ids_expected = list(
-            set(board_service_id_double.board_service_line_ids.mapped("product_id").ids)
-            & set(
-                board_service_id_single.board_service_line_ids.mapped("product_id").ids
-            )
-        )
-        wizard_result = self.env["pms.massive.changes.wizard"].create(
-            {
-                "massive_changes_on": "pricelist",
-                "pricelist_ids": [(6, 0, [self.pricelist1.id])],
-                "apply_pricelists_on": "board_services",
-                "board_service_room_type_ids": [
-                    (
-                        6,
-                        0,
-                        [
-                            board_service_single.id,
-                            board_service_double.id,
-                        ],
-                    )
-                ],
-                "board_service": service_breakfast.id,
-                "pms_property_ids": [self.pms_property1.id],
-                "start_date": date_from,
-                "end_date": date_to,
-                "date_types": "consumption_dates",
-            }
-        )
-        # ACT
-        wizard_result.apply_massive_changes()
-
-        items_created = self.env["product.pricelist.item"].search(
-            [
-                ("pricelist_id", "=", self.pricelist1.id),
-                ("pms_property_ids", "=", self.pms_property1.id),
-                ("product_id", "in", product_ids_expected),
-            ]
-        )
-        # ASSERT
-        self.assertEqual(
-            set(product_ids_expected),
-            set(items_created.mapped("product_id").ids),
-            "The wizard should create as many pricelist items as there"
-            " are services on the given board services.",
+            {(item.product_id, item.fixed_price) for item in items},
+            {(adult_breakfast, 10), (child_breakfast, 4)},
+            "Pricing a board service variant should only replace its own price",
         )
 
     def test_service(self):

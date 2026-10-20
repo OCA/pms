@@ -15,7 +15,7 @@
                     'checkin': (DateTime.today() + timedelta(days=14)),
                     'checkout': (DateTime.today() + timedelta(days=16)),
                     'adults': 2,
-                    'board_service_room_id': ref('pms_board_service_room_eco_half_board'),
+                    'board_service_id': ref('pms_board_service_half_board'),
                     'partner_requests': 'Vegan breakfast',
                     })]"
         />
@@ -85,7 +85,7 @@
                     'checkin': (DateTime.today() + timedelta(days=14)),
                     'checkout': (DateTime.today() + timedelta(days=15)),
                     'adults': 3,
-                    'board_service_room_id': ref('pms_board_service_room_triple_full_board'),
+                    'board_service_id': ref('pms_board_service_full_board'),
                     })]"
         />
         </record>
@@ -187,7 +187,7 @@
                     'checkout': (DateTime.today() + timedelta(days=16)),
                     'adults': 1,
                     'children':1,
-                    'board_service_room_id': ref('pms_board_service_room_double_half_board'),
+                    'board_service_id': ref('pms_board_service_half_board'),
                     'partner_requests': 'Vegan food.'
 
                     })]"
@@ -212,7 +212,7 @@
                     'checkin': (DateTime.today() + timedelta(days=15)),
                     'checkout': (DateTime.today() + timedelta(days=16)),
                     'adults': 1,
-                    'board_service_room_id': ref('pms_board_service_room_triple_full_board'),
+                    'board_service_id': ref('pms_board_service_full_board'),
                     })]"
         />
         </record>
@@ -292,7 +292,7 @@
                     'checkout': (DateTime.today() + timedelta(days=17)),
                     'adults': 2,
                     'children':1,
-                    'board_service_room_id': ref('pms_board_service_room_triple_breakfast'),
+                    'board_service_id': ref('pms_board_service_breakfast'),
                     'partner_requests': 'Soy milf for breakfast.'
                     })]"
         />
@@ -581,7 +581,7 @@
                     'children': 1,
                     'arrival_hour': '12:00',
                     'departure_hour': '12:30',
-                    'board_service_room_id': ref('pms_board_service_room_double_half_board'),
+                    'board_service_id': ref('pms_board_service_half_board'),
                     'partner_requests': 'allergic to nuts.'
                     })]"
         />
@@ -666,7 +666,7 @@
                     'checkin': (DateTime.today() + timedelta(days=23)),
                     'checkout': (DateTime.today() + timedelta(days=24)),
                     'adults': 1,
-                    'board_service_room_id': ref('pms_board_service_room_single_half_board'),
+                    'board_service_id': ref('pms_board_service_half_board'),
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -674,7 +674,7 @@
                     'checkin': (DateTime.today() + timedelta(days=23)),
                     'checkout': (DateTime.today() + timedelta(days=24)),
                     'adults': 1,
-                    'board_service_room_id': ref('pms_board_service_room_single_breakfast'),
+                    'board_service_id': ref('pms_board_service_breakfast'),
                     'sale_channel_origin_id': ref('pms.main_pms_sale_channel_phone')
                     }),
                     (0, 0, {
@@ -683,7 +683,7 @@
                     'checkin': (DateTime.today() + timedelta(days=23)),
                     'checkout': (DateTime.today() + timedelta(days=24)),
                     'adults': 1,
-                    'board_service_room_id': ref('pms_board_service_room_single_full_board'),
+                    'board_service_id': ref('pms_board_service_full_board'),
                     'sale_channel_origin_id': ref('pms.main_pms_sale_channel_phone')
                     })]"
         />
@@ -727,7 +727,7 @@
                     'checkout': (DateTime.today() + timedelta(days=24)),
                     'adults': 2,
                     'children': 1,
-                    'board_service_room_id': ref('pms_board_service_room_triple_full_board'),
+                    'board_service_id': ref('pms_board_service_full_board'),
                     'sale_channel_origin_id': ref('main_pms_sale_channel_mail')
                     })]"
         />
@@ -755,7 +755,7 @@
                     'adults': 1,
                     'arrival_hour': '17:00',
                     'departure_hour': '12:15',
-                    'board_service_room_id': ref('pms_board_service_room_single_full_board'),
+                    'board_service_id': ref('pms_board_service_full_board'),
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -765,7 +765,7 @@
                     'adults': 1,
                     'arrival_hour': '16:00',
                     'departure_hour': '11:15',
-                    'board_service_room_id': ref('pms_board_service_room_single_full_board'),
+                    'board_service_id': ref('pms_board_service_full_board'),
                     })]"
         />
         </record>
@@ -796,7 +796,7 @@
                     'adults': 1,
                     'arrival_hour': '17:00',
                     'departure_hour': '12:15',
-                    'board_service_room_id': ref('pms_board_service_room_double_half_board'),
+                    'board_service_id': ref('pms_board_service_half_board'),
                     'partner_requests': 'Cold dinner 1st night'
                     }),
                     (0, 0, {
@@ -858,7 +858,7 @@
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=32)),
                     'adults': 1,
-                    'board_service_room_id': ref('pms_board_service_room_eco_full_board'),
+                    'board_service_id': ref('pms_board_service_full_board'),
                     'partner_requests': 'Vegan food.'
                     })]"
         />
@@ -887,7 +887,7 @@
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=32)),
                     'adults': 1,
-                    'board_service_room_id': ref('pms_board_service_room_single_half_board'),
+                    'board_service_id': ref('pms_board_service_half_board'),
                     })]"
         />
         </record>
@@ -914,7 +914,7 @@
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=32)),
                     'adults': 1,
-                    'board_service_room_id': ref('pms_board_service_room_single_full_board'),
+                    'board_service_id': ref('pms_board_service_full_board'),
                     'partner_requests': 'picnic for 1st lunch'
                     })]"
         />
@@ -943,7 +943,7 @@
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=31)),
                     'adults': 2,
-                    'board_service_room_id': ref('pms_board_service_room_double_half_board'),
+                    'board_service_id': ref('pms_board_service_half_board'),
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
@@ -951,7 +951,7 @@
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=32)),
                     'adults': 2,
-                    'board_service_room_id': ref('pms_board_service_room_double_half_board'),
+                    'board_service_id': ref('pms_board_service_half_board'),
                     })]"
         />
         </record>
@@ -975,7 +975,7 @@
                     'checkout': (DateTime.today() + timedelta(days=27)),
                     'adults': 1,
                     'children': 2,
-                    'board_service_room_id': ref('pms_board_service_room_triple_full_board'),
+                    'board_service_id': ref('pms_board_service_full_board'),
                     'partner_requests': 'Seafood meals are needed for at least one day'
                     })]"
         />
@@ -1022,7 +1022,7 @@
                     'children': 2,
                     'arrival_hour': '09:00',
                     'departure_hour': '11:00',
-                    'board_service_room_id': ref('pms_board_service_room_triple_full_board'),
+                    'board_service_id': ref('pms_board_service_full_board'),
                     'partner_requests': '1 extra towel needed.'
                     })]"
         />

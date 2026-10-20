@@ -69,11 +69,6 @@
                     options="{'no_create': True,'no_open': True}"
                     attrs="{'column_invisible': [('parent.is_pms_available', '=', False)]}"
                 />
-                <!-- <field
-                    name="board_service_room_type_id"
-                    options="{'no_create': True, 'no_open': True}"
-                    attrs="{'invisible': [('parent.is_pms_available', '=', False)]}"
-                /> -->
             </xpath>
 
 
@@ -98,16 +93,29 @@
                     options="{'no_create': True,'no_open': True}"
                     attrs="{'column_invisible': [('parent.is_pms_available', '=', False)]}"
                 />
-                <!-- <field
-                    name="board_service_room_type_id"
-                    options="{'no_create': True, 'no_open': True}"
-                    attrs="{'invisible': [('parent.is_pms_available', '=', False)]}"
-                /> -->
             </xpath>
 
 
 
             <xpath expr="//page[@name='pricelist_rules']" position="after">
+                <page
+                    name="pricelist_board_services"
+                    string="Board Services"
+                    groups="pms.group_pms_user"
+                    attrs="{'invisible': [('is_pms_available', '=', False)]}"
+                >
+                    <group>
+                        <field
+                            name="board_service_ids"
+                            widget="many2many_tags"
+                            options="{'no_create': True}"
+                        />
+                        <field
+                            name="default_board_service_id"
+                            options="{'no_create': True}"
+                        />
+                    </group>
+                </page>
                 <page
                     name="pricelist_occupancy"
                     string="Occupancy"

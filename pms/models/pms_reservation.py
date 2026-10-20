@@ -72,23 +72,30 @@ class PmsReservation(models.Model):
         string="Sale Lines",
         copy=False,
     )
-    board_service_room_id = fields.Many2one(
+    board_service_id = fields.Many2one(
         string="Board Service",
-        help="Board Service included in the room",
+        help="Board service included in the room. If not set, Room Only",
         readonly=False,
         store=True,
-        comodel_name="pms.board.service.room.type",
-        compute="_compute_board_service_room_id",
-        inverse="_inverse_board_service_room_id",
+        comodel_name="product.template",
+        domain="[('id', 'in', allowed_board_service_ids)]",
+        compute="_compute_board_service_id",
+        inverse="_inverse_board_service_id",
         index=True,
         tracking=True,
         check_pms_properties=True,
+    )
+    allowed_board_service_ids = fields.Many2many(
+        string="Allowed Board Services",
+        help="Board services the pricelist sells for the stay",
+        comodel_name="product.template",
+        compute="_compute_allowed_board_service_ids",
     )
     # Manual override flag:
     # - False: system is allowed to auto-fill the field from the default rule.
     # - True: user has intervened (including clearing the value),
     # so do NOT auto-fill again.
-    board_service_room_manual = fields.Boolean(
+    board_service_manual = fields.Boolean(
         string="Board Service Manually Set",
         default=False,
         help=(
@@ -730,87 +737,39 @@ class PmsReservation(models.Model):
         for record in self:
             record.check_adults = True
 
-    @api.depends(
-        "pricelist_id",
-        "room_type_id",
-        "pms_property_id",
-        "board_service_room_manual",
-    )
-    def _compute_board_service_room_id(self):
-        """
-        Compute default board service for the reservation.
-
-        Behavior:
-        1) If 'board_service_room_manual' is True, DO NOT auto-fill again.
-           This prevents the default from coming back after the user
-           leared it.
-        2) Otherwise, if we have the needed inputs (pricelist + room type),
-           fetch the configured default and assign it when appropriate.
-
-        Optional safety:
-        - If manual mode is True but the currently selected board service
-        is no longer compatible with the new room type, we clear it.
-          This avoids inconsistent data.
-        """
+    @api.depends("pricelist_id", "pms_property_id", "checkin", "checkout")
+    def _compute_allowed_board_service_ids(self):
+        room_only = self.env["product.template"]._room_only_board_service()
         for reservation in self:
-            # 1) Respect the user's manual decision
-            # (including "I want it empty").
-            if reservation.board_service_room_manual:
-                # Optional: if the current value becomes incompatible
-                # with the room type, clear it to avoid inconsistencies.
-                if (
-                    reservation.board_service_room_id
-                    and reservation.board_service_room_id.pms_room_type_id
-                    and reservation.room_type_id
-                    and (
-                        reservation.board_service_room_id.pms_room_type_id
-                        != reservation.room_type_id
+            if reservation.pricelist_id and reservation.pms_property_id:
+                reservation.allowed_board_service_ids = (
+                    reservation.pricelist_id._get_available_board_services(
+                        reservation.pms_property_id,
+                        reservation.checkin,
+                        reservation.checkout,
                     )
-                ):
-                    reservation.board_service_room_id = False
-                continue
-
-            # 2) Auto-fill only when we can compute the default.
-            if reservation.pricelist_id and reservation.room_type_id:
-                board_service_default = (
-                    reservation.room_type_id.get_default_board_service(
-                        pms_property_id=reservation.pms_property_id.id,
-                        room_type_id=reservation.room_type_id.id,
-                        pricelist_id=reservation.pricelist_id.id,
-                    )
+                    - room_only
                 )
-
-                # Assign default if empty OR if current value
-                # doesn't match the room type.
-                if not reservation.board_service_room_id or (
-                    reservation.board_service_room_id.pms_room_type_id
-                    and (
-                        reservation.board_service_room_id.pms_room_type_id
-                        != reservation.room_type_id
-                    )
-                ):
-                    reservation.board_service_room_id = (
-                        board_service_default.id if board_service_default else False
-                    )
-
             else:
-                # If we cannot compute (missing inputs), keep it empty.
-                if not reservation.board_service_room_id:
-                    reservation.board_service_room_id = False
+                reservation.allowed_board_service_ids = False
 
-    def _inverse_board_service_room_id(self):
-        """
-        Inverse method executed when the user manually
-        the computed field.
-
-        Key idea:
-        - Any manual edit (setting a value OR clearing it) is considered
-        user decision.
-        - Once the user has decided, we set a flag so future recomputes
-        won't restore the default automatically.
-        """
+    @api.depends("pricelist_id", "pms_property_id", "board_service_manual")
+    def _compute_board_service_id(self):
+        """The default board service of the pricelist, if it sells it for the
+        stay, unless the current one is still sold. Once the user chooses a
+        board service (even none), it's kept"""
         for reservation in self:
-            reservation.board_service_room_manual = True
+            if reservation.board_service_manual:
+                continue
+            allowed = reservation.allowed_board_service_ids
+            if reservation.board_service_id in allowed:
+                continue
+            default = reservation.pricelist_id.default_board_service_id
+            reservation.board_service_id = default if default in allowed else False
+
+    def _inverse_board_service_id(self):
+        for reservation in self:
+            reservation.board_service_manual = True
 
     @api.depends("preferred_room_id")
     def _compute_room_type_id(self):
@@ -938,44 +897,54 @@ class PmsReservation(models.Model):
                 if not reservation.reservation_line_ids:
                     reservation.reservation_line_ids = False
 
-    @api.depends("board_service_room_id", "adults", "children")
+    @api.depends("board_service_id", "adults", "children")
     def _compute_board_service_ids(self):
+        """Keep a service for each product the board service makes the guests
+        consume: the ones already there are kept untouched (with their prices),
+        the missing ones are added and the ones no longer consumed removed.
+        Board services added by other means than the board service of the
+        reservation (without guest type) are left alone"""
         if self.env.context.get("skip_compute_board_service_ids", False):
             return
         for reservation in self:
-            board_services = []
-            old_board_lines = reservation.service_ids.filtered_domain(
-                [
-                    ("is_board_service", "=", True),
-                ]
-            )
-            # Avoid recalculating services if the boardservice has not changed
-            if (
-                old_board_lines
-                and reservation.board_service_room_id
-                == reservation._origin.board_service_room_id
-            ):
-                return
-            if reservation.board_service_room_id:
-                board = self.env["pms.board.service.room.type"].browse(
-                    reservation.board_service_room_id.id
+            if reservation.board_service_id:
+                consumed = reservation.board_service_id._get_board_service_products(
+                    reservation.adults, reservation.children
                 )
-                for line in board.board_service_line_ids:
-                    if (reservation.adults and line.adults) or (
-                        reservation.children and line.children
-                    ):
-                        data = {
-                            "product_id": line.product_id.id,
-                            "is_board_service": True,
-                            "folio_id": reservation.folio_id.id,
-                            "reservation_id": reservation.id,
-                            "board_service_line_id": line.id,
-                        }
-                        board_services.append((0, False, data))
-                reservation.service_ids -= old_board_lines
-                reservation.service_ids = board_services
-            elif old_board_lines:
-                reservation.service_ids -= old_board_lines
+            else:
+                consumed = []
+            board_services = reservation.service_ids.filtered(
+                lambda service: service.is_board_service and service.board_guest_type
+            )
+            to_keep = board_services.filtered(
+                lambda service, consumed=consumed: (
+                    service.product_id,
+                    service.board_guest_type,
+                )
+                in consumed
+            )
+            kept = [
+                (service.product_id, service.board_guest_type) for service in to_keep
+            ]
+            new_services = [
+                (
+                    0,
+                    False,
+                    {
+                        "product_id": product.id,
+                        "is_board_service": True,
+                        "board_guest_type": guest_type,
+                        "folio_id": reservation.folio_id.id,
+                        "reservation_id": reservation.id,
+                    },
+                )
+                for product, guest_type in consumed
+                if (product, guest_type) not in kept
+            ]
+            if board_services - to_keep:
+                reservation.service_ids -= board_services - to_keep
+            if new_services:
+                reservation.service_ids = new_services
 
     @api.depends("partner_id", "agency_id")
     def _compute_pricelist_id(self):
@@ -2058,6 +2027,7 @@ class PmsReservation(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        reservation_states = []
         for vals in vals_list:
             if vals.get("folio_id"):
                 folio = self.env["pms.folio"].browse(vals["folio_id"])
@@ -2130,12 +2100,11 @@ class PmsReservation(models.Model):
                 )
             # Avoid send state field in vals, with the propouse to
             # use action_confirm or action_cancel methods
-            reservation_state = False
-            if "state" in vals:
-                reservation_state = vals["state"]
-                vals.pop("state")
+            reservation_states.append(vals.pop("state", False))
         records = super().create(vals_list)
-        for record in records:
+        for record, vals, reservation_state in zip(
+            records, vals_list, reservation_states, strict=True
+        ):
             record._check_capacity()
             if (
                 record.preconfirm and record.state == "draft"
@@ -2152,7 +2121,7 @@ class PmsReservation(models.Model):
                         "service_ids": tourist_tax_services_cmds,
                     }
                 )
-        return record
+        return records
 
     def write(self, vals):
         if (
@@ -2275,7 +2244,7 @@ class PmsReservation(models.Model):
         # If we create a reservation with board service, compute_service_ids dont run
         # (compute with readonly to False), and
         # we must force it to compute the services linked with the board service:
-        if "board_service_room_id" in vals:
+        if "board_service_id" in vals:
             self._compute_board_service_ids()
 
     def get_folios_to_update_channel(self, vals):

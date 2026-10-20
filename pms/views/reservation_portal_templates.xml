@@ -155,9 +155,9 @@
                             />
                         </div>
                        <div class="col-12 col-md-6 mb-1">
-                           <t t-if="reservation.board_service_room_id">
+                           <t t-if="reservation.board_service_id">
                                <strong>Board Service:</strong> <span
-                                    t-field="reservation.board_service_room_id.pms_board_service_id.name"
+                                    t-field="reservation.board_service_id.name"
                                 />
                            </t>
                         </div>

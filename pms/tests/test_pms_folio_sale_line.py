@@ -54,28 +54,11 @@ class TestPmsFolioSaleLine(TestPms):
                 "consumed_on": "after",
             }
         )
-        cls.board_service_test = cls.board_service = cls.env[
-            "pms.board.service"
-        ].create(
-            {
-                "name": "Test Board Service",
-                "default_code": "TPS",
-            }
-        )
-        cls.env["pms.board.service.line"].create(
-            {
-                "pms_board_service_id": cls.board_service_test.id,
-                "product_id": cls.product_test1.id,
-                "amount": 8,
-                "adults": True,
-            }
-        )
-        cls.board_service_room_type = cls.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": cls.room_type_double.id,
-                "pms_board_service_id": cls.board_service_test.id,
-                "pms_property_id": cls.pms_property1.id,
-            }
+        cls.board_service_test = cls.board_service = cls._create_board_service(
+            "Test Board Service",
+            default_code="TPS",
+            list_price=8,
+            per_day=True,
         )
         cls.extra_service = cls.env["pms.service"].create(
             {
@@ -434,7 +417,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "board_service_room_id": self.board_service_room_type.id,
+                "board_service_id": self.board_service_test.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
@@ -473,7 +456,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "board_service_room_id": self.board_service_room_type.id,
+                "board_service_id": self.board_service_test.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
@@ -513,7 +496,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "board_service_room_id": self.board_service_room_type.id,
+                "board_service_id": self.board_service_test.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
@@ -556,7 +539,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "board_service_room_id": self.board_service_room_type.id,
+                "board_service_id": self.board_service_test.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
@@ -598,7 +581,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "board_service_room_id": self.board_service_room_type.id,
+                "board_service_id": self.board_service_test.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
@@ -641,7 +624,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "board_service_room_id": self.board_service_room_type.id,
+                "board_service_id": self.board_service_test.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
@@ -684,7 +667,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "board_service_room_id": self.board_service_room_type.id,
+                "board_service_id": self.board_service_test.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
@@ -728,7 +711,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "board_service_room_id": self.board_service_room_type.id,
+                "board_service_id": self.board_service_test.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )

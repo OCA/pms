@@ -26,6 +26,10 @@
         <record id="product.list0" model="product.pricelist">
             <field name="availability_plan_id" ref="main_pms_availability_plan" />
             <field name="is_pms_available" eval="True" />
+            <field
+            name="board_service_ids"
+            eval="[(4, ref('pms.product_template_board_room_only'))]"
+        />
         </record>
         <!-- default partner simplified invoices -->
         <record id="various_pms_partner" model="res.partner">

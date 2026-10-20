@@ -29,13 +29,6 @@ class ProductPricelistItem(models.Model):
         string="End Date Consumption",
         help="End date to apply daily pricelist items",
     )
-    board_service_room_type_id = fields.Many2one(
-        string="Board Service",
-        help="Specify a Board services on Room Types.",
-        comodel_name="pms.board.service.room.type",
-        index=True,
-        check_pms_properties=True,
-    )
     pricelist_id = fields.Many2one(
         string="Pricelist",
         help="Pricelist in which this item is included",
@@ -51,17 +44,6 @@ class ProductPricelistItem(models.Model):
         index=True,
         check_pms_properties=True,
     )
-    allowed_board_service_product_ids = fields.Many2many(
-        string="Allowed board service products",
-        comodel_name="product.product",
-        compute="_compute_allowed_board_service_product_ids",
-    )
-
-    allowed_board_service_room_type_ids = fields.Many2many(
-        string="Allowed board service room types",
-        comodel_name="pms.board.service.room.type",
-        compute="_compute_allowed_board_service_room_type_ids",
-    )
     has_properties = fields.Boolean(compute="_compute_has_properties", store=True)
 
     @api.depends("pms_property_ids")
@@ -69,56 +51,6 @@ class ProductPricelistItem(models.Model):
         """Compute if the pricelist has properties associated."""
         for record in self:
             record.has_properties = len(record.pms_property_ids) != 0
-
-    @api.depends("board_service_room_type_id")
-    def _compute_allowed_board_service_product_ids(self):
-        for record in self:
-            domain = []
-            if record.board_service_room_type_id:
-                domain.append(
-                    (
-                        "id",
-                        "in",
-                        record.board_service_room_type_id.board_service_line_ids.mapped(
-                            "product_id"
-                        ).ids,
-                    )
-                )
-            allowed_board_service_product_ids = self.env["product.product"].search(
-                domain
-            )
-            record.allowed_board_service_product_ids = allowed_board_service_product_ids
-
-    @api.depends("product_id")
-    def _compute_allowed_board_service_room_type_ids(self):
-        for record in self:
-            allowed_board_service_room_type_ids = []
-            all_board_service_room_type_ids = self.env[
-                "pms.board.service.room.type"
-            ].search([])
-            if record.product_id:
-                for board_service_room_type_id in all_board_service_room_type_ids:
-                    if (
-                        record.product_id
-                        in board_service_room_type_id.board_service_line_ids.mapped(
-                            "product_id"
-                        )
-                    ):
-                        allowed_board_service_room_type_ids.append(
-                            board_service_room_type_id.id
-                        )
-            else:
-                allowed_board_service_room_type_ids = (
-                    all_board_service_room_type_ids.ids
-                )
-            domain = []
-            if allowed_board_service_room_type_ids:
-                domain.append(("id", "in", allowed_board_service_room_type_ids))
-            record.allowed_board_service_room_type_ids = (
-                self.env["pms.board.service.room.type"].search(domain)
-                if domain
-                else False
-            )
 
     def write(self, vals):
         # Check that the price in product room types are not

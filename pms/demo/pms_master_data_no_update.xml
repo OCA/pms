@@ -7,10 +7,6 @@
         <record id="demo_pms_availability_2" model="pms.availability.plan">
             <field name="name">Availability Plan Demo</field>
         </record>
-        <record id="product.list0" model="product.pricelist">
-            <field name="availability_plan_id" ref="demo_pms_availability_2" />
-            <field name="is_pms_available" eval="True" />
-        </record>
         <!-- Company -->
         <record id="pms_company1" model="res.company">
             <field name="name">Alda Company</field>
@@ -819,202 +815,79 @@
             <field name="per_day">True</field>
             <field name="per_person">True</field>
         </record>
-        <!-- pms.board.service -->
-        <record id="pms_board_service_breakfast" model="pms.board.service">
+        <!-- board services -->
+        <!-- Breakfast for every guest, adults and children with their own variant -->
+        <record id="pms_board_service_breakfast" model="product.template">
             <field name="name">BreakFast</field>
             <field name="default_code">BB</field>
+            <field name="list_price">3.0</field>
+            <field name="type">service</field>
+            <field name="purchase_ok">False</field>
+            <field name="is_board_service">True</field>
+            <field name="per_day">True</field>
+            <field name="per_person">True</field>
+            <field name="consumed_on">after</field>
             <field
-            name="board_service_line_ids"
-            eval="[(5, 0), (0, 0, {
-                    'product_id': ref('pms_service_breakfast_buffet'),
-                    'amount': 3,
-                    'adults': True,})]"
+            name="attribute_line_ids"
+            eval="[(0, 0, {
+                    'attribute_id': ref('pms.product_attribute_board_guest'),
+                    'value_ids': [(6, 0, [
+                        ref('pms.product_attribute_value_board_guest_adult'),
+                        ref('pms.product_attribute_value_board_guest_child'),
+                    ])],
+                })]"
         />
         </record>
-        <record id="pms_board_service_half_board" model="pms.board.service">
+        <!-- Half and full board only for adults -->
+        <record id="pms_board_service_half_board" model="product.template">
             <field name="name">Half Board</field>
             <field name="default_code">HB</field>
+            <field name="list_price">11.0</field>
+            <field name="type">service</field>
+            <field name="purchase_ok">False</field>
+            <field name="is_board_service">True</field>
+            <field name="per_day">True</field>
+            <field name="per_person">True</field>
             <field
-            name="board_service_line_ids"
-            eval="[(5, 0), (0, 0, {
-                    'product_id': ref('pms_service_breakfast_buffet'),
-                    'amount': 3,
-                    'adults': True,}),
-                    (0, 0, {'product_id': ref('pms_service_dinner'),
-                    'amount': 8,
-                    'adults': True,})
-                    ]"
+            name="attribute_line_ids"
+            eval="[(0, 0, {
+                    'attribute_id': ref('pms.product_attribute_board_guest'),
+                    'value_ids': [(6, 0, [
+                        ref('pms.product_attribute_value_board_guest_adult'),
+                    ])],
+                })]"
         />
         </record>
-        <record id="pms_board_service_full_board" model="pms.board.service">
+        <record id="pms_board_service_full_board" model="product.template">
             <field name="name">Full Board</field>
             <field name="default_code">FB</field>
+            <field name="list_price">19.0</field>
+            <field name="type">service</field>
+            <field name="purchase_ok">False</field>
+            <field name="is_board_service">True</field>
+            <field name="per_day">True</field>
+            <field name="per_person">True</field>
             <field
-            name="board_service_line_ids"
-            eval="[(5, 0), (0, 0, {
-                    'product_id': ref('pms_service_breakfast_buffet'),
-                    'amount': 3,
-                    'adults': True,}),
-                    (0, 0, {'product_id': ref('pms_service_lunch'),
-                    'amount': 8,
-                    'adults': True,}),
-                    (0, 0, {'product_id': ref('pms_service_dinner'),
-                    'amount': 8,
-                    'adults': True,})
-                    ]"
+            name="attribute_line_ids"
+            eval="[(0, 0, {
+                    'attribute_id': ref('pms.product_attribute_board_guest'),
+                    'value_ids': [(6, 0, [
+                        ref('pms.product_attribute_value_board_guest_adult'),
+                    ])],
+                })]"
         />
         </record>
-        <!-- pms.board.service.room.type -->
-        <!-- Room Economic -->
-        <record
-        id="pms_board_service_room_eco_breakfast"
-        model="pms.board.service.room.type"
-    >
-            <field name="pms_board_service_id" ref="pms_board_service_breakfast" />
-            <field name="pms_room_type_id" ref="pms_room_type_economic" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-        </record>
-        <record
-        id="pms_board_service_room_eco_half_board"
-        model="pms.board.service.room.type"
-    >
-            <field name="pms_board_service_id" ref="pms_board_service_half_board" />
-            <field name="pms_room_type_id" ref="pms_room_type_economic" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-        </record>
-        <record
-        id="pms_board_service_room_eco_full_board"
-        model="pms.board.service.room.type"
-    >
-            <field name="pms_board_service_id" ref="pms_board_service_full_board" />
-            <field name="pms_room_type_id" ref="pms_room_type_economic" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-        </record>
-        <!-- Room Single -->
-        <record
-        id="pms_board_service_room_single_breakfast"
-        model="pms.board.service.room.type"
-    >
-            <field name="pms_board_service_id" ref="pms_board_service_breakfast" />
-            <field name="pms_room_type_id" ref="pms_room_type_single" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-        </record>
-        <record
-        id="pms_board_service_room_single_half_board"
-        model="pms.board.service.room.type"
-    >
-            <field name="pms_board_service_id" ref="pms_board_service_half_board" />
-            <field name="pms_room_type_id" ref="pms_room_type_single" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-        </record>
-        <record
-        id="pms_board_service_room_single_full_board"
-        model="pms.board.service.room.type"
-    >
-            <field name="pms_board_service_id" ref="pms_board_service_full_board" />
-            <field name="pms_room_type_id" ref="pms_room_type_single" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-        </record>
-        <!-- Room Double -->
-        <record
-        id="pms_board_service_room_double_breakfast"
-        model="pms.board.service.room.type"
-    >
-            <field name="pms_board_service_id" ref="pms_board_service_breakfast" />
-            <field name="pms_room_type_id" ref="pms_room_type_double" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-        </record>
-        <record
-        id="pms_board_service_room_double_half_board"
-        model="pms.board.service.room.type"
-    >
-            <field name="pms_board_service_id" ref="pms_board_service_half_board" />
-            <field name="pms_room_type_id" ref="pms_room_type_double" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-        </record>
-        <record
-        id="pms_board_service_room_full_board"
-        model="pms.board.service.room.type"
-    >
-            <field name="pms_board_service_id" ref="pms_board_service_full_board" />
-            <field name="pms_room_type_id" ref="pms_room_type_double" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-        </record>
-        <!-- Room Triple -->
-        <record
-        id="pms_board_service_room_triple_breakfast"
-        model="pms.board.service.room.type"
-    >
-            <field name="pms_board_service_id" ref="pms_board_service_breakfast" />
-            <field name="pms_room_type_id" ref="pms_room_type_triple" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-        </record>
-        <record
-        id="pms_board_service_room_triple_full_board"
-        model="pms.board.service.room.type"
-    >
-            <field name="pms_board_service_id" ref="pms_board_service_full_board" />
-            <field name="pms_room_type_id" ref="pms_room_type_triple" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-        </record>
-        <!-- Room Quadruple -->
-        <record
-        id="pms_board_service_room_quadruple_breakfast"
-        model="pms.board.service.room.type"
-    >
-            <field name="pms_board_service_id" ref="pms_board_service_breakfast" />
-            <field name="pms_room_type_id" ref="pms_room_type_quadruple" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-        </record>
-        <!-- Room Grand suite -->
-        <record
-        id="pms_board_service_room_grand_suite_breakfast"
-        model="pms.board.service.room.type"
-    >
-            <field name="pms_board_service_id" ref="pms_board_service_breakfast" />
-            <field name="pms_room_type_id" ref="demo_pms_room_type_grand_suite" />
-            <field name="pms_property_id" ref="san_carlos_property" />
-        </record>
-        <record
-        id="pms_board_service_room_grand_suite_half_board"
-        model="pms.board.service.room.type"
-    >
-            <field name="pms_board_service_id" ref="pms_board_service_half_board" />
-            <field name="pms_room_type_id" ref="demo_pms_room_type_grand_suite" />
-            <field name="pms_property_id" ref="san_carlos_property" />
-        </record>
-        <record
-        id="pms_board_service_room_grand_suite_full_board"
-        model="pms.board.service.room.type"
-    >
-            <field name="pms_board_service_id" ref="pms_board_service_full_board" />
-            <field name="pms_room_type_id" ref="demo_pms_room_type_grand_suite" />
-            <field name="pms_property_id" ref="san_carlos_property" />
-        </record>
-        <!-- Room Junior suite -->
-        <record
-        id="pms_board_service_room_junior_suite_breakfast"
-        model="pms.board.service.room.type"
-    >
-            <field name="pms_board_service_id" ref="pms_board_service_breakfast" />
-            <field name="pms_room_type_id" ref="demo_pms_room_type_junior_suite" />
-            <field name="pms_property_id" ref="san_carlos_property" />
-        </record>
-        <record
-        id="pms_board_service_room_junior_suite_half_board"
-        model="pms.board.service.room.type"
-    >
-            <field name="pms_board_service_id" ref="pms_board_service_half_board" />
-            <field name="pms_room_type_id" ref="demo_pms_room_type_junior_suite" />
-            <field name="pms_property_id" ref="san_carlos_property" />
-        </record>
-        <record
-        id="pms_board_service_room_junior_suite_full_board"
-        model="pms.board.service.room.type"
-    >
-            <field name="pms_board_service_id" ref="pms_board_service_full_board" />
-            <field name="pms_room_type_id" ref="demo_pms_room_type_junior_suite" />
-            <field name="pms_property_id" ref="san_carlos_property" />
+        <record id="product.list0" model="product.pricelist">
+            <field name="availability_plan_id" ref="demo_pms_availability_2" />
+            <field name="is_pms_available" eval="True" />
+            <field
+            name="board_service_ids"
+            eval="[
+                (4, ref('pms_board_service_breakfast')),
+                (4, ref('pms_board_service_half_board')),
+                (4, ref('pms_board_service_full_board')),
+            ]"
+        />
         </record>
         <!-- room.closure.reason -->
         <record id="pms_room_closure_reason_maintenance" model="room.closure.reason">
@@ -3845,6 +3718,15 @@
             <field name="pricelist_type" />
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="is_pms_available" eval="True" />
+            <field
+            name="board_service_ids"
+            eval="[(6, 0, [
+                ref('pms.product_template_board_room_only'),
+                ref('pms_board_service_breakfast'),
+                ref('pms_board_service_half_board'),
+            ])]"
+        />
+            <field name="default_board_service_id" ref="pms_board_service_breakfast" />
         </record>
 
         <record id="pms_pricelist_item_discount_10%" model="product.pricelist.item">

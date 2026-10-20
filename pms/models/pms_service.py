@@ -8,6 +8,8 @@ import pytz
 
 from odoo import _, api, fields, models
 
+from .product_product import BOARD_GUEST_TYPES
+
 
 class PmsService(models.Model):
     _name = "pms.service"
@@ -137,11 +139,10 @@ class PmsService(models.Model):
     is_board_service = fields.Boolean(
         help="Indicates if the service is part of a board service",
     )
-    board_service_line_id = fields.Many2one(
-        string="Board Service Line",
-        help="Board Service Line in which this service is included",
-        comodel_name="pms.board.service.room.type.line",
-        check_pms_properties=True,
+    board_guest_type = fields.Selection(
+        string="Board Service Guests",
+        help="Guests of the reservation the board service is counted by",
+        selection=BOARD_GUEST_TYPES,
     )
     # Non-stored related field to allow portal user to
     # see the image of the product he has ordered
@@ -580,19 +581,13 @@ class PmsService(models.Model):
         # TODO: Pass per_person to service line from product default_per_person
         #   When the user modifies the quantity avoid overwriting
         if self.product_id.per_person:
-            if self.is_board_service:
-                qty = (
-                    self.reservation_id.adults
-                    if self.board_service_line_id.adults
-                    else 0
-                )
-                qty += (
-                    self.reservation_id.children
-                    if self.board_service_line_id.children
-                    else 0
-                )
+            reservation = self.reservation_id
+            if self.board_guest_type == "children":
+                qty = reservation.children
+            elif self.board_guest_type == "all":
+                qty = reservation.adults + reservation.children
             else:
-                qty = self.reservation_id.adults
+                qty = reservation.adults
         return qty
 
     def _get_price_unit_line(self, date=False):
@@ -605,7 +600,6 @@ class PmsService(models.Model):
                 partner = origin.partner_id
                 pricelist = origin.pricelist_id
                 product = self.product_id.with_context(
-                    board_service_line_id=self.board_service_line_id.id,
                     property=origin.pms_property_id.id,
                 )
                 price = pricelist._get_product_price(
@@ -614,7 +608,6 @@ class PmsService(models.Model):
                     partner=partner.id,
                     consumption_date=date,
                     pms_property_id=origin.pms_property_id.id,
-                    board_service_line_id=self.board_service_line_id.id,
                 )
                 return self.env["account.tax"]._fix_tax_included_price_company(
                     price,

@@ -112,7 +112,7 @@
                                     <field name="checkin" force_save="1" />
                                     <field name="checkout" force_save="1" />
                                     <field
-                                        name="board_service_room_id"
+                                        name="board_service_id"
                                         attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
                                         options="{'no_create': True, 'no_edit': True, 'no_open': True}"
                                     />

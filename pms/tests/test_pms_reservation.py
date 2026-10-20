@@ -3417,35 +3417,13 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
             }
         )
         self.service.flush_recordset()
-        self.product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-                "per_day": True,
-                "consumed_on": "after",
-            }
-        )
-        self.board_service_test = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service",
-                "default_code": "TPS",
-                "pms_property_ids": [self.pms_property1.id],
-            }
-        )
-
-        self.env["pms.board.service.line"].create(
-            {
-                "pms_board_service_id": self.board_service_test.id,
-                "product_id": self.product_test1.id,
-                "amount": 8,
-                "adults": True,
-            }
-        )
-        self.board_service_room_type = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type_double.id,
-                "pms_board_service_id": self.board_service_test.id,
-                "pms_property_id": self.pms_property1.id,
-            }
+        self.board_service_test = self._create_board_service(
+            "Test Board Service",
+            default_code="TPS",
+            list_price=8,
+            per_day=True,
+            consumed_on="after",
+            pms_property_ids=[self.pms_property1.id],
         )
         checkin = fields.date.today()
         checkout = checkin + datetime.timedelta(days=11)
@@ -3463,7 +3441,7 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
         reservation = self.env["pms.reservation"].create(reservation_vals)
         reservation.write(
             {
-                "board_service_room_id": self.board_service_room_type.id,
+                "board_service_id": self.board_service_test.id,
             }
         )
 

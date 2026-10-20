@@ -56,7 +56,6 @@ class AvailabilityWizard(models.TransientModel):
     apply_pricelists_on = fields.Selection(
         selection=[
             ("room_types", "Room Types"),
-            ("board_services", "Board Services"),
             ("service", "Service"),
         ],
         default="room_types",
@@ -71,28 +70,6 @@ class AvailabilityWizard(models.TransientModel):
         store=True,
     )
 
-    board_service_room_type_ids = fields.Many2many(
-        string="Room type's board services",
-        comodel_name="pms.board.service.room.type",
-        check_pms_properties=True,
-        compute="_compute_board_service_room_type_ids",
-        readonly=False,
-        store=True,
-    )
-
-    board_service = fields.Many2one(
-        comodel_name="product.product",
-        check_pms_properties=True,
-        domain="[('id', 'in',allowed_board_services)]",
-    )
-
-    allowed_board_services = fields.Many2many(
-        string="Allowed services",
-        comodel_name="product.product",
-        compute="_compute_allowed_board_services",
-        readonly=False,
-        store=True,
-    )
     service = fields.Many2one(
         comodel_name="product.product",
         check_pms_properties=True,
@@ -273,93 +250,14 @@ class AvailabilityWizard(models.TransientModel):
     @api.depends("apply_pricelists_on")
     def _compute_room_type_ids(self):
         for record in self:
-            if (
-                record.apply_pricelists_on == "board_services"
-                or record.apply_pricelists_on == "service"
-            ):
+            if record.apply_pricelists_on == "service":
                 record.room_type_ids = False
-
-    @api.depends("apply_pricelists_on", "board_service")
-    def _compute_board_service_room_type_ids(self):
-        for record in self:
-            if (
-                record.apply_pricelists_on == "room_types"
-                or record.apply_pricelists_on == "service"
-            ):
-                record.board_service_room_type_ids = False
-                record.board_service = False
-            else:
-                if not record.board_service_room_type_ids:
-                    allowed_board_service_room_type_ids = []
-                    all_board_service_room_type_ids = self.env[
-                        "pms.board.service.room.type"
-                    ].search([])
-                    if record.board_service:
-                        for (
-                            board_service_room_type_id
-                        ) in all_board_service_room_type_ids:
-                            board_lines = (
-                                board_service_room_type_id.board_service_line_ids
-                            )
-                            if record.board_service in board_lines.mapped("product_id"):
-                                allowed_board_service_room_type_ids.append(
-                                    board_service_room_type_id.id
-                                )
-                    else:
-                        allowed_board_service_room_type_ids = (
-                            all_board_service_room_type_ids.ids
-                        )
-                    domain = []
-                    if allowed_board_service_room_type_ids:
-                        domain.append(("id", "in", allowed_board_service_room_type_ids))
-                    record.board_service_room_type_ids = (
-                        self.env["pms.board.service.room.type"].search(domain)
-                        if domain
-                        else False
-                    )
 
     @api.depends("apply_pricelists_on")
     def _compute_service(self):
         for record in self:
-            if (
-                record.apply_pricelists_on == "board_services"
-                or record.apply_pricelists_on == "room_types"
-            ):
+            if record.apply_pricelists_on == "room_types":
                 record.service = False
-
-    @api.depends("board_service_room_type_ids")
-    def _compute_allowed_board_services(self):
-        for record in self:
-            if not record.board_service_room_type_ids:
-                record.allowed_board_services = (
-                    self.env["pms.board.service.room.type"]
-                    .search([])
-                    .board_service_line_ids.mapped("product_id")
-                )
-            else:
-                product_ids = []
-                for bs_room_type_id in record.board_service_room_type_ids:
-                    tmp_list = bs_room_type_id.board_service_line_ids.mapped(
-                        "product_id"
-                    ).ids
-
-                    product_ids = (
-                        tmp_list
-                        if not product_ids
-                        else product_ids
-                        if record.board_service_room_type_ids
-                        else list(set(tmp_list) & set(product_ids))
-                    )
-
-                record.allowed_board_services = self.env["product.product"].search(
-                    [
-                        (
-                            "id",
-                            "in",
-                            product_ids,
-                        )
-                    ]
-                )
 
     def _rules_to_overwrite_by_plans(self, availability_plans):
         self.ensure_one()
@@ -444,8 +342,6 @@ class AvailabilityWizard(models.TransientModel):
         "start_date",
         "end_date",
         "room_type_ids",
-        "board_service_room_type_ids",
-        "board_service",
         "service",
         "apply_pricelists_on",
         "date_types",
@@ -505,8 +401,6 @@ class AvailabilityWizard(models.TransientModel):
                 product_ids = self.generate_product_ids_to_filter(
                     record.apply_pricelists_on,
                     record.room_type_ids,
-                    record.board_service_room_type_ids,
-                    record.board_service,
                     record.service,
                 )
                 if product_ids:
@@ -515,14 +409,6 @@ class AvailabilityWizard(models.TransientModel):
                             "product_id",
                             "in",
                             product_ids,
-                        )
-                    )
-                if record.board_service_room_type_ids:
-                    domain.append(
-                        (
-                            "board_service_room_type_id",
-                            "in",
-                            record.board_service_room_type_ids.ids,
                         )
                     )
                 week_days_to_apply = (
@@ -583,8 +469,6 @@ class AvailabilityWizard(models.TransientModel):
         self,
         apply_pricelists_on,
         room_type_ids,
-        board_service_room_type_ids,
-        board_service,
         service,
     ):
         product_ids = False
@@ -600,30 +484,8 @@ class AvailabilityWizard(models.TransientModel):
                 .mapped("product_id")
                 .ids
             )
-        elif apply_pricelists_on == "board_services":
-            if board_service:
-                product_ids = [board_service.id]
-            elif not board_service_room_type_ids and not board_service:
-                product_ids = (
-                    self.env["pms.board.service.room.type"]
-                    .search([])
-                    .board_service_line_ids.mapped("product_id")
-                    .ids
-                )
-            else:
-                bsrti = board_service_room_type_ids
-                product_ids = bsrti.board_service_line_ids.mapped("product_id").ids
-
         elif apply_pricelists_on == "service":
             domain = []
-            product_ids_board_services = (
-                self.env["pms.board.service.room.type"]
-                .search([])
-                .board_service_line_ids.mapped("product_id")
-                .ids
-            )
-            if product_ids_board_services:
-                domain.append(("id", "not in", product_ids_board_services))
             if service:
                 domain.append(("id", "=", service.id))
             product_ids = self.env["product.product"].search(domain).ids
@@ -676,57 +538,6 @@ class AvailabilityWizard(models.TransientModel):
 
                 pricelist_item = self.env["product.pricelist.item"].create(vals)
                 new_items.append(pricelist_item.id)
-        return new_items
-
-    @api.model
-    def create_pricelists_items_board_services(
-        self,
-        board_service_room_type_ids,
-        pricelist_ids,
-        board_service,
-        price,
-        min_quantity,
-        pms_property,
-        date_types,
-        date,
-    ):
-        new_items = []
-        for bs_room_type in board_service_room_type_ids:
-            for pricelist in pricelist_ids:
-                if board_service:
-                    vals = {
-                        "pricelist_id": pricelist.id,
-                        "compute_price": "fixed",
-                        "applied_on": "0_product_variant",
-                        "product_id": board_service.id,
-                        "board_service_room_type_id": bs_room_type.id,
-                        "fixed_price": price,
-                        "min_quantity": min_quantity,
-                        "pms_property_ids": [pms_property.id],
-                    }
-                    vals = self.generate_dates_vals(date_types, vals, date)
-
-                    pricelist_item = self.env["product.pricelist.item"].create(vals)
-                    new_items.append(pricelist_item.id)
-
-                else:
-                    for (
-                        board_service_line
-                    ) in bs_room_type.pms_board_service_id.board_service_line_ids:
-                        vals = {
-                            "pricelist_id": pricelist.id,
-                            "compute_price": "fixed",
-                            "applied_on": "0_product_variant",
-                            "product_id": board_service_line.product_id.id,
-                            "board_service_room_type_id": bs_room_type.id,
-                            "fixed_price": price,
-                            "min_quantity": min_quantity,
-                            "pms_property_ids": [pms_property.id],
-                        }
-                        vals = self.generate_dates_vals(date_types, vals, date)
-
-                        pricelist_item = self.env["product.pricelist.item"].create(vals)
-                        new_items.append(pricelist_item.id)
         return new_items
 
     @api.model
@@ -906,22 +717,6 @@ class AvailabilityWizard(models.TransientModel):
                         pms_property,
                         date,
                         self.date_types,
-                    )
-                    items = items + new_items if new_items else items
-
-                elif (
-                    self.massive_changes_on == "pricelist"
-                    and self.apply_pricelists_on == "board_services"
-                ):
-                    new_items = self.create_pricelists_items_board_services(
-                        self.board_service_room_type_ids,
-                        self.pricelist_ids,
-                        self.board_service,
-                        self.price,
-                        self.min_quantity,
-                        pms_property,
-                        self.date_types,
-                        date,
                     )
                     items = items + new_items if new_items else items
 

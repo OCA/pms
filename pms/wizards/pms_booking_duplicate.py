@@ -223,7 +223,7 @@ class BookingDuplicate(models.TransientModel):
                         "preferred_room_id": reservation.preferred_room_id.id,
                         "room_type_id": reservation.room_type_id.id,
                         "pricelist_id": reservation.pricelist_id.id,
-                        "board_service_room_id": reservation.board_service_room_id.id,
+                        "board_service_id": reservation.board_service_id.id,
                         "adults": reservation.adults,
                     },
                 )
@@ -318,7 +318,7 @@ class BookingDuplicate(models.TransientModel):
                 "partner_name": self.partner_name,
                 "pricelist_id": res.pricelist_id.id,
                 "pms_property_id": folio.pms_property_id.id,
-                "board_service_room_id": res.board_service_room_id.id,
+                "board_service_id": res.board_service_id.id,
                 "adults": res.adults,
                 "preferred_room_id": res.preferred_room_id.id,
             }
@@ -373,17 +373,23 @@ class BookingDuplicate(models.TransientModel):
                     )
                 res_vals["reservation_line_ids"] = line_vals
             new_reservation = self.env["pms.reservation"].create(res_vals)
-            # REVIEW: Board service overwrite prices
-            for service in new_reservation.service_ids.filtered("is_board_service"):
+            if not self.recompute_prices:
+                # The board services are created by the reservation, keep the
+                # price each one had in the reference reservation
                 origin_services_board = (
                     res.reference_reservation_id.service_ids.filtered(
                         "is_board_service"
                     )
                 )
-                if origin_services_board:
-                    service.service_line_ids.price_unit = (
-                        origin_services_board.service_line_ids[0].price_unit
-                    )
+                for service in new_reservation.service_ids.filtered("is_board_service"):
+                    origin_service = origin_services_board.filtered(
+                        lambda s, service=service: s.product_id == service.product_id
+                        and s.board_guest_type == service.board_guest_type
+                    )[:1]
+                    if origin_service.service_line_ids:
+                        service.service_line_ids.price_unit = (
+                            origin_service.service_line_ids[0].price_unit
+                        )
         self.created_folio_ids = [(4, folio.id)]
 
 
@@ -462,11 +468,11 @@ class PmsReservationDuplicate(models.TransientModel):
         help="Propertiy with access to the element;",
         related="booking_duplicate_id.pms_property_id",
     )
-    board_service_room_id = fields.Many2one(
+    board_service_id = fields.Many2one(
         string="Board Service",
-        help="Board Service included in the room",
-        comodel_name="pms.board.service.room.type",
-        domain="[('pms_room_type_id','=',room_type_id)]",
+        help="Board service included in the room. If not set, Room Only",
+        comodel_name="product.template",
+        domain="[('is_board_service', '=', True)]",
         check_pms_properties=True,
     )
     service_ids = fields.Many2many(
@@ -548,7 +554,7 @@ class PmsReservationDuplicate(models.TransientModel):
                 - {record.preferred_room_id.id}
             )
 
-    @api.depends("room_type_id", "board_service_room_id", "checkin", "checkout")
+    @api.depends("room_type_id", "board_service_id", "checkin", "checkout")
     def _compute_price_total(self):
         self.price_total = 0
         for record in self.filtered("checkout"):

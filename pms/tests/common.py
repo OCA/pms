@@ -43,7 +43,62 @@ class TestPms(common.TransactionCase):
                 "default_code": "RTC1",
             }
         )
+        cls.board_service_room_only = cls.env.ref(
+            "pms.product_template_board_room_only"
+        )
         for pricelist in cls.env["product.pricelist"].search([]):
             if not pricelist.availability_plan_id:
-                pricelist.availability_plan_id = cls.availability_plan1.id
-                pricelist.is_pms_available = True
+                pricelist.write(
+                    {
+                        "availability_plan_id": cls.availability_plan1.id,
+                        "is_pms_available": True,
+                        "board_service_ids": [(4, cls.board_service_room_only.id)],
+                    }
+                )
+
+    @classmethod
+    def _create_board_service(cls, name, guests=("adult",), **vals):
+        """A board service consumed by the given guests: one variant for
+        each of ("adult", "child"), or a single one for every guest if empty"""
+        attribute_lines = []
+        if guests:
+            attribute_lines = [
+                (
+                    0,
+                    0,
+                    {
+                        "attribute_id": cls.env.ref(
+                            "pms.product_attribute_board_guest"
+                        ).id,
+                        "value_ids": [
+                            (
+                                6,
+                                0,
+                                [
+                                    cls.env.ref(
+                                        f"pms.product_attribute_value_board_guest_{guest}"
+                                    ).id
+                                    for guest in guests
+                                ],
+                            )
+                        ],
+                    },
+                )
+            ]
+        return cls.env["product.template"].create(
+            dict(
+                {
+                    "name": name,
+                    "type": "service",
+                    "is_board_service": True,
+                    "attribute_line_ids": attribute_lines,
+                },
+                **vals,
+            )
+        )
+
+    @staticmethod
+    def _board_service_variant(board_service, guest_type):
+        return board_service.product_variant_ids.filtered(
+            lambda product: product.board_guest_type == guest_type
+        )

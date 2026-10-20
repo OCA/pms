@@ -5,7 +5,6 @@
 from . import ir_http
 from . import ir_config_parameter
 
-from . import pms_board_service_room_type
 from . import pms_property
 from . import res_users
 from . import pms_ubication
@@ -23,6 +22,7 @@ from . import res_company
 from . import account_payment
 from . import pms_availability_plan
 from . import pms_availability_plan_rule
+from . import pms_availability_plan_board_rule
 from . import pms_reservation_line
 from . import pms_checkin_partner
 from . import product_pricelist
@@ -34,9 +34,6 @@ from . import mail_compose_message
 from . import pms_room_type_class
 from . import pms_room_closure_reason
 from . import pms_service_line
-from . import pms_board_service
-from . import pms_board_service_room_type_line
-from . import pms_board_service_line
 from . import account_move_line
 from . import pms_cancelation_rule
 from . import folio_sale_line

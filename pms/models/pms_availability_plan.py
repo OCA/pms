@@ -45,6 +45,13 @@ class PmsAvailabilityPlan(models.Model):
         inverse_name="availability_plan_id",
         check_pms_properties=True,
     )
+    board_rule_ids = fields.One2many(
+        string="Board Service Rules",
+        help="Board services closed on some dates in the pricelists of the plan",
+        comodel_name="pms.availability.plan.board.rule",
+        inverse_name="availability_plan_id",
+        check_pms_properties=True,
+    )
 
     active = fields.Boolean(
         help="If unchecked, it will allow you to hide the "

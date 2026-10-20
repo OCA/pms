@@ -42,6 +42,22 @@
                     </group>
                     <separator string="Availability Rules" />
                     <field name="rule_ids" nolabel="1" />
+                    <separator string="Board Service Rules" />
+                    <field name="board_rule_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field
+                                name="pms_property_id"
+                                options="{'no_create': True}"
+                            />
+                            <field
+                                name="board_service_id"
+                                options="{'no_create': True}"
+                            />
+                            <field name="date_from" />
+                            <field name="date_to" />
+                            <field name="closed" />
+                        </tree>
+                    </field>
                 </sheet>
             </form>
         </field>

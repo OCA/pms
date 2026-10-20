@@ -1,39 +1,41 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+BOARD_GUEST_TYPES = [
+    ("adults", "Adults"),
+    ("children", "Children"),
+    ("all", "Adults and children"),
+]
+
 
 class ProductProduct(models.Model):
     _inherit = "product.product"
-
-    board_price = fields.Float(
-        string="Board Service Price",
-        help="Get price on board service",
-        digits="Product Price",
-        compute="_compute_board_price",
-    )
 
     room_type_id = fields.Many2one(
         string="Room Type",
         comodel_name="pms.room.type",
         compute="_compute_room_type_id",
     )
+    board_guest_type = fields.Selection(
+        string="Board Service Guests",
+        help="Guests that consume this variant of a board service, "
+        "given by its value of the Guest attribute",
+        selection=BOARD_GUEST_TYPES,
+        compute="_compute_board_guest_type",
+    )
 
-    @api.depends_context("consumption_date", "board_service_line_id")
-    # pylint: disable=W8110
-    def _compute_product_price(self):
-        super()._compute_product_price()
-
-    @api.depends_context("consumption_date", "board_service_line_id")
-    def _compute_board_price(self):
+    @api.depends("product_template_attribute_value_ids")
+    def _compute_board_guest_type(self):
+        guest_types = {
+            self.env.ref("pms.product_attribute_value_board_guest_adult"): "adults",
+            self.env.ref("pms.product_attribute_value_board_guest_child"): "children",
+        }
         for record in self:
-            if self._context.get("board_service_line_id"):
-                record.board_price = (
-                    self.env["pms.board.service.room.type.line"]
-                    .browse(self._context.get("board_service_line_id"))
-                    .amount
-                )
-            else:
-                record.board_price = False
+            values = (
+                record.product_template_attribute_value_ids.product_attribute_value_id
+            )
+            guest_value = values.filtered(lambda v: v in guest_types)
+            record.board_guest_type = guest_types.get(guest_value, "all")
 
     def _compute_room_type_id(self):
         for rec in self:
@@ -50,10 +52,3 @@ class ProductProduct(models.Model):
                 rec.room_type_id = room_type
             else:
                 rec.room_type_id = False
-
-    def price_compute(
-        self, price_type, uom=False, currency=False, company=None, date=False
-    ):
-        if self._context.get("board_service_line_id"):
-            price_type = "board_price"
-        return super().price_compute(price_type, uom, currency, company, date)

@@ -5,7 +5,8 @@ from datetime import date
 
 import babel
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 
 class ProductTemplate(models.Model):
@@ -61,6 +62,18 @@ class ProductTemplate(models.Model):
         string="Is available in PMS",
         help="Indicates if that product is available in PMS",
         default=True,
+    )
+    is_board_service = fields.Boolean(
+        string="Is a board service",
+        help="Indicates that the product is a board service (breakfast, half "
+        "board...) that pricelists sell and reservations include. With the "
+        "Guest attribute, adults and children consume their own variant",
+        default=False,
+    )
+    board_show_detail_report = fields.Boolean(
+        string="Show board service detail on report",
+        help="If unchecked, the folio report adds the board service to the "
+        "price of the room instead of showing it on its own lines",
     )
     is_tourist_tax = fields.Boolean(
         string="Is tourist tax",
@@ -131,6 +144,80 @@ class ProductTemplate(models.Model):
             vals["per_day"] = True
             vals["consumed_on"] = "before"
         return super().write(vals)
+
+    @api.constrains("is_board_service", "attribute_line_ids")
+    def _check_board_service_attributes(self):
+        board_services = self.filtered("is_board_service")
+        if not board_services:
+            return
+        guest_attribute = self.env.ref("pms.product_attribute_board_guest")
+        room_only = self._room_only_board_service()
+        for record in board_services:
+            attributes = record.attribute_line_ids.attribute_id
+            if record == room_only and attributes:
+                raise ValidationError(_("Room Only can't have variants"))
+            if attributes - guest_attribute:
+                raise ValidationError(
+                    _(
+                        "A board service can only have the attribute %s, "
+                        "otherwise a reservation can't tell which variant "
+                        "a guest consumes"
+                    )
+                    % guest_attribute.name
+                )
+
+    @api.constrains("is_board_service")
+    def _check_room_only_is_board_service(self):
+        if self._room_only_board_service() in self.filtered(
+            lambda record: not record.is_board_service
+        ):
+            raise ValidationError(_("Room Only must be a board service"))
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_room_only(self):
+        if self._room_only_board_service() in self:
+            raise UserError(_("Room Only can't be deleted"))
+
+    @api.model
+    def _room_only_board_service(self):
+        return (
+            self.env.ref(
+                "pms.product_template_board_room_only", raise_if_not_found=False
+            )
+            or self.browse()
+        )
+
+    def _get_board_service_products(self, adults, children):
+        """The products a stay with this board service consumes, each one with
+        the guests it is counted by: the variants of the guests that are
+        present. Room Only consumes nothing.
+
+        :return: list of (product.product, guest type)
+        """
+        self.ensure_one()
+        if self == self._room_only_board_service():
+            return []
+        guests = {"adults": adults, "children": children, "all": adults + children}
+        return [
+            (product, product.board_guest_type)
+            for product in self.product_variant_ids
+            if guests[product.board_guest_type]
+        ]
+
+    def _get_board_service_price(self, pricelist, pms_property, date, adults, children):
+        """Price of one night of this board service for the guests of a room"""
+        self.ensure_one()
+        guests = {"adults": adults, "children": children, "all": adults + children}
+        price = 0.0
+        for product, guest_type in self._get_board_service_products(adults, children):
+            unit_price = pricelist._get_product_price(
+                product=product,
+                quantity=1,
+                consumption_date=date,
+                pms_property_id=pms_property.id,
+            )
+            price += unit_price * (guests[guest_type] if product.per_person else 1)
+        return price
 
     def _get_mmdd_selection(self):
         lang = self.env.lang or "en_US"

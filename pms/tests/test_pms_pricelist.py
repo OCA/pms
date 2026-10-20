@@ -58,35 +58,14 @@ class TestPmsPricelist(TestPms):
                 "is_pms_available": True,
             }
         )
-        # product.product 1
-        cls.product1 = cls.env["product.product"].create(
-            {"name": "Test Breakfast", "per_day": True, "consumed_on": "after"}
+        # board service, consumed by adults
+        cls.board_service1 = cls._create_board_service(
+            "Test Only Breakfast",
+            default_code="CB1",
+            per_day=True,
+            consumed_on="after",
         )
-
-        # pms.board.service
-        cls.board_service1 = cls.env["pms.board.service"].create(
-            {
-                "name": "Test Only Breakfast",
-                "default_code": "CB1",
-            }
-        )
-        # pms.board.service.line
-        cls.board_service_line1 = cls.env["pms.board.service.line"].create(
-            {
-                "product_id": cls.product1.id,
-                "pms_board_service_id": cls.board_service1.id,
-                "adults": True,
-            }
-        )
-
-        # pms.board.service.room.type
-        cls.board_service_room_type1 = cls.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": cls.room_type1.id,
-                "pms_board_service_id": cls.board_service1.id,
-                "pms_property_id": cls.pms_property1.id,
-            }
-        )
+        cls.product1 = cls._board_service_variant(cls.board_service1, "adults")
 
         cls.partner1 = cls.env["res.partner"].create({"name": "Carles"})
 
@@ -120,7 +99,6 @@ class TestPmsPricelist(TestPms):
             "compute_price": "fixed",
             "applied_on": "0_product_variant",
             "product_id": self.product1.id,
-            "board_service_room_type_id": self.board_service_room_type1.id,
             "fixed_price": expected_price,
             "pms_property_ids": [self.pms_property1.id],
         }
@@ -134,7 +112,7 @@ class TestPmsPricelist(TestPms):
                 "preferred_room_id": self.room1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist2.id,
-                "board_service_room_id": self.board_service_room_type1.id,
+                "board_service_id": self.board_service1.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
@@ -168,7 +146,6 @@ class TestPmsPricelist(TestPms):
             "compute_price": "fixed",
             "applied_on": "0_product_variant",
             "product_id": self.product1.id,
-            "board_service_room_type_id": self.board_service_room_type1.id,
             "fixed_price": not_expected_price,
             "pms_property_ids": [self.pms_property1.id],
         }
@@ -182,7 +159,7 @@ class TestPmsPricelist(TestPms):
                 "preferred_room_id": self.room1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist2.id,
-                "board_service_room_id": self.board_service_room_type1.id,
+                "board_service_id": self.board_service1.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
@@ -213,7 +190,6 @@ class TestPmsPricelist(TestPms):
             "compute_price": "fixed",
             "applied_on": "0_product_variant",
             "product_id": self.product1.id,
-            "board_service_room_type_id": self.board_service_room_type1.id,
             "fixed_price": expected_price,
             "pms_property_ids": [self.pms_property1.id],
         }
@@ -227,7 +203,7 @@ class TestPmsPricelist(TestPms):
                 "preferred_room_id": self.room1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist2.id,
-                "board_service_room_id": self.board_service_room_type1.id,
+                "board_service_id": self.board_service1.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
@@ -262,7 +238,6 @@ class TestPmsPricelist(TestPms):
             "compute_price": "fixed",
             "applied_on": "0_product_variant",
             "product_id": self.product1.id,
-            "board_service_room_type_id": self.board_service_room_type1.id,
             "fixed_price": not_expected_price,
             "pms_property_ids": [self.pms_property1.id],
         }
@@ -276,7 +251,7 @@ class TestPmsPricelist(TestPms):
                 "preferred_room_id": self.room1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist2.id,
-                "board_service_room_id": self.board_service_room_type1.id,
+                "board_service_id": self.board_service1.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )

@@ -47,13 +47,6 @@ class PmsRoomType(models.Model):
         index=True,
         check_pms_properties=True,
     )
-    board_service_room_type_ids = fields.One2many(
-        string="Board Services",
-        help="Board Service included in room type",
-        comodel_name="pms.board.service.room.type",
-        inverse_name="pms_room_type_id",
-        check_pms_properties=True,
-    )
     room_amenity_ids = fields.Many2many(
         string="Room Type Amenities",
         help="List of amenities included in room type",
@@ -309,23 +302,3 @@ class PmsRoomType(models.Model):
         if not occupancy_rule:
             return price
         return max(occupancy_rule._apply(price, difference), 0)
-
-    @api.model
-    def get_default_board_service(self, pms_property_id, room_type_id, pricelist_id):
-        board_services_candidates = self.env["pms.board.service.room.type"].search(
-            [
-                ("pms_room_type_id", "=", room_type_id),
-                ("by_default", "=", True),
-                ("pms_property_id", "=", pms_property_id),
-            ]
-        )
-        board_service_default = (
-            board_services_candidates.filtered(
-                lambda service: pricelist_id in service.pricelist_ids.ids
-            )
-            or board_services_candidates.filtered(
-                lambda service: not service.pricelist_ids
-            )
-            or False
-        )
-        return board_service_default

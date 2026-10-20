@@ -1,7 +1,8 @@
-# Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import datetime
 
-from odoo.exceptions import ValidationError
+from odoo import fields
+from odoo.exceptions import UserError, ValidationError
 
 from .common import TestPms
 
@@ -10,476 +11,465 @@ class TestBoardService(TestPms):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.company2 = cls.env["res.company"].create(
+        cls.room_type = cls.env["pms.room.type"].create(
             {
-                "name": "Company 2",
+                "pms_property_ids": [cls.pms_property1.id],
+                "name": "Triple",
+                "default_code": "TRP",
+                "class_id": cls.room_type_class1.id,
             }
         )
-        cls.pms_property3 = cls.env["pms.property"].create(
+        cls.room = cls.env["pms.room"].create(
             {
-                "name": "Property 3",
-                "company_id": cls.company2.id,
-                "default_pricelist_id": cls.pricelist1.id,
+                "pms_property_id": cls.pms_property1.id,
+                "name": "Triple 101",
+                "room_type_id": cls.room_type.id,
+                "capacity": 3,
             }
+        )
+        cls.partner = cls.env["res.partner"].create({"name": "Guest"})
+        cls.sale_channel = cls.env["pms.sale.channel"].create(
+            {"name": "Door", "channel_type": "direct"}
+        )
+        # Breakfast with its own price for children
+        cls.breakfast = cls._create_board_service(
+            "Breakfast",
+            guests=("adult", "child"),
+            list_price=10,
+            per_day=True,
+            per_person=True,
+        )
+        cls.adult_breakfast = cls._board_service_variant(cls.breakfast, "adults")
+        cls.child_breakfast = cls._board_service_variant(cls.breakfast, "children")
+        cls.pricelist1.write(
+            {"is_pms_available": True, "board_service_ids": [(4, cls.breakfast.id)]}
+        )
+        cls.checkin = fields.date.today() + datetime.timedelta(days=10)
+        cls.checkout = cls.checkin + datetime.timedelta(days=2)
+
+    def _create_reservation(self, **vals):
+        return self.env["pms.reservation"].create(
+            dict(
+                {
+                    "checkin": self.checkin,
+                    "checkout": self.checkout,
+                    "room_type_id": self.room_type.id,
+                    "pms_property_id": self.pms_property1.id,
+                    "partner_id": self.partner.id,
+                    "pricelist_id": self.pricelist1.id,
+                    "sale_channel_origin_id": self.sale_channel.id,
+                    "adults": 2,
+                },
+                **vals,
+            )
         )
 
-    def test_create_bs_one_company_inconsistent_code(self):
+    def _board_services(self, reservation):
+        return {
+            (service.product_id, service.board_guest_type): set(
+                service.service_line_ids.mapped("day_qty")
+            )
+            for service in reservation.service_ids.filtered("is_board_service")
+        }
+
+    # CONSUMPTION
+    def test_each_guest_consumes_its_variant(self):
         """
-        Creation of board service with the same code as an existing one
-        belonging to the same property should fail.
+        Adults and children consume the variant of the board service for
+        them, each one counted by its own guests.
+        """
+        # ACT
+        reservation = self._create_reservation(
+            adults=2, children=1, board_service_id=self.breakfast.id
+        )
+        # ASSERT
+        self.assertEqual(
+            self._board_services(reservation),
+            {
+                (self.adult_breakfast, "adults"): {2},
+                (self.child_breakfast, "children"): {1},
+            },
+        )
 
-        PRE:    - board service bs1 exists
-                - board_service1 has code c1
-                - board_service1 has pms_property1
-                - pms_property1 has company company1
-        ACT:    - create a new board_service2
-                - board_service2 has code c1
-                - board_service2 has pms_property1
-                - pms_property1 has company company1
-        POST:   - Integrity error: the room type already exists
-                - board_service2 not created
+    def test_board_service_without_guest_attribute_for_every_guest(self):
+        """
+        A board service without the Guest attribute is a single product that
+        counts adults and children.
         """
         # ARRANGE
-        # board_service1
-        self.env["pms.board.service"].create(
+        breakfast = self._create_board_service(
+            "Breakfast for all", guests=(), per_day=True, per_person=True
+        )
+        # ACT
+        reservation = self._create_reservation(
+            adults=2, children=1, board_service_id=breakfast.id
+        )
+        # ASSERT
+        self.assertEqual(
+            self._board_services(reservation),
+            {(breakfast.product_variant_id, "all"): {3}},
+        )
+
+    def test_adults_only_board_service_leaves_children_out(self):
+        """
+        A board service only with the Adult value isn't consumed by children.
+        """
+        # ARRANGE
+        half_board = self._create_board_service(
+            "Half Board", guests=("adult",), per_day=True, per_person=True
+        )
+        # ACT
+        reservation = self._create_reservation(
+            adults=2, children=1, board_service_id=half_board.id
+        )
+        # ASSERT
+        self.assertEqual(
+            self._board_services(reservation),
+            {(half_board.product_variant_id, "adults"): {2}},
+        )
+
+    def test_children_variant_follows_the_children_of_the_reservation(self):
+        """
+        Adding children adds the variant for them without touching the adults
+        one, and removing them removes it.
+        """
+        # ARRANGE
+        reservation = self._create_reservation(
+            adults=2, board_service_id=self.breakfast.id
+        )
+        adult_service = reservation.service_ids.filtered("is_board_service")
+        # ACT & ASSERT
+        reservation.children = 1
+        self.assertEqual(
+            self._board_services(reservation),
             {
-                "name": "Board service bs1",
-                "default_code": "c1",
-                "pms_property_ids": [(6, 0, [self.pms_property1.id])],
+                (self.adult_breakfast, "adults"): {2},
+                (self.child_breakfast, "children"): {1},
+            },
+        )
+        self.assertIn(adult_service, reservation.service_ids)
+        reservation.children = 0
+        self.assertEqual(
+            self._board_services(reservation),
+            {(self.adult_breakfast, "adults"): {2}},
+        )
+        self.assertIn(adult_service, reservation.service_ids)
+
+    def test_room_only_never_consumes_anything(self):
+        """
+        Room Only exists to sell rooms without board service: it never adds a
+        service to a reservation.
+        """
+        # ACT
+        reservation = self._create_reservation(
+            board_service_id=self.board_service_room_only.id
+        )
+        # ASSERT
+        self.assertFalse(reservation.service_ids.filtered("is_board_service"))
+
+    # PRICES
+    def test_variants_priced_by_the_pricelist(self):
+        """
+        Each variant of a board service takes the price of the pricelist.
+        """
+        # ARRANGE
+        for product, price in ((self.adult_breakfast, 12), (self.child_breakfast, 6)):
+            self.env["product.pricelist.item"].create(
+                {
+                    "pricelist_id": self.pricelist1.id,
+                    "applied_on": "0_product_variant",
+                    "product_id": product.id,
+                    "compute_price": "fixed",
+                    "fixed_price": price,
+                }
+            )
+        # ACT
+        reservation = self._create_reservation(
+            adults=2, children=1, board_service_id=self.breakfast.id
+        )
+        # ASSERT
+        prices = {
+            service.product_id: set(service.service_line_ids.mapped("price_unit"))
+            for service in reservation.service_ids.filtered("is_board_service")
+        }
+        self.assertEqual(
+            prices, {self.adult_breakfast: {12}, self.child_breakfast: {6}}
+        )
+        self.assertEqual(
+            self.breakfast._get_board_service_price(
+                self.pricelist1, self.pms_property1, self.checkin, 2, 1
+            ),
+            30,
+        )
+
+    def test_children_price_extra(self):
+        """
+        Without pricelist rules, the variant for children takes the price of
+        the board service plus the extra of its Guest value.
+        """
+        # ARRANGE
+        self.breakfast.attribute_line_ids.product_template_value_ids.filtered(
+            lambda value: value.product_attribute_value_id
+            == self.env.ref("pms.product_attribute_value_board_guest_child")
+        ).price_extra = -4
+        # ACT
+        reservation = self._create_reservation(
+            adults=2, children=1, board_service_id=self.breakfast.id
+        )
+        # ASSERT
+        child_service = reservation.service_ids.filtered(
+            lambda service: service.product_id == self.child_breakfast
+        )
+        self.assertEqual(set(child_service.service_line_ids.mapped("price_unit")), {6})
+
+    # CONFIGURATION
+    def test_board_service_only_takes_the_guest_attribute(self):
+        """
+        A board service can't have other attributes: a reservation couldn't
+        tell which variant a guest consumes.
+        """
+        # ARRANGE
+        size = self.env["product.attribute"].create(
+            {
+                "name": "Size",
+                "value_ids": [(0, 0, {"name": "S"}), (0, 0, {"name": "L"})],
             }
         )
         # ACT & ASSERT
-        with self.assertRaises(
-            ValidationError, msg="The board service has been created and it shouldn't"
-        ):
-            # board_service2
-            self.env["pms.board.service"].create(
-                {
-                    "name": "Board service bs2",
-                    "default_code": "c1",
-                    "pms_property_ids": [(6, 0, [self.pms_property1.id])],
-                }
-            )
+        with self.assertRaisesRegex(ValidationError, "can only have the attribute"):
+            self.breakfast.attribute_line_ids = [
+                (
+                    0,
+                    0,
+                    {
+                        "attribute_id": size.id,
+                        "value_ids": [(6, 0, size.value_ids.ids)],
+                    },
+                )
+            ]
 
-    def test_create_bs_several_companies_inconsistent_code(self):
+    def test_room_only_is_protected(self):
         """
-        Creation of board service with properties and one of its
-        properties has the same code on its board services should fail.
+        Room Only can't be deleted, have variants or stop being a board service.
+        """
+        with self.assertRaisesRegex(
+            UserError, "can't be deleted"
+        ), self.env.cr.savepoint():
+            self.board_service_room_only.unlink()
+        with self.assertRaisesRegex(
+            ValidationError, "must be a board service"
+        ), self.env.cr.savepoint():
+            self.board_service_room_only.is_board_service = False
+        with self.assertRaisesRegex(
+            ValidationError, "can't have variants"
+        ), self.env.cr.savepoint():
+            self.board_service_room_only.attribute_line_ids = [
+                (
+                    0,
+                    0,
+                    {
+                        "attribute_id": self.env.ref(
+                            "pms.product_attribute_board_guest"
+                        ).id,
+                        "value_ids": [
+                            (
+                                6,
+                                0,
+                                [
+                                    self.env.ref(
+                                        "pms.product_attribute_value_board_guest_adult"
+                                    ).id
+                                ],
+                            )
+                        ],
+                    },
+                )
+            ]
 
-        PRE:    - board service bs1 exists
-                - board_service1 has code c1
-                - board_service1 has property pms_property1
-                - pms_property1 has company company1
-        ACT:    - create a new board_service2
-                - board_service2 has code c1
-                - board_service2 has property pms_property1, pms_property2,
-                    pms_property3
-                - pms_property1, pms_property2 has company company1
-                - pms_property3 has company company2
-        POST:   - Integrity error: the board service already exists
-                - board_service2 not created
+    def test_new_pricelist_sells_room_only(self):
+        """
+        A new pricelist sells rooms without board service.
+        """
+        pricelist = self.env["product.pricelist"].create(
+            {
+                "name": "New pricelist",
+                "availability_plan_id": self.availability_plan1.id,
+                "is_pms_available": True,
+            }
+        )
+        self.assertEqual(pricelist.board_service_ids, self.board_service_room_only)
+
+    def test_pricelist_default_board_service_must_be_sold(self):
+        """
+        The default board service of a pricelist must be one of its own.
+        """
+        half_board = self._create_board_service("Half Board")
+        with self.assertRaisesRegex(ValidationError, "must be one of"):
+            self.pricelist1.default_board_service_id = half_board
+
+    def test_pricelist_without_room_only_needs_default(self):
+        """
+        A pricelist that doesn't sell Room Only must say which board service
+        its reservations include.
+        """
+        with self.assertRaisesRegex(
+            ValidationError, "needs a default"
+        ), self.env.cr.savepoint():
+            self.pricelist1.board_service_ids = [(6, 0, self.breakfast.ids)]
+        self.pricelist1.write(
+            {
+                "board_service_ids": [(6, 0, self.breakfast.ids)],
+                "default_board_service_id": self.breakfast.id,
+            }
+        )
+
+    def test_room_only_cant_be_the_default(self):
+        """
+        Room Only is the absence of a board service, so it isn't a default.
+        """
+        with self.assertRaisesRegex(ValidationError, "leave the default empty"):
+            self.pricelist1.default_board_service_id = self.board_service_room_only
+
+    # DEFAULT OF THE RESERVATION
+    def test_reservation_takes_the_default_of_the_pricelist(self):
+        """
+        A reservation includes the default board service of its pricelist.
         """
         # ARRANGE
-        self.pms_property2 = self.env["pms.property"].create(
-            {
-                "name": "Property 2",
-                "company_id": self.company1.id,
-                "default_pricelist_id": self.pricelist1.id,
-            }
-        )
-        # board_service1
-        self.env["pms.board.service"].create(
-            {
-                "name": "Board service 1",
-                "default_code": "c1",
-                "pms_property_ids": [(6, 0, [self.pms_property1.id])],
-            }
-        )
-        # ACT & ASSERT
-        with self.assertRaises(
-            ValidationError, msg="The board service has been created and it shouldn't"
-        ):
-            # board_service2
-            self.env["pms.board.service"].create(
-                {
-                    "name": "Board service bs2",
-                    "default_code": "c1",
-                    "pms_property_ids": [
-                        (
-                            6,
-                            0,
-                            [
-                                self.pms_property1.id,
-                                self.pms_property2.id,
-                                self.pms_property3.id,
-                            ],
-                        )
-                    ],
-                }
-            )
+        self.pricelist1.default_board_service_id = self.breakfast
+        # ACT
+        reservation = self._create_reservation()
+        # ASSERT
+        self.assertEqual(reservation.board_service_id, self.breakfast)
+        self.assertTrue(reservation.service_ids.filtered("is_board_service"))
 
-    def test_search_bs_code_same_company_several_properties(self):
+    def test_reservation_keeps_the_board_service_chosen(self):
         """
-        Checks the search for a board service by code when the board service
-        belongs to properties of the same company
-
-        PRE:    - board service bs1 exists
-                - board_service1 has code c1
-                - board_service1 has 2 properties pms_property1 and pms_property2
-                - pms_property_1 and pms_property2 have the same company company1
-        ACT:    - search board service with code c1 and pms_property1
-                - pms_property1 has company company1
-        POST:   - only board_service1 board service found
+        Once chosen, even to sell Room Only, the board service of the
+        reservation doesn't come back to the default of the pricelist.
         """
         # ARRANGE
-        self.pms_property2 = self.env["pms.property"].create(
+        self.pricelist1.default_board_service_id = self.breakfast
+        reservation = self._create_reservation()
+        pricelist2 = self.env["product.pricelist"].create(
             {
-                "name": "Property 2",
-                "company_id": self.company1.id,
-                "default_pricelist_id": self.pricelist1.id,
-            }
-        )
-        board_service1 = self.env["pms.board.service"].create(
-            {
-                "name": "Board service 1",
-                "default_code": "c1",
-                "pms_property_ids": [
-                    (6, 0, [self.pms_property1.id, self.pms_property2.id])
+                "name": "Pricelist 2",
+                "availability_plan_id": self.availability_plan1.id,
+                "is_pms_available": True,
+                "board_service_ids": [
+                    (6, 0, (self.board_service_room_only | self.breakfast).ids)
                 ],
+                "default_board_service_id": self.breakfast.id,
             }
         )
         # ACT
-        board_services = self.env["pms.board.service"].get_unique_by_property_code(
-            self.pms_property1.id, "c1"
-        )
+        reservation.board_service_id = False
+        reservation.pricelist_id = pricelist2
         # ASSERT
-        self.assertEqual(
-            board_services.id,
-            board_service1.id,
-            "Expected board service not found",
-        )
+        self.assertTrue(reservation.board_service_manual)
+        self.assertFalse(reservation.board_service_id)
+        self.assertFalse(reservation.service_ids.filtered("is_board_service"))
 
-    def test_search_bs_code_several_companies_several_properties_not_found(self):
+    def test_default_closed_for_the_stay_is_not_applied(self):
         """
-        Checks the search for a board service by code when the board service
-        belongs to properties with different companies
-
-        PRE:    - board service bs1 exists
-                - board_service1 has code c1
-                - board_service1 has 2 properties pms_property1 and pms_property3
-                - pms_property1 and pms_property3 have different companies
-                - pms_property1 have company company1 and pms_property3 have company2
-        ACT:    - search board service with code c1 and property pms_property1
-                - pms_property1 has company company1
-        POST:   - only board_service1 room type found
+        The default of the pricelist isn't applied to a stay with a night on
+        which the availability plan closes it.
         """
         # ARRANGE
-        bs1 = self.env["pms.board.service"].create(
+        self.pricelist1.default_board_service_id = self.breakfast
+        self.env["pms.availability.plan.board.rule"].create(
             {
-                "name": "Board service 1",
-                "default_code": "c1",
-                "pms_property_ids": [
-                    (6, 0, [self.pms_property1.id, self.pms_property3.id])
-                ],
-            }
-        )
-        # ACT
-        board_services = self.env["pms.board.service"].get_unique_by_property_code(
-            self.pms_property1.id, "c1"
-        )
-        # ASSERT
-        self.assertEqual(board_services.id, bs1.id, "Expected board service not found")
-
-    def test_search_bs_code_no_result(self):
-        """
-        Search for a specific board service code and its property.
-        The board service exists but not in the property given.
-
-        PRE:    - board_service1 exists
-                - board_service1 has code c1
-                - board_service1 with 2 properties pms_property1 and pms_property2
-                - pms_property1 and pms_property2 have same company company1
-        ACT:    - search board service with code c1 and property pms_property3
-                - pms_property3 have company company2
-        POST:   - no room type found
-        """
-        # ARRANGE
-        self.pms_property2 = self.env["pms.property"].create(
-            {
-                "name": "Property 2",
-                "company_id": self.company1.id,
-                "default_pricelist_id": self.pricelist1.id,
-            }
-        )
-        # board_service1
-        self.env["pms.board.service"].create(
-            {
-                "name": "Board service 1",
-                "default_code": "c1",
-                "pms_property_ids": [
-                    (6, 0, [self.pms_property1.id, self.pms_property2.id])
-                ],
-            }
-        )
-        # ACT
-        board_services = self.env["pms.board.service"].get_unique_by_property_code(
-            self.pms_property3.id, "c1"
-        )
-        # ASSERT
-        self.assertFalse(
-            board_services, "Board service found but it should not have found any"
-        )
-
-    def test_search_bs_code_present_all_companies_and_properties(self):
-        """
-        Search for a specific board service and its property.
-        The board service exists without property, then
-        the search foundS the result.
-
-        PRE:    - board_service1 exists
-                - board_service1 has code c1
-                - board_service1 properties are null
-        ACT:    - search board service with code c1 and property pms_property1
-                - pms_property1 have company company1
-        POST:   - only board_service1 board service found
-        """
-        # ARRANGE
-        board_service1 = self.env["pms.board.service"].create(
-            {
-                "name": "Board service 1",
-                "default_code": "c1",
-                "pms_property_ids": False,
-            }
-        )
-        # ACT
-        board_services = self.env["pms.board.service"].get_unique_by_property_code(
-            self.pms_property1.id, "c1"
-        )
-        # ASSERT
-        self.assertEqual(
-            board_services.id,
-            board_service1.id,
-            "Expected board service not found",
-        )
-
-    def test_search_bs_code_several_companies_several_properties(self):
-        """
-        Search for a specific board service and its property.
-        There is one board service without properties and
-        another one with the same code that belongs to 2 properties
-        (from different companies)
-        The search founds only the board service that match the
-        property given.
-
-        PRE:    - board_service1 exists
-                - board_service1 has code c1
-                - board_service1 has 2 properties pms_property1 and pms_property3
-                - pms_property1 and pms_property2 have the same company company1
-                - board service board_service2 exists
-                - board_service2 has code c1
-                - board_service2 has no properties
-        ACT:    - search board service with code c1 and property pms_property1
-                - pms_property1 have company company1
-        POST:   - only board_service1 board service found
-        """
-        # ARRANGE
-        board_service1 = self.env["pms.board.service"].create(
-            {
-                "name": "Board service 1",
-                "default_code": "c1",
-                "pms_property_ids": [
-                    (6, 0, [self.pms_property1.id, self.pms_property3.id])
-                ],
-            }
-        )
-        # board_service2
-        self.env["pms.board.service"].create(
-            {
-                "name": "Board service bs2",
-                "default_code": "c1",
-                "pms_property_ids": False,
-            }
-        )
-        # ACT
-        board_services = self.env["pms.board.service"].get_unique_by_property_code(
-            self.pms_property1.id, "c1"
-        )
-        # ASSERT
-        self.assertEqual(
-            board_services.id,
-            board_service1.id,
-            "Expected board service not found",
-        )
-
-    def test_search_bs_code_same_companies_several_properties(self):
-        """
-        Search for a specific board service and its property.
-        There is one board service without properties and
-        another one with the same code that belongs to 2 properties
-        (same company).
-        The search founds only the board service that match the
-        property given.
-
-        PRE:    - board_service1 exists
-                - board_service1 has code c1
-                - board_service1 has property pms_property1
-                - pms_property1 have the company company1
-                - board service board_service2 exists
-                - board_service2 has code c1
-                - board_service2 has no properties
-        ACT:    - search board service with code c1 and pms_property2
-                - pms_property2 have company company1
-        POST:   - only board_service2 board service found
-        """
-        # ARRANGE
-        self.pms_property2 = self.env["pms.property"].create(
-            {
-                "name": "Property 2",
-                "company_id": self.company1.id,
-                "default_pricelist_id": self.pricelist1.id,
-            }
-        )
-        self.env["pms.board.service"].create(
-            {
-                "name": "Board service 1",
-                "default_code": "c1",
-                "pms_property_ids": [(6, 0, [self.pms_property1.id])],
-            }
-        )
-        board_service2 = self.env["pms.board.service"].create(
-            {
-                "name": "Board service bs2",
-                "default_code": "c1",
-                "pms_property_ids": False,
-            }
-        )
-        # ACT
-        board_services = self.env["pms.board.service"].get_unique_by_property_code(
-            self.pms_property2.id, "c1"
-        )
-        # ASSERT
-        self.assertEqual(
-            board_services.id,
-            board_service2.id,
-            "Expected board service not found",
-        )
-
-    def test_search_bs_code_no_properties(self):
-        """
-        Search for a specific board service and its property.
-        There is one board service without properties and
-        another one with the same code that belongs to one property.
-        The search founds only the board service that match the
-        property given that it's not the same as the 2nd one.
-
-        PRE:    - board_service1 exists
-                - board_service1 has code c1
-                - board_service1 has property pms_property1
-                - pms_property1 have the company company1
-                - board service board_service2 exists
-                - board_service2 has code c1
-                - board_service2 has no properties
-        ACT:    - search board service with code c1 and property pms_property3
-                - pms_property3 have company company2
-        POST:   - only board_service2 board service found
-        """
-        # ARRANGE
-        # board_service1
-        self.env["pms.board.service"].create(
-            {
-                "name": "Board service bs1",
-                "default_code": "c1",
-                "pms_property_ids": [(6, 0, [self.pms_property1.id])],
-            }
-        )
-        board_service2 = self.env["pms.board.service"].create(
-            {
-                "name": "Board service bs2",
-                "default_code": "c1",
-                "pms_property_ids": False,
-            }
-        )
-        # ACT
-        board_services = self.env["pms.board.service"].get_unique_by_property_code(
-            self.pms_property3.id, "c1"
-        )
-        # ASSERT
-        self.assertEqual(
-            board_services.id,
-            board_service2.id,
-            "Expected board service not found",
-        )
-
-    def test_archive_board_service_propagates_to_children(self):
-        """
-        Archiving a board service must cascade ``active=False`` to its
-        lines and to its room-type assignments (and their lines), so that
-        the archived regime fully disappears from operative selections
-        while historical references remain in place.
-
-        PRE:    - board_service bs1 is active
-                - bs1 has one line (bsl)
-                - bs1 has one room-type assignment (bsrt) with one line (bsrtl)
-        ACT:    - bs1.active = False
-        POST:   - bsl.active == False
-                - bsrt.active == False
-                - bsrtl.active == False
-                - reactivating bs1 propagates back to all descendants
-        """
-        # ARRANGE
-        product = self.env["product.product"].create(
-            {"name": "Bs Product", "is_pms_available": True}
-        )
-        room_type = self.env["pms.room.type"].create(
-            {
-                "pms_property_ids": [(6, 0, [self.pms_property1.id])],
-                "name": "Room Type Archive Test",
-                "default_code": "RTAT",
-                "class_id": self.room_type_class1.id,
-                "list_price": 30.0,
-            }
-        )
-        board_service = self.env["pms.board.service"].create(
-            {
-                "name": "Bs Archive Test",
-                "default_code": "BSAT",
-                "pms_property_ids": [(6, 0, [self.pms_property1.id])],
-                "board_service_line_ids": [
-                    (0, 0, {"product_id": product.id, "adults": True}),
-                ],
-            }
-        )
-        bsrt = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_board_service_id": board_service.id,
-                "pms_room_type_id": room_type.id,
+                "availability_plan_id": self.availability_plan1.id,
                 "pms_property_id": self.pms_property1.id,
+                "board_service_id": self.breakfast.id,
+                "date_from": self.checkin + datetime.timedelta(days=1),
+                "date_to": self.checkin + datetime.timedelta(days=1),
+            }
+        )
+        # ACT
+        reservation = self._create_reservation()
+        # ASSERT
+        self.assertFalse(reservation.board_service_id)
+        self.assertNotIn(self.breakfast, reservation.allowed_board_service_ids)
+
+    # CLOSINGS
+    def _close(self, board_service, date_from, date_to, closed=True):
+        return self.env["pms.availability.plan.board.rule"].create(
+            {
+                "availability_plan_id": self.availability_plan1.id,
+                "pms_property_id": self.pms_property1.id,
+                "board_service_id": board_service.id,
+                "date_from": date_from,
+                "date_to": date_to,
+                "closed": closed,
             }
         )
 
-        # ACT — archive
-        board_service.active = False
-
-        # ASSERT — propagation downwards
-        bs_line = board_service.with_context(active_test=False).board_service_line_ids
-        bsrt_line = bsrt.with_context(active_test=False).board_service_line_ids
-        self.assertFalse(bs_line.active, "Board service line was not archived")
-        self.assertFalse(
-            bsrt.with_context(active_test=False).active,
-            "Board service room type was not archived",
-        )
-        self.assertFalse(
-            bsrt_line.active,
-            "Board service room type line was not archived",
+    def _available(self, checkin, checkout):
+        return self.pricelist1._get_available_board_services(
+            self.pms_property1, checkin, checkout
         )
 
-        # ACT — reactivate
-        board_service.with_context(active_test=False).active = True
+    def test_closing_room_only_forces_a_board_service(self):
+        """
+        Closing Room Only on some dates leaves only the board services.
+        """
+        # ARRANGE
+        day = datetime.timedelta(days=1)
+        self._close(self.board_service_room_only, self.checkin, self.checkin + day)
+        # ACT & ASSERT
+        self.assertEqual(self._available(self.checkin, self.checkout), self.breakfast)
+        self.assertEqual(
+            self._available(self.checkout, self.checkout + day),
+            self.board_service_room_only | self.breakfast,
+        )
 
-        # ASSERT — propagation back
-        self.assertTrue(bs_line.active, "Board service line was not reactivated")
-        self.assertTrue(bsrt.active, "Board service room type was not reactivated")
-        self.assertTrue(
-            bsrt_line.active,
-            "Board service room type line was not reactivated",
+    def test_closing_on_checkout_night_does_not_apply(self):
+        """
+        The night of the checkout isn't part of the stay.
+        """
+        # ARRANGE
+        self._close(self.breakfast, self.checkout, self.checkout)
+        # ACT & ASSERT
+        self.assertIn(self.breakfast, self._available(self.checkin, self.checkout))
+
+    def test_later_rule_reopens_a_closing(self):
+        """
+        The last rule written decides each night, so a rule not closed
+        reopens what an earlier one closes.
+        """
+        # ARRANGE
+        day = datetime.timedelta(days=1)
+        self._close(self.breakfast, self.checkin - 10 * day, self.checkout + 10 * day)
+        self._close(self.breakfast, self.checkin, self.checkout - day, closed=False)
+        # ACT & ASSERT
+        self.assertIn(self.breakfast, self._available(self.checkin, self.checkout))
+        self.assertNotIn(
+            self.breakfast, self._available(self.checkin, self.checkout + day)
+        )
+
+    def test_board_service_of_another_property_is_not_available(self):
+        """
+        A pricelist only sells, in a property, the board services available
+        for it.
+        """
+        # ARRANGE
+        pms_property2 = self.env["pms.property"].create(
+            {
+                "name": "Property 2",
+                "company_id": self.company1.id,
+                "default_pricelist_id": self.pricelist1.id,
+            }
+        )
+        dinner = self._create_board_service(
+            "Dinner", pms_property_ids=[pms_property2.id]
+        )
+        self.pricelist1.board_service_ids = [(4, dinner.id)]
+        # ACT & ASSERT
+        self.assertNotIn(dinner, self._available(self.checkin, self.checkout))
+        self.assertIn(
+            dinner,
+            self.pricelist1._get_available_board_services(
+                pms_property2, self.checkin, self.checkout
+            ),
         )

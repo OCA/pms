@@ -79,6 +79,25 @@ class ProductPricelist(models.Model):
         inverse_name="pricelist_id",
         check_pms_properties=True,
     )
+    board_service_ids = fields.Many2many(
+        string="Board Services",
+        help="Board services sold with this pricelist. "
+        "Without Room Only, every reservation must include one of them",
+        comodel_name="product.template",
+        relation="product_pricelist_board_service_rel",
+        column1="pricelist_id",
+        column2="product_tmpl_id",
+        domain="[('is_board_service', '=', True)]",
+        default=lambda self: self.env["product.template"]._room_only_board_service(),
+    )
+    default_board_service_id = fields.Many2one(
+        string="Default Board Service",
+        help="Board service of the reservations of this pricelist unless "
+        "another one is chosen. If not set, Room Only",
+        comodel_name="product.template",
+        domain="[('id', 'in', board_service_ids), ('is_board_service', '=', True)]",
+        ondelete="restrict",
+    )
 
     def _get_applicable_rules_domain(self, products, date, **kwargs):
         domain = super()._get_applicable_rules_domain(products, date, **kwargs)
@@ -165,6 +184,51 @@ class ProductPricelist(models.Model):
             results[product.id] = (price, suitable_rule.id)
 
         return results
+
+    @api.constrains("is_pms_available", "board_service_ids", "default_board_service_id")
+    def _check_default_board_service(self):
+        room_only = self.env["product.template"]._room_only_board_service()
+        for record in self.filtered("is_pms_available"):
+            default = record.default_board_service_id
+            if default == room_only:
+                raise ValidationError(
+                    _(
+                        "Room Only can't be the default board service, "
+                        "leave the default empty instead"
+                    )
+                )
+            if default and default not in record.board_service_ids:
+                raise ValidationError(
+                    _(
+                        "The default board service of %s must be one of "
+                        "its board services"
+                    )
+                    % record.name
+                )
+            if not default and room_only not in record.board_service_ids:
+                raise ValidationError(
+                    _(
+                        "%s doesn't sell Room Only, so it needs a "
+                        "default board service"
+                    )
+                    % record.name
+                )
+
+    def _get_available_board_services(self, pms_property, checkin, checkout):
+        """Board services this pricelist sells for a stay in a property: its
+        own ones, less the ones its availability plan closes on any night"""
+        self.ensure_one()
+        board_services = self.board_service_ids.filtered(
+            lambda board: not board.pms_property_ids
+            or pms_property in board.pms_property_ids
+        )
+        if self.availability_plan_id and checkin and checkout:
+            board_services -= self.env[
+                "pms.availability.plan.board.rule"
+            ]._get_closed_board_services(
+                self.availability_plan_id.id, pms_property.id, checkin, checkout
+            )
+        return board_services
 
     @api.constrains("is_pms_available", "availability_plan_id")
     def _check_is_pms_available(self):

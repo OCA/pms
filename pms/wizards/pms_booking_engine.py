@@ -260,7 +260,7 @@ class BookingEngine(models.TransientModel):
                         "partner_name": record.partner_name,
                         "pricelist_id": record.pricelist_id.id,
                         "pms_property_id": folio.pms_property_id.id,
-                        "board_service_room_id": line.board_service_room_id.id,
+                        "board_service_id": line.board_service_id.id,
                         "adults": line.adults,
                     }
                     reservation_values.append((0, 0, res_dict))
@@ -337,17 +337,21 @@ class AvailabilityWizard(models.TransientModel):
         help="Propertiy with access to the element;",
         related="booking_engine_id.pms_property_id",
     )
-    board_service_room_id = fields.Many2one(
+    board_service_id = fields.Many2one(
         string="Board Service",
-        help="Board Service included in the room",
-        comodel_name="pms.board.service.room.type",
-        domain="""
-            [
-                ('pms_room_type_id','=',room_type_id),
-                ('pms_property_id','=',pms_property_id)
-            ]
-        """,
+        help="Board service included in the room. If not set, Room Only",
+        comodel_name="product.template",
+        domain="[('id', 'in', allowed_board_service_ids)]",
+        compute="_compute_board_service_id",
+        store=True,
+        readonly=False,
         check_pms_properties=True,
+    )
+    allowed_board_service_ids = fields.Many2many(
+        string="Allowed Board Services",
+        help="Board services the pricelist sells for the stay",
+        comodel_name="product.template",
+        compute="_compute_allowed_board_service_ids",
     )
 
     @api.onchange("rooms_selected_qty")
@@ -376,19 +380,41 @@ class AvailabilityWizard(models.TransientModel):
             )
             record.rooms_available_qty = pms_property.availability
 
+    @api.depends("checkin", "checkout")
+    def _compute_allowed_board_service_ids(self):
+        room_only = self.env["product.template"]._room_only_board_service()
+        for record in self:
+            pricelist = record.booking_engine_id.pricelist_id
+            if pricelist and record.pms_property_id:
+                record.allowed_board_service_ids = (
+                    pricelist._get_available_board_services(
+                        record.pms_property_id, record.checkin, record.checkout
+                    )
+                    - room_only
+                )
+            else:
+                record.allowed_board_service_ids = False
+
+    @api.depends("checkin", "checkout")
+    def _compute_board_service_id(self):
+        for record in self:
+            default = record.booking_engine_id.pricelist_id.default_board_service_id
+            if default in record.allowed_board_service_ids:
+                record.board_service_id = default
+            else:
+                record.board_service_id = False
+
     @api.depends("room_type_id")
     def _compute_adults(self):
         for record in self:
             record.adults = record.room_type_id.max_occupancy
 
-    @api.depends(
-        "room_type_id", "board_service_room_id", "checkin", "checkout", "adults"
-    )
+    @api.depends("room_type_id", "board_service_id", "checkin", "checkout", "adults")
     def _compute_price_per_room(self):
         for record in self:
             record.price_per_room = self._get_price_by_room_type(
                 room_type_id=record.room_type_id.id,
-                board_service_room_id=record.board_service_room_id.id,
+                board_service_id=record.board_service_id.id,
                 checkin=record.checkin,
                 checkout=record.checkout,
                 pricelist_id=record.booking_engine_id.pricelist_id.id,
@@ -407,7 +433,7 @@ class AvailabilityWizard(models.TransientModel):
         room_type_id,
         checkin,
         checkout,
-        board_service_room_id,
+        board_service_id,
         pricelist_id,
         pms_property_id,
         adults=False,
@@ -440,13 +466,16 @@ class AvailabilityWizard(models.TransientModel):
                 pms_property.company_id,
             )
 
-        if board_service_room_id:
-            board_service_room = self.env["pms.board.service.room.type"].browse(
-                board_service_room_id
-            )
-            nights = (checkout - checkin).days
+        if board_service_id:
+            board_service = self.env["product.template"].browse(board_service_id)
             adults = adults or room_type.get_room_type_capacity(pms_property_id)
-            room_type_total_price_per_room += (
-                board_service_room.amount * nights * adults
-            )
+            for date_iterator in [
+                checkin + datetime.timedelta(days=x)
+                for x in range(0, (checkout - checkin).days)
+            ]:
+                room_type_total_price_per_room += (
+                    board_service._get_board_service_price(
+                        pricelist, pms_property, date_iterator, adults, 0
+                    )
+                )
         return room_type_total_price_per_room

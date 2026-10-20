@@ -140,7 +140,7 @@
                                 <t t-if="line.reservation_id">
                                         <t
                                             t-set="print_board_service"
-                                            t-value="line.reservation_id.board_service_room_id.pms_board_service_id.show_detail_report"
+                                            t-value="line.reservation_id.board_service_id.board_show_detail_report"
                                         />
                                         <t t-if="not print_board_service">
                                             <t

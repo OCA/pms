@@ -25,6 +25,11 @@
                         <group>
                             <field name="is_extra_bed" />
                             <field name="is_crib" />
+                            <field name="is_board_service" />
+                            <field
+                                name="board_show_detail_report"
+                                attrs="{'invisible': [('is_board_service', '=', False)]}"
+                            />
                         </group>
                         <group>
                             <field name="per_day" />
@@ -88,6 +93,23 @@
         id="menu_services_pms"
         action="product.product_template_action"
         sequence="15"
+        parent="pms.pms_services_menu"
+    />
+
+    <record model="ir.actions.act_window" id="open_pms_board_service_form_tree">
+        <field name="name">Board Services</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('is_board_service', '=', True)]</field>
+        <field
+            name="context"
+        >{'default_is_board_service': True, 'default_detailed_type': 'service'}</field>
+    </record>
+    <menuitem
+        name="Board Services"
+        id="menu_open_pms_board_service_form_tree"
+        action="open_pms_board_service_form_tree"
+        sequence="25"
         parent="pms.pms_services_menu"
     />
 </odoo>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- The guests a board service variant is consumed by. A board service
+         without this attribute is consumed by every guest -->
+    <record id="product_attribute_board_guest" model="product.attribute">
+        <field name="name">Guest</field>
+        <field name="create_variant">always</field>
+        <field name="display_type">radio</field>
+    </record>
+    <record
+        id="product_attribute_value_board_guest_adult"
+        model="product.attribute.value"
+    >
+        <field name="name">Adult</field>
+        <field name="attribute_id" ref="product_attribute_board_guest" />
+        <field name="sequence">1</field>
+    </record>
+    <record
+        id="product_attribute_value_board_guest_child"
+        model="product.attribute.value"
+    >
+        <field name="name">Child</field>
+        <field name="attribute_id" ref="product_attribute_board_guest" />
+        <field name="sequence">2</field>
+    </record>
+    <!-- Selling a stay without board service. It is never added to a
+         reservation: pricelists list it to sell rooms only, and availability
+         plans close it to force a board service on some dates -->
+    <record id="product_template_board_room_only" model="product.template">
+        <field name="name">Room Only</field>
+        <field name="default_code">RO</field>
+        <field name="type">service</field>
+        <field name="list_price">0</field>
+        <field name="purchase_ok" eval="False" />
+        <field name="is_board_service" eval="True" />
+        <field name="is_pms_available" eval="False" />
+    </record>
+</odoo>

@@ -79,33 +79,6 @@
                 user.pms_property_ids.ids)]
             </field>
         </record>
-        <record id="pms_board_service_property_rule" model="ir.rule">
-            <field name="name">PMS Board Service Property Rule</field>
-            <field name="model_id" ref="model_pms_board_service" />
-            <field name="global" eval="True" />
-            <field name="domain_force">
-                ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
-                user.pms_property_ids.ids)]
-            </field>
-        </record>
-        <record id="pms_board_service_line_property_rule" model="ir.rule">
-            <field name="name">PMS Board Service Line Property Rule</field>
-            <field name="model_id" ref="model_pms_board_service_line" />
-            <field name="global" eval="True" />
-            <field name="domain_force">
-                ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
-                user.pms_property_ids.ids)]
-            </field>
-        </record>
-        <record id="pms_board_service_room_type_property_rule" model="ir.rule">
-            <field name="name">PMS Board Service Room Type Property Rule</field>
-            <field name="model_id" ref="model_pms_board_service_room_type" />
-            <field name="global" eval="True" />
-            <field name="domain_force">
-                ['|',('pms_property_id','=',False),('pms_property_id', 'in',
-                user.pms_property_ids.ids)]
-            </field>
-        </record>
         <record id="pms_cancelation_rule_property_rule" model="ir.rule">
             <field name="name">PMS Cancelation Rule Property Rule</field>
             <field name="model_id" ref="model_pms_cancelation_rule" />
@@ -167,6 +140,14 @@
             <field name="domain_force">
                 ['|',('pms_property_id','=',False),('pms_property_id', 'in',
                 user.pms_property_ids.ids)]
+            </field>
+        </record>
+        <record id="pms_availability_plan_board_rule_property_rule" model="ir.rule">
+            <field name="name">PMS Board Service Availability Rule Property Rule</field>
+            <field name="model_id" ref="model_pms_availability_plan_board_rule" />
+            <field name="global" eval="True" />
+            <field name="domain_force">
+                [('pms_property_id', 'in', user.pms_property_ids.ids)]
             </field>
         </record>
         <record id="pms_service_property_rule" model="ir.rule">

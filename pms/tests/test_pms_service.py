@@ -71,34 +71,11 @@ class TestPmsService(TestPms):
                     --> service.sale_channel_origin_id? It must be Door
         """
         # ARRANGE
-        self.product1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-            }
-        )
-
-        self.board_service1 = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service 1",
-                "default_code": "CB1",
-                "pms_property_ids": [self.pms_property1.id],
-            }
-        )
-        self.board_service_line1 = self.env["pms.board.service.line"].create(
-            {
-                "product_id": self.product1.id,
-                "pms_board_service_id": self.board_service1.id,
-                "amount": 10,
-                "adults": True,
-            }
-        )
-
-        self.board_service_room_type1 = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type_double.id,
-                "pms_board_service_id": self.board_service1.id,
-                "pms_property_id": self.pms_property1.id,
-            }
+        self.board_service1 = self._create_board_service(
+            "Test Board Service 1",
+            default_code="CB1",
+            list_price=10,
+            pms_property_ids=[self.pms_property1.id],
         )
         # ACT
         self.reservation = self.env["pms.reservation"].create(
@@ -109,7 +86,7 @@ class TestPmsService(TestPms):
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist1.id,
-                "board_service_room_id": self.board_service_room_type1.id,
+                "board_service_id": self.board_service1.id,
                 "sale_channel_origin_id": self.sale_channel_door.id,
                 "adults": 2,
             }
@@ -141,34 +118,11 @@ class TestPmsService(TestPms):
 
         """
         # ARRANGE
-        self.product1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-            }
-        )
-
-        self.board_service1 = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service 1",
-                "default_code": "CB1",
-                "pms_property_ids": [self.pms_property1.id],
-            }
-        )
-        self.board_service_line1 = self.env["pms.board.service.line"].create(
-            {
-                "product_id": self.product1.id,
-                "pms_board_service_id": self.board_service1.id,
-                "amount": 10,
-                "adults": True,
-            }
-        )
-
-        self.board_service_room_type1 = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type_double.id,
-                "pms_board_service_id": self.board_service1.id,
-                "pms_property_id": self.pms_property1.id,
-            }
+        self.board_service1 = self._create_board_service(
+            "Test Board Service 1",
+            default_code="CB1",
+            list_price=10,
+            pms_property_ids=[self.pms_property1.id],
         )
 
         self.reservation = self.env["pms.reservation"].create(
@@ -179,7 +133,7 @@ class TestPmsService(TestPms):
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist1.id,
-                "board_service_room_id": self.board_service_room_type1.id,
+                "board_service_id": self.board_service1.id,
                 "sale_channel_origin_id": self.sale_channel_door.id,
             }
         )
@@ -214,34 +168,11 @@ class TestPmsService(TestPms):
         Reservation.folio_id.sale_channel_ids = {Door, Phone}
         """
         # ARRANGE
-        self.product1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-            }
-        )
-
-        self.board_service1 = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service 1",
-                "default_code": "CB1",
-                "pms_property_ids": [self.pms_property1.id],
-            }
-        )
-        self.board_service_line1 = self.env["pms.board.service.line"].create(
-            {
-                "product_id": self.product1.id,
-                "pms_board_service_id": self.board_service1.id,
-                "amount": 10,
-                "adults": True,
-            }
-        )
-
-        self.board_service_room_type1 = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type_double.id,
-                "pms_board_service_id": self.board_service1.id,
-                "pms_property_id": self.pms_property1.id,
-            }
+        self.board_service1 = self._create_board_service(
+            "Test Board Service 1",
+            default_code="CB1",
+            list_price=10,
+            pms_property_ids=[self.pms_property1.id],
         )
         self.reservation = self.env["pms.reservation"].create(
             {
@@ -251,7 +182,7 @@ class TestPmsService(TestPms):
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist1.id,
-                "board_service_room_id": self.board_service_room_type1.id,
+                "board_service_id": self.board_service1.id,
                 "sale_channel_origin_id": self.sale_channel_door.id,
                 "adults": 2,
             }
@@ -296,34 +227,11 @@ class TestPmsService(TestPms):
 
         """
         # ARRANGE
-        self.product1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-            }
-        )
-
-        self.board_service1 = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service 1",
-                "default_code": "CB1",
-                "pms_property_ids": [self.pms_property1.id],
-            }
-        )
-        self.board_service_line1 = self.env["pms.board.service.line"].create(
-            {
-                "product_id": self.product1.id,
-                "pms_board_service_id": self.board_service1.id,
-                "amount": 10,
-                "adults": True,
-            }
-        )
-
-        self.board_service_room_type1 = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type_double.id,
-                "pms_board_service_id": self.board_service1.id,
-                "pms_property_id": self.pms_property1.id,
-            }
+        self.board_service1 = self._create_board_service(
+            "Test Board Service 1",
+            default_code="CB1",
+            list_price=10,
+            pms_property_ids=[self.pms_property1.id],
         )
 
         self.reservation = self.env["pms.reservation"].create(
@@ -334,7 +242,7 @@ class TestPmsService(TestPms):
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist1.id,
-                "board_service_room_id": self.board_service_room_type1.id,
+                "board_service_id": self.board_service1.id,
                 "sale_channel_origin_id": self.sale_channel_door.id,
                 "adults": 2,
             }

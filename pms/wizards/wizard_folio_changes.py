@@ -138,7 +138,8 @@ class WizardFolioChanges(models.TransientModel):
     )
     new_board_service_id = fields.Many2one(
         string="New Board Service",
-        comodel_name="pms.board.service",
+        comodel_name="product.template",
+        domain="[('is_board_service', '=', True)]",
     )
     apply_service = fields.Boolean(
         string="Add Service to reservations",
@@ -366,20 +367,8 @@ class WizardFolioChanges(models.TransientModel):
 
     def _add_board_service(self, reservations, new_board_service_id):
         for reservation in reservations:
-            if new_board_service_id in reservation.room_type_id.mapped(
-                "board_service_room_type_ids.pms_board_service_id.id"
-            ):
-                reservation.board_service_room_id = (
-                    reservation.room_type_id.board_service_room_type_ids.filtered(
-                        lambda x, r=reservation: x.pms_board_service_id.id
-                        == new_board_service_id
-                        and (r.folio_id.pms_property_id.id == x.pms_property_id.ids)
-                        and (
-                            not x.pricelist_ids
-                            or r.pricelist_id.id in x.pricelist_ids.ids
-                        )
-                    )
-                )
+            if new_board_service_id in reservation.allowed_board_service_ids.ids:
+                reservation.board_service_id = new_board_service_id
 
     def _add_service(self, reservations, new_service_id, day_qty):
         old_services = reservations.service_ids

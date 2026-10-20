@@ -445,11 +445,11 @@
                             />
                             <field name="allowed_room_ids" invisible="1" />
                             <field name="folio_payment_state" invisible="1" />
-                            <!-- TODO: How to filter to avoid show False (generic) pricelist board when exist a specific pricelist board¿? -->
+                            <field name="allowed_board_service_ids" invisible="1" />
                             <field
-                                name="board_service_room_id"
-                                domain="[('pms_room_type_id', '=', room_type_id)]"
+                                name="board_service_id"
                                 options="{'no_create': True,'no_open': True}"
+                                placeholder="Room Only"
                                 attrs="{'invisible': [('reservation_type','in',('out'))]}"
                             />
                             <field
@@ -584,7 +584,7 @@
                                         widget="many2many_tags"
                                         optional="show"
                                     />
-                                    <field name="board_service_line_id" invisible="1" />
+                                    <field name="board_guest_type" invisible="1" />
                                     <field
                                         name="price_subtotal"
                                         optional="hide"

@@ -696,35 +696,15 @@ class TestPmsBookingEngine(TestPms):
         checkin = fields.date.today()
         checkout = fields.date.today() + datetime.timedelta(days=1)
 
-        self.product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-                "per_day": True,
-                "consumed_on": "after",
-            }
+        self.board_service_test = self._create_board_service(
+            "Test Board Service",
+            default_code="TBS",
+            list_price=8,
+            per_day=True,
+            per_person=True,
+            consumed_on="after",
         )
-        self.board_service_test = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service",
-                "default_code": "TBS",
-            }
-        )
-        self.env["pms.board.service.line"].create(
-            {
-                "pms_board_service_id": self.board_service_test.id,
-                "product_id": self.product_test1.id,
-                "amount": 8,
-                "adults": True,
-            }
-        )
-        self.board_service_room_type = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.test_room_type_double.id,
-                "pms_board_service_id": self.board_service_test.id,
-                "pms_property_id": self.pms_property1.id,
-            }
-        )
-        # self.board_service_room_type.flush_recordset()
+        self.pricelist1.board_service_ids = [(4, self.board_service_test.id)]
         # ACT
         booking_engine = self.env["pms.booking.engine"].create(
             {
@@ -742,21 +722,15 @@ class TestPmsBookingEngine(TestPms):
         )
 
         lines_availability_test[0].rooms_selected_qty = 1
-        lines_availability_test[
-            0
-        ].board_service_room_id = self.board_service_room_type.id
+        lines_availability_test[0].board_service_id = self.board_service_test
 
         self.test_room_type_double.list_price = 25
 
         room_price = self.test_room_type_double.list_price
         days = (checkout - checkin).days
-        board_service_price = self.board_service_test.amount
-        room_capacity = self.test_room_type_double.get_room_type_capacity(
-            self.pms_property1.id
-        )
-        expected_price = room_price * days + (
-            board_service_price * room_capacity * days
-        )
+        board_service_price = self.board_service_test.list_price
+        adults = lines_availability_test[0].adults
+        expected_price = room_price * days + (board_service_price * adults * days)
 
         # ASSERT
         self.assertEqual(
@@ -776,34 +750,15 @@ class TestPmsBookingEngine(TestPms):
         checkin = fields.date.today()
         checkout = fields.date.today() + datetime.timedelta(days=1)
 
-        self.product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-                "per_day": True,
-                "consumed_on": "after",
-            }
+        self.board_service_test = self._create_board_service(
+            "Test Board Service",
+            default_code="TBS",
+            list_price=8,
+            per_day=True,
+            per_person=True,
+            consumed_on="after",
         )
-        self.board_service_test = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service",
-                "default_code": "TBS",
-            }
-        )
-        self.env["pms.board.service.line"].create(
-            {
-                "pms_board_service_id": self.board_service_test.id,
-                "product_id": self.product_test1.id,
-                "amount": 8,
-                "adults": True,
-            }
-        )
-        self.board_service_room_type = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.test_room_type_double.id,
-                "pms_board_service_id": self.board_service_test.id,
-                "pms_property_id": self.pms_property1.id,
-            }
-        )
+        self.pricelist1.board_service_ids = [(4, self.board_service_test.id)]
         discount = 15
 
         booking_engine = self.env["pms.booking.engine"].create(
@@ -822,9 +777,7 @@ class TestPmsBookingEngine(TestPms):
             lambda r: r.room_type_id.id == self.test_room_type_double.id
         )
         lines_availability_test[0].rooms_selected_qty = 1
-        lines_availability_test[
-            0
-        ].board_service_room_id = self.board_service_room_type.id
+        lines_availability_test[0].board_service_id = self.board_service_test
 
         # ACT
         booking_engine.create_folio()
