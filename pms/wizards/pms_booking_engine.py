@@ -131,8 +131,10 @@ class BookingEngine(models.TransientModel):
         for record in self:
             record.pricelist_id = (
                 record.partner_id.property_product_pricelist.id
-                if record.partner_id.property_product_pricelist.is_pms_available
-                else self.pms_property_id.default_pricelist_id.id
+                if record.partner_id.property_product_pricelist._is_pms_usable(
+                    record.pms_property_id
+                )
+                else record.pms_property_id.default_pricelist_id.id
             )
 
     @api.depends("agency_id")

@@ -47,3 +47,61 @@ class TestPms(common.TransactionCase):
             if not pricelist.availability_plan_id:
                 pricelist.availability_plan_id = cls.availability_plan1.id
                 pricelist.is_pms_available = True
+
+    def create_pricelist_by_property_scenario(self):
+        """
+        - create pms_property2 in company1, with room_type_property2
+          and one room of it
+        - create pricelist_property1 and pricelist_property2, each one
+          restricted to its property; pricelist_property2 is the default
+          pricelist of pms_property2
+        - create partner_pricelist_property1 with pricelist_property1
+          as its pricelist
+        """
+        self.pms_property2 = self.env["pms.property"].create(
+            {
+                "name": "Property 2",
+                "company_id": self.company1.id,
+                "default_pricelist_id": self.pricelist1.id,
+            }
+        )
+        self.pricelist_property1 = self.env["product.pricelist"].create(
+            {
+                "name": "Pricelist Property 1",
+                "is_pms_available": True,
+                "availability_plan_id": self.availability_plan1.id,
+                "pms_property_ids": [(6, 0, [self.pms_property1.id])],
+            }
+        )
+        self.pricelist_property2 = self.env["product.pricelist"].create(
+            {
+                "name": "Pricelist Property 2",
+                "is_pms_available": True,
+                "availability_plan_id": self.availability_plan1.id,
+                "pms_property_ids": [(6, 0, [self.pms_property2.id])],
+            }
+        )
+        self.pms_property2.default_pricelist_id = self.pricelist_property2
+        self.partner_pricelist_property1 = self.env["res.partner"].create(
+            {
+                "name": "Partner Pricelist Property 1",
+                "property_product_pricelist": self.pricelist_property1.id,
+            }
+        )
+        self.room_type_property2 = self.env["pms.room.type"].create(
+            {
+                "pms_property_ids": [self.pms_property2.id],
+                "name": "Double Property 2",
+                "default_code": "DBL_P2",
+                "class_id": self.room_type_class1.id,
+                "list_price": 25,
+            }
+        )
+        self.env["pms.room"].create(
+            {
+                "pms_property_id": self.pms_property2.id,
+                "name": "Double 201",
+                "room_type_id": self.room_type_property2.id,
+                "capacity": 2,
+            }
+        )
