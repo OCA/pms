@@ -839,6 +839,31 @@ class TestPmsBookingEngine(TestPms):
                     "The discount is not correctly established",
                 )
 
+    def test_partner_pricelist_from_another_property(self):
+        """
+        Check that the booking engine does not propose the partner
+        pricelist when that pricelist is restricted to another property.
+        -------------
+        Open the booking engine in pms_property2 for a partner whose
+        pricelist only belongs to pms_property1. The proposed pricelist
+        must be the default pricelist of pms_property2.
+        """
+        self.create_pricelist_by_property_scenario()
+        booking_engine = self.env["pms.booking.engine"].create(
+            {
+                "start_date": fields.date.today(),
+                "end_date": fields.date.today() + datetime.timedelta(days=1),
+                "partner_id": self.partner_pricelist_property1.id,
+                "pms_property_id": self.pms_property2.id,
+                "channel_type_id": self.sale_channel_direct1.id,
+            }
+        )
+        self.assertEqual(
+            booking_engine.pricelist_id,
+            self.pricelist_property2,
+            "The booking engine proposed a pricelist of another property",
+        )
+
     def _test_adding_board_services_are_saved_on_lines(self):
         checkin = fields.date.today()
         checkout = fields.date.today() + datetime.timedelta(days=1)
