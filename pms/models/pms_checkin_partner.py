@@ -561,6 +561,18 @@ class PmsCheckinPartner(models.Model):
                     partner = self.env["res.partner"].create(partner_values)
                     record.partner_id = partner
 
+    def _set_partner_contact_data(self):
+        # The email/mobile/phone inverses only reach an already linked partner, so
+        # the values saved together with the data that creates or links it are lost
+        for record in self.filtered("partner_id"):
+            vals = {
+                field: record[field]
+                for field in ("email", "mobile", "phone")
+                if record[field] and not record.partner_id[field]
+            }
+            if vals:
+                record.partner_id.write(vals)
+
     @api.model_create_multi
     def create(self, vals_list):
         records = self.env["pms.checkin.partner"]
@@ -598,6 +610,7 @@ class PmsCheckinPartner(models.Model):
         records_without_partner = records.filtered(lambda r: not r.partner_id)
         if records_without_partner:
             records_without_partner.set_partner_id()
+            records_without_partner._set_partner_contact_data()
         for record in records:
             record.set_partner_address()
         return records
@@ -615,6 +628,7 @@ class PmsCheckinPartner(models.Model):
                 records_without_partner.with_context(
                     skip_set_partner_data=True
                 ).set_partner_id()
+                records_without_partner._set_partner_contact_data()
             for record in self:
                 record.set_partner_address(vals)
         return res
