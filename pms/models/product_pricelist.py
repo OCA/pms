@@ -158,6 +158,23 @@ class ProductPricelist(models.Model):
 
         return results
 
+    def _is_pms_usable(self, pms_property):
+        """Return whether the pricelist can be used in the given property.
+
+        It must be available in the PMS and not restricted to other
+        properties. Without a property (e.g. not chosen yet in a form)
+        only the PMS availability is checked. An empty recordset is
+        never usable.
+        """
+        return bool(
+            self.is_pms_available
+            and (
+                not pms_property
+                or not self.pms_property_ids
+                or pms_property in self.pms_property_ids
+            )
+        )
+
     @api.constrains("is_pms_available", "availability_plan_id")
     def _check_is_pms_available(self):
         for record in self:

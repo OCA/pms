@@ -894,13 +894,21 @@ class PmsFolio(models.Model):
                 folio.pricelist_id = False
             elif len(folio.reservation_ids.pricelist_id) == 1:
                 folio.pricelist_id = folio.reservation_ids.pricelist_id
-            elif is_new and folio.agency_id and folio.agency_id.apply_pricelist:
+            elif (
+                is_new
+                and folio.agency_id
+                and folio.agency_id.apply_pricelist
+                and folio.agency_id.property_product_pricelist._is_pms_usable(
+                    folio.pms_property_id
+                )
+            ):
                 folio.pricelist_id = folio.agency_id.property_product_pricelist
             elif (
                 is_new
                 and folio.partner_id
-                and folio.partner_id.property_product_pricelist
-                and folio.partner_id.property_product_pricelist.is_pms_available
+                and folio.partner_id.property_product_pricelist._is_pms_usable(
+                    folio.pms_property_id
+                )
             ):
                 folio.pricelist_id = folio.partner_id.property_product_pricelist
             elif not folio.pricelist_id:

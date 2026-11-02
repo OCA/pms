@@ -1206,6 +1206,86 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
             "Rervation pricelist doesn't match with Agency pricelist",
         )
 
+    def test_partner_pricelist_from_another_property(self):
+        """
+        Check that a reservation does not take the partner pricelist
+        when that pricelist is restricted to another property.
+        -------------
+        Create a reservation without pricelist in pms_property2 for a
+        partner whose pricelist only belongs to pms_property1. The
+        reservation and its folio must take the default pricelist of
+        pms_property2 instead of failing on the property check.
+        """
+        self.create_pricelist_by_property_scenario()
+        reservation = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.pms_property2.id,
+                "checkin": fields.date.today() + datetime.timedelta(days=150),
+                "checkout": fields.date.today() + datetime.timedelta(days=152),
+                "partner_id": self.partner_pricelist_property1.id,
+                "room_type_id": self.room_type_property2.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+        self.assertEqual(
+            reservation.pricelist_id,
+            self.pricelist_property2,
+            "The reservation took a partner pricelist of another property",
+        )
+        self.assertEqual(
+            reservation.folio_id.pricelist_id,
+            self.pricelist_property2,
+            "The folio took a partner pricelist of another property",
+        )
+
+    def test_agency_pricelist_from_another_property(self):
+        """
+        Check that a reservation does not take the agency pricelist
+        when that pricelist is restricted to another property.
+        -------------
+        Create a reservation without partner in pms_property2 for an
+        agency that applies its pricelist, which only belongs to
+        pms_property1. The reservation and its folio must take the
+        default pricelist of pms_property2 instead of failing on the
+        property check.
+        """
+        self.create_pricelist_by_property_scenario()
+        sale_channel1 = self.env["pms.sale.channel"].create(
+            {
+                "name": "Test Indirect",
+                "channel_type": "indirect",
+            }
+        )
+        agency = self.env["res.partner"].create(
+            {
+                "firstname": "partner1",
+                "is_agency": True,
+                "sale_channel_id": sale_channel1.id,
+                "apply_pricelist": True,
+                "property_product_pricelist": self.pricelist_property1.id,
+            }
+        )
+        reservation = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.pms_property2.id,
+                "checkin": fields.date.today() + datetime.timedelta(days=150),
+                "checkout": fields.date.today() + datetime.timedelta(days=152),
+                "agency_id": agency.id,
+                "room_type_id": self.room_type_property2.id,
+                "sale_channel_origin_id": self.sale_channel_direct.id,
+            }
+        )
+        self.assertEqual(
+            reservation.pricelist_id,
+            self.pricelist_property2,
+            "The reservation took an agency pricelist of another property",
+        )
+        self.assertEqual(
+            reservation.folio_id.pricelist_id,
+            self.pricelist_property2,
+            "The folio took an agency pricelist of another property",
+        )
+
     def test_compute_access_url(self):
         """
         Check that the access_url field of the reservation is

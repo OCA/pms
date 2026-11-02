@@ -992,17 +992,21 @@ class PmsReservation(models.Model):
                 is_new
                 and reservation.agency_id
                 and reservation.agency_id.apply_pricelist
+                and reservation.agency_id.property_product_pricelist._is_pms_usable(
+                    reservation.pms_property_id
+                )
             ):
                 reservation.pricelist_id = (
                     reservation.agency_id.property_product_pricelist
                 )
             # only change de pricelist if the reservation is not yet saved
-            # and the partner has a pricelist default
+            # and the partner has a pricelist default usable in its property
             elif (
                 is_new
                 and reservation.partner_id
-                and reservation.partner_id.property_product_pricelist
-                and reservation.partner_id.property_product_pricelist.is_pms_available
+                and reservation.partner_id.property_product_pricelist._is_pms_usable(
+                    reservation.pms_property_id
+                )
             ):
                 reservation.pricelist_id = (
                     reservation.partner_id.property_product_pricelist

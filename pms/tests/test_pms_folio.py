@@ -1550,3 +1550,59 @@ class TestPmsFolio(TestPms, AccountTestInvoicingCommon):
             "The fiscal_position_id of the folio was not set "
             "correctly from the property",
         )
+
+    def test_folio_partner_pricelist_from_another_property(self):
+        """
+        Check that a new folio does not take the partner pricelist
+        when that pricelist is restricted to another property.
+        -------------
+        Create a folio without reservations in pms_property2 for a
+        partner whose pricelist only belongs to pms_property1. The
+        folio must be created with the default pricelist of
+        pms_property2 instead of failing on the property check.
+        """
+        self.create_pricelist_by_property_scenario()
+        folio = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property2.id,
+                "partner_id": self.partner_pricelist_property1.id,
+            }
+        )
+        self.assertEqual(
+            folio.pricelist_id,
+            self.pricelist_property2,
+            "The folio took a partner pricelist of another property",
+        )
+
+    def test_folio_partner_pricelist_from_same_property(self):
+        """
+        Check that a new folio still takes the partner pricelist
+        when that pricelist belongs to the folio property.
+        """
+        self.create_pricelist_by_property_scenario()
+        folio = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_id": self.partner_pricelist_property1.id,
+            }
+        )
+        self.assertEqual(
+            folio.pricelist_id,
+            self.pricelist_property1,
+            "The folio did not take the partner pricelist",
+        )
+
+    def test_folio_form_partner_pricelist_before_property(self):
+        """
+        Check that the folio form keeps the partner pricelist restricted
+        to a property when the partner is chosen before that property.
+        """
+        self.create_pricelist_by_property_scenario()
+        folio_form = Form(self.env["pms.folio"])
+        folio_form.partner_id = self.partner_pricelist_property1
+        folio_form.pms_property_id = self.pms_property1
+        self.assertEqual(
+            folio_form.pricelist_id,
+            self.pricelist_property1,
+            "The folio form lost the partner pricelist",
+        )
