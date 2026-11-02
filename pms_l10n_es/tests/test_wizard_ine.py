@@ -1,4 +1,6 @@
+import base64
 import datetime
+import xml.etree.ElementTree as ET
 
 from freezegun import freeze_time
 
@@ -1046,3 +1048,75 @@ class TestWizardINE(TestPms):
             self.env["pms.ine.wizard"].ine_countries(
                 start_date, end_date, self.pms_property1.id
             )
+
+    def test_ine_xml_customer_and_channel_groups(self):
+        """
+        +=============================+=======+=======+=======+
+        |                             |  01   |  02   |  03   |
+        +=============================+=======+=======+=======+
+        | r1 person, offline          | 25.00 |       |       |
+        | r2 person, online           |       | 21.00 |       |
+        | r3 person, offline          |       | 25.00 | 25.00 |
+        | r4 company, offline         |       | 21.50 | 21.50 |
+        +=============================+=======+=======+=======+
+        persons = 4 nights, companies = 2, internet = 1, others = 5
+        -> 50 + 25 + 12.5 + 62.5 = 150 -> 33.33 / 16.67 / 8.33 / 41.67 %
+        """
+        # ARRANGE
+        self.ideal_scenario()
+        self.company1.vat = "ES12345678Z"
+        self.pms_property1.write(
+            {
+                "ine_tourism_number": "H-00-0000001",
+                "ine_category_id": self.env.ref("pms_l10n_es.turism_category_1").id,
+                "street": "Test street 1",
+                "zip": "08001",
+                "city": "Test city",
+                "state_id": self.env["res.country.state"]
+                .search([("name", "=", "Madrid")])
+                .id,
+                "phone": "+34 600 000 000",
+                "website": "https://example.com",
+            }
+        )
+        sale_channel_online = self.env["pms.sale.channel"].create(
+            {
+                "name": "Web",
+                "channel_type": "direct",
+                "is_on_line": True,
+            }
+        )
+        self.reservation_2.sale_channel_origin_id = sale_channel_online
+        self.reservation_4.partner_id = self.env["res.partner"].create(
+            {
+                "name": "Company test",
+                "is_company": True,
+            }
+        )
+        wizard = self.env["pms.ine.wizard"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "start_date": datetime.date(2021, 2, 1),
+                "end_date": datetime.date(2021, 2, 28),
+            }
+        )
+
+        # ACT
+        wizard.ine_generate_xml()
+        prices = ET.fromstring(base64.b64decode(wizard.txt_binary)).find("PRECIOS")
+
+        # ASSERT
+        expected = {
+            "PCTN_HABITACIONES_OCUPADAS_PARTICULARES": "33.33",
+            "ADR_PARTICULARES": "24.33",
+            "PCTN_HABITACIONES_OCUPADAS_EMPRESAS": "16.67",
+            "ADR_EMPRESAS": "21.5",
+            "PCTN_HABITACIONES_OCUPADAS_INTERNET": "8.33",
+            "ADR_INTERNET": "21.0",
+            "PCTN_HABITACIONES_OCUPADAS_OTROS": "41.67",
+            "ADR_OTROS": "23.83",
+        }
+        self.assertDictEqual(
+            {tag: prices.find(tag).text for tag in expected},
+            expected,
+        )
