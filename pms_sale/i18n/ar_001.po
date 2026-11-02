@@ -14,13 +14,22 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
 
 #. module: pms_sale
+#. odoo-python
 #: code:addons/pms_sale/wizards/pms_configurator.py:0
-#, python-format
-msgid "%s of guests is lower than the %s of guests of the property."
-msgstr "عدد الضيوف %s أقل من الحد الأدنى %s للعقار."
+msgid "%(guests)s of guests is lower than the %(max)s of the property."
+msgstr ""
+
+#. module: pms_sale
+#. odoo-python
+#: code:addons/pms_sale/wizards/pms_configurator.py:0
+msgid ""
+"%(property)s is already booked for %(start)s – %(stop)s. Conflicting "
+"reservations: %(refs)s."
+msgstr ""
 
 #. module: pms_sale
 #: model_terms:ir.ui.view,arch_db:pms_sale.view_pms_team_kanban_inherit_pms_sale
@@ -80,9 +89,8 @@ msgid "Attachment Count"
 msgstr "عدد المرفقات"
 
 #. module: pms_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/pms_sale/static/src/xml/timeline.xml:0
-#, python-format
 msgid "Bedrooms..."
 msgstr "غرف النوم..."
 
@@ -107,6 +115,7 @@ msgid "Booked"
 msgstr "محجوز"
 
 #. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__partner_id
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__partner_id
 msgid "Booked by"
 msgstr "محجوز بواسطة"
@@ -131,6 +140,11 @@ msgstr "ملغى"
 #: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_form
 msgid "Check In"
 msgstr "تسجيل الوصول"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.pms_configurator_view_form
+msgid "Check In / Check Out"
+msgstr ""
 
 #. module: pms_sale
 #: model_terms:ir.ui.view,arch_db:pms_sale.pms_configurator_view_form
@@ -233,9 +247,8 @@ msgid "Date"
 msgstr "التاريخ"
 
 #. module: pms_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/pms_sale/static/src/xml/timeline.xml:0
-#, python-format
 msgid "Date..."
 msgstr "التاريخ..."
 
@@ -271,11 +284,6 @@ msgstr "الاسم المعروض"
 
 #. module: pms_sale
 #: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_kanban
-msgid "Dropdown menu"
-msgstr "القائمة المنسدلة"
-
-#. module: pms_sale
-#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_kanban
 msgid "Edit"
 msgstr "تعديل"
 
@@ -297,14 +305,14 @@ msgid "Entire Home"
 msgstr "المنزل بأكمله"
 
 #. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__existing_reservation_id
+msgid "Existing Reservation"
+msgstr ""
+
+#. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_follower_ids
 msgid "Followers"
 msgstr "المتابعون"
-
-#. module: pms_sale
-#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_channel_ids
-msgid "Followers (Channels)"
-msgstr "المتابعون (القنوات)"
 
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_partner_ids
@@ -318,18 +326,21 @@ msgstr "أيقونة Font Awesome مثل fa-tasks"
 
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__start
-#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__start
 msgid "From"
 msgstr "من"
 
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__guest_ids
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__guest_ids
-#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__guest_ids
 #: model_terms:ir.ui.view,arch_db:pms_sale.pms_configurator_view_form
 #: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_form
 msgid "Guests"
 msgstr "الضيوف"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__has_message
+msgid "Has Message"
+msgstr ""
 
 #. module: pms_sale
 #: model:ir.model.fields.selection,name:pms_sale.selection__pms_reservation__priority__2
@@ -368,13 +379,11 @@ msgstr "أيقونة للإشارة إلى نشاط استثنائي."
 
 #. module: pms_sale
 #: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_needaction
-#: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_unread
 msgid "If checked, new messages require your attention."
 msgstr "إذا تم التحديد، فإن الرسائل الجديدة تتطلب انتباهك."
 
 #. module: pms_sale
 #: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_has_error
-#: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr "إذا تم التحديد، فإن بعض الرسائل تحتوي على خطأ في التسليم."
 
@@ -417,26 +426,6 @@ msgstr "قيد المحاسبة"
 #: model:ir.model,name:pms_sale.model_account_move_line
 msgid "Journal Item"
 msgstr "بند القيد"
-
-#. module: pms_sale
-#: model:ir.model.fields,field_description:pms_sale.field_account_move____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_account_move_line____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_account_payment_register____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_pms_mail____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_pms_property____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest_wizard____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_pms_stage____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_pms_team____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_product_product____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_product_template____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_sale_order____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line____last_update
-msgid "Last Modified on"
-msgstr "تاريخ آخر تعديل"
 
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__write_uid
@@ -485,11 +474,6 @@ msgid "Mail Schedulers"
 msgstr "جدولات البريد"
 
 #. module: pms_sale
-#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_main_attachment_id
-msgid "Main Attachment"
-msgstr "المرفق الرئيسي"
-
-#. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_property__max_nights
 msgid "Maximum Nights"
 msgstr "أقصى عدد الليالي"
@@ -523,14 +507,16 @@ msgid "Name"
 msgstr "الاسم"
 
 #. module: pms_sale
-#: code:addons/pms_sale/models/pms_reservation.py:0
-#: code:addons/pms_sale/models/pms_reservation.py:0
-#: code:addons/pms_sale/models/pms_reservation.py:0
+#. odoo-python
 #: code:addons/pms_sale/models/pms_reservation.py:0
 #: model:pms.stage,name:pms_sale.pms_stage_new
-#, python-format
 msgid "New"
 msgstr "جديد"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
 
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__activity_date_deadline
@@ -567,7 +553,6 @@ msgstr "عدد الإجراءات"
 #: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__no_of_guests
 #: model:ir.model.fields,field_description:pms_sale.field_pms_property__no_of_guests
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__no_of_guests
-#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__no_of_guests
 msgid "Number of Guests"
 msgstr "عدد الضيوف"
 
@@ -578,18 +563,13 @@ msgstr "عدد الأخطاء"
 
 #. module: pms_sale
 #: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_needaction_counter
-msgid "Number of messages which requires an action"
-msgstr "الرسائل التي تحتاج إجراء"
+msgid "Number of messages requiring action"
+msgstr ""
 
 #. module: pms_sale
 #: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr "الرسائل التي فيها خطأ تسليم"
-
-#. module: pms_sale
-#: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_unread_counter
-msgid "Number of unread messages"
-msgstr "الرسائل غير المقروءة"
 
 #. module: pms_sale
 #: model_terms:ir.ui.view,arch_db:pms_sale.pms_configurator_view_form
@@ -634,6 +614,11 @@ msgid "Partner"
 msgstr "شريك"
 
 #. module: pms_sale
+#: model:ir.model,name:pms_sale.model_account_payment_register
+msgid "Pay"
+msgstr ""
+
+#. module: pms_sale
 #: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_search
 msgid "Payment Status"
 msgstr "حالة الدفع"
@@ -645,6 +630,7 @@ msgid "Phone"
 msgstr "الهاتف"
 
 #. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__price
 #: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation__price
 msgid "Price"
 msgstr "السعر"
@@ -660,16 +646,16 @@ msgid "Private Room"
 msgstr "غرفة خاصة"
 
 #. module: pms_sale
-#: model:ir.model,name:pms_sale.model_product_product
+#: model:ir.model,name:pms_sale.model_product_template
 #: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__product_id
 #: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation__product_id
 msgid "Product"
 msgstr "المنتج"
 
 #. module: pms_sale
-#: model:ir.model,name:pms_sale.model_product_template
-msgid "Product Template"
-msgstr "قالب المنتج"
+#: model:ir.model,name:pms_sale.model_product_product
+msgid "Product Variant"
+msgstr ""
 
 #. module: pms_sale
 #: model:ir.model,name:pms_sale.model_pms_property
@@ -677,7 +663,6 @@ msgstr "قالب المنتج"
 #: model:ir.model.fields,field_description:pms_sale.field_pms_mail__property_id
 #: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation__property_id
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__property_id
-#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__property_id
 #: model_terms:ir.ui.view,arch_db:pms_sale.pms_mail_view_search
 msgid "Property"
 msgstr "عقار"
@@ -691,9 +676,9 @@ msgid "Property Reservation"
 msgstr "حجز العقار"
 
 #. module: pms_sale
-#: model:ir.model,name:pms_sale.model_account_payment_register
-msgid "Register Payment"
-msgstr "تسجيل الدفع"
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__rating_ids
+msgid "Ratings"
+msgstr ""
 
 #. module: pms_sale
 #: model:ir.model,name:pms_sale.model_pms_reservation
@@ -704,7 +689,6 @@ msgstr "تسجيل الدفع"
 #: model:ir.model.fields,field_description:pms_sale.field_product_template__reservation_ok
 #: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__pms_reservation_id
 #: model:ir.model.fields.selection,name:pms_sale.selection__pms_stage__stage_type__reservation
-#: model:product.product,name:pms_sale.product_product_reservation
 #: model:product.template,name:pms_sale.product_product_reservation_product_template
 #: model_terms:ir.ui.view,arch_db:pms_sale.product_template_form_view_inherit_pms_sale
 #: model_terms:ir.ui.view,arch_db:pms_sale.product_template_search_view_inherit_pms_sale
@@ -742,7 +726,7 @@ msgstr "مرحلة الحجز"
 
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__reservation_id
-#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__reservation_id
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__reservation_type_id
 msgid "Reservation Type"
 msgstr "نوع الحجز"
 
@@ -779,7 +763,6 @@ msgstr "الحجوزات"
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_account_bank_statement_line__reservation_count
 #: model:ir.model.fields,field_description:pms_sale.field_account_move__reservation_count
-#: model:ir.model.fields,field_description:pms_sale.field_account_payment__reservation_count
 #: model:ir.model.fields,field_description:pms_sale.field_sale_order__reservation_count
 msgid "Reservations Count"
 msgstr "عدد الحجوزات"
@@ -793,11 +776,6 @@ msgstr "المسؤول"
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__activity_user_id
 msgid "Responsible User"
 msgstr "المستخدم المسؤول"
-
-#. module: pms_sale
-#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_has_sms_error
-msgid "SMS Delivery error"
-msgstr "خطأ في تسليم الرسالة النصية"
 
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest__order_line_id
@@ -817,16 +795,14 @@ msgid "Sales Order Line"
 msgstr "سطر طلب البيع"
 
 #. module: pms_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/pms_sale/static/src/xml/timeline.xml:0
-#, python-format
 msgid "Search"
 msgstr "بحث"
 
 #. module: pms_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/pms_sale/static/src/xml/timeline.xml:0
-#, python-format
 msgid "Select City"
 msgstr "اختر المدينة"
 
@@ -882,14 +858,13 @@ msgid "Team"
 msgstr "الفريق"
 
 #. module: pms_sale
+#. odoo-python
 #: code:addons/pms_sale/models/pms_reservation.py:0
-#, python-format
-msgid "The number of nights must be between %s and %s."
-msgstr "يجب أن يكون عدد الليالي بين %s و %s."
+msgid "The number of nights must be between %(min)s and %(max)s."
+msgstr ""
 
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_team__no_week_reservation
-#: model:ir.model.fields,field_description:pms_sale.field_pms_team__total_reservation
 msgid "This Week Reservations"
 msgstr "حجوزات هذا الأسبوع"
 
@@ -910,7 +885,6 @@ msgstr "HTML الجدول الزمني"
 
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__stop
-#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__stop
 msgid "To"
 msgstr "إلى"
 
@@ -937,14 +911,15 @@ msgid "Tomorrow:"
 msgstr "غدًا:"
 
 #. module: pms_sale
+#. odoo-python
 #: code:addons/pms_sale/models/pms_reservation.py:0
-#, python-format
 msgid ""
-"Too many guests (%s) on the reservation: the property\n"
-"                         accepts a maximum of %s guests."
+"Too many guests (%(guests)s) on the reservation: the property accepts a "
+"maximum of %(max)s guests."
 msgstr ""
 
 #. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_team__total_reservation
 #: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_search
 msgid "Total Reservations"
 msgstr "إجمالي الحجوزات"
@@ -970,22 +945,6 @@ msgid "Unit"
 msgstr "الوحدة"
 
 #. module: pms_sale
-#: model:product.product,uom_name:pms_sale.product_product_reservation
-#: model:product.template,uom_name:pms_sale.product_product_reservation_product_template
-msgid "Units"
-msgstr "الوحدات"
-
-#. module: pms_sale
-#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_unread
-msgid "Unread Messages"
-msgstr "الرسائل غير المقروءة"
-
-#. module: pms_sale
-#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_unread_counter
-msgid "Unread Messages Counter"
-msgstr "عداد الرسائل غير المقروءة"
-
-#. module: pms_sale
 #: model:ir.model.fields.selection,name:pms_sale.selection__pms_reservation__priority__3
 msgid "Urgent"
 msgstr "عاجل"
@@ -1001,8 +960,8 @@ msgid "Website communication history"
 msgstr "سجل التواصل على الموقع"
 
 #. module: pms_sale
+#. odoo-python
 #: code:addons/pms_sale/models/pms_reservation.py:0
-#, python-format
 msgid "You cannot have 2 reservations on the same night at the same property."
 msgstr "لا يمكن إجراء حجزين في نفس الليلة لنفس العقار."
 
@@ -1010,3 +969,47 @@ msgstr "لا يمكن إجراء حجزين في نفس الليلة لنفس ا
 #: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_kanban
 msgid "night(s)"
 msgstr "ليلة(ليالٍ)"
+
+#, python-format
+#~ msgid "%s of guests is lower than the %s of guests of the property."
+#~ msgstr "عدد الضيوف %s أقل من الحد الأدنى %s للعقار."
+
+#~ msgid "Dropdown menu"
+#~ msgstr "القائمة المنسدلة"
+
+#~ msgid "Followers (Channels)"
+#~ msgstr "المتابعون (القنوات)"
+
+#~ msgid "Last Modified on"
+#~ msgstr "تاريخ آخر تعديل"
+
+#~ msgid "Main Attachment"
+#~ msgstr "المرفق الرئيسي"
+
+#~ msgid "Number of messages which requires an action"
+#~ msgstr "الرسائل التي تحتاج إجراء"
+
+#~ msgid "Number of unread messages"
+#~ msgstr "الرسائل غير المقروءة"
+
+#~ msgid "Product Template"
+#~ msgstr "قالب المنتج"
+
+#~ msgid "Register Payment"
+#~ msgstr "تسجيل الدفع"
+
+#~ msgid "SMS Delivery error"
+#~ msgstr "خطأ في تسليم الرسالة النصية"
+
+#, python-format
+#~ msgid "The number of nights must be between %s and %s."
+#~ msgstr "يجب أن يكون عدد الليالي بين %s و %s."
+
+#~ msgid "Units"
+#~ msgstr "الوحدات"
+
+#~ msgid "Unread Messages"
+#~ msgstr "الرسائل غير المقروءة"
+
+#~ msgid "Unread Messages Counter"
+#~ msgstr "عداد الرسائل غير المقروءة"

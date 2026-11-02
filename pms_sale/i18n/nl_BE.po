@@ -17,10 +17,18 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: pms_sale
+#. odoo-python
 #: code:addons/pms_sale/wizards/pms_configurator.py:0
-#, python-format
-msgid "%s of guests is lower than the %s of guests of the property."
-msgstr "%s gasten is minder dan het aantal %s gasten van het pand."
+msgid "%(guests)s of guests is lower than the %(max)s of the property."
+msgstr ""
+
+#. module: pms_sale
+#. odoo-python
+#: code:addons/pms_sale/wizards/pms_configurator.py:0
+msgid ""
+"%(property)s is already booked for %(start)s – %(stop)s. Conflicting "
+"reservations: %(refs)s."
+msgstr ""
 
 #. module: pms_sale
 #: model_terms:ir.ui.view,arch_db:pms_sale.view_pms_team_kanban_inherit_pms_sale
@@ -80,9 +88,8 @@ msgid "Attachment Count"
 msgstr "Aantal bijlagen"
 
 #. module: pms_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/pms_sale/static/src/xml/timeline.xml:0
-#, python-format
 msgid "Bedrooms..."
 msgstr "Slaapkamers..."
 
@@ -107,6 +114,7 @@ msgid "Booked"
 msgstr "Geboekt"
 
 #. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__partner_id
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__partner_id
 msgid "Booked by"
 msgstr "Geboekt door"
@@ -131,6 +139,11 @@ msgstr "Geannuleerd"
 #: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_form
 msgid "Check In"
 msgstr "Incheck"
+
+#. module: pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_sale.pms_configurator_view_form
+msgid "Check In / Check Out"
+msgstr ""
 
 #. module: pms_sale
 #: model_terms:ir.ui.view,arch_db:pms_sale.pms_configurator_view_form
@@ -233,9 +246,8 @@ msgid "Date"
 msgstr "Datum"
 
 #. module: pms_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/pms_sale/static/src/xml/timeline.xml:0
-#, python-format
 msgid "Date..."
 msgstr "Datum..."
 
@@ -271,11 +283,6 @@ msgstr "Weergavenaam"
 
 #. module: pms_sale
 #: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_kanban
-msgid "Dropdown menu"
-msgstr "Vervolgkeuzemenu"
-
-#. module: pms_sale
-#: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_kanban
 msgid "Edit"
 msgstr "Bewerken"
 
@@ -297,14 +304,14 @@ msgid "Entire Home"
 msgstr "Gehele woning"
 
 #. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__existing_reservation_id
+msgid "Existing Reservation"
+msgstr ""
+
+#. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_follower_ids
 msgid "Followers"
 msgstr "Volgers"
-
-#. module: pms_sale
-#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_channel_ids
-msgid "Followers (Channels)"
-msgstr "Volgers (Kanalen)"
 
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_partner_ids
@@ -318,18 +325,21 @@ msgstr "Font Awesome icoon, bijv. fa-tasks"
 
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__start
-#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__start
 msgid "From"
 msgstr "Van"
 
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__guest_ids
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__guest_ids
-#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__guest_ids
 #: model_terms:ir.ui.view,arch_db:pms_sale.pms_configurator_view_form
 #: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_form
 msgid "Guests"
 msgstr "Gasten"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__has_message
+msgid "Has Message"
+msgstr ""
 
 #. module: pms_sale
 #: model:ir.model.fields.selection,name:pms_sale.selection__pms_reservation__priority__2
@@ -368,13 +378,11 @@ msgstr "Icoon voor uitzonderingsactiviteit."
 
 #. module: pms_sale
 #: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_needaction
-#: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_unread
 msgid "If checked, new messages require your attention."
 msgstr "Als aangevinkt, vereisen nieuwe berichten uw aandacht."
 
 #. module: pms_sale
 #: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_has_error
-#: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr "Als aangevinkt, hebben sommige berichten een bezorgfout."
 
@@ -417,26 +425,6 @@ msgstr "Journaalpost"
 #: model:ir.model,name:pms_sale.model_account_move_line
 msgid "Journal Item"
 msgstr "Journaalregel"
-
-#. module: pms_sale
-#: model:ir.model.fields,field_description:pms_sale.field_account_move____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_account_move_line____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_account_payment_register____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_pms_mail____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_pms_property____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest_wizard____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_pms_stage____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_pms_team____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_product_product____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_product_template____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_sale_order____last_update
-#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line____last_update
-msgid "Last Modified on"
-msgstr "Laatst gewijzigd op"
 
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__write_uid
@@ -485,11 +473,6 @@ msgid "Mail Schedulers"
 msgstr "E-mailplanners"
 
 #. module: pms_sale
-#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_main_attachment_id
-msgid "Main Attachment"
-msgstr "Hoofdbijlage"
-
-#. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_property__max_nights
 msgid "Maximum Nights"
 msgstr "Maximum nachten"
@@ -523,14 +506,16 @@ msgid "Name"
 msgstr "Naam"
 
 #. module: pms_sale
-#: code:addons/pms_sale/models/pms_reservation.py:0
-#: code:addons/pms_sale/models/pms_reservation.py:0
-#: code:addons/pms_sale/models/pms_reservation.py:0
+#. odoo-python
 #: code:addons/pms_sale/models/pms_reservation.py:0
 #: model:pms.stage,name:pms_sale.pms_stage_new
-#, python-format
 msgid "New"
 msgstr "Nieuw"
+
+#. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
 
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__activity_date_deadline
@@ -567,7 +552,6 @@ msgstr "Aantal acties"
 #: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__no_of_guests
 #: model:ir.model.fields,field_description:pms_sale.field_pms_property__no_of_guests
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__no_of_guests
-#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__no_of_guests
 msgid "Number of Guests"
 msgstr "Aantal gasten"
 
@@ -578,18 +562,13 @@ msgstr "Aantal fouten"
 
 #. module: pms_sale
 #: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_needaction_counter
-msgid "Number of messages which requires an action"
-msgstr "Berichten die actie vereisen"
+msgid "Number of messages requiring action"
+msgstr ""
 
 #. module: pms_sale
 #: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr "Berichten met bezorgfout"
-
-#. module: pms_sale
-#: model:ir.model.fields,help:pms_sale.field_pms_reservation__message_unread_counter
-msgid "Number of unread messages"
-msgstr "Ongelezen berichten"
 
 #. module: pms_sale
 #: model_terms:ir.ui.view,arch_db:pms_sale.pms_configurator_view_form
@@ -634,6 +613,11 @@ msgid "Partner"
 msgstr "Partner"
 
 #. module: pms_sale
+#: model:ir.model,name:pms_sale.model_account_payment_register
+msgid "Pay"
+msgstr ""
+
+#. module: pms_sale
 #: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_search
 msgid "Payment Status"
 msgstr "Betalingsstatus"
@@ -645,6 +629,7 @@ msgid "Phone"
 msgstr "Telefoon"
 
 #. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__price
 #: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation__price
 msgid "Price"
 msgstr "Prijs"
@@ -660,16 +645,16 @@ msgid "Private Room"
 msgstr "Privékamer"
 
 #. module: pms_sale
-#: model:ir.model,name:pms_sale.model_product_product
+#: model:ir.model,name:pms_sale.model_product_template
 #: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__product_id
 #: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation__product_id
 msgid "Product"
 msgstr "Product"
 
 #. module: pms_sale
-#: model:ir.model,name:pms_sale.model_product_template
-msgid "Product Template"
-msgstr "Productsjabloon"
+#: model:ir.model,name:pms_sale.model_product_product
+msgid "Product Variant"
+msgstr ""
 
 #. module: pms_sale
 #: model:ir.model,name:pms_sale.model_pms_property
@@ -677,7 +662,6 @@ msgstr "Productsjabloon"
 #: model:ir.model.fields,field_description:pms_sale.field_pms_mail__property_id
 #: model:ir.model.fields,field_description:pms_sale.field_pms_property_reservation__property_id
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__property_id
-#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__property_id
 #: model_terms:ir.ui.view,arch_db:pms_sale.pms_mail_view_search
 msgid "Property"
 msgstr "Object"
@@ -691,9 +675,9 @@ msgid "Property Reservation"
 msgstr "Object reservering"
 
 #. module: pms_sale
-#: model:ir.model,name:pms_sale.model_account_payment_register
-msgid "Register Payment"
-msgstr "Betaling registreren"
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__rating_ids
+msgid "Ratings"
+msgstr ""
 
 #. module: pms_sale
 #: model:ir.model,name:pms_sale.model_pms_reservation
@@ -704,7 +688,6 @@ msgstr "Betaling registreren"
 #: model:ir.model.fields,field_description:pms_sale.field_product_template__reservation_ok
 #: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__pms_reservation_id
 #: model:ir.model.fields.selection,name:pms_sale.selection__pms_stage__stage_type__reservation
-#: model:product.product,name:pms_sale.product_product_reservation
 #: model:product.template,name:pms_sale.product_product_reservation_product_template
 #: model_terms:ir.ui.view,arch_db:pms_sale.product_template_form_view_inherit_pms_sale
 #: model_terms:ir.ui.view,arch_db:pms_sale.product_template_search_view_inherit_pms_sale
@@ -742,7 +725,7 @@ msgstr "Reserveringsfase"
 
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__reservation_id
-#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__reservation_id
+#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__reservation_type_id
 msgid "Reservation Type"
 msgstr "Reserveringstype"
 
@@ -779,7 +762,6 @@ msgstr "Reserveringen"
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_account_bank_statement_line__reservation_count
 #: model:ir.model.fields,field_description:pms_sale.field_account_move__reservation_count
-#: model:ir.model.fields,field_description:pms_sale.field_account_payment__reservation_count
 #: model:ir.model.fields,field_description:pms_sale.field_sale_order__reservation_count
 msgid "Reservations Count"
 msgstr "Aantal reserveringen"
@@ -793,11 +775,6 @@ msgstr "Verantwoordelijke"
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__activity_user_id
 msgid "Responsible User"
 msgstr "Verantwoordelijke gebruiker"
-
-#. module: pms_sale
-#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_has_sms_error
-msgid "SMS Delivery error"
-msgstr "SMS bezorgfout"
 
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation_guest__order_line_id
@@ -817,16 +794,14 @@ msgid "Sales Order Line"
 msgstr "Verkooporderregel"
 
 #. module: pms_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/pms_sale/static/src/xml/timeline.xml:0
-#, python-format
 msgid "Search"
 msgstr "Zoeken"
 
 #. module: pms_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/pms_sale/static/src/xml/timeline.xml:0
-#, python-format
 msgid "Select City"
 msgstr "Selecteer stad"
 
@@ -882,14 +857,13 @@ msgid "Team"
 msgstr "Team"
 
 #. module: pms_sale
+#. odoo-python
 #: code:addons/pms_sale/models/pms_reservation.py:0
-#, python-format
-msgid "The number of nights must be between %s and %s."
-msgstr "Het aantal nachten moet tussen %s en %s liggen."
+msgid "The number of nights must be between %(min)s and %(max)s."
+msgstr ""
 
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_team__no_week_reservation
-#: model:ir.model.fields,field_description:pms_sale.field_pms_team__total_reservation
 msgid "This Week Reservations"
 msgstr "Reserveringen deze week"
 
@@ -910,7 +884,6 @@ msgstr "Tijdlijn HTML"
 
 #. module: pms_sale
 #: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__stop
-#: model:ir.model.fields,field_description:pms_sale.field_sale_order_line__stop
 msgid "To"
 msgstr "Tot"
 
@@ -937,14 +910,15 @@ msgid "Tomorrow:"
 msgstr "Morgen:"
 
 #. module: pms_sale
+#. odoo-python
 #: code:addons/pms_sale/models/pms_reservation.py:0
-#, python-format
 msgid ""
-"Too many guests (%s) on the reservation: the property\n"
-"                         accepts a maximum of %s guests."
+"Too many guests (%(guests)s) on the reservation: the property accepts a "
+"maximum of %(max)s guests."
 msgstr ""
 
 #. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_team__total_reservation
 #: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_search
 msgid "Total Reservations"
 msgstr "Totaal reserveringen"
@@ -970,22 +944,6 @@ msgid "Unit"
 msgstr "Eenheid"
 
 #. module: pms_sale
-#: model:product.product,uom_name:pms_sale.product_product_reservation
-#: model:product.template,uom_name:pms_sale.product_product_reservation_product_template
-msgid "Units"
-msgstr "Eenheden"
-
-#. module: pms_sale
-#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_unread
-msgid "Unread Messages"
-msgstr "Ongelezen berichten"
-
-#. module: pms_sale
-#: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__message_unread_counter
-msgid "Unread Messages Counter"
-msgstr "Teller ongelezen berichten"
-
-#. module: pms_sale
 #: model:ir.model.fields.selection,name:pms_sale.selection__pms_reservation__priority__3
 msgid "Urgent"
 msgstr "Dringend"
@@ -1001,12 +959,57 @@ msgid "Website communication history"
 msgstr "Website communicatiegeschiedenis"
 
 #. module: pms_sale
+#. odoo-python
 #: code:addons/pms_sale/models/pms_reservation.py:0
-#, python-format
 msgid "You cannot have 2 reservations on the same night at the same property."
-msgstr "U kunt niet 2 reserveringen hebben op dezelfde nacht voor hetzelfde object."
+msgstr ""
+"U kunt niet 2 reserveringen hebben op dezelfde nacht voor hetzelfde object."
 
 #. module: pms_sale
 #: model_terms:ir.ui.view,arch_db:pms_sale.view_reservation_kanban
 msgid "night(s)"
 msgstr "nacht(en)"
+
+#, python-format
+#~ msgid "%s of guests is lower than the %s of guests of the property."
+#~ msgstr "%s gasten is minder dan het aantal %s gasten van het pand."
+
+#~ msgid "Dropdown menu"
+#~ msgstr "Vervolgkeuzemenu"
+
+#~ msgid "Followers (Channels)"
+#~ msgstr "Volgers (Kanalen)"
+
+#~ msgid "Last Modified on"
+#~ msgstr "Laatst gewijzigd op"
+
+#~ msgid "Main Attachment"
+#~ msgstr "Hoofdbijlage"
+
+#~ msgid "Number of messages which requires an action"
+#~ msgstr "Berichten die actie vereisen"
+
+#~ msgid "Number of unread messages"
+#~ msgstr "Ongelezen berichten"
+
+#~ msgid "Product Template"
+#~ msgstr "Productsjabloon"
+
+#~ msgid "Register Payment"
+#~ msgstr "Betaling registreren"
+
+#~ msgid "SMS Delivery error"
+#~ msgstr "SMS bezorgfout"
+
+#, python-format
+#~ msgid "The number of nights must be between %s and %s."
+#~ msgstr "Het aantal nachten moet tussen %s en %s liggen."
+
+#~ msgid "Units"
+#~ msgstr "Eenheden"
+
+#~ msgid "Unread Messages"
+#~ msgstr "Ongelezen berichten"
+
+#~ msgid "Unread Messages Counter"
+#~ msgstr "Teller ongelezen berichten"

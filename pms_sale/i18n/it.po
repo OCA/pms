@@ -118,6 +118,7 @@ msgid "Booked"
 msgstr "Prenotata"
 
 #. module: pms_sale
+#: model:ir.model.fields,field_description:pms_sale.field_pms_configurator__partner_id
 #: model:ir.model.fields,field_description:pms_sale.field_pms_reservation__partner_id
 msgid "Booked by"
 msgstr "Prenotato da"
