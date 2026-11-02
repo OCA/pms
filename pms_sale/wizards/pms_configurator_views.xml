@@ -19,6 +19,11 @@
                         domain="[('property_id', '=', property_id), ('currency_id', '=', currency_id)]"
                         options="{'no_open': True, 'no_create': True}"
                     />
+                    <field
+                        name="partner_id"
+                        required="1"
+                        options="{'no_create': True}"
+                    />
                     <field name="product_id" invisible="True" />
                     <field name="price" invisible="True" />
                     <field name="existing_reservation_id" invisible="True" />

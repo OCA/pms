@@ -39,6 +39,7 @@ export class PMSConfiguratorFormController extends formView.Controller {
             stop: data.stop ? serializeDateTime(data.stop) : false,
             no_of_guests: data.no_of_guests || 0,
             guest_ids: guestCommands,
+            partner_id: data.partner_id?.id || false,
         };
         let reservationId = data.existing_reservation_id;
         if (reservationId) {
