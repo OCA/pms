@@ -1,5 +1,6 @@
 import datetime
 
+from odoo.exceptions import UserError
 from odoo.tests import tagged
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
@@ -341,6 +342,85 @@ class TestPmsFolioInvoice(TestPms, AccountTestInvoicingCommon):
             qty_invoiced_expected,
             3.0,
             "The quantity invoiced on the folio does not correspond",
+        )
+
+    def test_cancel_invoiced_reservation_is_blocked(self):
+        """
+        Test that an invoiced reservation refuses to be cancelled, and says why.
+        ---------------
+        A reservation is created and invoiced, and the invoice is posted.
+        Cancelling would drop the accommodation line from the folio, which
+        folio.sale.line refuses to do once that line is invoiced in a posted move.
+        The reservation has to refuse the cancellation upfront, naming the invoice
+        to refund, instead of dying later on with a message about sale order lines.
+        """
+        r1 = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.property.id,
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner_id.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
+            }
+        )
+        r1.folio_id._create_invoices()
+        r1.folio_id.move_ids.action_post()
+
+        with self.assertRaises(UserError) as error:
+            r1.action_cancel()
+
+        self.assertIn(
+            r1.folio_id.move_ids.name,
+            error.exception.args[0],
+            "The error does not tell which invoice has to be refunded",
+        )
+        self.assertNotEqual(
+            r1.state,
+            "cancel",
+            "An invoiced reservation was cancelled",
+        )
+
+    def test_cancel_reservation_released_by_refund(self):
+        """
+        Test that refunding the invoice releases the reservation to be cancelled.
+        ---------------
+        Same reservation, invoiced and posted, but the invoice is fully refunded
+        before cancelling. The refund brings the invoiced quantity of the folio
+        line back to zero, so the line can be dropped and the cancellation goes
+        through.
+        """
+        r1 = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.property.id,
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner_id.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
+            }
+        )
+        r1.folio_id._create_invoices()
+        invoice = r1.folio_id.move_ids
+        invoice.action_post()
+        self.env["account.move.reversal"].with_context(
+            active_model="account.move", active_ids=invoice.ids
+        ).create(
+            {
+                "move_ids": [(6, 0, invoice.ids)],
+                "refund_method": "cancel",
+                "journal_id": invoice.journal_id.id,
+            }
+        ).reverse_moves()
+
+        r1.action_cancel()
+
+        self.assertEqual(
+            r1.state,
+            "cancel",
+            "A refunded reservation could not be cancelled",
         )
 
     def test_price_invoice_by_services_folio(self):
