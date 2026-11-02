@@ -676,6 +676,27 @@ class WizardIne(models.TransientModel):
             ("occupies_availability", "=", True),
             ("reservation_id.reservation_type", "=", "normal"),
         ]
+        # The "persons" and "others" groups are an OR between two conditions on the
+        # reservation. As a domain, each side becomes a subquery over the whole
+        # reservation table that PostgreSQL cannot turn into a semi-join, and the
+        # report took minutes. Classify the reservations of the period in Python.
+        period_reservations = (
+            self.env["pms.reservation.line"]
+            .search(
+                basic_domain
+                + [
+                    ("date", ">=", self.start_date),
+                    ("date", "<=", self.end_date),
+                ]
+            )
+            .reservation_id
+        )
+        person_reservations = period_reservations.filtered(
+            lambda r: not r.partner_id.is_company
+        )
+        other_reservations = period_reservations.filtered(
+            lambda r: not r.sale_channel_origin_id.is_on_line
+        )
         total_groups_domains = {
             "tour_operator_offline": basic_domain
             + [
@@ -704,21 +725,12 @@ class WizardIne(models.TransientModel):
                 ("reservation_id.agency_id.sale_channel_id.is_on_line", "=", True),
             ],
             "persons": basic_domain
-            + [
-                "|",
-                ("reservation_id.partner_id", "=", False),
-                ("reservation_id.partner_id.is_company", "=", False),
-            ],
+            + [("reservation_id", "in", person_reservations.ids)],
             "groups": basic_domain
             + [("reservation_id.folio_id.number_of_rooms", ">=", 4)],
             "internet": basic_domain
             + [("reservation_id.sale_channel_origin_id.is_on_line", "=", True)],
-            "others": basic_domain
-            + [
-                "|",
-                ("reservation_id.sale_channel_origin_id.is_on_line", "!=", True),
-                ("reservation_id.sale_channel_origin_id", "=", False),
-            ],
+            "others": basic_domain + [("reservation_id", "in", other_reservations.ids)],
         }
         percents = {}
         adrs = {}
