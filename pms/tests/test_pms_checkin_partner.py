@@ -157,6 +157,24 @@ class TestPmsCheckinPartner(TestPms):
         )
 
     @freeze_time("2012-01-14")
+    def test_onboard_reservation_clears_to_assign(self):
+        """
+        Check that the check-in confirms the room assignment: a reservation
+        flagged as pending assignment stops being so once a guest is on board
+        """
+        # ARRANGE
+        self.reservation_1.to_assign = True
+
+        # ACT
+        self.checkin1.action_on_board()
+
+        # ASSERT
+        self.assertFalse(
+            self.reservation_1.to_assign,
+            "the reservation is still pending assignment after the check-in",
+        )
+
+    @freeze_time("2012-01-14")
     def test_premature_checkin(self):
         """
         Check that cannot change checkin_partner state to onboard if
