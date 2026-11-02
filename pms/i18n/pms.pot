@@ -10721,6 +10721,16 @@ msgstr ""
 #. odoo-python
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
+msgid ""
+"The reservation %(reservation)s is already invoiced in %(invoices)s, so it "
+"cannot be cancelled. Refund that invoice first: the refund releases the "
+"reservation and then it can be cancelled."
+msgstr ""
+
+#. module: pms
+#. odoo-python
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
 msgid "The reservation must be canceled by action: action_cancel"
 msgstr ""
 
