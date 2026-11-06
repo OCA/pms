@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-07-29 09:46+0000\n"
+"PO-Revision-Date: 2026-11-06 14:46+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -5786,7 +5786,7 @@ msgstr "Ottieni il prezzo con lo sconto applicato"
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__packaging_ids
 msgid "Gives the different ways to package the same product."
-msgstr "Consente di imballare diversamente lo stesso prodotto."
+msgstr "Consente di creare in modi diversi colli dello stesso prodotto."
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__global_location_number
