@@ -56,10 +56,62 @@ You will find the hotel settings in PMS Management > Configuration > Properties 
 
 This module required additional configuration for company, accounting, invoicing and user privileges.
 
+Derived room type prices
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+A room type can take its price from another one, e.g. a Superior room costing
+10 more than the Double one, so that the pricelists only need the prices of
+the latter. Set it in the *Derived Price* section of the room type:
+
+* *Price Derived From*: the room type the price is taken from. It must be
+  available in all the properties of the room type, and it can take its price
+  from a third one in turn (e.g. Family = Superior + 20), up to ten levels.
+* *Price Variation Type* and *Price Variation*: a fixed amount, in the currency
+  of the pricelist, or a percentage of the base price. Negative values lower
+  it, and the price never goes below zero.
+* *Price Rounding*: the multiple the prices derived by a percentage are rounded
+  to, e.g. 1 for whole amounts. Zero rounds them to the currency.
+* *Derive in Pricelists*: the pricelists the price is derived in. Leave it
+  empty to derive it in all of them.
+
+Mind that a derived room type with no rule of its own in a pricelist it does
+not derive in gets its sales price there.
+
 Usage
 =====
 
 To use this module, please, read the complete user guide at `<roomdoo.com>`_.
+
+Working with derived room type prices
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The price of a room type is only derived from its base room type on the days
+a pricelist has no rule of its own for it:
+
+* An item of the derived room type in the pricelist sets its price on its
+  dates: it overrides the derivation there, and the room type follows its base
+  again once the item is removed.
+* Rules on a product category or on all products cover the room type as well,
+  so they win over the derivation. Keep them out of the pricelists the room
+  types derive in.
+* The base room type is priced by the same pricelist, with its own rules or
+  derived in turn. With no rule at all, its sales price is the base.
+* Pricelists based on another one through category or global rules (e.g. a
+  channel rate 10% above the standard one) apply on top of the derived price.
+  When they hold rules for the base room type only, the derived room type has
+  no rule there either: its price is derived from the price of the base room
+  type in that pricelist, which may not be what you want (e.g. a breakfast
+  surcharge per guest of the base room type). Give those pricelists rules for
+  the derived room types too, or use category or global rules there instead.
+* The base price is computed for the date and the property of the stay only,
+  not for the guests: modules pricing by occupancy apply their rules to the
+  derived room type afterwards.
+* Prices already set on reservations do not follow later changes of the base
+  price: use *Update prices* on the reservation to recompute them.
+* Massive changes on pricelists leave the derived room types out of the price
+  changes when no room type is selected, so that they keep following their
+  base, except on the dates they have a price of their own, which is kept.
+  Select them explicitly to give them a price of their own.
 
 Bug Tracker
 ===========

@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="Docutils: https://docutils.sourceforge.io/" />
-<title>PMS (Property Management System)</title>
+<title>README.rst</title>
 <style type="text/css">
 
 /*
@@ -383,13 +383,19 @@ reservations, check-in, daily reports, board services, rate and availability pla
 <div class="contents local topic" id="contents">
 <ul class="simple">
 <li><a class="reference internal" href="#installation" id="toc-entry-1">Installation</a></li>
-<li><a class="reference internal" href="#configuration" id="toc-entry-2">Configuration</a></li>
-<li><a class="reference internal" href="#usage" id="toc-entry-3">Usage</a></li>
-<li><a class="reference internal" href="#bug-tracker" id="toc-entry-4">Bug Tracker</a></li>
-<li><a class="reference internal" href="#credits" id="toc-entry-5">Credits</a><ul>
-<li><a class="reference internal" href="#authors" id="toc-entry-6">Authors</a></li>
-<li><a class="reference internal" href="#contributors" id="toc-entry-7">Contributors</a></li>
-<li><a class="reference internal" href="#maintainers" id="toc-entry-8">Maintainers</a></li>
+<li><a class="reference internal" href="#configuration" id="toc-entry-2">Configuration</a><ul>
+<li><a class="reference internal" href="#derived-room-type-prices" id="toc-entry-3">Derived room type prices</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage" id="toc-entry-4">Usage</a><ul>
+<li><a class="reference internal" href="#working-with-derived-room-type-prices" id="toc-entry-5">Working with derived room type prices</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bug-tracker" id="toc-entry-6">Bug Tracker</a></li>
+<li><a class="reference internal" href="#credits" id="toc-entry-7">Credits</a><ul>
+<li><a class="reference internal" href="#authors" id="toc-entry-8">Authors</a></li>
+<li><a class="reference internal" href="#contributors" id="toc-entry-9">Contributors</a></li>
+<li><a class="reference internal" href="#maintainers" id="toc-entry-10">Maintainers</a></li>
 </ul>
 </li>
 </ul>
@@ -403,13 +409,64 @@ Ensure yourself to have all them in your addons list.</p>
 <h2><a class="toc-backref" href="#toc-entry-2">Configuration</a></h2>
 <p>You will find the hotel settings in PMS Management &gt; Configuration &gt; Properties &gt; Your Property.</p>
 <p>This module required additional configuration for company, accounting, invoicing and user privileges.</p>
+<div class="section" id="derived-room-type-prices">
+<h3><a class="toc-backref" href="#toc-entry-3">Derived room type prices</a></h3>
+<p>A room type can take its price from another one, e.g. a Superior room costing
+10 more than the Double one, so that the pricelists only need the prices of
+the latter. Set it in the <em>Derived Price</em> section of the room type:</p>
+<ul class="simple">
+<li><em>Price Derived From</em>: the room type the price is taken from. It must be
+available in all the properties of the room type, and it can take its price
+from a third one in turn (e.g. Family = Superior + 20), up to ten levels.</li>
+<li><em>Price Variation Type</em> and <em>Price Variation</em>: a fixed amount, in the currency
+of the pricelist, or a percentage of the base price. Negative values lower
+it, and the price never goes below zero.</li>
+<li><em>Price Rounding</em>: the multiple the prices derived by a percentage are rounded
+to, e.g. 1 for whole amounts. Zero rounds them to the currency.</li>
+<li><em>Derive in Pricelists</em>: the pricelists the price is derived in. Leave it
+empty to derive it in all of them.</li>
+</ul>
+<p>Mind that a derived room type with no rule of its own in a pricelist it does
+not derive in gets its sales price there.</p>
+</div>
 </div>
 <div class="section" id="usage">
-<h2><a class="toc-backref" href="#toc-entry-3">Usage</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-4">Usage</a></h2>
 <p>To use this module, please, read the complete user guide at <a class="reference external" href="roomdoo.com">roomdoo.com</a>.</p>
+<div class="section" id="working-with-derived-room-type-prices">
+<h3><a class="toc-backref" href="#toc-entry-5">Working with derived room type prices</a></h3>
+<p>The price of a room type is only derived from its base room type on the days
+a pricelist has no rule of its own for it:</p>
+<ul class="simple">
+<li>An item of the derived room type in the pricelist sets its price on its
+dates: it overrides the derivation there, and the room type follows its base
+again once the item is removed.</li>
+<li>Rules on a product category or on all products cover the room type as well,
+so they win over the derivation. Keep them out of the pricelists the room
+types derive in.</li>
+<li>The base room type is priced by the same pricelist, with its own rules or
+derived in turn. With no rule at all, its sales price is the base.</li>
+<li>Pricelists based on another one through category or global rules (e.g. a
+channel rate 10% above the standard one) apply on top of the derived price.
+When they hold rules for the base room type only, the derived room type has
+no rule there either: its price is derived from the price of the base room
+type in that pricelist, which may not be what you want (e.g. a breakfast
+surcharge per guest of the base room type). Give those pricelists rules for
+the derived room types too, or use category or global rules there instead.</li>
+<li>The base price is computed for the date and the property of the stay only,
+not for the guests: modules pricing by occupancy apply their rules to the
+derived room type afterwards.</li>
+<li>Prices already set on reservations do not follow later changes of the base
+price: use <em>Update prices</em> on the reservation to recompute them.</li>
+<li>Massive changes on pricelists leave the derived room types out of the price
+changes when no room type is selected, so that they keep following their
+base, except on the dates they have a price of their own, which is kept.
+Select them explicitly to give them a price of their own.</li>
+</ul>
+</div>
 </div>
 <div class="section" id="bug-tracker">
-<h2><a class="toc-backref" href="#toc-entry-4">Bug Tracker</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-6">Bug Tracker</a></h2>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/OCA/pms/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
@@ -417,15 +474,15 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
-<h2><a class="toc-backref" href="#toc-entry-5">Credits</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-7">Credits</a></h2>
 <div class="section" id="authors">
-<h3><a class="toc-backref" href="#toc-entry-6">Authors</a></h3>
+<h3><a class="toc-backref" href="#toc-entry-8">Authors</a></h3>
 <ul class="simple">
 <li>Commit [Sun]</li>
 </ul>
 </div>
 <div class="section" id="contributors">
-<h3><a class="toc-backref" href="#toc-entry-7">Contributors</a></h3>
+<h3><a class="toc-backref" href="#toc-entry-9">Contributors</a></h3>
 <ul class="simple">
 <li>Alexandre Díaz</li>
 <li>Pablo Quesada</li>
@@ -442,7 +499,7 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 </ul>
 </div>
 <div class="section" id="maintainers">
-<h3><a class="toc-backref" href="#toc-entry-8">Maintainers</a></h3>
+<h3><a class="toc-backref" href="#toc-entry-10">Maintainers</a></h3>
 <p>This module is maintained by the OCA.</p>
 <a class="reference external image-reference" href="https://odoo-community.org">
 <img alt="Odoo Community Association" src="https://odoo-community.org/logo.png" />
