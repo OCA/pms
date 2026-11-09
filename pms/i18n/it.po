@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-11-06 14:46+0000\n"
+"PO-Revision-Date: 2026-11-09 13:46+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -1968,7 +1968,7 @@ msgstr "Una transazione non può essere collegata a fogli con valute diverse."
 #: code:addons/pms/models/pms_folio.py:0
 #, python-format
 msgid "A transaction can't be linked to folios having different partners."
-msgstr "Una transizione non può essere collegata a fogli con partner diversi."
+msgstr "Una transazione non può essere collegata a fogli con partner diversi."
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__aeat_anonymous_cash_customer
