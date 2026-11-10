@@ -6,13 +6,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2026-11-11 00:49+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. module: pms_l10n_es
 #: model:ir.actions.server,name:pms_l10n_es.autoprocess_sent_com_ir_actions_server
@@ -22,6 +24,9 @@ msgid ""
 "                SES Automatic Process Sent Communications\n"
 "            "
 msgstr ""
+"\n"
+"                Comunicazioni inviate dal processo automatico SES\n"
+"            "
 
 #. module: pms_l10n_es
 #: model:ir.actions.server,name:pms_l10n_es.autosend_incomplete_traveller_report_com_ir_actions_server
@@ -31,6 +36,9 @@ msgid ""
 "                SES Automatic Sending Incomplete Traveller Reports\n"
 "            "
 msgstr ""
+"\n"
+"                Invio automatico SES dei report viaggiatori incompleti\n"
+"            "
 
 #. module: pms_l10n_es
 #: model:ir.actions.server,name:pms_l10n_es.autosend_pending_reservation_com_ir_actions_server
@@ -40,6 +48,10 @@ msgid ""
 "                SES Automatic Sending Pending Reservation Communications\n"
 "            "
 msgstr ""
+"\n"
+"                Invio automatico SES delle comunicazioni di prenotazione in "
+"sospeso\n"
+"            "
 
 #. module: pms_l10n_es
 #: model:ir.actions.server,name:pms_l10n_es.autosend_pend_traveller_reports_com_ir_actions_server
@@ -50,6 +62,10 @@ msgid ""
 "Communications\n"
 "            "
 msgstr ""
+"\n"
+"                Invio automatico SES delle comunicazioni dei report "
+"viaggiatori in sospeso\n"
+"            "
 
 #. module: pms_l10n_es
 #. odoo-python
@@ -59,22 +75,25 @@ msgid ""
 "%(guests)s is of age, so the unaccompanied minors declaration of folio "
 "%(folio)s does not hold. Uncheck the declaration or review the birthdates."
 msgstr ""
+"%(guests)s è maggiorenne, quindi la dichiarazione di minori non accompagnati "
+"del folio %(folio)s non è valida. Deselezionare la dichiarazione o rivedere "
+"le date di nascita."
 
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_report_invoice_document
 msgid "<strong>Tourism Classification:</strong>"
-msgstr ""
+msgstr "<strong>Classificazione turistica:</strong>"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__ab
 msgid "Abuelo/a"
-msgstr ""
+msgstr "Nonno/a"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_folio__ses_all_guests_minors
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_reservation__ses_all_guests_minors
 msgid "All guests are minors"
-msgstr ""
+msgstr "Tutti gli ospiti sono minorenni"
 
 #. module: pms_l10n_es
 #. odoo-python
@@ -82,82 +101,85 @@ msgstr ""
 #, python-format
 msgid "All reservation rooms must have the same institution property id."
 msgstr ""
+"Tutte le camere della prenotazione devono avere lo stesso id struttura "
+"dell'istituzione."
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_folio__ses_minors_authorization
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_reservation__ses_minors_authorization
 msgid "Authorization signed by the legal guardian of the minors."
-msgstr ""
+msgstr "Autorizzazione firmata dal tutore legale dei minori."
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__batch_id
 msgid "Batch"
-msgstr ""
+msgstr "Lotto"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__ine_seats
 msgid "Beds available excluding extra beds"
-msgstr ""
+msgstr "Letti disponibili esclusi i letti aggiuntivi"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__ba
 msgid "Bisabuelo/a"
-msgstr ""
+msgstr "Bisnonno/a"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__bn
 msgid "Bisnieto/a"
-msgstr ""
+msgstr "Pronipote"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category__category
 msgid "Category"
-msgstr ""
+msgstr "Categoria"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification__code
 msgid "Code"
-msgstr ""
+msgstr "Codice"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_tourism_classification__code
 msgid "Code of the Spanish tourism classification."
-msgstr ""
+msgstr "Codice della classificazione turistica spagnola."
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__communication_id
 msgid "Communication"
-msgstr ""
+msgstr "Comunicazione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__communication_time
 msgid "Communication Time"
-msgstr ""
+msgstr "Ora comunicazione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__communication_id_to_cancel
 msgid "Communication to Cancel"
-msgstr ""
+msgstr "Comunicazione da annullare"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__communication_id_to_cancel
 msgid "Communication to cancel if this is a cancellation operation"
 msgstr ""
+"Comunicazione da annullare se si tratta di un'operazione di annullamento"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_reservation__ses_communication_ids
 msgid "Communications related to this reservation"
-msgstr ""
+msgstr "Comunicazioni relative a questa prenotazione"
 
 #. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_res_partner
 msgid "Contact"
-msgstr ""
+msgstr "Contatto"
 
 #. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_res_country_state
 msgid "Country state"
-msgstr ""
+msgstr "Provincia del paese"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category__create_uid
@@ -166,7 +188,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification__create_uid
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Creato da"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category__create_date
@@ -175,52 +197,52 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification__create_date
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Creato il"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__cd
 msgid "Cuñado/a"
-msgstr ""
+msgstr "Cognato/a"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__cy
 msgid "Cónyuge"
-msgstr ""
+msgstr "Coniuge"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_res_partner_id_number__support_number
 msgid "DNI support number"
-msgstr ""
+msgstr "Numero di supporto DNI"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__date_target
 msgid "Date"
-msgstr ""
+msgstr "Data"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__communication_time
 msgid "Date and time of the communication"
-msgstr ""
+msgstr "Data e ora della comunicazione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__query_status_time
 msgid "Date and time of the last state query"
-msgstr ""
+msgstr "Data e ora dell'ultima interrogazione di stato"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_ses_communication__operation__b
 msgid "Delete communication"
-msgstr ""
+msgstr "Elimina comunicazione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification__description
 msgid "Description"
-msgstr ""
+msgstr "Descrizione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_tourism_classification__description
 msgid "Description of the Spanish tourism classification."
-msgstr ""
+msgstr "Descrizione della classificazione turistica spagnola."
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category__display_name
@@ -229,23 +251,23 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification__display_name
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nome visualizzato"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__entity
 msgid "Entity"
-msgstr ""
+msgstr "Entità"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__entity
 msgid "Entity of the communication"
-msgstr ""
+msgstr "Entità della comunicazione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_reservation__error_create
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_traveller_report__error_create
 msgid "Error Creating"
-msgstr ""
+msgstr "Errore di creazione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_reservation__error_processing
@@ -253,7 +275,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_ses_communication__state__error_processing
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "Error Processing"
-msgstr ""
+msgstr "Errore di elaborazione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_reservation__error_sending
@@ -261,17 +283,17 @@ msgstr ""
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_ses_communication__state__error_sending
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "Error Sending"
-msgstr ""
+msgstr "Errore di invio"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_room__institution__ertxaintxa
 msgid "Ertxaintxa (soon)"
-msgstr ""
+msgstr "Ertxaintxa (prossimamente)"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__ine_eventual_staff
 msgid "Eventual Staff"
-msgstr ""
+msgstr "Personale occasionale"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_folio__ses_all_guests_minors
@@ -279,84 +301,85 @@ msgstr ""
 msgid ""
 "Every guest of the folio whose birthdate is known is under the age of "
 "majority."
-msgstr ""
+msgstr "Ogni ospite del folio di cui è nota la data di nascita è minorenne."
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__txt_binary
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__txt_binary
 msgid "File Download"
-msgstr ""
+msgstr "Download file"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__txt_message
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__txt_message
 msgid "File Preview"
-msgstr ""
+msgstr "Anteprima file"
 
 #. module: pms_l10n_es
 #: model:ir.actions.server,name:pms_l10n_es.pms_ses_communication_force_send_communication
 msgid "Force Send Communication"
-msgstr ""
+msgstr "Forza invio comunicazione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__start_date
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__date_from
 msgid "From"
-msgstr ""
+msgstr "Da"
 
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ine_wizard
 msgid "Generate INE XML"
-msgstr ""
+msgstr "Genera XML INE"
 
 #. module: pms_l10n_es
 #: model:ir.actions.act_window,name:pms_l10n_es.action_ine_report
 #: model:ir.ui.menu,name:pms_l10n_es.menu_ine
 msgid "Generate INE file"
-msgstr ""
+msgstr "Genera file INE"
 
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.traveller_report_wizard
 msgid "Generate file"
-msgstr ""
+msgstr "Genera file"
 
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "Group By"
-msgstr ""
+msgstr "Raggruppa per"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_folio__ses_minors_authorization
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_reservation__ses_minors_authorization
 msgid "Guardian authorization"
-msgstr ""
+msgstr "Autorizzazione tutore"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_folio__ses_minors_authorization_filename
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_reservation__ses_minors_authorization_filename
 msgid "Guardian authorization filename"
-msgstr ""
+msgstr "Nome file autorizzazione tutore"
 
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.view_property_form_pms_l10n_es
 msgid "Guest information sending settings"
-msgstr ""
+msgstr "Impostazioni invio informazioni ospiti"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__hr
 msgid "Hermano"
-msgstr ""
+msgstr "Fratello"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__hj
 msgid "Hijo/a"
-msgstr ""
+msgstr "Figlio/a"
 
 #. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_pms_ine_tourism_type_category
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__ine_category_id
 msgid "Hotel category in the Ministry of Tourism. Used for INE statistics."
 msgstr ""
+"Categoria dell'hotel nel Ministero del Turismo. Usata per le statistiche INE."
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category__id
@@ -365,27 +388,27 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification__id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__communication_id
 msgid "ID of the communication"
-msgstr ""
+msgstr "ID della comunicazione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_checkin_partner__support_number
 msgid "ID support number"
-msgstr ""
+msgstr "Numero di supporto ID"
 
 #. module: pms_l10n_es
 #: model:ir.actions.act_window,name:pms_l10n_es.open_pms_ine_tourism_category
 msgid "INE Categories"
-msgstr ""
+msgstr "Categorie INE"
 
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.view_property_form_pms_l10n_es
 msgid "INE Settings"
-msgstr ""
+msgstr "Impostazioni INE"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__ine_code
@@ -393,86 +416,86 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner__ine_code
 #: model:ir.model.fields,field_description:pms_l10n_es.field_res_users__ine_code
 msgid "INE State Code"
-msgstr ""
+msgstr "Codice provincia INE"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__institution_lessor_id
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_room__institution_lessor_id
 msgid "Id provided by institution to send data from lessor."
-msgstr ""
+msgstr "Id fornito dall'istituzione per inviare i dati dal locatore."
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__institution_property_id
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_room__institution_property_id
 msgid "Id provided by institution to send data from property."
-msgstr ""
+msgstr "Id fornito dall'istituzione per inviare i dati dalla struttura."
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__in_ine
 msgid "In Ine"
-msgstr ""
+msgstr "In INE"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_traveller_report__incomplete
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_ses_communication__state__incomplete
 msgid "Incomplete checkin data"
-msgstr ""
+msgstr "Dati check-in incompleti"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__institution_independent_account
 msgid "Independent account for institution (travel reports)"
-msgstr ""
+msgstr "Account indipendente per l'istituzione (report viaggiatori)"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__ine_category_id
 msgid "Ine Category"
-msgstr ""
+msgstr "Categoria INE"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__institution
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__institution
 msgid "Institution"
-msgstr ""
+msgstr "Istituzione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__institution_lessor_id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__institution_lessor_id
 msgid "Institution Lessor"
-msgstr ""
+msgstr "Locatore istituzione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__institution_password
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__institution_password
 msgid "Institution Password"
-msgstr ""
+msgstr "Password istituzione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__institution_property_id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__institution_property_id
 msgid "Institution Property"
-msgstr ""
+msgstr "Struttura istituzione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__institution_user
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__institution_user
 msgid "Institution User"
-msgstr ""
+msgstr "Utente istituzione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__institution
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_room__institution
 msgid "Institution to send daily guest data."
-msgstr ""
+msgstr "Istituzione a cui inviare i dati giornalieri degli ospiti."
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_reservation__is_ses
 msgid "Is SES"
-msgstr ""
+msgstr "È SES"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__is_ses
 msgid "Is Ses"
-msgstr ""
+msgstr "È SES"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category____last_update
@@ -481,7 +504,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification____last_update
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Ultima modifica il"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category__write_uid
@@ -490,7 +513,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification__write_uid
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Ultimo aggiornamento di"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category__write_date
@@ -499,123 +522,123 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification__write_date
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Ultimo aggiornamento il"
 
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "Log SES Communications"
-msgstr ""
+msgstr "Registra comunicazioni SES"
 
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_form
 msgid "Log institution traveller report detail"
-msgstr ""
+msgstr "Registra dettaglio report viaggiatori istituzione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_room__institution__mossos
 msgid "Mossos_d'esquadra (soon)"
-msgstr ""
+msgstr "Mossos_d'esquadra (prossimamente)"
 
 #. module: pms_l10n_es
 #: model:res.partner.id_category,name:pms_l10n_es.document_type_spanish_residence
 msgid "NIE"
-msgstr ""
+msgstr "NIE"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_tourism_classification__name
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_ses_communication__operation__a
 msgid "New communication"
-msgstr ""
+msgstr "Nuova comunicazione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__ni
 msgid "Nieto/a"
-msgstr ""
+msgstr "Nipote (di nonno)"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_reservation__not_applicable
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_traveller_report__not_applicable
 msgid "Not Applicable"
-msgstr ""
+msgstr "Non applicabile"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__processing_result
 msgid "Notification processing result"
-msgstr ""
+msgstr "Risultato elaborazione notifica"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__sending_result
 msgid "Notification sending result"
-msgstr ""
+msgstr "Risultato invio notifica"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__send_attempt_count
 msgid "Number of attempts to send the communication"
-msgstr ""
+msgstr "Numero di tentativi di invio della comunicazione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__operation
 msgid "Operation"
-msgstr ""
+msgstr "Operazione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__operation
 msgid "Operation of the communication"
-msgstr ""
+msgstr "Operazione della comunicazione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__ot
 msgid "Otro"
-msgstr ""
+msgstr "Altro"
 
 #. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_pms_folio
 msgid "PMS Folio"
-msgstr ""
+msgstr "Folio PMS"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__pm
 msgid "Padre o Madre"
-msgstr ""
+msgstr "Padre o madre"
 
 #. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_pms_checkin_partner
 msgid "Partner Checkins"
-msgstr ""
+msgstr "Check-in partner"
 
 #. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_res_partner_id_number
 msgid "Partner ID Number"
-msgstr ""
+msgstr "Numero ID partner"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__institution_password
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_room__institution_password
 msgid "Password provided by institution to send the data."
-msgstr ""
+msgstr "Password fornita dall'istituzione per inviare i dati."
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_reservation__to_send
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_traveller_report__to_send
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_ses_communication__state__to_send
 msgid "Pending Notification"
-msgstr ""
+msgstr "Notifica in sospeso"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_reservation__to_process
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_traveller_report__to_process
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_ses_communication__state__to_process
 msgid "Pending Processing"
-msgstr ""
+msgstr "Elaborazione in sospeso"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__ine_permanent_staff
 msgid "Permanent Staff"
-msgstr ""
+msgstr "Personale permanente"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_reservation__ses_status_reservation__processed
@@ -623,12 +646,12 @@ msgstr ""
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_ses_communication__state__processed
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "Processed"
-msgstr ""
+msgstr "Elaborato"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__processing_result
 msgid "Processing Result"
-msgstr ""
+msgstr "Risultato elaborazione"
 
 #. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_pms_property
@@ -637,97 +660,99 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__pms_property_id
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "Property"
-msgstr ""
+msgstr "Struttura"
 
 #. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_pms_room
 msgid "Property Room"
-msgstr ""
+msgstr "Camera della struttura"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__pms_property_id
 msgid "Property related to this communication"
-msgstr ""
+msgstr "Struttura relativa a questa comunicazione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__query_status_time
 msgid "Query Status Time"
-msgstr ""
+msgstr "Ora stato interrogazione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__adr
 msgid "Range ADR"
-msgstr ""
+msgstr "Intervallo ADR"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__revpar
 msgid "Range RevPAR"
-msgstr ""
+msgstr "Intervallo RevPAR"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__ine_tourism_number
 msgid ""
 "Registration number in the Ministry of Tourism. Used for INE statistics."
 msgstr ""
+"Numero di registrazione nel Ministero del Turismo. Usato per le statistiche "
+"INE."
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__ses_related_checkin_partner_id
 msgid "Related checkin partner"
-msgstr ""
+msgstr "Ospite del check-in correlato"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__report_type
 msgid "Report Type"
-msgstr ""
+msgstr "Tipo report"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_traveller_report_wizard__report_type
 msgid "Report type (reservation/traveller report)"
-msgstr ""
+msgstr "Tipo report (prenotazione/report viaggiatori)"
 
 #. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_pms_reservation
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__reservation_id
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_ses_communication__entity__rh
 msgid "Reservation"
-msgstr ""
+msgstr "Prenotazione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__reservation_id
 msgid "Reservation related to this communication"
-msgstr ""
+msgstr "Prenotazione relativa a questa comunicazione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__traveller_report_wizard__report_type__reservations
 msgid "Reservations Report"
-msgstr ""
+msgstr "Report prenotazioni"
 
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "Results"
-msgstr ""
+msgstr "Risultati"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__room_id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__room_id
 msgid "Room"
-msgstr ""
+msgstr "Camera"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__room_id
 msgid "Room related to this communication"
-msgstr ""
+msgstr "Camera relativa a questa comunicazione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_property__institution__ses
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_room__institution__ses
 msgid "SES"
-msgstr ""
+msgstr "SES"
 
 #. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_pms_ses_communication
 msgid "SES Communication"
-msgstr ""
+msgstr "Comunicazione SES"
 
 #. module: pms_l10n_es
 #: model:ir.actions.act_window,name:pms_l10n_es.open_pms_ses_communication_form_tree
@@ -735,62 +760,62 @@ msgstr ""
 #: model:ir.ui.menu,name:pms_l10n_es.menu_open_pms_ses_communication_form_tree
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.view_pms_reservation_from_pms_l110n_es
 msgid "SES Communications"
-msgstr ""
+msgstr "Comunicazioni SES"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_reservation__ses_status_reservation
 msgid "SES Status"
-msgstr ""
+msgstr "Stato SES"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_reservation__ses_status_traveller_report
 msgid "SES Status traveller"
-msgstr ""
+msgstr "Stato SES viaggiatore"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__communication_soap
 msgid "SOAP Com."
-msgstr ""
+msgstr "Com. SOAP"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__query_status_soap
 msgid "SOAP Query Status"
-msgstr ""
+msgstr "Stato interrogazione SOAP"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__response_communication_soap
 msgid "SOAP Resp. Com."
-msgstr ""
+msgstr "Com. risp. SOAP"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__response_query_status_soap
 msgid "SOAP Resp. Status"
-msgstr ""
+msgstr "Stato risp. SOAP"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__communication_soap
 msgid "SOAP content communication"
-msgstr ""
+msgstr "Comunicazione contenuto SOAP"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__query_status_soap
 msgid "SOAP query status content communication"
-msgstr ""
+msgstr "Comunicazione contenuto stato interrogazione SOAP"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__response_communication_soap
 msgid "SOAP response communication"
-msgstr ""
+msgstr "Comunicazione risposta SOAP"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__response_query_status_soap
 msgid "SOAP response status query"
-msgstr ""
+msgstr "Interrogazione stato risposta SOAP"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__send_attempt_count
 msgid "Send Attempt Count"
-msgstr ""
+msgstr "Numero tentativi di invio"
 
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ine_wizard
@@ -798,188 +823,190 @@ msgid ""
 "Send survey to Spanish National Institute of Statistics (INE)\n"
 "                                <i class=\"fa fa-signal\"/>"
 msgstr ""
+"Invia indagine all'Istituto Nazionale di Statistica spagnolo (INE)\n"
+"                                <i class=\"fa fa-signal\"/>"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__sending_result
 msgid "Sending Result"
-msgstr ""
+msgstr "Risultato invio"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__ses_partners_relationship
 msgid "Ses Partners Relationship"
-msgstr ""
+msgstr "Relazione partner SES"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__ses_url
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__ses_url
 msgid "Ses Url"
-msgstr ""
+msgstr "URL SES"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__sb
 msgid "Sobrino/a"
-msgstr ""
+msgstr "Nipote (di zio)"
 
 #. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_pms_tourism_classification
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__spanish_tourism_classification_id
 msgid "Spanish Tourism Classification"
-msgstr ""
+msgstr "Classificazione turistica spagnola"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__spanish_tourism_classification_id
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_tourism_classification__name
 msgid "Spanish tourism classification."
-msgstr ""
+msgstr "Classificazione turistica spagnola."
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__state
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "State"
-msgstr ""
+msgstr "Provincia"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__state
 msgid "State of the communication"
-msgstr ""
+msgstr "Stato della comunicazione"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_reservation__ses_status_reservation
 msgid "Status of the reservation in SES"
-msgstr ""
+msgstr "Stato della prenotazione in SES"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_reservation__ses_status_traveller_report
 msgid "Status of the traveller report in SES"
-msgstr ""
+msgstr "Stato del report viaggiatore in SES"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__sg
 msgid "Suegro/a"
-msgstr ""
+msgstr "Suocero/a"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__support_number
 #: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner_id_number__support_number
 msgid "Support number"
-msgstr ""
+msgstr "Numero di supporto"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_room__in_ine
 msgid "Take it into account to generate INE statistics"
-msgstr ""
+msgstr "Tenerne conto per generare le statistiche INE"
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The company VAT is not established."
-msgstr ""
+msgstr "La partita IVA dell'azienda non è impostata."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The company name is not established."
-msgstr ""
+msgstr "Il nome dell'azienda non è impostato."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The following guests have no residence country set :%s."
-msgstr ""
+msgstr "I seguenti ospiti non hanno il paese di residenza impostato: %s."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The following spanish guests have no state set :%s."
-msgstr ""
+msgstr "I seguenti ospiti spagnoli non hanno la provincia impostata: %s."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a birthdate."
-msgstr ""
+msgstr "L'ospite non ha una data di nascita."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a city."
-msgstr ""
+msgstr "L'ospite non ha una città."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a country."
-msgstr ""
+msgstr "L'ospite non ha un paese."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a document number."
-msgstr ""
+msgstr "L'ospite non ha un numero di documento."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a document type."
-msgstr ""
+msgstr "L'ospite non ha un tipo di documento."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a lastname."
-msgstr ""
+msgstr "L'ospite non ha un cognome."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a name."
-msgstr ""
+msgstr "L'ospite non ha un nome."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a second lastname."
-msgstr ""
+msgstr "L'ospite non ha un secondo cognome."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a street."
-msgstr ""
+msgstr "L'ospite non ha una via."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a support number."
-msgstr ""
+msgstr "L'ospite non ha un numero di supporto."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a valid zip code."
-msgstr ""
+msgstr "L'ospite non ha un CAP valido."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest does not have a zip code."
-msgstr ""
+msgstr "L'ospite non ha un CAP."
 
 #. module: pms_l10n_es
 #. odoo-python
@@ -987,6 +1014,8 @@ msgstr ""
 #, python-format
 msgid "The guest information sending settings is not property set up."
 msgstr ""
+"Le impostazioni di invio delle informazioni ospiti non sono configurate "
+"correttamente."
 
 #. module: pms_l10n_es
 #. odoo-python
@@ -996,6 +1025,8 @@ msgid ""
 "The guest/reservation partner and property does not have a contact method "
 "(mail or phone)"
 msgstr ""
+"Il partner della prenotazione/ospite e la struttura non hanno un metodo di "
+"contatto (email o telefono)"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_folio__ses_unaccompanied_minors
@@ -1005,6 +1036,9 @@ msgid ""
 "guardian. No relationship with an accompanying guest is required on their "
 "checkin data."
 msgstr ""
+"I minori viaggiano da soli con l'autorizzazione del proprio tutore legale. "
+"Non è richiesta alcuna relazione con un ospite accompagnatore nei dati del "
+"check-in."
 
 #. module: pms_l10n_es
 #. odoo-python
@@ -1014,104 +1048,106 @@ msgid ""
 "The number of seats, excluding extra beds ({num_rooms}) exceeds the number "
 "of seats established in the property ({ine_seats})"
 msgstr ""
+"Il numero di posti, esclusi i letti aggiuntivi ({num_rooms}) supera il "
+"numero di posti stabilito nella struttura ({ine_seats})"
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The property category is not established."
-msgstr ""
+msgstr "La categoria della struttura non è impostata."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The property city is not established."
-msgstr ""
+msgstr "La città della struttura non è impostata."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The property does not have an institution property id."
-msgstr ""
+msgstr "La struttura non ha un id struttura dell'istituzione."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The property name is not established."
-msgstr ""
+msgstr "Il nome della struttura non è impostato."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The property phone is not established."
-msgstr ""
+msgstr "Il telefono della struttura non è impostato."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The property state is not established."
-msgstr ""
+msgstr "La provincia della struttura non è impostata."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The property street is not established."
-msgstr ""
+msgstr "La via della struttura non è impostata."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The property tourism number is not established."
-msgstr ""
+msgstr "Il numero turistico della struttura non è impostato."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "The property zip is not established."
-msgstr ""
+msgstr "Il CAP della struttura non è impostato."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The reservation does not have a name."
-msgstr ""
+msgstr "La prenotazione non ha un nome."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The reservations must be from the same property."
-msgstr ""
+msgstr "Le prenotazioni devono appartenere alla stessa struttura."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/models/res_country_state.py:0
 #, python-format
 msgid "The state {state} of {country} must have an INE code"
-msgstr ""
+msgstr "La provincia {state} di {country} deve avere un codice INE"
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "There are no guests onboard."
-msgstr ""
+msgstr "Non ci sono ospiti a bordo."
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "There are some guests not onboard."
-msgstr ""
+msgstr "Ci sono alcuni ospiti non a bordo."
 
 #. module: pms_l10n_es
 #. odoo-python
@@ -1121,128 +1157,130 @@ msgid ""
 "There was't enough guests in the reservation when data was sent to SES. Sent "
 "to SES with onboard guests"
 msgstr ""
+"Non c'erano abbastanza ospiti nella prenotazione quando i dati sono stati "
+"inviati a SES. Inviato a SES con gli ospiti a bordo"
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "Theres's no reservation to generate the XML"
-msgstr ""
+msgstr "Non c'è alcuna prenotazione per generare l'XML"
 
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "This Month"
-msgstr ""
+msgstr "Questo mese"
 
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "This Week"
-msgstr ""
+msgstr "Questa settimana"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_room__institution_independent_account
 msgid "This room has an independent account"
-msgstr ""
+msgstr "Questa camera ha un account indipendente"
 
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "Times"
-msgstr ""
+msgstr "Orari"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__end_date
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__date_to
 msgid "To"
-msgstr ""
+msgstr "A"
 
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "To Process"
-msgstr ""
+msgstr "Da elaborare"
 
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "Today"
-msgstr ""
+msgstr "Oggi"
 
 #. module: pms_l10n_es
 #: model:ir.actions.act_window,name:pms_l10n_es.open_pms_tourism_classification
 #: model:ir.ui.menu,name:pms_l10n_es.menu_open_pms_tourism_classification_form_tree
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.view_property_form_pms_l10n_es
 msgid "Tourism Classification"
-msgstr ""
+msgstr "Classificazione turistica"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__ine_tourism_number
 msgid "Tourism number"
-msgstr ""
+msgstr "Numero turistico"
 
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.view_room_form_pms_l10n_es
 msgid "Travel record institution"
-msgstr ""
+msgstr "Istituzione registro viaggi"
 
 #. module: pms_l10n_es
 #: model:ir.actions.act_window,name:pms_l10n_es.action_traveller_report
 #: model:ir.model,name:pms_l10n_es.model_traveller_report_wizard
 #: model:ir.ui.menu,name:pms_l10n_es.menu_traveller_report
 msgid "Traveller Report"
-msgstr ""
+msgstr "Report viaggiatori"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_ses_communication__entity__pv
 msgid "Traveller report"
-msgstr ""
+msgstr "Report viaggiatore"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__traveller_report_wizard__report_type__travellers
 msgid "Travellers Report"
-msgstr ""
+msgstr "Report viaggiatori"
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "Travellers ReporttravellersReservations Report"
-msgstr ""
+msgstr "Report viaggiatori Report prenotazioni"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__tu
 msgid "Tutor/a"
-msgstr ""
+msgstr "Tutore/a"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__txt_filename
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__txt_filename
 msgid "Txt Filename"
-msgstr ""
+msgstr "Nome file txt"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category__type
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__ti
 msgid "Tío/a"
-msgstr ""
+msgstr "Zio/a"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__ses_url
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_room__ses_url
 msgid "URL to send the data to SES"
-msgstr ""
+msgstr "URL a cui inviare i dati a SES"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_folio__ses_unaccompanied_minors
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_reservation__ses_unaccompanied_minors
 msgid "Unaccompanied minors"
-msgstr ""
+msgstr "Minori non accompagnati"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__ine_unpaid_staff
 msgid "Unpaid Staff"
-msgstr ""
+msgstr "Personale non retribuito"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__ine_eventual_staff
@@ -1250,52 +1288,52 @@ msgstr ""
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__ine_seats
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__ine_unpaid_staff
 msgid "Used for INE statistics."
-msgstr ""
+msgstr "Usato per le statistiche INE."
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_property__institution_user
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_room__institution_user
 msgid "User provided by institution to send the data."
-msgstr ""
+msgstr "Utente fornito dall'istituzione per inviare i dati."
 
 #. module: pms_l10n_es
 #: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_ses_communication_view_search
 msgid "Wait checkins"
-msgstr ""
+msgstr "Attesa check-in"
 
 #. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_pms_ine_wizard
 msgid "Wizard to generate statistical info."
-msgstr ""
+msgstr "Procedura guidata per generare informazioni statistiche."
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__communication_xml
 msgid "XML Com."
-msgstr ""
+msgstr "Com. XML"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ses_communication__query_status_xml
 msgid "XML Query Status"
-msgstr ""
+msgstr "Stato interrogazione XML"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__communication_xml
 msgid "XML content communication"
-msgstr ""
+msgstr "Comunicazione contenuto XML"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_ses_communication__query_status_xml
 msgid "XML query status content communication"
-msgstr ""
+msgstr "Comunicazione contenuto stato interrogazione XML"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__ses_partners_relationship__yn
 msgid "Yerno o Nuera"
-msgstr ""
+msgstr "Genero o nuora"
 
 #. module: pms_l10n_es
 #. odoo-python
 #: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
 #, python-format
 msgid "{state_name} does not have the INE Code configured"
-msgstr ""
+msgstr "{state_name} non ha il codice INE configurato"
