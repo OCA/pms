@@ -101,6 +101,31 @@ class AccountPayment(models.Model):
                     }
                 )
 
+    def _realign_move_lines_partner(self):
+        """Keep the journal items of the payment aligned with its partner.
+
+        Odoo only rewrites the journal items of a payment when the payment
+        itself is written (_synchronize_to_moves), and the partner of a journal
+        item is never recomputed from its move. So a payment whose partner was
+        corrected by hand keeps its original partner on the journal items, and
+        the partner ledger reports it under the wrong partner forever.
+        """
+        for payment in self:
+            if not payment.partner_id:
+                continue
+            # partner_id is protected by the fiscal lock date: skip locked
+            # entries instead of breaking the reconciliation for the user.
+            lock_date = payment.company_id._get_user_fiscal_lock_date()
+            if payment.move_id.date and payment.move_id.date <= lock_date:
+                continue
+            liquidity_lines, counterpart_lines, dummy = payment._seek_for_lines()
+            partner = payment.partner_id
+            lines = (liquidity_lines + counterpart_lines).filtered(
+                lambda line, partner=partner: line.partner_id != partner
+            )
+            if lines:
+                lines.write({"partner_id": partner.id})
+
     def action_draft(self):
         for payment in self:
             if payment._check_has_downpayment_invoice(payment):
