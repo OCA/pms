@@ -1067,3 +1067,111 @@ class TestPmsService(TestPms):
             self.folio1.service_ids.mapped("sale_channel_origin_id"),
             "sale_channel_origin_id of that service mustn't be changed",
         )
+
+    def _create_agency_reservation(self, **agency_vals):
+        """Half board reservation of an agency that is always invoiced"""
+        sale_channel = self.env["pms.sale.channel"].create(
+            {"name": "Tour Operator", "channel_type": "indirect"}
+        )
+        agency = self.env["res.partner"].create(
+            {
+                "name": "Agency",
+                "is_agency": True,
+                "sale_channel_id": sale_channel.id,
+                "invoice_to_agency": "always",
+                **agency_vals,
+            }
+        )
+        board_service = self.env["pms.board.service"].create(
+            {
+                "name": "Half Board",
+                "default_code": "HB",
+                "pms_property_ids": [self.pms_property1.id],
+            }
+        )
+        self.env["pms.board.service.line"].create(
+            {
+                "product_id": self.env["product.product"].create({"name": "Dinner"}).id,
+                "pms_board_service_id": board_service.id,
+                "amount": 20,
+                "adults": True,
+            }
+        )
+        board_service_room_type = self.env["pms.board.service.room.type"].create(
+            {
+                "pms_room_type_id": self.room_type_double.id,
+                "pms_board_service_id": board_service.id,
+                "pms_property_id": self.pms_property1.id,
+            }
+        )
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=2),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "pricelist_id": self.pricelist1.id,
+                "agency_id": agency.id,
+                "sale_channel_origin_id": sale_channel.id,
+                "board_service_room_id": board_service_room_type.id,
+                "adults": 2,
+            }
+        )
+        return agency, reservation
+
+    def _create_extra_service(self, reservation):
+        return self.env["pms.service"].create(
+            {
+                "reservation_id": reservation.id,
+                "product_id": self.env["product.product"].create({"name": "Bar"}).id,
+                "is_board_service": False,
+            }
+        )
+
+    @freeze_time("2002-03-01")
+    def test_agency_invoiced_extras(self):
+        """
+        An agency that is always invoiced and also the extras is invoiced the
+        extra services added to the reservation.
+        """
+        # ARRANGE
+        agency, reservation = self._create_agency_reservation(
+            invoice_extras_to_agency=True
+        )
+        # ACT
+        extra = self._create_extra_service(reservation)
+        # ASSERT
+        self.assertEqual(
+            extra.default_invoice_to,
+            agency,
+            "The extra service must be invoiced to the agency",
+        )
+
+    @freeze_time("2002-03-01")
+    def test_agency_only_invoiced_the_stay_by_default(self):
+        """
+        An agency that is always invoiced is invoiced by default the nights
+        and the board services, while the extras added to the reservation
+        are left to the guest, also in the folio sale lines.
+        """
+        # ARRANGE
+        agency, reservation = self._create_agency_reservation()
+        # ACT
+        extra = self._create_extra_service(reservation)
+        # ASSERT
+        sale_lines = reservation.folio_id.sale_line_ids.filtered(
+            lambda line: not line.display_type
+        )
+        extra_lines = sale_lines.filtered(lambda line: line.service_id == extra)
+        self.assertTrue(extra_lines)
+        self.assertTrue(sale_lines.filtered("is_board_service"))
+        self.assertFalse(
+            extra_lines.default_invoice_to,
+            "The extra service must be invoiced to the guest",
+        )
+        self.assertEqual(
+            (sale_lines - extra_lines).default_invoice_to,
+            agency,
+            "The nights and the board services must be invoiced to the agency",
+        )
