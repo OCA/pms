@@ -41,6 +41,34 @@
                             <field name="categ_id" />
                         </group>
                     </group>
+                    <group name="price_derivation_group" string="Derived Price">
+                        <group>
+                            <field
+                                name="price_base_room_type_id"
+                                options="{'no_create': True}"
+                            />
+                            <field
+                                name="price_derivation_type"
+                                attrs="{'invisible': [('price_base_room_type_id', '=', False)]}"
+                            />
+                            <field
+                                name="price_derivation_value"
+                                attrs="{'invisible': [('price_base_room_type_id', '=', False)]}"
+                            />
+                            <field
+                                name="price_derivation_rounding"
+                                attrs="{'invisible': ['|', ('price_base_room_type_id', '=', False), ('price_derivation_type', '!=', 'percent')]}"
+                            />
+                        </group>
+                        <group>
+                            <field
+                                name="price_derivation_pricelist_ids"
+                                widget="many2many_tags"
+                                options="{'no_create': True}"
+                                attrs="{'invisible': [('price_base_room_type_id', '=', False)]}"
+                            />
+                        </group>
+                    </group>
                     <notebook>
                         <page string="Board Services">
                             <separator string="Board Services" />
@@ -91,6 +119,7 @@
                 <field name="name" />
                 <field name="default_code" />
                 <field name="list_price" />
+                <field name="price_base_room_type_id" optional="hide" />
                 <field name="room_ids" widget="many2many_tags" />
                 <field name="total_rooms_count" />
             </tree>

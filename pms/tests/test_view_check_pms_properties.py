@@ -30,6 +30,7 @@ class TestViewCheckPmsProperties(common.TransactionCase):
         "pms.product_pricelist_item_view_form",
         "pms.product_template_view_form",
         "pms.res_partner_view_form",
+        "pms.pms_room_type_view_form",
     ]
 
     def test_views_validate_with_injected_property_domain(self):
