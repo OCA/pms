@@ -319,7 +319,7 @@
                             <field name="pms_property_id" />
                             <field
                                 name="pricelist_id"
-                                attrs="{'invisible': [('reservation_type', 'not in', 'normal')]}"
+                                attrs="{'invisible': [('reservation_type', '=', 'out')]}"
                             />
                             <field name="company_id" options="{'no_create': True}" />
                             <field
@@ -328,7 +328,7 @@
                             />
                             <field
                                 name="agency_id"
-                                attrs="{'invisible': [('reservation_type', 'not in', 'normal')]}"
+                                attrs="{'invisible': [('reservation_type', '=', 'out')]}"
                             />
                             <field name="sale_channel_origin_id" />
                             <field
@@ -355,7 +355,7 @@
                     <notebook colspan="4" col="1">
                         <page
                             string="Sale Lines"
-                            attrs="{'invisible':[('reservation_type', '!=', 'normal')]}"
+                            attrs="{'invisible':[('reservation_type', '=', 'out')]}"
                         >
                             <field
                                 name="sale_line_ids"
