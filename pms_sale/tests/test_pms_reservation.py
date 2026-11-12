@@ -1,5 +1,6 @@
 # Copyright (c) 2022 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from odoo.exceptions import ValidationError
 from odoo.tests.common import TransactionCase
 
 
@@ -77,6 +78,20 @@ class TestPMSReservation(TransactionCase):
 
     def test_check_no_of_nights(self):
         self.reservation._check_no_of_nights()
+
+    def test_check_no_of_nights_rejects_stay_below_minimum(self):
+        self.property.write({"min_nights": 2, "max_nights": 30})
+        with self.assertRaises(ValidationError):
+            self.reservation.write({"duration": 1})
+
+    def test_check_no_of_nights_rejects_fixed_length_stay_below_required(self):
+        self.property.write({"min_nights": 5, "max_nights": 5})
+        with self.assertRaises(ValidationError):
+            self.reservation.write({"duration": 3})
+
+    def test_check_no_of_nights_accepts_unconfigured_property(self):
+        self.property.write({"min_nights": 0, "max_nights": 0})
+        self.reservation.write({"duration": 2})
 
     def test_action_book(self):
         self.reservation.action_book()
