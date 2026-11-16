@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo noupdate="1">
     <record id="demo_tag_residential" model="pms.tag">
         <field name="name">Residential</field>

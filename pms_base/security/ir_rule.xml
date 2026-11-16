@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <!-- Multi-Company Rule -->
     <record id="pms_property_rule" model="ir.rule">

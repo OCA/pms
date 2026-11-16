@@ -1,12 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo noupdate="0">
     <!-- Module category for Settings app grouping -->
-    <record model="ir.module.category" id="module_category_property_management">
+    <record id="module_category_property_management" model="ir.module.category">
         <field name="name">Property Management</field>
-        <field name="sequence">100</field>
+        <field name="sequence" eval="100" />
     </record>
 
     <!-- Privilege: groups the User and Manager groups under one privilege entry -->
-    <record model="res.groups.privilege" id="res_groups_privilege_property_management">
+    <record id="res_groups_privilege_property_management" model="res.groups.privilege">
         <field name="name">Property Management System</field>
         <field name="category_id" ref="module_category_property_management" />
     </record>
@@ -14,7 +15,7 @@
     <!-- Group: PMS User -->
     <record id="group_pms_user" model="res.groups">
         <field name="name">User</field>
-        <field name="sequence">10</field>
+        <field name="sequence" eval="10" />
         <field name="privilege_id" ref="res_groups_privilege_property_management" />
         <field name="implied_by_ids" eval="[Command.link(ref('base.group_user'))]" />
     </record>
@@ -22,7 +23,7 @@
     <!-- Group: PMS Manager -->
     <record id="group_pms_manager" model="res.groups">
         <field name="name">Manager</field>
-        <field name="sequence">20</field>
+        <field name="sequence" eval="20" />
         <field name="privilege_id" ref="res_groups_privilege_property_management" />
         <field
             name="implied_ids"

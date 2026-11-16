@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record model="ir.ui.view" id="view_pms_room_form">
+    <record id="view_pms_room_form" model="ir.ui.view">
         <field name="name">pms.room.form</field>
         <field name="model">pms.room</field>
         <field name="arch" type="xml">
@@ -44,7 +45,7 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="view_pms_room_search">
+    <record id="view_pms_room_search" model="ir.ui.view">
         <field name="name">pms.room.search</field>
         <field name="model">pms.room</field>
         <field name="arch" type="xml">
@@ -71,7 +72,7 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="view_pms_room_tree">
+    <record id="view_pms_room_tree" model="ir.ui.view">
         <field name="name">pms.room.tree</field>
         <field name="model">pms.room</field>
         <field name="arch" type="xml">
@@ -86,7 +87,7 @@
         </field>
     </record>
 
-    <record model="ir.actions.act_window" id="action_pms_room">
+    <record id="action_pms_room" model="ir.actions.act_window">
         <field name="name">Rooms</field>
         <field name="res_model">pms.room</field>
         <field name="view_id" ref="view_pms_room_tree" />
