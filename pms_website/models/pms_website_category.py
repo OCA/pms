@@ -5,7 +5,11 @@ from odoo import api, fields, models
 
 class PMSWebsiteCategory(models.Model):
     _name = "pms.website.category"
-    _inherit = ["website.seo.metadata", "website.multi.mixin", "image.mixin"]
+    _inherit = [  # noqa: RUF012
+        "website.seo.metadata",
+        "website.multi.mixin",
+        "image.mixin",
+    ]
     _description = "Website Property Category"
     _parent_store = True
     _order = "name, id"

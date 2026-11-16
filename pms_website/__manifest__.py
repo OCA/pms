@@ -3,11 +3,12 @@
 {
     "name": "PMS - Website",
     "summary": "Publish properties on the website",
-    "version": "19.0.1.1.0",
+    "version": "20.0.1.0.0",
     "development_status": "Beta",
     "category": "Generic Modules/Property Management System",
     "website": "https://github.com/OCA/pms",
     "author": "Gray Matter Logic, Odoo Community Association (OCA)",
+    "maintainers": ["max3903"],
     "license": "AGPL-3",
     "depends": ["pms_base", "website"],
     "demo": [
@@ -16,12 +17,12 @@
         "demo/pms_property.xml",
     ],
     "data": [
-        "security/ir.model.access.csv",
         "data/rule.xml",
         "views/website_menu.xml",
         "views/pms_property_template.xml",
         "views/pms_property.xml",
         "views/pms_amenity_views.xml",
         "views/pms_website_category_views.xml",
+        "security/ir.access.csv",
     ],
 }

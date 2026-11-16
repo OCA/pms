@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <template id="property" name="Property" track="1">
-        <t t-call="website.layout">
-            <t t-set="additional_title" t-value="property.name" />
+        <t t-call="website.layout" additional_title="property.name">
             <div
                 id="oe_structure_website_sale_property_1"
                 class="oe_structure oe_empty"
@@ -78,12 +77,12 @@
                                     target="_BLANK"
                                     class="text-decoration-none"
                                 >
-                                    <i class="fa fa-map-marker me-1" />
+                                    <i class="oi me-1" data-icon="location_on" />
                                     <span t-field="property.city" />
                                 </a>
                             </h4>
                             <h5 t-if="property.parent_id" class="mt-2 text-muted">
-                                <i class="fa fa-building me-1" />
+                                <i class="oi me-1" data-icon="business" />
                                 <span
                                     itemprop="parent_name"
                                     t-field="property.parent_id"
@@ -104,7 +103,7 @@
                             <div
                                 class="d-flex align-items-center p-3 border rounded h-100"
                             >
-                                <i class="fa fa-bed fa-2x text-muted me-3" />
+                                <i class="oi oi-2x text-muted me-3" data-icon="bed" />
                                 <div>
                                     <div
                                         class="fs-4 fw-bold"
@@ -121,7 +120,10 @@
                             <div
                                 class="d-flex align-items-center p-3 border rounded h-100"
                             >
-                                <i class="fa fa-bath fa-2x text-muted me-3" />
+                                <i
+                                    class="oi oi-2x text-muted me-3"
+                                    data-icon="bathtub"
+                                />
                                 <div>
                                     <div
                                         class="fs-4 fw-bold"
@@ -135,7 +137,7 @@
                             <div
                                 class="d-flex align-items-center p-3 border rounded h-100"
                             >
-                                <i class="fa fa-home fa-2x text-muted me-3" />
+                                <i class="oi oi-2x text-muted me-3" data-icon="home" />
                                 <div>
                                     <div class="fs-4 fw-bold">
                                         <span t-field="property.area" />
@@ -159,7 +161,8 @@
                                             class="d-flex align-items-center p-3 border rounded h-100"
                                         >
                                             <i
-                                                t-attf-class="fa {{service.icon or 'fa-check'}} fa-lg text-muted me-3"
+                                                t-attf-class="oi {{service.icon or ''}} oi-lg text-muted me-3"
+                                                t-attf-data-icon="{{service.icon or 'check'}}"
                                             />
                                             <span t-out="service.name.name" />
                                         </div>
@@ -177,7 +180,7 @@
                                 class="sc-bBHxTw ljStsE list-group-item d-flex p-0  my-2 border-0"
                             >
                                 <div class="pt-0 pr-3">
-                                    <span class="fa fa-car" />
+                                    <span class="oi" data-icon="directions_car" />
                                 </div>
                                 <div class="flex-grow-1">
                                     <div class="mb-1">
@@ -212,7 +215,7 @@
                                     class="list-group-item d-flex p-0 col col-sm-6 col-md-4 p-3 my-2 border-0"
                                 >
                                     <div class="pt-0 pe-3">
-                                        <i class="fa fa-clock-o fa-lg" />
+                                        <i class="oi oi-lg" data-icon="schedule" />
                                     </div>
                                     <div class="flex-grow-1">
                                         <div class="mb-1">
@@ -232,7 +235,7 @@
                                     class="list-group-item d-flex p-0 col col-sm-6 col-md-4 p-3 my-2 border-0"
                                 >
                                     <div class="pt-0 pe-3">
-                                        <i class="fa fa-check-square-o fa-lg" />
+                                        <i class="oi oi-lg" data-icon="check_box" />
                                     </div>
                                     <div class="flex-grow-1">
                                         <div class="mb-1">
@@ -244,13 +247,19 @@
                                             <div class="d-flex justify-content-between">
                                                 <div>
                                                     <t t-if="property.pets">
-                                                        <span class="fa fa-circle-o" />
+                                                        <span
+                                                            class="oi"
+                                                            data-icon="circle"
+                                                        />
                                                         <span
                                                             class="normal"
                                                         >Pet-friendly apartments.</span>
                                                     </t>
                                                     <t t-elif="property.pets== False">
-                                                        <span class="fa fa-circle-o" />
+                                                        <span
+                                                            class="oi"
+                                                            data-icon="circle"
+                                                        />
                                                         <span
                                                             class="normal"
                                                         >Pets Are  Not Allowed.</span>
@@ -265,7 +274,7 @@
                                     class="list-group-item d-flex p-0 col col-sm-6 col-md-4 p-3 my-2 border-0"
                                 >
                                     <div class="pt-0 pe-3">
-                                        <i class="fa fa-times-circle-o fa-lg" />
+                                        <i class="oi oi-lg" data-icon="cancel" />
                                     </div>
                                     <div class="flex-grow-1">
                                         <div class="mb-1">
@@ -314,7 +323,10 @@
                                 <div
                                     class="d-flex align-items-center p-3 border rounded h-100"
                                 >
-                                    <i class="fa fa-check-circle text-success me-3" />
+                                    <i
+                                        class="oi oi-filled text-success me-3"
+                                        data-icon="check_circle"
+                                    />
                                     <span t-out="amenity.name" />
                                 </div>
                             </div>
@@ -376,7 +388,8 @@
                                                 class="d-flex align-items-center p-3 border rounded h-100"
                                             >
                                                 <i
-                                                    class="fa fa-check-circle text-success me-3"
+                                                    class="oi oi-filled text-success me-3"
+                                                    data-icon="check_circle"
                                                 />
                                                 <span t-out="amenity.name" />
                                             </div>
@@ -396,8 +409,7 @@
     </template>
 
     <template id="properties" name="Properties">
-        <t t-call="website.layout">
-            <t t-set="additional_title">Properties</t>
+        <t t-call="website.layout" additional_title.translate="Properties">
             <div id="wrap">
                 <section class="container py-5">
                     <div class="row mb-4">
@@ -548,7 +560,10 @@
                                                 t-if="property.city"
                                                 class="card-text text-muted mb-2"
                                             >
-                                                <i class="fa fa-map-marker me-1" />
+                                                <i
+                                                    class="oi me-1"
+                                                    data-icon="location_on"
+                                                />
                                                 <span t-field="property.city" />
                                             </p>
                                             <div
@@ -557,13 +572,19 @@
                                                 <span
                                                     t-if="show_rooms and property.qty_bedroom"
                                                 >
-                                                    <i class="fa fa-bed me-1" />
+                                                    <i
+                                                    class="oi me-1"
+                                                    data-icon="bed"
+                                                />
                                                     <t
                                                     t-out="property.qty_bedroom"
                                                 /> bedrooms
                                                 </span>
                                                 <span t-if="property.area">
-                                                    <i class="fa fa-home me-1" />
+                                                    <i
+                                                    class="oi me-1"
+                                                    data-icon="home"
+                                                />
                                                     <span t-field="property.area" />
                                                     m²
                                                 </span>

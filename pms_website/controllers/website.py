@@ -28,7 +28,7 @@ class Website(Website):
         return Domain.AND(
             [
                 [("is_published", "=", True)],
-                request.website.website_domain(),
+                request.env.website.website_domain(),
             ]
         )
 
@@ -90,7 +90,7 @@ class Website(Website):
             }.items()
             if value
         }
-        pager = request.website.pager(
+        pager = request.env.website.pager(
             url="/properties",
             url_args=url_args,
             total=properties_count,
@@ -150,7 +150,7 @@ class Website(Website):
         sitemap=True,
     )
     def product(self, pms_property, category="", search="", **kwargs):
-        if not pms_property.can_access_from_current_website():
+        if pms_property.website_id and pms_property.website_id != request.env.website:
             raise NotFound()
         return request.render(
             "pms_website.property",

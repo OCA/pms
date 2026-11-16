@@ -9,9 +9,9 @@
         <value eval="{'noupdate': False}" />
     </function>
 
-    <record id="base.res_partner_portal_public_rule" model="ir.rule">
+    <record id="base.res_partner_portal_public_rule" model="ir.access">
         <field
-            name="domain_force"
+            name="domain"
         >['|', ('id', 'child_of', user.commercial_partner_id.id), ('is_property', '=', True)]</field>
     </record>
 </odoo>

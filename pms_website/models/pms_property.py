@@ -8,7 +8,11 @@ from odoo.tools.translate import html_translate
 
 class PmsProperty(models.Model):
     _name = "pms.property"
-    _inherit = ["pms.property", "website.published.mixin", "website.multi.mixin"]
+    _inherit = [  # noqa: RUF012
+        "pms.property",
+        "website.published.mixin",
+        "website.multi.mixin",
+    ]
 
     def _compute_website_url(self):
         for pms_property in self:
@@ -18,12 +22,17 @@ class PmsProperty(models.Model):
                 )
 
     def google_map_link(self):
-        property_partner = self.sudo().partner_id
-        property_partner.geo_localize()
+        self.ensure_one()
+        property_partner_id = self.sudo().partner_id
+        if not (
+            property_partner_id.partner_latitude
+            and property_partner_id.partner_longitude
+        ):
+            property_partner_id.geo_localize()
         params = {
             "q": (
-                f"{property_partner.partner_latitude}"
-                f", {property_partner.partner_longitude}"
+                f"{property_partner_id.partner_latitude}"
+                f", {property_partner_id.partner_longitude}"
             ),
             "z": 10,
         }

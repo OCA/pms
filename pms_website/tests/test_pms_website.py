@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, patch
 from werkzeug.exceptions import NotFound
 
 from odoo.exceptions import UserError
+from odoo.fields import Command
 from odoo.tests.common import HttpCase
 
 from odoo.addons.pms_base.tests.common import PmsBaseCase
@@ -45,6 +46,23 @@ class TestPmsWebsite(PmsBaseCase):
         self.assertIn("maps.google.com", link)
         self.assertIn("33.0", link)
 
+    def test_property_google_map_link_skips_geocoding_with_coordinates(self):
+        with patch.object(
+            type(self.property.partner_id), "geo_localize"
+        ) as geo_localize:
+            self.property.google_map_link()
+        geo_localize.assert_not_called()
+
+    def test_property_google_map_link_geocodes_without_coordinates(self):
+        self.property.partner_id.write(
+            {"partner_latitude": 0.0, "partner_longitude": 0.0}
+        )
+        with patch.object(
+            type(self.property.partner_id), "geo_localize"
+        ) as geo_localize:
+            self.property.google_map_link()
+        geo_localize.assert_called_once_with()
+
     def test_amenity_is_main_amenity(self):
         amenity = self.env["pms.amenity"].create({"name": "WiFi"})
         self.assertFalse(amenity.is_main_amenity)
@@ -71,9 +89,11 @@ class TestPmsWebsite(PmsBaseCase):
 
     def test_website_category_check_parent_id_cycle(self):
         category = self.env["pms.website.category"].create({"name": "Cat"})
-        with patch.object(type(category), "_has_cycle", return_value=True):
-            with self.assertRaises(ValueError):
-                category.check_parent_id()
+        with (
+            patch.object(type(category), "_has_cycle", return_value=True),
+            self.assertRaises(ValueError),
+        ):
+            category.check_parent_id()
 
     def test_website_category_recursion(self):
         parent = self.env["pms.website.category"].create({"name": "Root"})
@@ -128,17 +148,9 @@ class TestPmsWebsiteController(PmsBaseCase):
     @contextmanager
     def _mock_request(self, website_module, render=False):
         mock_request = MagicMock()
-        mock_request.env = self.env
-        mock_website = MagicMock()
-        mock_website.website_domain.return_value = [
-            ("website_id", "in", (False, self.website.id))
-        ]
-        mock_website.pager.return_value = {
-            "page_count": 1,
-            "offset": 0,
-            "page": {"num": 0},
-        }
-        mock_request.website = mock_website
+        mock_request.env = self.env(
+            context=dict(self.env.context, website_id=self.website.id)
+        )
         if render:
             mock_response = MagicMock()
             mock_response.status_code = 200
@@ -168,11 +180,11 @@ class TestPmsWebsiteController(PmsBaseCase):
         controller = Website()
         user_group = self.env.ref("base.group_user")
         room_group = self.env.ref("pms_base.group_pms_show_room")
-        user_group.write({"implied_ids": [(4, room_group.id)]})
+        user_group.write({"implied_ids": [Command.link(room_group.id)]})
         with self._mock_request(website_module):
             flags = controller._get_pms_display_flags()
         self.assertTrue(flags["show_rooms"])
-        user_group.write({"implied_ids": [(3, room_group.id)]})
+        user_group.write({"implied_ids": [Command.unlink(room_group.id)]})
         with self._mock_request(website_module):
             flags = controller._get_pms_display_flags()
         self.assertFalse(flags["show_rooms"])
@@ -187,8 +199,8 @@ class TestPmsWebsiteController(PmsBaseCase):
         user_group.write(
             {
                 "implied_ids": [
-                    (4, amenity_group.id),
-                    (4, service_group.id),
+                    Command.link(amenity_group.id),
+                    Command.link(service_group.id),
                 ]
             }
         )
@@ -239,8 +251,8 @@ class TestPmsWebsiteController(PmsBaseCase):
         tag = self.env["pms.tag"].create({"name": "Vacation"})
         self.property.write(
             {
-                "property_category_ids": [(4, category.id)],
-                "tag_ids": [(4, tag.id)],
+                "property_category_ids": [Command.link(category.id)],
+                "tag_ids": [Command.link(tag.id)],
             }
         )
         self.env["pms.room"].create(
@@ -279,51 +291,46 @@ class TestPmsWebsiteController(PmsBaseCase):
         self.assertEqual(options["bedrooms"], [])
 
     def test_product_page_not_found(self):
+        from ..controllers import website as website_module
+
         controller = Website()
-        with (
-            patch.object(
-                type(self.property),
-                "can_access_from_current_website",
-                return_value=False,
-            ),
-            self.assertRaises(NotFound),
-        ):
+        self.property.website_id = self.env["website"].create({"name": "Other"})
+        with self._mock_request(website_module), self.assertRaises(NotFound):
             controller.product(self.property)
 
     def test_product_page_render(self):
         from ..controllers import website as website_module
 
         controller = Website()
-        with patch("odoo.http.Response.load", lambda result: result):
-            with self._mock_request(website_module, render=True) as mock_request:
-                with patch.object(
-                    type(self.property),
-                    "can_access_from_current_website",
-                    return_value=True,
-                ):
-                    result = controller.product(
-                        self.property, category="category", search="search"
-                    )
-                mock_request.render.assert_called_once()
-                args, _kwargs = mock_request.render.call_args
-                self.assertEqual(args[0], "pms_website.property")
-                self.assertEqual(args[1]["property"], self.property)
-                self.assertEqual(result.status_code, 200)
-                self.assertEqual(result.get_data(), b"page")
+        with (
+            patch("odoo.http.Response.load", lambda result: result),
+            self._mock_request(website_module, render=True) as mock_request,
+        ):
+            result = controller.product(
+                self.property, category="category", search="search"
+            )
+            mock_request.render.assert_called_once()
+            args, _kwargs = mock_request.render.call_args
+            self.assertEqual(args[0], "pms_website.property")
+            self.assertEqual(args[1]["property"], self.property)
+            self.assertEqual(result.status_code, 200)
+            self.assertEqual(result.get_data(), b"page")
 
     def test_properties_list_render(self):
         from ..controllers import website as website_module
 
         controller = Website()
-        with patch("odoo.http.Response.load", lambda result: result):
-            with self._mock_request(website_module, render=True) as mock_request:
-                result = controller.properties()
-                mock_request.render.assert_called_once()
-                args, _kwargs = mock_request.render.call_args
-                self.assertEqual(args[0], "pms_website.properties")
-                self.assertIn(self.property, args[1]["properties"])
-                self.assertIn("cities", args[1])
-                self.assertEqual(result.status_code, 200)
+        with (
+            patch("odoo.http.Response.load", lambda result: result),
+            self._mock_request(website_module, render=True) as mock_request,
+        ):
+            result = controller.properties()
+            mock_request.render.assert_called_once()
+            args, _kwargs = mock_request.render.call_args
+            self.assertEqual(args[0], "pms_website.properties")
+            self.assertIn(self.property, args[1]["properties"])
+            self.assertIn("cities", args[1])
+            self.assertEqual(result.status_code, 200)
 
     def test_properties_filter_by_city(self):
         from ..controllers import website as website_module
@@ -340,9 +347,8 @@ class TestPmsWebsiteController(PmsBaseCase):
         from ..controllers import website as website_module
 
         user_group = self.env.ref("base.group_user")
-        user_group.write(
-            {"implied_ids": [(4, self.env.ref("pms_base.group_pms_show_room").id)]}
-        )
+        room_group = self.env.ref("pms_base.group_pms_show_room")
+        user_group.write({"implied_ids": [Command.link(room_group.id)]})
         self.env["pms.room"].create(
             {
                 "name": "Extra Bedroom",
@@ -371,7 +377,7 @@ class TestPmsWebsiteController(PmsBaseCase):
                 "team_id": self.team.id,
                 "website_id": self.website.id,
                 "is_published": True,
-                "property_category_ids": [(4, other_category.id)],
+                "property_category_ids": [Command.link(other_category.id)],
             }
         )
         controller = Website()
@@ -395,7 +401,7 @@ class TestPmsWebsiteController(PmsBaseCase):
                 "team_id": self.team.id,
                 "website_id": self.website.id,
                 "is_published": True,
-                "tag_ids": [(4, other_tag.id)],
+                "tag_ids": [Command.link(other_tag.id)],
             }
         )
         controller = Website()
@@ -418,9 +424,8 @@ class TestPmsWebsiteController(PmsBaseCase):
         from ..controllers import website as website_module
 
         user_group = self.env.ref("base.group_user")
-        user_group.write(
-            {"implied_ids": [(3, self.env.ref("pms_base.group_pms_show_room").id)]}
-        )
+        room_group = self.env.ref("pms_base.group_pms_show_room")
+        user_group.write({"implied_ids": [Command.unlink(room_group.id)]})
         self.env["pms.room"].create(
             {
                 "name": "Bedroom",
@@ -441,7 +446,7 @@ class TestPmsWebsiteHttp(HttpCase):
         super().setUpClass()
         cls.owner = cls.env["res.partner"].create({"name": "Test Owner"})
         cls.team = cls.env.ref("pms_base.pms_team_default")
-        cls.website = cls.env.ref("website.default_website")
+        cls.website = cls.env.ref("base.default_website")
         cls.vendor = cls.env["res.partner"].create({"name": "Test Vendor"})
         cls.service_product = cls.env["product.product"].create(
             {"name": "Internet", "type": "service"}
@@ -459,9 +464,9 @@ class TestPmsWebsiteHttp(HttpCase):
         cls.env.ref("base.group_user").write(
             {
                 "implied_ids": [
-                    (4, cls.env.ref("pms_base.group_pms_show_room").id),
-                    (4, cls.env.ref("pms_base.group_pms_show_amenity").id),
-                    (4, cls.env.ref("pms_base.group_pms_show_service").id),
+                    Command.link(cls.env.ref("pms_base.group_pms_show_room").id),
+                    Command.link(cls.env.ref("pms_base.group_pms_show_amenity").id),
+                    Command.link(cls.env.ref("pms_base.group_pms_show_service").id),
                 ]
             }
         )
@@ -521,7 +526,7 @@ class TestPmsWebsiteHttp(HttpCase):
         user_group.write(
             {
                 "implied_ids": [
-                    (4, self.env.ref("pms_base.group_pms_show_amenity").id),
+                    Command.link(self.env.ref("pms_base.group_pms_show_amenity").id),
                     (
                         3,
                         self.env.ref("pms_base.group_pms_show_service").id,
@@ -542,7 +547,7 @@ class TestPmsWebsiteHttp(HttpCase):
                 "name": self.service_product.id,
                 "property_id": property_rec.id,
                 "vendor_id": self.vendor.id,
-                "icon": "fa-wifi",
+                "icon": "wifi",
             }
         )
         self.env["pms.room"].create(
@@ -573,7 +578,7 @@ class TestPmsWebsiteHttp(HttpCase):
                 "name": self.service_product.id,
                 "property_id": property_rec.id,
                 "vendor_id": self.vendor.id,
-                "icon": "fa-wifi",
+                "icon": "wifi",
             }
         )
         response = self.url_open(property_rec.website_url)

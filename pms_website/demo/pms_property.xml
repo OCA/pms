@@ -4,7 +4,7 @@
         <field name="is_published" eval="True" />
         <field
             name="image_1920"
-            type="base64"
+            type="bytes"
             file="pms_website/static/img/demo_property_downtown.jpg"
         />
         <field name="website_description1">
@@ -26,7 +26,7 @@
         <field name="is_published" eval="True" />
         <field
             name="image_1920"
-            type="base64"
+            type="bytes"
             file="pms_website/static/img/demo_property_suburban.jpg"
         />
         <field name="website_description1">

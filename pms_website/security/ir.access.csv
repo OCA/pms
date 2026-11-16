@@ -1,0 +1,7 @@
+id,name,model_id,group_id/id,operation,domain
+access_pms_property_public,access_property_public,pms.property,base.group_public,r,"[('is_published', '=', True)]"
+access_pms_room_public,access_pms_room,pms.room,base.group_public,r,
+access_pms_amenity_public,access_pms_amenity,pms.amenity,base.group_public,r,
+access_pms_service,access_pms_service,pms.service,base.group_public,r,
+access_pms_website_category,access_pms_website_category,pms.website.category,base.group_user,cru,
+access_pms_website_category_public,access_pms_website_category_public,pms.website.category,base.group_public,r,
