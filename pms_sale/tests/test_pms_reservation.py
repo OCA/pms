@@ -7,6 +7,8 @@ class TestPMSReservation(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # The onchange converts check-in/out hours from the user timezone
+        cls.env.user.tz = "UTC"
         cls.product = cls.env.ref("pms_sale.product_product_reservation")
         cls.partner_owner = cls.env["res.partner"].create({"name": "Property Owner"})
         cls.partner_property = cls.env["res.partner"].create({"name": "Property"})

@@ -12,7 +12,7 @@
                             <field name="notification_type" />
                             <field
                                 name="template_id"
-                                required="[('notification_type', '=', 'email')]"
+                                required="notification_type == 'email'"
                             />
                         </group>
                         <group>
@@ -36,10 +36,7 @@
             <list string="Mail Schedulers">
                 <field name="name" />
                 <field name="notification_type" />
-                <field
-                    name="template_id"
-                    required="[('notification_type', '=', 'email')]"
-                />
+                <field name="template_id" required="notification_type == 'email'" />
             </list>
         </field>
     </record>

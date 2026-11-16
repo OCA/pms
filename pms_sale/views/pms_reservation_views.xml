@@ -13,7 +13,7 @@
                         string="Book"
                         type="object"
                         groups="pms_base.group_pms_manager"
-                        invisible="('stage_id', '!=', (%(pms_sale.pms_stage_new)d))"
+                        invisible="stage_id != %(pms_sale.pms_stage_new)d"
                     />
                     <button
                         id="action_confirm"
@@ -22,7 +22,7 @@
                         string="Confirm"
                         type="object"
                         groups="pms_base.group_pms_manager"
-                        invisible="('stage_id', '!=', (%(pms_sale.pms_stage_booked)d))"
+                        invisible="stage_id != %(pms_sale.pms_stage_booked)d"
                     />
                     <button
                         id="action_check_in"
@@ -31,7 +31,7 @@
                         string="Check In"
                         type="object"
                         groups="pms_base.group_pms_manager"
-                        invisible="('stage_id', '!=', (%(pms_sale.pms_stage_confirmed)d))"
+                        invisible="stage_id != %(pms_sale.pms_stage_confirmed)d"
                     />
                     <button
                         id="action_check_out"
@@ -40,7 +40,7 @@
                         string="Check Out"
                         type="object"
                         groups="pms_base.group_pms_manager"
-                        invisible="('stage_id', '!=', (%(pms_sale.pms_stage_checked_in)d))"
+                        invisible="stage_id != %(pms_sale.pms_stage_checked_in)d"
                     />
                     <field
                         name="stage_id"
@@ -56,9 +56,9 @@
                             name="action_view_invoices"
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-pencil-square-o"
+                            icon="edit_square"
                             groups="account.group_account_invoice"
-                            invisible="('invoice_count', '=', 0)"
+                            invisible="invoice_count == 0"
                         >
                             <field
                                 name="invoice_count"

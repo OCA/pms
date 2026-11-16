@@ -2,14 +2,14 @@
 // Copyright (c) 2021 Gray Matter Logic
 // License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import {TimelineRenderer} from "@web_timeline/views/timeline/timeline_renderer.esm";
-import {onMounted, useState} from "@odoo/owl";
+import {onMounted, proxy} from "@odoo/owl";
 import {patch} from "@web/core/utils/patch";
 
 patch(TimelineRenderer.prototype, {
     setup() {
         super.setup(...arguments);
         if (this.params.resModel === "pms.reservation") {
-            this.pmsFilter = useState({
+            this.pmsFilter = proxy({
                 city: "",
                 datepicker: "",
                 bedrooms: "",
@@ -26,7 +26,7 @@ patch(TimelineRenderer.prototype, {
         const result = await this.orm.call("pms.reservation", "get_selections", []);
         if (!result) return;
         this.pmsFilter.cities = result.city || [];
-        const select = this.rootRef.el?.querySelector(
+        const select = this.rootRef()?.querySelector(
             ".pms-timeline-filters .pms-city-select"
         );
         if (!select) return;
@@ -39,7 +39,7 @@ patch(TimelineRenderer.prototype, {
     },
 
     _injectPmsFilterBar() {
-        const buttonsEl = this.rootRef.el?.querySelector(".oe_timeline_buttons");
+        const buttonsEl = this.rootRef()?.querySelector(".oe_timeline_buttons");
         if (!buttonsEl || buttonsEl.querySelector(".pms-timeline-filters")) return;
 
         const filterDiv = document.createElement("div");

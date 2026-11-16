@@ -1,14 +1,15 @@
 /** @odoo-module **/
 // Copyright (c) 2021 Gray Matter Logic
 // License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import {SaleOrderLineProductField} from "@sale/js/sale_product_field";
+import {usePlugin} from "@odoo/owl";
+import {SaleOrderLineProductField} from "@sale/js/sale_product_field/sale_product_field";
 import {patch} from "@web/core/utils/patch";
-import {useService} from "@web/core/utils/hooks";
+import {ActionManagerPlugin} from "@web/webclient/actions/action_plugin";
 
 patch(SaleOrderLineProductField.prototype, {
     setup() {
         super.setup();
-        this.action = useService("action");
+        this.action = usePlugin(ActionManagerPlugin);
     },
     get isPmsReservation() {
         return Boolean(this.props.record.data.reservation_ok);

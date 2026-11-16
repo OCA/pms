@@ -10,8 +10,9 @@
                     name="action_view_reservation_list"
                     type="object"
                     class="oe_stat_button"
-                    icon="fa-users"
-                    invisible="('reservation_count', '=', 0)"
+                    icon="group"
+                    icon_class="oi-filled"
+                    invisible="reservation_count == 0"
                     groups="pms_base.group_pms_user"
                 >
                     <field

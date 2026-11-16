@@ -1,15 +1,17 @@
 /** @odoo-module **/
 // Copyright (c) 2021 Gray Matter Logic
 // License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import {usePlugin} from "@odoo/owl";
 import {serializeDateTime} from "@web/core/l10n/dates";
 import {registry} from "@web/core/registry";
 import {useService} from "@web/core/utils/hooks";
 import {formView} from "@web/views/form/form_view";
+import {ActionManagerPlugin} from "@web/webclient/actions/action_plugin";
 
 export class PMSConfiguratorFormController extends formView.Controller {
     setup() {
         super.setup();
-        this.action = useService("action");
+        this.action = usePlugin(ActionManagerPlugin);
         this.orm = useService("orm");
     }
 

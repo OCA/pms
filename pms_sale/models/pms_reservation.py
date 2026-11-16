@@ -1,8 +1,7 @@
 # Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from datetime import datetime, timedelta
-
-import pytz
+from datetime import UTC, datetime, timedelta
+from zoneinfo import ZoneInfo
 
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
@@ -15,7 +14,7 @@ class PmsReservation(models.Model):
     _name = "pms.reservation"
     _description = "Reservation"
     _order = "start, id"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ["mail.thread", "mail.activity.mixin"]  # noqa: RUF012
 
     def _default_stage_id(self):
         return self.env.ref("pms_sale.pms_stage_new", raise_if_not_found=False)
@@ -65,7 +64,6 @@ class PmsReservation(models.Model):
     date = fields.Datetime(default=lambda self: fields.Datetime.now())
     stage_id = fields.Many2one(
         "pms.stage",
-        string="Stage",
         store=True,
         tracking=True,
         index=True,
@@ -75,10 +73,8 @@ class PmsReservation(models.Model):
     team_id = fields.Many2one(
         "pms.team", string="Team", related="property_id.team_id", store=True
     )
-    property_id = fields.Many2one("pms.property", string="Property")
-    reservation_type_id = fields.Many2one(
-        "pms.property.reservation", string="Reservation Type"
-    )
+    property_id = fields.Many2one("pms.property")
+    reservation_type_id = fields.Many2one("pms.property.reservation")
     sale_order_id = fields.Many2one("sale.order", string="Sales Order")
     sale_order_line_id = fields.Many2one("sale.order.line", string="Sales Order Line")
     invoice_status = fields.Selection(
@@ -90,7 +86,6 @@ class PmsReservation(models.Model):
     )
     company_id = fields.Many2one(
         "res.company",
-        string="Company",
         default=lambda self: self.env.company.id,
     )
     adults = fields.Integer()
@@ -169,8 +164,7 @@ class PmsReservation(models.Model):
     @api.onchange("property_id")
     def onchange_property_id(self):
         user_tz = self.env.user.tz or "UTC"
-        utc = pytz.timezone("UTC")
-        timezone = pytz.timezone(user_tz)
+        timezone = ZoneInfo(user_tz)
         if (
             self.property_id
             and self.start
@@ -183,10 +177,10 @@ class PmsReservation(models.Model):
                 + " "
                 + str(timedelta(hours=self.property_id.checkin))
             )
-            with_timezone = timezone.localize(
-                datetime.strptime(start_datetime, DEFAULT_SERVER_DATETIME_FORMAT)
-            )
-            start_datetime = with_timezone.astimezone(utc)
+            with_timezone = datetime.strptime(
+                start_datetime, DEFAULT_SERVER_DATETIME_FORMAT
+            ).replace(tzinfo=timezone)
+            start_datetime = with_timezone.astimezone(UTC)
             self.start = start_datetime.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
             end_datetime = (
@@ -194,10 +188,10 @@ class PmsReservation(models.Model):
                 + " "
                 + str(timedelta(hours=self.property_id.checkout))
             )
-            with_timezone = timezone.localize(
-                datetime.strptime(end_datetime, DEFAULT_SERVER_DATETIME_FORMAT)
-            )
-            end_datetime = with_timezone.astimezone(utc)
+            with_timezone = datetime.strptime(
+                end_datetime, DEFAULT_SERVER_DATETIME_FORMAT
+            ).replace(tzinfo=timezone)
+            end_datetime = with_timezone.astimezone(UTC)
             self.stop = end_datetime.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         else:
             self.start = self.start.date()
@@ -247,8 +241,8 @@ class PmsReservation(models.Model):
     def _check_no_of_nights(self):
         for rec in self:
             if (
-                rec.duration > rec.property_id.min_nights
-                and rec.property_id.max_nights < rec.duration
+                rec.duration < rec.property_id.min_nights
+                or rec.duration > rec.property_id.max_nights
             ):
                 raise ValidationError(
                     self.env._(  # pylint: disable=W8301

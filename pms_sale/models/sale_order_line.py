@@ -1,6 +1,6 @@
 # Copyright (c) 2021 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
+from odoo import Command, api, fields, models
 
 
 class SaleOrderLine(models.Model):
@@ -47,7 +47,7 @@ class SaleOrderLine(models.Model):
         recs = super().create(vals_list)
         for rec in recs:
             if rec.pms_reservation_id and not rec.pms_reservation_id.sale_order_line_id:
-                rec.pms_reservation_id.sudo().write(
+                rec.pms_reservation_id.write(
                     {
                         "sale_order_id": rec.order_id.id,
                         "sale_order_line_id": rec.id,
@@ -64,7 +64,7 @@ class SaleOrderLine(models.Model):
             for line in self:
                 reservation = line.pms_reservation_id
                 if reservation and not reservation.sale_order_line_id:
-                    reservation.sudo().write(
+                    reservation.write(
                         {
                             "sale_order_id": line.order_id.id,
                             "sale_order_line_id": line.id,
@@ -88,7 +88,9 @@ class SaleOrderLine(models.Model):
             result.update(
                 {
                     "pms_reservation_id": self.pms_reservation_id.id,
-                    "property_ids": [(6, 0, self.pms_reservation_id.property_id.ids)],
+                    "property_ids": [
+                        Command.set(self.pms_reservation_id.property_id.ids)
+                    ],
                 }
             )
         return result

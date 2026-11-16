@@ -30,4 +30,4 @@ class PMSMailScheduler(models.Model):
         ],
         string="Trigger",
     )
-    property_id = fields.Many2one("pms.property", string="Property")
+    property_id = fields.Many2one("pms.property")

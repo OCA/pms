@@ -1,7 +1,8 @@
 # Copyright (c) 2024 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from datetime import datetime, timedelta
+from datetime import timedelta
 
+from odoo import fields
 from odoo.tests.common import TransactionCase
 
 
@@ -28,7 +29,9 @@ class TestSaleReservation(TransactionCase):
                 "property_id": cls.property.id,
             }
         )
-        today = datetime.now().replace(hour=12, minute=0, second=0, microsecond=0)
+        today = fields.Datetime.now().replace(
+            hour=12, minute=0, second=0, microsecond=0
+        )
         cls.start = today + timedelta(days=10)
         cls.stop = today + timedelta(days=15)
 

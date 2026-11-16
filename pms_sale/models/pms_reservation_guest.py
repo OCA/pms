@@ -10,9 +10,9 @@ class PMSReservationGuest(models.Model):
     name = fields.Char(required=True)
     phone = fields.Char()
     email = fields.Char()
-    reservation_id = fields.Many2one("pms.reservation", string="Reservation")
+    reservation_id = fields.Many2one("pms.reservation")
     order_line_id = fields.Many2one("sale.order.line", string="Sale Order")
-    partner_id = fields.Many2one("res.partner", string="Partner")
+    partner_id = fields.Many2one("res.partner")
 
     @api.onchange("partner_id")
     def _onchange_partner_id(self):

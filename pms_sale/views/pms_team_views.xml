@@ -19,7 +19,7 @@
                     style="width: inherit;"
                     context="{'search_default_total_reservation': 1}"
                 >
-                        <t t-esc="record.total_reservation.value" />
+                        <t t-out="record.total_reservation.value" />
                         <br />
                         RESERVATION(S)
                 </button>
@@ -35,7 +35,7 @@
                             context="{'search_default_today_reservation': 1}"
                         >
                                 <t
-                            t-esc="record.no_today_reservation.value"
+                            t-out="record.no_today_reservation.value"
                         /> Reservation(s)
                             </a>
                         </div>
@@ -48,7 +48,7 @@
                             type="action"
                             context="{'search_default_tomorrow_reservation': 1}"
                         >
-                            <t t-esc="record.no_tomorrow_reservation.value" />
+                            <t t-out="record.no_tomorrow_reservation.value" />
                             Reservation(s)
                             </a>
                         </div>
@@ -61,7 +61,7 @@
                             type="action"
                             context="{'search_default_this_reservation': 1}"
                         >
-                                <t t-esc="record.no_week_reservation.value" />
+                                <t t-out="record.no_week_reservation.value" />
                             Reservation(s)
                             </a>
                         </div>

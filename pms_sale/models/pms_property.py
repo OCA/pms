@@ -37,8 +37,8 @@ class PmsProperty(models.Model):
             date_range = vals.get("datepicker_value").split("-")
             start = date_range[0].strip() + " 00:00:00"
             end = date_range[1].strip() + " 23:59:59"
-            start = datetime.strptime(start, "%m/%d/%Y %H:%M:%S")
-            end = datetime.strptime(end, "%m/%d/%Y %H:%M:%S")
+            start = datetime.strptime(start, "%m/%d/%Y %H:%M:%S")  # noqa: DTZ007
+            end = datetime.strptime(end, "%m/%d/%Y %H:%M:%S")  # noqa: DTZ007
             reservation_ids = self.env["pms.reservation"].search(
                 [
                     ("start", "<", end),

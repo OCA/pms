@@ -4,7 +4,7 @@
 {
     "name": "PMS - Sale",
     "summary": "Manage reservations",
-    "version": "19.0.1.0.1",
+    "version": "20.0.1.0.0",
     "development_status": "Beta",
     "category": "Generic Modules/Property Management System",
     "website": "https://github.com/OCA/pms",
@@ -19,7 +19,6 @@
         "demo/pms_reservation.xml",
     ],
     "data": [
-        "security/ir.model.access.csv",
         "data/ir_sequence.xml",
         "data/product_data.xml",
         "data/pms_stage.xml",
@@ -34,6 +33,7 @@
         "views/pms_team_views.xml",
         "views/menu.xml",
         "views/account_move.xml",
+        "security/ir.access.csv",
     ],
     "assets": {
         "web.assets_backend": [

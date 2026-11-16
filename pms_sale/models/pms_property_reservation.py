@@ -23,7 +23,6 @@ class PmsPropertyReservation(models.Model):
     name = fields.Char(required=True)
     product_id = fields.Many2one(
         "product.product",
-        string="Product",
         required=True,
         domain=[("reservation_ok", "=", True)],
         default=lambda self: self._default_product_id(),
@@ -34,10 +33,9 @@ class PmsPropertyReservation(models.Model):
         readonly=False,
         store=True,
     )
-    property_id = fields.Many2one("pms.property", string="Property")
+    property_id = fields.Many2one("pms.property")
     currency_id = fields.Many2one(
         "res.currency",
-        string="Currency",
         default=lambda self: self.env.company.currency_id,
     )
 

@@ -10,7 +10,8 @@
                     name="action_view_reservation_list"
                     type="object"
                     class="oe_stat_button"
-                    icon="fa-users"
+                    icon="group"
+                    icon_class="oi-filled"
                     invisible="reservation_count == 0"
                 >
                     <field
@@ -27,7 +28,7 @@
                 <field name="reservation_ok" invisible="True" />
                 <field
                     name="pms_reservation_id"
-                    invisible="[('reservation_ok', '=', False)]"
+                    invisible="not reservation_ok"
                     options="{'no_open': True, 'no_create': True}"
                 />
             </xpath>
@@ -47,14 +48,14 @@
                 expr="//field[@name='order_line']//list//field[@name='product_uom_qty']"
                 position="attributes"
             >
-                <attribute name="readonly">[('reservation_ok', '=', True)]</attribute>
+                <attribute name="readonly">reservation_ok</attribute>
                 <attribute name="force_save">1</attribute>
             </xpath>
             <xpath
                 expr="//field[@name='order_line']//form//field[@name='product_uom_qty']"
                 position="attributes"
             >
-                <attribute name="readonly">[('reservation_ok', '=', True)]</attribute>
+                <attribute name="readonly">reservation_ok</attribute>
                 <attribute name="force_save">1</attribute>
             </xpath>
         </field>
