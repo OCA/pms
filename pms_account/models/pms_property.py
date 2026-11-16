@@ -4,6 +4,9 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
 
+INVOICE_MOVE_TYPES = ("out_invoice", "out_refund")
+BILL_MOVE_TYPES = ("in_invoice", "in_refund")
+
 
 class PmsProperty(models.Model):
     _inherit = "pms.property"
@@ -59,14 +62,14 @@ class PmsProperty(models.Model):
     invoice_ids = fields.Many2many(
         "account.move",
         string="Invoices",
-        compute="_compute_invoice_count",
+        compute="_compute_invoice_ids",
         readonly=True,
         copy=False,
     )
     bill_ids = fields.Many2many(
         "account.move",
         string="Bills",
-        compute="_compute_invoice_count",
+        compute="_compute_invoice_ids",
         readonly=True,
         copy=False,
     )
@@ -82,35 +85,56 @@ class PmsProperty(models.Model):
     )
 
     @api.depends("invoice_line_ids")
+    def _compute_invoice_ids(self):
+        for rec in self:
+            moves = rec.invoice_line_ids.move_id
+            rec.invoice_ids = moves.filtered(
+                lambda move: move.move_type in INVOICE_MOVE_TYPES
+            )
+            rec.bill_ids = moves.filtered(
+                lambda move: move.move_type in BILL_MOVE_TYPES
+            )
+
+    @api.depends("invoice_line_ids")
     def _compute_invoice_count(self):
         for rec in self:
-            invoices = rec.invoice_line_ids.mapped("move_id").filtered(
-                lambda r: r.move_type in ("out_invoice", "out_refund")
+            move_counts = dict(
+                self.env["account.move"]._read_group(
+                    [
+                        ("move_type", "in", INVOICE_MOVE_TYPES + BILL_MOVE_TYPES),
+                        ("line_ids", "any", [("property_ids", "=", rec.id)]),
+                    ],
+                    ["move_type"],
+                    ["__count"],
+                )
             )
-            bills = rec.invoice_line_ids.mapped("move_id").filtered(
-                lambda r: r.move_type in ("in_invoice", "in_refund")
+            rec.invoice_count = sum(
+                move_counts.get(move_type, 0) for move_type in INVOICE_MOVE_TYPES
             )
-            rec.invoice_ids = invoices
-            rec.invoice_count = len(invoices)
-            rec.bill_ids = bills
-            rec.bill_count = len(bills)
+            rec.bill_count = sum(
+                move_counts.get(move_type, 0) for move_type in BILL_MOVE_TYPES
+            )
+
+    def _get_move_domain(self, move_types):
+        return [
+            ("move_type", "in", move_types),
+            ("line_ids", "any", [("property_ids", "in", self.ids)]),
+        ]
 
     def action_view_invoices(self):
         action = self.env.ref("account.action_move_out_invoice_type").read()[0]
-        invoices = self.mapped("invoice_ids")
-        if len(invoices) > 1:
-            action["domain"] = [("id", "in", invoices.ids)]
-        elif invoices:
+        action["domain"] = self._get_move_domain(INVOICE_MOVE_TYPES)
+        if self.invoice_count == 1:
+            move_id = self.env["account.move"].search(action["domain"], limit=1)
             action["views"] = [(self.env.ref("account.view_move_form").id, "form")]
-            action["res_id"] = invoices.ids[0]
+            action["res_id"] = move_id.id
         return action
 
     def action_view_bills(self):
         action = self.env.ref("account.action_move_in_invoice_type").read()[0]
-        bills = self.mapped("bill_ids")
-        if len(bills) > 1:
-            action["domain"] = [("id", "in", bills.ids)]
-        elif bills:
+        action["domain"] = self._get_move_domain(BILL_MOVE_TYPES)
+        if self.bill_count == 1:
+            move_id = self.env["account.move"].search(action["domain"], limit=1)
             action["views"] = [(self.env.ref("account.view_move_form").id, "form")]
-            action["res_id"] = bills.ids[0]
+            action["res_id"] = move_id.id
         return action

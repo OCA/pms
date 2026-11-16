@@ -5,7 +5,7 @@
 {
     "name": "PMS - Accounting",
     "summary": "Manage the accounting aspects of your properties",
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.0",
     "development_status": "Beta",
     "category": "Generic Modules/Property Management System",
     "website": "https://github.com/OCA/pms",

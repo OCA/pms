@@ -9,7 +9,6 @@ class PmsService(models.Model):
     _inherit = "pms.service"
 
     vendor_id = fields.Many2one(
-        string="Vendor",
         required=True,
         comodel_name="res.partner",
         ondelete="restrict",

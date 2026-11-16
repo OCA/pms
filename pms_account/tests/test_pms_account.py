@@ -170,7 +170,7 @@ class TestPmsAccountInvoice(AccountTestInvoicingCommon):
     def _link_move_lines(self, move, *properties):
         lines = move.invoice_line_ids
         for prop in properties:
-            prop.invoice_line_ids = [(4, line.id) for line in lines]
+            prop.invoice_line_ids = [Command.link(line.id) for line in lines]
 
     def test_invoice_count_with_out_invoice(self):
         move = self._create_move("out_invoice", self.customer)
@@ -213,7 +213,11 @@ class TestPmsAccountInvoice(AccountTestInvoicingCommon):
         self._link_move_lines(move2, self.property)
         action = self.property.action_view_invoices()
         self.assertEqual(
-            action["domain"], [("id", "in", self.property.invoice_ids.ids)]
+            action["domain"],
+            [
+                ("move_type", "in", ("out_invoice", "out_refund")),
+                ("line_ids", "any", [("property_ids", "in", self.property.ids)]),
+            ],
         )
 
     def test_action_view_bills_single(self):
@@ -230,7 +234,13 @@ class TestPmsAccountInvoice(AccountTestInvoicingCommon):
         self._link_move_lines(move1, self.property)
         self._link_move_lines(move2, self.property)
         action = self.property.action_view_bills()
-        self.assertEqual(action["domain"], [("id", "in", self.property.bill_ids.ids)])
+        self.assertEqual(
+            action["domain"],
+            [
+                ("move_type", "in", ("in_invoice", "in_refund")),
+                ("line_ids", "any", [("property_ids", "in", self.property.ids)]),
+            ],
+        )
 
     def test_move_property_ids_compute(self):
         move = self._create_move("out_invoice", self.customer)
@@ -266,6 +276,21 @@ class TestPmsAccountInvoice(AccountTestInvoicingCommon):
         self._link_move_lines(move, self.property)
         line = move.invoice_line_ids[0]
         self.assertIn(self.property, line.property_ids)
+
+    def test_invoice_line_property_ids_write_updates_move(self):
+        move = self._create_move("out_invoice", self.customer)
+        line = move.invoice_line_ids[0]
+        line.write({"property_ids": [Command.link(self.property.id)]})
+        self.assertIn(self.property, line.property_ids)
+        self.assertEqual(move.property_count, 1)
+
+    def test_move_search_by_property_ids(self):
+        move = self._create_move("out_invoice", self.customer)
+        self._link_move_lines(move, self.property)
+        moves = self.env["account.move"].search(
+            [("property_ids", "in", self.property.ids)]
+        )
+        self.assertEqual(moves, move)
 
     def test_service_vendor_required(self):
         service = self.env["pms.service"].create(

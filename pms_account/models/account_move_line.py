@@ -14,6 +14,5 @@ class AccountMoveLine(models.Model):
         "account_move_line_id",
         "property_id",
         string="Properties",
-        readonly=True,
         copy=False,
     )

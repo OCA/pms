@@ -11,20 +11,21 @@ class AccountMove(models.Model):
     property_ids = fields.Many2many(
         "pms.property",
         compute="_compute_pms_property_ids",
+        search="_search_pms_property_ids",
         string="Properties associated to this invoice",
     )
     property_count = fields.Integer(
         string="Properties", compute="_compute_pms_property_ids"
     )
 
-    @api.depends("line_ids")
+    @api.depends("line_ids.property_ids")
     def _compute_pms_property_ids(self):
         for invoice in self:
-            properties = self.env["pms.property"].search(
-                [("invoice_line_ids", "in", invoice.line_ids.ids)]
-            )
-            invoice.property_ids = properties
+            invoice.property_ids = invoice.line_ids.property_ids
             invoice.property_count = len(invoice.property_ids)
+
+    def _search_pms_property_ids(self, operator, value):
+        return [("line_ids", "any", [("property_ids", operator, value)])]
 
     def action_view_pms_property(self):
         action = self.env.ref("pms_base.action_pms_property").read()[0]
