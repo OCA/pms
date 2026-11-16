@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <template
         id="sale_order_portal_content"
@@ -7,7 +8,7 @@
         <xpath expr="//td[@name='td_product_name']" position="after">
             <td>
                 <t t-if="line.property_id">
-                    <t t-esc="line.property_id.name" />
+                    <t t-out="line.property_id.name" />
                 </t>
             </td>
         </xpath>
@@ -22,7 +23,7 @@
                 t-att-href="keep('/property/category/' + slug(c), category=0)"
                 t-attf-class="nav-link #{'active' if c.id == category.id else ''}"
             >
-                <span t-esc="c.name" />
+                <span t-out="c.name" />
             </a>
             <ul t-if="c.child_ids" class="nav nav-pills flex-column nav-hierarchy">
                 <t t-foreach="c.child_ids" t-as="c">
@@ -66,11 +67,11 @@
             <div class="row g-2 align-items-end w-100">
                 <div class="col-12 col-sm-auto flex-sm-grow-1">
                     <label class="form-label small mb-1" for="city">City</label>
-                    <select class="form-select" id="city" name="search">
+                    <select id="city" class="form-select" name="search">
                         <option value="">All cities</option>
                         <t t-foreach="city" t-as="c">
                             <option t-att-value="c" t-att-selected="c == search_city">
-                                <t t-esc="c" />
+                                <t t-out="c" />
                             </option>
                         </t>
                     </select>
@@ -78,8 +79,8 @@
                 <div class="col-12 col-sm-auto flex-sm-grow-1">
                     <label class="form-label small mb-1" for="date_range">Dates</label>
                     <input
-                        class="field_date_range_filtter form-control"
                         id="date_range"
+                        class="field_date_range_filtter form-control"
                         name="date_range"
                         type="text"
                         placeholder="Check-in – Check-out"
@@ -101,11 +102,11 @@
                             <i class="fa fa-minus" />
                         </button>
                         <input
-                            type="text"
+                            id="guest_select"
                             class="form-control text-center"
+                            type="text"
                             style="max-width:60px;"
                             data-min="1"
-                            id="guest_select"
                             name="guest_select"
                             placeholder="0"
                             t-att-value="search_guest or ''"
@@ -170,10 +171,10 @@
                             t-field="product.name"
                         />
                         <a
-                            role="button"
                             t-if="not product.website_published"
-                            t-att-href="product_href"
                             class="btn btn-sm btn-danger"
+                            role="button"
+                            t-att-href="product_href"
                             title="This product is unpublished."
                         >Unpublished</a>
                     </h6>
@@ -199,8 +200,8 @@
             <t t-set="additional_title">Properties</t>
             <div id="wrap" class="js_sale">
                 <div
-                    class="oe_structure oe_empty"
                     id="oe_structure_website_sale_products_1"
+                    class="oe_structure oe_empty"
                 />
                 <div class="container oe_website_sale">
                     <div
@@ -273,15 +274,15 @@
                                         <p
                                             t-if="category"
                                         >No property defined in category "<strong
-                                            t-esc="category.display_name"
+                                            t-out="category.display_name"
                                         />".</p>
                                     </t>
                                     <t t-else="">
                                         <h3 class="mt8">No results</h3>
-                                        <p>No results for "<strong t-esc='search' />"<t
+                                        <p>No results for "<strong t-out='search' />"<t
                                             t-if="category"
                                         > in category "<strong
-                                            t-esc="category.display_name"
+                                            t-out="category.display_name"
                                         />"</t>.</p>
                                     </t>
                                     <p
@@ -298,8 +299,8 @@
                     </div>
                 </div>
                 <div
-                    class="oe_structure oe_empty"
                     id="oe_structure_website_sale_products_2"
+                    class="oe_structure oe_empty"
                 />
             </div>
         </t>
@@ -343,8 +344,8 @@
         >
             <t t-if="not is_public_user and reservation_types">
                 <div
-                    class="modal fade"
                     id="pmsBookingModal"
+                    class="modal fade"
                     tabindex="-1"
                     aria-labelledby="pmsBookingModalLabel"
                     aria-hidden="true"
@@ -353,7 +354,7 @@
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="pmsBookingModalLabel">
+                                <h5 id="pmsBookingModalLabel" class="modal-title">
                                     Book <span t-field="property.name" />
                                 </h5>
                                 <button
@@ -372,9 +373,9 @@
                                                 class="form-label"
                                             >Check-in</label>
                                             <input
-                                                type="date"
-                                                class="form-control"
                                                 id="date_start"
+                                                class="form-control"
+                                                type="date"
                                                 name="date_start"
                                                 required="required"
                                             />
@@ -385,9 +386,9 @@
                                                 class="form-label"
                                             >Check-out</label>
                                             <input
-                                                type="date"
-                                                class="form-control"
                                                 id="date_end"
+                                                class="form-control"
+                                                type="date"
                                                 name="date_end"
                                                 required="required"
                                             />
@@ -408,21 +409,21 @@
                                             class="form-label"
                                         >Reservation Type</label>
                                         <select
-                                            class="form-select"
                                             id="reservation_type_id"
+                                            class="form-select"
                                             name="reservation_type_id"
                                             required="required"
                                         >
                                             <option value="">-- Select --</option>
                                             <t t-foreach="reservation_types" t-as="rt">
                                                 <option t-att-value="rt.id">
-                                                    <t t-esc="rt.name" />
+                                                    <t t-out="rt.name" />
                                                     <t t-if="rt.price">
                                                         (<t
-                                                        t-esc="rt.price"
+                                                        t-out="rt.price"
                                                         t-options='{"widget": "float", "precision": 2}'
                                                     />&#160;<t
-                                                        t-esc="rt.currency_id.symbol"
+                                                        t-out="rt.currency_id.symbol"
                                                     />)
                                                     </t>
                                                 </option>
@@ -435,7 +436,7 @@
                                             <t t-if="property.no_of_guests">
                                             <span class="text-muted small">(max
                                                     <t
-                                                t-esc="property.no_of_guests"
+                                                t-out="property.no_of_guests"
                                             />)</span>
                                         </t>
                                         </label>
@@ -474,9 +475,9 @@
                                             </div>
                                         </div>
                                         <button
-                                            type="button"
-                                            class="btn btn-outline-secondary btn-sm mt-2"
                                             id="pms_add_guest"
+                                            class="btn btn-outline-secondary btn-sm mt-2"
+                                            type="button"
                                             t-att-data-max="property.no_of_guests or 0"
                                         >
                                             <i class="fa fa-plus" />
@@ -492,9 +493,9 @@
                                     data-bs-dismiss="modal"
                                 >Cancel</button>
                                 <button
-                                    type="button"
                                     id="pmsAddToCart"
                                     class="btn btn-primary"
+                                    type="button"
                                 >
                                     <i class="fa fa-shopping-cart" />
                                     Add to Cart
@@ -526,7 +527,7 @@
             >
                 Show categories
             </button>
-            <div class="collapse d-lg-block" id="wsale_products_categories_collapse">
+            <div id="wsale_products_categories_collapse" class="collapse d-lg-block">
                 <ul class="nav nav-pills flex-column mb-2">
                     <li class="nav-item">
                         <a
