@@ -1,20 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <template id="property" name="Property" track="1">
         <t t-call="website.layout">
             <t t-set="additional_title" t-value="property.name" />
             <div
-                class="oe_structure oe_empty"
                 id="oe_structure_website_sale_property_1"
+                class="oe_structure oe_empty"
             />
             <div
-                itemscope="itemscope"
-                itemtype="http://schema.org/Product"
                 id="wrap"
                 class="js_sale"
+                itemscope="itemscope"
+                itemtype="http://schema.org/Product"
             >
                 <section
-                    t-attf-class="container py-2 oe_website_sale"
                     id="product_detail"
+                    t-attf-class="container py-2 oe_website_sale"
                     t-att-data-view-track="view_track and '1' or '0'"
                 >
                     <div class="row">
@@ -40,10 +41,10 @@
                         </div>
                     </div>
                     <div
+                        id="oe_structure_website_sale_property_3"
+                        class="oe_structure oe_empty mt16"
                         itemprop="description"
                         t-field="property.website_description1"
-                        class="oe_structure oe_empty mt16"
-                        id="oe_structure_website_sale_property_3"
                     />
                     <div class="row mb-4">
                         <div class="col-12">
@@ -60,7 +61,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-12 pt-2 pb-3" id="product_details">
+                        <div id="product_details" class="col-12 pt-2 pb-3">
                             <h1
                                 itemprop="name"
                                 t-field="property.name"
@@ -68,9 +69,9 @@
                             <span
                                 itemprop="url"
                                 style="display:none;"
-                                t-esc="property.website_url"
+                                t-out="property.website_url"
                             />
-                            <h4 class="mt-2 mb-0" t-if="property.partner_id">
+                            <h4 t-if="property.partner_id" class="mt-2 mb-0">
                                 <a
                                     itemprop="name"
                                     t-att-href="property.google_map_link()"
@@ -81,7 +82,7 @@
                                     <span t-field="property.city" />
                                 </a>
                             </h4>
-                            <h5 class="mt-2 text-muted" t-if="property.parent_id">
+                            <h5 t-if="property.parent_id" class="mt-2 text-muted">
                                 <i class="fa fa-building me-1" />
                                 <span
                                     itemprop="parent_name"
@@ -97,8 +98,8 @@
                     </div>
                     <div class="row g-3 mb-4">
                         <div
-                            class="col-sm-6 col-md-3"
                             t-if="show_rooms and property.qty_bedroom"
+                            class="col-sm-6 col-md-3"
                         >
                             <div
                                 class="d-flex align-items-center p-3 border rounded h-100"
@@ -107,15 +108,15 @@
                                 <div>
                                     <div
                                         class="fs-4 fw-bold"
-                                        t-esc="property.qty_bedroom"
+                                        t-out="property.qty_bedroom"
                                     />
                                     <div class="text-muted">Bedrooms</div>
                                 </div>
                             </div>
                         </div>
                         <div
-                            class="col-sm-6 col-md-3"
                             t-if="show_rooms and property.qty_half_bathroom"
+                            class="col-sm-6 col-md-3"
                         >
                             <div
                                 class="d-flex align-items-center p-3 border rounded h-100"
@@ -124,13 +125,13 @@
                                 <div>
                                     <div
                                         class="fs-4 fw-bold"
-                                        t-esc="property.qty_half_bathroom"
+                                        t-out="property.qty_half_bathroom"
                                     />
                                     <div class="text-muted">Bathrooms</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-md-3" t-if="property.area">
+                        <div t-if="property.area" class="col-sm-6 col-md-3">
                             <div
                                 class="d-flex align-items-center p-3 border rounded h-100"
                             >
@@ -145,7 +146,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row mb-4" t-if="show_services and property.service_ids">
+                    <div t-if="show_services and property.service_ids" class="row mb-4">
                         <div class="col-12">
                             <h5 class="mb-3">Services</h5>
                             <div class="row g-3">
@@ -160,7 +161,7 @@
                                             <i
                                                 t-attf-class="fa {{service.icon or 'fa-check'}} fa-lg text-muted me-3"
                                             />
-                                            <span t-esc="service.name.name" />
+                                            <span t-out="service.name.name" />
                                         </div>
                                     </div>
                                 </t>
@@ -194,10 +195,10 @@
                         </ul>
                     </div>
                     <div
+                        id="oe_structure_website_sale_property_4"
+                        class="oe_structure oe_empty mt16"
                         itemprop="description"
                         t-field="property.website_description2"
-                        class="oe_structure oe_empty mt16"
-                        id="oe_structure_website_sale_property_4"
                     />
                 </section>
                 <section class="row section-margin">
@@ -288,9 +289,9 @@
                     </div>
                 </section>
                 <section
-                    t-attf-class="container py-4 oe_website_sale"
-                    id="property_amenities"
                     t-if="show_amenities and property.amenity_ids"
+                    id="property_amenities"
+                    t-attf-class="container py-4 oe_website_sale"
                     t-att-data-view-track="view_track and '1' or '0'"
                 >
                     <t
@@ -314,12 +315,12 @@
                                     class="d-flex align-items-center p-3 border rounded h-100"
                                 >
                                     <i class="fa fa-check-circle text-success me-3" />
-                                    <span t-esc="amenity.name" />
+                                    <span t-out="amenity.name" />
                                 </div>
                             </div>
                         </t>
                     </div>
-                    <div class="row mt-4" t-if="other_amenities">
+                    <div t-if="other_amenities" class="row mt-4">
                         <div class="col-12 text-center">
                             <button
                                 type="button"
@@ -335,15 +336,15 @@
 
                 <!-- Anchor for pms_website_sale.property_booking_form xpath -->
                 <div
-                    class="modal fade right d-none"
                     id="exampleModalPreview"
+                    class="modal fade right d-none"
                     aria-hidden="true"
                     tabindex="-1"
                 />
 
                 <div
-                    class="modal fade"
                     id="propertyAmenitiesModal"
+                    class="modal fade"
                     tabindex="-1"
                     aria-labelledby="propertyAmenitiesModalLabel"
                     aria-hidden="true"
@@ -352,8 +353,8 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h3
-                                    class="modal-title"
                                     id="propertyAmenitiesModalLabel"
+                                    class="modal-title"
                                 >
                                     All Amenities
                                 </h3>
@@ -377,7 +378,7 @@
                                                 <i
                                                     class="fa fa-check-circle text-success me-3"
                                                 />
-                                                <span t-esc="amenity.name" />
+                                                <span t-out="amenity.name" />
                                             </div>
                                         </div>
                                     </t>
@@ -388,8 +389,8 @@
                 </div>
             </div>
             <div
-                class="oe_structure oe_empty"
                 id="oe_structure_website_sale_property_2"
+                class="oe_structure oe_empty"
             />
         </t>
     </template>
@@ -423,20 +424,20 @@
                                     </label>
                                     <select
                                         id="property_filter_city"
-                                        name="city"
                                         class="form-select"
+                                        name="city"
                                     >
                                         <option value="">All cities</option>
                                         <t t-foreach="cities" t-as="city_option">
                                             <option
                                                 t-att-value="city_option"
                                                 t-att-selected="selected_city == city_option and 'selected' or None"
-                                                t-esc="city_option"
+                                                t-out="city_option"
                                             />
                                         </t>
                                     </select>
                                 </div>
-                                <div class="col-md-3" t-if="show_rooms">
+                                <div t-if="show_rooms" class="col-md-3">
                                     <label
                                         class="form-label"
                                         for="property_filter_bedrooms"
@@ -445,8 +446,8 @@
                                     </label>
                                     <select
                                         id="property_filter_bedrooms"
-                                        name="bedrooms"
                                         class="form-select"
+                                        name="bedrooms"
                                     >
                                         <option value="">Any bedrooms</option>
                                         <t
@@ -457,7 +458,7 @@
                                                 t-att-value="bedroom_option"
                                                 t-att-selected="selected_bedrooms == str(bedroom_option) and 'selected' or None"
                                             >
-                                                <t t-esc="bedroom_option" />
+                                                <t t-out="bedroom_option" />
                                                 <t
                                                     t-if="bedroom_option == 1"
                                                 > bedroom</t>
@@ -475,8 +476,8 @@
                                     </label>
                                     <select
                                         id="property_filter_category"
-                                        name="category"
                                         class="form-select"
+                                        name="category"
                                     >
                                         <option value="">All categories</option>
                                         <t
@@ -486,7 +487,7 @@
                                             <option
                                                 t-att-value="category_option.id"
                                                 t-att-selected="selected_category == str(category_option.id) and 'selected' or None"
-                                                t-esc="category_option.display_name"
+                                                t-out="category_option.display_name"
                                             />
                                         </t>
                                     </select>
@@ -497,15 +498,15 @@
                                     </label>
                                     <select
                                         id="property_filter_tag"
-                                        name="tag"
                                         class="form-select"
+                                        name="tag"
                                     >
                                         <option value="">All tags</option>
                                         <t t-foreach="tags" t-as="tag_option">
                                             <option
                                                 t-att-value="tag_option.id"
                                                 t-att-selected="selected_tag == str(tag_option.id) and 'selected' or None"
-                                                t-esc="tag_option.display_name"
+                                                t-out="tag_option.display_name"
                                             />
                                         </t>
                                     </select>
@@ -521,7 +522,7 @@
                             </form>
                         </div>
                     </div>
-                    <div class="row g-4" t-if="properties">
+                    <div t-if="properties" class="row g-4">
                         <t t-foreach="properties" t-as="property">
                             <div class="col-md-6 col-lg-4">
                                 <div class="card h-100 shadow-sm border-0">
@@ -544,8 +545,8 @@
                                                 t-field="property.name"
                                             />
                                             <p
-                                                class="card-text text-muted mb-2"
                                                 t-if="property.city"
+                                                class="card-text text-muted mb-2"
                                             >
                                                 <i class="fa fa-map-marker me-1" />
                                                 <span t-field="property.city" />
@@ -558,7 +559,7 @@
                                                 >
                                                     <i class="fa fa-bed me-1" />
                                                     <t
-                                                    t-esc="property.qty_bedroom"
+                                                    t-out="property.qty_bedroom"
                                                 /> bedrooms
                                                 </span>
                                                 <span t-if="property.area">
@@ -573,10 +574,10 @@
                             </div>
                         </t>
                     </div>
-                    <div class="alert alert-info mt-4" t-if="not properties">
+                    <div t-if="not properties" class="alert alert-info mt-4">
                         No published properties are available right now.
                     </div>
-                    <div class="d-flex justify-content-center mt-4" t-if="pager">
+                    <div t-if="pager" class="d-flex justify-content-center mt-4">
                         <t t-call="website.pager" />
                     </div>
                 </section>

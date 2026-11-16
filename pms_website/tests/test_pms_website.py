@@ -280,13 +280,15 @@ class TestPmsWebsiteController(PmsBaseCase):
 
     def test_product_page_not_found(self):
         controller = Website()
-        with patch.object(
-            type(self.property),
-            "can_access_from_current_website",
-            return_value=False,
+        with (
+            patch.object(
+                type(self.property),
+                "can_access_from_current_website",
+                return_value=False,
+            ),
+            self.assertRaises(NotFound),
         ):
-            with self.assertRaises(NotFound):
-                controller.product(self.property)
+            controller.product(self.property)
 
     def test_product_page_render(self):
         from ..controllers import website as website_module

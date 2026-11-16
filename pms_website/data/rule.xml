@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <function name="write" model="ir.model.data">
         <function name="search" model="ir.model.data">
@@ -8,7 +9,7 @@
         <value eval="{'noupdate': False}" />
     </function>
 
-    <record model="ir.rule" id="base.res_partner_portal_public_rule">
+    <record id="base.res_partner_portal_public_rule" model="ir.rule">
         <field
             name="domain_force"
         >['|', ('id', 'child_of', user.commercial_partner_id.id), ('is_property', '=', True)]</field>

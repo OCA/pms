@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo noupdate="1">
     <record id="pms_base.demo_property_downtown" model="pms.property">
-        <field name="is_published">True</field>
+        <field name="is_published" eval="True" />
         <field
             name="image_1920"
             type="base64"
@@ -22,7 +23,7 @@
     </record>
 
     <record id="pms_base.demo_property_suburban" model="pms.property">
-        <field name="is_published">True</field>
+        <field name="is_published" eval="True" />
         <field
             name="image_1920"
             type="base64"
