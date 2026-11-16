@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <!-- Used in location -->
-    <record model="ir.actions.act_window" id="location_open_content">
+    <record id="location_open_content" model="ir.actions.act_window">
         <field name="context">{'search_default_productgroup': 1}</field>
         <field name="domain">[('location_id', 'child_of', stock_location_id)]</field>
         <field name="name">Content</field>
@@ -11,7 +12,7 @@
         <field name="name">pms.property.form.pms.stock</field>
         <field name="model">pms.property</field>
         <field name="inherit_id" ref="pms_base.view_pms_property_form" />
-        <field name="priority">99999</field>
+        <field name="priority" eval="99999" />
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
                 <page name="inventory" string="Inventory">
