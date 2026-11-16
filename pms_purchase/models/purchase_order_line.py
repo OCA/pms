@@ -8,12 +8,20 @@ class PurchaseOrderLine(models.Model):
 
     pms_property_id = fields.Many2one("pms.property", string="Property")
 
-    @api.onchange("pms_property_id")
-    def _onchange_pms_property_id(self):
-        for rec in self:
-            if rec.pms_property_id and rec.pms_property_id.analytic_id:
-                rec.analytic_distribution = {
-                    str(rec.pms_property_id.analytic_id.id): 100
-                }
+    @api.depends(
+        "product_id",
+        "order_id.partner_id",
+        "pms_property_id",
+        "pms_property_id.analytic_id",
+    )
+    def _compute_analytic_distribution(self):
+        res = super()._compute_analytic_distribution()
+        for purchase_line_id in self:
+            if not purchase_line_id.pms_property_id:
+                continue
+            analytic_id = purchase_line_id.pms_property_id.analytic_id
+            if analytic_id:
+                purchase_line_id.analytic_distribution = {str(analytic_id.id): 100}
             else:
-                rec.analytic_distribution = {}
+                purchase_line_id.analytic_distribution = {}
+        return res

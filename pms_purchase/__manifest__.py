@@ -3,7 +3,7 @@
 {
     "name": "PMS - Purchase",
     "summary": "Select a PMS property on the PO line.",
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.1",
     "category": "purchase",
     "website": "https://github.com/OCA/pms",
     "author": "Gray Matter Logic, Odoo Community Association (OCA)",
@@ -14,9 +14,9 @@
         "demo/purchase_order.xml",
     ],
     "data": [
-        "views/purchase_order.xml",
-        "views/pms_property.xml",
-        "views/stock_putaway_views.xml",
+        "views/purchase_order_views.xml",
+        "views/pms_property_views.xml",
+        "views/stock_putaway_rule_views.xml",
     ],
     "development_status": "Beta",
 }

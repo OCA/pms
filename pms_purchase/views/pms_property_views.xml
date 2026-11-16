@@ -10,10 +10,14 @@
                     name="action_open_po_line"
                     type="object"
                     class="oe_stat_button"
-                    icon="fa-shopping-cart"
+                    icon="shopping_cart"
                     groups="account.group_account_user"
                 >
-                    <field name="po_line_count" string="PO Line(s)" widget="statinfo" />
+                    <field
+                        name="po_line_count_calculated"
+                        string="PO Line(s)"
+                        widget="statinfo"
+                    />
                 </button>
             </xpath>
         </field>

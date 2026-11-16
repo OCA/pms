@@ -1,5 +1,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
+from odoo import Command
 from odoo.tests import common
 
 
@@ -66,21 +67,28 @@ class TestPmsProperty(common.TransactionCase):
             "picking_type_id": picking_type.id,
             "date_order": "2019-01-01",
             "order_line": [
-                (
-                    0,
-                    0,
+                Command.create(
                     {
                         "product_id": product_1.id,
-                        "pms_property_id": pms_property_record.id,
                     },
                 )
             ],
         }
         purchase_order = PurchaseOrder.create(vals)
-        purchase_order.order_line._onchange_pms_property_id()
 
-        pms_property_record._compute_po_line_count()
-        pms_property_record.action_open_po_line()
+        # The property analytic distribution is set by the compute, so it also
+        # applies to RPC and import, which never run onchanges.
+        purchase_order.order_line.write({"pms_property_id": pms_property_record.id})
+
+        self.assertEqual(pms_property_record.po_line_count_calculated, 1)
+        action = pms_property_record.action_open_po_line()
+        self.assertEqual(
+            action["domain"], [("id", "in", purchase_order.order_line.ids)]
+        )
+        self.assertEqual(
+            purchase_order.order_line.analytic_distribution,
+            {str(pms_property_record.analytic_id.id): 100},
+        )
 
         self.env["stock.putaway.rule"].create(
             {
@@ -94,9 +102,7 @@ class TestPmsProperty(common.TransactionCase):
         purchase_order.write(
             {
                 "order_line": [
-                    (
-                        0,
-                        0,
+                    Command.create(
                         {
                             "product_id": product_2.id,
                             "pms_property_id": pms_property_record.id,

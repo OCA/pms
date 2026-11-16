@@ -9,14 +9,17 @@ class PmsProperty(models.Model):
     po_line_ids = fields.One2many(
         "purchase.order.line", "pms_property_id", string="Purchases"
     )
-    po_line_count = fields.Integer(
-        compute="_compute_po_line_count", string="PO Line(s)", readonly=True, copy=False
+    po_line_count_calculated = fields.Integer(
+        compute="_compute_po_line_count_calculated",
+        string="PO Line(s)",
+        readonly=True,
+        copy=False,
     )
 
     @api.depends("po_line_ids")
-    def _compute_po_line_count(self):
-        for pms_property in self:
-            pms_property.po_line_count = len(pms_property.po_line_ids)
+    def _compute_po_line_count_calculated(self):
+        for pms_property_id in self:
+            pms_property_id.po_line_count_calculated = len(pms_property_id.po_line_ids)
 
     def action_open_po_line(self):
         view_id = self.env.ref("purchase.purchase_order_line_tree").id
