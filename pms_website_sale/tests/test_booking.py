@@ -1,8 +1,9 @@
 # Copyright (c) 2024 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import json
-from datetime import datetime, timedelta
+from datetime import timedelta
 
+from odoo import fields
 from odoo.tests import HttpCase, tagged
 
 
@@ -20,7 +21,7 @@ class TestPropertyBooking(HttpCase):
                 "no_of_guests": 4,
                 "min_nights": 1,
                 "max_nights": 30,
-                "website_published": True,
+                "is_published": True,
             }
         )
         cls.reservation_type = cls.env["pms.property.reservation"].create(
@@ -30,7 +31,7 @@ class TestPropertyBooking(HttpCase):
                 "property_id": cls.property.id,
             }
         )
-        today = datetime.now()
+        today = fields.Datetime.now()
         # Use distinct date ranges per test to avoid cross-test interference
         cls.dates_free = (
             (today + timedelta(days=30)).strftime("%Y-%m-%d"),
@@ -89,6 +90,40 @@ class TestPropertyBooking(HttpCase):
         result = resp.json()["result"]
         self.assertFalse(result["available"])
 
+    def test_check_availability_counts_new_stage_hold(self):
+        """A reservation still in the New stage holds the dates."""
+        self.env["pms.reservation"].create(
+            {
+                "property_id": self.property.id,
+                "start": self.dates_conflict[0],
+                "stop": self.dates_conflict[1],
+            }
+        )
+        self.authenticate("admin", "admin")
+        resp = self._jsonrpc(
+            f"/property/{self.property.id}/check_availability",
+            {
+                "date_start": self.dates_conflict[0],
+                "date_end": self.dates_conflict[1],
+            },
+        )
+        result = resp.json()["result"]
+        self.assertFalse(result["available"])
+
+    def test_check_availability_inverted_dates(self):
+        """A check-out before the check-in is rejected."""
+        self.authenticate("admin", "admin")
+        resp = self._jsonrpc(
+            f"/property/{self.property.id}/check_availability",
+            {
+                "date_start": self.dates_free[1],
+                "date_end": self.dates_free[0],
+            },
+        )
+        result = resp.json()["result"]
+        self.assertFalse(result["available"])
+        self.assertEqual(result["error"], "Invalid dates")
+
     def test_add_to_cart_creates_order_and_reservation(self):
         """Posting booking details creates a sale order line and linked reservation."""
         self.authenticate("admin", "admin")
@@ -112,13 +147,68 @@ class TestPropertyBooking(HttpCase):
         reservation = self.env["pms.reservation"].search(
             [
                 ("property_id", "=", self.property.id),
-                ("start", "=", self.dates_cart[0]),
+                ("start", "=", fields.Datetime.to_datetime(self.dates_cart[0])),
             ],
             limit=1,
         )
         self.assertTrue(reservation, "Expected pms.reservation to be created")
         self.assertTrue(reservation.sale_order_id)
         self.assertEqual(reservation.property_id, self.property)
+
+    def test_add_to_cart_rejects_booked_dates(self):
+        """A cart cannot book dates another reservation already holds."""
+        stage_confirmed = self.env.ref("pms_sale.pms_stage_confirmed")
+        self.env["pms.reservation"].create(
+            {
+                "property_id": self.property.id,
+                "start": self.dates_cart[0],
+                "stop": self.dates_cart[1],
+                "stage_id": stage_confirmed.id,
+            }
+        )
+        self.authenticate("admin", "admin")
+        resp = self._jsonrpc(
+            f"/property/{self.property.id}/add_to_cart",
+            {
+                "date_start": self.dates_cart[0],
+                "date_end": self.dates_cart[1],
+                "reservation_type_id": self.reservation_type.id,
+                "guests": [{"name": "Alice"}],
+            },
+        )
+        result = resp.json()["result"]
+        self.assertEqual(result["error"], "These dates are already booked")
+
+    def test_add_to_cart_ignores_unknown_guest_fields(self):
+        """Only name, phone and email are kept from the posted guests."""
+        self.authenticate("admin", "admin")
+        resp = self._jsonrpc(
+            f"/property/{self.property.id}/add_to_cart",
+            {
+                "date_start": self.dates_cart[0],
+                "date_end": self.dates_cart[1],
+                "reservation_type_id": self.reservation_type.id,
+                "guests": [
+                    {
+                        "name": "Alice",
+                        "phone": "555-1234",
+                        "email": "alice@test.com",
+                        "partner_id": self.partner_owner.id,
+                    }
+                ],
+            },
+        )
+        result = resp.json()["result"]
+        self.assertEqual(result.get("redirect"), "/shop/cart")
+        guest = self.env["pms.reservation.guest"].search(
+            [
+                ("reservation_id.property_id", "=", self.property.id),
+                ("name", "=", "Alice"),
+            ],
+            limit=1,
+        )
+        self.assertTrue(guest)
+        self.assertFalse(guest.partner_id)
 
     def test_add_to_cart_requires_login(self):
         """Public user attempting to add to cart receives a redirect to login."""

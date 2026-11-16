@@ -1,0 +1,5 @@
+id,name,model_id,group_id/id,operation,domain
+property_public,Property,pms.property,base.group_portal,r,"[('is_published', '=', True)]"
+access_pms_website_category_portal,access_pms_website_category_portal,pms.website.category,base.group_portal,r,
+access_pm_property_reservation_public,access_pm_property_reservation,pms.property.reservation,base.group_public,r,
+access_pm_property_reservation_portal,access_pm_property_reservation_portal,pms.property.reservation,base.group_portal,r,

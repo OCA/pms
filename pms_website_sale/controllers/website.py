@@ -32,10 +32,9 @@ class PropertyTableCompute:
     def process(self, products, ppg=20, ppr=4):
         # Compute products positions on the grid
         minpos = 0
-        index = 0
         maxy = 0
         x = 0
-        for p in products:
+        for index, p in enumerate(products):
             x = min(1, ppr)
             y = min(1, ppr)
             if index >= ppg:
@@ -61,7 +60,6 @@ class PropertyTableCompute:
             self.table[pos // ppr][pos % ppr] = {"product": p, "x": x, "y": y}
             if index <= ppg:
                 maxy = max(maxy, y + (pos // ppr))
-            index += 1
 
         # Format table according to HTML needs
         rows = sorted(self.table.items())
@@ -72,6 +70,9 @@ class PropertyTableCompute:
             rows[col] = [r[1] for r in cols if r[1]]
 
         return rows
+
+
+GUEST_FIELDS = ("name", "phone", "email")
 
 
 class WebsiteSale(WebsiteSale):
@@ -87,18 +88,14 @@ class WebsiteSale(WebsiteSale):
             date_range = args.get("date_range").split("-")
             start = date_range[0].strip() + " 00:00:00"
             end = date_range[1].strip() + " 23:59:59"
-            start = datetime.strptime(start, "%m/%d/%Y %H:%M:%S")
-            end = datetime.strptime(end, "%m/%d/%Y %H:%M:%S")
+            start = datetime.strptime(start, "%m/%d/%Y %H:%M:%S")  # noqa: DTZ007
+            end = datetime.strptime(end, "%m/%d/%Y %H:%M:%S")  # noqa: DTZ007
             reservation_ids = (
                 request.env["pms.reservation"]
                 .sudo()
                 .search(
                     [
-                        ("stop", "<=", end),
-                        "|",
-                        "|",
-                        ("start", ">=", start),
-                        ("start", ">=", end),
+                        ("start", "<=", end),
                         ("stop", ">=", start),
                     ]
                 )
@@ -151,10 +148,11 @@ class WebsiteSale(WebsiteSale):
                 post["ppg"] = ppg
             except ValueError:
                 ppg = False
+        website = request.env.website
         if not ppg:
-            ppg = request.env["website"].get_current_website().shop_ppg or 20
+            ppg = website.shop_ppg or 20
 
-        ppr = request.env["website"].get_current_website().shop_ppr or 4
+        ppr = website.shop_ppr or 4
 
         domain = self._get_property_search_domain(
             search=search, category=category, guest=guest_select, args=post
@@ -164,9 +162,7 @@ class WebsiteSale(WebsiteSale):
 
         pricelist_context, pricelist = self._get_pricelist_context()
 
-        request.update_context(
-            pricelist=pricelist.id, partner=request.env.user.partner_id
-        )
+        request.update_context(**pricelist_context, partner=request.env.user.partner_id)
 
         Property = request.env["pms.property"].with_context(bin_size=True)
 
@@ -187,7 +183,7 @@ class WebsiteSale(WebsiteSale):
             url = f"/shop/category/{request.env['ir.http']._slug(category)}"
 
         product_count = len(search_property)
-        pager = request.website.pager(
+        pager = website.pager(
             url=url, total=product_count, page=page, step=ppg, scope=7, url_args=post
         )
         offset = pager["offset"]
@@ -240,6 +236,34 @@ class PmsWebsiteSale(PmsPropertyWebsite):
         values["is_public_user"] = request.env.user._is_public()
         return values
 
+    def _get_reservation_overlap_domain(self, property_id, start, end):
+        """Domain of the active reservations overlapping the given dates."""
+        domain = [
+            ("property_id", "=", property_id),
+            ("start", "<=", end),
+            ("stop", ">=", start),
+        ]
+        stage_cancelled = request.env.ref(
+            "pms_sale.pms_stage_cancelled", raise_if_not_found=False
+        )
+        if stage_cancelled:
+            domain.append(("stage_id", "not in", stage_cancelled.ids))
+        return domain
+
+    def _prepare_guests(self, guests):
+        """Keep only the guest fields a public user may provide."""
+        prepared = []
+        for guest in guests or []:
+            if not isinstance(guest, dict):
+                continue
+            values = {}
+            for field_name in GUEST_FIELDS:
+                value = guest.get(field_name)
+                values[field_name] = value.strip() if isinstance(value, str) else ""
+            if values["name"]:
+                prepared.append(values)
+        return prepared
+
     @http.route(
         ["/property/<int:property_id>/check_availability"],
         type="jsonrpc",
@@ -251,28 +275,21 @@ class PmsWebsiteSale(PmsPropertyWebsite):
         if not date_start or not date_end:
             return {"available": False, "error": "Missing dates"}
         try:
-            start = datetime.strptime(date_start, "%Y-%m-%d")
-            end = datetime.strptime(date_end, "%Y-%m-%d")
+            start = datetime.strptime(date_start, "%Y-%m-%d")  # noqa: DTZ007
+            end = datetime.strptime(date_end, "%Y-%m-%d")  # noqa: DTZ007
         except ValueError:
             return {"available": False, "error": "Invalid dates"}
-        stage_new = request.env.ref("pms_sale.pms_stage_new", raise_if_not_found=False)
-        stage_cancelled = request.env.ref(
-            "pms_sale.pms_stage_cancelled", raise_if_not_found=False
-        )
-        excluded_stage_ids = [s.id for s in [stage_new, stage_cancelled] if s]
+        if end <= start:
+            return {"available": False, "error": "Invalid dates"}
         conflicting = (
             request.env["pms.reservation"]
             .sudo()
             .search(
-                [
-                    ("property_id", "=", property_id),
-                    ("stage_id", "not in", excluded_stage_ids),
-                    ("start", "<=", end),
-                    ("stop", ">=", start),
-                ]
+                self._get_reservation_overlap_domain(property_id, start, end),
+                limit=1,
             )
         )
-        return {"available": not bool(conflicting)}
+        return {"available": not conflicting}
 
     @http.route(
         ["/property/<int:property_id>/add_to_cart"],
@@ -291,9 +308,8 @@ class PmsWebsiteSale(PmsPropertyWebsite):
         **kwargs,
     ):
         pms_property = request.env["pms.property"].sudo().browse(property_id)
-        if (
-            not pms_property.exists()
-            or not pms_property.can_access_from_current_website()
+        if not pms_property.exists() or (
+            pms_property.website_id and pms_property.website_id != request.env.website
         ):
             return {"error": "Property not found", "redirect": "/property"}
 
@@ -304,22 +320,40 @@ class PmsWebsiteSale(PmsPropertyWebsite):
             }
 
         try:
-            start = datetime.strptime(date_start or "", "%Y-%m-%d")
-            end = datetime.strptime(date_end or "", "%Y-%m-%d")
+            start = datetime.strptime(date_start or "", "%Y-%m-%d")  # noqa: DTZ007
+            end = datetime.strptime(date_end or "", "%Y-%m-%d")  # noqa: DTZ007
         except ValueError:
             return {"error": "Invalid dates"}
+        if end <= start:
+            return {"error": "Invalid dates"}
 
+        try:
+            reservation_type_id = int(reservation_type_id or 0)
+        except (TypeError, ValueError):
+            return {"error": "Invalid reservation type"}
         reservation_type = (
-            request.env["pms.property.reservation"]
-            .sudo()
-            .browse(int(reservation_type_id or 0))
+            request.env["pms.property.reservation"].sudo().browse(reservation_type_id)
         )
-        if not reservation_type.exists():
+        if not reservation_type.exists() or (
+            reservation_type.property_id
+            and reservation_type.property_id != pms_property
+        ):
             return {"error": "Invalid reservation type"}
 
-        guests = [g for g in (guests or []) if g.get("name", "").strip()]
+        guests = self._prepare_guests(guests)
         if not guests:
             return {"error": "At least one guest is required"}
+
+        conflicting = (
+            request.env["pms.reservation"]
+            .sudo()
+            .search(
+                self._get_reservation_overlap_domain(pms_property.id, start, end),
+                limit=1,
+            )
+        )
+        if conflicting:
+            return {"error": "These dates are already booked"}
 
         reservation = (
             request.env["pms.reservation"]
@@ -336,7 +370,7 @@ class PmsWebsiteSale(PmsPropertyWebsite):
             )
         )
         duration = (end - start).days
-        order = request.cart or request.website._create_cart()
+        order = request.cart or request.env.website._create_cart()
         request.env["sale.order.line"].sudo().create(
             {
                 "order_id": order.id,

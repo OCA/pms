@@ -9,6 +9,8 @@ from odoo.addons.pms_website_sale.controllers.website import PropertyTableComput
 
 @tagged("post_install", "-at_install")
 class TestPropertyTableCompute(BaseCommon):
+    _test_user_groups = None
+
     def test_process_empty(self):
         rows = PropertyTableCompute().process([], ppg=20, ppr=4)
         self.assertEqual(rows, [])

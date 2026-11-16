@@ -99,7 +99,7 @@
                             aria-label="Remove one"
                             title="Remove one"
                         >
-                            <i class="fa fa-minus" />
+                            <i class="oi" data-icon="remove" />
                         </button>
                         <input
                             id="guest_select"
@@ -117,7 +117,7 @@
                             aria-label="Add one"
                             title="Add one"
                         >
-                            <i class="fa fa-plus" />
+                            <i class="oi" data-icon="add" />
                         </button>
                     </div>
                 </div>
@@ -126,9 +126,7 @@
     </template>
 
     <template id="search" name="Search Box">
-        <t t-call="pms_website_sale.pms_website_sale_search_box">
-            <t t-set="action" t-value="'/property'" />
-        </t>
+        <t t-call="pms_website_sale.pms_website_sale_search_box" action.f="/property" />
     </template>
 
     <!-- make grid view of template -->
@@ -142,7 +140,7 @@
             action="/shop/cart/update"
             method="post"
             class="card oe_product_cart oe_property_cart"
-            t-att-data-publish="product.website_published and 'on' or 'off'"
+            t-att-data-publish="product.is_published and 'on' or 'off'"
             itemscope="itemscope"
             itemtype="http://schema.org/Product"
         >
@@ -171,7 +169,7 @@
                             t-field="product.name"
                         />
                         <a
-                            t-if="not product.website_published"
+                            t-if="not product.is_published"
                             class="btn btn-sm btn-danger"
                             role="button"
                             t-att-href="product_href"
@@ -196,8 +194,7 @@
 
     <!-- /property listing -->
     <template id="properties" name="Properties">
-        <t t-call="website.layout">
-            <t t-set="additional_title">Properties</t>
+        <t t-call="website.layout" additional_title.translate="Properties">
             <div id="wrap" class="js_sale">
                 <div
                     id="oe_structure_website_sale_products_1"
@@ -207,12 +204,11 @@
                     <div
                         class="products_pager oe_property_filtter form-inline flex-md-nowrap justify-content-between justify-content-md-center"
                     >
-                        <t t-call="pms_website_sale.search">
-                            <t t-set="_classes" t-valuef="w-100 w-md-auto mt-2" />
-                        </t>
-                        <t t-call="website.pager">
-                            <t t-set="_classes" t-valuef="mt-2 ml-md-2" />
-                        </t>
+                        <t
+                            t-call="pms_website_sale.search"
+                            _classes.f="w-100 w-md-auto mt-2"
+                        />
+                        <t t-call="website.pager" _classes.f="mt-2 ml-md-2" />
                     </div>
                     <div class="row o_wsale_products_main_row">
                         <div
@@ -254,12 +250,8 @@
                                                     >
                                                         <t
                                                             t-call="pms_website_sale.property_item"
-                                                        >
-                                                            <t
-                                                                t-set="product_image_big"
-                                                                t-value="1 + 1 &gt;                                        2"
-                                                            />
-                                                        </t>
+                                                            product_image_big="1 + 1 &gt;                                        2"
+                                                        />
                                                     </div>
                                                 </td>
                                             </t>
@@ -319,7 +311,7 @@
                         t-attf-href="/web/login?redirect=#{property.website_url}"
                         class="btn btn-primary btn-lg"
                     >
-                        <i class="fa fa-sign-in" />
+                        <i class="oi" data-icon="login" />
                         Log in to Book
                     </a>
                 </t>
@@ -330,7 +322,7 @@
                         data-bs-toggle="modal"
                         data-bs-target="#pmsBookingModal"
                     >
-                        <i class="fa fa-calendar" />
+                        <i class="oi oi-filled" data-icon="calendar_today" />
                         Book Now
                     </button>
                 </t>
@@ -422,7 +414,7 @@
                                                         (<t
                                                         t-out="rt.price"
                                                         t-options='{"widget": "float", "precision": 2}'
-                                                    />&#160;<t
+                                                    /> <t
                                                         t-out="rt.currency_id.symbol"
                                                     />)
                                                     </t>
@@ -480,7 +472,7 @@
                                             type="button"
                                             t-att-data-max="property.no_of_guests or 0"
                                         >
-                                            <i class="fa fa-plus" />
+                                            <i class="oi" data-icon="add" />
                                             Add Guest
                                         </button>
                                     </div>
@@ -497,7 +489,7 @@
                                     class="btn btn-primary"
                                     type="button"
                                 >
-                                    <i class="fa fa-shopping-cart" />
+                                    <i class="oi" data-icon="shopping_cart" />
                                     Add to Cart
                                 </button>
                             </div>
@@ -522,8 +514,8 @@
             <button
                 type="button"
                 class="btn btn-link d-lg-none"
-                data-target="#wsale_products_categories_collapse"
-                data-toggle="collapse"
+                data-bs-target="#wsale_products_categories_collapse"
+                data-bs-toggle="collapse"
             >
                 Show categories
             </button>

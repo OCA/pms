@@ -3,8 +3,6 @@
 import {registry} from "@web/core/registry";
 
 registry.category("web_tour.tours").add("property_load_homepage", {
-    url: "/property",
-    test: true,
     steps: () => [
         {
             content: "Check Property",
@@ -14,8 +12,6 @@ registry.category("web_tour.tours").add("property_load_homepage", {
 });
 
 registry.category("web_tour.tours").add("property_search_homepage", {
-    url: "/property?date_range=04/18/2022-04/18/2022&guest_select=2",
-    test: true,
     steps: () => [
         {
             content: "Check Property",

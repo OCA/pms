@@ -60,11 +60,11 @@
                     if (result && result.available) {
                         availStatus.innerHTML =
                             '<span class="text-success">' +
-                            '<i class="fa fa-check-circle"></i> Available</span>';
+                            '<i class="oi oi-filled" data-icon="check_circle"></i> Available</span>';
                     } else {
                         availStatus.innerHTML =
                             '<span class="text-danger">' +
-                            '<i class="fa fa-times-circle"></i> Not available</span>';
+                            '<i class="oi oi-filled" data-icon="cancel"></i> Not available</span>';
                     }
                 })
                 .catch(function () {
@@ -159,7 +159,7 @@
                     '<div class="col-md-1">' +
                     '<button type="button" class="btn btn-outline-danger btn-sm pms-remove-guest"' +
                     ' title="Remove guest">' +
-                    '<i class="fa fa-times"></i>' +
+                    '<i class="oi" data-icon="close"></i>' +
                     "</button>" +
                     "</div>";
                 row.querySelector(".pms-remove-guest").addEventListener(

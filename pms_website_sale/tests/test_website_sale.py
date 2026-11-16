@@ -1,8 +1,9 @@
 # Copyright (c) 2024 Gray Matter Logic
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import json
-from datetime import datetime, timedelta
+from datetime import date, timedelta
 
+from odoo import fields
 from odoo.tests import HttpCase, tagged
 
 
@@ -11,7 +12,7 @@ class TestWebsiteSaleControllers(HttpCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.website = cls.env["website"].get_current_website()
+        cls.website = cls.env["website"].search([], limit=1)
         cls.product = cls.env.ref("pms_sale.product_product_reservation")
         cls.partner_owner = cls.env["res.partner"].create({"name": "Website Owner"})
         cls.property = cls.env["pms.property"].create(
@@ -20,7 +21,6 @@ class TestWebsiteSaleControllers(HttpCase):
                 "owner_id": cls.partner_owner.id,
                 "website_id": cls.website.id,
                 "is_published": True,
-                "website_published": True,
                 "city": "Boston",
                 "no_of_guests": 6,
                 "min_nights": 1,
@@ -44,7 +44,7 @@ class TestWebsiteSaleControllers(HttpCase):
         )
         cls.category = cls.env["pms.website.category"].create({"name": "City Stays"})
         cls.property.property_category_ids = cls.category
-        today = datetime.now()
+        today = fields.Datetime.now()
         cls.dates_free = (
             (today + timedelta(days=60)).strftime("%Y-%m-%d"),
             (today + timedelta(days=65)).strftime("%Y-%m-%d"),
@@ -93,7 +93,6 @@ class TestWebsiteSaleControllers(HttpCase):
                 "parent_id": self.property.id,
                 "website_id": self.website.id,
                 "is_published": True,
-                "website_published": True,
                 "city": "Boston",
             }
         )
@@ -121,10 +120,28 @@ class TestWebsiteSaleControllers(HttpCase):
             }
         )
         self.authenticate(None, None)
-        start = datetime.strptime(self.dates_blocked[0], "%Y-%m-%d").strftime(
-            "%m/%d/%Y"
+        start = date.fromisoformat(self.dates_blocked[0]).strftime("%m/%d/%Y")
+        end = date.fromisoformat(self.dates_blocked[1]).strftime("%m/%d/%Y")
+        response = self.url_open(f"/property?date_range={start} - {end}")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(b"Website Sale Property", response.content)
+
+    def test_property_search_excludes_dates_of_overlapping_stay(self):
+        """A stay ending after the search window still hides the property."""
+        stage_confirmed = self.env.ref("pms_sale.pms_stage_confirmed")
+        window_start = date.fromisoformat(self.dates_blocked[0])
+        window_end = date.fromisoformat(self.dates_blocked[1])
+        self.env["pms.reservation"].create(
+            {
+                "property_id": self.property.id,
+                "start": str(window_start - timedelta(days=2)),
+                "stop": str(window_end + timedelta(days=2)),
+                "stage_id": stage_confirmed.id,
+            }
         )
-        end = datetime.strptime(self.dates_blocked[1], "%Y-%m-%d").strftime("%m/%d/%Y")
+        self.authenticate(None, None)
+        start = window_start.strftime("%m/%d/%Y")
+        end = window_end.strftime("%m/%d/%Y")
         response = self.url_open(f"/property?date_range={start} - {end}")
         self.assertEqual(response.status_code, 200)
         self.assertNotIn(b"Website Sale Property", response.content)
@@ -176,6 +193,50 @@ class TestWebsiteSaleControllers(HttpCase):
         )
         result = response.json()["result"]
         self.assertEqual(result["error"], "Invalid reservation type")
+
+    def test_add_to_cart_rejects_foreign_reservation_type(self):
+        """A reservation type of another property cannot be booked."""
+        other_property = self.env["pms.property"].create(
+            {
+                "name": "Other Property",
+                "owner_id": self.partner_owner.id,
+                "is_published": True,
+            }
+        )
+        other_type = self.env["pms.property.reservation"].create(
+            {
+                "name": "Other Rate",
+                "product_id": self.product.id,
+                "property_id": other_property.id,
+            }
+        )
+        self.authenticate("admin", "admin")
+        response = self._jsonrpc(
+            f"/property/{self.property.id}/add_to_cart",
+            {
+                "date_start": self.dates_cart[0],
+                "date_end": self.dates_cart[1],
+                "reservation_type_id": other_type.id,
+                "guests": [{"name": "Guest"}],
+            },
+        )
+        result = response.json()["result"]
+        self.assertEqual(result["error"], "Invalid reservation type")
+
+    def test_add_to_cart_accepts_global_reservation_type(self):
+        """A property independent reservation type can be booked."""
+        self.authenticate("admin", "admin")
+        response = self._jsonrpc(
+            f"/property/{self.property.id}/add_to_cart",
+            {
+                "date_start": self.dates_cart[0],
+                "date_end": self.dates_cart[1],
+                "reservation_type_id": self.global_reservation_type.id,
+                "guests": [{"name": "Guest"}],
+            },
+        )
+        result = response.json()["result"]
+        self.assertEqual(result.get("redirect"), "/shop/cart")
 
     def test_add_to_cart_no_guests(self):
         self.authenticate("admin", "admin")
