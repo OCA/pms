@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <record id="view_reservation_form" model="ir.ui.view">
         <field name="name">pms.reservation.form</field>
@@ -7,36 +8,36 @@
                 <header>
                     <button
                         id="action_book"
+                        class="oe_highlight"
                         name="action_book"
                         string="Book"
-                        class="oe_highlight"
                         type="object"
                         groups="pms_base.group_pms_manager"
                         invisible="('stage_id', '!=', (%(pms_sale.pms_stage_new)d))"
                     />
                     <button
                         id="action_confirm"
+                        class="oe_highlight"
                         name="action_confirm"
                         string="Confirm"
-                        class="oe_highlight"
                         type="object"
                         groups="pms_base.group_pms_manager"
                         invisible="('stage_id', '!=', (%(pms_sale.pms_stage_booked)d))"
                     />
                     <button
                         id="action_check_in"
+                        class="oe_highlight"
                         name="action_check_in"
                         string="Check In"
-                        class="oe_highlight"
                         type="object"
                         groups="pms_base.group_pms_manager"
                         invisible="('stage_id', '!=', (%(pms_sale.pms_stage_confirmed)d))"
                     />
                     <button
                         id="action_check_out"
+                        class="oe_highlight"
                         name="action_check_out"
                         string="Check Out"
-                        class="oe_highlight"
                         type="object"
                         groups="pms_base.group_pms_manager"
                         invisible="('stage_id', '!=', (%(pms_sale.pms_stage_checked_in)d))"

@@ -1,8 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <!-- Dashboard -->
     <menuitem
-        name="Reservations"
         id="menu_board_reservation"
+        name="Reservations"
         sequence="20"
         parent="pms_base.menu_board"
         action="action_board_reservation"
@@ -10,8 +11,8 @@
 
     <!-- Operations -->
     <menuitem
-        name="Reservations"
         id="menu_operations_reservation"
+        name="Reservations"
         sequence="10"
         parent="pms_base.menu_operations"
         action="action_operations_reservation"
@@ -19,8 +20,8 @@
 
     <!-- Reporting -->
     <menuitem
-        name="Reservations"
         id="menu_report_reservation"
+        name="Reservations"
         sequence="10"
         parent="pms_base.menu_report"
         action="action_report_reservation"
@@ -28,8 +29,8 @@
 
     <!-- Configuration -->
     <menuitem
-        name="Reservations"
         id="menu_config_reservation"
+        name="Reservations"
         sequence="2"
         parent="pms_base.menu_config"
     />
