@@ -7,6 +7,13 @@ class PmsProperty(models.Model):
     _inherit = "pms.property"
 
     stock_location_id = fields.Many2one("stock.location", string="Inventory Location")
+    stock_location_auto_created = fields.Boolean(
+        string="Inventory Location Created Automatically",
+        copy=False,
+        readonly=True,
+        help="Set when the inventory location was created by this module from "
+        "the property name. Only such locations are renamed with the property.",
+    )
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -17,13 +24,17 @@ class PmsProperty(models.Model):
         return recs
 
     def write(self, vals):
+        vals = dict(vals)
+        if "stock_location_id" in vals:
+            # The user picked another location: it is not ours to rename.
+            vals.setdefault("stock_location_auto_created", False)
         res = super().write(vals)
         if "name" in vals:
             for rec in self:
-                if rec.stock_location_id:
-                    rec.stock_location_id.name = rec.name
-                else:
+                if not rec.stock_location_id:
                     rec._create_stock_location()
+                elif rec.stock_location_auto_created:
+                    rec.stock_location_id.name = rec.name
         return res
 
     def _create_stock_location(self):
@@ -37,4 +48,9 @@ class PmsProperty(models.Model):
                 "usage": "internal",
             }
         )
-        self.stock_location_id = location.id
+        self.write(
+            {
+                "stock_location_id": location.id,
+                "stock_location_auto_created": True,
+            }
+        )

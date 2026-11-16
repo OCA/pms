@@ -56,9 +56,29 @@ class TestPmsStock(PmsBaseCase):
             self.assertTrue(prop.stock_location_id)
             self.assertEqual(prop.stock_location_id.name, prop.name)
 
+    def test_property_auto_stock_location_is_flagged(self):
+        prop = self.env["pms.property"].create(self._property_vals("Flagged Property"))
+        self.assertTrue(prop.stock_location_auto_created)
+
+    def test_property_manual_location_clears_flag(self):
+        prop = self.env["pms.property"].create(
+            self._property_vals("Unflagged Property")
+        )
+        self.assertTrue(prop.stock_location_auto_created)
+        prop.write({"stock_location_id": self.location.id})
+        self.assertFalse(prop.stock_location_auto_created)
+
     def test_property_rename_updates_stock_location(self):
+        prop = self.env["pms.property"].create(
+            self._property_vals("Location To Rename")
+        )
+        prop.write({"name": "Renamed Property"})
+        self.assertEqual(prop.stock_location_id.name, "Renamed Property")
+
+    def test_property_rename_keeps_manually_set_location(self):
         self.property.write({"name": "Renamed Property"})
-        self.assertEqual(self.property.stock_location_id.name, "Renamed Property")
+        self.assertEqual(self.property.stock_location_id, self.location)
+        self.assertEqual(self.location.name, "Test Location")
 
     def test_property_rename_creates_stock_location(self):
         prop = self.env["pms.property"].create(

@@ -3,7 +3,7 @@
 {
     "name": "PMS - Stock",
     "summary": "Manage the content of a property.",
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.0",
     "development_status": "Beta",
     "category": "Generic Modules/Property Management System",
     "website": "https://github.com/OCA/pms",
@@ -15,5 +15,5 @@
         "demo/stock_location.xml",
         "demo/pms_property.xml",
     ],
-    "data": ["views/pms_property.xml"],
+    "data": ["views/pms_property_views.xml"],
 }
