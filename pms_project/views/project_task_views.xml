@@ -12,4 +12,14 @@
             </xpath>
         </field>
     </record>
+    <record id="view_task_search_form_pms" model="ir.ui.view">
+        <field name="name">project.task.search.form.pms</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_search_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='project_id']" position="after">
+                <field name="pms_property_ids" />
+            </xpath>
+        </field>
+    </record>
 </odoo>
