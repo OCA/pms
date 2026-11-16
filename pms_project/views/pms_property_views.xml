@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <record id="pms_property_views_form_project" model="ir.ui.view">
         <field name="name">pms.property.form.project</field>
