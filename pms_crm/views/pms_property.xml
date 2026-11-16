@@ -10,7 +10,7 @@
                     name="action_view_leads"
                     type="object"
                     class="oe_stat_button"
-                    icon="fa-pencil-square-o"
+                    icon="edit_square"
                 >
                     <field name="lead_count" widget="statinfo" string="Leads" />
                 </button>

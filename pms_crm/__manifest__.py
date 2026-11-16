@@ -4,7 +4,7 @@
 {
     "name": "PMS - CRM",
     "summary": "Link leads to properties",
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.0",
     "development_status": "Beta",
     "category": "Generic Modules/Property Management System",
     "website": "https://github.com/OCA/pms",
@@ -15,5 +15,9 @@
     "demo": [
         "demo/crm_lead.xml",
     ],
-    "data": ["views/crm_lead.xml", "views/pms_property.xml"],
+    "data": [
+        "security/ir.access.csv",
+        "views/crm_lead.xml",
+        "views/pms_property.xml",
+    ],
 }
