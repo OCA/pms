@@ -20,7 +20,6 @@ class PmsAmenity(models.Model):
         column2="property_id",
     )
     type_id = fields.Many2one(
-        string="Type",
         help="Organize amenities by type (multimedia, comfort, etc ...)",
         comodel_name="pms.amenity.type",
     )

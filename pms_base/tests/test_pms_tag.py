@@ -39,9 +39,12 @@ class TestPmsTag(PmsBaseCase):
     def test_unique_name_constraint(self):
         """Creating two tags with the same name raises an error."""
         self.env["pms.tag"].create({"name": "Unique Tag"})
-        with mute_logger("odoo.sql_db"), self.assertRaises(IntegrityError):
-            with self.env.cr.savepoint():
-                self.env["pms.tag"].create({"name": "Unique Tag"})
+        with (
+            mute_logger("odoo.sql_db"),
+            self.assertRaises(IntegrityError),
+            self.env.cr.savepoint(),
+        ):
+            self.env["pms.tag"].create({"name": "Unique Tag"})
 
     def test_tag_assigned_to_property(self):
         """A tag can be assigned to a property via tag_ids."""

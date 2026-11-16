@@ -2,16 +2,17 @@
 # Copyright 2019  Dario Lodeiros
 # Copyright (c) 2021 Open Source Integrators
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import pytz
 
 from odoo import api, fields, models
+
+from odoo.addons.base.models.res_partner import _tz_get
 
 
 class PmsProperty(models.Model):
     _name = "pms.property"
     _description = "Property"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
-    _inherits = {"res.partner": "partner_id"}
+    _inherit = ["mail.thread", "mail.activity.mixin"]  # noqa: RUF012
+    _inherits = {"res.partner": "partner_id"}  # noqa: RUF012
 
     def _default_team_id(self):
         return self.env.ref("pms_base.pms_team_default", raise_if_not_found=False)
@@ -24,7 +25,6 @@ class PmsProperty(models.Model):
         ondelete="cascade",
     )
     owner_id = fields.Many2one(
-        string="Owner",
         help="The owner of the property.",
         comodel_name="res.partner",
         required=True,
@@ -33,10 +33,8 @@ class PmsProperty(models.Model):
     property_child_ids = fields.One2many(
         "pms.property", "parent_id", string="Children Property"
     )
-    company_id = fields.Many2one(string="Company", comodel_name="res.company")
-    team_id = fields.Many2one(
-        "pms.team", string="Team", default=lambda self: self._default_team_id()
-    )
+    company_id = fields.Many2one(comodel_name="res.company")
+    team_id = fields.Many2one("pms.team", default=lambda self: self._default_team_id())
     room_ids = fields.One2many(
         string="Rooms",
         help="List of rooms in the property.",
@@ -71,7 +69,7 @@ class PmsProperty(models.Model):
         help="This field is used to determine the timezone of the property.",
         required=True,
         default=lambda self: self.env.user.tz or "UTC",
-        selection=lambda self: [(tz, tz) for tz in pytz.all_timezones],
+        selection=_tz_get,
     )
     area = fields.Float()
     heating = fields.Selection(
@@ -109,7 +107,7 @@ class PmsProperty(models.Model):
         for rec in self:
             rec.room_count = len(rec.room_ids)
 
-    @api.depends("room_ids")
+    @api.depends("room_ids", "room_ids.type_id")
     def _compute_balcony(self):
         for rec in self:
             type_id = self.env.ref(
@@ -121,7 +119,7 @@ class PmsProperty(models.Model):
             else:
                 rec.balcony = False
 
-    @api.depends("room_ids", "amenity_ids")
+    @api.depends("room_ids", "room_ids.type_id", "amenity_ids", "amenity_ids.type_id")
     def _compute_laundry_room(self):
         for rec in self:
             room_type_id = self.env.ref(
@@ -141,7 +139,7 @@ class PmsProperty(models.Model):
             else:
                 rec.laundry_room = False
 
-    @api.depends("room_ids", "amenity_ids")
+    @api.depends("room_ids", "room_ids.type_id", "amenity_ids", "amenity_ids.type_id")
     def _compute_parking_lot(self):
         for rec in self:
             room_type_id = self.env.ref(
@@ -161,7 +159,7 @@ class PmsProperty(models.Model):
             else:
                 rec.parking_lot = False
 
-    @api.depends("room_ids", "amenity_ids")
+    @api.depends("room_ids", "room_ids.type_id", "amenity_ids", "amenity_ids.type_id")
     def _compute_pets(self):
         for rec in self:
             room_type_id = self.env.ref(
@@ -181,7 +179,7 @@ class PmsProperty(models.Model):
             else:
                 rec.pets = False
 
-    @api.depends("room_ids")
+    @api.depends("room_ids", "room_ids.type_id")
     def _compute_terrace(self):
         for rec in self:
             type_id = self.env.ref(
@@ -193,7 +191,7 @@ class PmsProperty(models.Model):
             else:
                 rec.terrace = False
 
-    @api.depends("room_ids")
+    @api.depends("room_ids", "room_ids.type_id")
     def _compute_qty_half_bathroom(self):
         for rec in self:
             type_id = self.env.ref(
@@ -203,7 +201,7 @@ class PmsProperty(models.Model):
                 rec.room_ids.filtered(lambda x, _t=type_id: x.type_id == _t)
             )
 
-    @api.depends("room_ids")
+    @api.depends("room_ids", "room_ids.type_id")
     def _compute_qty_living_room(self):
         for rec in self:
             type_id = self.env.ref(
@@ -213,7 +211,7 @@ class PmsProperty(models.Model):
                 rec.room_ids.filtered(lambda x, _t=type_id: x.type_id == _t)
             )
 
-    @api.depends("room_ids")
+    @api.depends("room_ids", "room_ids.type_id")
     def _compute_qty_dining_room(self):
         for rec in self:
             type_id = self.env.ref(
@@ -223,7 +221,7 @@ class PmsProperty(models.Model):
                 rec.room_ids.filtered(lambda x, _t=type_id: x.type_id == _t)
             )
 
-    @api.depends("room_ids")
+    @api.depends("room_ids", "room_ids.type_id")
     def _compute_qty_kitchen(self):
         for rec in self:
             type_id = self.env.ref(
@@ -233,7 +231,7 @@ class PmsProperty(models.Model):
                 rec.room_ids.filtered(lambda x, _t=type_id: x.type_id == _t)
             )
 
-    @api.depends("room_ids")
+    @api.depends("room_ids", "room_ids.type_id")
     def _compute_qty_bedroom(self):
         for rec in self:
             type_id = self.env.ref(

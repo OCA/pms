@@ -19,7 +19,6 @@ class PmsRoom(models.Model):
         default=0,
     )
     property_id = fields.Many2one(
-        string="Property",
         required=True,
         comodel_name="pms.property",
         ondelete="restrict",

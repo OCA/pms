@@ -36,15 +36,18 @@ class TestPmsRoom(PmsBaseCase):
                 "type_id": self.room_type_bed.id,
             }
         )
-        with mute_logger("odoo.sql_db"), self.assertRaises(IntegrityError):
-            with self.env.cr.savepoint():
-                self.env["pms.room"].create(
-                    {
-                        "name": "Duplex",
-                        "property_id": self.property.id,
-                        "type_id": self.room_type_bath.id,
-                    }
-                )
+        with (
+            mute_logger("odoo.sql_db"),
+            self.assertRaises(IntegrityError),
+            self.env.cr.savepoint(),
+        ):
+            self.env["pms.room"].create(
+                {
+                    "name": "Duplex",
+                    "property_id": self.property.id,
+                    "type_id": self.room_type_bath.id,
+                }
+            )
 
     def test_same_name_different_property(self):
         """Two rooms with the same name in different properties are allowed."""

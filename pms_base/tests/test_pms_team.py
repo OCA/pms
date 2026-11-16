@@ -54,9 +54,12 @@ class TestPmsTeam(PmsBaseCase):
     def test_unique_name_constraint(self):
         """Creating two teams with the same name raises an error."""
         self.env["pms.team"].create({"name": "Unique Team"})
-        with mute_logger("odoo.sql_db"), self.assertRaises(IntegrityError):
-            with self.env.cr.savepoint():
-                self.env["pms.team"].create({"name": "Unique Team"})
+        with (
+            mute_logger("odoo.sql_db"),
+            self.assertRaises(IntegrityError),
+            self.env.cr.savepoint(),
+        ):
+            self.env["pms.team"].create({"name": "Unique Team"})
 
     def test_default_stages_on_creation(self):
         """A new team gets the default stages automatically."""

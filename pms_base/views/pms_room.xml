@@ -13,7 +13,7 @@
                             string="Archive"
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-archive"
+                            icon="archive"
                             invisible="not active"
                         />
                         <button
@@ -21,7 +21,7 @@
                             string="Restore"
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-archive"
+                            icon="archive"
                             invisible="active"
                         />
                     </div>
@@ -64,7 +64,7 @@
                         name="type_id"
                         string="Room Types"
                         enable_counters="True"
-                        icon="fa-hotel"
+                        icon="bed"
                         color="#784f73"
                     />
                 </searchpanel>

@@ -27,7 +27,6 @@ class PMSStage(models.Model):
     description = fields.Text(translate=True)
     company_id = fields.Many2one(
         "res.company",
-        string="Company",
         required=False,
         index=True,
         default=lambda self: self.env.company.id,
@@ -43,11 +42,9 @@ class PMSStage(models.Model):
 
     @api.constrains("custom_color")
     def _check_custom_color_hex_code(self):
-        if (
-            self.custom_color
-            and not self.custom_color.startswith("#")
-            or len(self.custom_color) != 7
-        ):
+        if not self.custom_color:
+            return
+        if not self.custom_color.startswith("#") or len(self.custom_color) != 7:
             raise ValidationError(
                 self.env._("Color code should be Hex Code. Ex:-#FFFFFF")
             )

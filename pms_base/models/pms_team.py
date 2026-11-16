@@ -6,7 +6,7 @@ from odoo import api, fields, models
 class PMSTeam(models.Model):
     _name = "pms.team"
     _description = "PMS Team"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ["mail.thread", "mail.activity.mixin"]  # noqa: RUF012
 
     def _default_stages(self):
         return self.env["pms.stage"].search([("is_default", "=", True)])
@@ -29,7 +29,6 @@ class PMSTeam(models.Model):
     sequence = fields.Integer(default=1, help="Used to sort teams. Lower is better.")
     company_id = fields.Many2one(
         "res.company",
-        string="Company",
         required=False,
         index=True,
         default=lambda self: self.env.company.id,

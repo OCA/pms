@@ -25,14 +25,14 @@ class PmsService(models.Model):
         default=0,
     )
     property_id = fields.Many2one(
-        string="Property",
         required=True,
         comodel_name="pms.property",
         ondelete="restrict",
     )
     vendor_id = fields.Many2one(
-        string="Vendor", required=True, comodel_name="res.partner", ondelete="restrict"
+        required=True, comodel_name="res.partner", ondelete="restrict"
     )
     icon = fields.Char(
-        string="Website Icon", help="Set Icon name from https://fontawesome.com/"
+        string="Website Icon",
+        help="Material Symbols icon name, see https://fonts.google.com/icons",
     )

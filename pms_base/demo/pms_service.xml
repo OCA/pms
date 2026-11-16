@@ -5,21 +5,21 @@
         <field name="name" ref="demo_product_internet" />
         <field name="property_id" ref="demo_property_downtown" />
         <field name="vendor_id" ref="demo_partner_owner" />
-        <field name="icon">fa-wifi</field>
+        <field name="icon">wifi</field>
     </record>
 
     <record id="demo_service_downtown_cleaning" model="pms.service">
         <field name="name" ref="demo_product_cleaning" />
         <field name="property_id" ref="demo_property_downtown" />
         <field name="vendor_id" ref="demo_partner_owner" />
-        <field name="icon">fa-home</field>
+        <field name="icon">home</field>
     </record>
 
     <record id="demo_service_downtown_laundry" model="pms.service">
         <field name="name" ref="demo_product_laundry" />
         <field name="property_id" ref="demo_property_downtown" />
         <field name="vendor_id" ref="demo_partner_owner" />
-        <field name="icon">fa-tshirt</field>
+        <field name="icon">local_laundry_service</field>
     </record>
 
     <!-- Services: Suburban House -->
@@ -27,20 +27,20 @@
         <field name="name" ref="demo_product_internet" />
         <field name="property_id" ref="demo_property_suburban" />
         <field name="vendor_id" ref="demo_partner_owner" />
-        <field name="icon">fa-wifi</field>
+        <field name="icon">wifi</field>
     </record>
 
     <record id="demo_service_suburban_cleaning" model="pms.service">
         <field name="name" ref="demo_product_cleaning" />
         <field name="property_id" ref="demo_property_suburban" />
         <field name="vendor_id" ref="demo_partner_owner" />
-        <field name="icon">fa-home</field>
+        <field name="icon">home</field>
     </record>
 
     <record id="demo_service_suburban_parking" model="pms.service">
         <field name="name" ref="demo_product_parking" />
         <field name="property_id" ref="demo_property_suburban" />
         <field name="vendor_id" ref="demo_partner_owner" />
-        <field name="icon">fa-car</field>
+        <field name="icon">directions_car</field>
     </record>
 </odoo>
