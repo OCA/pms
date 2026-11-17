@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="0">
+    <record id="pms_base.group_pms_manager" model="res.groups">
+        <field
+            name="implied_ids"
+            eval="[Command.link(ref('website.group_website_designer'))]"
+        />
+    </record>
+</odoo>

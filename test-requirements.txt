@@ -1,0 +1,4 @@
+odoo-addon-pms_base @ git+https://github.com/OCA/pms@refs/pull/472/head#subdirectory=pms_base
+odoo-addon-pms_account @ git+https://github.com/OCA/pms@refs/pull/473/head#subdirectory=pms_account
+odoo-addon-pms_sale @ git+https://github.com/OCA/pms@refs/pull/477/head#subdirectory=pms_sale
+odoo-addon-pms_website @ git+https://github.com/OCA/pms@refs/pull/480/head#subdirectory=pms_website
