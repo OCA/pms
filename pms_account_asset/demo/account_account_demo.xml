@@ -1,0 +1,22 @@
+<odoo noupdate="1">
+    <record id="account_account_pms_fixed_asset_demo" model="account.account">
+        <field name="code">PMS151</field>
+        <field name="name">PMS Demo Fixed Assets</field>
+        <field name="account_type">asset_fixed</field>
+        <field name="tag_ids" eval="[Command.clear()]" />
+    </record>
+
+    <record id="account_account_pms_depreciation_demo" model="account.account">
+        <field name="code">PMS152</field>
+        <field name="name">PMS Demo Accumulated Depreciation</field>
+        <field name="account_type">asset_fixed</field>
+        <field name="tag_ids" eval="[Command.clear()]" />
+    </record>
+
+    <record id="account_account_pms_depreciation_expense_demo" model="account.account">
+        <field name="code">PMS681</field>
+        <field name="name">PMS Demo Depreciation Expense</field>
+        <field name="account_type">expense_depreciation</field>
+        <field name="tag_ids" eval="[Command.clear()]" />
+    </record>
+</odoo>

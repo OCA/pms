@@ -1,0 +1,15 @@
+<odoo noupdate="1">
+    <record id="demo_asset_profile" model="account.asset.profile">
+        <field name="name">PMS Demo Assets</field>
+        <field name="account_asset_id" ref="account_account_pms_fixed_asset_demo" />
+        <field
+            name="account_depreciation_id"
+            ref="account_account_pms_depreciation_demo"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            ref="account_account_pms_depreciation_expense_demo"
+        />
+        <field name="journal_id" ref="account_journal_pms_depreciation_demo" />
+    </record>
+</odoo>

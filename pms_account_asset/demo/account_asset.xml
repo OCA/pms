@@ -1,45 +1,4 @@
 <odoo noupdate="1">
-    <record id="account_journal_pms_depreciation_demo" model="account.journal">
-        <field name="name">PMS Demo Depreciation</field>
-        <field name="code">PMSDP</field>
-        <field name="type">general</field>
-    </record>
-
-    <record id="account_account_pms_fixed_asset_demo" model="account.account">
-        <field name="code">PMS151</field>
-        <field name="name">PMS Demo Fixed Assets</field>
-        <field name="account_type">asset_fixed</field>
-        <field name="tag_ids" eval="[Command.clear()]" />
-    </record>
-
-    <record id="account_account_pms_depreciation_demo" model="account.account">
-        <field name="code">PMS152</field>
-        <field name="name">PMS Demo Accumulated Depreciation</field>
-        <field name="account_type">asset_fixed</field>
-        <field name="tag_ids" eval="[Command.clear()]" />
-    </record>
-
-    <record id="account_account_pms_depreciation_expense_demo" model="account.account">
-        <field name="code">PMS681</field>
-        <field name="name">PMS Demo Depreciation Expense</field>
-        <field name="account_type">expense_depreciation</field>
-        <field name="tag_ids" eval="[Command.clear()]" />
-    </record>
-
-    <record id="demo_asset_profile" model="account.asset.profile">
-        <field name="name">PMS Demo Assets</field>
-        <field name="account_asset_id" ref="account_account_pms_fixed_asset_demo" />
-        <field
-            name="account_depreciation_id"
-            ref="account_account_pms_depreciation_demo"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            ref="account_account_pms_depreciation_expense_demo"
-        />
-        <field name="journal_id" ref="account_journal_pms_depreciation_demo" />
-    </record>
-
     <record id="demo_asset_downtown_furniture" model="account.asset">
         <field name="name">Downtown Apartment – Furniture Set</field>
         <field name="property_id" ref="pms_base.demo_property_downtown" />
