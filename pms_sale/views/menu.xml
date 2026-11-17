@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- Dashboard -->
+    <menuitem
+        id="menu_board_reservation"
+        name="Reservations"
+        sequence="20"
+        parent="pms_base.menu_board"
+        action="action_board_reservation"
+    />
+
+    <!-- Operations -->
+    <menuitem
+        id="menu_operations_reservation"
+        name="Reservations"
+        sequence="10"
+        parent="pms_base.menu_operations"
+        action="action_operations_reservation"
+    />
+
+    <!-- Reporting -->
+    <menuitem
+        id="menu_report_reservation"
+        name="Reservations"
+        sequence="10"
+        parent="pms_base.menu_report"
+        action="action_report_reservation"
+    />
+
+    <!-- Configuration -->
+    <menuitem
+        id="menu_config_reservation"
+        name="Reservations"
+        sequence="2"
+        parent="pms_base.menu_config"
+    />
+
+    <!--
+    <menuitem
+        name="Types"
+        id="pms_pms_property_reservation_menu"
+        sequence="3"
+        parent="pms_sale.menu_config_reservation"
+        action="pms_property_reservation_action"/> -->
+
+    <!--
+    <menuitem
+        name="Mails"
+        id="pms_mail_menu"
+        sequence="4"
+        parent="pms_sale.menu_config_reservation"
+        action="action_pms_mail"/> -->
+
+    <!--
+    <menuitem
+        name="Guests"
+        id="pms_reservation_guest_menu"
+        sequence="5"
+        parent="pms_sale.menu_config_reservation"
+        action="pms_reservation_guest_action"/> -->
+
+    <menuitem
+        id="pms_reservation_timeline"
+        name="Reservations"
+        parent="sale.sale_order_menu"
+        sequence="25"
+        action="action_sale_reservation"
+        groups="sales_team.group_sale_salesman"
+    />
+</odoo>

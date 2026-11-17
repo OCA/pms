@@ -1,0 +1,11 @@
+id,name,model_id,group_id/id,operation,domain
+access_pms_property_reservation,access_pms_property_reservation,pms.property.reservation,base.group_user,cru,
+access_pms_property_reservation_manager,access_pms_property_reservation_manager,pms.property.reservation,pms_base.group_pms_manager,crud,
+access_pms_mail,access_pms_mail,pms.mail,base.group_user,cru,
+access_pms_mail_manager,access_pms_mail_manager,pms.mail,pms_base.group_pms_manager,crud,
+access_pms_reservation_guest,access_pms_reservation_guest,pms.reservation.guest,base.group_user,cru,
+access_pms_reservation_guest_manager,access_pms_reservation_guest_manager,pms.reservation.guest,pms_base.group_pms_manager,crud,
+access_pms_configurator,access_pms_configurator,pms.configurator,base.group_user,cru,
+access_pms_reservation_guest_wizard,access_pms_reservation_guest_wizard,pms.reservation.guest.wizard,base.group_user,cru,
+access_pms_reservation_manager,access_pms_reservation_manager,pms.reservation,pms_base.group_pms_manager,crud,
+access_pms_reservation_user,access_pms_reservation_user,pms.reservation,pms_base.group_pms_user,cru,
