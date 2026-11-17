@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <record id="demo_stock_location_downtown" model="stock.location">
+        <field name="name">Downtown Apartment</field>
+        <field name="location_id" ref="stock.stock_location_stock" />
+        <field name="usage">internal</field>
+    </record>
+
+    <record id="demo_stock_location_suburban" model="stock.location">
+        <field name="name">Suburban House</field>
+        <field name="location_id" ref="stock.stock_location_stock" />
+        <field name="usage">internal</field>
+    </record>
+</odoo>
