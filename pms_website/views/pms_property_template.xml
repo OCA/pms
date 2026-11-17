@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="property" name="Property" track="1">
+        <t t-call="website.layout" additional_title="property.name">
+            <div
+                id="oe_structure_website_sale_property_1"
+                class="oe_structure oe_empty"
+            />
+            <div
+                id="wrap"
+                class="js_sale"
+                itemscope="itemscope"
+                itemtype="http://schema.org/Product"
+            >
+                <section
+                    id="product_detail"
+                    t-attf-class="container py-2 oe_website_sale"
+                    t-att-data-view-track="view_track and '1' or '0'"
+                >
+                    <div class="row">
+                        <div class="col-md-4">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <a t-att-href="keep()">Properties</a>
+                                </li>
+                                <li class="breadcrumb-item active">
+                                    <span t-field="property.name" />
+                                </li>
+                            </ol>
+                        </div>
+                        <div class="col-md-8">
+                            <!-- <div class="form-inline justify-content-end">
+                                <t t-call="website_sale.search">
+                                    <t t-set="search" t-value="False"/>
+                                </t>
+                                <t t-call="website_sale.pricelist_list">
+                                    <t t-set="_classes" t-valuef="ml-2"/>
+                                </t>
+                            </div> -->
+                        </div>
+                    </div>
+                    <div
+                        id="oe_structure_website_sale_property_3"
+                        class="oe_structure oe_empty mt16"
+                        itemprop="description"
+                        t-field="property.website_description1"
+                    />
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div
+                                id="o-carousel-product"
+                                class="ratio ratio-16x9 rounded overflow-hidden bg-light"
+                            >
+                                <div
+                                    t-field="property.image_1920"
+                                    class="d-flex align-items-center justify-content-center h-100"
+                                    t-options='{"widget": "image", "preview_image": "image_1024", "class": "w-100 h-100 object-fit-cover", "alt-field": "name", "itemprop": "image"}'
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="product_details" class="col-12 pt-2 pb-3">
+                            <h1
+                                itemprop="name"
+                                t-field="property.name"
+                            >Property Name</h1>
+                            <span
+                                itemprop="url"
+                                style="display:none;"
+                                t-out="property.website_url"
+                            />
+                            <h4 t-if="property.partner_id" class="mt-2 mb-0">
+                                <a
+                                    itemprop="name"
+                                    t-att-href="property.google_map_link()"
+                                    target="_BLANK"
+                                    class="text-decoration-none"
+                                >
+                                    <i class="oi me-1" data-icon="location_on" />
+                                    <span t-field="property.city" />
+                                </a>
+                            </h4>
+                            <h5 t-if="property.parent_id" class="mt-2 text-muted">
+                                <i class="oi me-1" data-icon="business" />
+                                <span
+                                    itemprop="parent_name"
+                                    t-field="property.parent_id"
+                                />
+                            </h5>
+                            <div class="mt-4">
+                                <a href="/contactus" class="btn btn-primary">
+                                    Contact us
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div
+                            t-if="show_rooms and property.qty_bedroom"
+                            class="col-sm-6 col-md-3"
+                        >
+                            <div
+                                class="d-flex align-items-center p-3 border rounded h-100"
+                            >
+                                <i class="oi oi-2x text-muted me-3" data-icon="bed" />
+                                <div>
+                                    <div
+                                        class="fs-4 fw-bold"
+                                        t-out="property.qty_bedroom"
+                                    />
+                                    <div class="text-muted">Bedrooms</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            t-if="show_rooms and property.qty_half_bathroom"
+                            class="col-sm-6 col-md-3"
+                        >
+                            <div
+                                class="d-flex align-items-center p-3 border rounded h-100"
+                            >
+                                <i
+                                    class="oi oi-2x text-muted me-3"
+                                    data-icon="bathtub"
+                                />
+                                <div>
+                                    <div
+                                        class="fs-4 fw-bold"
+                                        t-out="property.qty_half_bathroom"
+                                    />
+                                    <div class="text-muted">Bathrooms</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div t-if="property.area" class="col-sm-6 col-md-3">
+                            <div
+                                class="d-flex align-items-center p-3 border rounded h-100"
+                            >
+                                <i class="oi oi-2x text-muted me-3" data-icon="home" />
+                                <div>
+                                    <div class="fs-4 fw-bold">
+                                        <span t-field="property.area" />
+                                        <span class="fs-6 fw-normal"> m²</span>
+                                    </div>
+                                    <div class="text-muted">Area</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div t-if="show_services and property.service_ids" class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="mb-3">Services</h5>
+                            <div class="row g-3">
+                                <t
+                                    t-foreach="property.sudo().service_ids"
+                                    t-as="service"
+                                >
+                                    <div class="col-sm-6 col-md-4">
+                                        <div
+                                            class="d-flex align-items-center p-3 border rounded h-100"
+                                        >
+                                            <i
+                                                t-attf-class="oi {{service.icon or ''}} oi-lg text-muted me-3"
+                                                t-attf-data-icon="{{service.icon or 'check'}}"
+                                            />
+                                            <span t-out="service.name.name" />
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        t-if="show_rooms and property.parking_lot"
+                        class="section-margin mt-3"
+                    >
+                        <ul class="list-group direction-vertical">
+                            <li
+                                class="sc-bBHxTw ljStsE list-group-item d-flex p-0  my-2 border-0"
+                            >
+                                <div class="pt-0 pr-3">
+                                    <span class="oi" data-icon="directions_car" />
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="mb-1">
+                                        <h5
+                                            class="mb-0 item-header"
+                                        >Parking Availability</h5>
+                                    </div>
+                                    <div class="mb-1">
+                                        <p
+                                            style="font-size: 15px; line-height:22px;"
+                                        >Free parking spots nearby</p>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div
+                        id="oe_structure_website_sale_property_4"
+                        class="oe_structure oe_empty mt16"
+                        itemprop="description"
+                        t-field="property.website_description2"
+                    />
+                </section>
+                <section class="row section-margin">
+                    <div class="col-12">
+                        <section class="container">
+                            <ul
+                                class="list-group direction-horizontal row"
+                                style="flex-direction: row !important; flex-wrap: wrap;"
+                            >
+                                <li
+                                    class="list-group-item d-flex p-0 col col-sm-6 col-md-4 p-3 my-2 border-0"
+                                >
+                                    <div class="pt-0 pe-3">
+                                        <i class="oi oi-lg" data-icon="schedule" />
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="mb-1">
+                                            <p
+                                                class="mb-0 item-header"
+                                            > Check in &amp; Check out </p>
+                                        </div>
+                                        <div class="mb-1">
+                                            <p
+                                                class="text-justify"
+                                            >Please contact the property manager for check-in and check-out times.</p>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li
+                                    class="list-group-item d-flex p-0 col col-sm-6 col-md-4 p-3 my-2 border-0"
+                                >
+                                    <div class="pt-0 pe-3">
+                                        <i class="oi oi-lg" data-icon="check_box" />
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="mb-1">
+                                            <p
+                                                class="mb-0 item-header"
+                                            > House Rules </p>
+                                        </div>
+                                        <div class="mb-1">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <t t-if="property.pets">
+                                                        <span
+                                                            class="oi"
+                                                            data-icon="circle"
+                                                        />
+                                                        <span
+                                                            class="normal"
+                                                        >Pet-friendly apartments.</span>
+                                                    </t>
+                                                    <t t-elif="property.pets== False">
+                                                        <span
+                                                            class="oi"
+                                                            data-icon="circle"
+                                                        />
+                                                        <span
+                                                            class="normal"
+                                                        >Pets Are  Not Allowed.</span>
+                                                    </t>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li
+                                    class="list-group-item d-flex p-0 col col-sm-6 col-md-4 p-3 my-2 border-0"
+                                >
+                                    <div class="pt-0 pe-3">
+                                        <i class="oi oi-lg" data-icon="cancel" />
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="mb-1">
+                                            <p
+                                                class="mb-0 item-header"
+                                            > Cancelation Policy </p>
+                                        </div>
+                                        <div class="mb-1">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <p
+                                                        class="text-justify"
+                                                    >Change of plans? No worries. You can cancel up to 72 hours before your check-in date for a full refund. For reservations close to check-in or special cases, please contact our team, we will be glad to help.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </section>
+                    </div>
+                </section>
+                <section
+                    t-if="show_amenities and property.amenity_ids"
+                    id="property_amenities"
+                    t-attf-class="container py-4 oe_website_sale"
+                    t-att-data-view-track="view_track and '1' or '0'"
+                >
+                    <t
+                        t-set="main_amenities"
+                        t-value="property.amenity_ids.filtered(lambda amenity: amenity.is_main_amenity)"
+                    />
+                    <t
+                        t-if="not main_amenities"
+                        t-set="main_amenities"
+                        t-value="property.amenity_ids"
+                    />
+                    <t
+                        t-set="other_amenities"
+                        t-value="property.amenity_ids.filtered(lambda amenity: not amenity.is_main_amenity)"
+                    />
+                    <h2 class="text-center mb-4">Amenities</h2>
+                    <div class="row g-3">
+                        <t t-foreach="main_amenities" t-as="amenity">
+                            <div class="col-sm-6 col-md-4">
+                                <div
+                                    class="d-flex align-items-center p-3 border rounded h-100"
+                                >
+                                    <i
+                                        class="oi oi-filled text-success me-3"
+                                        data-icon="check_circle"
+                                    />
+                                    <span t-out="amenity.name" />
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                    <div t-if="other_amenities" class="row mt-4">
+                        <div class="col-12 text-center">
+                            <button
+                                type="button"
+                                class="btn btn-outline-dark px-4"
+                                data-bs-toggle="modal"
+                                data-bs-target="#propertyAmenitiesModal"
+                            >
+                                Explore all amenities
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Anchor for pms_website_sale.property_booking_form xpath -->
+                <div
+                    id="exampleModalPreview"
+                    class="modal fade right d-none"
+                    aria-hidden="true"
+                    tabindex="-1"
+                />
+
+                <div
+                    id="propertyAmenitiesModal"
+                    class="modal fade"
+                    tabindex="-1"
+                    aria-labelledby="propertyAmenitiesModalLabel"
+                    aria-hidden="true"
+                >
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3
+                                    id="propertyAmenitiesModalLabel"
+                                    class="modal-title"
+                                >
+                                    All Amenities
+                                </h3>
+                                <button
+                                    type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Close"
+                                />
+                            </div>
+                            <div class="modal-body">
+                                <p class="text-muted mb-4">
+                                    Explore all amenities available in this property.
+                                </p>
+                                <div class="row g-3">
+                                    <t t-foreach="property.amenity_ids" t-as="amenity">
+                                        <div class="col-sm-6 col-md-4">
+                                            <div
+                                                class="d-flex align-items-center p-3 border rounded h-100"
+                                            >
+                                                <i
+                                                    class="oi oi-filled text-success me-3"
+                                                    data-icon="check_circle"
+                                                />
+                                                <span t-out="amenity.name" />
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                id="oe_structure_website_sale_property_2"
+                class="oe_structure oe_empty"
+            />
+        </t>
+    </template>
+
+    <template id="properties" name="Properties">
+        <t t-call="website.layout" additional_title.translate="Properties">
+            <div id="wrap">
+                <section class="container py-5">
+                    <div class="row mb-4">
+                        <div class="col-12 text-center">
+                            <h1>Properties</h1>
+                            <p class="lead text-muted mb-0">
+                                Browse our available properties and find your next stay.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <form
+                                method="get"
+                                action="/properties"
+                                class="row g-3 align-items-end"
+                            >
+                                <div class="col-md-3">
+                                    <label
+                                        class="form-label"
+                                        for="property_filter_city"
+                                    >
+                                        City
+                                    </label>
+                                    <select
+                                        id="property_filter_city"
+                                        class="form-select"
+                                        name="city"
+                                    >
+                                        <option value="">All cities</option>
+                                        <t t-foreach="cities" t-as="city_option">
+                                            <option
+                                                t-att-value="city_option"
+                                                t-att-selected="selected_city == city_option and 'selected' or None"
+                                                t-out="city_option"
+                                            />
+                                        </t>
+                                    </select>
+                                </div>
+                                <div t-if="show_rooms" class="col-md-3">
+                                    <label
+                                        class="form-label"
+                                        for="property_filter_bedrooms"
+                                    >
+                                        Bedrooms
+                                    </label>
+                                    <select
+                                        id="property_filter_bedrooms"
+                                        class="form-select"
+                                        name="bedrooms"
+                                    >
+                                        <option value="">Any bedrooms</option>
+                                        <t
+                                            t-foreach="bedrooms_options"
+                                            t-as="bedroom_option"
+                                        >
+                                            <option
+                                                t-att-value="bedroom_option"
+                                                t-att-selected="selected_bedrooms == str(bedroom_option) and 'selected' or None"
+                                            >
+                                                <t t-out="bedroom_option" />
+                                                <t
+                                                    t-if="bedroom_option == 1"
+                                                > bedroom</t>
+                                                <t t-else=""> bedrooms</t>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label
+                                        class="form-label"
+                                        for="property_filter_category"
+                                    >
+                                        Category
+                                    </label>
+                                    <select
+                                        id="property_filter_category"
+                                        class="form-select"
+                                        name="category"
+                                    >
+                                        <option value="">All categories</option>
+                                        <t
+                                            t-foreach="categories"
+                                            t-as="category_option"
+                                        >
+                                            <option
+                                                t-att-value="category_option.id"
+                                                t-att-selected="selected_category == str(category_option.id) and 'selected' or None"
+                                                t-out="category_option.display_name"
+                                            />
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label" for="property_filter_tag">
+                                        Tag
+                                    </label>
+                                    <select
+                                        id="property_filter_tag"
+                                        class="form-select"
+                                        name="tag"
+                                    >
+                                        <option value="">All tags</option>
+                                        <t t-foreach="tags" t-as="tag_option">
+                                            <option
+                                                t-att-value="tag_option.id"
+                                                t-att-selected="selected_tag == str(tag_option.id) and 'selected' or None"
+                                                t-out="tag_option.display_name"
+                                            />
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="col-12 d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        Filter
+                                    </button>
+                                    <a href="/properties" class="btn btn-link">
+                                        Clear
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div t-if="properties" class="row g-4">
+                        <t t-foreach="properties" t-as="property">
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card h-100 shadow-sm border-0">
+                                    <a
+                                        t-att-href="property.website_url"
+                                        class="text-decoration-none text-reset"
+                                    >
+                                        <div
+                                            class="ratio ratio-4x3 bg-light overflow-hidden rounded-top"
+                                        >
+                                            <img
+                                                t-att-src="website.image_url(property, 'image_512')"
+                                                t-att-alt="property.name"
+                                                class="w-100 h-100 object-fit-cover"
+                                            />
+                                        </div>
+                                        <div class="card-body">
+                                            <h5
+                                                class="card-title mb-2"
+                                                t-field="property.name"
+                                            />
+                                            <p
+                                                t-if="property.city"
+                                                class="card-text text-muted mb-2"
+                                            >
+                                                <i
+                                                    class="oi me-1"
+                                                    data-icon="location_on"
+                                                />
+                                                <span t-field="property.city" />
+                                            </p>
+                                            <div
+                                                class="d-flex flex-wrap gap-2 text-muted small"
+                                            >
+                                                <span
+                                                    t-if="show_rooms and property.qty_bedroom"
+                                                >
+                                                    <i
+                                                    class="oi me-1"
+                                                    data-icon="bed"
+                                                />
+                                                    <t
+                                                    t-out="property.qty_bedroom"
+                                                /> bedrooms
+                                                </span>
+                                                <span t-if="property.area">
+                                                    <i
+                                                    class="oi me-1"
+                                                    data-icon="home"
+                                                />
+                                                    <span t-field="property.area" />
+                                                    m²
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                    <div t-if="not properties" class="alert alert-info mt-4">
+                        No published properties are available right now.
+                    </div>
+                    <div t-if="pager" class="d-flex justify-content-center mt-4">
+                        <t t-call="website.pager" />
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+</odoo>
