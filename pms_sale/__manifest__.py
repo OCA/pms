@@ -40,6 +40,7 @@
             "pms_sale/static/src/js/pms_configurator_controller.esm.js",
             "pms_sale/static/src/js/pms_sale_product_field.esm.js",
             "pms_sale/static/src/js/timeline.esm.js",
+            "pms_sale/static/src/xml/timeline.xml",
         ],
     },
 }
