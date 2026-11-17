@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_pms_room_type_form" model="ir.ui.view">
+        <field name="name">pms.room.type.form</field>
+        <field name="model">pms.room.type</field>
+        <field name="arch" type="xml">
+            <form string="Room Type">
+                <header />
+                <sheet>
+                    <div class="oe_button_box" name="button_box" />
+                    <label for="name" />
+                    <h1>
+                        <field name="name" required="1" />
+                    </h1>
+                    <group id="main">
+                        <group id="main-left">
+                            <field name="icon" />
+                        </group>
+                        <group id="main-right" />
+                    </group>
+                    <notebook />
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pms_room_type_tree" model="ir.ui.view">
+        <field name="name">pms.room.type.tree</field>
+        <field name="model">pms.room.type</field>
+        <field name="arch" type="xml">
+            <list string="Room Types">
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pms_room_type" model="ir.actions.act_window">
+        <field name="name">Room Types</field>
+        <field name="res_model">pms.room.type</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
