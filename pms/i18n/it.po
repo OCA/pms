@@ -1932,6 +1932,22 @@ msgid "A payment acquirer is required to create a transaction."
 msgstr "È richiesto un metodo di pagamento per creare la transazione."
 
 #. module: pms
+#. odoo-python
+#: code:addons/pms/models/pms_room_type.py:0
+#, python-format
+msgid "A percentage variation must be greater than -100%."
+msgstr ""
+
+#. module: pms
+#. odoo-python
+#: code:addons/pms/models/pms_room_type.py:0
+#, python-format
+msgid ""
+"A room type cannot derive its price from itself, directly or through other "
+"room types."
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_folio_advance_payment_inv__advance_payment_method
 msgid ""
 "A standard invoice is issued with all the order                 lines ready "
@@ -2127,6 +2143,13 @@ msgstr "Aggiungi il nome camera"
 #: model_terms:ir.ui.view,arch_db:pms.booking_engine
 msgid "Add to Folio"
 msgstr "Aggiungi al foglio"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room_type__price_derivation_value
+msgid ""
+"Added to the price of the base room type, as an amount in the currency of "
+"the pricelist or as a percentage of that price. Negative values lower it"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__additional_product_tag_ids
@@ -4682,6 +4705,21 @@ msgstr ""
 "prodotto: se verrà comprato, lavorato, rifornito su ordine, ecc."
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__price_derivation_pricelist_ids
+msgid "Derive in Pricelists"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_room_type_view_form
+msgid "Derived Price"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__price_derived_room_type_ids
+msgid "Derived Room Types"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__name
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__description
 #: model:ir.model.fields,field_description:pms.field_room_closure_reason__description
@@ -5326,6 +5364,11 @@ msgstr "Nome"
 #: model:ir.model.fields,field_description:pms.field_pms_property__property_account_position_id
 msgid "Fiscal Position"
 msgstr "Posizione fiscale"
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__pms_room_type__price_derivation_type__amount
+msgid "Fixed amount"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_ir_pms_property__value_float
@@ -7261,6 +7304,11 @@ msgstr ""
 "        da quanto indicato nella tariffa"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__price_derived_room_type_ids
+msgid "Left Out (Derived Price)"
+msgstr ""
+
+#. module: pms
 #: model:ir.model,name:pms.model_pms_wizard_reservation_lines_split
 msgid "Lines available to split"
 msgstr "Righe disponibili per la divisione"
@@ -8811,6 +8859,11 @@ msgid "Pending arrival"
 msgstr "Arrivo in sospeso"
 
 #. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__pms_room_type__price_derivation_type__percent
+msgid "Percentage"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__commission_percent
 msgid "Percentage corresponding to commission"
 msgstr "Percentuale corrispondente alla commissione"
@@ -8870,8 +8923,8 @@ msgid ""
 "Please define an accounting sales journal for the company {company_name} "
 "({company_id})."
 msgstr ""
-"Definire un registro vendite contabile per l'azienda {company_name} ("
-"{company_id})."
+"Definire un registro vendite contabile per l'azienda {company_name} "
+"({company_id})."
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_account_analytic_distribution_model__pms_property_id
@@ -8946,6 +8999,11 @@ msgid "Price"
 msgstr "Prezzo"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__price_base_room_type_id
+msgid "Price Derived From"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__price_reduce
 msgid "Price Reduce"
 msgstr "Riduzione prezzo"
@@ -8961,6 +9019,11 @@ msgid "Price Reduce Tax included"
 msgstr "Riduzione prezzo tasse incluse"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__price_derivation_rounding
+msgid "Price Rounding"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_detail
 msgid "Price Total"
 msgstr "Prezzo totale"
@@ -8969,6 +9032,16 @@ msgstr "Prezzo totale"
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__price_unit
 msgid "Price Unit"
 msgstr "Prezzo unitario"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__price_derivation_value
+msgid "Price Variation"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__price_derivation_type
+msgid "Price Variation Type"
+msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
@@ -9150,6 +9223,13 @@ msgstr "Listini per un canale di vendita"
 #: model:ir.model.fields,help:pms.field_pms_availability_plan__pms_pricelist_ids
 msgid "Pricelists of the availability plan "
 msgstr "Listini del piano di disponibilità "
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room_type__price_derivation_pricelist_ids
+msgid ""
+"Pricelists where the price is derived. Leave it empty to derive it in all of "
+"them"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_board_service_room_type__pricelist_ids
@@ -10352,6 +10432,13 @@ msgid "Room type line in Booking Engine"
 msgstr "Riga tipo camera nel Booking Engine"
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room_type__price_base_room_type_id
+msgid ""
+"Room type whose price is the base of this one in the pricelists without a "
+"rule of their own for it"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__board_service_room_type_ids
 msgid "Room type's board services"
 msgstr "Tipo camera dei servizi pensione"
@@ -10360,6 +10447,29 @@ msgstr "Tipo camera dei servizi pensione"
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__room_type_filter_ids
 msgid "Room types"
 msgstr "Tipi camera"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_massive_changes_wizard__room_type_ids
+msgid ""
+"Room types to apply the changes to. Leave it empty to apply them to all the "
+"room types of the properties, except for the prices of the room types whose "
+"price is derived from another one"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_massive_changes_wizard__price_derived_room_type_ids
+msgid ""
+"Room types whose price is derived from another one in the selected "
+"pricelists. As no room type is selected, the new price is not set on them: "
+"they keep following the room type their price is derived from, except on the "
+"dates they have a price of their own, which is kept. Select them explicitly "
+"to give them a price of their own"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room_type__price_derived_room_type_ids
+msgid "Room types whose price is derived from this one"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__rooms
@@ -10430,6 +10540,13 @@ msgstr "Camere che appartengono al tipo camera."
 #: model:ir.model.fields,help:pms.field_pms_booking_duplicate__line_ids
 msgid "Rooms to create"
 msgstr "Camere da creare"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room_type__price_derivation_rounding
+msgid ""
+"Round the prices derived by a percentage to a multiple of this value, e.g. 1 "
+"for whole amounts. Zero rounds them to the currency"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__route_ids
@@ -10515,7 +10632,8 @@ msgstr "Canale di vendita attraverso cui è stato creato il folio, l'originale"
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation_line__sale_channel_id
 msgid "Sale Channel through which reservation line was created"
-msgstr "Canale di vendita attraverso cui è stata creata la riga di prenotazione"
+msgstr ""
+"Canale di vendita attraverso cui è stata creata la riga di prenotazione"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__sale_channel_origin_id
@@ -10599,7 +10717,8 @@ msgstr "Righe di vendita"
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__sale_line_ids
 msgid "Sale lines in folio. It correspond with reservation nights"
-msgstr "Righe di vendita nel folio. Corrispondono alle notti della prenotazione"
+msgstr ""
+"Righe di vendita nel folio. Corrispondono alle notti della prenotazione"
 
 #. module: pms
 #: model:ir.ui.menu,name:pms.pms_sales_menu
@@ -11792,7 +11911,8 @@ msgstr "Gli ospiti del check-in in un folio"
 #: code:addons/pms/models/res_users.py:0
 #, python-format
 msgid "The chosen property is not in the allowed properties for this user"
-msgstr "La struttura scelta non è tra le strutture consentite per questo utente"
+msgstr ""
+"La struttura scelta non è tra le strutture consentite per questo utente"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__closure_reason_id
@@ -11879,8 +11999,8 @@ msgid ""
 "The journal %(journal)s is used for normal invoices in the properties: "
 "%(properties)s"
 msgstr ""
-"Il registro %(journal)s è usato per fatture normali nelle strutture: %"
-"(properties)s"
+"Il registro %(journal)s è usato per fatture normali nelle strutture: "
+"%(properties)s"
 
 #. module: pms
 #. odoo-python
@@ -11890,8 +12010,8 @@ msgid ""
 "The journal %(journal)s is used for simplified invoices in the properties: "
 "%(properties)s"
 msgstr ""
-"Il registro %(journal)s è usato per fatture semplificate nelle strutture: %"
-"(properties)s"
+"Il registro %(journal)s è usato per fatture semplificate nelle strutture: "
+"%(properties)s"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__manager_user_id
@@ -11996,6 +12116,21 @@ msgstr ""
 #: model:ir.model.fields,help:pms.field_pms_reservation_line__price
 msgid "The price in a reservation line"
 msgstr "Il prezzo in una riga di prenotazione"
+
+#. module: pms
+#. odoo-python
+#: code:addons/pms/models/pms_room_type.py:0
+#: code:addons/pms/models/product_pricelist_item.py:0
+#, python-format
+msgid "The price of %(room_type)s is derived through too many levels."
+msgstr ""
+
+#. module: pms
+#. odoo-python
+#: code:addons/pms/models/pms_room_type.py:0
+#, python-format
+msgid "The price rounding can't be negative."
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__amount_untaxed
@@ -12153,8 +12288,8 @@ msgid ""
 "The room %(room)s can't hold %(occupancy)s guests (maximum capacity: "
 "%(capacity)s) (%(reservation)s)"
 msgstr ""
-"La camera %(room)s non può ospitare %(occupancy)s ospiti (capacità massima: %"
-"(capacity)s) (%(reservation)s)"
+"La camera %(room)s non può ospitare %(occupancy)s ospiti (capacità massima: "
+"%(capacity)s) (%(reservation)s)"
 
 #. module: pms
 #. odoo-python
@@ -13320,6 +13455,13 @@ msgstr ""
 "fatturazione."
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room_type__price_derivation_type
+msgid ""
+"Whether the variation is a fixed amount or a percentage of the price of the "
+"base room type"
+msgstr ""
+
+#. module: pms
 #: model:pms.amenity,name:pms.pms_amenity_wi_fi
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
@@ -13551,7 +13693,8 @@ msgstr "CAP dell'ospite"
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room__is_shared_room
 msgid "allows you to reserve units  smaller than the room itself (eg beds)"
-msgstr "consente di prenotare unità più piccole della camera stessa (es. letti)"
+msgstr ""
+"consente di prenotare unità più piccole della camera stessa (es. letti)"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__free_room_ids
