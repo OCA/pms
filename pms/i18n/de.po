@@ -3795,9 +3795,9 @@ msgid "Children"
 msgstr "Kinder"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_reservation__children_occupying
-msgid "Children Occupying"
-msgstr "Kinder besetzend"
+#: model:ir.model.fields,field_description:pms.field_pms_room__children_capacity
+msgid "Children Capacity"
+msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.several_partners_wizard
@@ -8138,9 +8138,11 @@ msgstr ""
 "Anzahl der Check-In-Partner, die zum Einchecken in eine Reservierung anstehen"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_reservation__children_occupying
-msgid "Number of children there in guest list whose presence counts"
-msgstr "Anzahl der Kinder auf der Gästeliste, deren Anwesenheit zählt"
+#: model:ir.model.fields,help:pms.field_pms_reservation__children
+msgid ""
+"Number of children there in guest list. They take the regular places of the "
+"room first, and only overflow into its children places"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_has_error_counter
@@ -8202,6 +8204,19 @@ msgid "Number of outgoing stock moves in the past 12 months"
 msgstr "Anzahl der ausgehenden Aktienbewegungen in den letzten 12 Monaten"
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room__capacity
+msgid "Number of places where anyone can sleep, adults or children"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room__children_capacity
+msgid ""
+"Number of places where only children can sleep, such as child bunk beds. "
+"Adults never occupy them, children occupy them only once the regular "
+"capacity is full"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__pricelist_item_count
 msgid "Number of price rules"
 msgstr "Anzahl der Preisregeln"
@@ -8239,14 +8254,6 @@ msgstr "Anzahl der Dienste im Folio"
 #: model:ir.model.fields,help:pms.field_pms_service__product_qty
 msgid "Number of services that were sold"
 msgstr "Anzahl der verkauften Dienstleistungen"
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_reservation__children
-msgid ""
-"Number total of children there in guest list,whose presence counts or not"
-msgstr ""
-"Gesamtzahl der Kinder auf der Gästeliste, unabhängig davon ob die "
-"Anwesenheit zählt oder nicht"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__occupied_room
@@ -12058,12 +12065,6 @@ msgid "The main manager in the folio"
 msgstr "Der wichtigste Manager im Folio"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_room__capacity
-msgid "The maximum number of people that can occupy a room"
-msgstr ""
-"Die maximale Anzahl von Personen, die einen Wohneinheit bewohnen können"
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_team_member__pms_role
 msgid ""
 "The member role in the organizationIt can be 'Reception', 'Revenue', "
@@ -12328,8 +12329,9 @@ msgstr "Der Ertragsmanager im Folio"
 #: code:addons/pms/models/pms_reservation_line.py:0
 #, python-format
 msgid ""
-"The room %(room)s can't hold %(occupancy)s guests (maximum capacity: "
-"%(capacity)s) (%(reservation)s)"
+"The room %(room)s can't hold %(adults)s adults and %(children)s children "
+"(capacity: %(capacity)s, children places: %(children_capacity)s) "
+"(%(reservation)s)"
 msgstr ""
 
 #. module: pms
@@ -13892,6 +13894,22 @@ msgstr ""
 #, python-format
 msgid "{room_name}: No room available in {checkin} <-> {checkout}."
 msgstr "{room_name}: Kein Zimmer verfügbar in {checkin} <-> {checkout}."
+
+#~ msgid "Children Occupying"
+#~ msgstr "Kinder besetzend"
+
+#~ msgid "Number of children there in guest list whose presence counts"
+#~ msgstr "Anzahl der Kinder auf der Gästeliste, deren Anwesenheit zählt"
+
+#~ msgid ""
+#~ "Number total of children there in guest list,whose presence counts or not"
+#~ msgstr ""
+#~ "Gesamtzahl der Kinder auf der Gästeliste, unabhängig davon ob die "
+#~ "Anwesenheit zählt oder nicht"
+
+#~ msgid "The maximum number of people that can occupy a room"
+#~ msgstr ""
+#~ "Die maximale Anzahl von Personen, die einen Wohneinheit bewohnen können"
 
 #~ msgid "Days Late"
 #~ msgstr "Tage überfällig"

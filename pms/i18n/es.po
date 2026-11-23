@@ -3093,8 +3093,8 @@ msgid "Children"
 msgstr "Niños"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_reservation__children_occupying
-msgid "Children Occupying"
+#: model:ir.model.fields,field_description:pms.field_pms_room__children_capacity
+msgid "Children Capacity"
 msgstr ""
 
 #. module: pms
@@ -7370,9 +7370,11 @@ msgid "Number of checkin partners pending to checkin in a reservation"
 msgstr "Ningún checkin fue realizado en esta reserva"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_reservation__children_occupying
-msgid "Number of children there in guest list whose presence counts"
-msgstr "Numero de niños en el rooming que ocupan plaza"
+#: model:ir.model.fields,help:pms.field_pms_reservation__children
+msgid ""
+"Number of children there in guest list. They take the regular places of the "
+"room first, and only overflow into its children places"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_has_error_counter
@@ -7434,6 +7436,19 @@ msgid "Number of outgoing stock moves in the past 12 months"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room__capacity
+msgid "Number of places where anyone can sleep, adults or children"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room__children_capacity
+msgid ""
+"Number of places where only children can sleep, such as child bunk beds. "
+"Adults never occupy them, children occupy them only once the regular "
+"capacity is full"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__pricelist_item_count
 msgid "Number of price rules"
 msgstr "Número de reglas de precio"
@@ -7470,12 +7485,6 @@ msgstr "Número de reglas de precio"
 #: model:ir.model.fields,help:pms.field_pms_service__product_qty
 msgid "Number of services that were sold"
 msgstr "Número de reglas de precio"
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_reservation__children
-msgid ""
-"Number total of children there in guest list,whose presence counts or not"
-msgstr "Número total de niños en el roomins"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__occupied_room
@@ -11238,11 +11247,6 @@ msgid "The main manager in the folio"
 msgstr "El principal gestor del folio"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_room__capacity
-msgid "The maximum number of people that can occupy a room"
-msgstr "El número máximo de personas que pueden ocupar una habitación"
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_team_member__pms_role
 msgid ""
 "The member role in the organizationIt can be 'Reception', 'Revenue', "
@@ -11497,8 +11501,9 @@ msgstr "El gestor de ingresos en el folio"
 #: code:addons/pms/models/pms_reservation_line.py:0
 #, python-format
 msgid ""
-"The room %(room)s can't hold %(occupancy)s guests (maximum capacity: "
-"%(capacity)s) (%(reservation)s)"
+"The room %(room)s can't hold %(adults)s adults and %(children)s children "
+"(capacity: %(capacity)s, children places: %(children_capacity)s) "
+"(%(reservation)s)"
 msgstr ""
 
 #. module: pms
@@ -13032,6 +13037,16 @@ msgstr ""
 #, python-format
 msgid "{room_name}: No room available in {checkin} <-> {checkout}."
 msgstr ""
+
+#~ msgid "Number of children there in guest list whose presence counts"
+#~ msgstr "Numero de niños en el rooming que ocupan plaza"
+
+#~ msgid ""
+#~ "Number total of children there in guest list,whose presence counts or not"
+#~ msgstr "Número total de niños en el roomins"
+
+#~ msgid "The maximum number of people that can occupy a room"
+#~ msgstr "El número máximo de personas que pueden ocupar una habitación"
 
 #~ msgid "Allowed Method"
 #~ msgstr "Método Permitido"

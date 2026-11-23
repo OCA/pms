@@ -3776,9 +3776,9 @@ msgid "Children"
 msgstr "Figli"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_reservation__children_occupying
-msgid "Children Occupying"
-msgstr "Occupazione figli"
+#: model:ir.model.fields,field_description:pms.field_pms_room__children_capacity
+msgid "Children Capacity"
+msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.several_partners_wizard
@@ -8105,9 +8105,11 @@ msgstr ""
 "Numero di partner al check-in in attesa di check-in in una prenotazione"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_reservation__children_occupying
-msgid "Number of children there in guest list whose presence counts"
-msgstr "Numero di bambini nell'elenco ospiti la cui presenza è conteggiata"
+#: model:ir.model.fields,help:pms.field_pms_reservation__children
+msgid ""
+"Number of children there in guest list. They take the regular places of the "
+"room first, and only overflow into its children places"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_has_error_counter
@@ -8169,6 +8171,19 @@ msgid "Number of outgoing stock moves in the past 12 months"
 msgstr "Numero di uscite di magazzino negli ultimi 12 mesi"
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room__capacity
+msgid "Number of places where anyone can sleep, adults or children"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room__children_capacity
+msgid ""
+"Number of places where only children can sleep, such as child bunk beds. "
+"Adults never occupy them, children occupy them only once the regular "
+"capacity is full"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__pricelist_item_count
 msgid "Number of price rules"
 msgstr "Numero di regole prezzi"
@@ -8204,14 +8219,6 @@ msgstr "Numero di servizi nel foglio"
 #: model:ir.model.fields,help:pms.field_pms_service__product_qty
 msgid "Number of services that were sold"
 msgstr "Numero di servizi che sono stati venduti"
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_reservation__children
-msgid ""
-"Number total of children there in guest list,whose presence counts or not"
-msgstr ""
-"Numero totale di bambini nella lista ospiti, la cui presenza viene "
-"conteggiata o meno"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_duplicate__occupied_room
@@ -12019,11 +12026,6 @@ msgid "The main manager in the folio"
 msgstr "Il responsabile principale nel folio"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_room__capacity
-msgid "The maximum number of people that can occupy a room"
-msgstr "Il numero massimo di persone che possono occupare una camera"
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_team_member__pms_role
 msgid ""
 "The member role in the organizationIt can be 'Reception', 'Revenue', "
@@ -12285,11 +12287,10 @@ msgstr "Il revenue manager nel folio"
 #: code:addons/pms/models/pms_reservation_line.py:0
 #, python-format
 msgid ""
-"The room %(room)s can't hold %(occupancy)s guests (maximum capacity: "
-"%(capacity)s) (%(reservation)s)"
+"The room %(room)s can't hold %(adults)s adults and %(children)s children "
+"(capacity: %(capacity)s, children places: %(children_capacity)s) "
+"(%(reservation)s)"
 msgstr ""
-"La camera %(room)s non può ospitare %(occupancy)s ospiti (capacità massima: "
-"%(capacity)s) (%(reservation)s)"
 
 #. module: pms
 #. odoo-python
@@ -13858,6 +13859,29 @@ msgstr ""
 #, python-format
 msgid "{room_name}: No room available in {checkin} <-> {checkout}."
 msgstr "{room_name}: nessuna camera disponibile dal {checkin} al {checkout}."
+
+#~ msgid "Children Occupying"
+#~ msgstr "Occupazione figli"
+
+#~ msgid "Number of children there in guest list whose presence counts"
+#~ msgstr "Numero di bambini nell'elenco ospiti la cui presenza è conteggiata"
+
+#~ msgid ""
+#~ "Number total of children there in guest list,whose presence counts or not"
+#~ msgstr ""
+#~ "Numero totale di bambini nella lista ospiti, la cui presenza viene "
+#~ "conteggiata o meno"
+
+#~ msgid "The maximum number of people that can occupy a room"
+#~ msgstr "Il numero massimo di persone che possono occupare una camera"
+
+#, python-format
+#~ msgid ""
+#~ "The room %(room)s can't hold %(occupancy)s guests (maximum capacity: "
+#~ "%(capacity)s) (%(reservation)s)"
+#~ msgstr ""
+#~ "La camera %(room)s non può ospitare %(occupancy)s ospiti (capacità "
+#~ "massima: %(capacity)s) (%(reservation)s)"
 
 #~ msgid "Days Late"
 #~ msgstr "Giorni ritardo"
