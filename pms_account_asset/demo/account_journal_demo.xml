@@ -1,0 +1,7 @@
+<odoo noupdate="1">
+    <record id="account_journal_pms_depreciation_demo" model="account.journal">
+        <field name="name">PMS Demo Depreciation</field>
+        <field name="code">PMSDP</field>
+        <field name="type">general</field>
+    </record>
+</odoo>

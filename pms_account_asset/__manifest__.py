@@ -17,6 +17,9 @@
         "pms_account",
     ],
     "demo": [
+        "demo/account_journal_demo.xml",
+        "demo/account_account_demo.xml",
+        "demo/account_asset_profile_demo.xml",
         "demo/account_asset.xml",
     ],
     "data": [
