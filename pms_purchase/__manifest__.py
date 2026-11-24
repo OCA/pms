@@ -3,7 +3,7 @@
 {
     "name": "PMS - Purchase",
     "summary": "Select a PMS property on the PO line.",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.1.0",
     "category": "purchase",
     "website": "https://github.com/OCA/pms",
     "author": "Gray Matter Logic, Odoo Community Association (OCA)",
