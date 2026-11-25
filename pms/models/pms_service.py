@@ -507,6 +507,7 @@ class PmsService(models.Model):
                 agency
                 and agency.invoice_to_agency == "always"
                 and agency.sale_channel_id == record.sale_channel_origin_id
+                and (record.is_board_service or agency.invoice_extras_to_agency)
             ):
                 record.default_invoice_to = agency
             elif not record.default_invoice_to:

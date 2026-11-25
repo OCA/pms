@@ -97,6 +97,10 @@
                           </div>-->
                         <field name="apply_pricelist" />
                         <field name="invoice_to_agency" />
+                        <field
+                            name="invoice_extras_to_agency"
+                            attrs="{'invisible': [('invoice_to_agency', '!=', 'always')]}"
+                        />
                     </group>
                 </page>
             </xpath>
