@@ -613,7 +613,7 @@ class PmsProperty(models.Model):
         return datetime.time(int(hour), int(minute))
 
     def datetime_from_hour_str(self, local_date, hour_str):
-        """Return local_date at hour_str, from property to user timezone."""
+        """Return local_date at hour_str, property local time, as naive UTC."""
         self.ensure_one()
         local_dt = datetime.datetime.combine(
             local_date, self.hour_str_to_time(hour_str)
@@ -621,15 +621,15 @@ class PmsProperty(models.Model):
         return self.date_property_timezone(local_dt)
 
     def date_property_timezone(self, dt):
+        """Return ``dt``, a naive datetime in the property's timezone, as the
+        naive UTC datetime Odoo stores."""
         self.ensure_one()
-        if self.env.user:
-            tz_property = self.tz
-            dt = pytz.timezone(tz_property).localize(dt)
-            dt = dt.replace(tzinfo=None)
-            dt = pytz.timezone(self.env.user.tz or "UTC").localize(dt)
-            dt = dt.astimezone(pytz.utc)
-            dt = dt.replace(tzinfo=None)
-        return dt
+        return (
+            pytz.timezone(self.tz)
+            .localize(dt)
+            .astimezone(pytz.utc)
+            .replace(tzinfo=None)
+        )
 
     def _get_payment_methods(self, automatic_included=False, room_ids=False):
         # We use automatic_included to True to see absolutely

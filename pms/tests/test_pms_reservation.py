@@ -1193,7 +1193,8 @@ class TestPmsReservations(TestPms, AccountTestInvoicingCommon):
             }
         )
         r = reservation.checkin
-        checkin_expected = datetime.datetime(r.year, r.month, r.day, 12, 00)
+        # The property's default arrival hour
+        checkin_expected = datetime.datetime(r.year, r.month, r.day, 14, 00)
         checkin_expected = self.pms_property1.date_property_timezone(checkin_expected)
 
         self.assertEqual(
