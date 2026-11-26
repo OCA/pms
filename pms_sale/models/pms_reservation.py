@@ -246,17 +246,18 @@ class PmsReservation(models.Model):
     @api.constrains("property_id", "duration")
     def _check_no_of_nights(self):
         for rec in self:
-            if (
-                rec.duration > rec.property_id.min_nights
-                and rec.property_id.max_nights < rec.duration
-            ):
+            min_nights = rec.property_id.min_nights
+            max_nights = rec.property_id.max_nights
+            too_short = min_nights > 0 and rec.duration < min_nights
+            too_long = max_nights > 0 and rec.duration > max_nights
+            if too_short or too_long:
                 raise ValidationError(
                     self.env._(  # pylint: disable=W8301
                         "The number of nights must be between %(min)s and %(max)s."
                     )
                     % {
-                        "min": rec.property_id.min_nights,
-                        "max": rec.property_id.max_nights,
+                        "min": min_nights,
+                        "max": max_nights,
                     }
                 )
 
