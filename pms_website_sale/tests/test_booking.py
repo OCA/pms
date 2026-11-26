@@ -109,10 +109,12 @@ class TestPropertyBooking(HttpCase):
         )
         result = resp.json()["result"]
         self.assertEqual(result.get("redirect"), "/shop/cart")
+        # A bare date in a datetime domain means midnight in the user's
+        # timezone, while the booking stores midnight UTC: compare datetimes.
         reservation = self.env["pms.reservation"].search(
             [
                 ("property_id", "=", self.property.id),
-                ("start", "=", self.dates_cart[0]),
+                ("start", "=", datetime.strptime(self.dates_cart[0], "%Y-%m-%d")),
             ],
             limit=1,
         )

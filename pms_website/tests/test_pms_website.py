@@ -5,8 +5,8 @@ from unittest.mock import MagicMock, patch
 
 from werkzeug.exceptions import NotFound
 
-from odoo.exceptions import UserError
-from odoo.tests.common import HttpCase
+from odoo.exceptions import AccessError, UserError
+from odoo.tests.common import HttpCase, new_test_user
 
 from odoo.addons.pms_base.tests.common import PmsBaseCase
 from odoo.addons.pms_website.controllers.website import Website
@@ -26,6 +26,13 @@ class TestPmsWebsite(PmsBaseCase):
                 "partner_longitude": -112.0,
             }
         )
+
+    def test_public_user_can_only_read_properties(self):
+        public_property = self.property.with_user(self.env.ref("base.public_user"))
+        public_property.check_access("read")
+        for operation in ("write", "create", "unlink"):
+            with self.assertRaises(AccessError):
+                public_property.check_access(operation)
 
     def test_property_website_fields(self):
         self.assertEqual(self.property.website_id, self.website)
@@ -495,6 +502,28 @@ class TestPmsWebsiteHttp(HttpCase):
         self.assertIn(b"Wi-Fi", response.content)
         self.assertIn(b"Explore all amenities", response.content)
         self.assertIn(b"propertyAmenitiesModal", response.content)
+
+    def test_property_page_as_portal_user(self):
+        """A signed-in customer sees the same page as a visitor."""
+        amenity = self.env["pms.amenity"].create(
+            {"name": "Sauna", "is_main_amenity": True}
+        )
+        property_rec = self._create_published_property("Portal Property", "Graz")
+        property_rec.amenity_ids = amenity
+        self.env["pms.service"].create(
+            {
+                "name": self.service_product.id,
+                "property_id": property_rec.id,
+                "vendor_id": self.vendor.id,
+                "icon": "fa-wifi",
+            }
+        )
+        new_test_user(self.env, login="pms_portal", groups="base.group_portal")
+        self.authenticate("pms_portal", "pms_portal")
+        response = self.url_open(property_rec.website_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Sauna", response.content)
+        self.assertIn(b'<h5 class="mb-3">Services</h5>', response.content)
 
     def test_properties_page_public(self):
         self._create_published_property("City Property A", "New York")
