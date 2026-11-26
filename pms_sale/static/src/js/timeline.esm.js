@@ -2,87 +2,49 @@
 // Copyright (c) 2021 Gray Matter Logic
 // License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import {TimelineRenderer} from "@web_timeline/views/timeline/timeline_renderer.esm";
-import {onMounted, useState} from "@odoo/owl";
+import {onWillStart, useState} from "@odoo/owl";
 import {patch} from "@web/core/utils/patch";
+import {useDateTimePicker} from "@web/core/datetime/datetime_picker_hook";
 
 patch(TimelineRenderer.prototype, {
     setup() {
         super.setup(...arguments);
         if (this.params.resModel === "pms.reservation") {
-            this.pmsFilter = useState({
+            const pmsFilter = useState({
                 city: "",
-                datepicker: "",
+                range: [false, false],
                 bedrooms: "",
                 cities: [],
             });
-            onMounted(() => {
-                this._injectPmsFilterBar();
-                this._loadPmsSelections();
+            this.pmsFilter = pmsFilter;
+            useDateTimePicker({
+                startDateRefName: "pms-date-from",
+                endDateRefName: "pms-date-to",
+                get pickerProps() {
+                    return {type: "date", range: true, value: pmsFilter.range};
+                },
+                onApply: (value) => {
+                    pmsFilter.range = value;
+                },
             });
+            onWillStart(() => this._loadPmsSelections());
         }
     },
 
     async _loadPmsSelections() {
         const result = await this.orm.call("pms.reservation", "get_selections", []);
-        if (!result) return;
-        this.pmsFilter.cities = result.city || [];
-        const select = this.rootRef.el?.querySelector(
-            ".pms-timeline-filters .pms-city-select"
-        );
-        if (!select) return;
-        while (select.options.length > 1) {
-            select.remove(1);
-        }
-        for (const city of this.pmsFilter.cities) {
-            select.appendChild(new Option(city, city));
-        }
+        this.pmsFilter.cities = result?.city || [];
     },
 
-    _injectPmsFilterBar() {
-        const buttonsEl = this.rootRef.el?.querySelector(".oe_timeline_buttons");
-        if (!buttonsEl || buttonsEl.querySelector(".pms-timeline-filters")) return;
-
-        const filterDiv = document.createElement("div");
-        filterDiv.className = "btn-group btn-sm pms-timeline-filters";
-
-        const citySelect = document.createElement("select");
-        citySelect.className = "btn btn-default btn-sm pms-city-select";
-        citySelect.style.cssText =
-            "width:20%;border-bottom:1px solid;margin-right:10px;";
-        citySelect.appendChild(new Option("Select City", ""));
-
-        const dateInput = document.createElement("input");
-        dateInput.className = "btn btn-default btn-sm";
-        dateInput.placeholder = "Date...";
-        dateInput.style.cssText = "border-bottom:1px solid;margin-right:10px;";
-
-        const bedroomsInput = document.createElement("input");
-        bedroomsInput.type = "number";
-        bedroomsInput.className = "btn btn-default btn-sm";
-        bedroomsInput.placeholder = "Bedrooms...";
-        bedroomsInput.style.cssText =
-            "width:20%;border-bottom:1px solid;margin-right:10px;";
-
-        const searchBtn = document.createElement("button");
-        searchBtn.className = "btn btn-default";
-        searchBtn.textContent = "Search";
-        searchBtn.addEventListener("click", () => {
-            this.pmsFilter.city = citySelect.value;
-            this.pmsFilter.datepicker = dateInput.value;
-            this.pmsFilter.bedrooms = bedroomsInput.value;
-            this.on_data_loaded(this.model.data);
-        });
-
-        filterDiv.append(citySelect, dateInput, bedroomsInput, searchBtn);
-        buttonsEl.appendChild(filterDiv);
+    _onPmsSearchClicked() {
+        this.on_data_loaded(this.model.data);
     },
 
     async on_data_loaded(records, adjust_window) {
         if (this.params.resModel === "pms.reservation" && this.pmsFilter) {
+            const [dateFrom, dateTo] = this.pmsFilter.range;
             const hasFilter =
-                this.pmsFilter.city ||
-                this.pmsFilter.datepicker ||
-                this.pmsFilter.bedrooms;
+                this.pmsFilter.city || dateFrom || dateTo || this.pmsFilter.bedrooms;
             if (hasFilter) {
                 const propertyInfo = await this.orm.call(
                     "pms.property",
@@ -90,7 +52,8 @@ patch(TimelineRenderer.prototype, {
                     [
                         {
                             city_value: this.pmsFilter.city || false,
-                            datepicker_value: this.pmsFilter.datepicker || false,
+                            date_from: dateFrom ? dateFrom.toISODate() : false,
+                            date_to: dateTo ? dateTo.toISODate() : false,
                             bedrooms_value: this.pmsFilter.bedrooms || false,
                         },
                     ]

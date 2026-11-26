@@ -101,7 +101,11 @@ class TestPMSProperty(TransactionCase):
         vals = {
             "city_value": "la",
             "bedrooms_value": 2,
-            "datepicker_value": "12/1/2022-12/15/2022",
+            "date_from": "2022-12-01",
+            "date_to": "2022-12-15",
         }
 
+        self.assertEqual(len(self.pms_property2.get_property_information(vals)), 1)
+        # A single date is a one-day range
+        vals.pop("date_to")
         self.assertEqual(len(self.pms_property2.get_property_information(vals)), 1)
