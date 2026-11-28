@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-11-11 00:49+0000\n"
+"PO-Revision-Date: 2026-11-28 17:46+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.15.2\n"
+"X-Generator: Weblate 2026.11.2\n"
 
 #. module: pms
 #. odoo-python
@@ -1936,7 +1936,7 @@ msgstr "È richiesto un metodo di pagamento per creare la transazione."
 #: code:addons/pms/models/pms_room_type.py:0
 #, python-format
 msgid "A percentage variation must be greater than -100%."
-msgstr ""
+msgstr "Una variazione percentuale deve essere maggiore di -100%."
 
 #. module: pms
 #. odoo-python
@@ -1946,6 +1946,8 @@ msgid ""
 "A room type cannot derive its price from itself, directly or through other "
 "room types."
 msgstr ""
+"Un tipo camera non può derivare il proprio prezzo da se stesso, direttamente "
+"o tramite altri tipi camera."
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_folio_advance_payment_inv__advance_payment_method
@@ -2150,6 +2152,8 @@ msgid ""
 "Added to the price of the base room type, as an amount in the currency of "
 "the pricelist or as a percentage of that price. Negative values lower it"
 msgstr ""
+"Aggiunto al prezzo del tipo camera base, come importo nella valuta del "
+"listino o come percentuale di tale prezzo. I valori negativi lo riducono"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__additional_product_tag_ids
@@ -3778,7 +3782,7 @@ msgstr "Figli"
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room__children_capacity
 msgid "Children Capacity"
-msgstr ""
+msgstr "Capienza bambini"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.several_partners_wizard
@@ -4707,17 +4711,17 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__price_derivation_pricelist_ids
 msgid "Derive in Pricelists"
-msgstr ""
+msgstr "Deriva nei listini"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_type_view_form
 msgid "Derived Price"
-msgstr ""
+msgstr "Prezzo derivato"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__price_derived_room_type_ids
 msgid "Derived Room Types"
-msgstr ""
+msgstr "Tipi camera derivati"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__name
@@ -5368,7 +5372,7 @@ msgstr "Posizione fiscale"
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_room_type__price_derivation_type__amount
 msgid "Fixed amount"
-msgstr ""
+msgstr "Importo fisso"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_ir_pms_property__value_float
@@ -7306,7 +7310,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__price_derived_room_type_ids
 msgid "Left Out (Derived Price)"
-msgstr ""
+msgstr "Esclusi (prezzo derivato)"
 
 #. module: pms
 #: model:ir.model,name:pms.model_pms_wizard_reservation_lines_split
@@ -8110,6 +8114,8 @@ msgid ""
 "Number of children there in guest list. They take the regular places of the "
 "room first, and only overflow into its children places"
 msgstr ""
+"Numero di bambini presenti nell'elenco ospiti. Occupano prima i posti "
+"regolari della camera e solo in eccedenza i posti per bambini"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__message_has_error_counter
@@ -8173,7 +8179,7 @@ msgstr "Numero di uscite di magazzino negli ultimi 12 mesi"
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room__capacity
 msgid "Number of places where anyone can sleep, adults or children"
-msgstr ""
+msgstr "Numero di posti in cui può dormire chiunque, adulti o bambini"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room__children_capacity
@@ -8182,6 +8188,9 @@ msgid ""
 "Adults never occupy them, children occupy them only once the regular "
 "capacity is full"
 msgstr ""
+"Numero di posti in cui possono dormire solo bambini, come letti a castello "
+"per bambini. Gli adulti non li occupano mai, i bambini li occupano solo "
+"quando la capienza regolare è piena"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__pricelist_item_count
@@ -8868,7 +8877,7 @@ msgstr "Arrivo in sospeso"
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_room_type__price_derivation_type__percent
 msgid "Percentage"
-msgstr ""
+msgstr "Percentuale"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__commission_percent
@@ -9008,7 +9017,7 @@ msgstr "Prezzo"
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__price_base_room_type_id
 msgid "Price Derived From"
-msgstr ""
+msgstr "Prezzo derivato da"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__price_reduce
@@ -9028,7 +9037,7 @@ msgstr "Riduzione prezzo tasse incluse"
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__price_derivation_rounding
 msgid "Price Rounding"
-msgstr ""
+msgstr "Arrotondamento prezzo"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_detail
@@ -9043,12 +9052,12 @@ msgstr "Prezzo unitario"
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__price_derivation_value
 msgid "Price Variation"
-msgstr ""
+msgstr "Variazione prezzo"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__price_derivation_type
 msgid "Price Variation Type"
-msgstr ""
+msgstr "Tipo variazione prezzo"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
@@ -9237,6 +9246,7 @@ msgid ""
 "Pricelists where the price is derived. Leave it empty to derive it in all of "
 "them"
 msgstr ""
+"Listini in cui il prezzo è derivato. Lasciare vuoto per derivarlo in tutti"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_board_service_room_type__pricelist_ids
@@ -10444,6 +10454,8 @@ msgid ""
 "Room type whose price is the base of this one in the pricelists without a "
 "rule of their own for it"
 msgstr ""
+"Tipo camera il cui prezzo è la base di questo nei listini privi di una "
+"regola propria per esso"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__board_service_room_type_ids
@@ -10462,6 +10474,9 @@ msgid ""
 "room types of the properties, except for the prices of the room types whose "
 "price is derived from another one"
 msgstr ""
+"Tipi camera a cui applicare le modifiche. Lasciare vuoto per applicarle a "
+"tutti i tipi camera delle strutture, ad eccezione dei prezzi dei tipi camera "
+"il cui prezzo è derivato da un altro"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_massive_changes_wizard__price_derived_room_type_ids
@@ -10472,11 +10487,16 @@ msgid ""
 "dates they have a price of their own, which is kept. Select them explicitly "
 "to give them a price of their own"
 msgstr ""
+"Tipi camera il cui prezzo è derivato da un altro nei listini selezionati. "
+"Poiché non è selezionato alcun tipo camera, il nuovo prezzo non viene "
+"impostato su di essi: continuano a seguire il tipo camera da cui deriva il "
+"loro prezzo, tranne nelle date in cui hanno un prezzo proprio, che viene "
+"mantenuto. Selezionarli esplicitamente per assegnare loro un prezzo proprio"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__price_derived_room_type_ids
 msgid "Room types whose price is derived from this one"
-msgstr ""
+msgstr "Tipi camera il cui prezzo è derivato da questo"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__rooms
@@ -10554,6 +10574,8 @@ msgid ""
 "Round the prices derived by a percentage to a multiple of this value, e.g. 1 "
 "for whole amounts. Zero rounds them to the currency"
 msgstr ""
+"Arrotonda i prezzi derivati da una percentuale a un multiplo di questo "
+"valore, es. 1 per importi interi. Zero li arrotonda alla valuta"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__route_ids
@@ -12125,14 +12147,14 @@ msgstr "Il prezzo in una riga di prenotazione"
 #: code:addons/pms/models/product_pricelist_item.py:0
 #, python-format
 msgid "The price of %(room_type)s is derived through too many levels."
-msgstr ""
+msgstr "Il prezzo di %(room_type)s è derivato attraverso troppi livelli."
 
 #. module: pms
 #. odoo-python
 #: code:addons/pms/models/pms_room_type.py:0
 #, python-format
 msgid "The price rounding can't be negative."
-msgstr ""
+msgstr "L'arrotondamento del prezzo non può essere negativo."
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__amount_untaxed
@@ -12291,6 +12313,9 @@ msgid ""
 "(capacity: %(capacity)s, children places: %(children_capacity)s) "
 "(%(reservation)s)"
 msgstr ""
+"La camera %(room)s non può ospitare %(adults)s adulti e %(children)s bambini "
+"(capienza: %(capacity)s, posti bambini: %(children_capacity)s) (%"
+"(reservation)s)"
 
 #. module: pms
 #. odoo-python
@@ -13461,6 +13486,8 @@ msgid ""
 "Whether the variation is a fixed amount or a percentage of the price of the "
 "base room type"
 msgstr ""
+"Indica se la variazione è un importo fisso o una percentuale del prezzo del "
+"tipo camera base"
 
 #. module: pms
 #: model:pms.amenity,name:pms.pms_amenity_wi_fi
